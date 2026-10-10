@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: ae89a03bb6dc178469deef9fa45789e9
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7777610672672879252
+    second: LowbushBlueberry_0_light_0
+  - first:
+      213: -5833886513439528584
+    second: LowbushBlueberry_0_light_1
+  - first:
+      213: 3342877699306601073
+    second: LowbushBlueberry_0_light_2
+  - first:
+      213: 6179409331507240394
+    second: LowbushBlueberry_0_light_3
+  - first:
+      213: -7935110681936115992
+    second: LowbushBlueberry_0_light_4
+  - first:
+      213: -6224578189045181675
+    second: LowbushBlueberry_0_light_5
+  - first:
+      213: 1951678428685396479
+    second: LowbushBlueberry_0_light_6
+  - first:
+      213: -2631538265425750720
+    second: LowbushBlueberry_0_light_7
+  - first:
+      213: -8152499799210570118
+    second: LowbushBlueberry_0_light_8
+  - first:
+      213: -6608060412987282701
+    second: LowbushBlueberry_0_light_9
+  - first:
+      213: 4831897903723740298
+    second: LowbushBlueberry_0_light_10
+  - first:
+      213: 3747682203837923665
+    second: LowbushBlueberry_0_light_11
+  - first:
+      213: -4300793805576522952
+    second: LowbushBlueberry_0_light_12
+  - first:
+      213: -2551315892135645518
+    second: LowbushBlueberry_0_light_13
+  - first:
+      213: -855216474843864948
+    second: LowbushBlueberry_0_light_14
+  - first:
+      213: 8670108604461934130
+    second: LowbushBlueberry_0_light_15
+  - first:
+      213: 319540869281806585
+    second: LowbushBlueberry_0_light_16
+  - first:
+      213: -2165548683895845048
+    second: LowbushBlueberry_0_light_17
+  - first:
+      213: -4532875058457657317
+    second: LowbushBlueberry_0_light_18
+  - first:
+      213: -4190283791931575817
+    second: LowbushBlueberry_0_light_19
+  - first:
+      213: -4779891921123673236
+    second: LowbushBlueberry_0_light_20
+  - first:
+      213: -1382488793554115426
+    second: LowbushBlueberry_0_light_21
+  - first:
+      213: -4934443663899911998
+    second: LowbushBlueberry_0_light_22
+  - first:
+      213: 1918428780904678454
+    second: LowbushBlueberry_0_light_23
+  - first:
+      213: 2314316148566669171
+    second: LowbushBlueberry_0_light_24
+  - first:
+      213: -3257880435127870312
+    second: LowbushBlueberry_0_light_25
+  - first:
+      213: 2772092624994534399
+    second: LowbushBlueberry_0_light_26
+  - first:
+      213: 7986055239286513051
+    second: LowbushBlueberry_0_light_27
+  - first:
+      213: 5408295156000162792
+    second: LowbushBlueberry_0_light_28
+  - first:
+      213: -5373924644727422978
+    second: LowbushBlueberry_0_light_29
+  - first:
+      213: 4883074262448249463
+    second: LowbushBlueberry_0_light_30
+  - first:
+      213: -8305439230623845405
+    second: LowbushBlueberry_0_light_31
+  - first:
+      213: -4702412970472855948
+    second: LowbushBlueberry_0_light_32
+  - first:
+      213: 8715894912381140258
+    second: LowbushBlueberry_0_light_33
+  - first:
+      213: -3737376961150992601
+    second: LowbushBlueberry_0_light_34
+  - first:
+      213: 7356299811478337902
+    second: LowbushBlueberry_0_light_35
+  - first:
+      213: -7614088122999394764
+    second: LowbushBlueberry_0_light_36
+  - first:
+      213: 5140171186518817447
+    second: LowbushBlueberry_0_light_37
+  - first:
+      213: -5201118455328067480
+    second: LowbushBlueberry_0_light_38
+  - first:
+      213: -2437460636550415783
+    second: LowbushBlueberry_0_light_39
+  - first:
+      213: -9041173745636706146
+    second: LowbushBlueberry_0_light_40
+  - first:
+      213: -4483301081743754465
+    second: LowbushBlueberry_0_light_41
+  - first:
+      213: -561693012786867725
+    second: LowbushBlueberry_0_light_42
+  - first:
+      213: -3027462455109640037
+    second: LowbushBlueberry_0_light_43
+  - first:
+      213: 1654972302373790183
+    second: LowbushBlueberry_0_light_44
+  - first:
+      213: 8945444057941935765
+    second: LowbushBlueberry_0_light_45
+  - first:
+      213: -6689289077020062943
+    second: LowbushBlueberry_0_light_46
+  - first:
+      213: -4166377300631971702
+    second: LowbushBlueberry_0_light_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 177
+        width: 49
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49234f103bf9feb60800000000000000
+      internalID: 7777610672672879252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 177
+        width: 50
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 879ae72102fd90fa0800000000000000
+      internalID: -5833886513439528584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 177
+        width: 50
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17abeb26e89446e20800000000000000
+      internalID: 3342877699306601073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 180
+        width: 53
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acd193e0c0ca1c550800000000000000
+      internalID: 6179409331507240394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 180
+        width: 52
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e64ac570e2d0e190800000000000000
+      internalID: -7935110681936115992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 180
+        width: 52
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5135155cd1bdd99a0800000000000000
+      internalID: -6224578189045181675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 180
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff9e591c031c51b10800000000000000
+      internalID: 1951678428685396479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 138
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 045537cd3e5ea7bd0800000000000000
+      internalID: -2631538265425750720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 138
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7e4c9c50a08cde80800000000000000
+      internalID: -8152499799210570118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 139
+        width: 54
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fa629db0147b44a0800000000000000
+      internalID: -6608060412987282701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 139
+        width: 52
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8c786efa895e0340800000000000000
+      internalID: 4831897903723740298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 139
+        width: 52
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15100dabb11720430800000000000000
+      internalID: 3747682203837923665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 140
+        width: 54
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 833396602d28054c0800000000000000
+      internalID: -4300793805576522952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 139
+        width: 50
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2be227ba6b7e79cd0800000000000000
+      internalID: -2551315892135645518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 103
+        width: 42
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c80aed2b529a124f0800000000000000
+      internalID: -855216474843864948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 102
+        width: 43
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 236e20de6d9625870800000000000000
+      internalID: 8670108604461934130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 102
+        width: 43
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f8f2c44abc3f6400800000000000000
+      internalID: 319540869281806585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 103
+        width: 43
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84fc29012fc62f1e0800000000000000
+      internalID: -2165548683895845048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 105
+        width: 43
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b104769862ef711c0800000000000000
+      internalID: -4532875058457657317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 105
+        width: 43
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f177d1a71f19d5c0800000000000000
+      internalID: -4190283791931575817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 105
+        width: 39
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6bf9a86f996aadb0800000000000000
+      internalID: -4779891921123673236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 104
+        width: 40
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e94af3a54c960dce0800000000000000
+      internalID: -1382488793554115426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 68
+        width: 40
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c89119a1a5558bb0800000000000000
+      internalID: -4934443663899911998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 69
+        width: 51
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63485bcdfc0af9a10800000000000000
+      internalID: 1918428780904678454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 68
+        width: 49
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 377344d764a1e1020800000000000000
+      internalID: 2314316148566669171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 68
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89c1287510fa9c2d0800000000000000
+      internalID: -3257880435127870312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 69
+        width: 43
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff387452e83787620800000000000000
+      internalID: 2772092624994534399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 69
+        width: 45
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9dd15e9dea24de60800000000000000
+      internalID: 7986055239286513051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 69
+        width: 45
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e30bdd3acf1e0b40800000000000000
+      internalID: 5408295156000162792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 70
+        width: 44
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efffd45020cfb65b0800000000000000
+      internalID: -5373924644727422978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 38
+        width: 36
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77a94198b2a24c340800000000000000
+      internalID: 4883074262448249463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 38
+        width: 36
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e3721b16072dbc80800000000000000
+      internalID: -8305439230623845405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 37
+        width: 35
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 476a6cb515cadbeb0800000000000000
+      internalID: -4702412970472855948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 36
+        width: 43
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22dbc187e3415f870800000000000000
+      internalID: 8715894912381140258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 39
+        width: 39
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72fbdde847b222cc0800000000000000
+      internalID: -3737376961150992601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 38
+        width: 40
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e69707404b3d61660800000000000000
+      internalID: 7356299811478337902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 38
+        width: 40
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43ea91c7133555690800000000000000
+      internalID: -7614088122999394764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 37
+        width: 39
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7aaf629d57e855740800000000000000
+      internalID: 5140171186518817447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 37
+        width: 39
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8603173525ae1d7b0800000000000000
+      internalID: -5201118455328067480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 5
+        width: 38
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95a3a6c17766c2ed0800000000000000
+      internalID: -2437460636550415783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 6
+        width: 44
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e987cba616c478280800000000000000
+      internalID: -9041173745636706146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 5
+        width: 43
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1bf9817b6d18c1c0800000000000000
+      internalID: -4483301081743754465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 7
+        width: 38
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f1150c4e277438f0800000000000000
+      internalID: -561693012786867725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 7
+        width: 37
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b90ab50ffea4cf5d0800000000000000
+      internalID: -3027462455109640037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 7
+        width: 37
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e1a9146a84a7f610800000000000000
+      internalID: 1654972302373790183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 7
+        width: 39
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59602c7c9f9942c70800000000000000
+      internalID: 8945444057941935765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 8
+        width: 36
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12b815c960fda23a0800000000000000
+      internalID: -6689289077020062943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LowbushBlueberry_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 7
+        width: 34
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8894936bed0e26c0800000000000000
+      internalID: -4166377300631971702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LowbushBlueberry_0_light_0: 7777610672672879252
+      LowbushBlueberry_0_light_1: -5833886513439528584
+      LowbushBlueberry_0_light_10: 4831897903723740298
+      LowbushBlueberry_0_light_11: 3747682203837923665
+      LowbushBlueberry_0_light_12: -4300793805576522952
+      LowbushBlueberry_0_light_13: -2551315892135645518
+      LowbushBlueberry_0_light_14: -855216474843864948
+      LowbushBlueberry_0_light_15: 8670108604461934130
+      LowbushBlueberry_0_light_16: 319540869281806585
+      LowbushBlueberry_0_light_17: -2165548683895845048
+      LowbushBlueberry_0_light_18: -4532875058457657317
+      LowbushBlueberry_0_light_19: -4190283791931575817
+      LowbushBlueberry_0_light_2: 3342877699306601073
+      LowbushBlueberry_0_light_20: -4779891921123673236
+      LowbushBlueberry_0_light_21: -1382488793554115426
+      LowbushBlueberry_0_light_22: -4934443663899911998
+      LowbushBlueberry_0_light_23: 1918428780904678454
+      LowbushBlueberry_0_light_24: 2314316148566669171
+      LowbushBlueberry_0_light_25: -3257880435127870312
+      LowbushBlueberry_0_light_26: 2772092624994534399
+      LowbushBlueberry_0_light_27: 7986055239286513051
+      LowbushBlueberry_0_light_28: 5408295156000162792
+      LowbushBlueberry_0_light_29: -5373924644727422978
+      LowbushBlueberry_0_light_3: 6179409331507240394
+      LowbushBlueberry_0_light_30: 4883074262448249463
+      LowbushBlueberry_0_light_31: -8305439230623845405
+      LowbushBlueberry_0_light_32: -4702412970472855948
+      LowbushBlueberry_0_light_33: 8715894912381140258
+      LowbushBlueberry_0_light_34: -3737376961150992601
+      LowbushBlueberry_0_light_35: 7356299811478337902
+      LowbushBlueberry_0_light_36: -7614088122999394764
+      LowbushBlueberry_0_light_37: 5140171186518817447
+      LowbushBlueberry_0_light_38: -5201118455328067480
+      LowbushBlueberry_0_light_39: -2437460636550415783
+      LowbushBlueberry_0_light_4: -7935110681936115992
+      LowbushBlueberry_0_light_40: -9041173745636706146
+      LowbushBlueberry_0_light_41: -4483301081743754465
+      LowbushBlueberry_0_light_42: -561693012786867725
+      LowbushBlueberry_0_light_43: -3027462455109640037
+      LowbushBlueberry_0_light_44: 1654972302373790183
+      LowbushBlueberry_0_light_45: 8945444057941935765
+      LowbushBlueberry_0_light_46: -6689289077020062943
+      LowbushBlueberry_0_light_47: -4166377300631971702
+      LowbushBlueberry_0_light_5: -6224578189045181675
+      LowbushBlueberry_0_light_6: 1951678428685396479
+      LowbushBlueberry_0_light_7: -2631538265425750720
+      LowbushBlueberry_0_light_8: -8152499799210570118
+      LowbushBlueberry_0_light_9: -6608060412987282701
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

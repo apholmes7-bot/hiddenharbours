@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 7df2b3d16d3f6274da77ce3f5583bb40
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4602692198071730108
+    second: Timothy_0_detail_0
+  - first:
+      213: 6838295444198644404
+    second: Timothy_0_detail_1
+  - first:
+      213: -8579435018113683766
+    second: Timothy_0_detail_2
+  - first:
+      213: -4605542885242940319
+    second: Timothy_0_detail_3
+  - first:
+      213: -4853015451627001868
+    second: Timothy_0_detail_4
+  - first:
+      213: 3908295688044694203
+    second: Timothy_0_detail_5
+  - first:
+      213: -8811455700954300651
+    second: Timothy_0_detail_6
+  - first:
+      213: 8667022556191943830
+    second: Timothy_0_detail_7
+  - first:
+      213: 5536104628778230660
+    second: Timothy_0_detail_8
+  - first:
+      213: 3621708274661437067
+    second: Timothy_0_detail_9
+  - first:
+      213: -6737601838496834461
+    second: Timothy_0_detail_10
+  - first:
+      213: 5190611589780785735
+    second: Timothy_0_detail_11
+  - first:
+      213: 8191526465277243634
+    second: Timothy_0_detail_12
+  - first:
+      213: -5955910496312179493
+    second: Timothy_0_detail_13
+  - first:
+      213: 3402001285202551914
+    second: Timothy_0_detail_14
+  - first:
+      213: -5996780559134355718
+    second: Timothy_0_detail_15
+  - first:
+      213: -1949113683869377394
+    second: Timothy_0_detail_16
+  - first:
+      213: 5073917733731916136
+    second: Timothy_0_detail_17
+  - first:
+      213: 5648558924217274424
+    second: Timothy_0_detail_18
+  - first:
+      213: 3866853164154550416
+    second: Timothy_0_detail_19
+  - first:
+      213: 3883411930803971846
+    second: Timothy_0_detail_20
+  - first:
+      213: -5828884980533304271
+    second: Timothy_0_detail_21
+  - first:
+      213: 5894899370233867855
+    second: Timothy_0_detail_22
+  - first:
+      213: -4889922552774635974
+    second: Timothy_0_detail_23
+  - first:
+      213: 3909383446113441244
+    second: Timothy_0_detail_24
+  - first:
+      213: 2684790892124012273
+    second: Timothy_0_detail_25
+  - first:
+      213: -8405959264013727942
+    second: Timothy_0_detail_26
+  - first:
+      213: -4186865734776918311
+    second: Timothy_0_detail_27
+  - first:
+      213: 2982508712965132877
+    second: Timothy_0_detail_28
+  - first:
+      213: -5450271649674000669
+    second: Timothy_0_detail_29
+  - first:
+      213: -8372510964854300825
+    second: Timothy_0_detail_30
+  - first:
+      213: 8417487217548506507
+    second: Timothy_0_detail_31
+  - first:
+      213: 99139782418977567
+    second: Timothy_0_detail_32
+  - first:
+      213: -3196990052341925255
+    second: Timothy_0_detail_33
+  - first:
+      213: 1568262263378486878
+    second: Timothy_0_detail_34
+  - first:
+      213: 2798946082970841160
+    second: Timothy_0_detail_35
+  - first:
+      213: 5564245659888205385
+    second: Timothy_0_detail_36
+  - first:
+      213: 5110504331730265986
+    second: Timothy_0_detail_37
+  - first:
+      213: 7903071791737567496
+    second: Timothy_0_detail_38
+  - first:
+      213: 5815705166277026987
+    second: Timothy_0_detail_39
+  - first:
+      213: 7838263258429830452
+    second: Timothy_0_detail_40
+  - first:
+      213: -970430220990640448
+    second: Timothy_0_detail_41
+  - first:
+      213: 4032772503654630382
+    second: Timothy_0_detail_42
+  - first:
+      213: 8519033876372444869
+    second: Timothy_0_detail_43
+  - first:
+      213: -5756746282362297690
+    second: Timothy_0_detail_44
+  - first:
+      213: 2480405066449044630
+    second: Timothy_0_detail_45
+  - first:
+      213: -590268122033119056
+    second: Timothy_0_detail_46
+  - first:
+      213: -2083626682516723992
+    second: Timothy_0_detail_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Timothy_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 122
+        width: 29
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbff6840b2c00ef30800000000000000
+      internalID: 4602692198071730108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 122
+        width: 29
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bad1a4c97186ee50800000000000000
+      internalID: 6838295444198644404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 121
+        width: 30
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ace69cb8e49bfe880800000000000000
+      internalID: -8579435018113683766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 121
+        width: 30
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1645447a523d510c0800000000000000
+      internalID: -4605542885242940319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 123
+        width: 30
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f76a4cb820a6acb0800000000000000
+      internalID: -4853015451627001868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 123
+        width: 30
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bba4813a83e0d3630800000000000000
+      internalID: 3908295688044694203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 124
+        width: 30
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51f378e99bb67b580800000000000000
+      internalID: -8811455700954300651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 124
+        width: 30
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69c6e125813774870800000000000000
+      internalID: 8667022556191943830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 132
+        width: 30
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 483e8bd04d134dc40800000000000000
+      internalID: 5536104628778230660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 75
+        width: 30
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8ea947bc74e24230800000000000000
+      internalID: 3621708274661437067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 76
+        width: 30
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36c906243da3f72a0800000000000000
+      internalID: -6737601838496834461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 78
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74ac8e76db1c80840800000000000000
+      internalID: 5190611589780785735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 78
+        width: 26
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f0bf0b6be52ea170800000000000000
+      internalID: 8191526465277243634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 78
+        width: 26
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd4ca4995fa585da0800000000000000
+      internalID: -5955910496312179493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 79
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a64abe1f426563f20800000000000000
+      internalID: 3402001285202551914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 79
+        width: 26
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afe04d09ad727cca0800000000000000
+      internalID: -5996780559134355718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 79
+        width: 26
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8cdc1e6e6b53f4e0800000000000000
+      internalID: -1949113683869377394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 81
+        width: 26
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86955aacb4d2a6640800000000000000
+      internalID: 5073917733731916136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 81
+        width: 26
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83055da0a66b36e40800000000000000
+      internalID: 5648558924217274424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 82
+        width: 26
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 098f6002772d9a530800000000000000
+      internalID: 3866853164154550416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 36
+        width: 26
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 607a51c6396a4e530800000000000000
+      internalID: 3883411930803971846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 36
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 134e3b23ef3ab1fa0800000000000000
+      internalID: -5828884980533304271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 37
+        width: 29
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4ea675aeb3eec150800000000000000
+      internalID: 5894899370233867855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 38
+        width: 29
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3e42be9851832cb0800000000000000
+      internalID: -4889922552774635974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 39
+        width: 25
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd5526c088be04630800000000000000
+      internalID: 3909383446113441244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 39
+        width: 26
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fe714d771b424520800000000000000
+      internalID: 2684790892124012273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 42
+        width: 26
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a37ce080698085b80800000000000000
+      internalID: -8405959264013727942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 43
+        width: 26
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9deed541cc345e5c0800000000000000
+      internalID: -4186865734776918311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 44
+        width: 22
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d425bc75fdff36920800000000000000
+      internalID: 2982508712965132877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 44
+        width: 22
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e68cc7bfcebc54b0800000000000000
+      internalID: -5450271649674000669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 45
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76fdbcd03addecb80800000000000000
+      internalID: -8372510964854300825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 45
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b85be5fc60ce0d470800000000000000
+      internalID: 8417487217548506507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 45
+        width: 25
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f13513a5b17306100800000000000000
+      internalID: 99139782418977567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 5
+        width: 25
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97ab3bb5c7202a3d0800000000000000
+      internalID: -3196990052341925255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 6
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e562353383693c510800000000000000
+      internalID: 1568262263378486878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 6
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 840b2fc02aad7d620800000000000000
+      internalID: 2798946082970841160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 6
+        width: 25
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94e35a072fb283d40800000000000000
+      internalID: 5564245659888205385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 5
+        width: 25
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 287a0e3fc982ce640800000000000000
+      internalID: 5110504331730265986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 7
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8097dec1ce95dad60800000000000000
+      internalID: 7903071791737567496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 8
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba4a85a290985b050800000000000000
+      internalID: 5815705166277026987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 8
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 435b4b697ea17cc60800000000000000
+      internalID: 7838263258429830452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 9
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ce8c860bd65882f0800000000000000
+      internalID: -970430220990640448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 10
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee30c4cb93947f730800000000000000
+      internalID: 4032772503654630382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 494
+        y: 9
+        width: 22
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c6d2bebc20b93670800000000000000
+      internalID: 8519033876372444869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 12
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a2aeb9b1cdeb10b0800000000000000
+      internalID: -5756746282362297690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 13
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69446c4244b2c6220800000000000000
+      internalID: 2480405066449044630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 12
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b0aaf73542fec7f0800000000000000
+      internalID: -590268122033119056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Timothy_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 13
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e6a01062987513e0800000000000000
+      internalID: -2083626682516723992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Timothy_0_detail_0: 4602692198071730108
+      Timothy_0_detail_1: 6838295444198644404
+      Timothy_0_detail_10: -6737601838496834461
+      Timothy_0_detail_11: 5190611589780785735
+      Timothy_0_detail_12: 8191526465277243634
+      Timothy_0_detail_13: -5955910496312179493
+      Timothy_0_detail_14: 3402001285202551914
+      Timothy_0_detail_15: -5996780559134355718
+      Timothy_0_detail_16: -1949113683869377394
+      Timothy_0_detail_17: 5073917733731916136
+      Timothy_0_detail_18: 5648558924217274424
+      Timothy_0_detail_19: 3866853164154550416
+      Timothy_0_detail_2: -8579435018113683766
+      Timothy_0_detail_20: 3883411930803971846
+      Timothy_0_detail_21: -5828884980533304271
+      Timothy_0_detail_22: 5894899370233867855
+      Timothy_0_detail_23: -4889922552774635974
+      Timothy_0_detail_24: 3909383446113441244
+      Timothy_0_detail_25: 2684790892124012273
+      Timothy_0_detail_26: -8405959264013727942
+      Timothy_0_detail_27: -4186865734776918311
+      Timothy_0_detail_28: 2982508712965132877
+      Timothy_0_detail_29: -5450271649674000669
+      Timothy_0_detail_3: -4605542885242940319
+      Timothy_0_detail_30: -8372510964854300825
+      Timothy_0_detail_31: 8417487217548506507
+      Timothy_0_detail_32: 99139782418977567
+      Timothy_0_detail_33: -3196990052341925255
+      Timothy_0_detail_34: 1568262263378486878
+      Timothy_0_detail_35: 2798946082970841160
+      Timothy_0_detail_36: 5564245659888205385
+      Timothy_0_detail_37: 5110504331730265986
+      Timothy_0_detail_38: 7903071791737567496
+      Timothy_0_detail_39: 5815705166277026987
+      Timothy_0_detail_4: -4853015451627001868
+      Timothy_0_detail_40: 7838263258429830452
+      Timothy_0_detail_41: -970430220990640448
+      Timothy_0_detail_42: 4032772503654630382
+      Timothy_0_detail_43: 8519033876372444869
+      Timothy_0_detail_44: -5756746282362297690
+      Timothy_0_detail_45: 2480405066449044630
+      Timothy_0_detail_46: -590268122033119056
+      Timothy_0_detail_47: -2083626682516723992
+      Timothy_0_detail_5: 3908295688044694203
+      Timothy_0_detail_6: -8811455700954300651
+      Timothy_0_detail_7: 8667022556191943830
+      Timothy_0_detail_8: 5536104628778230660
+      Timothy_0_detail_9: 3621708274661437067
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

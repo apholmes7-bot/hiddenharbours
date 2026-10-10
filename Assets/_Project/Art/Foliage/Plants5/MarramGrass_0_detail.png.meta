@@ -1,0 +1,6370 @@
+fileFormatVersion: 2
+guid: 14d6af0cefe7a8e488bcdde056a8538b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1513257978789165891
+    second: MarramGrass_0_detail_0
+  - first:
+      213: -7983642893147171061
+    second: MarramGrass_0_detail_1
+  - first:
+      213: -6496397998666023449
+    second: MarramGrass_0_detail_2
+  - first:
+      213: -3641272066633244198
+    second: MarramGrass_0_detail_3
+  - first:
+      213: -1921363761355092632
+    second: MarramGrass_0_detail_4
+  - first:
+      213: -7093680193338882783
+    second: MarramGrass_0_detail_5
+  - first:
+      213: -1179604310373779870
+    second: MarramGrass_0_detail_6
+  - first:
+      213: -3035028251511611836
+    second: MarramGrass_0_detail_7
+  - first:
+      213: 8249971946463991024
+    second: MarramGrass_0_detail_8
+  - first:
+      213: 7229717481112685516
+    second: MarramGrass_0_detail_9
+  - first:
+      213: -7665225728524070014
+    second: MarramGrass_0_detail_10
+  - first:
+      213: 6531269963318390973
+    second: MarramGrass_0_detail_11
+  - first:
+      213: 7444230554617806471
+    second: MarramGrass_0_detail_12
+  - first:
+      213: -7947014585764462611
+    second: MarramGrass_0_detail_13
+  - first:
+      213: 7759936335078475860
+    second: MarramGrass_0_detail_14
+  - first:
+      213: 7488832493359087435
+    second: MarramGrass_0_detail_15
+  - first:
+      213: -192481278112770287
+    second: MarramGrass_0_detail_16
+  - first:
+      213: 3714951937565254251
+    second: MarramGrass_0_detail_17
+  - first:
+      213: 4736511142444852205
+    second: MarramGrass_0_detail_18
+  - first:
+      213: 3371624024768940818
+    second: MarramGrass_0_detail_19
+  - first:
+      213: -1960200192087722218
+    second: MarramGrass_0_detail_20
+  - first:
+      213: -8074884513212144525
+    second: MarramGrass_0_detail_21
+  - first:
+      213: -232281673732419864
+    second: MarramGrass_0_detail_22
+  - first:
+      213: 51357511199615665
+    second: MarramGrass_0_detail_23
+  - first:
+      213: -7811655187183754048
+    second: MarramGrass_0_detail_24
+  - first:
+      213: 7484178789111293969
+    second: MarramGrass_0_detail_25
+  - first:
+      213: 8615372900411894628
+    second: MarramGrass_0_detail_26
+  - first:
+      213: -1125329733631052641
+    second: MarramGrass_0_detail_27
+  - first:
+      213: -5058440739223377757
+    second: MarramGrass_0_detail_28
+  - first:
+      213: 7226765959500080559
+    second: MarramGrass_0_detail_29
+  - first:
+      213: 7502942134779004434
+    second: MarramGrass_0_detail_30
+  - first:
+      213: 5003006675893423698
+    second: MarramGrass_0_detail_31
+  - first:
+      213: 7034003055952894631
+    second: MarramGrass_0_detail_32
+  - first:
+      213: 7524800448108837728
+    second: MarramGrass_0_detail_33
+  - first:
+      213: 3769419476954416418
+    second: MarramGrass_0_detail_34
+  - first:
+      213: -703712220864234264
+    second: MarramGrass_0_detail_35
+  - first:
+      213: -6100042656052781533
+    second: MarramGrass_0_detail_36
+  - first:
+      213: -8044675231610544703
+    second: MarramGrass_0_detail_37
+  - first:
+      213: -2556267377215256611
+    second: MarramGrass_0_detail_38
+  - first:
+      213: -2655529692154714397
+    second: MarramGrass_0_detail_39
+  - first:
+      213: 6244154361044170024
+    second: MarramGrass_0_detail_40
+  - first:
+      213: 6082150172245225785
+    second: MarramGrass_0_detail_41
+  - first:
+      213: -2019739489220602506
+    second: MarramGrass_0_detail_42
+  - first:
+      213: 6761667119337690174
+    second: MarramGrass_0_detail_43
+  - first:
+      213: 1303365076198425880
+    second: MarramGrass_0_detail_44
+  - first:
+      213: 5307580935357855116
+    second: MarramGrass_0_detail_45
+  - first:
+      213: 3132402015305344632
+    second: MarramGrass_0_detail_46
+  - first:
+      213: 1969447801160848989
+    second: MarramGrass_0_detail_47
+  - first:
+      213: 6762538286415423365
+    second: MarramGrass_0_detail_48
+  - first:
+      213: 2497140542375379760
+    second: MarramGrass_0_detail_49
+  - first:
+      213: 4258593668064055279
+    second: MarramGrass_0_detail_50
+  - first:
+      213: 3658021145064205152
+    second: MarramGrass_0_detail_51
+  - first:
+      213: -8890431759059928235
+    second: MarramGrass_0_detail_52
+  - first:
+      213: 8129649819265757433
+    second: MarramGrass_0_detail_53
+  - first:
+      213: -3418517457572216246
+    second: MarramGrass_0_detail_54
+  - first:
+      213: 7335756033371305904
+    second: MarramGrass_0_detail_55
+  - first:
+      213: -7279910311964697575
+    second: MarramGrass_0_detail_56
+  - first:
+      213: 5158115034894512420
+    second: MarramGrass_0_detail_57
+  - first:
+      213: -1111242563062576217
+    second: MarramGrass_0_detail_58
+  - first:
+      213: 4779604560334354535
+    second: MarramGrass_0_detail_59
+  - first:
+      213: 1142060208916354930
+    second: MarramGrass_0_detail_60
+  - first:
+      213: 1749716148700551643
+    second: MarramGrass_0_detail_61
+  - first:
+      213: -6566074810655673439
+    second: MarramGrass_0_detail_62
+  - first:
+      213: -2191760866578938870
+    second: MarramGrass_0_detail_63
+  - first:
+      213: 4314537264927617092
+    second: MarramGrass_0_detail_64
+  - first:
+      213: 502622873599876548
+    second: MarramGrass_0_detail_65
+  - first:
+      213: 9034705550285250217
+    second: MarramGrass_0_detail_66
+  - first:
+      213: -1565807103856047809
+    second: MarramGrass_0_detail_67
+  - first:
+      213: 4127365480526268055
+    second: MarramGrass_0_detail_68
+  - first:
+      213: 6320305824419962898
+    second: MarramGrass_0_detail_69
+  - first:
+      213: -6837245995355658499
+    second: MarramGrass_0_detail_70
+  - first:
+      213: 7213952946281403276
+    second: MarramGrass_0_detail_71
+  - first:
+      213: -7935903690624105129
+    second: MarramGrass_0_detail_72
+  - first:
+      213: -4456183214410940135
+    second: MarramGrass_0_detail_73
+  - first:
+      213: 7267750017773266044
+    second: MarramGrass_0_detail_74
+  - first:
+      213: 7692447044375640056
+    second: MarramGrass_0_detail_75
+  - first:
+      213: 3508783943291603369
+    second: MarramGrass_0_detail_76
+  - first:
+      213: -5176546313594969702
+    second: MarramGrass_0_detail_77
+  - first:
+      213: -1209607785838769036
+    second: MarramGrass_0_detail_78
+  - first:
+      213: 6549828223656987764
+    second: MarramGrass_0_detail_79
+  - first:
+      213: 7450063282752017096
+    second: MarramGrass_0_detail_80
+  - first:
+      213: 6257013980929152926
+    second: MarramGrass_0_detail_81
+  - first:
+      213: -356969627521703133
+    second: MarramGrass_0_detail_82
+  - first:
+      213: 7072586105790558969
+    second: MarramGrass_0_detail_83
+  - first:
+      213: -8145181989669345414
+    second: MarramGrass_0_detail_84
+  - first:
+      213: 2317581389309389652
+    second: MarramGrass_0_detail_85
+  - first:
+      213: 2293066427746652952
+    second: MarramGrass_0_detail_86
+  - first:
+      213: -841462931358083465
+    second: MarramGrass_0_detail_87
+  - first:
+      213: 851637816275377457
+    second: MarramGrass_0_detail_88
+  - first:
+      213: 8019196929967016289
+    second: MarramGrass_0_detail_89
+  - first:
+      213: -5389522003025097693
+    second: MarramGrass_0_detail_90
+  - first:
+      213: -3792556939864777913
+    second: MarramGrass_0_detail_91
+  - first:
+      213: 3308265288441011826
+    second: MarramGrass_0_detail_92
+  - first:
+      213: -5343257823208297370
+    second: MarramGrass_0_detail_93
+  - first:
+      213: -4230797194105299739
+    second: MarramGrass_0_detail_94
+  - first:
+      213: -1564733847100142137
+    second: MarramGrass_0_detail_95
+  - first:
+      213: -7622421543662153467
+    second: MarramGrass_0_detail_96
+  - first:
+      213: 381880203325030550
+    second: MarramGrass_0_detail_97
+  - first:
+      213: -4920523094554364021
+    second: MarramGrass_0_detail_98
+  - first:
+      213: -1014628882286430012
+    second: MarramGrass_0_detail_99
+  - first:
+      213: 4324090738866294096
+    second: MarramGrass_0_detail_100
+  - first:
+      213: 8806770183235149115
+    second: MarramGrass_0_detail_101
+  - first:
+      213: 1105152363790608021
+    second: MarramGrass_0_detail_102
+  - first:
+      213: -6794867174968354202
+    second: MarramGrass_0_detail_103
+  - first:
+      213: -8989940824077987154
+    second: MarramGrass_0_detail_104
+  - first:
+      213: -3092327806147749144
+    second: MarramGrass_0_detail_105
+  - first:
+      213: -779990303276507730
+    second: MarramGrass_0_detail_106
+  - first:
+      213: 8313795414824614127
+    second: MarramGrass_0_detail_107
+  - first:
+      213: -7169689665628419843
+    second: MarramGrass_0_detail_108
+  - first:
+      213: 1672953182440914024
+    second: MarramGrass_0_detail_109
+  - first:
+      213: 1983376511134702375
+    second: MarramGrass_0_detail_110
+  - first:
+      213: 4554067713086303773
+    second: MarramGrass_0_detail_111
+  - first:
+      213: 6574378667156017434
+    second: MarramGrass_0_detail_112
+  - first:
+      213: 2053394213151583270
+    second: MarramGrass_0_detail_113
+  - first:
+      213: -7803332669528385336
+    second: MarramGrass_0_detail_114
+  - first:
+      213: 8804172925888253933
+    second: MarramGrass_0_detail_115
+  - first:
+      213: -3734082685340378992
+    second: MarramGrass_0_detail_116
+  - first:
+      213: -6876450209846976668
+    second: MarramGrass_0_detail_117
+  - first:
+      213: 8061558244828951702
+    second: MarramGrass_0_detail_118
+  - first:
+      213: 2436602161426993652
+    second: MarramGrass_0_detail_119
+  - first:
+      213: 5265549372362694909
+    second: MarramGrass_0_detail_120
+  - first:
+      213: 4072817923859245535
+    second: MarramGrass_0_detail_121
+  - first:
+      213: 2988969881801211085
+    second: MarramGrass_0_detail_122
+  - first:
+      213: -8240549293397415390
+    second: MarramGrass_0_detail_123
+  - first:
+      213: -806624021676718757
+    second: MarramGrass_0_detail_124
+  - first:
+      213: -1494443063256055226
+    second: MarramGrass_0_detail_125
+  - first:
+      213: 6955869656920276061
+    second: MarramGrass_0_detail_126
+  - first:
+      213: 5664052325309486508
+    second: MarramGrass_0_detail_127
+  - first:
+      213: 3473097042706616042
+    second: MarramGrass_0_detail_128
+  - first:
+      213: 2586288445021320723
+    second: MarramGrass_0_detail_129
+  - first:
+      213: -6826043002405207024
+    second: MarramGrass_0_detail_130
+  - first:
+      213: -2356556971959862025
+    second: MarramGrass_0_detail_131
+  - first:
+      213: 4867821227404937588
+    second: MarramGrass_0_detail_132
+  - first:
+      213: -7139502971731430147
+    second: MarramGrass_0_detail_133
+  - first:
+      213: -505515907063262682
+    second: MarramGrass_0_detail_134
+  - first:
+      213: -7076315828469946707
+    second: MarramGrass_0_detail_135
+  - first:
+      213: -2045699697247270110
+    second: MarramGrass_0_detail_136
+  - first:
+      213: -1946659950900122368
+    second: MarramGrass_0_detail_137
+  - first:
+      213: 4489146797094331383
+    second: MarramGrass_0_detail_138
+  - first:
+      213: -279608055216632738
+    second: MarramGrass_0_detail_139
+  - first:
+      213: 3950250236872736914
+    second: MarramGrass_0_detail_140
+  - first:
+      213: 3125004521739213524
+    second: MarramGrass_0_detail_141
+  - first:
+      213: -6634764827145250948
+    second: MarramGrass_0_detail_142
+  - first:
+      213: -8748414398524514218
+    second: MarramGrass_0_detail_143
+  - first:
+      213: 4103280420845938899
+    second: MarramGrass_0_detail_144
+  - first:
+      213: 7125914861411756914
+    second: MarramGrass_0_detail_145
+  - first:
+      213: -5182538875416397516
+    second: MarramGrass_0_detail_146
+  - first:
+      213: 5576560634481901951
+    second: MarramGrass_0_detail_147
+  - first:
+      213: -2236734588222500609
+    second: MarramGrass_0_detail_148
+  - first:
+      213: -3870063880760868765
+    second: MarramGrass_0_detail_149
+  - first:
+      213: 2629340134148223621
+    second: MarramGrass_0_detail_150
+  - first:
+      213: -5630855121018456658
+    second: MarramGrass_0_detail_151
+  - first:
+      213: -842550321078932511
+    second: MarramGrass_0_detail_152
+  - first:
+      213: 5997165696539430993
+    second: MarramGrass_0_detail_153
+  - first:
+      213: 4579504476798734357
+    second: MarramGrass_0_detail_154
+  - first:
+      213: -4657547432302252693
+    second: MarramGrass_0_detail_155
+  - first:
+      213: 4716865451975166218
+    second: MarramGrass_0_detail_156
+  - first:
+      213: 765431660558855464
+    second: MarramGrass_0_detail_157
+  - first:
+      213: 3513908187518946000
+    second: MarramGrass_0_detail_158
+  - first:
+      213: -6680964822706550497
+    second: MarramGrass_0_detail_159
+  - first:
+      213: 7347300264475719668
+    second: MarramGrass_0_detail_160
+  - first:
+      213: 4032517887708776138
+    second: MarramGrass_0_detail_161
+  - first:
+      213: -8582861280066826782
+    second: MarramGrass_0_detail_162
+  - first:
+      213: -5458024076418227690
+    second: MarramGrass_0_detail_163
+  - first:
+      213: 1199832811461169657
+    second: MarramGrass_0_detail_164
+  - first:
+      213: -8820285766563109722
+    second: MarramGrass_0_detail_165
+  - first:
+      213: 5302436743596867914
+    second: MarramGrass_0_detail_166
+  - first:
+      213: 4206429542509154342
+    second: MarramGrass_0_detail_167
+  - first:
+      213: -8878782371713429985
+    second: MarramGrass_0_detail_168
+  - first:
+      213: 7726755781566796015
+    second: MarramGrass_0_detail_169
+  - first:
+      213: 5012484554544968631
+    second: MarramGrass_0_detail_170
+  - first:
+      213: -1070911598173324143
+    second: MarramGrass_0_detail_171
+  - first:
+      213: 2726505730948634993
+    second: MarramGrass_0_detail_172
+  - first:
+      213: -7689552532733145556
+    second: MarramGrass_0_detail_173
+  - first:
+      213: -6963266447068606463
+    second: MarramGrass_0_detail_174
+  - first:
+      213: 3706275175805837526
+    second: MarramGrass_0_detail_175
+  - first:
+      213: 8998649795332841189
+    second: MarramGrass_0_detail_176
+  - first:
+      213: -1026792225305851887
+    second: MarramGrass_0_detail_177
+  - first:
+      213: -6481714654032886637
+    second: MarramGrass_0_detail_178
+  - first:
+      213: -1067087381617282067
+    second: MarramGrass_0_detail_179
+  - first:
+      213: 8151758928149857085
+    second: MarramGrass_0_detail_180
+  - first:
+      213: 4483994138164690283
+    second: MarramGrass_0_detail_181
+  - first:
+      213: -3278304237900273324
+    second: MarramGrass_0_detail_182
+  - first:
+      213: 1550395414293573537
+    second: MarramGrass_0_detail_183
+  - first:
+      213: -2258800070541586054
+    second: MarramGrass_0_detail_184
+  - first:
+      213: 8009591415795698042
+    second: MarramGrass_0_detail_185
+  - first:
+      213: 5943955541621634886
+    second: MarramGrass_0_detail_186
+  - first:
+      213: 3245951487202329692
+    second: MarramGrass_0_detail_187
+  - first:
+      213: -7079853084144607777
+    second: MarramGrass_0_detail_188
+  - first:
+      213: -6414489281445326637
+    second: MarramGrass_0_detail_189
+  - first:
+      213: 2191391879458027212
+    second: MarramGrass_0_detail_190
+  - first:
+      213: 130339205614559651
+    second: MarramGrass_0_detail_191
+  - first:
+      213: 1056522943610637155
+    second: MarramGrass_0_detail_192
+  - first:
+      213: 2707496567941996042
+    second: MarramGrass_0_detail_193
+  - first:
+      213: 8747691869327150692
+    second: MarramGrass_0_detail_194
+  - first:
+      213: -3265884762634101834
+    second: MarramGrass_0_detail_195
+  - first:
+      213: 6512093145487451996
+    second: MarramGrass_0_detail_196
+  - first:
+      213: -1402795992371638583
+    second: MarramGrass_0_detail_197
+  - first:
+      213: 9220673722588232802
+    second: MarramGrass_0_detail_198
+  - first:
+      213: -8903678482563975636
+    second: MarramGrass_0_detail_199
+  - first:
+      213: -6173874174774766854
+    second: MarramGrass_0_detail_200
+  - first:
+      213: 2205792878945740105
+    second: MarramGrass_0_detail_201
+  - first:
+      213: 3339814871986337442
+    second: MarramGrass_0_detail_202
+  - first:
+      213: 4680702811470887216
+    second: MarramGrass_0_detail_203
+  - first:
+      213: 3653426032527249347
+    second: MarramGrass_0_detail_204
+  - first:
+      213: 1656538355692684173
+    second: MarramGrass_0_detail_205
+  - first:
+      213: 1380077826613220040
+    second: MarramGrass_0_detail_206
+  - first:
+      213: 2626699066651610133
+    second: MarramGrass_0_detail_207
+  - first:
+      213: 4944315560783741819
+    second: MarramGrass_0_detail_208
+  - first:
+      213: -4053203576167981703
+    second: MarramGrass_0_detail_209
+  - first:
+      213: 6751321697879984321
+    second: MarramGrass_0_detail_210
+  - first:
+      213: -5107012917356729427
+    second: MarramGrass_0_detail_211
+  - first:
+      213: 8846359649847301484
+    second: MarramGrass_0_detail_212
+  - first:
+      213: -3385509329548412122
+    second: MarramGrass_0_detail_213
+  - first:
+      213: 92837882944485781
+    second: MarramGrass_0_detail_214
+  - first:
+      213: -2519022433907709008
+    second: MarramGrass_0_detail_215
+  - first:
+      213: -4173327949946703870
+    second: MarramGrass_0_detail_216
+  - first:
+      213: -6991960727388617161
+    second: MarramGrass_0_detail_217
+  - first:
+      213: -8947370895679619284
+    second: MarramGrass_0_detail_218
+  - first:
+      213: 7195340506374661743
+    second: MarramGrass_0_detail_219
+  - first:
+      213: -5699285434281857671
+    second: MarramGrass_0_detail_220
+  - first:
+      213: 2152877142594870018
+    second: MarramGrass_0_detail_221
+  - first:
+      213: 1968043371524517869
+    second: MarramGrass_0_detail_222
+  - first:
+      213: -1929968606853621702
+    second: MarramGrass_0_detail_223
+  - first:
+      213: 5597444807676356809
+    second: MarramGrass_0_detail_224
+  - first:
+      213: 8658979329844478153
+    second: MarramGrass_0_detail_225
+  - first:
+      213: 8296051250044842383
+    second: MarramGrass_0_detail_226
+  - first:
+      213: 7143281231213128692
+    second: MarramGrass_0_detail_227
+  - first:
+      213: 1655755353600679053
+    second: MarramGrass_0_detail_228
+  - first:
+      213: -5220776544688869160
+    second: MarramGrass_0_detail_229
+  - first:
+      213: -6743235097760985062
+    second: MarramGrass_0_detail_230
+  - first:
+      213: -2385313818998473239
+    second: MarramGrass_0_detail_231
+  - first:
+      213: 8135246391921528873
+    second: MarramGrass_0_detail_232
+  - first:
+      213: 4617866395018946672
+    second: MarramGrass_0_detail_233
+  - first:
+      213: -3802118942772702979
+    second: MarramGrass_0_detail_234
+  - first:
+      213: -5243763545461776591
+    second: MarramGrass_0_detail_235
+  - first:
+      213: -4274602486667941320
+    second: MarramGrass_0_detail_236
+  - first:
+      213: -3737381944435455489
+    second: MarramGrass_0_detail_237
+  - first:
+      213: -7006595289353172618
+    second: MarramGrass_0_detail_238
+  - first:
+      213: 3897044113968501113
+    second: MarramGrass_0_detail_239
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34bf0473d1c200510800000000000000
+      internalID: 1513257978789165891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b07146c7617643190800000000000000
+      internalID: -7983642893147171061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7edf3f9807828d5a0800000000000000
+      internalID: -6496397998666023449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad1e5c1095a977dc0800000000000000
+      internalID: -3641272066633244198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86d0f10c6d1f555e0800000000000000
+      internalID: -1921363761355092632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 125cfc5b27f2e8d90800000000000000
+      internalID: -7093680193338882783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 266b6a8212431afe0800000000000000
+      internalID: -1179604310373779870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44e1061b2e961e5d0800000000000000
+      internalID: -3035028251511611836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f49ceb66c9cd7270800000000000000
+      internalID: 8249971946463991024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 785
+        y: 263
+        width: 44
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccb47209ebd155460800000000000000
+      internalID: 7229717481112685516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 870
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2835320efc5af9590800000000000000
+      internalID: -7665225728524070014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db075cf6d6bb3aa50800000000000000
+      internalID: 6531269963318390973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78e7a1a8f383f4760800000000000000
+      internalID: 7444230554617806471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 1122
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: def39aed65886b190800000000000000
+      internalID: -7947014585764462611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 1206
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 458cffb9bf4d0bb60800000000000000
+      internalID: 7759936335078475860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 1290
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4f3215a97dade760800000000000000
+      internalID: 7488832493359087435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 1374
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 117dc202c4b245df0800000000000000
+      internalID: -192481278112770287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 1458
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b62e934ca192e8330800000000000000
+      internalID: 3714951937565254251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 1542
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de3ea18f9c77bb140800000000000000
+      internalID: 4736511142444852205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 1626
+        y: 265
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21b8688df2a6ace20800000000000000
+      internalID: 3371624024768940818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 1710
+        y: 272
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61775f59f48fbc4e0800000000000000
+      internalID: -1960200192087722218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 374efab515f30ff80800000000000000
+      internalID: -8074884513212144525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ee88556c05c6ccf0800000000000000
+      internalID: -232281673732419864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bae993626576b000800000000000000
+      internalID: 51357511199615665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c42314cefc679390800000000000000
+      internalID: -7811655187183754048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 118ed70b4f42dd760800000000000000
+      internalID: 7484178789111293969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46be398b104ff8770800000000000000
+      internalID: 8615372900411894628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f947cbbc1960260f0800000000000000
+      internalID: -1125329733631052641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a8e93dc2feccc9b0800000000000000
+      internalID: -5058440739223377757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 692
+        y: 215
+        width: 43
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa523e2e951aa4460800000000000000
+      internalID: 7226765959500080559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21640d98e1ecf1860800000000000000
+      internalID: 7502942134779004434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 865
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25e098d80104e6540800000000000000
+      internalID: 5003006675893423698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7aa951bf28ccd9160800000000000000
+      internalID: 7034003055952894631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06b3a33b3267d6860800000000000000
+      internalID: 7524800448108837728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 1132
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2258e450b0baf4430800000000000000
+      internalID: 3769419476954416418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ec394ba679eb36f0800000000000000
+      internalID: -703712220864234264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 1310
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32e5e33168b485ba0800000000000000
+      internalID: -6100042656052781533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cd5876df729b5090800000000000000
+      internalID: -8044675231610544703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd74a263d50568cd0800000000000000
+      internalID: -2556267377215256611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 1577
+        y: 219
+        width: 48
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e6ad9880d9a52bd0800000000000000
+      internalID: -2655529692154714397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 1662
+        y: 219
+        width: 45
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8257eb4fe41b7a650800000000000000
+      internalID: 6244154361044170024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 1740
+        y: 219
+        width: 45
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 931f1476b53286450800000000000000
+      internalID: 6082150172245225785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 172
+        width: 45
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6755d26b2a178f3e0800000000000000
+      internalID: -2019739489220602506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 172
+        width: 45
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e34df819b6446dd50800000000000000
+      internalID: 6761667119337690174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 172
+        width: 45
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 815057b91ab761210800000000000000
+      internalID: 1303365076198425880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c85f3ac6db058a940800000000000000
+      internalID: 5307580935357855116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8762ef76907887b20800000000000000
+      internalID: 3132402015305344632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d56dddf2752e45b10800000000000000
+      internalID: 1969447801160848989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_48
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58725c5fdbc59dd50800000000000000
+      internalID: 6762538286415423365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_49
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 033c286c710a7a220800000000000000
+      internalID: 2497140542375379760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_50
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fef8fabc060991b30800000000000000
+      internalID: 4258593668064055279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_51
+      rect:
+        serializedVersion: 2
+        x: 664
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06b6b64b9d6e3c230800000000000000
+      internalID: 3658021145064205152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_52
+      rect:
+        serializedVersion: 2
+        x: 733
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55bb16d2b67de9480800000000000000
+      internalID: -8890431759059928235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_53
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f077a9107152d070800000000000000
+      internalID: 8129649819265757433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_54
+      rect:
+        serializedVersion: 2
+        x: 871
+        y: 172
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a42cfe20c7cfe80d0800000000000000
+      internalID: -3418517457572216246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_55
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 173
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b77600fe37ddc560800000000000000
+      internalID: 7335756033371305904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_56
+      rect:
+        serializedVersion: 2
+        x: 1004
+        y: 173
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91c14a2542098fa90800000000000000
+      internalID: -7279910311964697575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_57
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 173
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4213d7d9b4e459740800000000000000
+      internalID: 5158115034894512420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_58
+      rect:
+        serializedVersion: 2
+        x: 1132
+        y: 173
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ab4c59c6c21490f0800000000000000
+      internalID: -1111242563062576217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_59
+      rect:
+        serializedVersion: 2
+        x: 1196
+        y: 173
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 768f0913601945240800000000000000
+      internalID: 4779604560334354535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_60
+      rect:
+        serializedVersion: 2
+        x: 1260
+        y: 173
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 277519885b969df00800000000000000
+      internalID: 1142060208916354930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_61
+      rect:
+        serializedVersion: 2
+        x: 1324
+        y: 173
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd99f0d119d384810800000000000000
+      internalID: 1749716148700551643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_62
+      rect:
+        serializedVersion: 2
+        x: 1388
+        y: 173
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a37a3e8fbd90e4a0800000000000000
+      internalID: -6566074810655673439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_63
+      rect:
+        serializedVersion: 2
+        x: 1452
+        y: 173
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a04c5f2ba1d4591e0800000000000000
+      internalID: -2191760866578938870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_64
+      rect:
+        serializedVersion: 2
+        x: 1516
+        y: 173
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 440323678c050eb30800000000000000
+      internalID: 4314537264927617092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_65
+      rect:
+        serializedVersion: 2
+        x: 1582
+        y: 175
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cd18ec27dca9f600800000000000000
+      internalID: 502622873599876548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_66
+      rect:
+        serializedVersion: 2
+        x: 1656
+        y: 175
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ae900f74d8b16d70800000000000000
+      internalID: 9034705550285250217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_67
+      rect:
+        serializedVersion: 2
+        x: 1730
+        y: 175
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3980eb2cb2254ae0800000000000000
+      internalID: -1565807103856047809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_68
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 131
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7964afc6909574930800000000000000
+      internalID: 4127365480526268055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_69
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 131
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 210626039ac36b750800000000000000
+      internalID: 6320305824419962898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_70
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 131
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df62dd41ef83d11a0800000000000000
+      internalID: -6837245995355658499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_71
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 131
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c835c75cbfb1d1460800000000000000
+      internalID: 7213952946281403276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_72
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 131
+        width: 36
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75583acb3a10ed190800000000000000
+      internalID: -7935903690624105129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_73
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 131
+        width: 36
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9114af2f9f47822c0800000000000000
+      internalID: -4456183214410940135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_74
+      rect:
+        serializedVersion: 2
+        x: 404
+        y: 131
+        width: 36
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c74e6bd822c3cd460800000000000000
+      internalID: 7267750017773266044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_75
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 132
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f7738d94df01ca60800000000000000
+      internalID: 7692447044375640056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_76
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 132
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a98d75f764b1b030800000000000000
+      internalID: 3508783943291603369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_77
+      rect:
+        serializedVersion: 2
+        x: 579
+        y: 132
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9160d6ed863928b0800000000000000
+      internalID: -5176546313594969702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_78
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 132
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47c8887a02c963fe0800000000000000
+      internalID: -1209607785838769036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_79
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 132
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47c07e2211aa5ea50800000000000000
+      internalID: 6549828223656987764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_80
+      rect:
+        serializedVersion: 2
+        x: 754
+        y: 135
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c25d926511f36760800000000000000
+      internalID: 7450063282752017096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_81
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 135
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e975fe7801165d650800000000000000
+      internalID: 6257013980929152926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_82
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 135
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32327fbd30acb0bf0800000000000000
+      internalID: -356969627521703133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_83
+      rect:
+        serializedVersion: 2
+        x: 970
+        y: 135
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f2720f479fd62260800000000000000
+      internalID: 7072586105790558969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_84
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 135
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7769daa22086fe80800000000000000
+      internalID: -8145181989669345414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_85
+      rect:
+        serializedVersion: 2
+        x: 1114
+        y: 134
+        width: 38
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45ba7d79ef3b92020800000000000000
+      internalID: 2317581389309389652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_86
+      rect:
+        serializedVersion: 2
+        x: 1184
+        y: 134
+        width: 38
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 813963054cb92df10800000000000000
+      internalID: 2293066427746652952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_87
+      rect:
+        serializedVersion: 2
+        x: 1253
+        y: 134
+        width: 39
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7761eb41ce58254f0800000000000000
+      internalID: -841462931358083465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_88
+      rect:
+        serializedVersion: 2
+        x: 1323
+        y: 134
+        width: 39
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13d126ce410a1db00800000000000000
+      internalID: 851637816275377457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_89
+      rect:
+        serializedVersion: 2
+        x: 1393
+        y: 134
+        width: 39
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 169469ace19e94f60800000000000000
+      internalID: 8019196929967016289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_90
+      rect:
+        serializedVersion: 2
+        x: 1464
+        y: 137
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32c898c0b429435b0800000000000000
+      internalID: -5389522003025097693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_91
+      rect:
+        serializedVersion: 2
+        x: 1534
+        y: 137
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74bdae89e812e5bc0800000000000000
+      internalID: -3792556939864777913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_92
+      rect:
+        serializedVersion: 2
+        x: 1604
+        y: 137
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27e184c70c159ed20800000000000000
+      internalID: 3308265288441011826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_93
+      rect:
+        serializedVersion: 2
+        x: 1674
+        y: 137
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66ca750d15fe8d5b0800000000000000
+      internalID: -5343257823208297370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_94
+      rect:
+        serializedVersion: 2
+        x: 1744
+        y: 137
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ec52a02e503945c0800000000000000
+      internalID: -4230797194105299739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_95
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 96
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cdc09b3bd2f84ae0800000000000000
+      internalID: -1564733847100142137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_96
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 96
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5019bb9cdf7b73690800000000000000
+      internalID: -7622421543662153467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_97
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 96
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69041f98506bc4500800000000000000
+      internalID: 381880203325030550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_98
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 96
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b873bf7c05ac6bbb0800000000000000
+      internalID: -4920523094554364021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_99
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 96
+        width: 37
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c8377448605be1f0800000000000000
+      internalID: -1014628882286430012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_100
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 95
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05d8ea2fd91420c30800000000000000
+      internalID: 4324090738866294096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_101
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 95
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3d9b3642dee73a70800000000000000
+      internalID: 8806770183235149115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_102
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 95
+        width: 35
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5962c62383a465f00800000000000000
+      internalID: 1105152363790608021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_103
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 95
+        width: 35
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66a9c0c1e48c3b1a0800000000000000
+      internalID: -6794867174968354202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_104
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 95
+        width: 35
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea29c0583705d3380800000000000000
+      internalID: -8989940824077987154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_105
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 95
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ea10818e38d515d0800000000000000
+      internalID: -3092327806147749144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_106
+      rect:
+        serializedVersion: 2
+        x: 756
+        y: 95
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ead54f4a3faec25f0800000000000000
+      internalID: -779990303276507730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_107
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 95
+        width: 35
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe874e3a1e8806370800000000000000
+      internalID: 8313795414824614127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_108
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 95
+        width: 35
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df8cd6a5c35208c90800000000000000
+      internalID: -7169689665628419843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_109
+      rect:
+        serializedVersion: 2
+        x: 950
+        y: 95
+        width: 35
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86cff354e06873710800000000000000
+      internalID: 1672953182440914024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_110
+      rect:
+        serializedVersion: 2
+        x: 1013
+        y: 95
+        width: 34
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72b9902bd6e568b10800000000000000
+      internalID: 1983376511134702375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_111
+      rect:
+        serializedVersion: 2
+        x: 1074
+        y: 95
+        width: 34
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1ea591e47c433f30800000000000000
+      internalID: 4554067713086303773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_112
+      rect:
+        serializedVersion: 2
+        x: 1135
+        y: 95
+        width: 34
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a119db2b092ec3b50800000000000000
+      internalID: 6574378667156017434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_113
+      rect:
+        serializedVersion: 2
+        x: 1196
+        y: 95
+        width: 34
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62c2eb2582f1f7c10800000000000000
+      internalID: 2053394213151583270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_114
+      rect:
+        serializedVersion: 2
+        x: 1257
+        y: 95
+        width: 34
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c85f88e74ef4b390800000000000000
+      internalID: -7803332669528385336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_115
+      rect:
+        serializedVersion: 2
+        x: 1315
+        y: 98
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: def4eac21a4be2a70800000000000000
+      internalID: 8804172925888253933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_116
+      rect:
+        serializedVersion: 2
+        x: 1364
+        y: 98
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 098995ae49fdd2cc0800000000000000
+      internalID: -3734082685340378992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_117
+      rect:
+        serializedVersion: 2
+        x: 1413
+        y: 98
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46f196697f0f190a0800000000000000
+      internalID: -6876450209846976668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_118
+      rect:
+        serializedVersion: 2
+        x: 1462
+        y: 98
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 694b62ff28860ef60800000000000000
+      internalID: 8061558244828951702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_119
+      rect:
+        serializedVersion: 2
+        x: 1511
+        y: 98
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f11ec291cc80d120800000000000000
+      internalID: 2436602161426993652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_120
+      rect:
+        serializedVersion: 2
+        x: 1563
+        y: 99
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df0a5fe814df21940800000000000000
+      internalID: 5265549372362694909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_121
+      rect:
+        serializedVersion: 2
+        x: 1620
+        y: 99
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd96972b25e858830800000000000000
+      internalID: 4072817923859245535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_122
+      rect:
+        serializedVersion: 2
+        x: 1677
+        y: 99
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcc3a117544fa7920800000000000000
+      internalID: 2988969881801211085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_123
+      rect:
+        serializedVersion: 2
+        x: 1734
+        y: 99
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22a63f4f310b3ad80800000000000000
+      internalID: -8240549293397415390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_124
+      rect:
+        serializedVersion: 2
+        x: 1791
+        y: 99
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5589a8d9bb4ec4f0800000000000000
+      internalID: -806624021676718757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_125
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 61
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 642839da3fba24be0800000000000000
+      internalID: -1494443063256055226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_126
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 61
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5cb6a46996388060800000000000000
+      internalID: 6955869656920276061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_127
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 61
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca51c479491ca9e40800000000000000
+      internalID: 5664052325309486508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_128
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 61
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeeccfceb5be23030800000000000000
+      internalID: 3473097042706616042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_129
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 61
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 316713453a754e320800000000000000
+      internalID: 2586288445021320723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_130
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 64
+        width: 35
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 014c8142e060541a0800000000000000
+      internalID: -6826043002405207024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_131
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 64
+        width: 35
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fcbc596be3db4fd0800000000000000
+      internalID: -2356556971959862025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_132
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 64
+        width: 35
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 479c3919d99fd8340800000000000000
+      internalID: 4867821227404937588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_133
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 64
+        width: 35
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df43a19bfd36bec90800000000000000
+      internalID: -7139502971731430147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_134
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 64
+        width: 35
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6225f2bf5fb0cf8f0800000000000000
+      internalID: -505515907063262682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_135
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 63
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da62395fe30ebcd90800000000000000
+      internalID: -7076315828469946707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_136
+      rect:
+        serializedVersion: 2
+        x: 591
+        y: 63
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22bc374c6f63c93e0800000000000000
+      internalID: -2045699697247270110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_137
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 63
+        width: 25
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00d6e18a6131cf4e0800000000000000
+      internalID: -1946659950900122368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_138
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 63
+        width: 25
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f3e3693a37ac4e30800000000000000
+      internalID: 4489146797094331383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_139
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 63
+        width: 25
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5c897884f1ae1cf0800000000000000
+      internalID: -279608055216632738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_140
+      rect:
+        serializedVersion: 2
+        x: 803
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 290c3be39ab12d630800000000000000
+      internalID: 3950250236872736914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_141
+      rect:
+        serializedVersion: 2
+        x: 849
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4da51c73e0f3e5b20800000000000000
+      internalID: 3125004521739213524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_142
+      rect:
+        serializedVersion: 2
+        x: 895
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7750cdca849ce3a0800000000000000
+      internalID: -6634764827145250948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_143
+      rect:
+        serializedVersion: 2
+        x: 941
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 650a804a473679680800000000000000
+      internalID: -8748414398524514218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_144
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d8665a7dc7c1f830800000000000000
+      internalID: 4103280420845938899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_145
+      rect:
+        serializedVersion: 2
+        x: 1033
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27bef1ecfc554e260800000000000000
+      internalID: 7125914861411756914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_146
+      rect:
+        serializedVersion: 2
+        x: 1079
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4393720e95ce318b0800000000000000
+      internalID: -5182538875416397516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_147
+      rect:
+        serializedVersion: 2
+        x: 1125
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7188b6e95ce36d40800000000000000
+      internalID: 5576560634481901951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_148
+      rect:
+        serializedVersion: 2
+        x: 1171
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff01b242eb585f0e0800000000000000
+      internalID: -2236734588222500609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_149
+      rect:
+        serializedVersion: 2
+        x: 1217
+        y: 62
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 360cd29a765ca4ac0800000000000000
+      internalID: -3870063880760868765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_150
+      rect:
+        serializedVersion: 2
+        x: 1262
+        y: 64
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5823591dbea4d7420800000000000000
+      internalID: 2629340134148223621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_151
+      rect:
+        serializedVersion: 2
+        x: 1319
+        y: 64
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea5710ad91f2bd1b0800000000000000
+      internalID: -5630855121018456658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_152
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 64
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ebe2be62f8ae44f0800000000000000
+      internalID: -842550321078932511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_153
+      rect:
+        serializedVersion: 2
+        x: 1433
+        y: 64
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15014693d663a3350800000000000000
+      internalID: 5997165696539430993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_154
+      rect:
+        serializedVersion: 2
+        x: 1490
+        y: 64
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51056e2fe0bad8f30800000000000000
+      internalID: 4579504476798734357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_155
+      rect:
+        serializedVersion: 2
+        x: 1549
+        y: 63
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6d671d79411d5fb0800000000000000
+      internalID: -4657547432302252693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_156
+      rect:
+        serializedVersion: 2
+        x: 1605
+        y: 63
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a09ca46332ca57140800000000000000
+      internalID: 4716865451975166218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_157
+      rect:
+        serializedVersion: 2
+        x: 1661
+        y: 63
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82da2733a0c5f9a00800000000000000
+      internalID: 765431660558855464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_158
+      rect:
+        serializedVersion: 2
+        x: 1717
+        y: 63
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0da476a01e8e3c030800000000000000
+      internalID: 3513908187518946000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_159
+      rect:
+        serializedVersion: 2
+        x: 1773
+        y: 63
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1902b914e17843a0800000000000000
+      internalID: -6680964822706550497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_160
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 33
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f77532b9aad6f560800000000000000
+      internalID: 7347300264475719668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_161
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 33
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac64a4757a166f730800000000000000
+      internalID: 4032517887708776138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_162
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 33
+        width: 27
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ed8925c32d83e880800000000000000
+      internalID: -8582861280066826782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_163
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 33
+        width: 27
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 612ef8535043144b0800000000000000
+      internalID: -5458024076418227690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_164
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 33
+        width: 27
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f15005c599a6a010800000000000000
+      internalID: 1199832811461169657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_165
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 33
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a46292c3dc089580800000000000000
+      internalID: -8820285766563109722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_166
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 33
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a410212ff1a069940800000000000000
+      internalID: 5302436743596867914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_167
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 33
+        width: 27
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62097fdd16d306a30800000000000000
+      internalID: 4206429542509154342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_168
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 33
+        width: 27
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1e4508897a38c480800000000000000
+      internalID: -8878782371713429985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_169
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 33
+        width: 27
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe01c7af173fa3b60800000000000000
+      internalID: 7726755781566796015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_170
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b3f8c3252cef8540800000000000000
+      internalID: 5012484554544968631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_171
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19c780d439b5321f0800000000000000
+      internalID: -1070911598173324143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_172
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1799243448e76d520800000000000000
+      internalID: 2726505730948634993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_173
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2e4cb466b8394590800000000000000
+      internalID: -7689552532733145556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_174
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10054123f028d5f90800000000000000
+      internalID: -6963266447068606463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_175
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d061cdb2a55f6330800000000000000
+      internalID: 3706275175805837526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_176
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ee94fcdf40a1ec70800000000000000
+      internalID: 8998649795332841189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_177
+      rect:
+        serializedVersion: 2
+        x: 890
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 118038849e910c1f0800000000000000
+      internalID: -1026792225305851887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_178
+      rect:
+        serializedVersion: 2
+        x: 941
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3940dee1dd25c06a0800000000000000
+      internalID: -6481714654032886637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_179
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 35
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de3766a1ea1f031f0800000000000000
+      internalID: -1067087381617282067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_180
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d33cdf62e8dd02170800000000000000
+      internalID: 8151758928149857085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_181
+      rect:
+        serializedVersion: 2
+        x: 1091
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6d7d3459e85a3e30800000000000000
+      internalID: 4483994138164690283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_182
+      rect:
+        serializedVersion: 2
+        x: 1139
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 459eb423aaf1182d0800000000000000
+      internalID: -3278304237900273324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_183
+      rect:
+        serializedVersion: 2
+        x: 1187
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1afec5a3a6c148510800000000000000
+      internalID: 1550395414293573537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_184
+      rect:
+        serializedVersion: 2
+        x: 1235
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a71ddb0bd4127a0e0800000000000000
+      internalID: -2258800070541586054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_185
+      rect:
+        serializedVersion: 2
+        x: 1283
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a79458eb4f8c72f60800000000000000
+      internalID: 8009591415795698042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_186
+      rect:
+        serializedVersion: 2
+        x: 1331
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 647721b921c2d7250800000000000000
+      internalID: 5943955541621634886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_187
+      rect:
+        serializedVersion: 2
+        x: 1379
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5488d80eafeb0d20800000000000000
+      internalID: 3245951487202329692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_188
+      rect:
+        serializedVersion: 2
+        x: 1427
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdd5b91712f4fbd90800000000000000
+      internalID: -7079853084144607777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_189
+      rect:
+        serializedVersion: 2
+        x: 1475
+        y: 34
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d096e3ebf72bf6a0800000000000000
+      internalID: -6414489281445326637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_190
+      rect:
+        serializedVersion: 2
+        x: 1521
+        y: 37
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc675cacd43696e10800000000000000
+      internalID: 2191391879458027212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_191
+      rect:
+        serializedVersion: 2
+        x: 1569
+        y: 37
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a166f221de0fc100800000000000000
+      internalID: 130339205614559651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_192
+      rect:
+        serializedVersion: 2
+        x: 1617
+        y: 37
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36b46fef40689ae00800000000000000
+      internalID: 1056522943610637155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_193
+      rect:
+        serializedVersion: 2
+        x: 1665
+        y: 37
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0e95ca98c5f29520800000000000000
+      internalID: 2707496567941996042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_194
+      rect:
+        serializedVersion: 2
+        x: 1713
+        y: 37
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46e41db686b066970800000000000000
+      internalID: 8747691869327150692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_195
+      rect:
+        serializedVersion: 2
+        x: 1761
+        y: 34
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bb55dd9c1f3da2d0800000000000000
+      internalID: -3265884762634101834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_196
+      rect:
+        serializedVersion: 2
+        x: 1806
+        y: 34
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c572909963a9f5a50800000000000000
+      internalID: 6512093145487451996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_197
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 4
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cec85e2a74488ce0800000000000000
+      internalID: -1402795992371638583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_198
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 4
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26c76a0c5e966ff70800000000000000
+      internalID: 9220673722588232802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_199
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 4
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c263c740897cf6480800000000000000
+      internalID: -8903678482563975636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_200
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 7
+        width: 24
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af2979c062ef15aa0800000000000000
+      internalID: -6173874174774766854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_201
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 7
+        width: 24
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 945a5a5cfec8c9e10800000000000000
+      internalID: 2205792878945740105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_202
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 7
+        width: 25
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a6ff445ee7695e20800000000000000
+      internalID: 3339814871986337442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_203
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 7
+        width: 25
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 039f4e8586235f040800000000000000
+      internalID: 4680702811470887216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_204
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 7
+        width: 25
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cf83f1be9393b230800000000000000
+      internalID: 3653426032527249347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_205
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 8
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d834fd79bd43df610800000000000000
+      internalID: 1656538355692684173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_206
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 8
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c29ca9a875072310800000000000000
+      internalID: 1380077826613220040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_207
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 8
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51c8e9f52e8e37420800000000000000
+      internalID: 2626699066651610133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_208
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 8
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7383f17eccbd9440800000000000000
+      internalID: 4944315560783741819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_209
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 8
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97d1a2082d020c7c0800000000000000
+      internalID: -4053203576167981703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_210
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 8
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c8068e605381bd50800000000000000
+      internalID: 6751321697879984321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_211
+      rect:
+        serializedVersion: 2
+        x: 621
+        y: 8
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dabee9d4fce3029b0800000000000000
+      internalID: -5107012917356729427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_212
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 8
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c655f744b3594ca70800000000000000
+      internalID: 8846359649847301484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_213
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 8
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62bfe74b3314401d0800000000000000
+      internalID: -3385509329548412122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_214
+      rect:
+        serializedVersion: 2
+        x: 735
+        y: 8
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 599fa9a0093d94100800000000000000
+      internalID: 92837882944485781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_215
+      rect:
+        serializedVersion: 2
+        x: 774
+        y: 7
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bbe0b55172aa0dd0800000000000000
+      internalID: -2519022433907709008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_216
+      rect:
+        serializedVersion: 2
+        x: 811
+        y: 7
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 200b73c375c5516c0800000000000000
+      internalID: -4173327949946703870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_217
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 7
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 736058073c097fe90800000000000000
+      internalID: -6991960727388617161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_218
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 7
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2ff859539d84d380800000000000000
+      internalID: -8947370895679619284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_219
+      rect:
+        serializedVersion: 2
+        x: 922
+        y: 7
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f66e078611cfad360800000000000000
+      internalID: 7195340506374661743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_220
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 8
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97d6218f71218e0b0800000000000000
+      internalID: -5699285434281857671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_221
+      rect:
+        serializedVersion: 2
+        x: 1002
+        y: 8
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20bdc61da5e80ed10800000000000000
+      internalID: 2152877142594870018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_222
+      rect:
+        serializedVersion: 2
+        x: 1044
+        y: 8
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: defe74ee405ef4b10800000000000000
+      internalID: 1968043371524517869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_223
+      rect:
+        serializedVersion: 2
+        x: 1086
+        y: 8
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3895d807cf5735e0800000000000000
+      internalID: -1929968606853621702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_224
+      rect:
+        serializedVersion: 2
+        x: 1128
+        y: 8
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c86763656e1ead40800000000000000
+      internalID: 5597444807676356809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_225
+      rect:
+        serializedVersion: 2
+        x: 1170
+        y: 9
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c084d0c2dfda2870800000000000000
+      internalID: 8658979329844478153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_226
+      rect:
+        serializedVersion: 2
+        x: 1212
+        y: 9
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f81bb5558ae712370800000000000000
+      internalID: 8296051250044842383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_227
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 9
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fb6c2dde68022360800000000000000
+      internalID: 7143281231213128692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_228
+      rect:
+        serializedVersion: 2
+        x: 1296
+        y: 9
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8cd156b8bc6af610800000000000000
+      internalID: 1655755353600679053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_229
+      rect:
+        serializedVersion: 2
+        x: 1338
+        y: 9
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d0f02ab4631c87b0800000000000000
+      internalID: -5220776544688869160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_230
+      rect:
+        serializedVersion: 2
+        x: 1379
+        y: 11
+        width: 20
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a109201e7673b62a0800000000000000
+      internalID: -6743235097760985062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_231
+      rect:
+        serializedVersion: 2
+        x: 1418
+        y: 11
+        width: 20
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9edf3c438b9a5eed0800000000000000
+      internalID: -2385313818998473239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_232
+      rect:
+        serializedVersion: 2
+        x: 1457
+        y: 11
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 920d2c6bd7336e070800000000000000
+      internalID: 8135246391921528873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_233
+      rect:
+        serializedVersion: 2
+        x: 1496
+        y: 11
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 078615f0505f51040800000000000000
+      internalID: 4617866395018946672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_234
+      rect:
+        serializedVersion: 2
+        x: 1535
+        y: 11
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df0df3e47f82c3bc0800000000000000
+      internalID: -3802118942772702979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_235
+      rect:
+        serializedVersion: 2
+        x: 1574
+        y: 10
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13f9b9a86d86a37b0800000000000000
+      internalID: -5243763545461776591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_236
+      rect:
+        serializedVersion: 2
+        x: 1611
+        y: 10
+        width: 18
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83ae72aafaf8da4c0800000000000000
+      internalID: -4274602486667941320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_237
+      rect:
+        serializedVersion: 2
+        x: 1649
+        y: 10
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff947fb4ce6222cc0800000000000000
+      internalID: -3737381944435455489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_238
+      rect:
+        serializedVersion: 2
+        x: 1686
+        y: 10
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 679cd25f4b293ce90800000000000000
+      internalID: -7006595289353172618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_0_detail_239
+      rect:
+        serializedVersion: 2
+        x: 1723
+        y: 10
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9719e1769f4151630800000000000000
+      internalID: 3897044113968501113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MarramGrass_0_detail_0: 1513257978789165891
+      MarramGrass_0_detail_1: -7983642893147171061
+      MarramGrass_0_detail_10: -7665225728524070014
+      MarramGrass_0_detail_100: 4324090738866294096
+      MarramGrass_0_detail_101: 8806770183235149115
+      MarramGrass_0_detail_102: 1105152363790608021
+      MarramGrass_0_detail_103: -6794867174968354202
+      MarramGrass_0_detail_104: -8989940824077987154
+      MarramGrass_0_detail_105: -3092327806147749144
+      MarramGrass_0_detail_106: -779990303276507730
+      MarramGrass_0_detail_107: 8313795414824614127
+      MarramGrass_0_detail_108: -7169689665628419843
+      MarramGrass_0_detail_109: 1672953182440914024
+      MarramGrass_0_detail_11: 6531269963318390973
+      MarramGrass_0_detail_110: 1983376511134702375
+      MarramGrass_0_detail_111: 4554067713086303773
+      MarramGrass_0_detail_112: 6574378667156017434
+      MarramGrass_0_detail_113: 2053394213151583270
+      MarramGrass_0_detail_114: -7803332669528385336
+      MarramGrass_0_detail_115: 8804172925888253933
+      MarramGrass_0_detail_116: -3734082685340378992
+      MarramGrass_0_detail_117: -6876450209846976668
+      MarramGrass_0_detail_118: 8061558244828951702
+      MarramGrass_0_detail_119: 2436602161426993652
+      MarramGrass_0_detail_12: 7444230554617806471
+      MarramGrass_0_detail_120: 5265549372362694909
+      MarramGrass_0_detail_121: 4072817923859245535
+      MarramGrass_0_detail_122: 2988969881801211085
+      MarramGrass_0_detail_123: -8240549293397415390
+      MarramGrass_0_detail_124: -806624021676718757
+      MarramGrass_0_detail_125: -1494443063256055226
+      MarramGrass_0_detail_126: 6955869656920276061
+      MarramGrass_0_detail_127: 5664052325309486508
+      MarramGrass_0_detail_128: 3473097042706616042
+      MarramGrass_0_detail_129: 2586288445021320723
+      MarramGrass_0_detail_13: -7947014585764462611
+      MarramGrass_0_detail_130: -6826043002405207024
+      MarramGrass_0_detail_131: -2356556971959862025
+      MarramGrass_0_detail_132: 4867821227404937588
+      MarramGrass_0_detail_133: -7139502971731430147
+      MarramGrass_0_detail_134: -505515907063262682
+      MarramGrass_0_detail_135: -7076315828469946707
+      MarramGrass_0_detail_136: -2045699697247270110
+      MarramGrass_0_detail_137: -1946659950900122368
+      MarramGrass_0_detail_138: 4489146797094331383
+      MarramGrass_0_detail_139: -279608055216632738
+      MarramGrass_0_detail_14: 7759936335078475860
+      MarramGrass_0_detail_140: 3950250236872736914
+      MarramGrass_0_detail_141: 3125004521739213524
+      MarramGrass_0_detail_142: -6634764827145250948
+      MarramGrass_0_detail_143: -8748414398524514218
+      MarramGrass_0_detail_144: 4103280420845938899
+      MarramGrass_0_detail_145: 7125914861411756914
+      MarramGrass_0_detail_146: -5182538875416397516
+      MarramGrass_0_detail_147: 5576560634481901951
+      MarramGrass_0_detail_148: -2236734588222500609
+      MarramGrass_0_detail_149: -3870063880760868765
+      MarramGrass_0_detail_15: 7488832493359087435
+      MarramGrass_0_detail_150: 2629340134148223621
+      MarramGrass_0_detail_151: -5630855121018456658
+      MarramGrass_0_detail_152: -842550321078932511
+      MarramGrass_0_detail_153: 5997165696539430993
+      MarramGrass_0_detail_154: 4579504476798734357
+      MarramGrass_0_detail_155: -4657547432302252693
+      MarramGrass_0_detail_156: 4716865451975166218
+      MarramGrass_0_detail_157: 765431660558855464
+      MarramGrass_0_detail_158: 3513908187518946000
+      MarramGrass_0_detail_159: -6680964822706550497
+      MarramGrass_0_detail_16: -192481278112770287
+      MarramGrass_0_detail_160: 7347300264475719668
+      MarramGrass_0_detail_161: 4032517887708776138
+      MarramGrass_0_detail_162: -8582861280066826782
+      MarramGrass_0_detail_163: -5458024076418227690
+      MarramGrass_0_detail_164: 1199832811461169657
+      MarramGrass_0_detail_165: -8820285766563109722
+      MarramGrass_0_detail_166: 5302436743596867914
+      MarramGrass_0_detail_167: 4206429542509154342
+      MarramGrass_0_detail_168: -8878782371713429985
+      MarramGrass_0_detail_169: 7726755781566796015
+      MarramGrass_0_detail_17: 3714951937565254251
+      MarramGrass_0_detail_170: 5012484554544968631
+      MarramGrass_0_detail_171: -1070911598173324143
+      MarramGrass_0_detail_172: 2726505730948634993
+      MarramGrass_0_detail_173: -7689552532733145556
+      MarramGrass_0_detail_174: -6963266447068606463
+      MarramGrass_0_detail_175: 3706275175805837526
+      MarramGrass_0_detail_176: 8998649795332841189
+      MarramGrass_0_detail_177: -1026792225305851887
+      MarramGrass_0_detail_178: -6481714654032886637
+      MarramGrass_0_detail_179: -1067087381617282067
+      MarramGrass_0_detail_18: 4736511142444852205
+      MarramGrass_0_detail_180: 8151758928149857085
+      MarramGrass_0_detail_181: 4483994138164690283
+      MarramGrass_0_detail_182: -3278304237900273324
+      MarramGrass_0_detail_183: 1550395414293573537
+      MarramGrass_0_detail_184: -2258800070541586054
+      MarramGrass_0_detail_185: 8009591415795698042
+      MarramGrass_0_detail_186: 5943955541621634886
+      MarramGrass_0_detail_187: 3245951487202329692
+      MarramGrass_0_detail_188: -7079853084144607777
+      MarramGrass_0_detail_189: -6414489281445326637
+      MarramGrass_0_detail_19: 3371624024768940818
+      MarramGrass_0_detail_190: 2191391879458027212
+      MarramGrass_0_detail_191: 130339205614559651
+      MarramGrass_0_detail_192: 1056522943610637155
+      MarramGrass_0_detail_193: 2707496567941996042
+      MarramGrass_0_detail_194: 8747691869327150692
+      MarramGrass_0_detail_195: -3265884762634101834
+      MarramGrass_0_detail_196: 6512093145487451996
+      MarramGrass_0_detail_197: -1402795992371638583
+      MarramGrass_0_detail_198: 9220673722588232802
+      MarramGrass_0_detail_199: -8903678482563975636
+      MarramGrass_0_detail_2: -6496397998666023449
+      MarramGrass_0_detail_20: -1960200192087722218
+      MarramGrass_0_detail_200: -6173874174774766854
+      MarramGrass_0_detail_201: 2205792878945740105
+      MarramGrass_0_detail_202: 3339814871986337442
+      MarramGrass_0_detail_203: 4680702811470887216
+      MarramGrass_0_detail_204: 3653426032527249347
+      MarramGrass_0_detail_205: 1656538355692684173
+      MarramGrass_0_detail_206: 1380077826613220040
+      MarramGrass_0_detail_207: 2626699066651610133
+      MarramGrass_0_detail_208: 4944315560783741819
+      MarramGrass_0_detail_209: -4053203576167981703
+      MarramGrass_0_detail_21: -8074884513212144525
+      MarramGrass_0_detail_210: 6751321697879984321
+      MarramGrass_0_detail_211: -5107012917356729427
+      MarramGrass_0_detail_212: 8846359649847301484
+      MarramGrass_0_detail_213: -3385509329548412122
+      MarramGrass_0_detail_214: 92837882944485781
+      MarramGrass_0_detail_215: -2519022433907709008
+      MarramGrass_0_detail_216: -4173327949946703870
+      MarramGrass_0_detail_217: -6991960727388617161
+      MarramGrass_0_detail_218: -8947370895679619284
+      MarramGrass_0_detail_219: 7195340506374661743
+      MarramGrass_0_detail_22: -232281673732419864
+      MarramGrass_0_detail_220: -5699285434281857671
+      MarramGrass_0_detail_221: 2152877142594870018
+      MarramGrass_0_detail_222: 1968043371524517869
+      MarramGrass_0_detail_223: -1929968606853621702
+      MarramGrass_0_detail_224: 5597444807676356809
+      MarramGrass_0_detail_225: 8658979329844478153
+      MarramGrass_0_detail_226: 8296051250044842383
+      MarramGrass_0_detail_227: 7143281231213128692
+      MarramGrass_0_detail_228: 1655755353600679053
+      MarramGrass_0_detail_229: -5220776544688869160
+      MarramGrass_0_detail_23: 51357511199615665
+      MarramGrass_0_detail_230: -6743235097760985062
+      MarramGrass_0_detail_231: -2385313818998473239
+      MarramGrass_0_detail_232: 8135246391921528873
+      MarramGrass_0_detail_233: 4617866395018946672
+      MarramGrass_0_detail_234: -3802118942772702979
+      MarramGrass_0_detail_235: -5243763545461776591
+      MarramGrass_0_detail_236: -4274602486667941320
+      MarramGrass_0_detail_237: -3737381944435455489
+      MarramGrass_0_detail_238: -7006595289353172618
+      MarramGrass_0_detail_239: 3897044113968501113
+      MarramGrass_0_detail_24: -7811655187183754048
+      MarramGrass_0_detail_25: 7484178789111293969
+      MarramGrass_0_detail_26: 8615372900411894628
+      MarramGrass_0_detail_27: -1125329733631052641
+      MarramGrass_0_detail_28: -5058440739223377757
+      MarramGrass_0_detail_29: 7226765959500080559
+      MarramGrass_0_detail_3: -3641272066633244198
+      MarramGrass_0_detail_30: 7502942134779004434
+      MarramGrass_0_detail_31: 5003006675893423698
+      MarramGrass_0_detail_32: 7034003055952894631
+      MarramGrass_0_detail_33: 7524800448108837728
+      MarramGrass_0_detail_34: 3769419476954416418
+      MarramGrass_0_detail_35: -703712220864234264
+      MarramGrass_0_detail_36: -6100042656052781533
+      MarramGrass_0_detail_37: -8044675231610544703
+      MarramGrass_0_detail_38: -2556267377215256611
+      MarramGrass_0_detail_39: -2655529692154714397
+      MarramGrass_0_detail_4: -1921363761355092632
+      MarramGrass_0_detail_40: 6244154361044170024
+      MarramGrass_0_detail_41: 6082150172245225785
+      MarramGrass_0_detail_42: -2019739489220602506
+      MarramGrass_0_detail_43: 6761667119337690174
+      MarramGrass_0_detail_44: 1303365076198425880
+      MarramGrass_0_detail_45: 5307580935357855116
+      MarramGrass_0_detail_46: 3132402015305344632
+      MarramGrass_0_detail_47: 1969447801160848989
+      MarramGrass_0_detail_48: 6762538286415423365
+      MarramGrass_0_detail_49: 2497140542375379760
+      MarramGrass_0_detail_5: -7093680193338882783
+      MarramGrass_0_detail_50: 4258593668064055279
+      MarramGrass_0_detail_51: 3658021145064205152
+      MarramGrass_0_detail_52: -8890431759059928235
+      MarramGrass_0_detail_53: 8129649819265757433
+      MarramGrass_0_detail_54: -3418517457572216246
+      MarramGrass_0_detail_55: 7335756033371305904
+      MarramGrass_0_detail_56: -7279910311964697575
+      MarramGrass_0_detail_57: 5158115034894512420
+      MarramGrass_0_detail_58: -1111242563062576217
+      MarramGrass_0_detail_59: 4779604560334354535
+      MarramGrass_0_detail_6: -1179604310373779870
+      MarramGrass_0_detail_60: 1142060208916354930
+      MarramGrass_0_detail_61: 1749716148700551643
+      MarramGrass_0_detail_62: -6566074810655673439
+      MarramGrass_0_detail_63: -2191760866578938870
+      MarramGrass_0_detail_64: 4314537264927617092
+      MarramGrass_0_detail_65: 502622873599876548
+      MarramGrass_0_detail_66: 9034705550285250217
+      MarramGrass_0_detail_67: -1565807103856047809
+      MarramGrass_0_detail_68: 4127365480526268055
+      MarramGrass_0_detail_69: 6320305824419962898
+      MarramGrass_0_detail_7: -3035028251511611836
+      MarramGrass_0_detail_70: -6837245995355658499
+      MarramGrass_0_detail_71: 7213952946281403276
+      MarramGrass_0_detail_72: -7935903690624105129
+      MarramGrass_0_detail_73: -4456183214410940135
+      MarramGrass_0_detail_74: 7267750017773266044
+      MarramGrass_0_detail_75: 7692447044375640056
+      MarramGrass_0_detail_76: 3508783943291603369
+      MarramGrass_0_detail_77: -5176546313594969702
+      MarramGrass_0_detail_78: -1209607785838769036
+      MarramGrass_0_detail_79: 6549828223656987764
+      MarramGrass_0_detail_8: 8249971946463991024
+      MarramGrass_0_detail_80: 7450063282752017096
+      MarramGrass_0_detail_81: 6257013980929152926
+      MarramGrass_0_detail_82: -356969627521703133
+      MarramGrass_0_detail_83: 7072586105790558969
+      MarramGrass_0_detail_84: -8145181989669345414
+      MarramGrass_0_detail_85: 2317581389309389652
+      MarramGrass_0_detail_86: 2293066427746652952
+      MarramGrass_0_detail_87: -841462931358083465
+      MarramGrass_0_detail_88: 851637816275377457
+      MarramGrass_0_detail_89: 8019196929967016289
+      MarramGrass_0_detail_9: 7229717481112685516
+      MarramGrass_0_detail_90: -5389522003025097693
+      MarramGrass_0_detail_91: -3792556939864777913
+      MarramGrass_0_detail_92: 3308265288441011826
+      MarramGrass_0_detail_93: -5343257823208297370
+      MarramGrass_0_detail_94: -4230797194105299739
+      MarramGrass_0_detail_95: -1564733847100142137
+      MarramGrass_0_detail_96: -7622421543662153467
+      MarramGrass_0_detail_97: 381880203325030550
+      MarramGrass_0_detail_98: -4920523094554364021
+      MarramGrass_0_detail_99: -1014628882286430012
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

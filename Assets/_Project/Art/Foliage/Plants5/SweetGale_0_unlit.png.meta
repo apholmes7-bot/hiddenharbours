@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: c04b76c9b1892184f9af3897b4c4cfb3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8712031282482042217
+    second: SweetGale_0_unlit_0
+  - first:
+      213: -593952282221469001
+    second: SweetGale_0_unlit_1
+  - first:
+      213: -5366652607060081356
+    second: SweetGale_0_unlit_2
+  - first:
+      213: 3755437366632090906
+    second: SweetGale_0_unlit_3
+  - first:
+      213: 5832878598460667449
+    second: SweetGale_0_unlit_4
+  - first:
+      213: -1536188650172912058
+    second: SweetGale_0_unlit_5
+  - first:
+      213: 6342429286906287120
+    second: SweetGale_0_unlit_6
+  - first:
+      213: 1242777797173830654
+    second: SweetGale_0_unlit_7
+  - first:
+      213: 7345902097722623375
+    second: SweetGale_0_unlit_8
+  - first:
+      213: 284665788140106978
+    second: SweetGale_0_unlit_9
+  - first:
+      213: -433157561227224287
+    second: SweetGale_0_unlit_10
+  - first:
+      213: 7018634352585723162
+    second: SweetGale_0_unlit_11
+  - first:
+      213: -8044587035957776397
+    second: SweetGale_0_unlit_12
+  - first:
+      213: 6618081967411370681
+    second: SweetGale_0_unlit_13
+  - first:
+      213: -49956433798095009
+    second: SweetGale_0_unlit_14
+  - first:
+      213: 6888694737575555554
+    second: SweetGale_0_unlit_15
+  - first:
+      213: 7801384684752947340
+    second: SweetGale_0_unlit_16
+  - first:
+      213: 3438183319120859973
+    second: SweetGale_0_unlit_17
+  - first:
+      213: -7698416557284502561
+    second: SweetGale_0_unlit_18
+  - first:
+      213: 7361456883819234422
+    second: SweetGale_0_unlit_19
+  - first:
+      213: 5643511260540840865
+    second: SweetGale_0_unlit_20
+  - first:
+      213: 3058721499334514662
+    second: SweetGale_0_unlit_21
+  - first:
+      213: -3477247308607579573
+    second: SweetGale_0_unlit_22
+  - first:
+      213: -8795787654936423627
+    second: SweetGale_0_unlit_23
+  - first:
+      213: 4886633185982003731
+    second: SweetGale_0_unlit_24
+  - first:
+      213: 1420571291683833180
+    second: SweetGale_0_unlit_25
+  - first:
+      213: 2794002403855237034
+    second: SweetGale_0_unlit_26
+  - first:
+      213: 8991324634828894634
+    second: SweetGale_0_unlit_27
+  - first:
+      213: 8356670410727629173
+    second: SweetGale_0_unlit_28
+  - first:
+      213: -7251150195649727253
+    second: SweetGale_0_unlit_29
+  - first:
+      213: -8271049795289620444
+    second: SweetGale_0_unlit_30
+  - first:
+      213: -8370741069413266332
+    second: SweetGale_0_unlit_31
+  - first:
+      213: -8307607808583910071
+    second: SweetGale_0_unlit_32
+  - first:
+      213: 352000212950002638
+    second: SweetGale_0_unlit_33
+  - first:
+      213: 7314210599154166387
+    second: SweetGale_0_unlit_34
+  - first:
+      213: 3829458228527582397
+    second: SweetGale_0_unlit_35
+  - first:
+      213: 5226037481474723908
+    second: SweetGale_0_unlit_36
+  - first:
+      213: -7559999121592495038
+    second: SweetGale_0_unlit_37
+  - first:
+      213: 7754055718972277474
+    second: SweetGale_0_unlit_38
+  - first:
+      213: 5687153886140919626
+    second: SweetGale_0_unlit_39
+  - first:
+      213: 8283769405938608817
+    second: SweetGale_0_unlit_40
+  - first:
+      213: 5019705021593122057
+    second: SweetGale_0_unlit_41
+  - first:
+      213: 4174782669340937843
+    second: SweetGale_0_unlit_42
+  - first:
+      213: 790323977316424355
+    second: SweetGale_0_unlit_43
+  - first:
+      213: 2578049314273787748
+    second: SweetGale_0_unlit_44
+  - first:
+      213: -280744219829305256
+    second: SweetGale_0_unlit_45
+  - first:
+      213: 2069692188621207863
+    second: SweetGale_0_unlit_46
+  - first:
+      213: -1355252102945277237
+    second: SweetGale_0_unlit_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 325
+        width: 27
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79a2197f4b5a81780800000000000000
+      internalID: -8712031282482042217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 327
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b228a4db8bd1c7f0800000000000000
+      internalID: -593952282221469001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 327
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 435824b33e1d585b0800000000000000
+      internalID: -5366652607060081356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 327
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1d8556436efd1430800000000000000
+      internalID: 3755437366632090906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 280
+        width: 28
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 936f93f6e2c82f050800000000000000
+      internalID: 5832878598460667449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 279
+        width: 27
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64ee47ecf8c5eaae0800000000000000
+      internalID: -1536188650172912058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 279
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 014551335d5d40850800000000000000
+      internalID: 6342429286906287120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 281
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef3e94f62db3f3110800000000000000
+      internalID: 1242777797173830654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 237
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f85cd81a903e1f560800000000000000
+      internalID: 7345902097722623375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 235
+        width: 26
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e43ccda60653f300800000000000000
+      internalID: 284665788140106978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 235
+        width: 26
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12bd6473e7d1df9f0800000000000000
+      internalID: -433157561227224287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 238
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1dc932e1c2376160800000000000000
+      internalID: 7018634352585723162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 194
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ff260d76b2eb5090800000000000000
+      internalID: -8044587035957776397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 195
+        width: 27
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ba19f93c7628db50800000000000000
+      internalID: 6618081967411370681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 195
+        width: 26
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5f183d53e48e4ff0800000000000000
+      internalID: -49956433798095009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 196
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e13b4fad5f899f50800000000000000
+      internalID: 6888694737575555554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 158
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c884fda8906144c60800000000000000
+      internalID: 7801384684752947340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 158
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5435fd03381e6bf20800000000000000
+      internalID: 3438183319120859973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 157
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd3521addeab92590800000000000000
+      internalID: -7698416557284502561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 158
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 674466d7806292660800000000000000
+      internalID: 7361456883819234422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 158
+        width: 23
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ab24724797c15e40800000000000000
+      internalID: 5643511260540840865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 123
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e71fa27ff2c27a20800000000000000
+      internalID: 3058721499334514662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 123
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4a134efef55ebfc0800000000000000
+      internalID: -3477247308607579573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 123
+        width: 22
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5339fbbdab51fe580800000000000000
+      internalID: -8795787654936423627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 124
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31ab71efdfec0d340800000000000000
+      internalID: 4886633185982003731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 123
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c55cee23012e6b310800000000000000
+      internalID: 1420571291683833180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 88
+        width: 25
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aaff06f026a46c620800000000000000
+      internalID: 2794002403855237034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 88
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa1f1370e1a97cc70800000000000000
+      internalID: 8991324634828894634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 88
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5712078867bd8f370800000000000000
+      internalID: 8356670410727629173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 90
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be43b47b05dbe5b90800000000000000
+      internalID: -7251150195649727253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 90
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 420e1387804573d80800000000000000
+      internalID: -8271049795289620444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 58
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46c49d2f85725db80800000000000000
+      internalID: -8370741069413266332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 61
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94d3814b6b275bc80800000000000000
+      internalID: -8307607808583910071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 61
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecb2fb5245e82e400800000000000000
+      internalID: 352000212950002638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 61
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37a2bfe99cb418560800000000000000
+      internalID: 7314210599154166387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 61
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbc459138f7f42530800000000000000
+      internalID: 3829458228527582397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 60
+        width: 16
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4409d22966d968840800000000000000
+      internalID: 5226037481474723908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 31
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 244d63f7adc751790800000000000000
+      internalID: -7559999121592495038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 31
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e2cde9f790fb9b60800000000000000
+      internalID: 7754055718972277474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 30
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4f696ed354dcee40800000000000000
+      internalID: 5687153886140919626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 31
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ba283aa26cd5f270800000000000000
+      internalID: 8283769405938608817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 31
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9057d412f1399a540800000000000000
+      internalID: 5019705021593122057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 31
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37e068408becfe930800000000000000
+      internalID: 4174782669340937843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 4
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3aa5b65587bc7fa00800000000000000
+      internalID: 790323977316424355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 4
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46f7ab6313217c320800000000000000
+      internalID: 2578049314273787748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 5
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85084589e989a1cf0800000000000000
+      internalID: -280744219829305256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 5
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 739fa21741609bc10800000000000000
+      internalID: 2069692188621207863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SweetGale_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 4
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bca78de846d213de0800000000000000
+      internalID: -1355252102945277237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SweetGale_0_unlit_0: -8712031282482042217
+      SweetGale_0_unlit_1: -593952282221469001
+      SweetGale_0_unlit_10: -433157561227224287
+      SweetGale_0_unlit_11: 7018634352585723162
+      SweetGale_0_unlit_12: -8044587035957776397
+      SweetGale_0_unlit_13: 6618081967411370681
+      SweetGale_0_unlit_14: -49956433798095009
+      SweetGale_0_unlit_15: 6888694737575555554
+      SweetGale_0_unlit_16: 7801384684752947340
+      SweetGale_0_unlit_17: 3438183319120859973
+      SweetGale_0_unlit_18: -7698416557284502561
+      SweetGale_0_unlit_19: 7361456883819234422
+      SweetGale_0_unlit_2: -5366652607060081356
+      SweetGale_0_unlit_20: 5643511260540840865
+      SweetGale_0_unlit_21: 3058721499334514662
+      SweetGale_0_unlit_22: -3477247308607579573
+      SweetGale_0_unlit_23: -8795787654936423627
+      SweetGale_0_unlit_24: 4886633185982003731
+      SweetGale_0_unlit_25: 1420571291683833180
+      SweetGale_0_unlit_26: 2794002403855237034
+      SweetGale_0_unlit_27: 8991324634828894634
+      SweetGale_0_unlit_28: 8356670410727629173
+      SweetGale_0_unlit_29: -7251150195649727253
+      SweetGale_0_unlit_3: 3755437366632090906
+      SweetGale_0_unlit_30: -8271049795289620444
+      SweetGale_0_unlit_31: -8370741069413266332
+      SweetGale_0_unlit_32: -8307607808583910071
+      SweetGale_0_unlit_33: 352000212950002638
+      SweetGale_0_unlit_34: 7314210599154166387
+      SweetGale_0_unlit_35: 3829458228527582397
+      SweetGale_0_unlit_36: 5226037481474723908
+      SweetGale_0_unlit_37: -7559999121592495038
+      SweetGale_0_unlit_38: 7754055718972277474
+      SweetGale_0_unlit_39: 5687153886140919626
+      SweetGale_0_unlit_4: 5832878598460667449
+      SweetGale_0_unlit_40: 8283769405938608817
+      SweetGale_0_unlit_41: 5019705021593122057
+      SweetGale_0_unlit_42: 4174782669340937843
+      SweetGale_0_unlit_43: 790323977316424355
+      SweetGale_0_unlit_44: 2578049314273787748
+      SweetGale_0_unlit_45: -280744219829305256
+      SweetGale_0_unlit_46: 2069692188621207863
+      SweetGale_0_unlit_47: -1355252102945277237
+      SweetGale_0_unlit_5: -1536188650172912058
+      SweetGale_0_unlit_6: 6342429286906287120
+      SweetGale_0_unlit_7: 1242777797173830654
+      SweetGale_0_unlit_8: 7345902097722623375
+      SweetGale_0_unlit_9: 284665788140106978
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

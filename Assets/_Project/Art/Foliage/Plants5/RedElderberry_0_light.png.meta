@@ -1,0 +1,2236 @@
+fileFormatVersion: 2
+guid: c23be2b923327fc4daac208d497d90c2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -781754530670522157
+    second: RedElderberry_0_light_0
+  - first:
+      213: 2122409626177589462
+    second: RedElderberry_0_light_1
+  - first:
+      213: -4970235946591206133
+    second: RedElderberry_0_light_2
+  - first:
+      213: 3158954196669018228
+    second: RedElderberry_0_light_3
+  - first:
+      213: -1791982342753634157
+    second: RedElderberry_0_light_4
+  - first:
+      213: -5029609654384651354
+    second: RedElderberry_0_light_5
+  - first:
+      213: 3260605328057846173
+    second: RedElderberry_0_light_6
+  - first:
+      213: -106593645560979647
+    second: RedElderberry_0_light_7
+  - first:
+      213: 7694281605662506710
+    second: RedElderberry_0_light_8
+  - first:
+      213: 6148535242108410395
+    second: RedElderberry_0_light_9
+  - first:
+      213: 3795168337151852897
+    second: RedElderberry_0_light_10
+  - first:
+      213: 2719944309999427060
+    second: RedElderberry_0_light_11
+  - first:
+      213: -7412214343052764131
+    second: RedElderberry_0_light_12
+  - first:
+      213: -5662165547458657346
+    second: RedElderberry_0_light_13
+  - first:
+      213: -9193384272660064931
+    second: RedElderberry_0_light_14
+  - first:
+      213: 368116906889555997
+    second: RedElderberry_0_light_15
+  - first:
+      213: -3900289246535820952
+    second: RedElderberry_0_light_16
+  - first:
+      213: -695613023356943973
+    second: RedElderberry_0_light_17
+  - first:
+      213: 8909094434228425157
+    second: RedElderberry_0_light_18
+  - first:
+      213: 3352004038471331600
+    second: RedElderberry_0_light_19
+  - first:
+      213: 4841499088501126089
+    second: RedElderberry_0_light_20
+  - first:
+      213: -8635086432265051887
+    second: RedElderberry_0_light_21
+  - first:
+      213: -2153062396715711822
+    second: RedElderberry_0_light_22
+  - first:
+      213: 8799945374960822467
+    second: RedElderberry_0_light_23
+  - first:
+      213: -4218754080664847594
+    second: RedElderberry_0_light_24
+  - first:
+      213: -745136310008631023
+    second: RedElderberry_0_light_25
+  - first:
+      213: 6818485346293635664
+    second: RedElderberry_0_light_26
+  - first:
+      213: 1368346458841228546
+    second: RedElderberry_0_light_27
+  - first:
+      213: 8258057382553973968
+    second: RedElderberry_0_light_28
+  - first:
+      213: -6052902968359874194
+    second: RedElderberry_0_light_29
+  - first:
+      213: 986808726449681313
+    second: RedElderberry_0_light_30
+  - first:
+      213: -5833270210977213369
+    second: RedElderberry_0_light_31
+  - first:
+      213: 5703395967652729354
+    second: RedElderberry_0_light_32
+  - first:
+      213: 4802956656771646422
+    second: RedElderberry_0_light_33
+  - first:
+      213: 9158424832213288903
+    second: RedElderberry_0_light_34
+  - first:
+      213: -9067144900609477834
+    second: RedElderberry_0_light_35
+  - first:
+      213: 286746529167943317
+    second: RedElderberry_0_light_36
+  - first:
+      213: -541223800192884567
+    second: RedElderberry_0_light_37
+  - first:
+      213: -849678240098789567
+    second: RedElderberry_0_light_38
+  - first:
+      213: -4352834318209582948
+    second: RedElderberry_0_light_39
+  - first:
+      213: 1821184563350608336
+    second: RedElderberry_0_light_40
+  - first:
+      213: 1679273354809677057
+    second: RedElderberry_0_light_41
+  - first:
+      213: 3327846244383883027
+    second: RedElderberry_0_light_42
+  - first:
+      213: 5587817327015086238
+    second: RedElderberry_0_light_43
+  - first:
+      213: -1828340967312483861
+    second: RedElderberry_0_light_44
+  - first:
+      213: -9174274549453406809
+    second: RedElderberry_0_light_45
+  - first:
+      213: -664846607063116474
+    second: RedElderberry_0_light_46
+  - first:
+      213: 3838461313228160923
+    second: RedElderberry_0_light_47
+  - first:
+      213: -4604067573628755302
+    second: RedElderberry_0_light_48
+  - first:
+      213: 8098075477671905007
+    second: RedElderberry_0_light_49
+  - first:
+      213: 5760417500981481221
+    second: RedElderberry_0_light_50
+  - first:
+      213: -7138656529147859829
+    second: RedElderberry_0_light_51
+  - first:
+      213: 879504189143923829
+    second: RedElderberry_0_light_52
+  - first:
+      213: 4259598487840640517
+    second: RedElderberry_0_light_53
+  - first:
+      213: -8779408012267167481
+    second: RedElderberry_0_light_54
+  - first:
+      213: 6975001880265495887
+    second: RedElderberry_0_light_55
+  - first:
+      213: 6610323847926023850
+    second: RedElderberry_0_light_56
+  - first:
+      213: 6374392539350422148
+    second: RedElderberry_0_light_57
+  - first:
+      213: 5124971424835745202
+    second: RedElderberry_0_light_58
+  - first:
+      213: 5339426879514416739
+    second: RedElderberry_0_light_59
+  - first:
+      213: 4052787758915201296
+    second: RedElderberry_0_light_60
+  - first:
+      213: 8018346970466805907
+    second: RedElderberry_0_light_61
+  - first:
+      213: -8024807359420442789
+    second: RedElderberry_0_light_62
+  - first:
+      213: -7932594485865731864
+    second: RedElderberry_0_light_63
+  - first:
+      213: -3343863419994855244
+    second: RedElderberry_0_light_64
+  - first:
+      213: -3843596914963432427
+    second: RedElderberry_0_light_65
+  - first:
+      213: -8990427380336755377
+    second: RedElderberry_0_light_66
+  - first:
+      213: 5853177123210192060
+    second: RedElderberry_0_light_67
+  - first:
+      213: -2579726612427482520
+    second: RedElderberry_0_light_68
+  - first:
+      213: -2937532456318542220
+    second: RedElderberry_0_light_69
+  - first:
+      213: -2711009631604622650
+    second: RedElderberry_0_light_70
+  - first:
+      213: -671953165042378483
+    second: RedElderberry_0_light_71
+  - first:
+      213: 5392222673863939339
+    second: RedElderberry_0_light_72
+  - first:
+      213: 8322631839984902333
+    second: RedElderberry_0_light_73
+  - first:
+      213: -1973537236880071032
+    second: RedElderberry_0_light_74
+  - first:
+      213: 8519202620726009428
+    second: RedElderberry_0_light_75
+  - first:
+      213: 3492651257375556747
+    second: RedElderberry_0_light_76
+  - first:
+      213: 6898718352044073110
+    second: RedElderberry_0_light_77
+  - first:
+      213: 678731704987315040
+    second: RedElderberry_0_light_78
+  - first:
+      213: 5924107175814011799
+    second: RedElderberry_0_light_79
+  - first:
+      213: -1512936128336561470
+    second: RedElderberry_0_light_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: RedElderberry_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 186
+        width: 31
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d0d4d17566a625f0800000000000000
+      internalID: -781754530670522157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 186
+        width: 37
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d05f2c5f40547d10800000000000000
+      internalID: 2122409626177589462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 186
+        width: 30
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b05cd817dbc260bb0800000000000000
+      internalID: -4970235946591206133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 186
+        width: 36
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 470bf22ea1cd6db20800000000000000
+      internalID: 3158954196669018228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 186
+        width: 30
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 398b568bd899127e0800000000000000
+      internalID: -1791982342753634157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 186
+        width: 38
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a31787daac333ab0800000000000000
+      internalID: -5029609654384651354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 188
+        width: 52
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9942ab354fff3d20800000000000000
+      internalID: 3260605328057846173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 188
+        width: 52
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14f1605e4ad458ef0800000000000000
+      internalID: -106593645560979647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 189
+        width: 52
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6def553ba5497ca60800000000000000
+      internalID: 7694281605662506710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 617
+        y: 194
+        width: 25
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1a97d2f93cf35550800000000000000
+      internalID: 6148535242108410395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 191
+        width: 32
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1610fb6be752ba430800000000000000
+      internalID: 3795168337151852897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 194
+        width: 33
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fd5c5660fe2fb520800000000000000
+      internalID: 2719944309999427060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 196
+        width: 30
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1cd84b9356822990800000000000000
+      internalID: -7412214343052764131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 194
+        width: 30
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb3854c1f62fb61b0800000000000000
+      internalID: -5662165547458657346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 817
+        y: 199
+        width: 29
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d551f6076b98a6080800000000000000
+      internalID: -9193384272660064931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 199
+        width: 31
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d10b7fe5060db1500800000000000000
+      internalID: 368116906889555997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 913
+        y: 199
+        width: 29
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 869d4fa48936fd9c0800000000000000
+      internalID: -3900289246535820952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 938
+        y: 199
+        width: 30
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b918ca904afa856f0800000000000000
+      internalID: -695613023356943973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 108
+        width: 29
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c1589e7f2673ab70800000000000000
+      internalID: 8909094434228425157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 108
+        width: 29
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01f22cec9e5b48e20800000000000000
+      internalID: 3352004038471331600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 108
+        width: 29
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c3bc7605c5703340800000000000000
+      internalID: 4841499088501126089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 108
+        width: 22
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 111eb08f3a20a2880800000000000000
+      internalID: -8635086432265051887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 115
+        width: 32
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b242885829ce12e0800000000000000
+      internalID: -2153062396715711822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 115
+        width: 28
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c8a165c1bfaf1a70800000000000000
+      internalID: 8799945374960822467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 115
+        width: 44
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61bfd3bf389f375c0800000000000000
+      internalID: -4218754080664847594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 117
+        width: 39
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 111b0b4597eb8a5f0800000000000000
+      internalID: -745136310008631023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 115
+        width: 43
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05ad90ceb4020ae50800000000000000
+      internalID: 6818485346293635664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 117
+        width: 39
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20525e0cad75df210800000000000000
+      internalID: 1368346458841228546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 115
+        width: 42
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d4fbe5bf638a9270800000000000000
+      internalID: 8258057382553973968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 117
+        width: 40
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e619007e1d4cffba0800000000000000
+      internalID: -6052902968359874194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 120
+        width: 31
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a3f941fe49d1bd00800000000000000
+      internalID: 986808726449681313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 123
+        width: 33
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 744d5db26af0c0fa0800000000000000
+      internalID: -5833270210977213369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 124
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0216592a68862f40800000000000000
+      internalID: 5703395967652729354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 804
+        y: 123
+        width: 33
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d3c876d1a787a240800000000000000
+      internalID: 4802956656771646422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 835
+        y: 124
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c7803a8cd2491f70800000000000000
+      internalID: 9158424832213288903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 123
+        width: 34
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6337d20b0c70b2280800000000000000
+      internalID: -9067144900609477834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 926
+        y: 124
+        width: 27
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 596a1a3f27abaf300800000000000000
+      internalID: 286746529167943317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 47
+        width: 28
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a0248d32df2d78f0800000000000000
+      internalID: -541223800192884567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 46
+        width: 31
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 147588574265534f0800000000000000
+      internalID: -849678240098789567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 47
+        width: 28
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c98fcf8ff30a793c0800000000000000
+      internalID: -4352834318209582948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 46
+        width: 31
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d910f816b5264910800000000000000
+      internalID: 1821184563350608336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 47
+        width: 28
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1059532183afd4710800000000000000
+      internalID: 1679273354809677057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 46
+        width: 31
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31f7e9f0782ee2e20800000000000000
+      internalID: 3327846244383883027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 46
+        width: 42
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e98c18ed04aeb8d40800000000000000
+      internalID: 5587817327015086238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 49
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be99b03c39d60a6e0800000000000000
+      internalID: -1828340967312483861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 48
+        width: 21
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ad3ce797ed6ea080800000000000000
+      internalID: -9174274549453406809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 48
+        width: 20
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64511eb888df5c6f0800000000000000
+      internalID: -664846607063116474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 48
+        width: 22
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9f3b033a34f44530800000000000000
+      internalID: 3838461313228160923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_48
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 48
+        width: 17
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a92a6f76fe01b10c0800000000000000
+      internalID: -4604067573628755302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_49
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 47
+        width: 20
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe68fe2ddb4226070800000000000000
+      internalID: 8098075477671905007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_50
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 48
+        width: 16
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50fc1f7723d11ff40800000000000000
+      internalID: 5760417500981481221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_51
+      rect:
+        serializedVersion: 2
+        x: 590
+        y: 47
+        width: 19
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8c6e9e75b56eec90800000000000000
+      internalID: -7138656529147859829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_52
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 48
+        width: 16
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57c34647660a43c00800000000000000
+      internalID: 879504189143923829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_53
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 47
+        width: 19
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50e4881a1422d1b30800000000000000
+      internalID: 4259598487840640517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_54
+      rect:
+        serializedVersion: 2
+        x: 707
+        y: 52
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 701e89a9de6492680800000000000000
+      internalID: -8779408012267167481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_55
+      rect:
+        serializedVersion: 2
+        x: 733
+        y: 51
+        width: 27
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4518e4414f2cc060800000000000000
+      internalID: 6975001880265495887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_56
+      rect:
+        serializedVersion: 2
+        x: 791
+        y: 52
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa68ce544869cbb50800000000000000
+      internalID: 6610323847926023850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_57
+      rect:
+        serializedVersion: 2
+        x: 817
+        y: 51
+        width: 27
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 482d1e6dd34667850800000000000000
+      internalID: 6374392539350422148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_58
+      rect:
+        serializedVersion: 2
+        x: 875
+        y: 52
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b5bc5d8b5e8f1740800000000000000
+      internalID: 5124971424835745202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_59
+      rect:
+        serializedVersion: 2
+        x: 901
+        y: 51
+        width: 26
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36611a91574791a40800000000000000
+      internalID: 5339426879514416739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_60
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 62
+        width: 21
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01921308ef46e3830800000000000000
+      internalID: 4052787758915201296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_61
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 5
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 398e08c2614e64f60800000000000000
+      internalID: 8018346970466805907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_62
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 5
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b57ddce493822a090800000000000000
+      internalID: -8024807359420442789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_63
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 5
+        width: 39
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e820c20853c9e190800000000000000
+      internalID: -7932594485865731864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_64
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 5
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b8a8c1afe53891d0800000000000000
+      internalID: -3343863419994855244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_65
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 5
+        width: 39
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51c31d758fcc8aac0800000000000000
+      internalID: -3843596914963432427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_66
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 4
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4df4105ee59b3380800000000000000
+      internalID: -8990427380336755377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_67
+      rect:
+        serializedVersion: 2
+        x: 381
+        y: 5
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb4e2640599aa3150800000000000000
+      internalID: 5853177123210192060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_68
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 7
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86a53a06058f23cd0800000000000000
+      internalID: -2579726612427482520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_69
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 6
+        width: 14
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47ed3f07bc9cb37d0800000000000000
+      internalID: -2937532456318542220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_70
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 5
+        width: 25
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ca3b858a1f806ad0800000000000000
+      internalID: -2711009631604622650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_71
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 5
+        width: 24
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0913f3182ebca6f0800000000000000
+      internalID: -671953165042378483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_72
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 7
+        width: 19
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b059771e3f505da40800000000000000
+      internalID: 5392222673863939339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_73
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 7
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db0e7a2309def7370800000000000000
+      internalID: 8322631839984902333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_74
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 7
+        width: 14
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 886e1ccd6569c94e0800000000000000
+      internalID: -1973537236880071032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_75
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 6
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45e53f995a94a3670800000000000000
+      internalID: 8519202620726009428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_76
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 8
+        width: 17
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b84013050d3687030800000000000000
+      internalID: 3492651257375556747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_77
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 8
+        width: 17
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6902e0b4acb2dbf50800000000000000
+      internalID: 6898718352044073110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_78
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 8
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06b609db3e65b6900800000000000000
+      internalID: 678731704987315040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_79
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 8
+        width: 19
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79b9cb1d618a63250800000000000000
+      internalID: 5924107175814011799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedElderberry_0_light_80
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 8
+        width: 36
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2caf4ae6b98f00be0800000000000000
+      internalID: -1512936128336561470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      RedElderberry_0_light_0: -781754530670522157
+      RedElderberry_0_light_1: 2122409626177589462
+      RedElderberry_0_light_10: 3795168337151852897
+      RedElderberry_0_light_11: 2719944309999427060
+      RedElderberry_0_light_12: -7412214343052764131
+      RedElderberry_0_light_13: -5662165547458657346
+      RedElderberry_0_light_14: -9193384272660064931
+      RedElderberry_0_light_15: 368116906889555997
+      RedElderberry_0_light_16: -3900289246535820952
+      RedElderberry_0_light_17: -695613023356943973
+      RedElderberry_0_light_18: 8909094434228425157
+      RedElderberry_0_light_19: 3352004038471331600
+      RedElderberry_0_light_2: -4970235946591206133
+      RedElderberry_0_light_20: 4841499088501126089
+      RedElderberry_0_light_21: -8635086432265051887
+      RedElderberry_0_light_22: -2153062396715711822
+      RedElderberry_0_light_23: 8799945374960822467
+      RedElderberry_0_light_24: -4218754080664847594
+      RedElderberry_0_light_25: -745136310008631023
+      RedElderberry_0_light_26: 6818485346293635664
+      RedElderberry_0_light_27: 1368346458841228546
+      RedElderberry_0_light_28: 8258057382553973968
+      RedElderberry_0_light_29: -6052902968359874194
+      RedElderberry_0_light_3: 3158954196669018228
+      RedElderberry_0_light_30: 986808726449681313
+      RedElderberry_0_light_31: -5833270210977213369
+      RedElderberry_0_light_32: 5703395967652729354
+      RedElderberry_0_light_33: 4802956656771646422
+      RedElderberry_0_light_34: 9158424832213288903
+      RedElderberry_0_light_35: -9067144900609477834
+      RedElderberry_0_light_36: 286746529167943317
+      RedElderberry_0_light_37: -541223800192884567
+      RedElderberry_0_light_38: -849678240098789567
+      RedElderberry_0_light_39: -4352834318209582948
+      RedElderberry_0_light_4: -1791982342753634157
+      RedElderberry_0_light_40: 1821184563350608336
+      RedElderberry_0_light_41: 1679273354809677057
+      RedElderberry_0_light_42: 3327846244383883027
+      RedElderberry_0_light_43: 5587817327015086238
+      RedElderberry_0_light_44: -1828340967312483861
+      RedElderberry_0_light_45: -9174274549453406809
+      RedElderberry_0_light_46: -664846607063116474
+      RedElderberry_0_light_47: 3838461313228160923
+      RedElderberry_0_light_48: -4604067573628755302
+      RedElderberry_0_light_49: 8098075477671905007
+      RedElderberry_0_light_5: -5029609654384651354
+      RedElderberry_0_light_50: 5760417500981481221
+      RedElderberry_0_light_51: -7138656529147859829
+      RedElderberry_0_light_52: 879504189143923829
+      RedElderberry_0_light_53: 4259598487840640517
+      RedElderberry_0_light_54: -8779408012267167481
+      RedElderberry_0_light_55: 6975001880265495887
+      RedElderberry_0_light_56: 6610323847926023850
+      RedElderberry_0_light_57: 6374392539350422148
+      RedElderberry_0_light_58: 5124971424835745202
+      RedElderberry_0_light_59: 5339426879514416739
+      RedElderberry_0_light_6: 3260605328057846173
+      RedElderberry_0_light_60: 4052787758915201296
+      RedElderberry_0_light_61: 8018346970466805907
+      RedElderberry_0_light_62: -8024807359420442789
+      RedElderberry_0_light_63: -7932594485865731864
+      RedElderberry_0_light_64: -3343863419994855244
+      RedElderberry_0_light_65: -3843596914963432427
+      RedElderberry_0_light_66: -8990427380336755377
+      RedElderberry_0_light_67: 5853177123210192060
+      RedElderberry_0_light_68: -2579726612427482520
+      RedElderberry_0_light_69: -2937532456318542220
+      RedElderberry_0_light_7: -106593645560979647
+      RedElderberry_0_light_70: -2711009631604622650
+      RedElderberry_0_light_71: -671953165042378483
+      RedElderberry_0_light_72: 5392222673863939339
+      RedElderberry_0_light_73: 8322631839984902333
+      RedElderberry_0_light_74: -1973537236880071032
+      RedElderberry_0_light_75: 8519202620726009428
+      RedElderberry_0_light_76: 3492651257375556747
+      RedElderberry_0_light_77: 6898718352044073110
+      RedElderberry_0_light_78: 678731704987315040
+      RedElderberry_0_light_79: 5924107175814011799
+      RedElderberry_0_light_8: 7694281605662506710
+      RedElderberry_0_light_80: -1512936128336561470
+      RedElderberry_0_light_9: 6148535242108410395
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

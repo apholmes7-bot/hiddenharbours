@@ -1,0 +1,832 @@
+fileFormatVersion: 2
+guid: 20ec621e3e2a13743aee6f6d8435626e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5614245445436010055
+    second: Fireweed_0_detail_0
+  - first:
+      213: -2388244254187720005
+    second: Fireweed_0_detail_1
+  - first:
+      213: -1247186484924485197
+    second: Fireweed_0_detail_2
+  - first:
+      213: -4373356897338108888
+    second: Fireweed_0_detail_3
+  - first:
+      213: 8035383551485228718
+    second: Fireweed_0_detail_4
+  - first:
+      213: -3231497651029467605
+    second: Fireweed_0_detail_5
+  - first:
+      213: -3939880991088522184
+    second: Fireweed_0_detail_6
+  - first:
+      213: 6684151309322656356
+    second: Fireweed_0_detail_7
+  - first:
+      213: -3104643671953273484
+    second: Fireweed_0_detail_8
+  - first:
+      213: 968004755594221190
+    second: Fireweed_0_detail_9
+  - first:
+      213: 6651953749724533751
+    second: Fireweed_0_detail_10
+  - first:
+      213: 3641366761909302711
+    second: Fireweed_0_detail_11
+  - first:
+      213: -4464841891785671867
+    second: Fireweed_0_detail_12
+  - first:
+      213: -5922853774555134139
+    second: Fireweed_0_detail_13
+  - first:
+      213: 4739193924030141750
+    second: Fireweed_0_detail_14
+  - first:
+      213: 6037721778220412365
+    second: Fireweed_0_detail_15
+  - first:
+      213: 9131875779321415150
+    second: Fireweed_0_detail_16
+  - first:
+      213: -5096913352658206974
+    second: Fireweed_0_detail_17
+  - first:
+      213: -4016129736613622089
+    second: Fireweed_0_detail_18
+  - first:
+      213: -3540989961477480717
+    second: Fireweed_0_detail_19
+  - first:
+      213: 6953932261648830576
+    second: Fireweed_0_detail_20
+  - first:
+      213: 1675625692453912263
+    second: Fireweed_0_detail_21
+  - first:
+      213: -6972608616446895864
+    second: Fireweed_0_detail_22
+  - first:
+      213: 1948800975001081810
+    second: Fireweed_0_detail_23
+  - first:
+      213: -2897070550439618511
+    second: Fireweed_0_detail_24
+  - first:
+      213: -7369866431243207014
+    second: Fireweed_0_detail_25
+  - first:
+      213: -4089310437569299261
+    second: Fireweed_0_detail_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fireweed_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 162
+        width: 22
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74e6111bc7ec9ed40800000000000000
+      internalID: 5614245445436010055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 163
+        width: 15
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb2f54811804bded0800000000000000
+      internalID: -2388244254187720005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 164
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b17865ff7a11bee0800000000000000
+      internalID: -1247186484924485197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 165
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 824582aa217be43c0800000000000000
+      internalID: -4373356897338108888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 116
+        width: 17
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea63b4c44ca638f60800000000000000
+      internalID: 8035383551485228718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 117
+        width: 20
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2e11e1f10a6723d0800000000000000
+      internalID: -3231497651029467605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 117
+        width: 20
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83ccadcec1bb259c0800000000000000
+      internalID: -3939880991088522184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 119
+        width: 18
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46a9321a330e2cc50800000000000000
+      internalID: 6684151309322656356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 77
+        width: 8
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47d8f0b87071ae4d0800000000000000
+      internalID: -3104643671953273484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 75
+        width: 10
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 686151e423b0f6d00800000000000000
+      internalID: 968004755594221190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 76
+        width: 13
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f398aa11bc705c50800000000000000
+      internalID: 6651953749724533751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 76
+        width: 15
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b5b484f6cbb88230800000000000000
+      internalID: 3641366761909302711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 77
+        width: 9
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54bf4d584f1b902c0800000000000000
+      internalID: -4464841891785671867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 77
+        width: 8
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5474f076fdbcdcda0800000000000000
+      internalID: -5922853774555134139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 81
+        width: 18
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 635918bb3cff4c140800000000000000
+      internalID: 4739193924030141750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 40
+        width: 16
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcda773d7fb4ac350800000000000000
+      internalID: 6037721778220412365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 40
+        width: 16
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee5427773a0fabe70800000000000000
+      internalID: 9131875779321415150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 40
+        width: 15
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20fbcd37f402449b0800000000000000
+      internalID: -5096913352658206974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 41
+        width: 14
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7be034d6847d348c0800000000000000
+      internalID: -4016129736613622089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 40
+        width: 13
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fe19e81460ebdec0800000000000000
+      internalID: -3540989961477480717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 4
+        width: 12
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07015b76c84518060800000000000000
+      internalID: 6953932261648830576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 6
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cebb3f70b4014710800000000000000
+      internalID: 1675625692453912263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 6
+        width: 8
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 809dad2e7615c3f90800000000000000
+      internalID: -6972608616446895864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 9
+        width: 8
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d7dfdc59288b0b10800000000000000
+      internalID: 1948800975001081810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 8
+        width: 8
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1381dc70fa98bc7d0800000000000000
+      internalID: -2897070550439618511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 9
+        width: 11
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9e3cab2789f8b990800000000000000
+      internalID: -7369866431243207014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fireweed_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 9
+        width: 9
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cc7268b2d9df37c0800000000000000
+      internalID: -4089310437569299261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fireweed_0_detail_0: 5614245445436010055
+      Fireweed_0_detail_1: -2388244254187720005
+      Fireweed_0_detail_10: 6651953749724533751
+      Fireweed_0_detail_11: 3641366761909302711
+      Fireweed_0_detail_12: -4464841891785671867
+      Fireweed_0_detail_13: -5922853774555134139
+      Fireweed_0_detail_14: 4739193924030141750
+      Fireweed_0_detail_15: 6037721778220412365
+      Fireweed_0_detail_16: 9131875779321415150
+      Fireweed_0_detail_17: -5096913352658206974
+      Fireweed_0_detail_18: -4016129736613622089
+      Fireweed_0_detail_19: -3540989961477480717
+      Fireweed_0_detail_2: -1247186484924485197
+      Fireweed_0_detail_20: 6953932261648830576
+      Fireweed_0_detail_21: 1675625692453912263
+      Fireweed_0_detail_22: -6972608616446895864
+      Fireweed_0_detail_23: 1948800975001081810
+      Fireweed_0_detail_24: -2897070550439618511
+      Fireweed_0_detail_25: -7369866431243207014
+      Fireweed_0_detail_26: -4089310437569299261
+      Fireweed_0_detail_3: -4373356897338108888
+      Fireweed_0_detail_4: 8035383551485228718
+      Fireweed_0_detail_5: -3231497651029467605
+      Fireweed_0_detail_6: -3939880991088522184
+      Fireweed_0_detail_7: 6684151309322656356
+      Fireweed_0_detail_8: -3104643671953273484
+      Fireweed_0_detail_9: 968004755594221190
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

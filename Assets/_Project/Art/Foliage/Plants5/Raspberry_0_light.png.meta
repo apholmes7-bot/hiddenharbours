@@ -1,0 +1,1456 @@
+fileFormatVersion: 2
+guid: e5bc61fe0e4a7154ca2153dca8f893d7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1567262286448275077
+    second: Raspberry_0_light_0
+  - first:
+      213: -6435481880438899745
+    second: Raspberry_0_light_1
+  - first:
+      213: 5727949005974255805
+    second: Raspberry_0_light_2
+  - first:
+      213: 1851432615530965391
+    second: Raspberry_0_light_3
+  - first:
+      213: 8071751962945299524
+    second: Raspberry_0_light_4
+  - first:
+      213: -2631020063302395213
+    second: Raspberry_0_light_5
+  - first:
+      213: 6762088041346664705
+    second: Raspberry_0_light_6
+  - first:
+      213: -3747292671607700378
+    second: Raspberry_0_light_7
+  - first:
+      213: -4532570253146960233
+    second: Raspberry_0_light_8
+  - first:
+      213: 2927569534229567225
+    second: Raspberry_0_light_9
+  - first:
+      213: 4818404260337040757
+    second: Raspberry_0_light_10
+  - first:
+      213: 3277702065462481379
+    second: Raspberry_0_light_11
+  - first:
+      213: -4595862960824886631
+    second: Raspberry_0_light_12
+  - first:
+      213: -94401060725657495
+    second: Raspberry_0_light_13
+  - first:
+      213: -1002434198937721098
+    second: Raspberry_0_light_14
+  - first:
+      213: 1008234194497035874
+    second: Raspberry_0_light_15
+  - first:
+      213: 8698326857614557262
+    second: Raspberry_0_light_16
+  - first:
+      213: 2860202638943877146
+    second: Raspberry_0_light_17
+  - first:
+      213: -8037649795069362755
+    second: Raspberry_0_light_18
+  - first:
+      213: 7196977148260532184
+    second: Raspberry_0_light_19
+  - first:
+      213: -7182494262245203324
+    second: Raspberry_0_light_20
+  - first:
+      213: 5103770751369776986
+    second: Raspberry_0_light_21
+  - first:
+      213: -3517601312367056092
+    second: Raspberry_0_light_22
+  - first:
+      213: 6608222578948833330
+    second: Raspberry_0_light_23
+  - first:
+      213: 3285515039788005749
+    second: Raspberry_0_light_24
+  - first:
+      213: 7511264331968519507
+    second: Raspberry_0_light_25
+  - first:
+      213: 7691286475693730413
+    second: Raspberry_0_light_26
+  - first:
+      213: -7667066494036110483
+    second: Raspberry_0_light_27
+  - first:
+      213: -823508377928470791
+    second: Raspberry_0_light_28
+  - first:
+      213: -6692701892899842150
+    second: Raspberry_0_light_29
+  - first:
+      213: 8454381216950827233
+    second: Raspberry_0_light_30
+  - first:
+      213: -7824924794604360993
+    second: Raspberry_0_light_31
+  - first:
+      213: 1492540537315214123
+    second: Raspberry_0_light_32
+  - first:
+      213: 2447107923316117929
+    second: Raspberry_0_light_33
+  - first:
+      213: -3056197212442137927
+    second: Raspberry_0_light_34
+  - first:
+      213: 7152034589900465604
+    second: Raspberry_0_light_35
+  - first:
+      213: -8618220023101712228
+    second: Raspberry_0_light_36
+  - first:
+      213: 3684300575852352416
+    second: Raspberry_0_light_37
+  - first:
+      213: 7724498258255946822
+    second: Raspberry_0_light_38
+  - first:
+      213: 3327232729599813818
+    second: Raspberry_0_light_39
+  - first:
+      213: 4161188833552235599
+    second: Raspberry_0_light_40
+  - first:
+      213: 4288942884218415257
+    second: Raspberry_0_light_41
+  - first:
+      213: 3981737909281865654
+    second: Raspberry_0_light_42
+  - first:
+      213: -5516766016779236217
+    second: Raspberry_0_light_43
+  - first:
+      213: -339440110407526481
+    second: Raspberry_0_light_44
+  - first:
+      213: -3197375884182131447
+    second: Raspberry_0_light_45
+  - first:
+      213: 9016773976764098260
+    second: Raspberry_0_light_46
+  - first:
+      213: 8509589584603733358
+    second: Raspberry_0_light_47
+  - first:
+      213: 1525568475339497820
+    second: Raspberry_0_light_48
+  - first:
+      213: 5365969827681100092
+    second: Raspberry_0_light_49
+  - first:
+      213: -9107564060443371637
+    second: Raspberry_0_light_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Raspberry_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 194
+        width: 64
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7152621147ff3ae0800000000000000
+      internalID: -1567262286448275077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 195
+        width: 63
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdbf9fd835390b6a0800000000000000
+      internalID: -6435481880438899745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 195
+        width: 64
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db8b5a0e543cd7f40800000000000000
+      internalID: 5727949005974255805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 195
+        width: 62
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f89ab4e872c91b910800000000000000
+      internalID: 1851432615530965391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 195
+        width: 60
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 444aa62f4af940070800000000000000
+      internalID: 8071751962945299524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 195
+        width: 59
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ba5fe1313dbc7bd0800000000000000
+      internalID: -2631020063302395213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 148
+        width: 70
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 109826c1f33c7dd50800000000000000
+      internalID: 6762088041346664705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 148
+        width: 69
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 664066f4b21fefbc0800000000000000
+      internalID: -3747292671607700378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 148
+        width: 68
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79e4cad8e531911c0800000000000000
+      internalID: -4532570253146960233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 149
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f6520ffaf0d0a820800000000000000
+      internalID: 2927569534229567225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 149
+        width: 35
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57d3e9155296ed240800000000000000
+      internalID: 4818404260337040757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 150
+        width: 65
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e1947b99acbc7d20800000000000000
+      internalID: 3277702065462481379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 453
+        y: 152
+        width: 62
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99a58afacf63830c0800000000000000
+      internalID: -4595862960824886631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 106
+        width: 54
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 960f6054cbe90bef0800000000000000
+      internalID: -94401060725657495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 106
+        width: 53
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f62d9d3863a612f0800000000000000
+      internalID: -1002434198937721098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 107
+        width: 52
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26ed56578a7fdfd00800000000000000
+      internalID: 1008234194497035874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 109
+        width: 51
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e400b58f03aa6b870800000000000000
+      internalID: 8698326857614557262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 111
+        width: 53
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1872e7652b71b720800000000000000
+      internalID: 2860202638943877146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 111
+        width: 46
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbd36efb818847090800000000000000
+      internalID: -8037649795069362755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 110
+        width: 46
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8df3caac59cc0e360800000000000000
+      internalID: 7196977148260532184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 69
+        width: 46
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 482e791e587a25c90800000000000000
+      internalID: -7182494262245203324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 68
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5f8c6a157c34d640800000000000000
+      internalID: 5103770751369776986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 68
+        width: 45
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42be9e25e38fe2fc0800000000000000
+      internalID: -3517601312367056092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 68
+        width: 45
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23006f67c6f15bb50800000000000000
+      internalID: 6608222578948833330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 69
+        width: 52
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57974c2758e789d20800000000000000
+      internalID: 3285515039788005749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 69
+        width: 51
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35d9b011d1f5d3860800000000000000
+      internalID: 7511264331968519507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 70
+        width: 20
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6aad79ac40fcba60800000000000000
+      internalID: 7691286475693730413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 70
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d639da145ab199590800000000000000
+      internalID: -7667066494036110483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 71
+        width: 44
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fee3005e7f4294f0800000000000000
+      internalID: -823508377928470791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 33
+        width: 41
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a97de1e761fbe13a0800000000000000
+      internalID: -6692701892899842150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 34
+        width: 41
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e8b6107ceef35570800000000000000
+      internalID: 8454381216950827233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 34
+        width: 41
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdae5778b58486390800000000000000
+      internalID: -7824924794604360993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 34
+        width: 42
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b234b8bf5b196b410800000000000000
+      internalID: 1492540537315214123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 36
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a11d40e0bfd5f120800000000000000
+      internalID: 2447107923316117929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 36
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bae8d4e3d43695d0800000000000000
+      internalID: -3056197212442137927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 39
+        width: 30
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c5e2500191214360800000000000000
+      internalID: 7152034589900465604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 39
+        width: 30
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c981ddedc8ee56880800000000000000
+      internalID: -8618220023101712228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 39
+        width: 29
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a3527d7ad3412330800000000000000
+      internalID: 3684300575852352416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 40
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 644287f5d3ee23b60800000000000000
+      internalID: 7724498258255946822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 41
+        width: 27
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab8a9d40a84bc2e20800000000000000
+      internalID: 3327232729599813818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 6
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4cf33b72338fb930800000000000000
+      internalID: 4161188833552235599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 4
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99827c354d2658b30800000000000000
+      internalID: 4288942884218415257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 5
+        width: 29
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bfb3774889f14730800000000000000
+      internalID: 3981737909281865654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 7
+        width: 39
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78c4dec69828073b0800000000000000
+      internalID: -5516766016779236217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 7
+        width: 39
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa7d3ac94011a4bf0800000000000000
+      internalID: -339440110407526481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 8
+        width: 39
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90d6ce1e293a0a3d0800000000000000
+      internalID: -3197375884182131447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 6
+        width: 25
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d6a201b824022d70800000000000000
+      internalID: 9016773976764098260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 8
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6d5ba634a2281670800000000000000
+      internalID: 8509589584603733358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_48
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 7
+        width: 27
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c51252d0278eb2510800000000000000
+      internalID: 1525568475339497820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_49
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 8
+        width: 27
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c31656ec021c77a40800000000000000
+      internalID: 5365969827681100092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raspberry_0_light_50
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 9
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b879820bdbe6b9180800000000000000
+      internalID: -9107564060443371637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Raspberry_0_light_0: -1567262286448275077
+      Raspberry_0_light_1: -6435481880438899745
+      Raspberry_0_light_10: 4818404260337040757
+      Raspberry_0_light_11: 3277702065462481379
+      Raspberry_0_light_12: -4595862960824886631
+      Raspberry_0_light_13: -94401060725657495
+      Raspberry_0_light_14: -1002434198937721098
+      Raspberry_0_light_15: 1008234194497035874
+      Raspberry_0_light_16: 8698326857614557262
+      Raspberry_0_light_17: 2860202638943877146
+      Raspberry_0_light_18: -8037649795069362755
+      Raspberry_0_light_19: 7196977148260532184
+      Raspberry_0_light_2: 5727949005974255805
+      Raspberry_0_light_20: -7182494262245203324
+      Raspberry_0_light_21: 5103770751369776986
+      Raspberry_0_light_22: -3517601312367056092
+      Raspberry_0_light_23: 6608222578948833330
+      Raspberry_0_light_24: 3285515039788005749
+      Raspberry_0_light_25: 7511264331968519507
+      Raspberry_0_light_26: 7691286475693730413
+      Raspberry_0_light_27: -7667066494036110483
+      Raspberry_0_light_28: -823508377928470791
+      Raspberry_0_light_29: -6692701892899842150
+      Raspberry_0_light_3: 1851432615530965391
+      Raspberry_0_light_30: 8454381216950827233
+      Raspberry_0_light_31: -7824924794604360993
+      Raspberry_0_light_32: 1492540537315214123
+      Raspberry_0_light_33: 2447107923316117929
+      Raspberry_0_light_34: -3056197212442137927
+      Raspberry_0_light_35: 7152034589900465604
+      Raspberry_0_light_36: -8618220023101712228
+      Raspberry_0_light_37: 3684300575852352416
+      Raspberry_0_light_38: 7724498258255946822
+      Raspberry_0_light_39: 3327232729599813818
+      Raspberry_0_light_4: 8071751962945299524
+      Raspberry_0_light_40: 4161188833552235599
+      Raspberry_0_light_41: 4288942884218415257
+      Raspberry_0_light_42: 3981737909281865654
+      Raspberry_0_light_43: -5516766016779236217
+      Raspberry_0_light_44: -339440110407526481
+      Raspberry_0_light_45: -3197375884182131447
+      Raspberry_0_light_46: 9016773976764098260
+      Raspberry_0_light_47: 8509589584603733358
+      Raspberry_0_light_48: 1525568475339497820
+      Raspberry_0_light_49: 5365969827681100092
+      Raspberry_0_light_5: -2631020063302395213
+      Raspberry_0_light_50: -9107564060443371637
+      Raspberry_0_light_6: 6762088041346664705
+      Raspberry_0_light_7: -3747292671607700378
+      Raspberry_0_light_8: -4532570253146960233
+      Raspberry_0_light_9: 2927569534229567225
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

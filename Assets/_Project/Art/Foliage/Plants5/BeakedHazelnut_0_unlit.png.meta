@@ -1,0 +1,1820 @@
+fileFormatVersion: 2
+guid: 68b61a193a9afb643b1be1e8b5b799df
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3320565670078121684
+    second: BeakedHazelnut_0_unlit_0
+  - first:
+      213: -1481112313888707025
+    second: BeakedHazelnut_0_unlit_1
+  - first:
+      213: -2985919012457806419
+    second: BeakedHazelnut_0_unlit_2
+  - first:
+      213: -8402880827108169184
+    second: BeakedHazelnut_0_unlit_3
+  - first:
+      213: -4128960873867058101
+    second: BeakedHazelnut_0_unlit_4
+  - first:
+      213: 5222429024706612101
+    second: BeakedHazelnut_0_unlit_5
+  - first:
+      213: 5937156770614198938
+    second: BeakedHazelnut_0_unlit_6
+  - first:
+      213: 8757992001815487127
+    second: BeakedHazelnut_0_unlit_7
+  - first:
+      213: 7134047058808574742
+    second: BeakedHazelnut_0_unlit_8
+  - first:
+      213: 4656031744159137963
+    second: BeakedHazelnut_0_unlit_9
+  - first:
+      213: -711320922163423940
+    second: BeakedHazelnut_0_unlit_10
+  - first:
+      213: -5153438044890894579
+    second: BeakedHazelnut_0_unlit_11
+  - first:
+      213: -3809598399831944993
+    second: BeakedHazelnut_0_unlit_12
+  - first:
+      213: 5996916094808415524
+    second: BeakedHazelnut_0_unlit_13
+  - first:
+      213: 6529504695608209696
+    second: BeakedHazelnut_0_unlit_14
+  - first:
+      213: 1363222393556334990
+    second: BeakedHazelnut_0_unlit_15
+  - first:
+      213: 3366814335476622329
+    second: BeakedHazelnut_0_unlit_16
+  - first:
+      213: 8135807904877030293
+    second: BeakedHazelnut_0_unlit_17
+  - first:
+      213: 7979852553369783277
+    second: BeakedHazelnut_0_unlit_18
+  - first:
+      213: -1342857820755384421
+    second: BeakedHazelnut_0_unlit_19
+  - first:
+      213: -2421300802732750660
+    second: BeakedHazelnut_0_unlit_20
+  - first:
+      213: 2659730305288242016
+    second: BeakedHazelnut_0_unlit_21
+  - first:
+      213: 2586577617840300291
+    second: BeakedHazelnut_0_unlit_22
+  - first:
+      213: -4822351960990537544
+    second: BeakedHazelnut_0_unlit_23
+  - first:
+      213: 7167613568780915115
+    second: BeakedHazelnut_0_unlit_24
+  - first:
+      213: 8533573663006523821
+    second: BeakedHazelnut_0_unlit_25
+  - first:
+      213: 639126501313407924
+    second: BeakedHazelnut_0_unlit_26
+  - first:
+      213: -8955899759808046771
+    second: BeakedHazelnut_0_unlit_27
+  - first:
+      213: 5534765298142063916
+    second: BeakedHazelnut_0_unlit_28
+  - first:
+      213: -4513127725615000819
+    second: BeakedHazelnut_0_unlit_29
+  - first:
+      213: -4067813049304748784
+    second: BeakedHazelnut_0_unlit_30
+  - first:
+      213: -4267648955661082662
+    second: BeakedHazelnut_0_unlit_31
+  - first:
+      213: -6676803473174141371
+    second: BeakedHazelnut_0_unlit_32
+  - first:
+      213: -7551541025712000737
+    second: BeakedHazelnut_0_unlit_33
+  - first:
+      213: 6597755428653586356
+    second: BeakedHazelnut_0_unlit_34
+  - first:
+      213: 2519384741279831987
+    second: BeakedHazelnut_0_unlit_35
+  - first:
+      213: 8225545465030773173
+    second: BeakedHazelnut_0_unlit_36
+  - first:
+      213: -9205167036211384957
+    second: BeakedHazelnut_0_unlit_37
+  - first:
+      213: 2217718082780209037
+    second: BeakedHazelnut_0_unlit_38
+  - first:
+      213: 2691452411585918760
+    second: BeakedHazelnut_0_unlit_39
+  - first:
+      213: -1192258159540623038
+    second: BeakedHazelnut_0_unlit_40
+  - first:
+      213: 1134470611050879225
+    second: BeakedHazelnut_0_unlit_41
+  - first:
+      213: 837748801591101607
+    second: BeakedHazelnut_0_unlit_42
+  - first:
+      213: -8946153903027299740
+    second: BeakedHazelnut_0_unlit_43
+  - first:
+      213: 3274851235795765690
+    second: BeakedHazelnut_0_unlit_44
+  - first:
+      213: -1860441434923128548
+    second: BeakedHazelnut_0_unlit_45
+  - first:
+      213: -6444001503010615616
+    second: BeakedHazelnut_0_unlit_46
+  - first:
+      213: 2542446458459564700
+    second: BeakedHazelnut_0_unlit_47
+  - first:
+      213: -3322698782003996493
+    second: BeakedHazelnut_0_unlit_48
+  - first:
+      213: -4072884341157349287
+    second: BeakedHazelnut_0_unlit_49
+  - first:
+      213: 8005482560782571634
+    second: BeakedHazelnut_0_unlit_50
+  - first:
+      213: 3757639180116329491
+    second: BeakedHazelnut_0_unlit_51
+  - first:
+      213: 5923330787528283519
+    second: BeakedHazelnut_0_unlit_52
+  - first:
+      213: -3114017037794997472
+    second: BeakedHazelnut_0_unlit_53
+  - first:
+      213: 7073596009314554930
+    second: BeakedHazelnut_0_unlit_54
+  - first:
+      213: -5517681184121377104
+    second: BeakedHazelnut_0_unlit_55
+  - first:
+      213: -6161990517396184121
+    second: BeakedHazelnut_0_unlit_56
+  - first:
+      213: 7319551010018863349
+    second: BeakedHazelnut_0_unlit_57
+  - first:
+      213: 4954051599357232143
+    second: BeakedHazelnut_0_unlit_58
+  - first:
+      213: -2889243055364496637
+    second: BeakedHazelnut_0_unlit_59
+  - first:
+      213: -3210105539465917962
+    second: BeakedHazelnut_0_unlit_60
+  - first:
+      213: 3877480818886016508
+    second: BeakedHazelnut_0_unlit_61
+  - first:
+      213: -3266697746710126414
+    second: BeakedHazelnut_0_unlit_62
+  - first:
+      213: 7852854574348246288
+    second: BeakedHazelnut_0_unlit_63
+  - first:
+      213: 6196900209131425399
+    second: BeakedHazelnut_0_unlit_64
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 427
+        width: 32
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d60d5242e4051e20800000000000000
+      internalID: 3320565670078121684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 426
+        width: 37
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2ee432a238027be0800000000000000
+      internalID: -1481112313888707025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 429
+        width: 77
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da50e5e6a72ef86d0800000000000000
+      internalID: -2985919012457806419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 429
+        width: 77
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02ae64a7868f26b80800000000000000
+      internalID: -8402880827108169184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 429
+        width: 76
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b44eaad16fbf2b6c0800000000000000
+      internalID: -4128960873867058101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 430
+        width: 69
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58bc352478bc97840800000000000000
+      internalID: 5222429024706612101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 341
+        width: 44
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a92c34060a4056250800000000000000
+      internalID: 5937156770614198938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 341
+        width: 49
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 792ace5e253aa8970800000000000000
+      internalID: 8757992001815487127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 341
+        width: 44
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 613943f800a310360800000000000000
+      internalID: 7134047058808574742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 341
+        width: 49
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba04c8dd33c8d9040800000000000000
+      internalID: 4656031744159137963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 341
+        width: 45
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c355529d361e026f0800000000000000
+      internalID: -711320922163423940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 341
+        width: 47
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0f6b4af66f4b78b0800000000000000
+      internalID: -5153438044890894579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 344
+        width: 39
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd0de118076912bc0800000000000000
+      internalID: -3809598399831944993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 344
+        width: 51
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42dd0ea4a63593350800000000000000
+      internalID: 5996916094808415524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 344
+        width: 39
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 021f8f40de57d9a50800000000000000
+      internalID: 6529504695608209696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 344
+        width: 51
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8978c55b832be210800000000000000
+      internalID: 1363222393556334990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 259
+        width: 39
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f3e6caccc359be20800000000000000
+      internalID: 3366814335476622329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 259
+        width: 51
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59ba2032f2238e070800000000000000
+      internalID: 8135807904877030293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 259
+        width: 37
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: deb89934e912ebe60800000000000000
+      internalID: 7979852553369783277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 258
+        width: 16
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9725024de53d5de0800000000000000
+      internalID: -1342857820755384421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 259
+        width: 31
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb80fbe9fbfc56ed0800000000000000
+      internalID: -2421300802732750660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 260
+        width: 79
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0630c0dee9249e420800000000000000
+      internalID: 2659730305288242016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 259
+        width: 79
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 301e85f93ae55e320800000000000000
+      internalID: 2586577617840300291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 259
+        width: 78
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b8204ff070931db0800000000000000
+      internalID: -4822351960990537544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 176
+        width: 53
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba1d47ea09a787360800000000000000
+      internalID: 7167613568780915115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 178
+        width: 28
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da10220a8085d6670800000000000000
+      internalID: 8533573663006523821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 189
+        width: 57
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bbe25daa22aed800800000000000000
+      internalID: 639126501313407924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 189
+        width: 57
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4992ac6e9046b380800000000000000
+      internalID: -8955899759808046771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 189
+        width: 56
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2daae6d6bf6fcc40800000000000000
+      internalID: 5534765298142063916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 189
+        width: 25
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0350c0ce362e51c0800000000000000
+      internalID: -4513127725615000819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 190
+        width: 26
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01ded7775993c87c0800000000000000
+      internalID: -4067813049304748784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 192
+        width: 25
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adf11c3c2e346c4c0800000000000000
+      internalID: -4267648955661082662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 193
+        width: 29
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5466c5acd9a3753a0800000000000000
+      internalID: -6676803473174141371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 193
+        width: 46
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f11b5a76279833790800000000000000
+      internalID: -7551541025712000737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 111
+        width: 59
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b75dcf1b9fef8b50800000000000000
+      internalID: 6597755428653586356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 112
+        width: 58
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b7168ce217a6f220800000000000000
+      internalID: 2519384741279831987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 112
+        width: 58
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b90cf60502072270800000000000000
+      internalID: 8225545465030773173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 112
+        width: 24
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38d2c740a5da04080800000000000000
+      internalID: -9205167036211384957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 113
+        width: 28
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8f1318a8dae6ce10800000000000000
+      internalID: 2217718082780209037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 112
+        width: 47
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 827727a55b5f95520800000000000000
+      internalID: 2691452411585918760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 112
+        width: 47
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2492500558f347fe0800000000000000
+      internalID: -1192258159540623038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 116
+        width: 22
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f8dec392037ebf00800000000000000
+      internalID: 1134470611050879225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 114
+        width: 21
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a8c8d1b81840ab00800000000000000
+      internalID: 837748801591101607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 116
+        width: 27
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46a55188c60e8d380800000000000000
+      internalID: -8946153903027299740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 51
+        width: 58
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab90bd919db927d20800000000000000
+      internalID: 3274851235795765690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 51
+        width: 56
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c192df93f526e26e0800000000000000
+      internalID: -1860441434923128548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 51
+        width: 55
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ce08f856ce4296a0800000000000000
+      internalID: -6444001503010615616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 63
+        width: 27
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9aaee06595984320800000000000000
+      internalID: 2542446458459564700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_48
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 63
+        width: 27
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b8570bef0763e1d0800000000000000
+      internalID: -3322698782003996493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_49
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 63
+        width: 27
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 958b01255453a77c0800000000000000
+      internalID: -4072884341157349287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_50
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 65
+        width: 16
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 278970369ff291f60800000000000000
+      internalID: 8005482560782571634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_51
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 65
+        width: 17
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3148cecece0d52430800000000000000
+      internalID: 3757639180116329491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_52
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 65
+        width: 22
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7512c5d7f5e33250800000000000000
+      internalID: 5923330787528283519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_53
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 66
+        width: 31
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02b07bdb00ac8c4d0800000000000000
+      internalID: -3114017037794997472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_54
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 5
+        width: 29
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23490dbc7167a2260800000000000000
+      internalID: 7073596009314554930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_55
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 4
+        width: 28
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bea69c62324d63b0800000000000000
+      internalID: -5517681184121377104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_56
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 4
+        width: 26
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c36645a5463c7aa0800000000000000
+      internalID: -6161990517396184121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_57
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 4
+        width: 26
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f8a68becd4449560800000000000000
+      internalID: 7319551010018863349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_58
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 9
+        width: 40
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f04c4a29ea350c440800000000000000
+      internalID: 4954051599357232143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_59
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 8
+        width: 38
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3032c3fbfb857e7d0800000000000000
+      internalID: -2889243055364496637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_60
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 8
+        width: 38
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f9ce9c050a6373d0800000000000000
+      internalID: -3210105539465917962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_61
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 8
+        width: 38
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfd7711d2449fc530800000000000000
+      internalID: 3877480818886016508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_62
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 8
+        width: 19
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b026c205bb5aa2d0800000000000000
+      internalID: -3266697746710126414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_63
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 8
+        width: 15
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01d14d011a1fafc60800000000000000
+      internalID: 7852854574348246288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeakedHazelnut_0_unlit_64
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 9
+        width: 31
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77e82d958efcff550800000000000000
+      internalID: 6196900209131425399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BeakedHazelnut_0_unlit_0: 3320565670078121684
+      BeakedHazelnut_0_unlit_1: -1481112313888707025
+      BeakedHazelnut_0_unlit_10: -711320922163423940
+      BeakedHazelnut_0_unlit_11: -5153438044890894579
+      BeakedHazelnut_0_unlit_12: -3809598399831944993
+      BeakedHazelnut_0_unlit_13: 5996916094808415524
+      BeakedHazelnut_0_unlit_14: 6529504695608209696
+      BeakedHazelnut_0_unlit_15: 1363222393556334990
+      BeakedHazelnut_0_unlit_16: 3366814335476622329
+      BeakedHazelnut_0_unlit_17: 8135807904877030293
+      BeakedHazelnut_0_unlit_18: 7979852553369783277
+      BeakedHazelnut_0_unlit_19: -1342857820755384421
+      BeakedHazelnut_0_unlit_2: -2985919012457806419
+      BeakedHazelnut_0_unlit_20: -2421300802732750660
+      BeakedHazelnut_0_unlit_21: 2659730305288242016
+      BeakedHazelnut_0_unlit_22: 2586577617840300291
+      BeakedHazelnut_0_unlit_23: -4822351960990537544
+      BeakedHazelnut_0_unlit_24: 7167613568780915115
+      BeakedHazelnut_0_unlit_25: 8533573663006523821
+      BeakedHazelnut_0_unlit_26: 639126501313407924
+      BeakedHazelnut_0_unlit_27: -8955899759808046771
+      BeakedHazelnut_0_unlit_28: 5534765298142063916
+      BeakedHazelnut_0_unlit_29: -4513127725615000819
+      BeakedHazelnut_0_unlit_3: -8402880827108169184
+      BeakedHazelnut_0_unlit_30: -4067813049304748784
+      BeakedHazelnut_0_unlit_31: -4267648955661082662
+      BeakedHazelnut_0_unlit_32: -6676803473174141371
+      BeakedHazelnut_0_unlit_33: -7551541025712000737
+      BeakedHazelnut_0_unlit_34: 6597755428653586356
+      BeakedHazelnut_0_unlit_35: 2519384741279831987
+      BeakedHazelnut_0_unlit_36: 8225545465030773173
+      BeakedHazelnut_0_unlit_37: -9205167036211384957
+      BeakedHazelnut_0_unlit_38: 2217718082780209037
+      BeakedHazelnut_0_unlit_39: 2691452411585918760
+      BeakedHazelnut_0_unlit_4: -4128960873867058101
+      BeakedHazelnut_0_unlit_40: -1192258159540623038
+      BeakedHazelnut_0_unlit_41: 1134470611050879225
+      BeakedHazelnut_0_unlit_42: 837748801591101607
+      BeakedHazelnut_0_unlit_43: -8946153903027299740
+      BeakedHazelnut_0_unlit_44: 3274851235795765690
+      BeakedHazelnut_0_unlit_45: -1860441434923128548
+      BeakedHazelnut_0_unlit_46: -6444001503010615616
+      BeakedHazelnut_0_unlit_47: 2542446458459564700
+      BeakedHazelnut_0_unlit_48: -3322698782003996493
+      BeakedHazelnut_0_unlit_49: -4072884341157349287
+      BeakedHazelnut_0_unlit_5: 5222429024706612101
+      BeakedHazelnut_0_unlit_50: 8005482560782571634
+      BeakedHazelnut_0_unlit_51: 3757639180116329491
+      BeakedHazelnut_0_unlit_52: 5923330787528283519
+      BeakedHazelnut_0_unlit_53: -3114017037794997472
+      BeakedHazelnut_0_unlit_54: 7073596009314554930
+      BeakedHazelnut_0_unlit_55: -5517681184121377104
+      BeakedHazelnut_0_unlit_56: -6161990517396184121
+      BeakedHazelnut_0_unlit_57: 7319551010018863349
+      BeakedHazelnut_0_unlit_58: 4954051599357232143
+      BeakedHazelnut_0_unlit_59: -2889243055364496637
+      BeakedHazelnut_0_unlit_6: 5937156770614198938
+      BeakedHazelnut_0_unlit_60: -3210105539465917962
+      BeakedHazelnut_0_unlit_61: 3877480818886016508
+      BeakedHazelnut_0_unlit_62: -3266697746710126414
+      BeakedHazelnut_0_unlit_63: 7852854574348246288
+      BeakedHazelnut_0_unlit_64: 6196900209131425399
+      BeakedHazelnut_0_unlit_7: 8757992001815487127
+      BeakedHazelnut_0_unlit_8: 7134047058808574742
+      BeakedHazelnut_0_unlit_9: 4656031744159137963
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,1482 @@
+fileFormatVersion: 2
+guid: 5453dab37814edf459d7090ef12a41e3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2314113040329535285
+    second: Rhodora_0_light_0
+  - first:
+      213: 136137221680387907
+    second: Rhodora_0_light_1
+  - first:
+      213: -5222548586692513636
+    second: Rhodora_0_light_2
+  - first:
+      213: 3182957784312806092
+    second: Rhodora_0_light_3
+  - first:
+      213: -5607258115684445505
+    second: Rhodora_0_light_4
+  - first:
+      213: 7981308647739473022
+    second: Rhodora_0_light_5
+  - first:
+      213: -8324020627312290026
+    second: Rhodora_0_light_6
+  - first:
+      213: -6182304908625755444
+    second: Rhodora_0_light_7
+  - first:
+      213: -2306333121044409838
+    second: Rhodora_0_light_8
+  - first:
+      213: 3712071418422694880
+    second: Rhodora_0_light_9
+  - first:
+      213: 2125416497697619062
+    second: Rhodora_0_light_10
+  - first:
+      213: 404065686696892451
+    second: Rhodora_0_light_11
+  - first:
+      213: 4878006150954841392
+    second: Rhodora_0_light_12
+  - first:
+      213: 3170365213563612293
+    second: Rhodora_0_light_13
+  - first:
+      213: -6360159147727510593
+    second: Rhodora_0_light_14
+  - first:
+      213: -5092815459344178350
+    second: Rhodora_0_light_15
+  - first:
+      213: -4272670229783514346
+    second: Rhodora_0_light_16
+  - first:
+      213: -7692921786776718030
+    second: Rhodora_0_light_17
+  - first:
+      213: 5433625507327870362
+    second: Rhodora_0_light_18
+  - first:
+      213: -1517722253558811151
+    second: Rhodora_0_light_19
+  - first:
+      213: -4627609159972533585
+    second: Rhodora_0_light_20
+  - first:
+      213: 7025927245263604492
+    second: Rhodora_0_light_21
+  - first:
+      213: -3933816303221512934
+    second: Rhodora_0_light_22
+  - first:
+      213: 7450699362373964038
+    second: Rhodora_0_light_23
+  - first:
+      213: -693500121016837164
+    second: Rhodora_0_light_24
+  - first:
+      213: 906751920365794518
+    second: Rhodora_0_light_25
+  - first:
+      213: 9219888230264124485
+    second: Rhodora_0_light_26
+  - first:
+      213: 8225802456670352574
+    second: Rhodora_0_light_27
+  - first:
+      213: -7622636567400622397
+    second: Rhodora_0_light_28
+  - first:
+      213: 4856612422296109396
+    second: Rhodora_0_light_29
+  - first:
+      213: -2285225027029866450
+    second: Rhodora_0_light_30
+  - first:
+      213: 7373656896299443243
+    second: Rhodora_0_light_31
+  - first:
+      213: -5622362015212640794
+    second: Rhodora_0_light_32
+  - first:
+      213: -8086647234059421834
+    second: Rhodora_0_light_33
+  - first:
+      213: 4698574600988570992
+    second: Rhodora_0_light_34
+  - first:
+      213: -6754650176747235879
+    second: Rhodora_0_light_35
+  - first:
+      213: -3563237915814100959
+    second: Rhodora_0_light_36
+  - first:
+      213: 8142944399664197811
+    second: Rhodora_0_light_37
+  - first:
+      213: -2399745259744747901
+    second: Rhodora_0_light_38
+  - first:
+      213: 4033599770718427622
+    second: Rhodora_0_light_39
+  - first:
+      213: -8134561403905397869
+    second: Rhodora_0_light_40
+  - first:
+      213: 8898875700446035272
+    second: Rhodora_0_light_41
+  - first:
+      213: 156580203727638083
+    second: Rhodora_0_light_42
+  - first:
+      213: 2025385620402728226
+    second: Rhodora_0_light_43
+  - first:
+      213: -3096933602973999618
+    second: Rhodora_0_light_44
+  - first:
+      213: 104534657370485661
+    second: Rhodora_0_light_45
+  - first:
+      213: -1071293142171069276
+    second: Rhodora_0_light_46
+  - first:
+      213: -4739463468259769678
+    second: Rhodora_0_light_47
+  - first:
+      213: 1122602936712919273
+    second: Rhodora_0_light_48
+  - first:
+      213: -1514461874187470834
+    second: Rhodora_0_light_49
+  - first:
+      213: 1100058406348030159
+    second: Rhodora_0_light_50
+  - first:
+      213: -235686590108203010
+    second: Rhodora_0_light_51
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Rhodora_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 306
+        width: 29
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53fe0faac816d1020800000000000000
+      internalID: 2314113040329535285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 306
+        width: 31
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 347d7f2f418a3e100800000000000000
+      internalID: 136137221680387907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 306
+        width: 31
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9079fb0bb7c587b0800000000000000
+      internalID: -5222548586692513636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 306
+        width: 28
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cca7705ad332c2c20800000000000000
+      internalID: 3182957784312806092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 263
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb2d3bac3740f22b0800000000000000
+      internalID: -5607258115684445505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 263
+        width: 29
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7cb347aded43ce60800000000000000
+      internalID: 7981308647739473022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 264
+        width: 35
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 617d60e87532b7c80800000000000000
+      internalID: -8324020627312290026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 263
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc2453cd07a043aa0800000000000000
+      internalID: -6182304908625755444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 220
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2121e62fe324effd0800000000000000
+      internalID: -2306333121044409838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 220
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e317f3a94de38330800000000000000
+      internalID: 3712071418422694880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 221
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67c75013b0ffe7d10800000000000000
+      internalID: 2125416497697619062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 224
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3281e79e9978b9500800000000000000
+      internalID: 404065686696892451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 182
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03575dfdfb822b340800000000000000
+      internalID: 4878006150954841392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 183
+        width: 17
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58ce6ba4d566ffb20800000000000000
+      internalID: 3170365213563612293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 183
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb320c4e3fc2cb7a0800000000000000
+      internalID: -6360159147727510593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 184
+        width: 22
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2532c27925fa259b0800000000000000
+      internalID: -5092815459344178350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 185
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 613fd57401d64b4c0800000000000000
+      internalID: -4272670229783514346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 149
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2357f4ec4604d3590800000000000000
+      internalID: -7692921786776718030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 148
+        width: 22
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9587ce3c9d186b40800000000000000
+      internalID: 5433625507327870362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 149
+        width: 21
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f5fbe0d6a7ffeae0800000000000000
+      internalID: -1517722253558811151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 149
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faa4e74bcfd67cfb0800000000000000
+      internalID: -4627609159972533585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 150
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0b0da7ca9b118160800000000000000
+      internalID: 7025927245263604492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 116
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1567da1ae64869c0800000000000000
+      internalID: -3933816303221512934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 116
+        width: 26
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60197863893366760800000000000000
+      internalID: 7450699362373964038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 116
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dbd91370513066f0800000000000000
+      internalID: -693500121016837164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 117
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d47ec0411e659c00800000000000000
+      internalID: 906751920365794518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 117
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 544b2b11f7f93ff70800000000000000
+      internalID: 9219888230264124485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 83
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb43f5e80cbe72270800000000000000
+      internalID: 8225802456670352574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 85
+        width: 13
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c6de2cad64f63690800000000000000
+      internalID: -7622636567400622397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 85
+        width: 15
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45185b24447266340800000000000000
+      internalID: 4856612422296109396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 85
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e286d0012ff3940e0800000000000000
+      internalID: -2285225027029866450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 86
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b24a98f31ed745660800000000000000
+      internalID: 7373656896299443243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 86
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e5e994298b59f1b0800000000000000
+      internalID: -5622362015212640794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 55
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6773efd7f2576cf80800000000000000
+      internalID: -8086647234059421834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 55
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 075b89a94b0b43140800000000000000
+      internalID: 4698574600988570992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 58
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d593f0b379a242a0800000000000000
+      internalID: -6754650176747235879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 58
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12082b19ef5dc8ec0800000000000000
+      internalID: -3563237915814100959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 58
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b0bdbfc9cc810170800000000000000
+      internalID: 8142944399664197811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 58
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38e9c71966462bed0800000000000000
+      internalID: -2399745259744747901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 29
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e9d4cbde993af730800000000000000
+      internalID: 4033599770718427622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 29
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39bad9c708b3c1f80800000000000000
+      internalID: -8134561403905397869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 29
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84df0712d482f7b70800000000000000
+      internalID: 8898875700446035272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 29
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34e4b0e9dd84c2200800000000000000
+      internalID: 156580203727638083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 29
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22de945ad7d9b1c10800000000000000
+      internalID: 2025385620402728226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 29
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efd93cddb4b7505d0800000000000000
+      internalID: -3096933602973999618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 4
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d93f84f87b1637100800000000000000
+      internalID: 104534657370485661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 5
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a4d49a20900221f0800000000000000
+      internalID: -1071293142171069276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 5
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b28f6c161b0a3eb0800000000000000
+      internalID: -4739463468259769678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_48
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 5
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e875925c69449f00800000000000000
+      internalID: 1122602936712919273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_49
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 5
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e08fe2b03fc8bfae0800000000000000
+      internalID: -1514461874187470834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_50
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 5
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc08e8eca41344f00800000000000000
+      internalID: 1100058406348030159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_light_51
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 5
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef707468b4caabcf0800000000000000
+      internalID: -235686590108203010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Rhodora_0_light_0: 2314113040329535285
+      Rhodora_0_light_1: 136137221680387907
+      Rhodora_0_light_10: 2125416497697619062
+      Rhodora_0_light_11: 404065686696892451
+      Rhodora_0_light_12: 4878006150954841392
+      Rhodora_0_light_13: 3170365213563612293
+      Rhodora_0_light_14: -6360159147727510593
+      Rhodora_0_light_15: -5092815459344178350
+      Rhodora_0_light_16: -4272670229783514346
+      Rhodora_0_light_17: -7692921786776718030
+      Rhodora_0_light_18: 5433625507327870362
+      Rhodora_0_light_19: -1517722253558811151
+      Rhodora_0_light_2: -5222548586692513636
+      Rhodora_0_light_20: -4627609159972533585
+      Rhodora_0_light_21: 7025927245263604492
+      Rhodora_0_light_22: -3933816303221512934
+      Rhodora_0_light_23: 7450699362373964038
+      Rhodora_0_light_24: -693500121016837164
+      Rhodora_0_light_25: 906751920365794518
+      Rhodora_0_light_26: 9219888230264124485
+      Rhodora_0_light_27: 8225802456670352574
+      Rhodora_0_light_28: -7622636567400622397
+      Rhodora_0_light_29: 4856612422296109396
+      Rhodora_0_light_3: 3182957784312806092
+      Rhodora_0_light_30: -2285225027029866450
+      Rhodora_0_light_31: 7373656896299443243
+      Rhodora_0_light_32: -5622362015212640794
+      Rhodora_0_light_33: -8086647234059421834
+      Rhodora_0_light_34: 4698574600988570992
+      Rhodora_0_light_35: -6754650176747235879
+      Rhodora_0_light_36: -3563237915814100959
+      Rhodora_0_light_37: 8142944399664197811
+      Rhodora_0_light_38: -2399745259744747901
+      Rhodora_0_light_39: 4033599770718427622
+      Rhodora_0_light_4: -5607258115684445505
+      Rhodora_0_light_40: -8134561403905397869
+      Rhodora_0_light_41: 8898875700446035272
+      Rhodora_0_light_42: 156580203727638083
+      Rhodora_0_light_43: 2025385620402728226
+      Rhodora_0_light_44: -3096933602973999618
+      Rhodora_0_light_45: 104534657370485661
+      Rhodora_0_light_46: -1071293142171069276
+      Rhodora_0_light_47: -4739463468259769678
+      Rhodora_0_light_48: 1122602936712919273
+      Rhodora_0_light_49: -1514461874187470834
+      Rhodora_0_light_5: 7981308647739473022
+      Rhodora_0_light_50: 1100058406348030159
+      Rhodora_0_light_51: -235686590108203010
+      Rhodora_0_light_6: -8324020627312290026
+      Rhodora_0_light_7: -6182304908625755444
+      Rhodora_0_light_8: -2306333121044409838
+      Rhodora_0_light_9: 3712071418422694880
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

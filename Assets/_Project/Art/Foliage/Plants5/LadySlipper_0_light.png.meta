@@ -1,0 +1,1092 @@
+fileFormatVersion: 2
+guid: 8a8fa3bf53203e44faea82b6dd8acf24
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4842090666043651112
+    second: LadySlipper_0_light_0
+  - first:
+      213: 3335023388945194664
+    second: LadySlipper_0_light_1
+  - first:
+      213: -3341478491040601878
+    second: LadySlipper_0_light_2
+  - first:
+      213: -2835332564452946409
+    second: LadySlipper_0_light_3
+  - first:
+      213: -852235638587023618
+    second: LadySlipper_0_light_4
+  - first:
+      213: -2199069602932524697
+    second: LadySlipper_0_light_5
+  - first:
+      213: -5401459223859170636
+    second: LadySlipper_0_light_6
+  - first:
+      213: -669330979240387014
+    second: LadySlipper_0_light_7
+  - first:
+      213: -3693002252427039698
+    second: LadySlipper_0_light_8
+  - first:
+      213: -8095931251240409996
+    second: LadySlipper_0_light_9
+  - first:
+      213: -2115781840568837369
+    second: LadySlipper_0_light_10
+  - first:
+      213: -3636394931132260678
+    second: LadySlipper_0_light_11
+  - first:
+      213: 602905985366396152
+    second: LadySlipper_0_light_12
+  - first:
+      213: -3058362678446437076
+    second: LadySlipper_0_light_13
+  - first:
+      213: 7797544548398356457
+    second: LadySlipper_0_light_14
+  - first:
+      213: -83026745519190926
+    second: LadySlipper_0_light_15
+  - first:
+      213: 1199567738040159568
+    second: LadySlipper_0_light_16
+  - first:
+      213: -6494857328088299270
+    second: LadySlipper_0_light_17
+  - first:
+      213: 9104664882644161228
+    second: LadySlipper_0_light_18
+  - first:
+      213: -1059088965527167277
+    second: LadySlipper_0_light_19
+  - first:
+      213: -9172972942465674712
+    second: LadySlipper_0_light_20
+  - first:
+      213: -7263478298133544885
+    second: LadySlipper_0_light_21
+  - first:
+      213: -2612865124798881433
+    second: LadySlipper_0_light_22
+  - first:
+      213: -8669757093569353380
+    second: LadySlipper_0_light_23
+  - first:
+      213: -5836630502762089512
+    second: LadySlipper_0_light_24
+  - first:
+      213: -2567274799737303889
+    second: LadySlipper_0_light_25
+  - first:
+      213: 8040438769443670211
+    second: LadySlipper_0_light_26
+  - first:
+      213: 2176033314710796943
+    second: LadySlipper_0_light_27
+  - first:
+      213: -4222586285050979391
+    second: LadySlipper_0_light_28
+  - first:
+      213: 220274585900130963
+    second: LadySlipper_0_light_29
+  - first:
+      213: 5888480279475071922
+    second: LadySlipper_0_light_30
+  - first:
+      213: 4199290385525054664
+    second: LadySlipper_0_light_31
+  - first:
+      213: -5398123372314338409
+    second: LadySlipper_0_light_32
+  - first:
+      213: 2950844407333780748
+    second: LadySlipper_0_light_33
+  - first:
+      213: 7210905594770982044
+    second: LadySlipper_0_light_34
+  - first:
+      213: -2557146383322756480
+    second: LadySlipper_0_light_35
+  - first:
+      213: 7364750245173162986
+    second: LadySlipper_0_light_36
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LadySlipper_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 293
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82434c76ecf823340800000000000000
+      internalID: 4842090666043651112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 294
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae92bf3a12684e20800000000000000
+      internalID: 3335023388945194664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 294
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae8aaec240fa0a1d0800000000000000
+      internalID: -3341478491040601878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 260
+        width: 25
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71e4fab0e00e6a8d0800000000000000
+      internalID: -2835332564452946409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 260
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efe9719b3304c24f0800000000000000
+      internalID: -852235638587023618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 260
+        width: 25
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 769f8d8e8d55b71e0800000000000000
+      internalID: -2199069602932524697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 225
+        width: 20
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b2fd1d34792a05b0800000000000000
+      internalID: -5401459223859170636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 227
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3e5639450f06b6f0800000000000000
+      internalID: -669330979240387014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 227
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2c6e5d8402dfbcc0800000000000000
+      internalID: -3693002252427039698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 193
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 474e4dbcb6975af80800000000000000
+      internalID: -8095931251240409996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 193
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70b1caa30ab33a2e0800000000000000
+      internalID: -2115781840568837369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 195
+        width: 23
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abe94da931ee88dc0800000000000000
+      internalID: -3636394931132260678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 137
+        width: 16
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fc88b2acc3fd5800800000000000000
+      internalID: 602905985366396152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 137
+        width: 25
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2d43ec09538e85d0800000000000000
+      internalID: -3058362678446437076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 165
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e7519f1471763c60800000000000000
+      internalID: 7797544548398356457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 166
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27cc8766d9709def0800000000000000
+      internalID: -83026745519190926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 137
+        width: 23
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05d07ed8088b5a010800000000000000
+      internalID: 1199567738040159568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 109
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af8447cdba1add5a0800000000000000
+      internalID: -6494857328088299270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 108
+        width: 8
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc29af0e8744a5e70800000000000000
+      internalID: 9104664882644161228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 110
+        width: 21
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3de9738723c5d41f0800000000000000
+      internalID: -1059088965527167277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 110
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 822501695bd03b080800000000000000
+      internalID: -9172972942465674712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 40
+        width: 15
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b40cdfda8f0f23b90800000000000000
+      internalID: -7263478298133544885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 83
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7612b56330d3dbbd0800000000000000
+      internalID: -2612865124798881433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 59
+        width: 27
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5920e49bd5dea780800000000000000
+      internalID: -8669757093569353380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 59
+        width: 35
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d3f7a54b7f100fa0800000000000000
+      internalID: -5836630502762089512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 60
+        width: 16
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fac88d0fb253f5cd0800000000000000
+      internalID: -2567274799737303889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 40
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c808f2f570659f60800000000000000
+      internalID: 8040438769443670211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 40
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8ab0c645c2d23e10800000000000000
+      internalID: 2176033314710796943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 40
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cb991e552c5665c0800000000000000
+      internalID: -4222586285050979391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 40
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 392af9d91929e0300800000000000000
+      internalID: 220274585900130963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 23
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bb210d9d9518b150800000000000000
+      internalID: 5888480279475071922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 23
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cc1fe95b50e64a30800000000000000
+      internalID: 4199290385525054664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 23
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79b5873b4630615b0800000000000000
+      internalID: -5398123372314338409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 23
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0df39eaa5183f820800000000000000
+      internalID: 2950844407333780748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 23
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c948335fe68421460800000000000000
+      internalID: 7210905594770982044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 6
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08a4f57a9e0338cd0800000000000000
+      internalID: -2557146383322756480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LadySlipper_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 6
+        width: 15
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae3740fe359d43660800000000000000
+      internalID: 7364750245173162986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LadySlipper_0_light_0: 4842090666043651112
+      LadySlipper_0_light_1: 3335023388945194664
+      LadySlipper_0_light_10: -2115781840568837369
+      LadySlipper_0_light_11: -3636394931132260678
+      LadySlipper_0_light_12: 602905985366396152
+      LadySlipper_0_light_13: -3058362678446437076
+      LadySlipper_0_light_14: 7797544548398356457
+      LadySlipper_0_light_15: -83026745519190926
+      LadySlipper_0_light_16: 1199567738040159568
+      LadySlipper_0_light_17: -6494857328088299270
+      LadySlipper_0_light_18: 9104664882644161228
+      LadySlipper_0_light_19: -1059088965527167277
+      LadySlipper_0_light_2: -3341478491040601878
+      LadySlipper_0_light_20: -9172972942465674712
+      LadySlipper_0_light_21: -7263478298133544885
+      LadySlipper_0_light_22: -2612865124798881433
+      LadySlipper_0_light_23: -8669757093569353380
+      LadySlipper_0_light_24: -5836630502762089512
+      LadySlipper_0_light_25: -2567274799737303889
+      LadySlipper_0_light_26: 8040438769443670211
+      LadySlipper_0_light_27: 2176033314710796943
+      LadySlipper_0_light_28: -4222586285050979391
+      LadySlipper_0_light_29: 220274585900130963
+      LadySlipper_0_light_3: -2835332564452946409
+      LadySlipper_0_light_30: 5888480279475071922
+      LadySlipper_0_light_31: 4199290385525054664
+      LadySlipper_0_light_32: -5398123372314338409
+      LadySlipper_0_light_33: 2950844407333780748
+      LadySlipper_0_light_34: 7210905594770982044
+      LadySlipper_0_light_35: -2557146383322756480
+      LadySlipper_0_light_36: 7364750245173162986
+      LadySlipper_0_light_4: -852235638587023618
+      LadySlipper_0_light_5: -2199069602932524697
+      LadySlipper_0_light_6: -5401459223859170636
+      LadySlipper_0_light_7: -669330979240387014
+      LadySlipper_0_light_8: -3693002252427039698
+      LadySlipper_0_light_9: -8095931251240409996
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

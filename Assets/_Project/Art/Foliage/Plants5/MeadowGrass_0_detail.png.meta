@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 9f0dc16c6bb10c0499975fa9c3fefa0d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -389298423142955634
+    second: MeadowGrass_0_detail_0
+  - first:
+      213: 8935212663865531712
+    second: MeadowGrass_0_detail_1
+  - first:
+      213: -4423445193673652878
+    second: MeadowGrass_0_detail_2
+  - first:
+      213: 5910628338943592333
+    second: MeadowGrass_0_detail_3
+  - first:
+      213: 7337908329017695621
+    second: MeadowGrass_0_detail_4
+  - first:
+      213: -2328154626480906811
+    second: MeadowGrass_0_detail_5
+  - first:
+      213: 7235722958641935735
+    second: MeadowGrass_0_detail_6
+  - first:
+      213: -2963632497742197043
+    second: MeadowGrass_0_detail_7
+  - first:
+      213: -6482607047310632762
+    second: MeadowGrass_0_detail_8
+  - first:
+      213: 1893879852725445869
+    second: MeadowGrass_0_detail_9
+  - first:
+      213: 9171230992711285902
+    second: MeadowGrass_0_detail_10
+  - first:
+      213: 4931804981037808962
+    second: MeadowGrass_0_detail_11
+  - first:
+      213: 445707972779049094
+    second: MeadowGrass_0_detail_12
+  - first:
+      213: 8097405050039616484
+    second: MeadowGrass_0_detail_13
+  - first:
+      213: -1442380015110645375
+    second: MeadowGrass_0_detail_14
+  - first:
+      213: -5479119225005968161
+    second: MeadowGrass_0_detail_15
+  - first:
+      213: -8058074782141061766
+    second: MeadowGrass_0_detail_16
+  - first:
+      213: 4965361458676815370
+    second: MeadowGrass_0_detail_17
+  - first:
+      213: -3098651108668771682
+    second: MeadowGrass_0_detail_18
+  - first:
+      213: -4796422045114312586
+    second: MeadowGrass_0_detail_19
+  - first:
+      213: 2795850614247556091
+    second: MeadowGrass_0_detail_20
+  - first:
+      213: 7192486966143984366
+    second: MeadowGrass_0_detail_21
+  - first:
+      213: 7767000255177280363
+    second: MeadowGrass_0_detail_22
+  - first:
+      213: -3703784220609416911
+    second: MeadowGrass_0_detail_23
+  - first:
+      213: -5473454380596041425
+    second: MeadowGrass_0_detail_24
+  - first:
+      213: 9050752087689396274
+    second: MeadowGrass_0_detail_25
+  - first:
+      213: -716751111563424097
+    second: MeadowGrass_0_detail_26
+  - first:
+      213: 8643880335877715008
+    second: MeadowGrass_0_detail_27
+  - first:
+      213: -833220333907589508
+    second: MeadowGrass_0_detail_28
+  - first:
+      213: -1606567578466242379
+    second: MeadowGrass_0_detail_29
+  - first:
+      213: -4610414825032869843
+    second: MeadowGrass_0_detail_30
+  - first:
+      213: -7191365972354260723
+    second: MeadowGrass_0_detail_31
+  - first:
+      213: 3612433152225709379
+    second: MeadowGrass_0_detail_32
+  - first:
+      213: -6421169148779726618
+    second: MeadowGrass_0_detail_33
+  - first:
+      213: -196531761982308894
+    second: MeadowGrass_0_detail_34
+  - first:
+      213: -1652339970454958076
+    second: MeadowGrass_0_detail_35
+  - first:
+      213: -1393587731184996121
+    second: MeadowGrass_0_detail_36
+  - first:
+      213: 8769885508938369577
+    second: MeadowGrass_0_detail_37
+  - first:
+      213: 2240215960104767772
+    second: MeadowGrass_0_detail_38
+  - first:
+      213: -8479199115832923066
+    second: MeadowGrass_0_detail_39
+  - first:
+      213: 8326789628520846002
+    second: MeadowGrass_0_detail_40
+  - first:
+      213: 1623617631398510229
+    second: MeadowGrass_0_detail_41
+  - first:
+      213: -4170768219224424009
+    second: MeadowGrass_0_detail_42
+  - first:
+      213: -4674846529336946602
+    second: MeadowGrass_0_detail_43
+  - first:
+      213: -3752487254954161300
+    second: MeadowGrass_0_detail_44
+  - first:
+      213: 8320353555241134793
+    second: MeadowGrass_0_detail_45
+  - first:
+      213: -513065368963128445
+    second: MeadowGrass_0_detail_46
+  - first:
+      213: -4514368457317169882
+    second: MeadowGrass_0_detail_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 97
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e85c1f0952fe89af0800000000000000
+      internalID: -389298423142955634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 97
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04dd646b390400c70800000000000000
+      internalID: 8935212663865531712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 98
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2754ca36804cc92c0800000000000000
+      internalID: -4423445193673652878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 98
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d87071e8825c60250800000000000000
+      internalID: 5910628338943592333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 99
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58dda715fbc75d560800000000000000
+      internalID: 7337908329017695621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 99
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cd5c6ac3bbb0bfd0800000000000000
+      internalID: -2328154626480906811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 101
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 775bdf2c1b37a6460800000000000000
+      internalID: 7235722958641935735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 101
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcec54ff1ff0fd6d0800000000000000
+      internalID: -2963632497742197043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 101
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c81b9e9c372906a0800000000000000
+      internalID: -6482607047310632762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 63
+        width: 32
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de428fc11b9684a10800000000000000
+      internalID: 1893879852725445869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8cfb912ff1c64f70800000000000000
+      internalID: 9171230992711285902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 64
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24db24c108a417440800000000000000
+      internalID: 4931804981037808962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6800e0f2a097f2600800000000000000
+      internalID: 445707972779049094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 64
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e3c01abdf2cf5070800000000000000
+      internalID: 8097405050039616484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 311
+        y: 63
+        width: 26
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1891530b403abfbe0800000000000000
+      internalID: -1442380015110645375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 63
+        width: 26
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd4718f281246f3b0800000000000000
+      internalID: -5479119225005968161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a75e2fcdda7fb2090800000000000000
+      internalID: -8058074782141061766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a06d8d560f188e440800000000000000
+      internalID: 4965361458676815370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 64
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e927de8eb316ff4d0800000000000000
+      internalID: -3098651108668771682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 64
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 678db10009faf6db0800000000000000
+      internalID: -4796422045114312586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 31
+        width: 29
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf38843125bdcc620800000000000000
+      internalID: 2795850614247556091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 31
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee2a3acc9c8d0d360800000000000000
+      internalID: 7192486966143984366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 34
+        width: 30
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6bc53ca49de9cb60800000000000000
+      internalID: 7767000255177280363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 31
+        width: 26
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 131f0e5ffd3899cc0800000000000000
+      internalID: -3703784220609416911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 33
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f29644e8d326a04b0800000000000000
+      internalID: -5473454380596041425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 34
+        width: 26
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2300ad0221bba9d70800000000000000
+      internalID: 9050752087689396274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 36
+        width: 26
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9e45ea59a69d06f0800000000000000
+      internalID: -716751111563424097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 35
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 044b9f44e5b35f770800000000000000
+      internalID: 8643880335877715008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 38
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c764ec9558ecf64f0800000000000000
+      internalID: -833220333907589508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 36
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b03cd1ac4354b9e0800000000000000
+      internalID: -1606567578466242379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 39
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2898b6c4248400c0800000000000000
+      internalID: -4610414825032869843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 39
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d012ef7efb2233c90800000000000000
+      internalID: -7191365972354260723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 38
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34d024dffc0f12230800000000000000
+      internalID: 3612433152225709379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 4
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e879441eac63e6a0800000000000000
+      internalID: -6421169148779726618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 4
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ed76fb5767c54df0800000000000000
+      internalID: -196531761982308894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 6
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4005ad42d85b119e0800000000000000
+      internalID: -1652339970454958076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 7
+        width: 24
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e0306f875bf8ace0800000000000000
+      internalID: -1393587731184996121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 7
+        width: 23
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92a0e11d764e4b970800000000000000
+      internalID: 8769885508938369577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 7
+        width: 24
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c11943aeb88d61f10800000000000000
+      internalID: 2240215960104767772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 7
+        width: 23
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64ce8f03455d35a80800000000000000
+      internalID: -8479199115832923066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 7
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b25467cc03be8370800000000000000
+      internalID: 8326789628520846002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 9
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59eb19a22af388610800000000000000
+      internalID: 1623617631398510229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 412
+        y: 9
+        width: 21
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b1c3acf6647e16c0800000000000000
+      internalID: -4170768219224424009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 10
+        width: 20
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 650576799db9f1fb0800000000000000
+      internalID: -4674846529336946602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 494
+        y: 11
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6bc64029bc7cebc0800000000000000
+      internalID: -3752487254954161300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 11
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ca6ec1b975d77370800000000000000
+      internalID: 8320353555241134793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 9
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 383e568e3c931e8f0800000000000000
+      internalID: -513065368963128445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 11
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 625c1646ecdb951c0800000000000000
+      internalID: -4514368457317169882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MeadowGrass_0_detail_0: -389298423142955634
+      MeadowGrass_0_detail_1: 8935212663865531712
+      MeadowGrass_0_detail_10: 9171230992711285902
+      MeadowGrass_0_detail_11: 4931804981037808962
+      MeadowGrass_0_detail_12: 445707972779049094
+      MeadowGrass_0_detail_13: 8097405050039616484
+      MeadowGrass_0_detail_14: -1442380015110645375
+      MeadowGrass_0_detail_15: -5479119225005968161
+      MeadowGrass_0_detail_16: -8058074782141061766
+      MeadowGrass_0_detail_17: 4965361458676815370
+      MeadowGrass_0_detail_18: -3098651108668771682
+      MeadowGrass_0_detail_19: -4796422045114312586
+      MeadowGrass_0_detail_2: -4423445193673652878
+      MeadowGrass_0_detail_20: 2795850614247556091
+      MeadowGrass_0_detail_21: 7192486966143984366
+      MeadowGrass_0_detail_22: 7767000255177280363
+      MeadowGrass_0_detail_23: -3703784220609416911
+      MeadowGrass_0_detail_24: -5473454380596041425
+      MeadowGrass_0_detail_25: 9050752087689396274
+      MeadowGrass_0_detail_26: -716751111563424097
+      MeadowGrass_0_detail_27: 8643880335877715008
+      MeadowGrass_0_detail_28: -833220333907589508
+      MeadowGrass_0_detail_29: -1606567578466242379
+      MeadowGrass_0_detail_3: 5910628338943592333
+      MeadowGrass_0_detail_30: -4610414825032869843
+      MeadowGrass_0_detail_31: -7191365972354260723
+      MeadowGrass_0_detail_32: 3612433152225709379
+      MeadowGrass_0_detail_33: -6421169148779726618
+      MeadowGrass_0_detail_34: -196531761982308894
+      MeadowGrass_0_detail_35: -1652339970454958076
+      MeadowGrass_0_detail_36: -1393587731184996121
+      MeadowGrass_0_detail_37: 8769885508938369577
+      MeadowGrass_0_detail_38: 2240215960104767772
+      MeadowGrass_0_detail_39: -8479199115832923066
+      MeadowGrass_0_detail_4: 7337908329017695621
+      MeadowGrass_0_detail_40: 8326789628520846002
+      MeadowGrass_0_detail_41: 1623617631398510229
+      MeadowGrass_0_detail_42: -4170768219224424009
+      MeadowGrass_0_detail_43: -4674846529336946602
+      MeadowGrass_0_detail_44: -3752487254954161300
+      MeadowGrass_0_detail_45: 8320353555241134793
+      MeadowGrass_0_detail_46: -513065368963128445
+      MeadowGrass_0_detail_47: -4514368457317169882
+      MeadowGrass_0_detail_5: -2328154626480906811
+      MeadowGrass_0_detail_6: 7235722958641935735
+      MeadowGrass_0_detail_7: -2963632497742197043
+      MeadowGrass_0_detail_8: -6482607047310632762
+      MeadowGrass_0_detail_9: 1893879852725445869
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

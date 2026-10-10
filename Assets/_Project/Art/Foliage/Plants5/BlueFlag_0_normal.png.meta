@@ -1,0 +1,1300 @@
+fileFormatVersion: 2
+guid: de6ee28ec82b6244388389012b3d0d07
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5356222824367881507
+    second: BlueFlag_0_normal_0
+  - first:
+      213: -5386742664642169322
+    second: BlueFlag_0_normal_1
+  - first:
+      213: 688837901782584284
+    second: BlueFlag_0_normal_2
+  - first:
+      213: 4045066706402654879
+    second: BlueFlag_0_normal_3
+  - first:
+      213: -6363893285851410453
+    second: BlueFlag_0_normal_4
+  - first:
+      213: -7070967086251603684
+    second: BlueFlag_0_normal_5
+  - first:
+      213: 5628329089544076825
+    second: BlueFlag_0_normal_6
+  - first:
+      213: -6495257855904658217
+    second: BlueFlag_0_normal_7
+  - first:
+      213: 7784836567489009628
+    second: BlueFlag_0_normal_8
+  - first:
+      213: 5628557101786766314
+    second: BlueFlag_0_normal_9
+  - first:
+      213: 2805275057009729008
+    second: BlueFlag_0_normal_10
+  - first:
+      213: 113475270326580043
+    second: BlueFlag_0_normal_11
+  - first:
+      213: -3147527809442968242
+    second: BlueFlag_0_normal_12
+  - first:
+      213: 1025903527356997618
+    second: BlueFlag_0_normal_13
+  - first:
+      213: 1243368570879516550
+    second: BlueFlag_0_normal_14
+  - first:
+      213: 1800743339469556209
+    second: BlueFlag_0_normal_15
+  - first:
+      213: -6560951650200714947
+    second: BlueFlag_0_normal_16
+  - first:
+      213: 5494637840892363492
+    second: BlueFlag_0_normal_17
+  - first:
+      213: -7690790497329606438
+    second: BlueFlag_0_normal_18
+  - first:
+      213: 1549606197852865936
+    second: BlueFlag_0_normal_19
+  - first:
+      213: 1386968960425205744
+    second: BlueFlag_0_normal_20
+  - first:
+      213: -4621767743581990634
+    second: BlueFlag_0_normal_21
+  - first:
+      213: 8798844686362527047
+    second: BlueFlag_0_normal_22
+  - first:
+      213: 171687118330470056
+    second: BlueFlag_0_normal_23
+  - first:
+      213: 6749511710281636052
+    second: BlueFlag_0_normal_24
+  - first:
+      213: 4607099571676031733
+    second: BlueFlag_0_normal_25
+  - first:
+      213: 5088052292478655574
+    second: BlueFlag_0_normal_26
+  - first:
+      213: -3124614247635438382
+    second: BlueFlag_0_normal_27
+  - first:
+      213: -1577639512805421598
+    second: BlueFlag_0_normal_28
+  - first:
+      213: 4123966686722497906
+    second: BlueFlag_0_normal_29
+  - first:
+      213: -7743988327915227894
+    second: BlueFlag_0_normal_30
+  - first:
+      213: -8285032475423623919
+    second: BlueFlag_0_normal_31
+  - first:
+      213: -755114004222797678
+    second: BlueFlag_0_normal_32
+  - first:
+      213: -4693681557326208181
+    second: BlueFlag_0_normal_33
+  - first:
+      213: -7037156386664224417
+    second: BlueFlag_0_normal_34
+  - first:
+      213: -145242203255450722
+    second: BlueFlag_0_normal_35
+  - first:
+      213: -1790666316897398990
+    second: BlueFlag_0_normal_36
+  - first:
+      213: 9132849500471548888
+    second: BlueFlag_0_normal_37
+  - first:
+      213: -6160983035084018762
+    second: BlueFlag_0_normal_38
+  - first:
+      213: 5473015513521740265
+    second: BlueFlag_0_normal_39
+  - first:
+      213: -2400248876945825507
+    second: BlueFlag_0_normal_40
+  - first:
+      213: 5295006316719099117
+    second: BlueFlag_0_normal_41
+  - first:
+      213: 1576454291259193323
+    second: BlueFlag_0_normal_42
+  - first:
+      213: -7103448943271127753
+    second: BlueFlag_0_normal_43
+  - first:
+      213: -3801407909359107909
+    second: BlueFlag_0_normal_44
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 252
+        width: 23
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd286bf38bfdaa5b0800000000000000
+      internalID: -5356222824367881507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 252
+        width: 24
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 616ff8136127e35b0800000000000000
+      internalID: -5386742664642169322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 253
+        width: 26
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdb839b0c6e3f8900800000000000000
+      internalID: 688837901782584284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 254
+        width: 27
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9ab3efdcb6f22830800000000000000
+      internalID: 4045066706402654879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 207
+        width: 24
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bef455c16c8eea7a0800000000000000
+      internalID: -6363893285851410453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 206
+        width: 24
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c198e7d06e0eedd90800000000000000
+      internalID: -7070967086251603684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 207
+        width: 24
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91eb54d9c77db1e40800000000000000
+      internalID: 5628329089544076825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 207
+        width: 23
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dccc36b4653cd5a0800000000000000
+      internalID: -6495257855904658217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 163
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd757afbc9b490c60800000000000000
+      internalID: 7784836567489009628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 163
+        width: 23
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeb900adcd6ac1e40800000000000000
+      internalID: 5628557101786766314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 165
+        width: 23
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fd14562dc65ee620800000000000000
+      internalID: 2805275057009729008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 167
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b437b9a3825239100800000000000000
+      internalID: 113475270326580043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 123
+        width: 6
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4d0d75322cb154d0800000000000000
+      internalID: -3147527809442968242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 123
+        width: 6
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ff1fe992ddbc3e00800000000000000
+      internalID: 1025903527356997618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 124
+        width: 11
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68f9828a025514110800000000000000
+      internalID: 1243368570879516550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 125
+        width: 7
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f9cbb8c6868df810800000000000000
+      internalID: 1800743339469556209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 124
+        width: 8
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d31064d4c31d2f4a0800000000000000
+      internalID: -6560951650200714947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 126
+        width: 6
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e20fc32100e04c40800000000000000
+      internalID: 5494637840892363492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 125
+        width: 8
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad018bc4ac2d44590800000000000000
+      internalID: -7690790497329606438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 127
+        width: 21
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09583c470ae418510800000000000000
+      internalID: 1549606197852865936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 88
+        width: 21
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ff13a8cbe08f3310800000000000000
+      internalID: 1386968960425205744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 89
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 611df6179be2cdfb0800000000000000
+      internalID: -4621767743581990634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 88
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 745c87cbf96cb1a70800000000000000
+      internalID: 8798844686362527047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 89
+        width: 20
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae19944684f16200800000000000000
+      internalID: 171687118330470056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 90
+        width: 17
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d81daad3251bad50800000000000000
+      internalID: 6749511710281636052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 53
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5faaa96a6a4bfef30800000000000000
+      internalID: 4607099571676031733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 54
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65c5dc33a946c9640800000000000000
+      internalID: 5088052292478655574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 56
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d4b09d85e323a4d0800000000000000
+      internalID: -3124614247635438382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 57
+        width: 14
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2edcc97c8391b1ae0800000000000000
+      internalID: -1577639512805421598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 56
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27d93a31ad54b3930800000000000000
+      internalID: 4123966686722497906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 24
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0577d925a3d78490800000000000000
+      internalID: -7743988327915227894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 22
+        width: 6
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 115bccd0cd6a50d80800000000000000
+      internalID: -8285032475423623919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 23
+        width: 6
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 298906d50db4585f0800000000000000
+      internalID: -755114004222797678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 6
+        width: 12
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b43e4c6ed71bcdeb0800000000000000
+      internalID: -4693681557326208181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 6
+        width: 14
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f59e1000d8ff65e90800000000000000
+      internalID: -7037156386664224417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 36
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9350945cfefbfdf0800000000000000
+      internalID: -145242203255450722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 36
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23fc21ed8764627e0800000000000000
+      internalID: -1790666316897398990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 36
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8dbd5b69b366ebe70800000000000000
+      internalID: 9132849500471548888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 6
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bbeb96629acf7aa0800000000000000
+      internalID: -6160983035084018762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 6
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e95aadbc9e04fb40800000000000000
+      internalID: 5473015513521740265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 6
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d112d1d0d5a90bed0800000000000000
+      internalID: -2400248876945825507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 6
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: deccd7fd034ab7940800000000000000
+      internalID: 5295006316719099117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 6
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be7f42353d0b0e510800000000000000
+      internalID: 1576454291259193323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 6
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 735533062da7b6d90800000000000000
+      internalID: -7103448943271127753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlueFlag_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 6
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb04a4ca5afae3bc0800000000000000
+      internalID: -3801407909359107909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BlueFlag_0_normal_0: -5356222824367881507
+      BlueFlag_0_normal_1: -5386742664642169322
+      BlueFlag_0_normal_10: 2805275057009729008
+      BlueFlag_0_normal_11: 113475270326580043
+      BlueFlag_0_normal_12: -3147527809442968242
+      BlueFlag_0_normal_13: 1025903527356997618
+      BlueFlag_0_normal_14: 1243368570879516550
+      BlueFlag_0_normal_15: 1800743339469556209
+      BlueFlag_0_normal_16: -6560951650200714947
+      BlueFlag_0_normal_17: 5494637840892363492
+      BlueFlag_0_normal_18: -7690790497329606438
+      BlueFlag_0_normal_19: 1549606197852865936
+      BlueFlag_0_normal_2: 688837901782584284
+      BlueFlag_0_normal_20: 1386968960425205744
+      BlueFlag_0_normal_21: -4621767743581990634
+      BlueFlag_0_normal_22: 8798844686362527047
+      BlueFlag_0_normal_23: 171687118330470056
+      BlueFlag_0_normal_24: 6749511710281636052
+      BlueFlag_0_normal_25: 4607099571676031733
+      BlueFlag_0_normal_26: 5088052292478655574
+      BlueFlag_0_normal_27: -3124614247635438382
+      BlueFlag_0_normal_28: -1577639512805421598
+      BlueFlag_0_normal_29: 4123966686722497906
+      BlueFlag_0_normal_3: 4045066706402654879
+      BlueFlag_0_normal_30: -7743988327915227894
+      BlueFlag_0_normal_31: -8285032475423623919
+      BlueFlag_0_normal_32: -755114004222797678
+      BlueFlag_0_normal_33: -4693681557326208181
+      BlueFlag_0_normal_34: -7037156386664224417
+      BlueFlag_0_normal_35: -145242203255450722
+      BlueFlag_0_normal_36: -1790666316897398990
+      BlueFlag_0_normal_37: 9132849500471548888
+      BlueFlag_0_normal_38: -6160983035084018762
+      BlueFlag_0_normal_39: 5473015513521740265
+      BlueFlag_0_normal_4: -6363893285851410453
+      BlueFlag_0_normal_40: -2400248876945825507
+      BlueFlag_0_normal_41: 5295006316719099117
+      BlueFlag_0_normal_42: 1576454291259193323
+      BlueFlag_0_normal_43: -7103448943271127753
+      BlueFlag_0_normal_44: -3801407909359107909
+      BlueFlag_0_normal_5: -7070967086251603684
+      BlueFlag_0_normal_6: 5628329089544076825
+      BlueFlag_0_normal_7: -6495257855904658217
+      BlueFlag_0_normal_8: 7784836567489009628
+      BlueFlag_0_normal_9: 5628557101786766314
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

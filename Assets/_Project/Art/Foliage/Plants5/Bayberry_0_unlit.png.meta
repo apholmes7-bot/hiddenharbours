@@ -1,0 +1,6656 @@
+fileFormatVersion: 2
+guid: 6304e54d32807e3488d831b8228a5c22
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4177934664134234699
+    second: Bayberry_0_unlit_0
+  - first:
+      213: 5101128856317031939
+    second: Bayberry_0_unlit_1
+  - first:
+      213: 5437872373816714659
+    second: Bayberry_0_unlit_2
+  - first:
+      213: 7155783684782293593
+    second: Bayberry_0_unlit_3
+  - first:
+      213: -2475711549039312642
+    second: Bayberry_0_unlit_4
+  - first:
+      213: -3344244229201502213
+    second: Bayberry_0_unlit_5
+  - first:
+      213: -8962573514997822844
+    second: Bayberry_0_unlit_6
+  - first:
+      213: 8837480101966845791
+    second: Bayberry_0_unlit_7
+  - first:
+      213: 6070407984522100788
+    second: Bayberry_0_unlit_8
+  - first:
+      213: 4474669818849122691
+    second: Bayberry_0_unlit_9
+  - first:
+      213: 6407546735976528432
+    second: Bayberry_0_unlit_10
+  - first:
+      213: -8916444640078721940
+    second: Bayberry_0_unlit_11
+  - first:
+      213: -4450320024074714702
+    second: Bayberry_0_unlit_12
+  - first:
+      213: 890681189128649187
+    second: Bayberry_0_unlit_13
+  - first:
+      213: -7959645773118502898
+    second: Bayberry_0_unlit_14
+  - first:
+      213: -2216917411641406600
+    second: Bayberry_0_unlit_15
+  - first:
+      213: -2323799835656463865
+    second: Bayberry_0_unlit_16
+  - first:
+      213: 9016384924650142746
+    second: Bayberry_0_unlit_17
+  - first:
+      213: 1844328731125450948
+    second: Bayberry_0_unlit_18
+  - first:
+      213: 5610866691984735067
+    second: Bayberry_0_unlit_19
+  - first:
+      213: -6539311585912910126
+    second: Bayberry_0_unlit_20
+  - first:
+      213: -50034145795404333
+    second: Bayberry_0_unlit_21
+  - first:
+      213: 5873040169109505243
+    second: Bayberry_0_unlit_22
+  - first:
+      213: -3793262329266825961
+    second: Bayberry_0_unlit_23
+  - first:
+      213: 1333132570442353722
+    second: Bayberry_0_unlit_24
+  - first:
+      213: 9014551959515978137
+    second: Bayberry_0_unlit_25
+  - first:
+      213: 8427282034116699504
+    second: Bayberry_0_unlit_26
+  - first:
+      213: -7892527581464465027
+    second: Bayberry_0_unlit_27
+  - first:
+      213: -5435928216489980614
+    second: Bayberry_0_unlit_28
+  - first:
+      213: 5530545961965265719
+    second: Bayberry_0_unlit_29
+  - first:
+      213: -513158654224923624
+    second: Bayberry_0_unlit_30
+  - first:
+      213: 8246659264671443264
+    second: Bayberry_0_unlit_31
+  - first:
+      213: 252526728023649198
+    second: Bayberry_0_unlit_32
+  - first:
+      213: 849947099615210191
+    second: Bayberry_0_unlit_33
+  - first:
+      213: -2405538419569565834
+    second: Bayberry_0_unlit_34
+  - first:
+      213: -8868633430307857024
+    second: Bayberry_0_unlit_35
+  - first:
+      213: -2635126831605517050
+    second: Bayberry_0_unlit_36
+  - first:
+      213: -6135163216483335490
+    second: Bayberry_0_unlit_37
+  - first:
+      213: 3057838473904728455
+    second: Bayberry_0_unlit_38
+  - first:
+      213: 7938446325956085714
+    second: Bayberry_0_unlit_39
+  - first:
+      213: 2026781043776406623
+    second: Bayberry_0_unlit_40
+  - first:
+      213: 6750322536739150354
+    second: Bayberry_0_unlit_41
+  - first:
+      213: -9081838928080284784
+    second: Bayberry_0_unlit_42
+  - first:
+      213: 4360409092030985934
+    second: Bayberry_0_unlit_43
+  - first:
+      213: 8291320183403972043
+    second: Bayberry_0_unlit_44
+  - first:
+      213: -1699700118212561483
+    second: Bayberry_0_unlit_45
+  - first:
+      213: -5562937072118964526
+    second: Bayberry_0_unlit_46
+  - first:
+      213: 2793480845960718026
+    second: Bayberry_0_unlit_47
+  - first:
+      213: -7149559202006025057
+    second: Bayberry_0_unlit_48
+  - first:
+      213: -6866082129629486402
+    second: Bayberry_0_unlit_49
+  - first:
+      213: -6858362672067300901
+    second: Bayberry_0_unlit_50
+  - first:
+      213: -5624691467633171707
+    second: Bayberry_0_unlit_51
+  - first:
+      213: 5474849372137014782
+    second: Bayberry_0_unlit_52
+  - first:
+      213: -7520514815923434227
+    second: Bayberry_0_unlit_53
+  - first:
+      213: 4353212304536646601
+    second: Bayberry_0_unlit_54
+  - first:
+      213: -7542565376376775372
+    second: Bayberry_0_unlit_55
+  - first:
+      213: 1551249505861349738
+    second: Bayberry_0_unlit_56
+  - first:
+      213: 8453302236602522782
+    second: Bayberry_0_unlit_57
+  - first:
+      213: 2941267367411520185
+    second: Bayberry_0_unlit_58
+  - first:
+      213: -9041118612176058490
+    second: Bayberry_0_unlit_59
+  - first:
+      213: 5075036870405854703
+    second: Bayberry_0_unlit_60
+  - first:
+      213: 281092964714347815
+    second: Bayberry_0_unlit_61
+  - first:
+      213: 6549972770961623110
+    second: Bayberry_0_unlit_62
+  - first:
+      213: 5368668603146455418
+    second: Bayberry_0_unlit_63
+  - first:
+      213: 9171337062898341122
+    second: Bayberry_0_unlit_64
+  - first:
+      213: 3715200695082878645
+    second: Bayberry_0_unlit_65
+  - first:
+      213: 3319432764923071009
+    second: Bayberry_0_unlit_66
+  - first:
+      213: 3346616151112236659
+    second: Bayberry_0_unlit_67
+  - first:
+      213: 6261579027496272239
+    second: Bayberry_0_unlit_68
+  - first:
+      213: 5948381925811146477
+    second: Bayberry_0_unlit_69
+  - first:
+      213: -2938658683373059228
+    second: Bayberry_0_unlit_70
+  - first:
+      213: 4930442582377858690
+    second: Bayberry_0_unlit_71
+  - first:
+      213: 2846193255601683725
+    second: Bayberry_0_unlit_72
+  - first:
+      213: 2511128752190156646
+    second: Bayberry_0_unlit_73
+  - first:
+      213: 236671918346989690
+    second: Bayberry_0_unlit_74
+  - first:
+      213: 1969669891832013754
+    second: Bayberry_0_unlit_75
+  - first:
+      213: 8451275726948332899
+    second: Bayberry_0_unlit_76
+  - first:
+      213: 7918660294589005235
+    second: Bayberry_0_unlit_77
+  - first:
+      213: -1963325097119700308
+    second: Bayberry_0_unlit_78
+  - first:
+      213: 7046643544475476893
+    second: Bayberry_0_unlit_79
+  - first:
+      213: 7257773946693816522
+    second: Bayberry_0_unlit_80
+  - first:
+      213: -7026556067427047239
+    second: Bayberry_0_unlit_81
+  - first:
+      213: 5196398910279491909
+    second: Bayberry_0_unlit_82
+  - first:
+      213: -4008014160086861308
+    second: Bayberry_0_unlit_83
+  - first:
+      213: -6854896053036223731
+    second: Bayberry_0_unlit_84
+  - first:
+      213: 6433999349726122193
+    second: Bayberry_0_unlit_85
+  - first:
+      213: -3425900460373614804
+    second: Bayberry_0_unlit_86
+  - first:
+      213: 4811719706835189313
+    second: Bayberry_0_unlit_87
+  - first:
+      213: 797435800225606116
+    second: Bayberry_0_unlit_88
+  - first:
+      213: 7384868728407020380
+    second: Bayberry_0_unlit_89
+  - first:
+      213: -1569250221655831474
+    second: Bayberry_0_unlit_90
+  - first:
+      213: 7326059856678051368
+    second: Bayberry_0_unlit_91
+  - first:
+      213: -4932321320623557077
+    second: Bayberry_0_unlit_92
+  - first:
+      213: 4542701203249453517
+    second: Bayberry_0_unlit_93
+  - first:
+      213: -6540567217541145046
+    second: Bayberry_0_unlit_94
+  - first:
+      213: 7038133671429360780
+    second: Bayberry_0_unlit_95
+  - first:
+      213: 3029592289138746094
+    second: Bayberry_0_unlit_96
+  - first:
+      213: 3280341668510735818
+    second: Bayberry_0_unlit_97
+  - first:
+      213: 3143770523222315973
+    second: Bayberry_0_unlit_98
+  - first:
+      213: 6283106537212088517
+    second: Bayberry_0_unlit_99
+  - first:
+      213: -8160170684122852057
+    second: Bayberry_0_unlit_100
+  - first:
+      213: -6659015337621140823
+    second: Bayberry_0_unlit_101
+  - first:
+      213: -1543077779221473784
+    second: Bayberry_0_unlit_102
+  - first:
+      213: 7378849365511300556
+    second: Bayberry_0_unlit_103
+  - first:
+      213: 5322854463333180831
+    second: Bayberry_0_unlit_104
+  - first:
+      213: -3434799370457205612
+    second: Bayberry_0_unlit_105
+  - first:
+      213: -4682383673072037945
+    second: Bayberry_0_unlit_106
+  - first:
+      213: -801825682833414274
+    second: Bayberry_0_unlit_107
+  - first:
+      213: -7417500221063186847
+    second: Bayberry_0_unlit_108
+  - first:
+      213: -6110632409042155954
+    second: Bayberry_0_unlit_109
+  - first:
+      213: 6191945348219876754
+    second: Bayberry_0_unlit_110
+  - first:
+      213: -2729197364521270474
+    second: Bayberry_0_unlit_111
+  - first:
+      213: -796230671530446231
+    second: Bayberry_0_unlit_112
+  - first:
+      213: -4375033840618042642
+    second: Bayberry_0_unlit_113
+  - first:
+      213: -5314883624047414992
+    second: Bayberry_0_unlit_114
+  - first:
+      213: -4093874224738944150
+    second: Bayberry_0_unlit_115
+  - first:
+      213: -6426346733254637254
+    second: Bayberry_0_unlit_116
+  - first:
+      213: -2072599147853422465
+    second: Bayberry_0_unlit_117
+  - first:
+      213: 7879924552739555246
+    second: Bayberry_0_unlit_118
+  - first:
+      213: -1063695707620377406
+    second: Bayberry_0_unlit_119
+  - first:
+      213: -4600736281314113006
+    second: Bayberry_0_unlit_120
+  - first:
+      213: -1475754832306803891
+    second: Bayberry_0_unlit_121
+  - first:
+      213: -7741821268504319992
+    second: Bayberry_0_unlit_122
+  - first:
+      213: 498507678454384096
+    second: Bayberry_0_unlit_123
+  - first:
+      213: 915651858080599252
+    second: Bayberry_0_unlit_124
+  - first:
+      213: -2753491749456993231
+    second: Bayberry_0_unlit_125
+  - first:
+      213: 1069822843562826049
+    second: Bayberry_0_unlit_126
+  - first:
+      213: 5260470430935752264
+    second: Bayberry_0_unlit_127
+  - first:
+      213: -5835838630378428142
+    second: Bayberry_0_unlit_128
+  - first:
+      213: -1936569932316170794
+    second: Bayberry_0_unlit_129
+  - first:
+      213: 2332145193845287483
+    second: Bayberry_0_unlit_130
+  - first:
+      213: 8779777907445580492
+    second: Bayberry_0_unlit_131
+  - first:
+      213: 2464790262964106813
+    second: Bayberry_0_unlit_132
+  - first:
+      213: -4135301792719788280
+    second: Bayberry_0_unlit_133
+  - first:
+      213: 8051911410104416577
+    second: Bayberry_0_unlit_134
+  - first:
+      213: -1306439313379964893
+    second: Bayberry_0_unlit_135
+  - first:
+      213: 647635464893479110
+    second: Bayberry_0_unlit_136
+  - first:
+      213: -3949954579756342633
+    second: Bayberry_0_unlit_137
+  - first:
+      213: -3667956095749861598
+    second: Bayberry_0_unlit_138
+  - first:
+      213: -2185885532849562347
+    second: Bayberry_0_unlit_139
+  - first:
+      213: -8126862444660244770
+    second: Bayberry_0_unlit_140
+  - first:
+      213: -8363576368797558093
+    second: Bayberry_0_unlit_141
+  - first:
+      213: -5477105055714417894
+    second: Bayberry_0_unlit_142
+  - first:
+      213: 632259893078207055
+    second: Bayberry_0_unlit_143
+  - first:
+      213: 1325809861283444332
+    second: Bayberry_0_unlit_144
+  - first:
+      213: -1536003429847160406
+    second: Bayberry_0_unlit_145
+  - first:
+      213: 998849532486766182
+    second: Bayberry_0_unlit_146
+  - first:
+      213: 2210769766153502076
+    second: Bayberry_0_unlit_147
+  - first:
+      213: -6338567104667203308
+    second: Bayberry_0_unlit_148
+  - first:
+      213: -5229092248501512305
+    second: Bayberry_0_unlit_149
+  - first:
+      213: -954124538037065549
+    second: Bayberry_0_unlit_150
+  - first:
+      213: 6024076928263728404
+    second: Bayberry_0_unlit_151
+  - first:
+      213: -4572758286212705175
+    second: Bayberry_0_unlit_152
+  - first:
+      213: -865956535749215399
+    second: Bayberry_0_unlit_153
+  - first:
+      213: -8499869493629606584
+    second: Bayberry_0_unlit_154
+  - first:
+      213: -297984654232184758
+    second: Bayberry_0_unlit_155
+  - first:
+      213: 6900801641101976629
+    second: Bayberry_0_unlit_156
+  - first:
+      213: -8552509385576139618
+    second: Bayberry_0_unlit_157
+  - first:
+      213: 5023698104429299835
+    second: Bayberry_0_unlit_158
+  - first:
+      213: 7312873959911291812
+    second: Bayberry_0_unlit_159
+  - first:
+      213: 1710525726129288493
+    second: Bayberry_0_unlit_160
+  - first:
+      213: 7185165487346965056
+    second: Bayberry_0_unlit_161
+  - first:
+      213: 7287721736742487557
+    second: Bayberry_0_unlit_162
+  - first:
+      213: -9212156885457140323
+    second: Bayberry_0_unlit_163
+  - first:
+      213: 1577557774575540733
+    second: Bayberry_0_unlit_164
+  - first:
+      213: 8040263354436212048
+    second: Bayberry_0_unlit_165
+  - first:
+      213: -2974870652681769022
+    second: Bayberry_0_unlit_166
+  - first:
+      213: 7119999858125841747
+    second: Bayberry_0_unlit_167
+  - first:
+      213: 2648500313913039774
+    second: Bayberry_0_unlit_168
+  - first:
+      213: -33968190043308001
+    second: Bayberry_0_unlit_169
+  - first:
+      213: 4761315113907858771
+    second: Bayberry_0_unlit_170
+  - first:
+      213: 5988635222665299135
+    second: Bayberry_0_unlit_171
+  - first:
+      213: -3987991607184881528
+    second: Bayberry_0_unlit_172
+  - first:
+      213: 2908724497237972453
+    second: Bayberry_0_unlit_173
+  - first:
+      213: 4403406615166301044
+    second: Bayberry_0_unlit_174
+  - first:
+      213: 7428080437508108437
+    second: Bayberry_0_unlit_175
+  - first:
+      213: -5914732273537453155
+    second: Bayberry_0_unlit_176
+  - first:
+      213: -6848016952949759654
+    second: Bayberry_0_unlit_177
+  - first:
+      213: -8089146554821877949
+    second: Bayberry_0_unlit_178
+  - first:
+      213: 8667321838534963214
+    second: Bayberry_0_unlit_179
+  - first:
+      213: -2576144849373662847
+    second: Bayberry_0_unlit_180
+  - first:
+      213: -5604236918827045784
+    second: Bayberry_0_unlit_181
+  - first:
+      213: -6573859838562905097
+    second: Bayberry_0_unlit_182
+  - first:
+      213: 6839282429816920482
+    second: Bayberry_0_unlit_183
+  - first:
+      213: -6115675406938822292
+    second: Bayberry_0_unlit_184
+  - first:
+      213: 7700703305762226161
+    second: Bayberry_0_unlit_185
+  - first:
+      213: -2539143007203035924
+    second: Bayberry_0_unlit_186
+  - first:
+      213: 6433644995743333837
+    second: Bayberry_0_unlit_187
+  - first:
+      213: 5116607844753927996
+    second: Bayberry_0_unlit_188
+  - first:
+      213: 3056888332010321182
+    second: Bayberry_0_unlit_189
+  - first:
+      213: -1481093480995158805
+    second: Bayberry_0_unlit_190
+  - first:
+      213: -1031563551451289695
+    second: Bayberry_0_unlit_191
+  - first:
+      213: -381652503358967351
+    second: Bayberry_0_unlit_192
+  - first:
+      213: 3025536007276608665
+    second: Bayberry_0_unlit_193
+  - first:
+      213: 8484940359988685298
+    second: Bayberry_0_unlit_194
+  - first:
+      213: 2052193677535885940
+    second: Bayberry_0_unlit_195
+  - first:
+      213: 2822727192533051092
+    second: Bayberry_0_unlit_196
+  - first:
+      213: 6098383470657203752
+    second: Bayberry_0_unlit_197
+  - first:
+      213: 1643662058756750859
+    second: Bayberry_0_unlit_198
+  - first:
+      213: 3112078024291170104
+    second: Bayberry_0_unlit_199
+  - first:
+      213: 7309057963235712287
+    second: Bayberry_0_unlit_200
+  - first:
+      213: 7304283862520080901
+    second: Bayberry_0_unlit_201
+  - first:
+      213: -7247448778088378222
+    second: Bayberry_0_unlit_202
+  - first:
+      213: -1189938545663080565
+    second: Bayberry_0_unlit_203
+  - first:
+      213: -4781512414490947799
+    second: Bayberry_0_unlit_204
+  - first:
+      213: -5729268073088585241
+    second: Bayberry_0_unlit_205
+  - first:
+      213: 625581484779947500
+    second: Bayberry_0_unlit_206
+  - first:
+      213: 6954004543925536664
+    second: Bayberry_0_unlit_207
+  - first:
+      213: -3155034684651235031
+    second: Bayberry_0_unlit_208
+  - first:
+      213: 1320282169392095231
+    second: Bayberry_0_unlit_209
+  - first:
+      213: -6655404115704511999
+    second: Bayberry_0_unlit_210
+  - first:
+      213: 1854158111098609031
+    second: Bayberry_0_unlit_211
+  - first:
+      213: -6995229578719981892
+    second: Bayberry_0_unlit_212
+  - first:
+      213: -4195996433497545955
+    second: Bayberry_0_unlit_213
+  - first:
+      213: 4633830358874562088
+    second: Bayberry_0_unlit_214
+  - first:
+      213: -4429761886001101650
+    second: Bayberry_0_unlit_215
+  - first:
+      213: -7337530162274064847
+    second: Bayberry_0_unlit_216
+  - first:
+      213: -1518174894385558429
+    second: Bayberry_0_unlit_217
+  - first:
+      213: 4214989407580499067
+    second: Bayberry_0_unlit_218
+  - first:
+      213: -2515530023929143364
+    second: Bayberry_0_unlit_219
+  - first:
+      213: -5314035528126494869
+    second: Bayberry_0_unlit_220
+  - first:
+      213: -91205925957388960
+    second: Bayberry_0_unlit_221
+  - first:
+      213: -416933209503600110
+    second: Bayberry_0_unlit_222
+  - first:
+      213: 4139582097030411910
+    second: Bayberry_0_unlit_223
+  - first:
+      213: -6567465272482453422
+    second: Bayberry_0_unlit_224
+  - first:
+      213: 2377265166512683710
+    second: Bayberry_0_unlit_225
+  - first:
+      213: 4815637207972930161
+    second: Bayberry_0_unlit_226
+  - first:
+      213: 5620734301712658444
+    second: Bayberry_0_unlit_227
+  - first:
+      213: -5769318048075139277
+    second: Bayberry_0_unlit_228
+  - first:
+      213: -4350496372216890667
+    second: Bayberry_0_unlit_229
+  - first:
+      213: -2069339117830868219
+    second: Bayberry_0_unlit_230
+  - first:
+      213: 584426902009006616
+    second: Bayberry_0_unlit_231
+  - first:
+      213: 4947982406654284394
+    second: Bayberry_0_unlit_232
+  - first:
+      213: -7677563162437492897
+    second: Bayberry_0_unlit_233
+  - first:
+      213: -6850366865801257608
+    second: Bayberry_0_unlit_234
+  - first:
+      213: 2391112151074902436
+    second: Bayberry_0_unlit_235
+  - first:
+      213: -384666302965567057
+    second: Bayberry_0_unlit_236
+  - first:
+      213: 4228085794559387221
+    second: Bayberry_0_unlit_237
+  - first:
+      213: 901642646734772600
+    second: Bayberry_0_unlit_238
+  - first:
+      213: -4892465577033631324
+    second: Bayberry_0_unlit_239
+  - first:
+      213: 6372784265676926250
+    second: Bayberry_0_unlit_240
+  - first:
+      213: -4323873041091157014
+    second: Bayberry_0_unlit_241
+  - first:
+      213: 5885924011322601141
+    second: Bayberry_0_unlit_242
+  - first:
+      213: 8882795366229443864
+    second: Bayberry_0_unlit_243
+  - first:
+      213: -672705709846750959
+    second: Bayberry_0_unlit_244
+  - first:
+      213: 9025625640525381887
+    second: Bayberry_0_unlit_245
+  - first:
+      213: -7384950379457412806
+    second: Bayberry_0_unlit_246
+  - first:
+      213: 2080419658085374304
+    second: Bayberry_0_unlit_247
+  - first:
+      213: -6187982208346845798
+    second: Bayberry_0_unlit_248
+  - first:
+      213: -4703579398168255368
+    second: Bayberry_0_unlit_249
+  - first:
+      213: 3090684035147526034
+    second: Bayberry_0_unlit_250
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 1074
+        width: 81
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bdec710f8ef406c0800000000000000
+      internalID: -4177934664134234699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 1074
+        width: 81
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 306754afaa9dac640800000000000000
+      internalID: 5101128856317031939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 1074
+        width: 81
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a56147ec14377b40800000000000000
+      internalID: 5437872373816714659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 1074
+        width: 81
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9520cfc29537e4360800000000000000
+      internalID: 7155783684782293593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 1074
+        width: 80
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef00e29867184add0800000000000000
+      internalID: -2475711549039312642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 1074
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bff5b44979bd691d0800000000000000
+      internalID: -3344244229201502213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 1074
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48a0b35bfda8e9380800000000000000
+      internalID: -8962573514997822844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 1074
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f57115b645905aa70800000000000000
+      internalID: 8837480101966845791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 1074
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 430822746eb6e3450800000000000000
+      internalID: 6070407984522100788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 1005
+        width: 80
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 389d9af0e78391e30800000000000000
+      internalID: 4474669818849122691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 1005
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03a3897cecd2ce850800000000000000
+      internalID: 6407546735976528432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 1005
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6c0ca857dc624480800000000000000
+      internalID: -8916444640078721940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 1005
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b1083454894d32c0800000000000000
+      internalID: -4450320024074714702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 1005
+        width: 79
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e9b22e82d55c5c00800000000000000
+      internalID: 890681189128649187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 1005
+        width: 80
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0805536758a98190800000000000000
+      internalID: -7959645773118502898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 1007
+        width: 79
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87b4cbe1c5deb31e0800000000000000
+      internalID: -2216917411641406600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 794
+        y: 1007
+        width: 79
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70ad59a8c5430cfd0800000000000000
+      internalID: -2323799835656463865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 906
+        y: 1007
+        width: 79
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1c75ff6152a02d70800000000000000
+      internalID: 9016384924650142746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 938
+        width: 79
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c887c3953f589910800000000000000
+      internalID: 1844328731125450948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 938
+        width: 78
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5b32d9578dcddd40800000000000000
+      internalID: 5610866691984735067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 938
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2de801662c2bf35a0800000000000000
+      internalID: -6539311585912910126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 938
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3dd8931a53e3e4ff0800000000000000
+      internalID: -50034145795404333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 938
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd44f57caea318150800000000000000
+      internalID: 5873040169109505243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 938
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7151e245200ab5bc0800000000000000
+      internalID: -3793262329266825961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 689
+        y: 938
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3c48b3720d308210800000000000000
+      internalID: 1333132570442353722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 801
+        y: 938
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 999504cfe3f1a1d70800000000000000
+      internalID: 9014551959515978137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 913
+        y: 938
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 075ae814c58b3f470800000000000000
+      internalID: 8427282034116699504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 870
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7176d62bfb187290800000000000000
+      internalID: -7892527581464465027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 870
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3d879f7614bf84b0800000000000000
+      internalID: -5435928216489980614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 870
+        width: 78
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73329e4104270cc40800000000000000
+      internalID: 5530545961965265719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 871
+        width: 73
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 814818d3ce4e0e8f0800000000000000
+      internalID: -513158654224923624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 871
+        width: 73
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 049ec6698e4027270800000000000000
+      internalID: 8246659264671443264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 871
+        width: 73
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eab2420a8b7218300800000000000000
+      internalID: 252526728023649198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 871
+        width: 73
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fca2076426e9bcb00800000000000000
+      internalID: 849947099615210191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 877
+        width: 73
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67f50007d8fcd9ed0800000000000000
+      internalID: -2405538419569565834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 876
+        y: 875
+        width: 77
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08d985712e84ce480800000000000000
+      internalID: -8868633430307857024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 808
+        width: 77
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6057d00bb162e6bd0800000000000000
+      internalID: -2635126831605517050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 808
+        width: 77
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb2c7726f858bdaa0800000000000000
+      internalID: -6135163216483335490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 808
+        width: 78
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7892d9114ef9f6a20800000000000000
+      internalID: 3057838473904728455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 810
+        width: 78
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d70e1fafd60b2e60800000000000000
+      internalID: 7938446325956085714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 808
+        width: 77
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f54c9c7fe92902c10800000000000000
+      internalID: 2026781043776406623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 808
+        width: 77
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21a96a91596fdad50800000000000000
+      internalID: 6750322536739150354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 808
+        width: 77
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 093d570dc93d6f180800000000000000
+      internalID: -9081838928080284784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 764
+        y: 808
+        width: 78
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec6f3ed77f8438c30800000000000000
+      internalID: 4360409092030985934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 871
+        y: 810
+        width: 78
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc502da07cfa01370800000000000000
+      internalID: 8291320183403972043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 747
+        width: 81
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b530457fb37968e0800000000000000
+      internalID: -1699700118212561483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 747
+        width: 81
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2de5f74e43a7cc2b0800000000000000
+      internalID: -5562937072118964526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 747
+        width: 81
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac6a856670074c620800000000000000
+      internalID: 2793480845960718026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_48
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 747
+        width: 81
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9c3ec729c9a7cc90800000000000000
+      internalID: -7149559202006025057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_49
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 754
+        width: 81
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb2e6c06ea6c6b0a0800000000000000
+      internalID: -6866082129629486402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_50
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 747
+        width: 77
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd131a6ac7332d0a0800000000000000
+      internalID: -6858362672067300901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_51
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 747
+        width: 77
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 503ed8c39e411f1b0800000000000000
+      internalID: -5624691467633171707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_52
+      rect:
+        serializedVersion: 2
+        x: 779
+        y: 747
+        width: 77
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef54ff83f729afb40800000000000000
+      internalID: 5474849372137014782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_53
+      rect:
+        serializedVersion: 2
+        x: 886
+        y: 747
+        width: 77
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0d42dcce93c1a790800000000000000
+      internalID: -7520514815923434227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_54
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 687
+        width: 77
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c334c3d687b96c30800000000000000
+      internalID: 4353212304536646601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_55
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 687
+        width: 77
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43dd6ed90cc635790800000000000000
+      internalID: -7542565376376775372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_56
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 687
+        width: 77
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a61bddae435278510800000000000000
+      internalID: 1551249505861349738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_57
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 687
+        width: 77
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9c55bfb899205570800000000000000
+      internalID: 8453302236602522782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_58
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 687
+        width: 78
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b21300561b71d820800000000000000
+      internalID: 2941267367411520185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_59
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 687
+        width: 78
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 687c21d268e778280800000000000000
+      internalID: -9041118612176058490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_60
+      rect:
+        serializedVersion: 2
+        x: 653
+        y: 687
+        width: 74
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe51d8a15272e6640800000000000000
+      internalID: 5075036870405854703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_61
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 687
+        width: 74
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72df8a6ef84a6e300800000000000000
+      internalID: 281092964714347815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_62
+      rect:
+        serializedVersion: 2
+        x: 863
+        y: 687
+        width: 74
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64806ad288d26ea50800000000000000
+      internalID: 6549972770961623110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_63
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 626
+        width: 74
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a79465f66a7518a40800000000000000
+      internalID: 5368668603146455418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_64
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 627
+        width: 75
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2051e658772274f70800000000000000
+      internalID: 9171337062898341122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_65
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 628
+        width: 75
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b603b3295b0f8330800000000000000
+      internalID: 3715200695082878645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_66
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 628
+        width: 75
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12a4809338ef01e20800000000000000
+      internalID: 3319432764923071009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_67
+      rect:
+        serializedVersion: 2
+        x: 430
+        y: 628
+        width: 75
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37e31a688a1917e20800000000000000
+      internalID: 3346616151112236659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_68
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 628
+        width: 75
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6183f243f895e650800000000000000
+      internalID: 6261579027496272239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_69
+      rect:
+        serializedVersion: 2
+        x: 637
+        y: 628
+        width: 73
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: deec35c78d5ec8250800000000000000
+      internalID: 5948381925811146477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_70
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 628
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4638e654f79c737d0800000000000000
+      internalID: -2938658683373059228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_71
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 628
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2868714f7637c6440800000000000000
+      internalID: 4930442582377858690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_72
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0d304aafa5bf7720800000000000000
+      internalID: 2846193255601683725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_73
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66f609bab4259d220800000000000000
+      internalID: 2511128752190156646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_74
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a70f1651bd3d84300800000000000000
+      internalID: 236671918346989690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_75
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab3ed63b45ca55b10800000000000000
+      internalID: 1969669891832013754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_76
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 365f2a33f76f84570800000000000000
+      internalID: 8451275726948332899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_77
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bdb7f3459bb4ed60800000000000000
+      internalID: 7918660294589005235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_78
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caa229fe93ed0c4e0800000000000000
+      internalID: -1963325097119700308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_79
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 567
+        width: 73
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d93a24f08f4bac160800000000000000
+      internalID: 7046643544475476893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_80
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 570
+        width: 63
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac015c083fac8b460800000000000000
+      internalID: 7257773946693816522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_81
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 570
+        width: 63
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b825a62c78ac7e90800000000000000
+      internalID: -7026556067427047239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_82
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 512
+        width: 63
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 541af66f6415d1840800000000000000
+      internalID: 5196398910279491909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_83
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 512
+        width: 62
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40a79455b5ca068c0800000000000000
+      internalID: -4008014160086861308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_84
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 515
+        width: 62
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d037c8acb548ed0a0800000000000000
+      internalID: -6854896053036223731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_85
+      rect:
+        serializedVersion: 2
+        x: 286
+        y: 514
+        width: 65
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d0158dd1582a4950800000000000000
+      internalID: 6433999349726122193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_86
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 514
+        width: 65
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2f5597bea1c470d0800000000000000
+      internalID: -3425900460373614804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_87
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 515
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14e78ac6499a6c240800000000000000
+      internalID: 4811719706835189313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_88
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 515
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e960a3a2af011b00800000000000000
+      internalID: 797435800225606116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_89
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 515
+        width: 51
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5357955bf25c7660800000000000000
+      internalID: 7384868728407020380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_90
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 524
+        width: 21
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4c4086dc37e83ae0800000000000000
+      internalID: -1569250221655831474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_91
+      rect:
+        serializedVersion: 2
+        x: 746
+        y: 513
+        width: 66
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82e5b80ef946ba560800000000000000
+      internalID: 7326059856678051368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_92
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 513
+        width: 66
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b26b52634efdc8bb0800000000000000
+      internalID: -4932321320623557077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_93
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 513
+        width: 67
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc95c641daaea0f30800000000000000
+      internalID: 4542701203249453517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_94
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 457
+        width: 67
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2e15e0e4cc3b35a0800000000000000
+      internalID: -6540567217541145046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_95
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 457
+        width: 53
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8c4347d8497ca160800000000000000
+      internalID: 7038133671429360780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_96
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 467
+        width: 24
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee2a060b2264b0a20800000000000000
+      internalID: 3029592289138746094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_97
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 457
+        width: 66
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acd9e751e5d168d20800000000000000
+      internalID: 3280341668510735818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_98
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 457
+        width: 66
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c3920c62aae0ab20800000000000000
+      internalID: 3143770523222315973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_99
+      rect:
+        serializedVersion: 2
+        x: 381
+        y: 457
+        width: 67
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c016743b14123750800000000000000
+      internalID: 6283106537212088517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_100
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 457
+        width: 67
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7251d4a4fff31ce80800000000000000
+      internalID: -8160170684122852057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_101
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 457
+        width: 53
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9aac637d4dc6693a0800000000000000
+      internalID: -6659015337621140823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_102
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 467
+        width: 24
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80694b47fe2e59ae0800000000000000
+      internalID: -1543077779221473784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_103
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 459
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc5ea623760f66660800000000000000
+      internalID: 7378849365511300556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_104
+      rect:
+        serializedVersion: 2
+        x: 745
+        y: 459
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f95a316cee39ed940800000000000000
+      internalID: 5322854463333180831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_105
+      rect:
+        serializedVersion: 2
+        x: 834
+        y: 459
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 494b921cb242550d0800000000000000
+      internalID: -3434799370457205612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_106
+      rect:
+        serializedVersion: 2
+        x: 924
+        y: 459
+        width: 63
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cfc3709bd4d40fb0800000000000000
+      internalID: -4682383673072037945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_107
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 406
+        width: 63
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e77edea2ac75fd4f0800000000000000
+      internalID: -801825682833414274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_108
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 406
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 166b52a39debf0990800000000000000
+      internalID: -7417500221063186847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_109
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 406
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e468d02133ca23ba0800000000000000
+      internalID: -6110632409042155954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_110
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 406
+        width: 64
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2953745ec753ee550800000000000000
+      internalID: 6191945348219876754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_111
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 406
+        width: 63
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63307c5f471ff1ad0800000000000000
+      internalID: -2729197364521270474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_112
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 406
+        width: 63
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96238204c6833f4f0800000000000000
+      internalID: -796230671530446231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_113
+      rect:
+        serializedVersion: 2
+        x: 548
+        y: 406
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eea06a1e6e1c843c0800000000000000
+      internalID: -4375033840618042642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_114
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 406
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 031fc1ed08dbd36b0800000000000000
+      internalID: -5314883624047414992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_115
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 406
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6bbe473513af27c0800000000000000
+      internalID: -4093874224738944150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_116
+      rect:
+        serializedVersion: 2
+        x: 827
+        y: 406
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a398dd0c1b701d6a0800000000000000
+      internalID: -6426346733254637254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_117
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 408
+        width: 59
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f706b6e5e06ac33e0800000000000000
+      internalID: -2072599147853422465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_118
+      rect:
+        serializedVersion: 2
+        x: 974
+        y: 421
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea78bee81ad1b5d60800000000000000
+      internalID: 7879924552739555246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_119
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 353
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ccfd2eb36efc31f0800000000000000
+      internalID: -1063695707620377406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_120
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 353
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21a45075ab6e620c0800000000000000
+      internalID: -4600736281314113006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_121
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 353
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4b69c48cc0158be0800000000000000
+      internalID: -1475754832306803891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_122
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 353
+        width: 66
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8086c3003968f8490800000000000000
+      internalID: -7741821268504319992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_123
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 355
+        width: 59
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e50414a71e0be600800000000000000
+      internalID: 498507678454384096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_124
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 368
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dc02da738c05bc00800000000000000
+      internalID: 915651858080599252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_125
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 353
+        width: 65
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 134a5ada7d1a9c9d0800000000000000
+      internalID: -2753491749456993231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_126
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 353
+        width: 65
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14919234536c8de00800000000000000
+      internalID: 1069822843562826049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_127
+      rect:
+        serializedVersion: 2
+        x: 663
+        y: 353
+        width: 65
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84e1f5b5cf1f00940800000000000000
+      internalID: 5260470430935752264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_128
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 353
+        width: 65
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 219aacd6fafe20fa0800000000000000
+      internalID: -5835838630378428142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_129
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 354
+        width: 59
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d5a79d28ebef15e0800000000000000
+      internalID: -1936569932316170794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_130
+      rect:
+        serializedVersion: 2
+        x: 901
+        y: 368
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3a68c392b17d5020800000000000000
+      internalID: 2332145193845287483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_131
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 353
+        width: 58
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc2cd145d7908d970800000000000000
+      internalID: 8779777907445580492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_132
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 301
+        width: 58
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3631d56fa1b43220800000000000000
+      internalID: 2464790262964106813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_133
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 301
+        width: 58
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 807a6e5ede47c96c0800000000000000
+      internalID: -4135301792719788280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_134
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 301
+        width: 59
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 149303244c22ebf60800000000000000
+      internalID: 8051911410104416577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_135
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 302
+        width: 59
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 328c165cd589edde0800000000000000
+      internalID: -1306439313379964893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_136
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 301
+        width: 58
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c8bbe4260ddcf800800000000000000
+      internalID: 647635464893479110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_137
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 301
+        width: 58
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79222bacc31fe29c0800000000000000
+      internalID: -3949954579756342633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_138
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 301
+        width: 58
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22fc9155d5dc81dc0800000000000000
+      internalID: -3667956095749861598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_139
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 301
+        width: 59
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51d16de60bc2aa1e0800000000000000
+      internalID: -2185885532849562347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_140
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 302
+        width: 59
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ede309f1aa5973f80800000000000000
+      internalID: -8126862444660244770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_141
+      rect:
+        serializedVersion: 2
+        x: 787
+        y: 302
+        width: 64
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ba58fdca9b9eeb80800000000000000
+      internalID: -8363576368797558093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_142
+      rect:
+        serializedVersion: 2
+        x: 876
+        y: 302
+        width: 64
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1365a488f96df3b0800000000000000
+      internalID: -5477105055714417894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_143
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 250
+        width: 64
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4a27acd50d36c800800000000000000
+      internalID: 632259893078207055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_144
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 250
+        width: 64
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c66728d5b09366210800000000000000
+      internalID: 1325809861283444332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_145
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 250
+        width: 64
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa9ad26c4050faae0800000000000000
+      internalID: -1536003429847160406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_146
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 250
+        width: 60
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66e40ff8b50acdd00800000000000000
+      internalID: 998849532486766182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_147
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 250
+        width: 60
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7db0cf936b3eae10800000000000000
+      internalID: 2210769766153502076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_148
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 250
+        width: 60
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 419c55d2dc2e808a0800000000000000
+      internalID: -6338567104667203308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_149
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 250
+        width: 61
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f87915e0e488e67b0800000000000000
+      internalID: -5229092248501512305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_150
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 252
+        width: 61
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b821dea9c442c2f0800000000000000
+      internalID: -954124538037065549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_151
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 249
+        width: 56
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41d29c0ac02d99350800000000000000
+      internalID: 6024076928263728404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_152
+      rect:
+        serializedVersion: 2
+        x: 805
+        y: 249
+        width: 56
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9645192f09c4a80c0800000000000000
+      internalID: -4572758286212705175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_153
+      rect:
+        serializedVersion: 2
+        x: 889
+        y: 249
+        width: 56
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95b7db76e118bf3f0800000000000000
+      internalID: -865956535749215399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_154
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 198
+        width: 56
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8452703dab56a0a80800000000000000
+      internalID: -8499869493629606584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_155
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 199
+        width: 57
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4819f729885ddbf0800000000000000
+      internalID: -297984654232184758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_156
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 199
+        width: 57
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 534e053d78294cf50800000000000000
+      internalID: 6900801641101976629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_157
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 199
+        width: 57
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e943a86e6026f4980800000000000000
+      internalID: -8552509385576139618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_158
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 199
+        width: 57
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b78cf4d2fc2c7b540800000000000000
+      internalID: 5023698104429299835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_159
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 199
+        width: 57
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ab77bb0f1c8c7560800000000000000
+      internalID: 7312873959911291812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_160
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 199
+        width: 57
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d257a1dc5120db710800000000000000
+      internalID: 1710525726129288493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_161
+      rect:
+        serializedVersion: 2
+        x: 581
+        y: 203
+        width: 61
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04a56bd21f5d6b360800000000000000
+      internalID: 7185165487346965056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_162
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 203
+        width: 61
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 506cd6cbe40332560800000000000000
+      internalID: 7287721736742487557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_163
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 203
+        width: 61
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d95882bee18d72080800000000000000
+      internalID: -9212156885457140323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_164
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 203
+        width: 61
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df91b3e007c94e510800000000000000
+      internalID: 1577557774575540733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_165
+      rect:
+        serializedVersion: 2
+        x: 929
+        y: 210
+        width: 61
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 055d2c5fbe0c49f60800000000000000
+      internalID: 8040263354436212048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_166
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 158
+        width: 35
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cf2b2627e227b6d0800000000000000
+      internalID: -2974870652681769022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_167
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 158
+        width: 35
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3552c68c5225fc260800000000000000
+      internalID: 7119999858125841747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_168
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 158
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9b1c4ec00d51c420800000000000000
+      internalID: 2648500313913039774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_169
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 158
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f104ec27c12578ff0800000000000000
+      internalID: -33968190043308001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_170
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 162
+        width: 36
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35d2d2c9ed6931240800000000000000
+      internalID: 4761315113907858771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_171
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb48b508108eb1350800000000000000
+      internalID: 5988635222665299135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_172
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 888818633cec7a8c0800000000000000
+      internalID: -3987991607184881528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_173
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e59857e48ddd5820800000000000000
+      internalID: 2908724497237972453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_174
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 473b79a7cfa0c1d30800000000000000
+      internalID: 4403406615166301044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_175
+      rect:
+        serializedVersion: 2
+        x: 519
+        y: 162
+        width: 36
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 590f2b06dc7d51760800000000000000
+      internalID: 7428080437508108437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_176
+      rect:
+        serializedVersion: 2
+        x: 575
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d93f246b556aaeda0800000000000000
+      internalID: -5914732273537453155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_177
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a51a3971dd4f6f0a0800000000000000
+      internalID: -6848016952949759654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_178
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34f54c701149dbf80800000000000000
+      internalID: -8089146554821877949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_179
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 159
+        width: 36
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e00bcdb6a43884870800000000000000
+      internalID: 8667321838534963214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_180
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 162
+        width: 36
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 181712398e1bf3cd0800000000000000
+      internalID: -2576144849373662847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_181
+      rect:
+        serializedVersion: 2
+        x: 856
+        y: 159
+        width: 43
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86c2f200730c932b0800000000000000
+      internalID: -5604236918827045784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_182
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 159
+        width: 43
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f3504f7e45f4c4a0800000000000000
+      internalID: -6573859838562905097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_183
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 118
+        width: 43
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a9dec342230aee50800000000000000
+      internalID: 6839282429816920482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_184
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 118
+        width: 43
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c69a1df9e91c02ba0800000000000000
+      internalID: -6115675406938822292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_185
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 124
+        width: 39
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ff32a44bd46eda60800000000000000
+      internalID: 7700703305762226161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_186
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce4febd43e623ccd0800000000000000
+      internalID: -2539143007203035924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_187
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcd30466906e84950800000000000000
+      internalID: 6433644995743333837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_188
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3fe881d9b7d10740800000000000000
+      internalID: 5116607844753927996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_189
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e15f28bedbf3c6a20800000000000000
+      internalID: 3056888332010321182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_190
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 123
+        width: 39
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be403228359127be0800000000000000
+      internalID: -1481093480995158805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_191
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a761885a662fa1f0800000000000000
+      internalID: -1031563551451289695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_192
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c176adf11914baf0800000000000000
+      internalID: -381652503358967351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_193
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99c30e8f7fcdcf920800000000000000
+      internalID: 3025536007276608665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_194
+      rect:
+        serializedVersion: 2
+        x: 715
+        y: 118
+        width: 42
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f920816d4090c570800000000000000
+      internalID: 8484940359988685298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_195
+      rect:
+        serializedVersion: 2
+        x: 782
+        y: 123
+        width: 39
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47a34d7d64bda7c10800000000000000
+      internalID: 2052193677535885940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_196
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 119
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d6a4c81d675c2720800000000000000
+      internalID: 2822727192533051092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_197
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 119
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82ee2a8b47fc1a450800000000000000
+      internalID: 6098383470657203752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_198
+      rect:
+        serializedVersion: 2
+        x: 965
+        y: 119
+        width: 40
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0ebbf61fe57fc610800000000000000
+      internalID: 1643662058756750859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_199
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 79
+        width: 40
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 837bc2f7972503b20800000000000000
+      internalID: 3112078024291170104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_200
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 84
+        width: 39
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1d97651e7dfe6560800000000000000
+      internalID: 7309057963235712287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_201
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 81
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50aa02429770e5560800000000000000
+      internalID: 7304283862520080901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_202
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 78
+        width: 40
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29014362cb3eb6b90800000000000000
+      internalID: -7247448778088378222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_203
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 78
+        width: 40
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b870531823d7c7fe0800000000000000
+      internalID: -1189938545663080565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_204
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 78
+        width: 41
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92f8525eac7a4adb0800000000000000
+      internalID: -4781512414490947799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_205
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 78
+        width: 41
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e17190ea0d8d70b0800000000000000
+      internalID: -5729268073088585241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_206
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 83
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce5ce52cb038ea800800000000000000
+      internalID: 625581484779947500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_207
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 78
+        width: 40
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 897422fe946918060800000000000000
+      internalID: 6954004543925536664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_208
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 78
+        width: 40
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 929935f9ba01734d0800000000000000
+      internalID: -3155034684651235031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_209
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 78
+        width: 41
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fffd5ed43a5925210800000000000000
+      internalID: 1320282169392095231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_210
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 78
+        width: 41
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10282c6f73143a3a0800000000000000
+      internalID: -6655404115704511999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_211
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 83
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78d11717afa4bb910800000000000000
+      internalID: 1854158111098609031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_212
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 80
+        width: 31
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbe071ea2c3fbee90800000000000000
+      internalID: -6995229578719981892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_213
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 80
+        width: 31
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d13a29e9973d4c5c0800000000000000
+      internalID: -4195996433497545955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_214
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 80
+        width: 31
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82e932a092cae4040800000000000000
+      internalID: 4633830358874562088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_215
+      rect:
+        serializedVersion: 2
+        x: 892
+        y: 80
+        width: 31
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea40759d8035682c0800000000000000
+      internalID: -4429761886001101650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_216
+      rect:
+        serializedVersion: 2
+        x: 942
+        y: 84
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 136a0fc713bdb2a90800000000000000
+      internalID: -7337530162274064847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_217
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36c8b392afb5eeae0800000000000000
+      internalID: -1518174894385558429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_218
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7caed2c886ae7a30800000000000000
+      internalID: 4214989407580499067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_219
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbf9fd565ca071dd0800000000000000
+      internalID: -2515530023929143364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_220
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b67073697d0c046b0800000000000000
+      internalID: -5314035528126494869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_221
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 47
+        width: 44
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06536ed81b8fbbef0800000000000000
+      internalID: -91205925957388960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_222
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 44
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21279787471c63af0800000000000000
+      internalID: -416933209503600110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_223
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 686701c1cffb27930800000000000000
+      internalID: 4139582097030411910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_224
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25828fe612dabd4a0800000000000000
+      internalID: -6567465272482453422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_225
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebaf5ead21ebdf020800000000000000
+      internalID: 2377265166512683710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_226
+      rect:
+        serializedVersion: 2
+        x: 579
+        y: 41
+        width: 49
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 172616cb68494d240800000000000000
+      internalID: 4815637207972930161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_227
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 47
+        width: 44
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c00bf66411cd00e40800000000000000
+      internalID: 5620734301712658444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_228
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 44
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3373b3c6dc34fefa0800000000000000
+      internalID: -5769318048075139277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_229
+      rect:
+        serializedVersion: 2
+        x: 721
+        y: 41
+        width: 50
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5daf261799eef93c0800000000000000
+      internalID: -4350496372216890667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_230
+      rect:
+        serializedVersion: 2
+        x: 791
+        y: 41
+        width: 50
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 503fed1490b3843e0800000000000000
+      internalID: -2069339117830868219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_231
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 41
+        width: 50
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81acd63cb2d4c1800800000000000000
+      internalID: 584426902009006616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_232
+      rect:
+        serializedVersion: 2
+        x: 931
+        y: 41
+        width: 50
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a62d28788c3caa440800000000000000
+      internalID: 4947982406654284394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_233
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 13
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5fd9423bf0d37590800000000000000
+      internalID: -7677563162437492897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_234
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 9
+        width: 38
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87d5fce51ab9ee0a0800000000000000
+      internalID: -6850366865801257608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_235
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 5
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a190fe25dfee2120800000000000000
+      internalID: 2391112151074902436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_236
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 5
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa1bca6190469aaf0800000000000000
+      internalID: -384666302965567057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_237
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 5
+        width: 45
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5566698f0ad2daa30800000000000000
+      internalID: 4228085794559387221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_238
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 5
+        width: 45
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87918f8c537438c00800000000000000
+      internalID: 901642646734772600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_239
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 12
+        width: 44
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a97515aa787a1cb0800000000000000
+      internalID: -4892465577033631324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_240
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 5
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2d2fd1768da07850800000000000000
+      internalID: 6372784265676926250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_241
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 5
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae3afd3c0648ef3c0800000000000000
+      internalID: -4323873041091157014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_242
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 5
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5be63dd04b00fa150800000000000000
+      internalID: 5885924011322601141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_243
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 5
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81587909257064b70800000000000000
+      internalID: 8882795366229443864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_244
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 5
+        width: 30
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 119153698b11aa6f0800000000000000
+      internalID: -672705709846750959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_245
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 8
+        width: 40
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff04c2343b6714d70800000000000000
+      internalID: 9025625640525381887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_246
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 8
+        width: 40
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a310e8cc1c2638990800000000000000
+      internalID: -7384950379457412806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_247
+      rect:
+        serializedVersion: 2
+        x: 783
+        y: 8
+        width: 40
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0691bef08a22fdc10800000000000000
+      internalID: 2080419658085374304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_248
+      rect:
+        serializedVersion: 2
+        x: 844
+        y: 8
+        width: 40
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9d8c0387fedf1aa0800000000000000
+      internalID: -6187982208346845798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_249
+      rect:
+        serializedVersion: 2
+        x: 905
+        y: 14
+        width: 40
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 874e55f357789beb0800000000000000
+      internalID: -4703579398168255368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_0_unlit_250
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 6
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29f60fb31c054ea20800000000000000
+      internalID: 3090684035147526034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bayberry_0_unlit_0: -4177934664134234699
+      Bayberry_0_unlit_1: 5101128856317031939
+      Bayberry_0_unlit_10: 6407546735976528432
+      Bayberry_0_unlit_100: -8160170684122852057
+      Bayberry_0_unlit_101: -6659015337621140823
+      Bayberry_0_unlit_102: -1543077779221473784
+      Bayberry_0_unlit_103: 7378849365511300556
+      Bayberry_0_unlit_104: 5322854463333180831
+      Bayberry_0_unlit_105: -3434799370457205612
+      Bayberry_0_unlit_106: -4682383673072037945
+      Bayberry_0_unlit_107: -801825682833414274
+      Bayberry_0_unlit_108: -7417500221063186847
+      Bayberry_0_unlit_109: -6110632409042155954
+      Bayberry_0_unlit_11: -8916444640078721940
+      Bayberry_0_unlit_110: 6191945348219876754
+      Bayberry_0_unlit_111: -2729197364521270474
+      Bayberry_0_unlit_112: -796230671530446231
+      Bayberry_0_unlit_113: -4375033840618042642
+      Bayberry_0_unlit_114: -5314883624047414992
+      Bayberry_0_unlit_115: -4093874224738944150
+      Bayberry_0_unlit_116: -6426346733254637254
+      Bayberry_0_unlit_117: -2072599147853422465
+      Bayberry_0_unlit_118: 7879924552739555246
+      Bayberry_0_unlit_119: -1063695707620377406
+      Bayberry_0_unlit_12: -4450320024074714702
+      Bayberry_0_unlit_120: -4600736281314113006
+      Bayberry_0_unlit_121: -1475754832306803891
+      Bayberry_0_unlit_122: -7741821268504319992
+      Bayberry_0_unlit_123: 498507678454384096
+      Bayberry_0_unlit_124: 915651858080599252
+      Bayberry_0_unlit_125: -2753491749456993231
+      Bayberry_0_unlit_126: 1069822843562826049
+      Bayberry_0_unlit_127: 5260470430935752264
+      Bayberry_0_unlit_128: -5835838630378428142
+      Bayberry_0_unlit_129: -1936569932316170794
+      Bayberry_0_unlit_13: 890681189128649187
+      Bayberry_0_unlit_130: 2332145193845287483
+      Bayberry_0_unlit_131: 8779777907445580492
+      Bayberry_0_unlit_132: 2464790262964106813
+      Bayberry_0_unlit_133: -4135301792719788280
+      Bayberry_0_unlit_134: 8051911410104416577
+      Bayberry_0_unlit_135: -1306439313379964893
+      Bayberry_0_unlit_136: 647635464893479110
+      Bayberry_0_unlit_137: -3949954579756342633
+      Bayberry_0_unlit_138: -3667956095749861598
+      Bayberry_0_unlit_139: -2185885532849562347
+      Bayberry_0_unlit_14: -7959645773118502898
+      Bayberry_0_unlit_140: -8126862444660244770
+      Bayberry_0_unlit_141: -8363576368797558093
+      Bayberry_0_unlit_142: -5477105055714417894
+      Bayberry_0_unlit_143: 632259893078207055
+      Bayberry_0_unlit_144: 1325809861283444332
+      Bayberry_0_unlit_145: -1536003429847160406
+      Bayberry_0_unlit_146: 998849532486766182
+      Bayberry_0_unlit_147: 2210769766153502076
+      Bayberry_0_unlit_148: -6338567104667203308
+      Bayberry_0_unlit_149: -5229092248501512305
+      Bayberry_0_unlit_15: -2216917411641406600
+      Bayberry_0_unlit_150: -954124538037065549
+      Bayberry_0_unlit_151: 6024076928263728404
+      Bayberry_0_unlit_152: -4572758286212705175
+      Bayberry_0_unlit_153: -865956535749215399
+      Bayberry_0_unlit_154: -8499869493629606584
+      Bayberry_0_unlit_155: -297984654232184758
+      Bayberry_0_unlit_156: 6900801641101976629
+      Bayberry_0_unlit_157: -8552509385576139618
+      Bayberry_0_unlit_158: 5023698104429299835
+      Bayberry_0_unlit_159: 7312873959911291812
+      Bayberry_0_unlit_16: -2323799835656463865
+      Bayberry_0_unlit_160: 1710525726129288493
+      Bayberry_0_unlit_161: 7185165487346965056
+      Bayberry_0_unlit_162: 7287721736742487557
+      Bayberry_0_unlit_163: -9212156885457140323
+      Bayberry_0_unlit_164: 1577557774575540733
+      Bayberry_0_unlit_165: 8040263354436212048
+      Bayberry_0_unlit_166: -2974870652681769022
+      Bayberry_0_unlit_167: 7119999858125841747
+      Bayberry_0_unlit_168: 2648500313913039774
+      Bayberry_0_unlit_169: -33968190043308001
+      Bayberry_0_unlit_17: 9016384924650142746
+      Bayberry_0_unlit_170: 4761315113907858771
+      Bayberry_0_unlit_171: 5988635222665299135
+      Bayberry_0_unlit_172: -3987991607184881528
+      Bayberry_0_unlit_173: 2908724497237972453
+      Bayberry_0_unlit_174: 4403406615166301044
+      Bayberry_0_unlit_175: 7428080437508108437
+      Bayberry_0_unlit_176: -5914732273537453155
+      Bayberry_0_unlit_177: -6848016952949759654
+      Bayberry_0_unlit_178: -8089146554821877949
+      Bayberry_0_unlit_179: 8667321838534963214
+      Bayberry_0_unlit_18: 1844328731125450948
+      Bayberry_0_unlit_180: -2576144849373662847
+      Bayberry_0_unlit_181: -5604236918827045784
+      Bayberry_0_unlit_182: -6573859838562905097
+      Bayberry_0_unlit_183: 6839282429816920482
+      Bayberry_0_unlit_184: -6115675406938822292
+      Bayberry_0_unlit_185: 7700703305762226161
+      Bayberry_0_unlit_186: -2539143007203035924
+      Bayberry_0_unlit_187: 6433644995743333837
+      Bayberry_0_unlit_188: 5116607844753927996
+      Bayberry_0_unlit_189: 3056888332010321182
+      Bayberry_0_unlit_19: 5610866691984735067
+      Bayberry_0_unlit_190: -1481093480995158805
+      Bayberry_0_unlit_191: -1031563551451289695
+      Bayberry_0_unlit_192: -381652503358967351
+      Bayberry_0_unlit_193: 3025536007276608665
+      Bayberry_0_unlit_194: 8484940359988685298
+      Bayberry_0_unlit_195: 2052193677535885940
+      Bayberry_0_unlit_196: 2822727192533051092
+      Bayberry_0_unlit_197: 6098383470657203752
+      Bayberry_0_unlit_198: 1643662058756750859
+      Bayberry_0_unlit_199: 3112078024291170104
+      Bayberry_0_unlit_2: 5437872373816714659
+      Bayberry_0_unlit_20: -6539311585912910126
+      Bayberry_0_unlit_200: 7309057963235712287
+      Bayberry_0_unlit_201: 7304283862520080901
+      Bayberry_0_unlit_202: -7247448778088378222
+      Bayberry_0_unlit_203: -1189938545663080565
+      Bayberry_0_unlit_204: -4781512414490947799
+      Bayberry_0_unlit_205: -5729268073088585241
+      Bayberry_0_unlit_206: 625581484779947500
+      Bayberry_0_unlit_207: 6954004543925536664
+      Bayberry_0_unlit_208: -3155034684651235031
+      Bayberry_0_unlit_209: 1320282169392095231
+      Bayberry_0_unlit_21: -50034145795404333
+      Bayberry_0_unlit_210: -6655404115704511999
+      Bayberry_0_unlit_211: 1854158111098609031
+      Bayberry_0_unlit_212: -6995229578719981892
+      Bayberry_0_unlit_213: -4195996433497545955
+      Bayberry_0_unlit_214: 4633830358874562088
+      Bayberry_0_unlit_215: -4429761886001101650
+      Bayberry_0_unlit_216: -7337530162274064847
+      Bayberry_0_unlit_217: -1518174894385558429
+      Bayberry_0_unlit_218: 4214989407580499067
+      Bayberry_0_unlit_219: -2515530023929143364
+      Bayberry_0_unlit_22: 5873040169109505243
+      Bayberry_0_unlit_220: -5314035528126494869
+      Bayberry_0_unlit_221: -91205925957388960
+      Bayberry_0_unlit_222: -416933209503600110
+      Bayberry_0_unlit_223: 4139582097030411910
+      Bayberry_0_unlit_224: -6567465272482453422
+      Bayberry_0_unlit_225: 2377265166512683710
+      Bayberry_0_unlit_226: 4815637207972930161
+      Bayberry_0_unlit_227: 5620734301712658444
+      Bayberry_0_unlit_228: -5769318048075139277
+      Bayberry_0_unlit_229: -4350496372216890667
+      Bayberry_0_unlit_23: -3793262329266825961
+      Bayberry_0_unlit_230: -2069339117830868219
+      Bayberry_0_unlit_231: 584426902009006616
+      Bayberry_0_unlit_232: 4947982406654284394
+      Bayberry_0_unlit_233: -7677563162437492897
+      Bayberry_0_unlit_234: -6850366865801257608
+      Bayberry_0_unlit_235: 2391112151074902436
+      Bayberry_0_unlit_236: -384666302965567057
+      Bayberry_0_unlit_237: 4228085794559387221
+      Bayberry_0_unlit_238: 901642646734772600
+      Bayberry_0_unlit_239: -4892465577033631324
+      Bayberry_0_unlit_24: 1333132570442353722
+      Bayberry_0_unlit_240: 6372784265676926250
+      Bayberry_0_unlit_241: -4323873041091157014
+      Bayberry_0_unlit_242: 5885924011322601141
+      Bayberry_0_unlit_243: 8882795366229443864
+      Bayberry_0_unlit_244: -672705709846750959
+      Bayberry_0_unlit_245: 9025625640525381887
+      Bayberry_0_unlit_246: -7384950379457412806
+      Bayberry_0_unlit_247: 2080419658085374304
+      Bayberry_0_unlit_248: -6187982208346845798
+      Bayberry_0_unlit_249: -4703579398168255368
+      Bayberry_0_unlit_25: 9014551959515978137
+      Bayberry_0_unlit_250: 3090684035147526034
+      Bayberry_0_unlit_26: 8427282034116699504
+      Bayberry_0_unlit_27: -7892527581464465027
+      Bayberry_0_unlit_28: -5435928216489980614
+      Bayberry_0_unlit_29: 5530545961965265719
+      Bayberry_0_unlit_3: 7155783684782293593
+      Bayberry_0_unlit_30: -513158654224923624
+      Bayberry_0_unlit_31: 8246659264671443264
+      Bayberry_0_unlit_32: 252526728023649198
+      Bayberry_0_unlit_33: 849947099615210191
+      Bayberry_0_unlit_34: -2405538419569565834
+      Bayberry_0_unlit_35: -8868633430307857024
+      Bayberry_0_unlit_36: -2635126831605517050
+      Bayberry_0_unlit_37: -6135163216483335490
+      Bayberry_0_unlit_38: 3057838473904728455
+      Bayberry_0_unlit_39: 7938446325956085714
+      Bayberry_0_unlit_4: -2475711549039312642
+      Bayberry_0_unlit_40: 2026781043776406623
+      Bayberry_0_unlit_41: 6750322536739150354
+      Bayberry_0_unlit_42: -9081838928080284784
+      Bayberry_0_unlit_43: 4360409092030985934
+      Bayberry_0_unlit_44: 8291320183403972043
+      Bayberry_0_unlit_45: -1699700118212561483
+      Bayberry_0_unlit_46: -5562937072118964526
+      Bayberry_0_unlit_47: 2793480845960718026
+      Bayberry_0_unlit_48: -7149559202006025057
+      Bayberry_0_unlit_49: -6866082129629486402
+      Bayberry_0_unlit_5: -3344244229201502213
+      Bayberry_0_unlit_50: -6858362672067300901
+      Bayberry_0_unlit_51: -5624691467633171707
+      Bayberry_0_unlit_52: 5474849372137014782
+      Bayberry_0_unlit_53: -7520514815923434227
+      Bayberry_0_unlit_54: 4353212304536646601
+      Bayberry_0_unlit_55: -7542565376376775372
+      Bayberry_0_unlit_56: 1551249505861349738
+      Bayberry_0_unlit_57: 8453302236602522782
+      Bayberry_0_unlit_58: 2941267367411520185
+      Bayberry_0_unlit_59: -9041118612176058490
+      Bayberry_0_unlit_6: -8962573514997822844
+      Bayberry_0_unlit_60: 5075036870405854703
+      Bayberry_0_unlit_61: 281092964714347815
+      Bayberry_0_unlit_62: 6549972770961623110
+      Bayberry_0_unlit_63: 5368668603146455418
+      Bayberry_0_unlit_64: 9171337062898341122
+      Bayberry_0_unlit_65: 3715200695082878645
+      Bayberry_0_unlit_66: 3319432764923071009
+      Bayberry_0_unlit_67: 3346616151112236659
+      Bayberry_0_unlit_68: 6261579027496272239
+      Bayberry_0_unlit_69: 5948381925811146477
+      Bayberry_0_unlit_7: 8837480101966845791
+      Bayberry_0_unlit_70: -2938658683373059228
+      Bayberry_0_unlit_71: 4930442582377858690
+      Bayberry_0_unlit_72: 2846193255601683725
+      Bayberry_0_unlit_73: 2511128752190156646
+      Bayberry_0_unlit_74: 236671918346989690
+      Bayberry_0_unlit_75: 1969669891832013754
+      Bayberry_0_unlit_76: 8451275726948332899
+      Bayberry_0_unlit_77: 7918660294589005235
+      Bayberry_0_unlit_78: -1963325097119700308
+      Bayberry_0_unlit_79: 7046643544475476893
+      Bayberry_0_unlit_8: 6070407984522100788
+      Bayberry_0_unlit_80: 7257773946693816522
+      Bayberry_0_unlit_81: -7026556067427047239
+      Bayberry_0_unlit_82: 5196398910279491909
+      Bayberry_0_unlit_83: -4008014160086861308
+      Bayberry_0_unlit_84: -6854896053036223731
+      Bayberry_0_unlit_85: 6433999349726122193
+      Bayberry_0_unlit_86: -3425900460373614804
+      Bayberry_0_unlit_87: 4811719706835189313
+      Bayberry_0_unlit_88: 797435800225606116
+      Bayberry_0_unlit_89: 7384868728407020380
+      Bayberry_0_unlit_9: 4474669818849122691
+      Bayberry_0_unlit_90: -1569250221655831474
+      Bayberry_0_unlit_91: 7326059856678051368
+      Bayberry_0_unlit_92: -4932321320623557077
+      Bayberry_0_unlit_93: 4542701203249453517
+      Bayberry_0_unlit_94: -6540567217541145046
+      Bayberry_0_unlit_95: 7038133671429360780
+      Bayberry_0_unlit_96: 3029592289138746094
+      Bayberry_0_unlit_97: 3280341668510735818
+      Bayberry_0_unlit_98: 3143770523222315973
+      Bayberry_0_unlit_99: 6283106537212088517
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

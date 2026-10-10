@@ -1,0 +1,1404 @@
+fileFormatVersion: 2
+guid: 2feefb4d1b697434aa1d85e051ce68f7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9087108253126125187
+    second: RedOsierDogwood_0_light_0
+  - first:
+      213: 4450198658678885666
+    second: RedOsierDogwood_0_light_1
+  - first:
+      213: -2672086016095275389
+    second: RedOsierDogwood_0_light_2
+  - first:
+      213: 4114750103548586313
+    second: RedOsierDogwood_0_light_3
+  - first:
+      213: 7660470027986727430
+    second: RedOsierDogwood_0_light_4
+  - first:
+      213: -3133473283172302195
+    second: RedOsierDogwood_0_light_5
+  - first:
+      213: 291019083532034788
+    second: RedOsierDogwood_0_light_6
+  - first:
+      213: 3476132304781352194
+    second: RedOsierDogwood_0_light_7
+  - first:
+      213: 9019312395231873259
+    second: RedOsierDogwood_0_light_8
+  - first:
+      213: 7435582015363073315
+    second: RedOsierDogwood_0_light_9
+  - first:
+      213: -2591151583112011562
+    second: RedOsierDogwood_0_light_10
+  - first:
+      213: 2929434828876646265
+    second: RedOsierDogwood_0_light_11
+  - first:
+      213: -7120119347882118038
+    second: RedOsierDogwood_0_light_12
+  - first:
+      213: -7539580881248736680
+    second: RedOsierDogwood_0_light_13
+  - first:
+      213: -806340095469123191
+    second: RedOsierDogwood_0_light_14
+  - first:
+      213: -7841484941373507205
+    second: RedOsierDogwood_0_light_15
+  - first:
+      213: 3822825565145453016
+    second: RedOsierDogwood_0_light_16
+  - first:
+      213: 9144746039295957678
+    second: RedOsierDogwood_0_light_17
+  - first:
+      213: 7516687784750151448
+    second: RedOsierDogwood_0_light_18
+  - first:
+      213: -261600554730541407
+    second: RedOsierDogwood_0_light_19
+  - first:
+      213: 8289742277883374091
+    second: RedOsierDogwood_0_light_20
+  - first:
+      213: -5381880166080152902
+    second: RedOsierDogwood_0_light_21
+  - first:
+      213: -2565359233188870586
+    second: RedOsierDogwood_0_light_22
+  - first:
+      213: 1701650600894228708
+    second: RedOsierDogwood_0_light_23
+  - first:
+      213: 1895228698065995202
+    second: RedOsierDogwood_0_light_24
+  - first:
+      213: -2000668113118505062
+    second: RedOsierDogwood_0_light_25
+  - first:
+      213: 2397784112647600065
+    second: RedOsierDogwood_0_light_26
+  - first:
+      213: 1997481114263490858
+    second: RedOsierDogwood_0_light_27
+  - first:
+      213: -2100465172411233590
+    second: RedOsierDogwood_0_light_28
+  - first:
+      213: -2894850900505212844
+    second: RedOsierDogwood_0_light_29
+  - first:
+      213: 5278935553326459527
+    second: RedOsierDogwood_0_light_30
+  - first:
+      213: 6407525780073163866
+    second: RedOsierDogwood_0_light_31
+  - first:
+      213: -3400958288181748714
+    second: RedOsierDogwood_0_light_32
+  - first:
+      213: 6401972186608641811
+    second: RedOsierDogwood_0_light_33
+  - first:
+      213: 3074781090261433013
+    second: RedOsierDogwood_0_light_34
+  - first:
+      213: 6862877405489197630
+    second: RedOsierDogwood_0_light_35
+  - first:
+      213: -4609388032091684287
+    second: RedOsierDogwood_0_light_36
+  - first:
+      213: 6858217377357542399
+    second: RedOsierDogwood_0_light_37
+  - first:
+      213: 8223003735478753087
+    second: RedOsierDogwood_0_light_38
+  - first:
+      213: -7150359996430831163
+    second: RedOsierDogwood_0_light_39
+  - first:
+      213: -2624896604933613131
+    second: RedOsierDogwood_0_light_40
+  - first:
+      213: 5627136330302556518
+    second: RedOsierDogwood_0_light_41
+  - first:
+      213: -6889460528689300390
+    second: RedOsierDogwood_0_light_42
+  - first:
+      213: 648893326259460345
+    second: RedOsierDogwood_0_light_43
+  - first:
+      213: -2277521120718435339
+    second: RedOsierDogwood_0_light_44
+  - first:
+      213: -9142782391609056523
+    second: RedOsierDogwood_0_light_45
+  - first:
+      213: 4820708521666887061
+    second: RedOsierDogwood_0_light_46
+  - first:
+      213: 3383759825232977042
+    second: RedOsierDogwood_0_light_47
+  - first:
+      213: 8468692017984201245
+    second: RedOsierDogwood_0_light_48
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 302
+        width: 53
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7995e8703b14e180800000000000000
+      internalID: -9087108253126125187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 302
+        width: 51
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22d89761a1842cd30800000000000000
+      internalID: 4450198658678885666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 302
+        width: 51
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3863a59fce7daead0800000000000000
+      internalID: -2672086016095275389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 304
+        width: 60
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 949e3851b678a1930800000000000000
+      internalID: 4114750103548586313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 305
+        width: 61
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 602fcae47e47f4a60800000000000000
+      internalID: 7660470027986727430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 310
+        width: 25
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d82865b96aaa384d0800000000000000
+      internalID: -3133473283172302195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 310
+        width: 28
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e269c88058e90400800000000000000
+      internalID: 291019083532034788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 230
+        width: 63
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20d90c2f9e3bd3030800000000000000
+      internalID: 3476132304781352194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 230
+        width: 61
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be8c21c46d80b2d70800000000000000
+      internalID: 9019312395231873259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 230
+        width: 58
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 325cff3927e703760800000000000000
+      internalID: 7435582015363073315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 229
+        width: 53
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d0ea691d516a0cd0800000000000000
+      internalID: -2591151583112011562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 229
+        width: 54
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97789dfb47177a820800000000000000
+      internalID: 2929434828876646265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 229
+        width: 53
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a64b9175d21403d90800000000000000
+      internalID: -7120119347882118038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 158
+        width: 61
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85aa7d982270e5790800000000000000
+      internalID: -7539580881248736680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 158
+        width: 59
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 989886194fd4fc4f0800000000000000
+      internalID: -806340095469123191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 158
+        width: 59
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b797bd5edf27d2390800000000000000
+      internalID: -7841484941373507205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 160
+        width: 55
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d1d6c8e8976d0530800000000000000
+      internalID: 3822825565145453016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 170
+        width: 36
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaa5561621aa8ee70800000000000000
+      internalID: 9144746039295957678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 170
+        width: 35
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 817fc8117b3a05860800000000000000
+      internalID: 7516687784750151448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 170
+        width: 34
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aead367eab9e5cf0800000000000000
+      internalID: -261600554730541407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 98
+        width: 34
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0aa6c84ea41b0370800000000000000
+      internalID: 8289742277883374091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 100
+        width: 39
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aba721dd088bf45b0800000000000000
+      internalID: -5381880166080152902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 100
+        width: 38
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64642888e53066cd0800000000000000
+      internalID: -2565359233188870586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 100
+        width: 38
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e8612ea43a7d9710800000000000000
+      internalID: 1701650600894228708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 101
+        width: 41
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c58954a5743d4a10800000000000000
+      internalID: 1895228698065995202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 103
+        width: 40
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a97de1c73f23c34e0800000000000000
+      internalID: -2000668113118505062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 103
+        width: 37
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c77f6a42f3a64120800000000000000
+      internalID: 2397784112647600065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 103
+        width: 37
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a211a358d7a78bb10800000000000000
+      internalID: 1997481114263490858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 45
+        width: 34
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aca495fed06a9d2e0800000000000000
+      internalID: -2100465172411233590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 46
+        width: 34
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 458caad817c63d7d0800000000000000
+      internalID: -2894850900505212844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 46
+        width: 33
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78a2430baeb824940800000000000000
+      internalID: 5278935553326459527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 47
+        width: 36
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5c2b6a9fba1ce850800000000000000
+      internalID: 6407525780073163866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 48
+        width: 36
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61c9109b47e5dc0d0800000000000000
+      internalID: -3400958288181748714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 57
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3172dbcd8cf58d850800000000000000
+      internalID: 6401972186608641811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 57
+        width: 27
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bafe175c11dbaa20800000000000000
+      internalID: 3074781090261433013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 57
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e32fc33a3a6dd3f50800000000000000
+      internalID: 6862877405489197630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 56
+        width: 25
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1420d33a10a2800c0800000000000000
+      internalID: -4609388032091684287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 58
+        width: 28
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff3bec94e584d2f50800000000000000
+      internalID: 6858217377357542399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 5
+        width: 26
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f37dbef745afd1270800000000000000
+      internalID: 8223003735478753087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 5
+        width: 27
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c1b39ca771d4cc90800000000000000
+      internalID: -7150359996430831163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 5
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b99dc2f17e729bd0800000000000000
+      internalID: -2624896604933613131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 5
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6690166bdaa971e40800000000000000
+      internalID: 5627136330302556518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 6
+        width: 26
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5c366da628b360a0800000000000000
+      internalID: -6889460528689300390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 6
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f811d0da05510900800000000000000
+      internalID: 648893326259460345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 7
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fbc0278b9e9460e0800000000000000
+      internalID: -2277521120718435339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 8
+        width: 23
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f22279fadf4e1180800000000000000
+      internalID: -9142782391609056523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 7
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59d37a7fbd896e240800000000000000
+      internalID: 4820708521666887061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 9
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29cdf3412a785fe20800000000000000
+      internalID: 3383759825232977042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOsierDogwood_0_light_48
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 9
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1262247586d68570800000000000000
+      internalID: 8468692017984201245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      RedOsierDogwood_0_light_0: -9087108253126125187
+      RedOsierDogwood_0_light_1: 4450198658678885666
+      RedOsierDogwood_0_light_10: -2591151583112011562
+      RedOsierDogwood_0_light_11: 2929434828876646265
+      RedOsierDogwood_0_light_12: -7120119347882118038
+      RedOsierDogwood_0_light_13: -7539580881248736680
+      RedOsierDogwood_0_light_14: -806340095469123191
+      RedOsierDogwood_0_light_15: -7841484941373507205
+      RedOsierDogwood_0_light_16: 3822825565145453016
+      RedOsierDogwood_0_light_17: 9144746039295957678
+      RedOsierDogwood_0_light_18: 7516687784750151448
+      RedOsierDogwood_0_light_19: -261600554730541407
+      RedOsierDogwood_0_light_2: -2672086016095275389
+      RedOsierDogwood_0_light_20: 8289742277883374091
+      RedOsierDogwood_0_light_21: -5381880166080152902
+      RedOsierDogwood_0_light_22: -2565359233188870586
+      RedOsierDogwood_0_light_23: 1701650600894228708
+      RedOsierDogwood_0_light_24: 1895228698065995202
+      RedOsierDogwood_0_light_25: -2000668113118505062
+      RedOsierDogwood_0_light_26: 2397784112647600065
+      RedOsierDogwood_0_light_27: 1997481114263490858
+      RedOsierDogwood_0_light_28: -2100465172411233590
+      RedOsierDogwood_0_light_29: -2894850900505212844
+      RedOsierDogwood_0_light_3: 4114750103548586313
+      RedOsierDogwood_0_light_30: 5278935553326459527
+      RedOsierDogwood_0_light_31: 6407525780073163866
+      RedOsierDogwood_0_light_32: -3400958288181748714
+      RedOsierDogwood_0_light_33: 6401972186608641811
+      RedOsierDogwood_0_light_34: 3074781090261433013
+      RedOsierDogwood_0_light_35: 6862877405489197630
+      RedOsierDogwood_0_light_36: -4609388032091684287
+      RedOsierDogwood_0_light_37: 6858217377357542399
+      RedOsierDogwood_0_light_38: 8223003735478753087
+      RedOsierDogwood_0_light_39: -7150359996430831163
+      RedOsierDogwood_0_light_4: 7660470027986727430
+      RedOsierDogwood_0_light_40: -2624896604933613131
+      RedOsierDogwood_0_light_41: 5627136330302556518
+      RedOsierDogwood_0_light_42: -6889460528689300390
+      RedOsierDogwood_0_light_43: 648893326259460345
+      RedOsierDogwood_0_light_44: -2277521120718435339
+      RedOsierDogwood_0_light_45: -9142782391609056523
+      RedOsierDogwood_0_light_46: 4820708521666887061
+      RedOsierDogwood_0_light_47: 3383759825232977042
+      RedOsierDogwood_0_light_48: 8468692017984201245
+      RedOsierDogwood_0_light_5: -3133473283172302195
+      RedOsierDogwood_0_light_6: 291019083532034788
+      RedOsierDogwood_0_light_7: 3476132304781352194
+      RedOsierDogwood_0_light_8: 9019312395231873259
+      RedOsierDogwood_0_light_9: 7435582015363073315
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

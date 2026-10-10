@@ -1,0 +1,6968 @@
+fileFormatVersion: 2
+guid: 55cc526c63fc0f14683507011befa1f0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3605698883134380092
+    second: Threesquare_0_unlit_0
+  - first:
+      213: -8780441719036088221
+    second: Threesquare_0_unlit_1
+  - first:
+      213: -6183512555679206417
+    second: Threesquare_0_unlit_2
+  - first:
+      213: 892998618115161010
+    second: Threesquare_0_unlit_3
+  - first:
+      213: 3573160910980652322
+    second: Threesquare_0_unlit_4
+  - first:
+      213: -2455608815550953065
+    second: Threesquare_0_unlit_5
+  - first:
+      213: -1271504377433637580
+    second: Threesquare_0_unlit_6
+  - first:
+      213: -788235764372642897
+    second: Threesquare_0_unlit_7
+  - first:
+      213: 2257777244473451645
+    second: Threesquare_0_unlit_8
+  - first:
+      213: 527251536184845556
+    second: Threesquare_0_unlit_9
+  - first:
+      213: 2755141694285026730
+    second: Threesquare_0_unlit_10
+  - first:
+      213: -3168118657476907805
+    second: Threesquare_0_unlit_11
+  - first:
+      213: -3135605782917686275
+    second: Threesquare_0_unlit_12
+  - first:
+      213: -6399854870988433344
+    second: Threesquare_0_unlit_13
+  - first:
+      213: 1475186574929414968
+    second: Threesquare_0_unlit_14
+  - first:
+      213: -2169442391669443721
+    second: Threesquare_0_unlit_15
+  - first:
+      213: -3842512982702613695
+    second: Threesquare_0_unlit_16
+  - first:
+      213: -1487848496219780519
+    second: Threesquare_0_unlit_17
+  - first:
+      213: -3386093020990075721
+    second: Threesquare_0_unlit_18
+  - first:
+      213: 372191556371380334
+    second: Threesquare_0_unlit_19
+  - first:
+      213: 5961475484194086847
+    second: Threesquare_0_unlit_20
+  - first:
+      213: -3538113890974449347
+    second: Threesquare_0_unlit_21
+  - first:
+      213: -7565983009240120013
+    second: Threesquare_0_unlit_22
+  - first:
+      213: 9203462780410229299
+    second: Threesquare_0_unlit_23
+  - first:
+      213: 1545444539043765283
+    second: Threesquare_0_unlit_24
+  - first:
+      213: -6875575453364303797
+    second: Threesquare_0_unlit_25
+  - first:
+      213: -4803091466163995008
+    second: Threesquare_0_unlit_26
+  - first:
+      213: -8128977729499580914
+    second: Threesquare_0_unlit_27
+  - first:
+      213: -1768571602589995370
+    second: Threesquare_0_unlit_28
+  - first:
+      213: -2349851703762905881
+    second: Threesquare_0_unlit_29
+  - first:
+      213: 7627156946873476617
+    second: Threesquare_0_unlit_30
+  - first:
+      213: -295128727296310734
+    second: Threesquare_0_unlit_31
+  - first:
+      213: -8515804976351314544
+    second: Threesquare_0_unlit_32
+  - first:
+      213: -646769509657024100
+    second: Threesquare_0_unlit_33
+  - first:
+      213: -5158908483158168957
+    second: Threesquare_0_unlit_34
+  - first:
+      213: -3076180794602172881
+    second: Threesquare_0_unlit_35
+  - first:
+      213: 1144521507688718168
+    second: Threesquare_0_unlit_36
+  - first:
+      213: 9091396454916967999
+    second: Threesquare_0_unlit_37
+  - first:
+      213: -6677495174762812334
+    second: Threesquare_0_unlit_38
+  - first:
+      213: -2027842151747880472
+    second: Threesquare_0_unlit_39
+  - first:
+      213: -8857341086590242705
+    second: Threesquare_0_unlit_40
+  - first:
+      213: -4306032707464627557
+    second: Threesquare_0_unlit_41
+  - first:
+      213: 8145598050296211840
+    second: Threesquare_0_unlit_42
+  - first:
+      213: -2710641787527194075
+    second: Threesquare_0_unlit_43
+  - first:
+      213: -2117829732964667810
+    second: Threesquare_0_unlit_44
+  - first:
+      213: 3392070570822019153
+    second: Threesquare_0_unlit_45
+  - first:
+      213: -8218319423545880446
+    second: Threesquare_0_unlit_46
+  - first:
+      213: -2772328872174307033
+    second: Threesquare_0_unlit_47
+  - first:
+      213: -6887327279285967676
+    second: Threesquare_0_unlit_48
+  - first:
+      213: -1752506425682887306
+    second: Threesquare_0_unlit_49
+  - first:
+      213: -776845936006743505
+    second: Threesquare_0_unlit_50
+  - first:
+      213: -6880020597317955226
+    second: Threesquare_0_unlit_51
+  - first:
+      213: 3198694814547104054
+    second: Threesquare_0_unlit_52
+  - first:
+      213: 472526420321141439
+    second: Threesquare_0_unlit_53
+  - first:
+      213: -9050366093675737281
+    second: Threesquare_0_unlit_54
+  - first:
+      213: -4569680602713176717
+    second: Threesquare_0_unlit_55
+  - first:
+      213: 8381301039293770851
+    second: Threesquare_0_unlit_56
+  - first:
+      213: -8155905240503369890
+    second: Threesquare_0_unlit_57
+  - first:
+      213: 8399885471871866081
+    second: Threesquare_0_unlit_58
+  - first:
+      213: -7742014976871198709
+    second: Threesquare_0_unlit_59
+  - first:
+      213: 1182423191315303720
+    second: Threesquare_0_unlit_60
+  - first:
+      213: 4188932825148975346
+    second: Threesquare_0_unlit_61
+  - first:
+      213: -1632827815645441384
+    second: Threesquare_0_unlit_62
+  - first:
+      213: -4363412872988882253
+    second: Threesquare_0_unlit_63
+  - first:
+      213: 1448441209991061237
+    second: Threesquare_0_unlit_64
+  - first:
+      213: -6449460908229564885
+    second: Threesquare_0_unlit_65
+  - first:
+      213: -7608718183835309374
+    second: Threesquare_0_unlit_66
+  - first:
+      213: -6698228090414992159
+    second: Threesquare_0_unlit_67
+  - first:
+      213: 6867910409786980170
+    second: Threesquare_0_unlit_68
+  - first:
+      213: -2591855616623062140
+    second: Threesquare_0_unlit_69
+  - first:
+      213: -3438869228742592387
+    second: Threesquare_0_unlit_70
+  - first:
+      213: 6545928942592387680
+    second: Threesquare_0_unlit_71
+  - first:
+      213: 2920426612350028673
+    second: Threesquare_0_unlit_72
+  - first:
+      213: 2302574039371105408
+    second: Threesquare_0_unlit_73
+  - first:
+      213: 185971893064482629
+    second: Threesquare_0_unlit_74
+  - first:
+      213: -8782996081854770100
+    second: Threesquare_0_unlit_75
+  - first:
+      213: 7777656078888138089
+    second: Threesquare_0_unlit_76
+  - first:
+      213: -311028878767224641
+    second: Threesquare_0_unlit_77
+  - first:
+      213: -463168519098444125
+    second: Threesquare_0_unlit_78
+  - first:
+      213: -6250605061025402463
+    second: Threesquare_0_unlit_79
+  - first:
+      213: 2989664168212360842
+    second: Threesquare_0_unlit_80
+  - first:
+      213: -5286545152429296400
+    second: Threesquare_0_unlit_81
+  - first:
+      213: 4944277765493354199
+    second: Threesquare_0_unlit_82
+  - first:
+      213: 3521975465477507332
+    second: Threesquare_0_unlit_83
+  - first:
+      213: 3130448011548494394
+    second: Threesquare_0_unlit_84
+  - first:
+      213: 6936201864073480441
+    second: Threesquare_0_unlit_85
+  - first:
+      213: -597316991707103362
+    second: Threesquare_0_unlit_86
+  - first:
+      213: 1967795614964875626
+    second: Threesquare_0_unlit_87
+  - first:
+      213: -6711392247965686081
+    second: Threesquare_0_unlit_88
+  - first:
+      213: -357470468136245152
+    second: Threesquare_0_unlit_89
+  - first:
+      213: 1254766080500643643
+    second: Threesquare_0_unlit_90
+  - first:
+      213: 1776856842358260298
+    second: Threesquare_0_unlit_91
+  - first:
+      213: -6700805684617184042
+    second: Threesquare_0_unlit_92
+  - first:
+      213: -1437412015574313210
+    second: Threesquare_0_unlit_93
+  - first:
+      213: -8538623235006037446
+    second: Threesquare_0_unlit_94
+  - first:
+      213: 8505374548393732121
+    second: Threesquare_0_unlit_95
+  - first:
+      213: 368618098556340951
+    second: Threesquare_0_unlit_96
+  - first:
+      213: 6253362395960797622
+    second: Threesquare_0_unlit_97
+  - first:
+      213: -424063236875635699
+    second: Threesquare_0_unlit_98
+  - first:
+      213: -8325390194414458733
+    second: Threesquare_0_unlit_99
+  - first:
+      213: 3412503060464768753
+    second: Threesquare_0_unlit_100
+  - first:
+      213: -1444133099520851750
+    second: Threesquare_0_unlit_101
+  - first:
+      213: 2822482029534595920
+    second: Threesquare_0_unlit_102
+  - first:
+      213: 1073292807638369490
+    second: Threesquare_0_unlit_103
+  - first:
+      213: 4620744063991080497
+    second: Threesquare_0_unlit_104
+  - first:
+      213: -1456392078657363312
+    second: Threesquare_0_unlit_105
+  - first:
+      213: -9156969179207508264
+    second: Threesquare_0_unlit_106
+  - first:
+      213: -6867988802850189924
+    second: Threesquare_0_unlit_107
+  - first:
+      213: 4092011177902666687
+    second: Threesquare_0_unlit_108
+  - first:
+      213: -5612918105871650540
+    second: Threesquare_0_unlit_109
+  - first:
+      213: -8505561239057065632
+    second: Threesquare_0_unlit_110
+  - first:
+      213: -1751194029624501849
+    second: Threesquare_0_unlit_111
+  - first:
+      213: 7534128218261584137
+    second: Threesquare_0_unlit_112
+  - first:
+      213: -6250654592806505249
+    second: Threesquare_0_unlit_113
+  - first:
+      213: 2348682836372982898
+    second: Threesquare_0_unlit_114
+  - first:
+      213: 2383589741371659003
+    second: Threesquare_0_unlit_115
+  - first:
+      213: 1354064155402588121
+    second: Threesquare_0_unlit_116
+  - first:
+      213: 401110454591801969
+    second: Threesquare_0_unlit_117
+  - first:
+      213: 4914348290981978059
+    second: Threesquare_0_unlit_118
+  - first:
+      213: 886166530089038860
+    second: Threesquare_0_unlit_119
+  - first:
+      213: -5084608372321707334
+    second: Threesquare_0_unlit_120
+  - first:
+      213: -5085887561474112082
+    second: Threesquare_0_unlit_121
+  - first:
+      213: 1413155432986161494
+    second: Threesquare_0_unlit_122
+  - first:
+      213: -8723026111942664208
+    second: Threesquare_0_unlit_123
+  - first:
+      213: -1353540218069250568
+    second: Threesquare_0_unlit_124
+  - first:
+      213: 2770109950111907417
+    second: Threesquare_0_unlit_125
+  - first:
+      213: -4786167709374129590
+    second: Threesquare_0_unlit_126
+  - first:
+      213: 8513470792105224552
+    second: Threesquare_0_unlit_127
+  - first:
+      213: 3953357275358509899
+    second: Threesquare_0_unlit_128
+  - first:
+      213: -6192960458906535263
+    second: Threesquare_0_unlit_129
+  - first:
+      213: 1756465144315149275
+    second: Threesquare_0_unlit_130
+  - first:
+      213: -3862451960155916209
+    second: Threesquare_0_unlit_131
+  - first:
+      213: 8134914459070036281
+    second: Threesquare_0_unlit_132
+  - first:
+      213: 3660103950528031669
+    second: Threesquare_0_unlit_133
+  - first:
+      213: 4536208235151749393
+    second: Threesquare_0_unlit_134
+  - first:
+      213: 1786380967494624593
+    second: Threesquare_0_unlit_135
+  - first:
+      213: 2304348526655304925
+    second: Threesquare_0_unlit_136
+  - first:
+      213: 7425837561450735216
+    second: Threesquare_0_unlit_137
+  - first:
+      213: -6017807351066902977
+    second: Threesquare_0_unlit_138
+  - first:
+      213: -5501677064903454257
+    second: Threesquare_0_unlit_139
+  - first:
+      213: -3995853762297903619
+    second: Threesquare_0_unlit_140
+  - first:
+      213: 2607891932282873251
+    second: Threesquare_0_unlit_141
+  - first:
+      213: 8566053518865191695
+    second: Threesquare_0_unlit_142
+  - first:
+      213: 5228445653744387089
+    second: Threesquare_0_unlit_143
+  - first:
+      213: -8282417469771712197
+    second: Threesquare_0_unlit_144
+  - first:
+      213: 5054129935773150050
+    second: Threesquare_0_unlit_145
+  - first:
+      213: -102302360744489652
+    second: Threesquare_0_unlit_146
+  - first:
+      213: 5224195178808914710
+    second: Threesquare_0_unlit_147
+  - first:
+      213: 6949137046386939952
+    second: Threesquare_0_unlit_148
+  - first:
+      213: 1838047190265948805
+    second: Threesquare_0_unlit_149
+  - first:
+      213: 1761864199111936814
+    second: Threesquare_0_unlit_150
+  - first:
+      213: -132409354292212139
+    second: Threesquare_0_unlit_151
+  - first:
+      213: -3697318966949221768
+    second: Threesquare_0_unlit_152
+  - first:
+      213: -7939373810901233389
+    second: Threesquare_0_unlit_153
+  - first:
+      213: -6047366571439680227
+    second: Threesquare_0_unlit_154
+  - first:
+      213: 6803730949575979858
+    second: Threesquare_0_unlit_155
+  - first:
+      213: 8366692915410289210
+    second: Threesquare_0_unlit_156
+  - first:
+      213: 8823464062390862015
+    second: Threesquare_0_unlit_157
+  - first:
+      213: -3038844727670938794
+    second: Threesquare_0_unlit_158
+  - first:
+      213: -7167068166071019281
+    second: Threesquare_0_unlit_159
+  - first:
+      213: 7479101501869792259
+    second: Threesquare_0_unlit_160
+  - first:
+      213: 400638534881122904
+    second: Threesquare_0_unlit_161
+  - first:
+      213: 1048026749300483701
+    second: Threesquare_0_unlit_162
+  - first:
+      213: -3400447575985499211
+    second: Threesquare_0_unlit_163
+  - first:
+      213: 4842330460235186897
+    second: Threesquare_0_unlit_164
+  - first:
+      213: -7322011344675228366
+    second: Threesquare_0_unlit_165
+  - first:
+      213: -3310870180350370932
+    second: Threesquare_0_unlit_166
+  - first:
+      213: -7129821815226859560
+    second: Threesquare_0_unlit_167
+  - first:
+      213: 2383173555994754048
+    second: Threesquare_0_unlit_168
+  - first:
+      213: -5180392262141753456
+    second: Threesquare_0_unlit_169
+  - first:
+      213: 141660471935331868
+    second: Threesquare_0_unlit_170
+  - first:
+      213: 638215482872078827
+    second: Threesquare_0_unlit_171
+  - first:
+      213: -6596688735069996223
+    second: Threesquare_0_unlit_172
+  - first:
+      213: 4646559712143095702
+    second: Threesquare_0_unlit_173
+  - first:
+      213: -8064586400955008426
+    second: Threesquare_0_unlit_174
+  - first:
+      213: 2249079665985374890
+    second: Threesquare_0_unlit_175
+  - first:
+      213: -8684250365072821677
+    second: Threesquare_0_unlit_176
+  - first:
+      213: 793983306658726197
+    second: Threesquare_0_unlit_177
+  - first:
+      213: -7820369517636732643
+    second: Threesquare_0_unlit_178
+  - first:
+      213: -1408385964801285118
+    second: Threesquare_0_unlit_179
+  - first:
+      213: -4629528440337209856
+    second: Threesquare_0_unlit_180
+  - first:
+      213: 8460456897249268003
+    second: Threesquare_0_unlit_181
+  - first:
+      213: -484401830827325959
+    second: Threesquare_0_unlit_182
+  - first:
+      213: -5357225213989611949
+    second: Threesquare_0_unlit_183
+  - first:
+      213: -20011519594764021
+    second: Threesquare_0_unlit_184
+  - first:
+      213: 7321856142816233424
+    second: Threesquare_0_unlit_185
+  - first:
+      213: 7536993609390797635
+    second: Threesquare_0_unlit_186
+  - first:
+      213: 2106456709099543176
+    second: Threesquare_0_unlit_187
+  - first:
+      213: 8668401625501321792
+    second: Threesquare_0_unlit_188
+  - first:
+      213: -2929481899144044894
+    second: Threesquare_0_unlit_189
+  - first:
+      213: -7453074304073020743
+    second: Threesquare_0_unlit_190
+  - first:
+      213: -6041310281230385554
+    second: Threesquare_0_unlit_191
+  - first:
+      213: -2529957017806244282
+    second: Threesquare_0_unlit_192
+  - first:
+      213: 942401587229971001
+    second: Threesquare_0_unlit_193
+  - first:
+      213: 6292712688418055329
+    second: Threesquare_0_unlit_194
+  - first:
+      213: 3267734596773647302
+    second: Threesquare_0_unlit_195
+  - first:
+      213: -5258212938076252492
+    second: Threesquare_0_unlit_196
+  - first:
+      213: 5168261877856393290
+    second: Threesquare_0_unlit_197
+  - first:
+      213: 5822132252278626261
+    second: Threesquare_0_unlit_198
+  - first:
+      213: -3923805731870106721
+    second: Threesquare_0_unlit_199
+  - first:
+      213: -1708618940320706868
+    second: Threesquare_0_unlit_200
+  - first:
+      213: -146188986655023659
+    second: Threesquare_0_unlit_201
+  - first:
+      213: 7734006450476669844
+    second: Threesquare_0_unlit_202
+  - first:
+      213: 181169330505828512
+    second: Threesquare_0_unlit_203
+  - first:
+      213: -8857564603294139203
+    second: Threesquare_0_unlit_204
+  - first:
+      213: 8971329788512255453
+    second: Threesquare_0_unlit_205
+  - first:
+      213: -7925481642000218072
+    second: Threesquare_0_unlit_206
+  - first:
+      213: 1058823190334435575
+    second: Threesquare_0_unlit_207
+  - first:
+      213: 5974767179889468323
+    second: Threesquare_0_unlit_208
+  - first:
+      213: 4386919937128681323
+    second: Threesquare_0_unlit_209
+  - first:
+      213: -8220233440381184160
+    second: Threesquare_0_unlit_210
+  - first:
+      213: -1320380982455422680
+    second: Threesquare_0_unlit_211
+  - first:
+      213: -2353556622904625794
+    second: Threesquare_0_unlit_212
+  - first:
+      213: 2212467557132020820
+    second: Threesquare_0_unlit_213
+  - first:
+      213: -1758149675817751053
+    second: Threesquare_0_unlit_214
+  - first:
+      213: -1770326431779896413
+    second: Threesquare_0_unlit_215
+  - first:
+      213: 7843045979933976774
+    second: Threesquare_0_unlit_216
+  - first:
+      213: 8807832281504116146
+    second: Threesquare_0_unlit_217
+  - first:
+      213: -6852860754561225988
+    second: Threesquare_0_unlit_218
+  - first:
+      213: -4765144949290779812
+    second: Threesquare_0_unlit_219
+  - first:
+      213: 6863970400900785086
+    second: Threesquare_0_unlit_220
+  - first:
+      213: -1164899101662227503
+    second: Threesquare_0_unlit_221
+  - first:
+      213: -9133791435527847362
+    second: Threesquare_0_unlit_222
+  - first:
+      213: -3512033577424339204
+    second: Threesquare_0_unlit_223
+  - first:
+      213: -3218801633914021297
+    second: Threesquare_0_unlit_224
+  - first:
+      213: 5320477288780196950
+    second: Threesquare_0_unlit_225
+  - first:
+      213: -1155695447884923839
+    second: Threesquare_0_unlit_226
+  - first:
+      213: 4743844228244540656
+    second: Threesquare_0_unlit_227
+  - first:
+      213: -7209966426411328821
+    second: Threesquare_0_unlit_228
+  - first:
+      213: 7438985652912036099
+    second: Threesquare_0_unlit_229
+  - first:
+      213: -3779214413287765832
+    second: Threesquare_0_unlit_230
+  - first:
+      213: -6156244055246590261
+    second: Threesquare_0_unlit_231
+  - first:
+      213: 8601340651130622119
+    second: Threesquare_0_unlit_232
+  - first:
+      213: 5238463699427220194
+    second: Threesquare_0_unlit_233
+  - first:
+      213: -6865167621590830730
+    second: Threesquare_0_unlit_234
+  - first:
+      213: 8383872319427151170
+    second: Threesquare_0_unlit_235
+  - first:
+      213: -2736895113971038890
+    second: Threesquare_0_unlit_236
+  - first:
+      213: -1721569978989809461
+    second: Threesquare_0_unlit_237
+  - first:
+      213: 6818766603673442981
+    second: Threesquare_0_unlit_238
+  - first:
+      213: 3915326431511051943
+    second: Threesquare_0_unlit_239
+  - first:
+      213: 8881650774781122124
+    second: Threesquare_0_unlit_240
+  - first:
+      213: -488787949443357994
+    second: Threesquare_0_unlit_241
+  - first:
+      213: 1210398201312690874
+    second: Threesquare_0_unlit_242
+  - first:
+      213: 2901263069449973503
+    second: Threesquare_0_unlit_243
+  - first:
+      213: 3691742991709131219
+    second: Threesquare_0_unlit_244
+  - first:
+      213: 4083141012697672778
+    second: Threesquare_0_unlit_245
+  - first:
+      213: 3593426379570884993
+    second: Threesquare_0_unlit_246
+  - first:
+      213: 1778837540872413794
+    second: Threesquare_0_unlit_247
+  - first:
+      213: -2454484722425963183
+    second: Threesquare_0_unlit_248
+  - first:
+      213: -8396293485736279181
+    second: Threesquare_0_unlit_249
+  - first:
+      213: -1031151308208866656
+    second: Threesquare_0_unlit_250
+  - first:
+      213: -6470306210425550171
+    second: Threesquare_0_unlit_251
+  - first:
+      213: 8071085102286580971
+    second: Threesquare_0_unlit_252
+  - first:
+      213: -4745916330707606031
+    second: Threesquare_0_unlit_253
+  - first:
+      213: 4086308718676946937
+    second: Threesquare_0_unlit_254
+  - first:
+      213: -395481794767194538
+    second: Threesquare_0_unlit_255
+  - first:
+      213: -5291552970249389474
+    second: Threesquare_0_unlit_256
+  - first:
+      213: -7882639128354879076
+    second: Threesquare_0_unlit_257
+  - first:
+      213: -7085231857727496723
+    second: Threesquare_0_unlit_258
+  - first:
+      213: 4441483117416173526
+    second: Threesquare_0_unlit_259
+  - first:
+      213: 1411790216813179607
+    second: Threesquare_0_unlit_260
+  - first:
+      213: 4589664294611632567
+    second: Threesquare_0_unlit_261
+  - first:
+      213: -1122964530568982444
+    second: Threesquare_0_unlit_262
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 359
+        width: 38
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c7a0c738fbf5fdc0800000000000000
+      internalID: -3605698883134380092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 359
+        width: 38
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36075ddf6ca952680800000000000000
+      internalID: -8780441719036088221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 359
+        width: 38
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe3b29e9710cf2aa0800000000000000
+      internalID: -6183512555679206417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 359
+        width: 37
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bb3ba90381946c00800000000000000
+      internalID: 892998618115161010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 368
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22d1058caea669130800000000000000
+      internalID: 3573160910980652322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 365
+        width: 15
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79984c9eaccebedd0800000000000000
+      internalID: -2455608815550953065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 364
+        width: 19
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43db6b46185ba5ee0800000000000000
+      internalID: -1271504377433637580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 359
+        width: 38
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa36f41afbf9f05f0800000000000000
+      internalID: -788235764372642897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 359
+        width: 38
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d74ecce017c355f10800000000000000
+      internalID: 2257777244473451645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 581
+        y: 359
+        width: 38
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f4a3998a7c215700800000000000000
+      internalID: 527251536184845556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 662
+        y: 359
+        width: 37
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa51ab906ca3c3620800000000000000
+      internalID: 2755141694285026730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 368
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ec2dcecdd49804d0800000000000000
+      internalID: -3168118657476907805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 749
+        y: 365
+        width: 15
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfbd78157271c74d0800000000000000
+      internalID: -3135605782917686275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 364
+        width: 19
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0485ea817e52f27a0800000000000000
+      internalID: -6399854870988433344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 821
+        y: 359
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83bc710cf5ae87410800000000000000
+      internalID: 1475186574929414968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 894
+        y: 359
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7737ed393a794e1e0800000000000000
+      internalID: -2169442391669443721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 967
+        y: 359
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14b1f2dfcc6acaac0800000000000000
+      internalID: -3842512982702613695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 1040
+        y: 359
+        width: 29
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95a8837fca91a5be0800000000000000
+      internalID: -1487848496219780519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 1113
+        y: 364
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bc0573765e2201d0800000000000000
+      internalID: -3386093020990075721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 312
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e687ae1af3a4a2500800000000000000
+      internalID: 372191556371380334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 312
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbf969c1e5a6bb250800000000000000
+      internalID: 5961475484194086847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 312
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d31c791792816eec0800000000000000
+      internalID: -3538113890974449347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 312
+        width: 29
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3350a951a8a300790800000000000000
+      internalID: -7565983009240120013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 317
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33271e103a449bf70800000000000000
+      internalID: 9203462780410229299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32c55c1ce95827510800000000000000
+      internalID: 1545444539043765283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4843d3bd8c0590a0800000000000000
+      internalID: -6875575453364303797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08eb59762cdf75db0800000000000000
+      internalID: -4803091466163995008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 623
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e06bd1ef2d1103f80800000000000000
+      internalID: -8128977729499580914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 319
+        width: 36
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69ea7cb6f75c477e0800000000000000
+      internalID: -1768571602589995370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 781
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e49d525356a36fd0800000000000000
+      internalID: -2349851703762905881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 860
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 906eb8035da19d960800000000000000
+      internalID: 7627156946873476617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2328d767cfd77ebf0800000000000000
+      internalID: -295128727296310734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 1018
+        y: 313
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09d73102e78c1d980800000000000000
+      internalID: -8515804976351314544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 1097
+        y: 319
+        width: 36
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c99e655ce863607f0800000000000000
+      internalID: -646769509657024100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 266
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38aab905110e768b0800000000000000
+      internalID: -5158908483158168957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 266
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2ecbd89dd53f45d0800000000000000
+      internalID: -3076180794602172881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 266
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85f949f4f3822ef00800000000000000
+      internalID: 1144521507688718168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 266
+        width: 28
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3e429f48e02b2e70800000000000000
+      internalID: 9091396454916967999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 271
+        width: 28
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25ca0e67485c453a0800000000000000
+      internalID: -6677495174762812334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 381
+        y: 266
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e9f0849e48abd3e0800000000000000
+      internalID: -2027842151747880472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 453
+        y: 266
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f60f05fb537641580800000000000000
+      internalID: -8857341086590242705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 266
+        width: 30
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9a7b502116ed34c0800000000000000
+      internalID: -4306032707464627557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 266
+        width: 28
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 089250ff44afa0170800000000000000
+      internalID: 8145598050296211840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 271
+        width: 28
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52a9c15e7add16ad0800000000000000
+      internalID: -2710641787527194075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 272
+        width: 38
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5e61ef1415fb92e0800000000000000
+      internalID: -2117829732964667810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 809
+        y: 272
+        width: 38
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15827e2563e031f20800000000000000
+      internalID: 3392070570822019153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 881
+        y: 272
+        width: 38
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 280dadcd60aa2fd80800000000000000
+      internalID: -8218319423545880446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 272
+        width: 37
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 729bd754495b689d0800000000000000
+      internalID: -2772328872174307033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_48
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 277
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c46d42845c4b60a0800000000000000
+      internalID: -6887327279285967676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_49
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 279
+        width: 11
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67df496e0b8dda7e0800000000000000
+      internalID: -1752506425682887306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_50
+      rect:
+        serializedVersion: 2
+        x: 1049
+        y: 277
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2abc13bcb61835f0800000000000000
+      internalID: -776845936006743505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_51
+      rect:
+        serializedVersion: 2
+        x: 1097
+        y: 274
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6611e79f7b14580a0800000000000000
+      internalID: -6880020597317955226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_52
+      rect:
+        serializedVersion: 2
+        x: 1161
+        y: 274
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 631d6f58cfb046c20800000000000000
+      internalID: 3198694814547104054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_53
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb28a369640ce8600800000000000000
+      internalID: 472526420321141439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_54
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3fc73b1df3a66280800000000000000
+      internalID: -9050366093675737281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_55
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 234
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 375c94af3bb3590c0800000000000000
+      internalID: -4569680602713176717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_56
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 238
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36ca7b2a3ec505470800000000000000
+      internalID: 8381301039293770851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_57
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5fbc06456760de80800000000000000
+      internalID: -8155905240503369890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_58
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e413e80553629470800000000000000
+      internalID: 8399885471871866081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_59
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0096d1c566de8490800000000000000
+      internalID: -7742014976871198709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_60
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82d4884b0afc86010800000000000000
+      internalID: 1182423191315303720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_61
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 234
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f86af6e534122a30800000000000000
+      internalID: 4188932825148975346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_62
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 238
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8929315b0c70759e0800000000000000
+      internalID: -1632827815645441384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_63
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 228
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ba81214c1b0273c0800000000000000
+      internalID: -4363412872988882253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_64
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 228
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fedd873b95e91410800000000000000
+      internalID: 1448441209991061237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_65
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 228
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2665348979ee76a0800000000000000
+      internalID: -6449460908229564885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_66
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cae070ef17686690800000000000000
+      internalID: -7608718183835309374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_67
+      rect:
+        serializedVersion: 2
+        x: 782
+        y: 237
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e4754e5a0d1b03a0800000000000000
+      internalID: -6698228090414992159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_68
+      rect:
+        serializedVersion: 2
+        x: 787
+        y: 235
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a477f844128bf4f50800000000000000
+      internalID: 6867910409786980170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_69
+      rect:
+        serializedVersion: 2
+        x: 796
+        y: 233
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 483d4168c01e70cd0800000000000000
+      internalID: -2591855616623062140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_70
+      rect:
+        serializedVersion: 2
+        x: 802
+        y: 238
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d78b6c708aea640d0800000000000000
+      internalID: -3438869228742592387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_71
+      rect:
+        serializedVersion: 2
+        x: 845
+        y: 228
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06aea2401bfc7da50800000000000000
+      internalID: 6545928942592387680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_72
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 228
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18b88b5e780778820800000000000000
+      internalID: 2920426612350028673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_73
+      rect:
+        serializedVersion: 2
+        x: 971
+        y: 228
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08440c5a3e264ff10800000000000000
+      internalID: 2302574039371105408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_74
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 228
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54fb0509374b49200800000000000000
+      internalID: 185971893064482629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_75
+      rect:
+        serializedVersion: 2
+        x: 1097
+        y: 237
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c44166d09978c1680800000000000000
+      internalID: -8782996081854770100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_76
+      rect:
+        serializedVersion: 2
+        x: 1102
+        y: 235
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 965f847fef8cfeb60800000000000000
+      internalID: 7777656078888138089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_77
+      rect:
+        serializedVersion: 2
+        x: 1111
+        y: 233
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb80136f1e00fabf0800000000000000
+      internalID: -311028878767224641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_78
+      rect:
+        serializedVersion: 2
+        x: 1117
+        y: 238
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a65ef39fae7299f0800000000000000
+      internalID: -463168519098444125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_79
+      rect:
+        serializedVersion: 2
+        x: 1160
+        y: 228
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a1725a60d36149a0800000000000000
+      internalID: -6250605061025402463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_80
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 190
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8ee20898bb6d7920800000000000000
+      internalID: 2989664168212360842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_81
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 190
+        width: 33
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f47364713b62a6b0800000000000000
+      internalID: -5286545152429296400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_82
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 190
+        width: 33
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dee71b8e6a9d9440800000000000000
+      internalID: 4944277765493354199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_83
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 195
+        width: 23
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4098d6f860290e030800000000000000
+      internalID: 3521975465477507332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_84
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 203
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3a0d2471e5917b20800000000000000
+      internalID: 3130448011548494394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_85
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 200
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f8808688d6524060800000000000000
+      internalID: 6936201864073480441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_86
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 195
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7f3efa5c57e5b7f0800000000000000
+      internalID: -597316991707103362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_87
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 190
+        width: 32
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a618d8c9fa30f4b10800000000000000
+      internalID: 1967795614964875626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_88
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 190
+        width: 32
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb6e1b71f485cd2a0800000000000000
+      internalID: -6711392247965686081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_89
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 190
+        width: 32
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 068eb01d0820a0bf0800000000000000
+      internalID: -357470468136245152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_90
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 190
+        width: 31
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3733782a13d96110800000000000000
+      internalID: 1254766080500643643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_91
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 199
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a428c7942e9a8a810800000000000000
+      internalID: 1776856842358260298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_92
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 196
+        width: 14
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dc79737bb4f103a0800000000000000
+      internalID: -6700805684617184042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_93
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 201
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60790d733694d0ce0800000000000000
+      internalID: -1437412015574313210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_94
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 199
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3281964867b08980800000000000000
+      internalID: -8538623235006037446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_95
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 191
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91828ae9619290670800000000000000
+      internalID: 8505374548393732121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_96
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 191
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7da0b3625389d1500800000000000000
+      internalID: 368618098556340951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_97
+      rect:
+        serializedVersion: 2
+        x: 741
+        y: 191
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b96707a7f768c650800000000000000
+      internalID: 6253362395960797622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_98
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 191
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d04b9bb9bbc6d1af0800000000000000
+      internalID: -424063236875635699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_99
+      rect:
+        serializedVersion: 2
+        x: 855
+        y: 197
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 398e76d5ab5467c80800000000000000
+      internalID: -8325390194414458733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_100
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 191
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f69fe90475ab5f20800000000000000
+      internalID: 3412503060464768753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_101
+      rect:
+        serializedVersion: 2
+        x: 969
+        y: 191
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad00daae89865fbe0800000000000000
+      internalID: -1444133099520851750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_102
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 191
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05b4553a3787b2720800000000000000
+      internalID: 2822482029534595920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_103
+      rect:
+        serializedVersion: 2
+        x: 1083
+        y: 191
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d4444b3f1a15ee00800000000000000
+      internalID: 1073292807638369490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_104
+      rect:
+        serializedVersion: 2
+        x: 1140
+        y: 196
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 136ee249e3e202040800000000000000
+      internalID: 4620744063991080497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_105
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 154
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0926fe9ee1bd9cbe0800000000000000
+      internalID: -1456392078657363312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_106
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 154
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ded2261c09ebe080800000000000000
+      internalID: -9156969179207508264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_107
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 154
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9d01cc629000b0a0800000000000000
+      internalID: -6867988802850189924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_108
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 154
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb3f0d36c7eb9c830800000000000000
+      internalID: 4092011177902666687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_109
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 160
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4117922a8b8ea12b0800000000000000
+      internalID: -5612918105871650540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_110
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 154
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0691ca21e1d26f980800000000000000
+      internalID: -8505561239057065632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_111
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 154
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a9527bee4282b7e0800000000000000
+      internalID: -1751194029624501849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_112
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 154
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9097abd62b99e8860800000000000000
+      internalID: 7534128218261584137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_113
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 154
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd4ba16e3c63149a0800000000000000
+      internalID: -6250654592806505249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_114
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 159
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27c81188892389020800000000000000
+      internalID: 2348682836372982898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_115
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 155
+        width: 33
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf219b0bd36341120800000000000000
+      internalID: 2383589741371659003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_116
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 155
+        width: 33
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9df4cd9dc2a9ac210800000000000000
+      internalID: 1354064155402588121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_117
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 155
+        width: 33
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17ac3a155d7019500800000000000000
+      internalID: 401110454591801969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_118
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 155
+        width: 33
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcf578abbb5433440800000000000000
+      internalID: 4914348290981978059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_119
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 162
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c043cc593cb4c4c00800000000000000
+      internalID: 886166530089038860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_120
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 160
+        width: 9
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aba99c1ff97df69b0800000000000000
+      internalID: -5084608372321707334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_121
+      rect:
+        serializedVersion: 2
+        x: 872
+        y: 160
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea502c2853c4b69b0800000000000000
+      internalID: -5085887561474112082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_122
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 155
+        width: 27
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 651bd8b01698c9310800000000000000
+      internalID: 1413155432986161494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_123
+      rect:
+        serializedVersion: 2
+        x: 970
+        y: 155
+        width: 27
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ff533fb7f591f680800000000000000
+      internalID: -8723026111942664208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_124
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 155
+        width: 26
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fd07c0d752473de0800000000000000
+      internalID: -1353540218069250568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_125
+      rect:
+        serializedVersion: 2
+        x: 1083
+        y: 155
+        width: 27
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95ef13da258617620800000000000000
+      internalID: 2770109950111907417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_126
+      rect:
+        serializedVersion: 2
+        x: 1139
+        y: 161
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4a5f4793dd149db0800000000000000
+      internalID: -4786167709374129590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_127
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 160
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8696811449ce52670800000000000000
+      internalID: 8513470792105224552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_128
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 162
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4b33f30f752dd630800000000000000
+      internalID: 3953357275358509899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_129
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 119
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aaf5da364f2e0aa0800000000000000
+      internalID: -6192960458906535263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_130
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 119
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bdb724b1eb7306810800000000000000
+      internalID: 1756465144315149275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_131
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 119
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4835e80860d56ac0800000000000000
+      internalID: -3862451960155916209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_132
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 119
+        width: 27
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 939fe03999505e070800000000000000
+      internalID: 8134914459070036281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_133
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 125
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bb2a34a62d4bc230800000000000000
+      internalID: 3660103950528031669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_134
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 129
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 111fb632b59d3fe30800000000000000
+      internalID: 4536208235151749393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_135
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 129
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 155290976008ac810800000000000000
+      internalID: 1786380967494624593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_136
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 120
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd4fbf9a6c0baff10800000000000000
+      internalID: 2304348526655304925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_137
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 120
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 076260a1befdd0760800000000000000
+      internalID: 7425837561450735216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_138
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 120
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3e3ce019147c7ca0800000000000000
+      internalID: -6017807351066902977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_139
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 120
+        width: 20
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc1148dcbdd16a3b0800000000000000
+      internalID: -5501677064903454257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_140
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 125
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df543d39c20eb88c0800000000000000
+      internalID: -3995853762297903619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_141
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 128
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a5e35c25e7113420800000000000000
+      internalID: 2607891932282873251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_142
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 126
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f03d1fe5a4cb0e670800000000000000
+      internalID: 8566053518865191695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_143
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 120
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1148edede9b2f8840800000000000000
+      internalID: 5228445653744387089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_144
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 120
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3974c08131fe0d80800000000000000
+      internalID: -8282417469771712197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_145
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 120
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26b2d6e0660e32640800000000000000
+      internalID: 5054129935773150050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_146
+      rect:
+        serializedVersion: 2
+        x: 690
+        y: 120
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4d04208b8c849ef0800000000000000
+      internalID: -102302360744489652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_147
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 125
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 613b63e06d1108840800000000000000
+      internalID: 5224195178808914710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_148
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 121
+        width: 29
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0389669535b407060800000000000000
+      internalID: 6949137046386939952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_149
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 121
+        width: 29
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58ae4306e2e028910800000000000000
+      internalID: 1838047190265948805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_150
+      rect:
+        serializedVersion: 2
+        x: 905
+        y: 121
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2b8b828726637810800000000000000
+      internalID: 1761864199111936814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_151
+      rect:
+        serializedVersion: 2
+        x: 963
+        y: 121
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55e4970d466992ef0800000000000000
+      internalID: -132409354292212139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_152
+      rect:
+        serializedVersion: 2
+        x: 1021
+        y: 129
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87a6da12dfb70bcc0800000000000000
+      internalID: -3697318966949221768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_153
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 129
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3115136659da1d190800000000000000
+      internalID: -7939373810901233389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_154
+      rect:
+        serializedVersion: 2
+        x: 1030
+        y: 126
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1514c2c420731ca0800000000000000
+      internalID: -6047366571439680227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_155
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 128
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 253becc3045bb6e50800000000000000
+      internalID: 6803730949575979858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_156
+      rect:
+        serializedVersion: 2
+        x: 1078
+        y: 123
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a32cecfb0e67c1470800000000000000
+      internalID: 8366692915410289210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_157
+      rect:
+        serializedVersion: 2
+        x: 1127
+        y: 123
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb08b37e0dd337a70800000000000000
+      internalID: 8823464062390862015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_158
+      rect:
+        serializedVersion: 2
+        x: 1176
+        y: 123
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 653ea9712dad3d5d0800000000000000
+      internalID: -3038844727670938794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_159
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 88
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe89358c975798c90800000000000000
+      internalID: -7167068166071019281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_160
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 93
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30c1a02a03b1bc760800000000000000
+      internalID: 7479101501869792259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_161
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 89
+        width: 25
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85a1ce2ff9a5f8500800000000000000
+      internalID: 400638534881122904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_162
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 89
+        width: 25
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 576a92b96c65b8e00800000000000000
+      internalID: 1048026749300483701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_163
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 89
+        width: 26
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b3db0c22fe2fc0d0800000000000000
+      internalID: -3400447575985499211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_164
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 89
+        width: 26
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d24f57d5e9633340800000000000000
+      internalID: 4842330460235186897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_165
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 65
+        width: 24
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 235b047c97df26a90800000000000000
+      internalID: -7322011344675228366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_166
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 94
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8b58cadc1d6d02d0800000000000000
+      internalID: -3310870180350370932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_167
+      rect:
+        serializedVersion: 2
+        x: 381
+        y: 89
+        width: 25
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8df729f95d8cd0d90800000000000000
+      internalID: -7129821815226859560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_168
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 89
+        width: 25
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00cfb2bf8bbb21120800000000000000
+      internalID: 2383173555994754048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_169
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 89
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 097cbd93fac8b18b0800000000000000
+      internalID: -5180392262141753456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_170
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 89
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1e6b6cd27747f100800000000000000
+      internalID: 141660471935331868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_171
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 97
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be1aebaa9956bd800800000000000000
+      internalID: 638215482872078827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_172
+      rect:
+        serializedVersion: 2
+        x: 599
+        y: 97
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14bf454db8ad374a0800000000000000
+      internalID: -6596688735069996223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_173
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 90
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6973eed8075eb7040800000000000000
+      internalID: 4646559712143095702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_174
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 90
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65a71a67565d41090800000000000000
+      internalID: -8064586400955008426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_175
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 90
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aaacc924a06563f10800000000000000
+      internalID: 2249079665985374890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_176
+      rect:
+        serializedVersion: 2
+        x: 774
+        y: 90
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3523749dd485b7780800000000000000
+      internalID: -8684250365072821677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_177
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 99
+        width: 20
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 531cbf65c9bc40b00800000000000000
+      internalID: 793983306658726197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_178
+      rect:
+        serializedVersion: 2
+        x: 865
+        y: 90
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1938f89b57787390800000000000000
+      internalID: -7820369517636732643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_179
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 90
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 204af5d4d68647ce0800000000000000
+      internalID: -1408385964801285118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_180
+      rect:
+        serializedVersion: 2
+        x: 958
+        y: 90
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 006e12c696c90cfb0800000000000000
+      internalID: -4629528440337209856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_181
+      rect:
+        serializedVersion: 2
+        x: 1004
+        y: 90
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 321db0ef8b4996570800000000000000
+      internalID: 8460456897249268003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_182
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 99
+        width: 20
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f50df0f91f0749f0800000000000000
+      internalID: -484401830827325959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_183
+      rect:
+        serializedVersion: 2
+        x: 1095
+        y: 89
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 356126a3d0057a5b0800000000000000
+      internalID: -5357225213989611949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_184
+      rect:
+        serializedVersion: 2
+        x: 1141
+        y: 89
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b09632301a7e8bff0800000000000000
+      internalID: -20011519594764021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_185
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 58
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d7c2197e557c9560800000000000000
+      internalID: 7321856142816233424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_186
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 58
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 343b02a41c7c89860800000000000000
+      internalID: 7536993609390797635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_187
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 63
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88add986733ab3d10800000000000000
+      internalID: 2106456709099543176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_188
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 59
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04acc6ae9595c4870800000000000000
+      internalID: 8668401625501321792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_189
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 59
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ae1599dbb36857d0800000000000000
+      internalID: -2929481899144044894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_190
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 35
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bac225986c519890800000000000000
+      internalID: -7453074304073020743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_191
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 59
+        width: 22
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6ef855be44f82ca0800000000000000
+      internalID: -6041310281230385554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_192
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 646f6a02f79c3ecd0800000000000000
+      internalID: -2529957017806244282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_193
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9325b922045141d00800000000000000
+      internalID: 942401587229971001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_194
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a460c299d4345750800000000000000
+      internalID: 6292712688418055329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_195
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c392f47d43595d20800000000000000
+      internalID: 3267734596773647302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_196
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 64
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b61a9821331707b0800000000000000
+      internalID: -5258212938076252492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_197
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a48d2d79bca59b740800000000000000
+      internalID: 5168261877856393290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_198
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d7996cbf6e5cc050800000000000000
+      internalID: 5822132252278626261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_199
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9b9d30e977db89c0800000000000000
+      internalID: -3923805731870106721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_200
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 59
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cce0ead5024c948e0800000000000000
+      internalID: -1708618940320706868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_201
+      rect:
+        serializedVersion: 2
+        x: 773
+        y: 64
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5dd5a5424e1a8fdf0800000000000000
+      internalID: -146188986655023659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_202
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 60
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49bdd33e3e5b45b60800000000000000
+      internalID: 7734006450476669844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_203
+      rect:
+        serializedVersion: 2
+        x: 858
+        y: 60
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a8cef4db84a38200800000000000000
+      internalID: 181169330505828512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_204
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 60
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbc34953ceb931580800000000000000
+      internalID: -8857564603294139203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_205
+      rect:
+        serializedVersion: 2
+        x: 942
+        y: 60
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddd372719e0908c70800000000000000
+      internalID: 8971329788512255453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_206
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 66
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82882b60078030290800000000000000
+      internalID: -7925481642000218072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_207
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 42
+        width: 18
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f074dbe412b1be00800000000000000
+      internalID: 1058823190334435575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_208
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 60
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a369fc2813aae250800000000000000
+      internalID: 5974767179889468323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_209
+      rect:
+        serializedVersion: 2
+        x: 1110
+        y: 60
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6f42ae907871ec30800000000000000
+      internalID: 4386919937128681323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_210
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 60
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 067da471d3ddbed80800000000000000
+      internalID: -8220233440381184160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_211
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 37
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 821309cfd701dade0800000000000000
+      internalID: -1320380982455422680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_212
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 17
+        width: 16
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e75700d98bc765fd0800000000000000
+      internalID: -2353556622904625794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_213
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 30
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45c2ee3658344be10800000000000000
+      internalID: 2212467557132020820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_214
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 30
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fd2ae65f2cc997e0800000000000000
+      internalID: -1758149675817751053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_215
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 30
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a346496d798e67e0800000000000000
+      internalID: -1770326431779896413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_216
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 15
+        width: 23
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c82507b3c818dc60800000000000000
+      internalID: 7843045979933976774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_217
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bd654c4bc4bb3a70800000000000000
+      internalID: 8807832281504116146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_218
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 31
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfaa925a37fb5e0a0800000000000000
+      internalID: -6852860754561225988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_219
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 31
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5bb64a5aedceddb0800000000000000
+      internalID: -4765144949290779812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_220
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 36
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb3ac7676b8b14f50800000000000000
+      internalID: 6863970400900785086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_221
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d3504e507275dfe0800000000000000
+      internalID: -1164899101662227503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_222
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e328bd015114e3180800000000000000
+      internalID: -9133791435527847362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_223
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 31
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfeb062a110c24fc0800000000000000
+      internalID: -3512033577424339204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_224
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 31
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4a9b18c7f48453d0800000000000000
+      internalID: -3218801633914021297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_225
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 36
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65ce641b7e126d940800000000000000
+      internalID: 5320477288780196950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_226
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14c78400d1526ffe0800000000000000
+      internalID: -1155695447884923839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_227
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fc8d4e013585d140800000000000000
+      internalID: 4743844228244540656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_228
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bca92473cbd01fb90800000000000000
+      internalID: -7209966426411328821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_229
+      rect:
+        serializedVersion: 2
+        x: 783
+        y: 31
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3099c03b9069c3760800000000000000
+      internalID: 7438985652912036099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_230
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 37
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b842f5a3888d8bc0800000000000000
+      internalID: -3779214413287765832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_231
+      rect:
+        serializedVersion: 2
+        x: 863
+        y: 33
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bceaa6026a0a09aa0800000000000000
+      internalID: -6156244055246590261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_232
+      rect:
+        serializedVersion: 2
+        x: 905
+        y: 33
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a094c610c91e5770800000000000000
+      internalID: 8601340651130622119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_233
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 33
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ea5325eaf2c2b840800000000000000
+      internalID: 5238463699427220194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_234
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 33
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 671b09fdb660ab0a0800000000000000
+      internalID: -6865167621590830730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_235
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 35
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2458fa1747f795470800000000000000
+      internalID: 8383872319427151170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_236
+      rect:
+        serializedVersion: 2
+        x: 1113
+        y: 35
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65501400568940ad0800000000000000
+      internalID: -2736895113971038890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_237
+      rect:
+        serializedVersion: 2
+        x: 1153
+        y: 35
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc0f552b931cb18e0800000000000000
+      internalID: -1721569978989809461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_238
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 7
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aa9042491021ae50800000000000000
+      internalID: 6818766603673442981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_239
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 6
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7aef9e925a8065630800000000000000
+      internalID: 3915326431511051943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_240
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 6
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c46d6e99256f14b70800000000000000
+      internalID: 8881650774781122124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_241
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 6
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d2efee13f97739f0800000000000000
+      internalID: -488787949443357994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_242
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 6
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab2c30a40c23cc010800000000000000
+      internalID: 1210398201312690874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_243
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 7
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffe668ed36b534820800000000000000
+      internalID: 2901263069449973503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_244
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 7
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d15cd6f0b4bb3330800000000000000
+      internalID: 3691742991709131219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_245
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 7
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4c6cad1e1b3aa830800000000000000
+      internalID: 4083141012697672778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_246
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 7
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18137d0e04a6ed130800000000000000
+      internalID: 3593426379570884993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_247
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 7
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26264d89153bfa810800000000000000
+      internalID: 1778837540872413794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_248
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 7
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15d5d2d362befedd0800000000000000
+      internalID: -2454484722425963183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_249
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 7
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37343c86f8f5a7b80800000000000000
+      internalID: -8396293485736279181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_250
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 7
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0aaf784395d90b1f0800000000000000
+      internalID: -1031151308208866656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_251
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 8
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5aac49368cad436a0800000000000000
+      internalID: -6470306210425550171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_252
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 8
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bec2db95321420070800000000000000
+      internalID: 8071085102286580971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_253
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 8
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f5a27efd3e132eb0800000000000000
+      internalID: -4745916330707606031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_254
+      rect:
+        serializedVersion: 2
+        x: 738
+        y: 8
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ff2253212c75b830800000000000000
+      internalID: 4086308718676946937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_255
+      rect:
+        serializedVersion: 2
+        x: 805
+        y: 7
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65674cb2767f28af0800000000000000
+      internalID: -395481794767194538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_256
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 7
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5a3f120c90a096b0800000000000000
+      internalID: -5291552970249389474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_257
+      rect:
+        serializedVersion: 2
+        x: 871
+        y: 7
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9900dd0a7d3b9290800000000000000
+      internalID: -7882639128354879076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_258
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 7
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ded1fd02a233cad90800000000000000
+      internalID: -7085231857727496723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_259
+      rect:
+        serializedVersion: 2
+        x: 971
+        y: 9
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6df4c710d5153ad30800000000000000
+      internalID: 4441483117416173526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_260
+      rect:
+        serializedVersion: 2
+        x: 1010
+        y: 9
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d27582e8bfa79310800000000000000
+      internalID: 1411790216813179607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_261
+      rect:
+        serializedVersion: 2
+        x: 1049
+        y: 9
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b1ce9edb53c1bf30800000000000000
+      internalID: 4589664294611632567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_0_unlit_262
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 9
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 450921c85bd6a60f0800000000000000
+      internalID: -1122964530568982444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Threesquare_0_unlit_0: -3605698883134380092
+      Threesquare_0_unlit_1: -8780441719036088221
+      Threesquare_0_unlit_10: 2755141694285026730
+      Threesquare_0_unlit_100: 3412503060464768753
+      Threesquare_0_unlit_101: -1444133099520851750
+      Threesquare_0_unlit_102: 2822482029534595920
+      Threesquare_0_unlit_103: 1073292807638369490
+      Threesquare_0_unlit_104: 4620744063991080497
+      Threesquare_0_unlit_105: -1456392078657363312
+      Threesquare_0_unlit_106: -9156969179207508264
+      Threesquare_0_unlit_107: -6867988802850189924
+      Threesquare_0_unlit_108: 4092011177902666687
+      Threesquare_0_unlit_109: -5612918105871650540
+      Threesquare_0_unlit_11: -3168118657476907805
+      Threesquare_0_unlit_110: -8505561239057065632
+      Threesquare_0_unlit_111: -1751194029624501849
+      Threesquare_0_unlit_112: 7534128218261584137
+      Threesquare_0_unlit_113: -6250654592806505249
+      Threesquare_0_unlit_114: 2348682836372982898
+      Threesquare_0_unlit_115: 2383589741371659003
+      Threesquare_0_unlit_116: 1354064155402588121
+      Threesquare_0_unlit_117: 401110454591801969
+      Threesquare_0_unlit_118: 4914348290981978059
+      Threesquare_0_unlit_119: 886166530089038860
+      Threesquare_0_unlit_12: -3135605782917686275
+      Threesquare_0_unlit_120: -5084608372321707334
+      Threesquare_0_unlit_121: -5085887561474112082
+      Threesquare_0_unlit_122: 1413155432986161494
+      Threesquare_0_unlit_123: -8723026111942664208
+      Threesquare_0_unlit_124: -1353540218069250568
+      Threesquare_0_unlit_125: 2770109950111907417
+      Threesquare_0_unlit_126: -4786167709374129590
+      Threesquare_0_unlit_127: 8513470792105224552
+      Threesquare_0_unlit_128: 3953357275358509899
+      Threesquare_0_unlit_129: -6192960458906535263
+      Threesquare_0_unlit_13: -6399854870988433344
+      Threesquare_0_unlit_130: 1756465144315149275
+      Threesquare_0_unlit_131: -3862451960155916209
+      Threesquare_0_unlit_132: 8134914459070036281
+      Threesquare_0_unlit_133: 3660103950528031669
+      Threesquare_0_unlit_134: 4536208235151749393
+      Threesquare_0_unlit_135: 1786380967494624593
+      Threesquare_0_unlit_136: 2304348526655304925
+      Threesquare_0_unlit_137: 7425837561450735216
+      Threesquare_0_unlit_138: -6017807351066902977
+      Threesquare_0_unlit_139: -5501677064903454257
+      Threesquare_0_unlit_14: 1475186574929414968
+      Threesquare_0_unlit_140: -3995853762297903619
+      Threesquare_0_unlit_141: 2607891932282873251
+      Threesquare_0_unlit_142: 8566053518865191695
+      Threesquare_0_unlit_143: 5228445653744387089
+      Threesquare_0_unlit_144: -8282417469771712197
+      Threesquare_0_unlit_145: 5054129935773150050
+      Threesquare_0_unlit_146: -102302360744489652
+      Threesquare_0_unlit_147: 5224195178808914710
+      Threesquare_0_unlit_148: 6949137046386939952
+      Threesquare_0_unlit_149: 1838047190265948805
+      Threesquare_0_unlit_15: -2169442391669443721
+      Threesquare_0_unlit_150: 1761864199111936814
+      Threesquare_0_unlit_151: -132409354292212139
+      Threesquare_0_unlit_152: -3697318966949221768
+      Threesquare_0_unlit_153: -7939373810901233389
+      Threesquare_0_unlit_154: -6047366571439680227
+      Threesquare_0_unlit_155: 6803730949575979858
+      Threesquare_0_unlit_156: 8366692915410289210
+      Threesquare_0_unlit_157: 8823464062390862015
+      Threesquare_0_unlit_158: -3038844727670938794
+      Threesquare_0_unlit_159: -7167068166071019281
+      Threesquare_0_unlit_16: -3842512982702613695
+      Threesquare_0_unlit_160: 7479101501869792259
+      Threesquare_0_unlit_161: 400638534881122904
+      Threesquare_0_unlit_162: 1048026749300483701
+      Threesquare_0_unlit_163: -3400447575985499211
+      Threesquare_0_unlit_164: 4842330460235186897
+      Threesquare_0_unlit_165: -7322011344675228366
+      Threesquare_0_unlit_166: -3310870180350370932
+      Threesquare_0_unlit_167: -7129821815226859560
+      Threesquare_0_unlit_168: 2383173555994754048
+      Threesquare_0_unlit_169: -5180392262141753456
+      Threesquare_0_unlit_17: -1487848496219780519
+      Threesquare_0_unlit_170: 141660471935331868
+      Threesquare_0_unlit_171: 638215482872078827
+      Threesquare_0_unlit_172: -6596688735069996223
+      Threesquare_0_unlit_173: 4646559712143095702
+      Threesquare_0_unlit_174: -8064586400955008426
+      Threesquare_0_unlit_175: 2249079665985374890
+      Threesquare_0_unlit_176: -8684250365072821677
+      Threesquare_0_unlit_177: 793983306658726197
+      Threesquare_0_unlit_178: -7820369517636732643
+      Threesquare_0_unlit_179: -1408385964801285118
+      Threesquare_0_unlit_18: -3386093020990075721
+      Threesquare_0_unlit_180: -4629528440337209856
+      Threesquare_0_unlit_181: 8460456897249268003
+      Threesquare_0_unlit_182: -484401830827325959
+      Threesquare_0_unlit_183: -5357225213989611949
+      Threesquare_0_unlit_184: -20011519594764021
+      Threesquare_0_unlit_185: 7321856142816233424
+      Threesquare_0_unlit_186: 7536993609390797635
+      Threesquare_0_unlit_187: 2106456709099543176
+      Threesquare_0_unlit_188: 8668401625501321792
+      Threesquare_0_unlit_189: -2929481899144044894
+      Threesquare_0_unlit_19: 372191556371380334
+      Threesquare_0_unlit_190: -7453074304073020743
+      Threesquare_0_unlit_191: -6041310281230385554
+      Threesquare_0_unlit_192: -2529957017806244282
+      Threesquare_0_unlit_193: 942401587229971001
+      Threesquare_0_unlit_194: 6292712688418055329
+      Threesquare_0_unlit_195: 3267734596773647302
+      Threesquare_0_unlit_196: -5258212938076252492
+      Threesquare_0_unlit_197: 5168261877856393290
+      Threesquare_0_unlit_198: 5822132252278626261
+      Threesquare_0_unlit_199: -3923805731870106721
+      Threesquare_0_unlit_2: -6183512555679206417
+      Threesquare_0_unlit_20: 5961475484194086847
+      Threesquare_0_unlit_200: -1708618940320706868
+      Threesquare_0_unlit_201: -146188986655023659
+      Threesquare_0_unlit_202: 7734006450476669844
+      Threesquare_0_unlit_203: 181169330505828512
+      Threesquare_0_unlit_204: -8857564603294139203
+      Threesquare_0_unlit_205: 8971329788512255453
+      Threesquare_0_unlit_206: -7925481642000218072
+      Threesquare_0_unlit_207: 1058823190334435575
+      Threesquare_0_unlit_208: 5974767179889468323
+      Threesquare_0_unlit_209: 4386919937128681323
+      Threesquare_0_unlit_21: -3538113890974449347
+      Threesquare_0_unlit_210: -8220233440381184160
+      Threesquare_0_unlit_211: -1320380982455422680
+      Threesquare_0_unlit_212: -2353556622904625794
+      Threesquare_0_unlit_213: 2212467557132020820
+      Threesquare_0_unlit_214: -1758149675817751053
+      Threesquare_0_unlit_215: -1770326431779896413
+      Threesquare_0_unlit_216: 7843045979933976774
+      Threesquare_0_unlit_217: 8807832281504116146
+      Threesquare_0_unlit_218: -6852860754561225988
+      Threesquare_0_unlit_219: -4765144949290779812
+      Threesquare_0_unlit_22: -7565983009240120013
+      Threesquare_0_unlit_220: 6863970400900785086
+      Threesquare_0_unlit_221: -1164899101662227503
+      Threesquare_0_unlit_222: -9133791435527847362
+      Threesquare_0_unlit_223: -3512033577424339204
+      Threesquare_0_unlit_224: -3218801633914021297
+      Threesquare_0_unlit_225: 5320477288780196950
+      Threesquare_0_unlit_226: -1155695447884923839
+      Threesquare_0_unlit_227: 4743844228244540656
+      Threesquare_0_unlit_228: -7209966426411328821
+      Threesquare_0_unlit_229: 7438985652912036099
+      Threesquare_0_unlit_23: 9203462780410229299
+      Threesquare_0_unlit_230: -3779214413287765832
+      Threesquare_0_unlit_231: -6156244055246590261
+      Threesquare_0_unlit_232: 8601340651130622119
+      Threesquare_0_unlit_233: 5238463699427220194
+      Threesquare_0_unlit_234: -6865167621590830730
+      Threesquare_0_unlit_235: 8383872319427151170
+      Threesquare_0_unlit_236: -2736895113971038890
+      Threesquare_0_unlit_237: -1721569978989809461
+      Threesquare_0_unlit_238: 6818766603673442981
+      Threesquare_0_unlit_239: 3915326431511051943
+      Threesquare_0_unlit_24: 1545444539043765283
+      Threesquare_0_unlit_240: 8881650774781122124
+      Threesquare_0_unlit_241: -488787949443357994
+      Threesquare_0_unlit_242: 1210398201312690874
+      Threesquare_0_unlit_243: 2901263069449973503
+      Threesquare_0_unlit_244: 3691742991709131219
+      Threesquare_0_unlit_245: 4083141012697672778
+      Threesquare_0_unlit_246: 3593426379570884993
+      Threesquare_0_unlit_247: 1778837540872413794
+      Threesquare_0_unlit_248: -2454484722425963183
+      Threesquare_0_unlit_249: -8396293485736279181
+      Threesquare_0_unlit_25: -6875575453364303797
+      Threesquare_0_unlit_250: -1031151308208866656
+      Threesquare_0_unlit_251: -6470306210425550171
+      Threesquare_0_unlit_252: 8071085102286580971
+      Threesquare_0_unlit_253: -4745916330707606031
+      Threesquare_0_unlit_254: 4086308718676946937
+      Threesquare_0_unlit_255: -395481794767194538
+      Threesquare_0_unlit_256: -5291552970249389474
+      Threesquare_0_unlit_257: -7882639128354879076
+      Threesquare_0_unlit_258: -7085231857727496723
+      Threesquare_0_unlit_259: 4441483117416173526
+      Threesquare_0_unlit_26: -4803091466163995008
+      Threesquare_0_unlit_260: 1411790216813179607
+      Threesquare_0_unlit_261: 4589664294611632567
+      Threesquare_0_unlit_262: -1122964530568982444
+      Threesquare_0_unlit_27: -8128977729499580914
+      Threesquare_0_unlit_28: -1768571602589995370
+      Threesquare_0_unlit_29: -2349851703762905881
+      Threesquare_0_unlit_3: 892998618115161010
+      Threesquare_0_unlit_30: 7627156946873476617
+      Threesquare_0_unlit_31: -295128727296310734
+      Threesquare_0_unlit_32: -8515804976351314544
+      Threesquare_0_unlit_33: -646769509657024100
+      Threesquare_0_unlit_34: -5158908483158168957
+      Threesquare_0_unlit_35: -3076180794602172881
+      Threesquare_0_unlit_36: 1144521507688718168
+      Threesquare_0_unlit_37: 9091396454916967999
+      Threesquare_0_unlit_38: -6677495174762812334
+      Threesquare_0_unlit_39: -2027842151747880472
+      Threesquare_0_unlit_4: 3573160910980652322
+      Threesquare_0_unlit_40: -8857341086590242705
+      Threesquare_0_unlit_41: -4306032707464627557
+      Threesquare_0_unlit_42: 8145598050296211840
+      Threesquare_0_unlit_43: -2710641787527194075
+      Threesquare_0_unlit_44: -2117829732964667810
+      Threesquare_0_unlit_45: 3392070570822019153
+      Threesquare_0_unlit_46: -8218319423545880446
+      Threesquare_0_unlit_47: -2772328872174307033
+      Threesquare_0_unlit_48: -6887327279285967676
+      Threesquare_0_unlit_49: -1752506425682887306
+      Threesquare_0_unlit_5: -2455608815550953065
+      Threesquare_0_unlit_50: -776845936006743505
+      Threesquare_0_unlit_51: -6880020597317955226
+      Threesquare_0_unlit_52: 3198694814547104054
+      Threesquare_0_unlit_53: 472526420321141439
+      Threesquare_0_unlit_54: -9050366093675737281
+      Threesquare_0_unlit_55: -4569680602713176717
+      Threesquare_0_unlit_56: 8381301039293770851
+      Threesquare_0_unlit_57: -8155905240503369890
+      Threesquare_0_unlit_58: 8399885471871866081
+      Threesquare_0_unlit_59: -7742014976871198709
+      Threesquare_0_unlit_6: -1271504377433637580
+      Threesquare_0_unlit_60: 1182423191315303720
+      Threesquare_0_unlit_61: 4188932825148975346
+      Threesquare_0_unlit_62: -1632827815645441384
+      Threesquare_0_unlit_63: -4363412872988882253
+      Threesquare_0_unlit_64: 1448441209991061237
+      Threesquare_0_unlit_65: -6449460908229564885
+      Threesquare_0_unlit_66: -7608718183835309374
+      Threesquare_0_unlit_67: -6698228090414992159
+      Threesquare_0_unlit_68: 6867910409786980170
+      Threesquare_0_unlit_69: -2591855616623062140
+      Threesquare_0_unlit_7: -788235764372642897
+      Threesquare_0_unlit_70: -3438869228742592387
+      Threesquare_0_unlit_71: 6545928942592387680
+      Threesquare_0_unlit_72: 2920426612350028673
+      Threesquare_0_unlit_73: 2302574039371105408
+      Threesquare_0_unlit_74: 185971893064482629
+      Threesquare_0_unlit_75: -8782996081854770100
+      Threesquare_0_unlit_76: 7777656078888138089
+      Threesquare_0_unlit_77: -311028878767224641
+      Threesquare_0_unlit_78: -463168519098444125
+      Threesquare_0_unlit_79: -6250605061025402463
+      Threesquare_0_unlit_8: 2257777244473451645
+      Threesquare_0_unlit_80: 2989664168212360842
+      Threesquare_0_unlit_81: -5286545152429296400
+      Threesquare_0_unlit_82: 4944277765493354199
+      Threesquare_0_unlit_83: 3521975465477507332
+      Threesquare_0_unlit_84: 3130448011548494394
+      Threesquare_0_unlit_85: 6936201864073480441
+      Threesquare_0_unlit_86: -597316991707103362
+      Threesquare_0_unlit_87: 1967795614964875626
+      Threesquare_0_unlit_88: -6711392247965686081
+      Threesquare_0_unlit_89: -357470468136245152
+      Threesquare_0_unlit_9: 527251536184845556
+      Threesquare_0_unlit_90: 1254766080500643643
+      Threesquare_0_unlit_91: 1776856842358260298
+      Threesquare_0_unlit_92: -6700805684617184042
+      Threesquare_0_unlit_93: -1437412015574313210
+      Threesquare_0_unlit_94: -8538623235006037446
+      Threesquare_0_unlit_95: 8505374548393732121
+      Threesquare_0_unlit_96: 368618098556340951
+      Threesquare_0_unlit_97: 6253362395960797622
+      Threesquare_0_unlit_98: -424063236875635699
+      Threesquare_0_unlit_99: -8325390194414458733
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,2262 @@
+fileFormatVersion: 2
+guid: 9d87c7cd991880e45962ae1243a571b4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7915480112533843303
+    second: Serviceberry_0_detail_0
+  - first:
+      213: -8400221529902982083
+    second: Serviceberry_0_detail_1
+  - first:
+      213: 6809860297587325253
+    second: Serviceberry_0_detail_2
+  - first:
+      213: 7156706279961147429
+    second: Serviceberry_0_detail_3
+  - first:
+      213: 3068060468076449391
+    second: Serviceberry_0_detail_4
+  - first:
+      213: 2087056136222311675
+    second: Serviceberry_0_detail_5
+  - first:
+      213: -6119512971232524936
+    second: Serviceberry_0_detail_6
+  - first:
+      213: 8564094770069785220
+    second: Serviceberry_0_detail_7
+  - first:
+      213: -5626404843548310771
+    second: Serviceberry_0_detail_8
+  - first:
+      213: -5221900214443257089
+    second: Serviceberry_0_detail_9
+  - first:
+      213: 9182608528680354385
+    second: Serviceberry_0_detail_10
+  - first:
+      213: -7163024920135947068
+    second: Serviceberry_0_detail_11
+  - first:
+      213: -5463698294182160990
+    second: Serviceberry_0_detail_12
+  - first:
+      213: -1429420881057243423
+    second: Serviceberry_0_detail_13
+  - first:
+      213: 4661239690364090770
+    second: Serviceberry_0_detail_14
+  - first:
+      213: 3196717478814313430
+    second: Serviceberry_0_detail_15
+  - first:
+      213: -9175053867275207198
+    second: Serviceberry_0_detail_16
+  - first:
+      213: -2322498801803671777
+    second: Serviceberry_0_detail_17
+  - first:
+      213: 4738230690530408163
+    second: Serviceberry_0_detail_18
+  - first:
+      213: -5792150375516384402
+    second: Serviceberry_0_detail_19
+  - first:
+      213: -3675405917445077776
+    second: Serviceberry_0_detail_20
+  - first:
+      213: -6446591839283180611
+    second: Serviceberry_0_detail_21
+  - first:
+      213: -7523181124958217320
+    second: Serviceberry_0_detail_22
+  - first:
+      213: 3456924905608805437
+    second: Serviceberry_0_detail_23
+  - first:
+      213: 2498979070934363343
+    second: Serviceberry_0_detail_24
+  - first:
+      213: -7485102933443989613
+    second: Serviceberry_0_detail_25
+  - first:
+      213: 8345348653003896523
+    second: Serviceberry_0_detail_26
+  - first:
+      213: -9202246618250905979
+    second: Serviceberry_0_detail_27
+  - first:
+      213: 8181405952917145981
+    second: Serviceberry_0_detail_28
+  - first:
+      213: 8653278538204349860
+    second: Serviceberry_0_detail_29
+  - first:
+      213: -5713423940363668530
+    second: Serviceberry_0_detail_30
+  - first:
+      213: 2154535908769377147
+    second: Serviceberry_0_detail_31
+  - first:
+      213: -6752685897470920552
+    second: Serviceberry_0_detail_32
+  - first:
+      213: 3691718324750314903
+    second: Serviceberry_0_detail_33
+  - first:
+      213: 5431270175077880851
+    second: Serviceberry_0_detail_34
+  - first:
+      213: -6273268705619787358
+    second: Serviceberry_0_detail_35
+  - first:
+      213: 1250559737055702981
+    second: Serviceberry_0_detail_36
+  - first:
+      213: 1574847546892695383
+    second: Serviceberry_0_detail_37
+  - first:
+      213: -7407560906580230081
+    second: Serviceberry_0_detail_38
+  - first:
+      213: 6589358843558367581
+    second: Serviceberry_0_detail_39
+  - first:
+      213: 427410191675597388
+    second: Serviceberry_0_detail_40
+  - first:
+      213: -2084534631464563524
+    second: Serviceberry_0_detail_41
+  - first:
+      213: 767167859361939298
+    second: Serviceberry_0_detail_42
+  - first:
+      213: 5894781618489964801
+    second: Serviceberry_0_detail_43
+  - first:
+      213: 4333019899018915513
+    second: Serviceberry_0_detail_44
+  - first:
+      213: -1068934373549528106
+    second: Serviceberry_0_detail_45
+  - first:
+      213: 8261336859859415006
+    second: Serviceberry_0_detail_46
+  - first:
+      213: 8582489393377086541
+    second: Serviceberry_0_detail_47
+  - first:
+      213: -6960423712669687162
+    second: Serviceberry_0_detail_48
+  - first:
+      213: -7656509674120847803
+    second: Serviceberry_0_detail_49
+  - first:
+      213: 8778831257274970181
+    second: Serviceberry_0_detail_50
+  - first:
+      213: -9008318990579864863
+    second: Serviceberry_0_detail_51
+  - first:
+      213: 3667706058297476490
+    second: Serviceberry_0_detail_52
+  - first:
+      213: 2224207419930437083
+    second: Serviceberry_0_detail_53
+  - first:
+      213: -8387805505741325847
+    second: Serviceberry_0_detail_54
+  - first:
+      213: -4352301883162685203
+    second: Serviceberry_0_detail_55
+  - first:
+      213: 5684009367460743530
+    second: Serviceberry_0_detail_56
+  - first:
+      213: -7562595513336787901
+    second: Serviceberry_0_detail_57
+  - first:
+      213: -3133840534263912694
+    second: Serviceberry_0_detail_58
+  - first:
+      213: -1229957253216040989
+    second: Serviceberry_0_detail_59
+  - first:
+      213: -5293653690261419941
+    second: Serviceberry_0_detail_60
+  - first:
+      213: -2310607075904442424
+    second: Serviceberry_0_detail_61
+  - first:
+      213: 4805309191127269446
+    second: Serviceberry_0_detail_62
+  - first:
+      213: -1576470499269860395
+    second: Serviceberry_0_detail_63
+  - first:
+      213: -5106063800800500668
+    second: Serviceberry_0_detail_64
+  - first:
+      213: -8139181931000840153
+    second: Serviceberry_0_detail_65
+  - first:
+      213: 4593129497581761916
+    second: Serviceberry_0_detail_66
+  - first:
+      213: 1261417134735001958
+    second: Serviceberry_0_detail_67
+  - first:
+      213: 2702956948830043479
+    second: Serviceberry_0_detail_68
+  - first:
+      213: -1090775772407706957
+    second: Serviceberry_0_detail_69
+  - first:
+      213: 4549221447094789808
+    second: Serviceberry_0_detail_70
+  - first:
+      213: 187516744980978574
+    second: Serviceberry_0_detail_71
+  - first:
+      213: 3233970635649015410
+    second: Serviceberry_0_detail_72
+  - first:
+      213: 295399229583061080
+    second: Serviceberry_0_detail_73
+  - first:
+      213: 5730994411556059710
+    second: Serviceberry_0_detail_74
+  - first:
+      213: 4342894350033633831
+    second: Serviceberry_0_detail_75
+  - first:
+      213: 2266602274689241500
+    second: Serviceberry_0_detail_76
+  - first:
+      213: 1169235752688742671
+    second: Serviceberry_0_detail_77
+  - first:
+      213: -8489702216077961369
+    second: Serviceberry_0_detail_78
+  - first:
+      213: 5402216041001445486
+    second: Serviceberry_0_detail_79
+  - first:
+      213: -5876052122458985430
+    second: Serviceberry_0_detail_80
+  - first:
+      213: 7000544823293636349
+    second: Serviceberry_0_detail_81
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 434
+        width: 36
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99250c196c0962290800000000000000
+      internalID: -7915480112533843303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 435
+        width: 28
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3c5b8b560b6c6b80800000000000000
+      internalID: -8400221529902982083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 436
+        width: 31
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5497ab74cdb718e50800000000000000
+      internalID: 6809860297587325253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 435
+        width: 33
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52834ea917ab15360800000000000000
+      internalID: 7156706279961147429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 436
+        width: 31
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6e8d1d8db0f39a20800000000000000
+      internalID: 3068060468076449391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 435
+        width: 32
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf484d98f76b6fc10800000000000000
+      internalID: 2087056136222311675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 436
+        width: 31
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8754a4f006f131ba0800000000000000
+      internalID: -6119512971232524936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 435
+        width: 32
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48a4ac0a1d6c9d670800000000000000
+      internalID: 8564094770069785220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 435
+        width: 29
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0304c1da9efae1b0800000000000000
+      internalID: -5626404843548310771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 435
+        width: 31
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff2d299fb651887b0800000000000000
+      internalID: -5221900214443257089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 435
+        width: 30
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15207772ecd2f6f70800000000000000
+      internalID: 9182608528680354385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 435
+        width: 29
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cca60659c2d79c90800000000000000
+      internalID: -7163024920135947068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 321
+        width: 29
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a55d5f695b0d24b0800000000000000
+      internalID: -5463698294182160990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 321
+        width: 30
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ee9e06384da92ce0800000000000000
+      internalID: -1429420881057243423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 322
+        width: 31
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2997a155dcc00b040800000000000000
+      internalID: 4661239690364090770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 324
+        width: 27
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6db620c2c950d5c20800000000000000
+      internalID: 3196717478814313430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 324
+        width: 29
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2edbcf58e19aba080800000000000000
+      internalID: -9175053867275207198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 325
+        width: 34
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f17c83715a3d4cfd0800000000000000
+      internalID: -2322498801803671777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 324
+        width: 29
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e63be475b391c140800000000000000
+      internalID: 4738230690530408163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 325
+        width: 33
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6353bdebe52e9fa0800000000000000
+      internalID: -5792150375516384402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 466
+        y: 324
+        width: 30
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f4415d8ac55efcc0800000000000000
+      internalID: -3675405917445077776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 325
+        width: 32
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb089fa0ea1986a0800000000000000
+      internalID: -6446591839283180611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 324
+        width: 28
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89b11f950aa489790800000000000000
+      internalID: -7523181124958217320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 326
+        width: 21
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3c7306d2e679ff20800000000000000
+      internalID: 3456924905608805437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 609
+        y: 324
+        width: 27
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fccad2099382ea220800000000000000
+      internalID: 2498979070934363343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 220
+        width: 34
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39f26d03a829f1890800000000000000
+      internalID: -7485102933443989613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 221
+        width: 30
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc6f4156262a0d370800000000000000
+      internalID: 8345348653003896523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 220
+        width: 32
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5867d9fc47d0b4080800000000000000
+      internalID: -9202246618250905979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 221
+        width: 31
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7984e20e513a8170800000000000000
+      internalID: 8181405952917145981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 220
+        width: 32
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a58e24cbfe961870800000000000000
+      internalID: 8653278538204349860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 221
+        width: 31
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec3396f7237d5b0b0800000000000000
+      internalID: -5713423940363668530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 222
+        width: 53
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7ba50a6ef276ed10800000000000000
+      internalID: 2154535908769377147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 235
+        width: 25
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 898b47914f3a942a0800000000000000
+      internalID: -6752685897470920552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 234
+        width: 26
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79dea8db14e9b3330800000000000000
+      internalID: 3691718324750314903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 551
+        y: 235
+        width: 25
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 314d0b8b27fbf5b40800000000000000
+      internalID: 5431270175077880851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 234
+        width: 28
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a145f4795fd0f8a0800000000000000
+      internalID: -6273268705619787358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 235
+        width: 26
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cf6c918471ea5110800000000000000
+      internalID: 1250559737055702981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 234
+        width: 27
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7573fefff7bfad510800000000000000
+      internalID: 1574847546892695383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 136
+        width: 22
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3007373a9e033990800000000000000
+      internalID: -7407560906580230081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 135
+        width: 27
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5110efc4fa127b50800000000000000
+      internalID: 6589358843558367581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 136
+        width: 22
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c42a4380e477ee500800000000000000
+      internalID: 427410191675597388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 135
+        width: 28
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbc0e890cce3213e0800000000000000
+      internalID: -2084534631464563524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 136
+        width: 22
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26f7d5c7a1785aa00800000000000000
+      internalID: 767167859361939298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 135
+        width: 28
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 109b89e66a87ec150800000000000000
+      internalID: 5894781618489964801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 140
+        width: 20
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bea8bd04aaf12c30800000000000000
+      internalID: 4333019899018915513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 139
+        width: 24
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6db2068c9d16a21f0800000000000000
+      internalID: -1068934373549528106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 138
+        width: 40
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edfe2c58a1a26a270800000000000000
+      internalID: 8261336859859415006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 138
+        width: 40
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4c8ccc91a02b1770800000000000000
+      internalID: 8582489393377086541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_48
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 139
+        width: 39
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6822e10e28b976f90800000000000000
+      internalID: -6960423712669687162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_49
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 141
+        width: 21
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54e5fae640d9eb590800000000000000
+      internalID: -7656509674120847803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_50
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 143
+        width: 13
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54078f8248ca4d970800000000000000
+      internalID: 8778831257274970181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_51
+      rect:
+        serializedVersion: 2
+        x: 637
+        y: 141
+        width: 22
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1eae41f2b950cf280800000000000000
+      internalID: -9008318990579864863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_52
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 61
+        width: 30
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a858e594a3f46e230800000000000000
+      internalID: 3667706058297476490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_53
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 61
+        width: 25
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd5edb33dd8fdde10800000000000000
+      internalID: 2224207419930437083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_54
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 61
+        width: 30
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e9f8314557889b80800000000000000
+      internalID: -8387805505741325847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_55
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 61
+        width: 25
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de013da2f748993c0800000000000000
+      internalID: -4352301883162685203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_56
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 61
+        width: 29
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a698d7f8768a1ee40800000000000000
+      internalID: 5684009367460743530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_57
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 61
+        width: 24
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34c099fe2734c0790800000000000000
+      internalID: -7562595513336787901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_58
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 64
+        width: 27
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a07aa7c43ac5284d0800000000000000
+      internalID: -3133840534263912694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_59
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 64
+        width: 21
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e7842115605eeee0800000000000000
+      internalID: -1229957253216040989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_60
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 63
+        width: 41
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b584804040a2986b0800000000000000
+      internalID: -5293653690261419941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_61
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 78
+        width: 18
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cf26394b131fefd0800000000000000
+      internalID: -2310607075904442424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_62
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 78
+        width: 18
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6408f0def33efa240800000000000000
+      internalID: 4805309191127269446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_63
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 78
+        width: 18
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d32324fe604f1ae0800000000000000
+      internalID: -1576470499269860395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_64
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 78
+        width: 18
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4442ec8b60e9329b0800000000000000
+      internalID: -5106063800800500668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_65
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 78
+        width: 18
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 720ca603821db0f80800000000000000
+      internalID: -8139181931000840153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_66
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 78
+        width: 19
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c75babe41f21ebf30800000000000000
+      internalID: 4593129497581761916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_67
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 79
+        width: 33
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66988756334718110800000000000000
+      internalID: 1261417134735001958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_68
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 4
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75d303a2605d28520800000000000000
+      internalID: 2702956948830043479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_69
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 4
+        width: 33
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ba4904d639ccd0f0800000000000000
+      internalID: -1090775772407706957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_70
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 9
+        width: 14
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b66ca6adc4122f30800000000000000
+      internalID: 4549221447094789808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_71
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 8
+        width: 17
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8b570e6c713a9200800000000000000
+      internalID: 187516744980978574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_72
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 8
+        width: 27
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27e57e7a82f51ec20800000000000000
+      internalID: 3233970635649015410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_73
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 8
+        width: 25
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 850f832c808791400800000000000000
+      internalID: 295399229583061080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_74
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 8
+        width: 25
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3a3c8e9d05988f40800000000000000
+      internalID: 5730994411556059710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_75
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 9
+        width: 29
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7224ec6d66f054c30800000000000000
+      internalID: 4342894350033633831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_76
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 10
+        width: 28
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c91d1f582c6947f10800000000000000
+      internalID: 2266602274689241500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_77
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 10
+        width: 28
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f01f2b1e8b5f93010800000000000000
+      internalID: 1169235752688742671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_78
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 10
+        width: 26
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76793d990d48e2a80800000000000000
+      internalID: -8489702216077961369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_79
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 12
+        width: 17
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e68eecbfdd688fa40800000000000000
+      internalID: 5402216041001445486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_80
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 12
+        width: 14
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2ce62f2ab1147ea0800000000000000
+      internalID: -5876052122458985430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Serviceberry_0_detail_81
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 11
+        width: 26
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfeed922d6ee62160800000000000000
+      internalID: 7000544823293636349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Serviceberry_0_detail_0: -7915480112533843303
+      Serviceberry_0_detail_1: -8400221529902982083
+      Serviceberry_0_detail_10: 9182608528680354385
+      Serviceberry_0_detail_11: -7163024920135947068
+      Serviceberry_0_detail_12: -5463698294182160990
+      Serviceberry_0_detail_13: -1429420881057243423
+      Serviceberry_0_detail_14: 4661239690364090770
+      Serviceberry_0_detail_15: 3196717478814313430
+      Serviceberry_0_detail_16: -9175053867275207198
+      Serviceberry_0_detail_17: -2322498801803671777
+      Serviceberry_0_detail_18: 4738230690530408163
+      Serviceberry_0_detail_19: -5792150375516384402
+      Serviceberry_0_detail_2: 6809860297587325253
+      Serviceberry_0_detail_20: -3675405917445077776
+      Serviceberry_0_detail_21: -6446591839283180611
+      Serviceberry_0_detail_22: -7523181124958217320
+      Serviceberry_0_detail_23: 3456924905608805437
+      Serviceberry_0_detail_24: 2498979070934363343
+      Serviceberry_0_detail_25: -7485102933443989613
+      Serviceberry_0_detail_26: 8345348653003896523
+      Serviceberry_0_detail_27: -9202246618250905979
+      Serviceberry_0_detail_28: 8181405952917145981
+      Serviceberry_0_detail_29: 8653278538204349860
+      Serviceberry_0_detail_3: 7156706279961147429
+      Serviceberry_0_detail_30: -5713423940363668530
+      Serviceberry_0_detail_31: 2154535908769377147
+      Serviceberry_0_detail_32: -6752685897470920552
+      Serviceberry_0_detail_33: 3691718324750314903
+      Serviceberry_0_detail_34: 5431270175077880851
+      Serviceberry_0_detail_35: -6273268705619787358
+      Serviceberry_0_detail_36: 1250559737055702981
+      Serviceberry_0_detail_37: 1574847546892695383
+      Serviceberry_0_detail_38: -7407560906580230081
+      Serviceberry_0_detail_39: 6589358843558367581
+      Serviceberry_0_detail_4: 3068060468076449391
+      Serviceberry_0_detail_40: 427410191675597388
+      Serviceberry_0_detail_41: -2084534631464563524
+      Serviceberry_0_detail_42: 767167859361939298
+      Serviceberry_0_detail_43: 5894781618489964801
+      Serviceberry_0_detail_44: 4333019899018915513
+      Serviceberry_0_detail_45: -1068934373549528106
+      Serviceberry_0_detail_46: 8261336859859415006
+      Serviceberry_0_detail_47: 8582489393377086541
+      Serviceberry_0_detail_48: -6960423712669687162
+      Serviceberry_0_detail_49: -7656509674120847803
+      Serviceberry_0_detail_5: 2087056136222311675
+      Serviceberry_0_detail_50: 8778831257274970181
+      Serviceberry_0_detail_51: -9008318990579864863
+      Serviceberry_0_detail_52: 3667706058297476490
+      Serviceberry_0_detail_53: 2224207419930437083
+      Serviceberry_0_detail_54: -8387805505741325847
+      Serviceberry_0_detail_55: -4352301883162685203
+      Serviceberry_0_detail_56: 5684009367460743530
+      Serviceberry_0_detail_57: -7562595513336787901
+      Serviceberry_0_detail_58: -3133840534263912694
+      Serviceberry_0_detail_59: -1229957253216040989
+      Serviceberry_0_detail_6: -6119512971232524936
+      Serviceberry_0_detail_60: -5293653690261419941
+      Serviceberry_0_detail_61: -2310607075904442424
+      Serviceberry_0_detail_62: 4805309191127269446
+      Serviceberry_0_detail_63: -1576470499269860395
+      Serviceberry_0_detail_64: -5106063800800500668
+      Serviceberry_0_detail_65: -8139181931000840153
+      Serviceberry_0_detail_66: 4593129497581761916
+      Serviceberry_0_detail_67: 1261417134735001958
+      Serviceberry_0_detail_68: 2702956948830043479
+      Serviceberry_0_detail_69: -1090775772407706957
+      Serviceberry_0_detail_7: 8564094770069785220
+      Serviceberry_0_detail_70: 4549221447094789808
+      Serviceberry_0_detail_71: 187516744980978574
+      Serviceberry_0_detail_72: 3233970635649015410
+      Serviceberry_0_detail_73: 295399229583061080
+      Serviceberry_0_detail_74: 5730994411556059710
+      Serviceberry_0_detail_75: 4342894350033633831
+      Serviceberry_0_detail_76: 2266602274689241500
+      Serviceberry_0_detail_77: 1169235752688742671
+      Serviceberry_0_detail_78: -8489702216077961369
+      Serviceberry_0_detail_79: 5402216041001445486
+      Serviceberry_0_detail_8: -5626404843548310771
+      Serviceberry_0_detail_80: -5876052122458985430
+      Serviceberry_0_detail_81: 7000544823293636349
+      Serviceberry_0_detail_9: -5221900214443257089
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

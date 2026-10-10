@@ -1,0 +1,7150 @@
+fileFormatVersion: 2
+guid: 0409f77e90a43fe408f0445e24fbc48d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4836090476763343327
+    second: Glasswort_0_normal_0
+  - first:
+      213: -5833627489374629031
+    second: Glasswort_0_normal_1
+  - first:
+      213: -2860359860845393053
+    second: Glasswort_0_normal_2
+  - first:
+      213: 8185517031863560266
+    second: Glasswort_0_normal_3
+  - first:
+      213: -3282663701466660918
+    second: Glasswort_0_normal_4
+  - first:
+      213: -8974963181801338134
+    second: Glasswort_0_normal_5
+  - first:
+      213: 4242977276234865201
+    second: Glasswort_0_normal_6
+  - first:
+      213: 3004639208554088275
+    second: Glasswort_0_normal_7
+  - first:
+      213: 6508089411484752912
+    second: Glasswort_0_normal_8
+  - first:
+      213: -1165676062728581766
+    second: Glasswort_0_normal_9
+  - first:
+      213: 9037273530083314822
+    second: Glasswort_0_normal_10
+  - first:
+      213: -2301390676755438222
+    second: Glasswort_0_normal_11
+  - first:
+      213: -4680643890131692907
+    second: Glasswort_0_normal_12
+  - first:
+      213: 6408162968200373304
+    second: Glasswort_0_normal_13
+  - first:
+      213: 1596504866081185278
+    second: Glasswort_0_normal_14
+  - first:
+      213: 6105495312531863230
+    second: Glasswort_0_normal_15
+  - first:
+      213: -2659038171686664298
+    second: Glasswort_0_normal_16
+  - first:
+      213: -2993621689502288219
+    second: Glasswort_0_normal_17
+  - first:
+      213: 6290447906921578420
+    second: Glasswort_0_normal_18
+  - first:
+      213: -3922883153893313111
+    second: Glasswort_0_normal_19
+  - first:
+      213: 6066499344434338335
+    second: Glasswort_0_normal_20
+  - first:
+      213: 4192170268377817947
+    second: Glasswort_0_normal_21
+  - first:
+      213: -7192185897361213022
+    second: Glasswort_0_normal_22
+  - first:
+      213: -8797692372111527883
+    second: Glasswort_0_normal_23
+  - first:
+      213: -4747345697691960283
+    second: Glasswort_0_normal_24
+  - first:
+      213: 9048808404638159283
+    second: Glasswort_0_normal_25
+  - first:
+      213: 4203181589254466039
+    second: Glasswort_0_normal_26
+  - first:
+      213: 1127584462702830441
+    second: Glasswort_0_normal_27
+  - first:
+      213: -7298535053007066697
+    second: Glasswort_0_normal_28
+  - first:
+      213: -7638051263185465542
+    second: Glasswort_0_normal_29
+  - first:
+      213: -2258278363495248678
+    second: Glasswort_0_normal_30
+  - first:
+      213: -9003308547768956760
+    second: Glasswort_0_normal_31
+  - first:
+      213: -1642037462144721055
+    second: Glasswort_0_normal_32
+  - first:
+      213: 6347190739434123631
+    second: Glasswort_0_normal_33
+  - first:
+      213: -1519683041511744985
+    second: Glasswort_0_normal_34
+  - first:
+      213: -8665107110973144707
+    second: Glasswort_0_normal_35
+  - first:
+      213: -1621374069995545142
+    second: Glasswort_0_normal_36
+  - first:
+      213: 6597307154127452449
+    second: Glasswort_0_normal_37
+  - first:
+      213: 2373972776868318550
+    second: Glasswort_0_normal_38
+  - first:
+      213: -5626472244868420063
+    second: Glasswort_0_normal_39
+  - first:
+      213: -804708657577847850
+    second: Glasswort_0_normal_40
+  - first:
+      213: -5104937816277492009
+    second: Glasswort_0_normal_41
+  - first:
+      213: -2785747115316960952
+    second: Glasswort_0_normal_42
+  - first:
+      213: -8015494768505008752
+    second: Glasswort_0_normal_43
+  - first:
+      213: -4003449531120230626
+    second: Glasswort_0_normal_44
+  - first:
+      213: 8446599392872995779
+    second: Glasswort_0_normal_45
+  - first:
+      213: -2513170716259352795
+    second: Glasswort_0_normal_46
+  - first:
+      213: 3878981333793642868
+    second: Glasswort_0_normal_47
+  - first:
+      213: -9189342441262701198
+    second: Glasswort_0_normal_48
+  - first:
+      213: 3414805323365207039
+    second: Glasswort_0_normal_49
+  - first:
+      213: 8252274237261145107
+    second: Glasswort_0_normal_50
+  - first:
+      213: 5186509607773556163
+    second: Glasswort_0_normal_51
+  - first:
+      213: 6639676065983532828
+    second: Glasswort_0_normal_52
+  - first:
+      213: 2497055331405865277
+    second: Glasswort_0_normal_53
+  - first:
+      213: -6356175640017835384
+    second: Glasswort_0_normal_54
+  - first:
+      213: -1432656006566974309
+    second: Glasswort_0_normal_55
+  - first:
+      213: 8629034943715611884
+    second: Glasswort_0_normal_56
+  - first:
+      213: -2603158034744421903
+    second: Glasswort_0_normal_57
+  - first:
+      213: -6709611228626340756
+    second: Glasswort_0_normal_58
+  - first:
+      213: 2785392272525644350
+    second: Glasswort_0_normal_59
+  - first:
+      213: 9042847008763240960
+    second: Glasswort_0_normal_60
+  - first:
+      213: -8845835326135561077
+    second: Glasswort_0_normal_61
+  - first:
+      213: 2599478321880709654
+    second: Glasswort_0_normal_62
+  - first:
+      213: 3835911968833375772
+    second: Glasswort_0_normal_63
+  - first:
+      213: -4630406156092444295
+    second: Glasswort_0_normal_64
+  - first:
+      213: 6239988046293449239
+    second: Glasswort_0_normal_65
+  - first:
+      213: 6104657117895589603
+    second: Glasswort_0_normal_66
+  - first:
+      213: -4622072288152584944
+    second: Glasswort_0_normal_67
+  - first:
+      213: 2354497118905973958
+    second: Glasswort_0_normal_68
+  - first:
+      213: 8774912110763286643
+    second: Glasswort_0_normal_69
+  - first:
+      213: 412117795186608542
+    second: Glasswort_0_normal_70
+  - first:
+      213: -5945726917738749512
+    second: Glasswort_0_normal_71
+  - first:
+      213: -8255843870184400580
+    second: Glasswort_0_normal_72
+  - first:
+      213: -4818549640827495342
+    second: Glasswort_0_normal_73
+  - first:
+      213: 201727169485664525
+    second: Glasswort_0_normal_74
+  - first:
+      213: 4039207717612892795
+    second: Glasswort_0_normal_75
+  - first:
+      213: 4419940474804579585
+    second: Glasswort_0_normal_76
+  - first:
+      213: 4356981786483251083
+    second: Glasswort_0_normal_77
+  - first:
+      213: -2067249164501104000
+    second: Glasswort_0_normal_78
+  - first:
+      213: 2961431566914301683
+    second: Glasswort_0_normal_79
+  - first:
+      213: -5505039208100844035
+    second: Glasswort_0_normal_80
+  - first:
+      213: -2139214050848534488
+    second: Glasswort_0_normal_81
+  - first:
+      213: 9039368804498535919
+    second: Glasswort_0_normal_82
+  - first:
+      213: 5534383063187196940
+    second: Glasswort_0_normal_83
+  - first:
+      213: -580101559646090675
+    second: Glasswort_0_normal_84
+  - first:
+      213: 8168613516953297822
+    second: Glasswort_0_normal_85
+  - first:
+      213: -3739906382552820628
+    second: Glasswort_0_normal_86
+  - first:
+      213: -7581332293926952379
+    second: Glasswort_0_normal_87
+  - first:
+      213: -5140652954058422769
+    second: Glasswort_0_normal_88
+  - first:
+      213: 4781732950576398853
+    second: Glasswort_0_normal_89
+  - first:
+      213: 2081706064875458323
+    second: Glasswort_0_normal_90
+  - first:
+      213: 2242911441728427772
+    second: Glasswort_0_normal_91
+  - first:
+      213: -1176326722166417309
+    second: Glasswort_0_normal_92
+  - first:
+      213: 4746627251977729103
+    second: Glasswort_0_normal_93
+  - first:
+      213: 6029366971128595814
+    second: Glasswort_0_normal_94
+  - first:
+      213: 678950877476820242
+    second: Glasswort_0_normal_95
+  - first:
+      213: 8085929268688311408
+    second: Glasswort_0_normal_96
+  - first:
+      213: 3026051151293068403
+    second: Glasswort_0_normal_97
+  - first:
+      213: 5375943624791673350
+    second: Glasswort_0_normal_98
+  - first:
+      213: -5905857791105658802
+    second: Glasswort_0_normal_99
+  - first:
+      213: -5623839880442126135
+    second: Glasswort_0_normal_100
+  - first:
+      213: -3806086820946240274
+    second: Glasswort_0_normal_101
+  - first:
+      213: 3769131318810481158
+    second: Glasswort_0_normal_102
+  - first:
+      213: -1936829703365069538
+    second: Glasswort_0_normal_103
+  - first:
+      213: 5111917560419670912
+    second: Glasswort_0_normal_104
+  - first:
+      213: -8261014972129011242
+    second: Glasswort_0_normal_105
+  - first:
+      213: -6376724327190677908
+    second: Glasswort_0_normal_106
+  - first:
+      213: 1593572474305561427
+    second: Glasswort_0_normal_107
+  - first:
+      213: -6914287637047903984
+    second: Glasswort_0_normal_108
+  - first:
+      213: -1259369144945869470
+    second: Glasswort_0_normal_109
+  - first:
+      213: 1888345528428572172
+    second: Glasswort_0_normal_110
+  - first:
+      213: 4017338070029360928
+    second: Glasswort_0_normal_111
+  - first:
+      213: -4555024791374761046
+    second: Glasswort_0_normal_112
+  - first:
+      213: -7890813227565059709
+    second: Glasswort_0_normal_113
+  - first:
+      213: 5668014028359435712
+    second: Glasswort_0_normal_114
+  - first:
+      213: -4238922196980291034
+    second: Glasswort_0_normal_115
+  - first:
+      213: -1503259419158702739
+    second: Glasswort_0_normal_116
+  - first:
+      213: 1823376636204846152
+    second: Glasswort_0_normal_117
+  - first:
+      213: -2450455627064831941
+    second: Glasswort_0_normal_118
+  - first:
+      213: -2741570837136105931
+    second: Glasswort_0_normal_119
+  - first:
+      213: -1898853750170083228
+    second: Glasswort_0_normal_120
+  - first:
+      213: -8150870790420906404
+    second: Glasswort_0_normal_121
+  - first:
+      213: -758187677889152224
+    second: Glasswort_0_normal_122
+  - first:
+      213: -6329903617207293968
+    second: Glasswort_0_normal_123
+  - first:
+      213: -6744325326069124824
+    second: Glasswort_0_normal_124
+  - first:
+      213: -3923138732813927579
+    second: Glasswort_0_normal_125
+  - first:
+      213: 2826611850376182222
+    second: Glasswort_0_normal_126
+  - first:
+      213: -1114512275325103664
+    second: Glasswort_0_normal_127
+  - first:
+      213: -2631096271838209099
+    second: Glasswort_0_normal_128
+  - first:
+      213: -4011429701154910562
+    second: Glasswort_0_normal_129
+  - first:
+      213: -8376945220177258256
+    second: Glasswort_0_normal_130
+  - first:
+      213: -7360313796024739505
+    second: Glasswort_0_normal_131
+  - first:
+      213: 8941331004952821671
+    second: Glasswort_0_normal_132
+  - first:
+      213: 8693587930783488412
+    second: Glasswort_0_normal_133
+  - first:
+      213: -5218218956909553932
+    second: Glasswort_0_normal_134
+  - first:
+      213: -5799339370981406403
+    second: Glasswort_0_normal_135
+  - first:
+      213: -4910290560052920894
+    second: Glasswort_0_normal_136
+  - first:
+      213: 2668493183392195294
+    second: Glasswort_0_normal_137
+  - first:
+      213: -6778143251364548686
+    second: Glasswort_0_normal_138
+  - first:
+      213: 3486439335581221104
+    second: Glasswort_0_normal_139
+  - first:
+      213: -3778018650189059863
+    second: Glasswort_0_normal_140
+  - first:
+      213: 9218402354231720732
+    second: Glasswort_0_normal_141
+  - first:
+      213: -6070227169050166239
+    second: Glasswort_0_normal_142
+  - first:
+      213: -1203842545926422923
+    second: Glasswort_0_normal_143
+  - first:
+      213: -4886659794343043429
+    second: Glasswort_0_normal_144
+  - first:
+      213: 449349176211369859
+    second: Glasswort_0_normal_145
+  - first:
+      213: -2890458363758540844
+    second: Glasswort_0_normal_146
+  - first:
+      213: -8834754102090225340
+    second: Glasswort_0_normal_147
+  - first:
+      213: -6987700009590689138
+    second: Glasswort_0_normal_148
+  - first:
+      213: 5256974032234070370
+    second: Glasswort_0_normal_149
+  - first:
+      213: -3606904813525193796
+    second: Glasswort_0_normal_150
+  - first:
+      213: -2444420939820658046
+    second: Glasswort_0_normal_151
+  - first:
+      213: -161411004508742877
+    second: Glasswort_0_normal_152
+  - first:
+      213: 2032098373756163574
+    second: Glasswort_0_normal_153
+  - first:
+      213: 7697250006026434999
+    second: Glasswort_0_normal_154
+  - first:
+      213: 9131665805508436039
+    second: Glasswort_0_normal_155
+  - first:
+      213: -8360741072863873452
+    second: Glasswort_0_normal_156
+  - first:
+      213: 7417349314873074655
+    second: Glasswort_0_normal_157
+  - first:
+      213: 1262558994249921510
+    second: Glasswort_0_normal_158
+  - first:
+      213: 8760749316235373294
+    second: Glasswort_0_normal_159
+  - first:
+      213: -8863018441077145550
+    second: Glasswort_0_normal_160
+  - first:
+      213: 3019578963245305611
+    second: Glasswort_0_normal_161
+  - first:
+      213: -6801402896074623174
+    second: Glasswort_0_normal_162
+  - first:
+      213: 2867561858236114349
+    second: Glasswort_0_normal_163
+  - first:
+      213: -5808479912363846956
+    second: Glasswort_0_normal_164
+  - first:
+      213: -6135850293815672029
+    second: Glasswort_0_normal_165
+  - first:
+      213: 5973451016409884300
+    second: Glasswort_0_normal_166
+  - first:
+      213: 5548237287782525829
+    second: Glasswort_0_normal_167
+  - first:
+      213: -4103300524793350212
+    second: Glasswort_0_normal_168
+  - first:
+      213: -7345478283248495468
+    second: Glasswort_0_normal_169
+  - first:
+      213: 6156369228894412917
+    second: Glasswort_0_normal_170
+  - first:
+      213: 4310695556845674179
+    second: Glasswort_0_normal_171
+  - first:
+      213: 5442479538990528216
+    second: Glasswort_0_normal_172
+  - first:
+      213: -1885332612629260844
+    second: Glasswort_0_normal_173
+  - first:
+      213: -2142985963810957456
+    second: Glasswort_0_normal_174
+  - first:
+      213: -7737583398490621208
+    second: Glasswort_0_normal_175
+  - first:
+      213: 1701001257918772244
+    second: Glasswort_0_normal_176
+  - first:
+      213: -4701914473027553844
+    second: Glasswort_0_normal_177
+  - first:
+      213: 7388586781366785964
+    second: Glasswort_0_normal_178
+  - first:
+      213: 3979234825919591253
+    second: Glasswort_0_normal_179
+  - first:
+      213: -7362603528675927935
+    second: Glasswort_0_normal_180
+  - first:
+      213: -1232650713061536174
+    second: Glasswort_0_normal_181
+  - first:
+      213: -806439636274254657
+    second: Glasswort_0_normal_182
+  - first:
+      213: 5588657470295667074
+    second: Glasswort_0_normal_183
+  - first:
+      213: -1304145516700672452
+    second: Glasswort_0_normal_184
+  - first:
+      213: 5135490197069164598
+    second: Glasswort_0_normal_185
+  - first:
+      213: -4220445658748205143
+    second: Glasswort_0_normal_186
+  - first:
+      213: 1682778034915829251
+    second: Glasswort_0_normal_187
+  - first:
+      213: 3256336444557260138
+    second: Glasswort_0_normal_188
+  - first:
+      213: -6792300916588103544
+    second: Glasswort_0_normal_189
+  - first:
+      213: -4416317549548894823
+    second: Glasswort_0_normal_190
+  - first:
+      213: -5923615976539763637
+    second: Glasswort_0_normal_191
+  - first:
+      213: -990058332639753032
+    second: Glasswort_0_normal_192
+  - first:
+      213: -2279893614341983998
+    second: Glasswort_0_normal_193
+  - first:
+      213: -7916608105581673347
+    second: Glasswort_0_normal_194
+  - first:
+      213: -7899950067417625934
+    second: Glasswort_0_normal_195
+  - first:
+      213: 5694032793572041244
+    second: Glasswort_0_normal_196
+  - first:
+      213: 1155889875444842832
+    second: Glasswort_0_normal_197
+  - first:
+      213: 7764727031208802036
+    second: Glasswort_0_normal_198
+  - first:
+      213: -2272148773534365865
+    second: Glasswort_0_normal_199
+  - first:
+      213: -8260292620739239155
+    second: Glasswort_0_normal_200
+  - first:
+      213: -8313876109369121097
+    second: Glasswort_0_normal_201
+  - first:
+      213: 8698565328088078437
+    second: Glasswort_0_normal_202
+  - first:
+      213: 5945829239492723361
+    second: Glasswort_0_normal_203
+  - first:
+      213: 1648271358864930431
+    second: Glasswort_0_normal_204
+  - first:
+      213: 3006073288997076192
+    second: Glasswort_0_normal_205
+  - first:
+      213: 6668070954256403721
+    second: Glasswort_0_normal_206
+  - first:
+      213: -6943768831447325157
+    second: Glasswort_0_normal_207
+  - first:
+      213: -975365875079508347
+    second: Glasswort_0_normal_208
+  - first:
+      213: 3956899783822416822
+    second: Glasswort_0_normal_209
+  - first:
+      213: -8207673222737171909
+    second: Glasswort_0_normal_210
+  - first:
+      213: -1799287448605989672
+    second: Glasswort_0_normal_211
+  - first:
+      213: -2898430455935687575
+    second: Glasswort_0_normal_212
+  - first:
+      213: 5903440442074487625
+    second: Glasswort_0_normal_213
+  - first:
+      213: 2900421483079695273
+    second: Glasswort_0_normal_214
+  - first:
+      213: 2201602122264352732
+    second: Glasswort_0_normal_215
+  - first:
+      213: -7596910598802716483
+    second: Glasswort_0_normal_216
+  - first:
+      213: -8561691168376067654
+    second: Glasswort_0_normal_217
+  - first:
+      213: 3063184954167654455
+    second: Glasswort_0_normal_218
+  - first:
+      213: 679277952801394793
+    second: Glasswort_0_normal_219
+  - first:
+      213: -4408401698398685425
+    second: Glasswort_0_normal_220
+  - first:
+      213: 4899217994820342974
+    second: Glasswort_0_normal_221
+  - first:
+      213: -4106317051764800661
+    second: Glasswort_0_normal_222
+  - first:
+      213: -516194824680170610
+    second: Glasswort_0_normal_223
+  - first:
+      213: 2879478566142133461
+    second: Glasswort_0_normal_224
+  - first:
+      213: -6393592623070050120
+    second: Glasswort_0_normal_225
+  - first:
+      213: -3691293431442522693
+    second: Glasswort_0_normal_226
+  - first:
+      213: 2385321191359896816
+    second: Glasswort_0_normal_227
+  - first:
+      213: -8785390951254691138
+    second: Glasswort_0_normal_228
+  - first:
+      213: -2576269861852824582
+    second: Glasswort_0_normal_229
+  - first:
+      213: 2901061453551355335
+    second: Glasswort_0_normal_230
+  - first:
+      213: 3170476550285474759
+    second: Glasswort_0_normal_231
+  - first:
+      213: 503202602327788451
+    second: Glasswort_0_normal_232
+  - first:
+      213: 840312469531794315
+    second: Glasswort_0_normal_233
+  - first:
+      213: -6419524113977155420
+    second: Glasswort_0_normal_234
+  - first:
+      213: -6349633836939744743
+    second: Glasswort_0_normal_235
+  - first:
+      213: -8487461328685851060
+    second: Glasswort_0_normal_236
+  - first:
+      213: 4213873888415149159
+    second: Glasswort_0_normal_237
+  - first:
+      213: 4604397422926051041
+    second: Glasswort_0_normal_238
+  - first:
+      213: -1140837599181820697
+    second: Glasswort_0_normal_239
+  - first:
+      213: 452225124702643681
+    second: Glasswort_0_normal_240
+  - first:
+      213: -5840346351302831764
+    second: Glasswort_0_normal_241
+  - first:
+      213: 8616946482178670133
+    second: Glasswort_0_normal_242
+  - first:
+      213: 1505021028855018197
+    second: Glasswort_0_normal_243
+  - first:
+      213: 6324744880110080697
+    second: Glasswort_0_normal_244
+  - first:
+      213: 1123244572149396992
+    second: Glasswort_0_normal_245
+  - first:
+      213: -2132991477519622208
+    second: Glasswort_0_normal_246
+  - first:
+      213: 3586887823860021984
+    second: Glasswort_0_normal_247
+  - first:
+      213: -7907444608132691912
+    second: Glasswort_0_normal_248
+  - first:
+      213: 3408467993581761064
+    second: Glasswort_0_normal_249
+  - first:
+      213: 159017042139188141
+    second: Glasswort_0_normal_250
+  - first:
+      213: 5495890314378708569
+    second: Glasswort_0_normal_251
+  - first:
+      213: 5019372212998378561
+    second: Glasswort_0_normal_252
+  - first:
+      213: 5988618762106136176
+    second: Glasswort_0_normal_253
+  - first:
+      213: -7535039180028819464
+    second: Glasswort_0_normal_254
+  - first:
+      213: -3986020834139978831
+    second: Glasswort_0_normal_255
+  - first:
+      213: -6728937082775466727
+    second: Glasswort_0_normal_256
+  - first:
+      213: 7420135992667730432
+    second: Glasswort_0_normal_257
+  - first:
+      213: 6132216451944458387
+    second: Glasswort_0_normal_258
+  - first:
+      213: 8773747616081404207
+    second: Glasswort_0_normal_259
+  - first:
+      213: -2745696544249177914
+    second: Glasswort_0_normal_260
+  - first:
+      213: 7590969213771474970
+    second: Glasswort_0_normal_261
+  - first:
+      213: 8556524907490954313
+    second: Glasswort_0_normal_262
+  - first:
+      213: -7864248682824106449
+    second: Glasswort_0_normal_263
+  - first:
+      213: 4724621197183073088
+    second: Glasswort_0_normal_264
+  - first:
+      213: 4281158328888925537
+    second: Glasswort_0_normal_265
+  - first:
+      213: 4076241043448983776
+    second: Glasswort_0_normal_266
+  - first:
+      213: 5674148859108919991
+    second: Glasswort_0_normal_267
+  - first:
+      213: 359487315473892121
+    second: Glasswort_0_normal_268
+  - first:
+      213: 8860806102764159550
+    second: Glasswort_0_normal_269
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Glasswort_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd9e0297aae3d1340800000000000000
+      internalID: 4836090476763343327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9531fdfc4baca0fa0800000000000000
+      internalID: -5833627489374629031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36b46848cd5fd48d0800000000000000
+      internalID: -2860359860845393053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a48232b2f5cc89170800000000000000
+      internalID: 8185517031863560266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acfb20d71c2a172d0800000000000000
+      internalID: -3282663701466660918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aea858c9986827380800000000000000
+      internalID: -8974963181801338134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13a980c3a5512ea30800000000000000
+      internalID: 4242977276234865201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 357c310e07f92b920800000000000000
+      internalID: 3004639208554088275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01c9702a6d0615a50800000000000000
+      internalID: 6508089411484752912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7d03e50ccfa2dfe0800000000000000
+      internalID: -1165676062728581766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68c08a2e468da6d70800000000000000
+      internalID: 9037273530083314822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 275a89e6f51df00e0800000000000000
+      internalID: -2301390676755438222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 584
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59219985e230b0fb0800000000000000
+      internalID: -4680643890131692907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 632
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8346566844e5ee850800000000000000
+      internalID: 6408162968200373304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 367
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efd93f097bce72610800000000000000
+      internalID: 1596504866081185278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 729
+        y: 366
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb6364173a31bb450800000000000000
+      internalID: 6105495312531863230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 697896cfed2391bd0800000000000000
+      internalID: -2659038171686664298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a6bf4d2fe48476d0800000000000000
+      internalID: -2993621689502288219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bff82a0b092c4750800000000000000
+      internalID: 6290447906921578420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a533dc4e8e1f89c0800000000000000
+      internalID: -3922883153893313111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1a16271309803450800000000000000
+      internalID: 6066499344434338335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b532d94e5a49d2a30800000000000000
+      internalID: 4192170268377817947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a9f53d3809303c90800000000000000
+      internalID: -7192185897361213022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 530f025566158e580800000000000000
+      internalID: -8797692372111527883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52c771f8d3a0e1eb0800000000000000
+      internalID: -4747345697691960283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b1d6072d43d39d70800000000000000
+      internalID: 9048808404638159283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 479
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f969f1d263b45a30800000000000000
+      internalID: 4203181589254466039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 963e6a9381cf5af00800000000000000
+      internalID: 1127584462702830441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 573
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b9e6c0e90566ba90800000000000000
+      internalID: -7298535053007066697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 331
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3f4b9128d0300690800000000000000
+      internalID: -7638051263185465542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 336
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adc4ae31bcbf8a0e0800000000000000
+      internalID: -2258278363495248678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 673
+        y: 333
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a84efec392dd0380800000000000000
+      internalID: -9003308547768956760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 336
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16fdaf8c0af4639e0800000000000000
+      internalID: -1642037462144721055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 333
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f61be914950c51850800000000000000
+      internalID: 6347190739434123631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72ad18b435009eae0800000000000000
+      internalID: -1519683041511744985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d710cb50efa5fb780800000000000000
+      internalID: -8665107110973144707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acdd2edafd8bf79e0800000000000000
+      internalID: -1621374069995545142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 129f8e317e75e8b50800000000000000
+      internalID: 6597307154127452449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65d0fa7a9ab02f020800000000000000
+      internalID: 2373972776868318550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12ee50abd41cae1b0800000000000000
+      internalID: -5626472244868420063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d3146d4db915d4f0800000000000000
+      internalID: -804708657577847850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7de525c6a1e9729b0800000000000000
+      internalID: -5104937816277492009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 841a67512c90759d0800000000000000
+      internalID: -2785747115316960952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09dc148d9fd33c090800000000000000
+      internalID: -8015494768505008752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1fdf55dcd3e078c0800000000000000
+      internalID: -4003449531120230626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cb99345569583570800000000000000
+      internalID: 8446599392872995779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52f72758c8c6f1dd0800000000000000
+      internalID: -2513170716259352795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 479142ba8f8e4d530800000000000000
+      internalID: 3878981333793642868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_48
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 275ad15acb5e87080800000000000000
+      internalID: -9189342441262701198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_49
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffbcb446953d36f20800000000000000
+      internalID: 3414805323365207039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_50
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 314ee0542b7f58270800000000000000
+      internalID: 8252274237261145107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_51
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cd4e7b420f2af740800000000000000
+      internalID: 5186509607773556163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_52
+      rect:
+        serializedVersion: 2
+        x: 404
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1f8c98143ed42c50800000000000000
+      internalID: 6639676065983532828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_53
+      rect:
+        serializedVersion: 2
+        x: 411
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3121fc089257a220800000000000000
+      internalID: 2497055331405865277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_54
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88aeebe8ee35ac7a0800000000000000
+      internalID: -6356175640017835384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_55
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9cee3bd3fe2e1ce0800000000000000
+      internalID: -1432656006566974309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_56
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce41a9e009d70c770800000000000000
+      internalID: 8629034943715611884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_57
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f1dadc3f89bfdbd0800000000000000
+      internalID: -2603158034744421903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_58
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 301
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6431c8f22ca2e2a0800000000000000
+      internalID: -6709611228626340756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_59
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 298
+        width: 20
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e325204a383b7a620800000000000000
+      internalID: 2785392272525644350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_60
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 297
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00269838175ae7d70800000000000000
+      internalID: 9042847008763240960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_61
+      rect:
+        serializedVersion: 2
+        x: 623
+        y: 297
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b84961c53a74d3580800000000000000
+      internalID: -8845835326135561077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_62
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 297
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61a3709d2c3331420800000000000000
+      internalID: 2599478321880709654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_63
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 297
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1e8bf3bc95eb3530800000000000000
+      internalID: 3835911968833375772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_64
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 971f35c422e7dbfb0800000000000000
+      internalID: -4630406156092444295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_65
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71a31063114e89650800000000000000
+      internalID: 6239988046293449239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_66
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3eef9bb0e4918b450800000000000000
+      internalID: 6104657117895589603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_67
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01dfc722eb91bdfb0800000000000000
+      internalID: -4622072288152584944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_68
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cc321da7aadca020800000000000000
+      internalID: 2354497118905973958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_69
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 370a151c210c6c970800000000000000
+      internalID: 8774912110763286643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_70
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9907b383f228b500800000000000000
+      internalID: 412117795186608542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_71
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b124b0ced88c7da0800000000000000
+      internalID: -5945726917738749512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_72
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c39929ccdb95d6d80800000000000000
+      internalID: -8255843870184400580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_73
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25c14e5a1a2112db0800000000000000
+      internalID: -4818549640827495342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_74
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 262
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d01fcb6bacdacc200800000000000000
+      internalID: 201727169485664525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_75
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 267
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b72355eb4062e0830800000000000000
+      internalID: 4039207717612892795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_76
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 267
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10d2919a178c65d30800000000000000
+      internalID: 4419940474804579585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_77
+      rect:
+        serializedVersion: 2
+        x: 572
+        y: 267
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b875e2cb9db177c30800000000000000
+      internalID: 4356981786483251083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_78
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 267
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08a40bf66d7af43e0800000000000000
+      internalID: -2067249164501104000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_79
+      rect:
+        serializedVersion: 2
+        x: 664
+        y: 267
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fe2e8cd15e191920800000000000000
+      internalID: 2961431566914301683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_80
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 267
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfd2d86d10c2a93b0800000000000000
+      internalID: -5505039208100844035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_81
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 233
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82016a0a72cff42e0800000000000000
+      internalID: -2139214050848534488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_82
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 233
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe5f1e9f80a427d70800000000000000
+      internalID: 9039368804498535919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_83
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 233
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0c0634d2141ecc40800000000000000
+      internalID: 5534383063187196940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_84
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 233
+        width: 31
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4a05ab74b013f7f0800000000000000
+      internalID: -580101559646090675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_85
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 232
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e93a479e6bebc5170800000000000000
+      internalID: 8168613516953297822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_86
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 232
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6419beb5fe291cc0800000000000000
+      internalID: -3739906382552820628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_87
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 232
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54269404272b9c690800000000000000
+      internalID: -7581332293926952379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_88
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 232
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0609c7ef5bb8a8b0800000000000000
+      internalID: -5140652954058422769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_89
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 232
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50203e9a8c02c5240800000000000000
+      internalID: 4781732950576398853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_90
+      rect:
+        serializedVersion: 2
+        x: 373
+        y: 233
+        width: 30
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31f8dabf2a4b3ec10800000000000000
+      internalID: 2081706064875458323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_91
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 233
+        width: 30
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf6d1e2a21c602f10800000000000000
+      internalID: 2242911441728427772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_92
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 233
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36898712419dcafe0800000000000000
+      internalID: -1176326722166417309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_93
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 233
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f44325346586fd140800000000000000
+      internalID: 4746627251977729103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_94
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 233
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 665c796b05d9ca350800000000000000
+      internalID: 6029366971128595814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_95
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 232
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21512ffc93e1c6900800000000000000
+      internalID: 678950877476820242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_96
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 232
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 074d91b24ddf63070800000000000000
+      internalID: 8085929268688311408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_97
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 232
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3743cf84d71bef920800000000000000
+      internalID: 3026051151293068403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_98
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 232
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60acb386e303b9a40800000000000000
+      internalID: 5375943624791673350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_99
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e409c2b21ad2a0ea0800000000000000
+      internalID: -5905857791105658802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_100
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c06294dc6b14f1b0800000000000000
+      internalID: -5623839880442126135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_101
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eec143da3301e2bc0800000000000000
+      internalID: -3806086820946240274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_102
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6029f79f6f4ae4430800000000000000
+      internalID: 3769131318810481158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_103
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e15ff7485affe15e0800000000000000
+      internalID: -1936829703365069538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_104
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08b55e5efed21f640800000000000000
+      internalID: 5111917560419670912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_105
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d9111ec6aafa5d80800000000000000
+      internalID: -8261014972129011242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_106
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c66353f72035187a0800000000000000
+      internalID: -6376724327190677908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_107
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 353c2d6e8b18d1610800000000000000
+      internalID: 1593572474305561427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_108
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01972ee07048b00a0800000000000000
+      internalID: -6914287637047903984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_109
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26df9626f62d58ee0800000000000000
+      internalID: -1259369144945869470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_110
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 201
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0eae23d040c43a10800000000000000
+      internalID: 1888345528428572172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_111
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 201
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02fd0ce90b370c730800000000000000
+      internalID: 4017338070029360928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_112
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa37207f51d49c0c0800000000000000
+      internalID: -4555024791374761046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_113
+      rect:
+        serializedVersion: 2
+        x: 606
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 381f7064d233e7290800000000000000
+      internalID: -7890813227565059709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_114
+      rect:
+        serializedVersion: 2
+        x: 648
+        y: 201
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c58b467ab4d8ae40800000000000000
+      internalID: 5668014028359435712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_115
+      rect:
+        serializedVersion: 2
+        x: 690
+        y: 201
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62aa87a78b25c25c0800000000000000
+      internalID: -4238922196980291034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_116
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 201
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6519cbd589532be0800000000000000
+      internalID: -1503259419158702739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_117
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 171
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84c8cb4d36fed4910800000000000000
+      internalID: 1823376636204846152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_118
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 171
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3091fa179b3efdd0800000000000000
+      internalID: -2450455627064831941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_119
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 171
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53e9eed59dbf3f9d0800000000000000
+      internalID: -2741570837136105931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_120
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 171
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 460a1b4239ae5a5e0800000000000000
+      internalID: -1898853750170083228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_121
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 171
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5ebad6833a42ee80800000000000000
+      internalID: -8150870790420906404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_122
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 171
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02bb652f2506a75f0800000000000000
+      internalID: -758187677889152224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_123
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 171
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f726e9823aa728a0800000000000000
+      internalID: -6329903617207293968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_124
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 171
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 821baf159d75762a0800000000000000
+      internalID: -6744325326069124824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_125
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56bbc02bb163e89c0800000000000000
+      internalID: -3923138732813927579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_126
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec9f49b70842a3720800000000000000
+      internalID: 2826611850376182222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_127
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d15f639df47880f0800000000000000
+      internalID: -1114512275325103664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_128
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bb9a3381e77c7bd0800000000000000
+      internalID: -2631096271838209099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_129
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9ec535b0f98458c0800000000000000
+      internalID: -4011429701154910562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_130
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f89d6884bc1fbb80800000000000000
+      internalID: -8376945220177258256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_131
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f49d9806999ead990800000000000000
+      internalID: -7360313796024739505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_132
+      rect:
+        serializedVersion: 2
+        x: 466
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7af36610d2df51c70800000000000000
+      internalID: 8941331004952821671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_133
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9919f59924d5a870800000000000000
+      internalID: 8693587930783488412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_134
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f6523981892597b0800000000000000
+      internalID: -5218218956909553932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_135
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3947bc719b948fa0800000000000000
+      internalID: -5799339370981406403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_136
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cd771060c42bdbb0800000000000000
+      internalID: -4910290560052920894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_137
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed2a4a97964680520800000000000000
+      internalID: 2668493183392195294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_138
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bf64b100a23fe1a0800000000000000
+      internalID: -6778143251364548686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_139
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f084409a12526030800000000000000
+      internalID: 3486439335581221104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_140
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e82ea0fd08c19bc0800000000000000
+      internalID: -3778018650189059863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_141
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1b3b9899185eef70800000000000000
+      internalID: 9218402354231720732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_142
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12cf6da1d8832cba0800000000000000
+      internalID: -6070227169050166239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_143
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57ebd8c25971b4fe0800000000000000
+      internalID: -1203842545926422923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_144
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9edff3cec81f2cb0800000000000000
+      internalID: -4886659794343043429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_145
+      rect:
+        serializedVersion: 2
+        x: 733
+        y: 174
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38f613ce1b86c3600800000000000000
+      internalID: 449349176211369859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_146
+      rect:
+        serializedVersion: 2
+        x: 739
+        y: 171
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d78d16be6703e7d0800000000000000
+      internalID: -2890458363758540844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_147
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 144
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 449acf2e3f5a46580800000000000000
+      internalID: -8834754102090225340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_148
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 141
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e827a5b1dd3b60f90800000000000000
+      internalID: -6987700009590689138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_149
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 144
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 261c3c8970684f840800000000000000
+      internalID: 5256974032234070370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_150
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 141
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbb2f2bae23b1fdc0800000000000000
+      internalID: -3606904813525193796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_151
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 144
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28296783b1ca31ed0800000000000000
+      internalID: -2444420939820658046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_152
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 141
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32bda6deb8d82cdf0800000000000000
+      internalID: -161411004508742877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_153
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 144
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f5926454b6733c10800000000000000
+      internalID: 2032098373756163574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_154
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 141
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b93494491022da60800000000000000
+      internalID: 7697250006026434999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_155
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74069e02ba13abe70800000000000000
+      internalID: 9131665805508436039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_156
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4563ee49a4ea8fb80800000000000000
+      internalID: -8360741072863873452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_157
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd32fff27e7bfe660800000000000000
+      internalID: 7417349314873074655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_158
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e3bd3847b2858110800000000000000
+      internalID: 1262558994249921510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_159
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eeaa470361f649970800000000000000
+      internalID: 8760749316235373294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_160
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2304cd5afab300580800000000000000
+      internalID: -8863018441077145550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_161
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0f8a739113b7e920800000000000000
+      internalID: 3019578963245305611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_162
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a37b825f9109c91a0800000000000000
+      internalID: -6801402896074623174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_163
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da56f9b2150abc720800000000000000
+      internalID: 2867561858236114349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_164
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d29f8a5b42246fa0800000000000000
+      internalID: -5808479912363846956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_165
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 323042abaa419daa0800000000000000
+      internalID: -6135850293815672029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_166
+      rect:
+        serializedVersion: 2
+        x: 581
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c86ae4cfc06f5e250800000000000000
+      internalID: 5973451016409884300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_167
+      rect:
+        serializedVersion: 2
+        x: 619
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58baadbda6c4ffc40800000000000000
+      internalID: 5548237287782525829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_168
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb7b405b9e52e07c0800000000000000
+      internalID: -4103300524793350212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_169
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 142
+        width: 24
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49490ad5b6e9f0a90800000000000000
+      internalID: -7345478283248495468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_170
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 115
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 570a5622231df6550800000000000000
+      internalID: 6156369228894412917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_171
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 115
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ce14a815caa2db30800000000000000
+      internalID: 4310695556845674179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_172
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 115
+        width: 29
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d6bcd22e42978b40800000000000000
+      internalID: 5442479538990528216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_173
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 115
+        width: 29
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d516cc4af3f5d5e0800000000000000
+      internalID: -1885332612629260844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_174
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 115
+        width: 29
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0775664be959242e0800000000000000
+      internalID: -2142985963810957456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_175
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 115
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8eab10105e49e9490800000000000000
+      internalID: -7737583398490621208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_176
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 115
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 414bdbcb1ab2b9710800000000000000
+      internalID: 1701001257918772244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_177
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 115
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc5bce6d2b17fbeb0800000000000000
+      internalID: -4701914473027553844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_178
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 115
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca7938ff788898660800000000000000
+      internalID: 7388586781366785964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_179
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 115
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 553fcc4cdf4193730800000000000000
+      internalID: 3979234825919591253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_180
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 116
+        width: 26
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 188db337917c2d990800000000000000
+      internalID: -7362603528675927935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_181
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 116
+        width: 26
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25ec5d315beb4eee0800000000000000
+      internalID: -1232650713061536174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_182
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 116
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbce31b6c63fec4f0800000000000000
+      internalID: -806439636274254657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_183
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 116
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2817e48fb56ee8d40800000000000000
+      internalID: 5588657470295667074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_184
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 116
+        width: 27
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3e53adef8eb6ede0800000000000000
+      internalID: -1304145516700672452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_185
+      rect:
+        serializedVersion: 2
+        x: 637
+        y: 114
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 630fecf002de44740800000000000000
+      internalID: 5135490197069164598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_186
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 114
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a74974c807fd65c0800000000000000
+      internalID: -4220445658748205143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_187
+      rect:
+        serializedVersion: 2
+        x: 707
+        y: 114
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 306ecfef4bd6a5710800000000000000
+      internalID: 1682778034915829251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_188
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 86
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a657ef65eb4d03d20800000000000000
+      internalID: 3256336444557260138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_189
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 86
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 888b433bd46ecb1a0800000000000000
+      internalID: -6792300916588103544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_190
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99580db569616b2c0800000000000000
+      internalID: -4416317549548894823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_191
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4cc48c67a61bcda0800000000000000
+      internalID: -5923615976539763637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_192
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bc8718213b9242f0800000000000000
+      internalID: -990058332639753032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_193
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 201f67f46d03c50e0800000000000000
+      internalID: -2279893614341983998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_194
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7483d83fde822290800000000000000
+      internalID: -7916608105581673347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_195
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bacf38f44dbd5290800000000000000
+      internalID: -7899950067417625934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_196
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c12694058a4450f40800000000000000
+      internalID: 5694032793572041244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_197
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0514c51b7bb8a0010800000000000000
+      internalID: 1155889875444842832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_198
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f6f219781ad1cb60800000000000000
+      internalID: 7764727031208802036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_199
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75705a49ab4b770e0800000000000000
+      internalID: -2272148773534365865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_200
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d03ae0850ab8d5d80800000000000000
+      internalID: -8260292620739239155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_201
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b662723abd2f9c80800000000000000
+      internalID: -8313876109369121097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_202
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5681834341387b870800000000000000
+      internalID: 8698565328088078437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_203
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a24813e034d38250800000000000000
+      internalID: 5945829239492723361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_204
+      rect:
+        serializedVersion: 2
+        x: 637
+        y: 88
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7638966116dfd610800000000000000
+      internalID: 1648271358864930431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_205
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 88
+        width: 25
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ecf57fbab7b7b920800000000000000
+      internalID: 3006073288997076192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_206
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 88
+        width: 25
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90d8d85343fb98c50800000000000000
+      internalID: 6668070954256403721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_207
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 60
+        width: 25
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1627279907c2af90800000000000000
+      internalID: -6943768831447325157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_208
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 60
+        width: 25
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58e09d187edc672f0800000000000000
+      internalID: -975365875079508347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_209
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 60
+        width: 25
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bb1e8a836bb9e630800000000000000
+      internalID: 3956899783822416822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_210
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 60
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3ae346a0bc781e80800000000000000
+      internalID: -8207673222737171909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_211
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 60
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d465093995a707e0800000000000000
+      internalID: -1799287448605989672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_212
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 60
+        width: 24
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 964a7cb5bd4b6c7d0800000000000000
+      internalID: -2898430455935687575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_213
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 60
+        width: 24
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94b5686edcb3de150800000000000000
+      internalID: 5903440442074487625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_214
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 60
+        width: 24
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ab70e5c8fd504820800000000000000
+      internalID: 2900421483079695273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_215
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 60
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd710523779ad8e10800000000000000
+      internalID: 2201602122264352732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_216
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 60
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db8c6ff7f0a529690800000000000000
+      internalID: -7596910598802716483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_217
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 60
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab968508e33ce2980800000000000000
+      internalID: -8561691168376067654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_218
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 60
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 738fb728c7e928a20800000000000000
+      internalID: 3063184954167654455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_219
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 60
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9605b78f2b74d6900800000000000000
+      internalID: 679277952801394793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_220
+      rect:
+        serializedVersion: 2
+        x: 508
+        y: 60
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f07b7b3130632d2c0800000000000000
+      internalID: -4408401698398685425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_221
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 60
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb4d7722fc48df340800000000000000
+      internalID: 4899217994820342974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_222
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 60
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b630e6ac56e6307c0800000000000000
+      internalID: -4106317051764800661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_223
+      rect:
+        serializedVersion: 2
+        x: 619
+        y: 60
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8b1b08ba8b16d8f0800000000000000
+      internalID: -516194824680170610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_224
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 60
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d4c041ff76f5f720800000000000000
+      internalID: 2879478566142133461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_225
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 60
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b80a5f42656547a0800000000000000
+      internalID: -6393592623070050120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_226
+      rect:
+        serializedVersion: 2
+        x: 730
+        y: 60
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbdb2217e24e5ccc0800000000000000
+      internalID: -3691293431442522693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_227
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fcd73e4cfc5a1120800000000000000
+      internalID: 2385321191359896816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_228
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb278811a75041680800000000000000
+      internalID: -8785390951254691138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_229
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afbb7b6d5304f3cd0800000000000000
+      internalID: -2576269861852824582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_230
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c5c1828504a24820800000000000000
+      internalID: 2901061453551355335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_231
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cbb874ef9bcffb20800000000000000
+      internalID: 3170476550285474759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_232
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3abccc9c91cbbf600800000000000000
+      internalID: 503202602327788451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_233
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8b16c62db369ab00800000000000000
+      internalID: 840312469531794315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_234
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a0665794d449e6a0800000000000000
+      internalID: -6419524113977155420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_235
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91ae767caa191e7a0800000000000000
+      internalID: -6349633836939744743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_236
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4e90dad3ea763a80800000000000000
+      internalID: -8487461328685851060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_237
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76c6747b9ffaa7a30800000000000000
+      internalID: 4213873888415149159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_238
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e63b3e9f0b16ef30800000000000000
+      internalID: 4604397422926051041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_239
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ecab5a7f3eea20f0800000000000000
+      internalID: -1140837599181820697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_240
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e5686cda50a64600800000000000000
+      internalID: 452225124702643681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_241
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c61985ddfebe2fea0800000000000000
+      internalID: -5840346351302831764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_242
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53ebfc6cb2b859770800000000000000
+      internalID: 8616946482178670133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_243
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d2756cd6a8e2e410800000000000000
+      internalID: 1505021028855018197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_244
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 34
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b29ee165f106c750800000000000000
+      internalID: 6324744880110080697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_245
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 34
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 006b9d6bcf0969f00800000000000000
+      internalID: 1123244572149396992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_246
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 34
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cfd1816d871662e0800000000000000
+      internalID: -2132991477519622208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_247
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 34
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0eab95eb87f27c130800000000000000
+      internalID: 3586887823860021984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_248
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8384c2b360d134290800000000000000
+      internalID: -7907444608132691912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_249
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 822bab1d49f4d4f20800000000000000
+      internalID: 3408467993581761064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_250
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dab80f54821f43200800000000000000
+      internalID: 159017042139188141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_251
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9568d095f13554c40800000000000000
+      internalID: 5495890314378708569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_252
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1441c371f6468a540800000000000000
+      internalID: 5019372212998378561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_253
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 076639af809db1350800000000000000
+      internalID: 5988618762106136176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_254
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f74bb1c9c92e6790800000000000000
+      internalID: -7535039180028819464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_255
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b3c7c19b2fcea8c0800000000000000
+      internalID: -3986020834139978831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_256
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91d0739ef530e92a0800000000000000
+      internalID: -6728937082775466727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_257
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 002fc0c2f5e99f660800000000000000
+      internalID: 7420135992667730432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_258
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 398a4f78f520a1550800000000000000
+      internalID: 6132216451944458387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_259
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 8
+        width: 21
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f216675b8fc92c970800000000000000
+      internalID: 8773747616081404207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_260
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 9
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c892035a8355e9d0800000000000000
+      internalID: -2745696544249177914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_261
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 9
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1866cff74a885960800000000000000
+      internalID: 7590969213771474970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_262
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 9
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94cc7c6a112eeb670800000000000000
+      internalID: 8556524907490954313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_263
+      rect:
+        serializedVersion: 2
+        x: 529
+        y: 9
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2e7fe25d739cd290800000000000000
+      internalID: -7864248682824106449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_264
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 9
+        width: 19
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04bb06c52f9319140800000000000000
+      internalID: 4724621197183073088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_265
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 7
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16d11ac41dab96b30800000000000000
+      internalID: 4281158328888925537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_266
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 7
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e0f4a5d1a7b19830800000000000000
+      internalID: 4076241043448983776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_267
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 7
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ba00ed0350aebe40800000000000000
+      internalID: 5674148859108919991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_268
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 7
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 913841c0fc72df400800000000000000
+      internalID: 359487315473892121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_0_normal_269
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 7
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e320fd23438e7fa70800000000000000
+      internalID: 8860806102764159550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Glasswort_0_normal_0: 4836090476763343327
+      Glasswort_0_normal_1: -5833627489374629031
+      Glasswort_0_normal_10: 9037273530083314822
+      Glasswort_0_normal_100: -5623839880442126135
+      Glasswort_0_normal_101: -3806086820946240274
+      Glasswort_0_normal_102: 3769131318810481158
+      Glasswort_0_normal_103: -1936829703365069538
+      Glasswort_0_normal_104: 5111917560419670912
+      Glasswort_0_normal_105: -8261014972129011242
+      Glasswort_0_normal_106: -6376724327190677908
+      Glasswort_0_normal_107: 1593572474305561427
+      Glasswort_0_normal_108: -6914287637047903984
+      Glasswort_0_normal_109: -1259369144945869470
+      Glasswort_0_normal_11: -2301390676755438222
+      Glasswort_0_normal_110: 1888345528428572172
+      Glasswort_0_normal_111: 4017338070029360928
+      Glasswort_0_normal_112: -4555024791374761046
+      Glasswort_0_normal_113: -7890813227565059709
+      Glasswort_0_normal_114: 5668014028359435712
+      Glasswort_0_normal_115: -4238922196980291034
+      Glasswort_0_normal_116: -1503259419158702739
+      Glasswort_0_normal_117: 1823376636204846152
+      Glasswort_0_normal_118: -2450455627064831941
+      Glasswort_0_normal_119: -2741570837136105931
+      Glasswort_0_normal_12: -4680643890131692907
+      Glasswort_0_normal_120: -1898853750170083228
+      Glasswort_0_normal_121: -8150870790420906404
+      Glasswort_0_normal_122: -758187677889152224
+      Glasswort_0_normal_123: -6329903617207293968
+      Glasswort_0_normal_124: -6744325326069124824
+      Glasswort_0_normal_125: -3923138732813927579
+      Glasswort_0_normal_126: 2826611850376182222
+      Glasswort_0_normal_127: -1114512275325103664
+      Glasswort_0_normal_128: -2631096271838209099
+      Glasswort_0_normal_129: -4011429701154910562
+      Glasswort_0_normal_13: 6408162968200373304
+      Glasswort_0_normal_130: -8376945220177258256
+      Glasswort_0_normal_131: -7360313796024739505
+      Glasswort_0_normal_132: 8941331004952821671
+      Glasswort_0_normal_133: 8693587930783488412
+      Glasswort_0_normal_134: -5218218956909553932
+      Glasswort_0_normal_135: -5799339370981406403
+      Glasswort_0_normal_136: -4910290560052920894
+      Glasswort_0_normal_137: 2668493183392195294
+      Glasswort_0_normal_138: -6778143251364548686
+      Glasswort_0_normal_139: 3486439335581221104
+      Glasswort_0_normal_14: 1596504866081185278
+      Glasswort_0_normal_140: -3778018650189059863
+      Glasswort_0_normal_141: 9218402354231720732
+      Glasswort_0_normal_142: -6070227169050166239
+      Glasswort_0_normal_143: -1203842545926422923
+      Glasswort_0_normal_144: -4886659794343043429
+      Glasswort_0_normal_145: 449349176211369859
+      Glasswort_0_normal_146: -2890458363758540844
+      Glasswort_0_normal_147: -8834754102090225340
+      Glasswort_0_normal_148: -6987700009590689138
+      Glasswort_0_normal_149: 5256974032234070370
+      Glasswort_0_normal_15: 6105495312531863230
+      Glasswort_0_normal_150: -3606904813525193796
+      Glasswort_0_normal_151: -2444420939820658046
+      Glasswort_0_normal_152: -161411004508742877
+      Glasswort_0_normal_153: 2032098373756163574
+      Glasswort_0_normal_154: 7697250006026434999
+      Glasswort_0_normal_155: 9131665805508436039
+      Glasswort_0_normal_156: -8360741072863873452
+      Glasswort_0_normal_157: 7417349314873074655
+      Glasswort_0_normal_158: 1262558994249921510
+      Glasswort_0_normal_159: 8760749316235373294
+      Glasswort_0_normal_16: -2659038171686664298
+      Glasswort_0_normal_160: -8863018441077145550
+      Glasswort_0_normal_161: 3019578963245305611
+      Glasswort_0_normal_162: -6801402896074623174
+      Glasswort_0_normal_163: 2867561858236114349
+      Glasswort_0_normal_164: -5808479912363846956
+      Glasswort_0_normal_165: -6135850293815672029
+      Glasswort_0_normal_166: 5973451016409884300
+      Glasswort_0_normal_167: 5548237287782525829
+      Glasswort_0_normal_168: -4103300524793350212
+      Glasswort_0_normal_169: -7345478283248495468
+      Glasswort_0_normal_17: -2993621689502288219
+      Glasswort_0_normal_170: 6156369228894412917
+      Glasswort_0_normal_171: 4310695556845674179
+      Glasswort_0_normal_172: 5442479538990528216
+      Glasswort_0_normal_173: -1885332612629260844
+      Glasswort_0_normal_174: -2142985963810957456
+      Glasswort_0_normal_175: -7737583398490621208
+      Glasswort_0_normal_176: 1701001257918772244
+      Glasswort_0_normal_177: -4701914473027553844
+      Glasswort_0_normal_178: 7388586781366785964
+      Glasswort_0_normal_179: 3979234825919591253
+      Glasswort_0_normal_18: 6290447906921578420
+      Glasswort_0_normal_180: -7362603528675927935
+      Glasswort_0_normal_181: -1232650713061536174
+      Glasswort_0_normal_182: -806439636274254657
+      Glasswort_0_normal_183: 5588657470295667074
+      Glasswort_0_normal_184: -1304145516700672452
+      Glasswort_0_normal_185: 5135490197069164598
+      Glasswort_0_normal_186: -4220445658748205143
+      Glasswort_0_normal_187: 1682778034915829251
+      Glasswort_0_normal_188: 3256336444557260138
+      Glasswort_0_normal_189: -6792300916588103544
+      Glasswort_0_normal_19: -3922883153893313111
+      Glasswort_0_normal_190: -4416317549548894823
+      Glasswort_0_normal_191: -5923615976539763637
+      Glasswort_0_normal_192: -990058332639753032
+      Glasswort_0_normal_193: -2279893614341983998
+      Glasswort_0_normal_194: -7916608105581673347
+      Glasswort_0_normal_195: -7899950067417625934
+      Glasswort_0_normal_196: 5694032793572041244
+      Glasswort_0_normal_197: 1155889875444842832
+      Glasswort_0_normal_198: 7764727031208802036
+      Glasswort_0_normal_199: -2272148773534365865
+      Glasswort_0_normal_2: -2860359860845393053
+      Glasswort_0_normal_20: 6066499344434338335
+      Glasswort_0_normal_200: -8260292620739239155
+      Glasswort_0_normal_201: -8313876109369121097
+      Glasswort_0_normal_202: 8698565328088078437
+      Glasswort_0_normal_203: 5945829239492723361
+      Glasswort_0_normal_204: 1648271358864930431
+      Glasswort_0_normal_205: 3006073288997076192
+      Glasswort_0_normal_206: 6668070954256403721
+      Glasswort_0_normal_207: -6943768831447325157
+      Glasswort_0_normal_208: -975365875079508347
+      Glasswort_0_normal_209: 3956899783822416822
+      Glasswort_0_normal_21: 4192170268377817947
+      Glasswort_0_normal_210: -8207673222737171909
+      Glasswort_0_normal_211: -1799287448605989672
+      Glasswort_0_normal_212: -2898430455935687575
+      Glasswort_0_normal_213: 5903440442074487625
+      Glasswort_0_normal_214: 2900421483079695273
+      Glasswort_0_normal_215: 2201602122264352732
+      Glasswort_0_normal_216: -7596910598802716483
+      Glasswort_0_normal_217: -8561691168376067654
+      Glasswort_0_normal_218: 3063184954167654455
+      Glasswort_0_normal_219: 679277952801394793
+      Glasswort_0_normal_22: -7192185897361213022
+      Glasswort_0_normal_220: -4408401698398685425
+      Glasswort_0_normal_221: 4899217994820342974
+      Glasswort_0_normal_222: -4106317051764800661
+      Glasswort_0_normal_223: -516194824680170610
+      Glasswort_0_normal_224: 2879478566142133461
+      Glasswort_0_normal_225: -6393592623070050120
+      Glasswort_0_normal_226: -3691293431442522693
+      Glasswort_0_normal_227: 2385321191359896816
+      Glasswort_0_normal_228: -8785390951254691138
+      Glasswort_0_normal_229: -2576269861852824582
+      Glasswort_0_normal_23: -8797692372111527883
+      Glasswort_0_normal_230: 2901061453551355335
+      Glasswort_0_normal_231: 3170476550285474759
+      Glasswort_0_normal_232: 503202602327788451
+      Glasswort_0_normal_233: 840312469531794315
+      Glasswort_0_normal_234: -6419524113977155420
+      Glasswort_0_normal_235: -6349633836939744743
+      Glasswort_0_normal_236: -8487461328685851060
+      Glasswort_0_normal_237: 4213873888415149159
+      Glasswort_0_normal_238: 4604397422926051041
+      Glasswort_0_normal_239: -1140837599181820697
+      Glasswort_0_normal_24: -4747345697691960283
+      Glasswort_0_normal_240: 452225124702643681
+      Glasswort_0_normal_241: -5840346351302831764
+      Glasswort_0_normal_242: 8616946482178670133
+      Glasswort_0_normal_243: 1505021028855018197
+      Glasswort_0_normal_244: 6324744880110080697
+      Glasswort_0_normal_245: 1123244572149396992
+      Glasswort_0_normal_246: -2132991477519622208
+      Glasswort_0_normal_247: 3586887823860021984
+      Glasswort_0_normal_248: -7907444608132691912
+      Glasswort_0_normal_249: 3408467993581761064
+      Glasswort_0_normal_25: 9048808404638159283
+      Glasswort_0_normal_250: 159017042139188141
+      Glasswort_0_normal_251: 5495890314378708569
+      Glasswort_0_normal_252: 5019372212998378561
+      Glasswort_0_normal_253: 5988618762106136176
+      Glasswort_0_normal_254: -7535039180028819464
+      Glasswort_0_normal_255: -3986020834139978831
+      Glasswort_0_normal_256: -6728937082775466727
+      Glasswort_0_normal_257: 7420135992667730432
+      Glasswort_0_normal_258: 6132216451944458387
+      Glasswort_0_normal_259: 8773747616081404207
+      Glasswort_0_normal_26: 4203181589254466039
+      Glasswort_0_normal_260: -2745696544249177914
+      Glasswort_0_normal_261: 7590969213771474970
+      Glasswort_0_normal_262: 8556524907490954313
+      Glasswort_0_normal_263: -7864248682824106449
+      Glasswort_0_normal_264: 4724621197183073088
+      Glasswort_0_normal_265: 4281158328888925537
+      Glasswort_0_normal_266: 4076241043448983776
+      Glasswort_0_normal_267: 5674148859108919991
+      Glasswort_0_normal_268: 359487315473892121
+      Glasswort_0_normal_269: 8860806102764159550
+      Glasswort_0_normal_27: 1127584462702830441
+      Glasswort_0_normal_28: -7298535053007066697
+      Glasswort_0_normal_29: -7638051263185465542
+      Glasswort_0_normal_3: 8185517031863560266
+      Glasswort_0_normal_30: -2258278363495248678
+      Glasswort_0_normal_31: -9003308547768956760
+      Glasswort_0_normal_32: -1642037462144721055
+      Glasswort_0_normal_33: 6347190739434123631
+      Glasswort_0_normal_34: -1519683041511744985
+      Glasswort_0_normal_35: -8665107110973144707
+      Glasswort_0_normal_36: -1621374069995545142
+      Glasswort_0_normal_37: 6597307154127452449
+      Glasswort_0_normal_38: 2373972776868318550
+      Glasswort_0_normal_39: -5626472244868420063
+      Glasswort_0_normal_4: -3282663701466660918
+      Glasswort_0_normal_40: -804708657577847850
+      Glasswort_0_normal_41: -5104937816277492009
+      Glasswort_0_normal_42: -2785747115316960952
+      Glasswort_0_normal_43: -8015494768505008752
+      Glasswort_0_normal_44: -4003449531120230626
+      Glasswort_0_normal_45: 8446599392872995779
+      Glasswort_0_normal_46: -2513170716259352795
+      Glasswort_0_normal_47: 3878981333793642868
+      Glasswort_0_normal_48: -9189342441262701198
+      Glasswort_0_normal_49: 3414805323365207039
+      Glasswort_0_normal_5: -8974963181801338134
+      Glasswort_0_normal_50: 8252274237261145107
+      Glasswort_0_normal_51: 5186509607773556163
+      Glasswort_0_normal_52: 6639676065983532828
+      Glasswort_0_normal_53: 2497055331405865277
+      Glasswort_0_normal_54: -6356175640017835384
+      Glasswort_0_normal_55: -1432656006566974309
+      Glasswort_0_normal_56: 8629034943715611884
+      Glasswort_0_normal_57: -2603158034744421903
+      Glasswort_0_normal_58: -6709611228626340756
+      Glasswort_0_normal_59: 2785392272525644350
+      Glasswort_0_normal_6: 4242977276234865201
+      Glasswort_0_normal_60: 9042847008763240960
+      Glasswort_0_normal_61: -8845835326135561077
+      Glasswort_0_normal_62: 2599478321880709654
+      Glasswort_0_normal_63: 3835911968833375772
+      Glasswort_0_normal_64: -4630406156092444295
+      Glasswort_0_normal_65: 6239988046293449239
+      Glasswort_0_normal_66: 6104657117895589603
+      Glasswort_0_normal_67: -4622072288152584944
+      Glasswort_0_normal_68: 2354497118905973958
+      Glasswort_0_normal_69: 8774912110763286643
+      Glasswort_0_normal_7: 3004639208554088275
+      Glasswort_0_normal_70: 412117795186608542
+      Glasswort_0_normal_71: -5945726917738749512
+      Glasswort_0_normal_72: -8255843870184400580
+      Glasswort_0_normal_73: -4818549640827495342
+      Glasswort_0_normal_74: 201727169485664525
+      Glasswort_0_normal_75: 4039207717612892795
+      Glasswort_0_normal_76: 4419940474804579585
+      Glasswort_0_normal_77: 4356981786483251083
+      Glasswort_0_normal_78: -2067249164501104000
+      Glasswort_0_normal_79: 2961431566914301683
+      Glasswort_0_normal_8: 6508089411484752912
+      Glasswort_0_normal_80: -5505039208100844035
+      Glasswort_0_normal_81: -2139214050848534488
+      Glasswort_0_normal_82: 9039368804498535919
+      Glasswort_0_normal_83: 5534383063187196940
+      Glasswort_0_normal_84: -580101559646090675
+      Glasswort_0_normal_85: 8168613516953297822
+      Glasswort_0_normal_86: -3739906382552820628
+      Glasswort_0_normal_87: -7581332293926952379
+      Glasswort_0_normal_88: -5140652954058422769
+      Glasswort_0_normal_89: 4781732950576398853
+      Glasswort_0_normal_9: -1165676062728581766
+      Glasswort_0_normal_90: 2081706064875458323
+      Glasswort_0_normal_91: 2242911441728427772
+      Glasswort_0_normal_92: -1176326722166417309
+      Glasswort_0_normal_93: 4746627251977729103
+      Glasswort_0_normal_94: 6029366971128595814
+      Glasswort_0_normal_95: 678950877476820242
+      Glasswort_0_normal_96: 8085929268688311408
+      Glasswort_0_normal_97: 3026051151293068403
+      Glasswort_0_normal_98: 5375943624791673350
+      Glasswort_0_normal_99: -5905857791105658802
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

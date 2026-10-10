@@ -1,0 +1,1690 @@
+fileFormatVersion: 2
+guid: 1bb28fc53db2b36498d83b136c810158
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1335643429487198403
+    second: PussyWillow_0_light_0
+  - first:
+      213: -1363175736769318111
+    second: PussyWillow_0_light_1
+  - first:
+      213: -3911853421999852350
+    second: PussyWillow_0_light_2
+  - first:
+      213: 5370653948082059776
+    second: PussyWillow_0_light_3
+  - first:
+      213: -326675257628886637
+    second: PussyWillow_0_light_4
+  - first:
+      213: 1215074429711356788
+    second: PussyWillow_0_light_5
+  - first:
+      213: -8609946649734339373
+    second: PussyWillow_0_light_6
+  - first:
+      213: 2619553798669955839
+    second: PussyWillow_0_light_7
+  - first:
+      213: 815943792735671743
+    second: PussyWillow_0_light_8
+  - first:
+      213: -5688199322783872992
+    second: PussyWillow_0_light_9
+  - first:
+      213: 928635463672564397
+    second: PussyWillow_0_light_10
+  - first:
+      213: -6982205388057555478
+    second: PussyWillow_0_light_11
+  - first:
+      213: 8607358293010189127
+    second: PussyWillow_0_light_12
+  - first:
+      213: 7526413499774455539
+    second: PussyWillow_0_light_13
+  - first:
+      213: -8112520724107734447
+    second: PussyWillow_0_light_14
+  - first:
+      213: 8814655551408239196
+    second: PussyWillow_0_light_15
+  - first:
+      213: 6893514482084974021
+    second: PussyWillow_0_light_16
+  - first:
+      213: 8925676245100217610
+    second: PussyWillow_0_light_17
+  - first:
+      213: -65114542837067379
+    second: PussyWillow_0_light_18
+  - first:
+      213: -8900304464506552017
+    second: PussyWillow_0_light_19
+  - first:
+      213: -5246576231166100666
+    second: PussyWillow_0_light_20
+  - first:
+      213: 2578347656197235205
+    second: PussyWillow_0_light_21
+  - first:
+      213: -1471692750921238295
+    second: PussyWillow_0_light_22
+  - first:
+      213: 1825301454026388952
+    second: PussyWillow_0_light_23
+  - first:
+      213: -7467297369554964362
+    second: PussyWillow_0_light_24
+  - first:
+      213: 955048540376839777
+    second: PussyWillow_0_light_25
+  - first:
+      213: 7977579969806093769
+    second: PussyWillow_0_light_26
+  - first:
+      213: -6537603338703011465
+    second: PussyWillow_0_light_27
+  - first:
+      213: 4184780270331058999
+    second: PussyWillow_0_light_28
+  - first:
+      213: -8496126918300961531
+    second: PussyWillow_0_light_29
+  - first:
+      213: 849066561991759589
+    second: PussyWillow_0_light_30
+  - first:
+      213: 6343655655188935220
+    second: PussyWillow_0_light_31
+  - first:
+      213: -5313669509622738733
+    second: PussyWillow_0_light_32
+  - first:
+      213: 1268442295156547143
+    second: PussyWillow_0_light_33
+  - first:
+      213: 1703446790447844858
+    second: PussyWillow_0_light_34
+  - first:
+      213: -1498164417104133188
+    second: PussyWillow_0_light_35
+  - first:
+      213: 5710841321037422125
+    second: PussyWillow_0_light_36
+  - first:
+      213: 1870455478394839599
+    second: PussyWillow_0_light_37
+  - first:
+      213: 270503920422803324
+    second: PussyWillow_0_light_38
+  - first:
+      213: 5952190542423631657
+    second: PussyWillow_0_light_39
+  - first:
+      213: -7617079245136739172
+    second: PussyWillow_0_light_40
+  - first:
+      213: 1631654062435220505
+    second: PussyWillow_0_light_41
+  - first:
+      213: -6847591047410054459
+    second: PussyWillow_0_light_42
+  - first:
+      213: -449009179842858554
+    second: PussyWillow_0_light_43
+  - first:
+      213: -329995972414540022
+    second: PussyWillow_0_light_44
+  - first:
+      213: 516617677566792134
+    second: PussyWillow_0_light_45
+  - first:
+      213: -8777651984150231001
+    second: PussyWillow_0_light_46
+  - first:
+      213: 4832433681377866707
+    second: PussyWillow_0_light_47
+  - first:
+      213: -5720670481612218108
+    second: PussyWillow_0_light_48
+  - first:
+      213: -604735994487633765
+    second: PussyWillow_0_light_49
+  - first:
+      213: -899207198106134980
+    second: PussyWillow_0_light_50
+  - first:
+      213: -7689646780816884536
+    second: PussyWillow_0_light_51
+  - first:
+      213: -8750394469698096129
+    second: PussyWillow_0_light_52
+  - first:
+      213: 8750729533828029747
+    second: PussyWillow_0_light_53
+  - first:
+      213: 3857968961356979529
+    second: PussyWillow_0_light_54
+  - first:
+      213: 6243402981388642168
+    second: PussyWillow_0_light_55
+  - first:
+      213: 3920562692593758863
+    second: PussyWillow_0_light_56
+  - first:
+      213: -6466697162985395287
+    second: PussyWillow_0_light_57
+  - first:
+      213: 4353846501369439601
+    second: PussyWillow_0_light_58
+  - first:
+      213: 3220175460756905950
+    second: PussyWillow_0_light_59
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PussyWillow_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 410
+        width: 34
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c04b216f98298210800000000000000
+      internalID: 1335643429487198403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 409
+        width: 39
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 123fe6bc3e6051de0800000000000000
+      internalID: -1363175736769318111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 410
+        width: 33
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c47d40e90e46b9c0800000000000000
+      internalID: -3911853421999852350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 409
+        width: 40
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00afaf29f45688a40800000000000000
+      internalID: 5370653948082059776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 410
+        width: 33
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 399fe10859a677bf0800000000000000
+      internalID: -326675257628886637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 409
+        width: 41
+        height: 101
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4731b9e81cfccd010800000000000000
+      internalID: 1215074429711356788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 413
+        width: 64
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d42587b323538880800000000000000
+      internalID: -8609946649734339373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 413
+        width: 62
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff27fb70d468a5420800000000000000
+      internalID: 2619553798669955839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 579
+        y: 413
+        width: 63
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb5d1b27e80d25b00800000000000000
+      internalID: 815943792735671743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 303
+        width: 64
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02889d17ad47f01b0800000000000000
+      internalID: -5688199322783872992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 303
+        width: 64
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: daa880ab80d23ec00800000000000000
+      internalID: 928635463672564397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 303
+        width: 64
+        height: 95
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aedc20061393a1f90800000000000000
+      internalID: -6982205388057555478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 303
+        width: 63
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74b826583ca737770800000000000000
+      internalID: 8607358293010189127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 306
+        width: 51
+        height: 94
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fec2ce8331337860800000000000000
+      internalID: 7526413499774455539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 308
+        width: 32
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 152509622698a6f80800000000000000
+      internalID: -8112520724107734447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 311
+        width: 59
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c52fc1f9582f35a70800000000000000
+      internalID: 8814655551408239196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 207
+        width: 27
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cd8fa6e5eeaaaf50800000000000000
+      internalID: 6893514482084974021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 205
+        width: 43
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a054751314f5edb70800000000000000
+      internalID: 8925676245100217610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 209
+        width: 32
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d811c741baaa81ff0800000000000000
+      internalID: -65114542837067379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 208
+        width: 32
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f218340de34cb7480800000000000000
+      internalID: -8900304464506552017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 208
+        width: 61
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64b365e17ba6037b0800000000000000
+      internalID: -5246576231166100666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 209
+        width: 30
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 502e81b588128c320800000000000000
+      internalID: 2578347656197235205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 208
+        width: 33
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e872da8d3f739be0800000000000000
+      internalID: -1471692750921238295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 223
+        width: 23
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d53f376006c45910800000000000000
+      internalID: 1825301454026388952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 223
+        width: 41
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 670b7771b94de5890800000000000000
+      internalID: -7467297369554964362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 519
+        y: 223
+        width: 23
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 166ba606693014d00800000000000000
+      internalID: 955048540376839777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 223
+        width: 42
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cd409b27be06be60800000000000000
+      internalID: 7977579969806093769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 223
+        width: 22
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7710332b664c545a0800000000000000
+      internalID: -6537603338703011465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 223
+        width: 41
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73b5524eb73531a30800000000000000
+      internalID: 4184780270331058999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 127
+        width: 50
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 505790c0591b71a80800000000000000
+      internalID: -8496126918300961531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 127
+        width: 48
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e65e222a8d78cb00800000000000000
+      internalID: 849066561991759589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 127
+        width: 48
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4323fe05531390850800000000000000
+      internalID: 6343655655188935220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 129
+        width: 49
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d0dc19ebbd0246b0800000000000000
+      internalID: -5313669509622738733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 129
+        width: 51
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74e13e40c896a9110800000000000000
+      internalID: 1268442295156547143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 130
+        width: 51
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afd4c66a4dbd3a710800000000000000
+      internalID: 1703446790447844858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 130
+        width: 50
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb3c0677663753be0800000000000000
+      internalID: -1498164417104133188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 621
+        y: 132
+        width: 53
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2ede059cebf04f40800000000000000
+      internalID: 5710841321037422125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 54
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2268e5f85135f910800000000000000
+      internalID: 1870455478394839599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 54
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c77d627e1e501c300800000000000000
+      internalID: 270503920422803324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 54
+        width: 46
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 927a99423cd6a9250800000000000000
+      internalID: 5952190542423631657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 58
+        width: 26
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c94cf9798c2ba4690800000000000000
+      internalID: -7617079245136739172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 56
+        width: 39
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91c36c399bcc4a610800000000000000
+      internalID: 1631654062435220505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 58
+        width: 37
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ca8af3f83878f0a0800000000000000
+      internalID: -6847591047410054459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 75
+        width: 35
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c1b396a78cc4c9f0800000000000000
+      internalID: -449009179842858554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 75
+        width: 33
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a07fbe6596e9b6bf0800000000000000
+      internalID: -329995972414540022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 542
+        y: 75
+        width: 33
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c15e046a056b2700800000000000000
+      internalID: 516617677566792134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 76
+        width: 28
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72809b2c6048f2680800000000000000
+      internalID: -8777651984150231001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 5
+        width: 32
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d3392374d0401340800000000000000
+      internalID: 4832433681377866707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_48
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 6
+        width: 29
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 401e072a1881c90b0800000000000000
+      internalID: -5720670481612218108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_49
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 6
+        width: 29
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b980ca921db8b97f0800000000000000
+      internalID: -604735994487633765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_50
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 5
+        width: 28
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c36d86941df5583f0800000000000000
+      internalID: -899207198106134980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_51
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 5
+        width: 28
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ccfe2d8ef2e84590800000000000000
+      internalID: -7689646780816884536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_52
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 6
+        width: 27
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff33a15679a509680800000000000000
+      internalID: -8750394469698096129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_53
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 6
+        width: 26
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33dd65dc526d07970800000000000000
+      internalID: 8750729533828029747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_54
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 6
+        width: 26
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94d5a2874524a8530800000000000000
+      internalID: 3857968961356979529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_55
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 7
+        width: 20
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 877e84fbee505a650800000000000000
+      internalID: 6243402981388642168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_56
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 7
+        width: 20
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8233b33ff2a86630800000000000000
+      internalID: 3920562692593758863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_57
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 7
+        width: 28
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9abaa3a313da146a0800000000000000
+      internalID: -6466697162985395287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_58
+      rect:
+        serializedVersion: 2
+        x: 581
+        y: 7
+        width: 30
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 175e3b84358fb6c30800000000000000
+      internalID: 4353846501369439601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PussyWillow_0_light_59
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 8
+        width: 29
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edf58d4358c50bc20800000000000000
+      internalID: 3220175460756905950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PussyWillow_0_light_0: 1335643429487198403
+      PussyWillow_0_light_1: -1363175736769318111
+      PussyWillow_0_light_10: 928635463672564397
+      PussyWillow_0_light_11: -6982205388057555478
+      PussyWillow_0_light_12: 8607358293010189127
+      PussyWillow_0_light_13: 7526413499774455539
+      PussyWillow_0_light_14: -8112520724107734447
+      PussyWillow_0_light_15: 8814655551408239196
+      PussyWillow_0_light_16: 6893514482084974021
+      PussyWillow_0_light_17: 8925676245100217610
+      PussyWillow_0_light_18: -65114542837067379
+      PussyWillow_0_light_19: -8900304464506552017
+      PussyWillow_0_light_2: -3911853421999852350
+      PussyWillow_0_light_20: -5246576231166100666
+      PussyWillow_0_light_21: 2578347656197235205
+      PussyWillow_0_light_22: -1471692750921238295
+      PussyWillow_0_light_23: 1825301454026388952
+      PussyWillow_0_light_24: -7467297369554964362
+      PussyWillow_0_light_25: 955048540376839777
+      PussyWillow_0_light_26: 7977579969806093769
+      PussyWillow_0_light_27: -6537603338703011465
+      PussyWillow_0_light_28: 4184780270331058999
+      PussyWillow_0_light_29: -8496126918300961531
+      PussyWillow_0_light_3: 5370653948082059776
+      PussyWillow_0_light_30: 849066561991759589
+      PussyWillow_0_light_31: 6343655655188935220
+      PussyWillow_0_light_32: -5313669509622738733
+      PussyWillow_0_light_33: 1268442295156547143
+      PussyWillow_0_light_34: 1703446790447844858
+      PussyWillow_0_light_35: -1498164417104133188
+      PussyWillow_0_light_36: 5710841321037422125
+      PussyWillow_0_light_37: 1870455478394839599
+      PussyWillow_0_light_38: 270503920422803324
+      PussyWillow_0_light_39: 5952190542423631657
+      PussyWillow_0_light_4: -326675257628886637
+      PussyWillow_0_light_40: -7617079245136739172
+      PussyWillow_0_light_41: 1631654062435220505
+      PussyWillow_0_light_42: -6847591047410054459
+      PussyWillow_0_light_43: -449009179842858554
+      PussyWillow_0_light_44: -329995972414540022
+      PussyWillow_0_light_45: 516617677566792134
+      PussyWillow_0_light_46: -8777651984150231001
+      PussyWillow_0_light_47: 4832433681377866707
+      PussyWillow_0_light_48: -5720670481612218108
+      PussyWillow_0_light_49: -604735994487633765
+      PussyWillow_0_light_5: 1215074429711356788
+      PussyWillow_0_light_50: -899207198106134980
+      PussyWillow_0_light_51: -7689646780816884536
+      PussyWillow_0_light_52: -8750394469698096129
+      PussyWillow_0_light_53: 8750729533828029747
+      PussyWillow_0_light_54: 3857968961356979529
+      PussyWillow_0_light_55: 6243402981388642168
+      PussyWillow_0_light_56: 3920562692593758863
+      PussyWillow_0_light_57: -6466697162985395287
+      PussyWillow_0_light_58: 4353846501369439601
+      PussyWillow_0_light_59: 3220175460756905950
+      PussyWillow_0_light_6: -8609946649734339373
+      PussyWillow_0_light_7: 2619553798669955839
+      PussyWillow_0_light_8: 815943792735671743
+      PussyWillow_0_light_9: -5688199322783872992
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: ec25699b4d65bdb4682382a5963f2293
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7948362513628615843
+    second: Goldenrod_0_light_0
+  - first:
+      213: -329684232498252941
+    second: Goldenrod_0_light_1
+  - first:
+      213: -2047445578135896567
+    second: Goldenrod_0_light_2
+  - first:
+      213: 5853568758122686918
+    second: Goldenrod_0_light_3
+  - first:
+      213: -3495369444098407355
+    second: Goldenrod_0_light_4
+  - first:
+      213: 1501432471017761858
+    second: Goldenrod_0_light_5
+  - first:
+      213: -4391467395104193533
+    second: Goldenrod_0_light_6
+  - first:
+      213: 7516379427569363166
+    second: Goldenrod_0_light_7
+  - first:
+      213: -5839948174211102772
+    second: Goldenrod_0_light_8
+  - first:
+      213: -6762094340231340698
+    second: Goldenrod_0_light_9
+  - first:
+      213: 6458729760274897177
+    second: Goldenrod_0_light_10
+  - first:
+      213: 7072593895395889278
+    second: Goldenrod_0_light_11
+  - first:
+      213: -1054476493031137825
+    second: Goldenrod_0_light_12
+  - first:
+      213: -2576106339534993786
+    second: Goldenrod_0_light_13
+  - first:
+      213: -7542691964370755639
+    second: Goldenrod_0_light_14
+  - first:
+      213: -4858167829619609145
+    second: Goldenrod_0_light_15
+  - first:
+      213: -1793915170578691655
+    second: Goldenrod_0_light_16
+  - first:
+      213: -4356656873761234236
+    second: Goldenrod_0_light_17
+  - first:
+      213: -3287259095858140704
+    second: Goldenrod_0_light_18
+  - first:
+      213: 8916328798385091182
+    second: Goldenrod_0_light_19
+  - first:
+      213: 97447656126905764
+    second: Goldenrod_0_light_20
+  - first:
+      213: -567168078928876312
+    second: Goldenrod_0_light_21
+  - first:
+      213: 5071490733408382656
+    second: Goldenrod_0_light_22
+  - first:
+      213: 8096684084335704648
+    second: Goldenrod_0_light_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Goldenrod_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 80
+        width: 22
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5ba225f76eb1b190800000000000000
+      internalID: -7948362513628615843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 82
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 373f4e1ffe9bc6bf0800000000000000
+      internalID: -329684232498252941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 82
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90ef34238130693e0800000000000000
+      internalID: -2047445578135896567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 81
+        width: 22
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c92a30a5cd0c3150800000000000000
+      internalID: 5853568758122686918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 81
+        width: 18
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54482c58204fd7fc0800000000000000
+      internalID: -3495369444098407355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 82
+        width: 18
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24c2041a0e826d410800000000000000
+      internalID: 1501432471017761858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 84
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 304ca10dbaf5e03c0800000000000000
+      internalID: -4391467395104193533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 38
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed86351144b8f4860800000000000000
+      internalID: 7516379427569363166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 40
+        width: 24
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc7c471b31654fea0800000000000000
+      internalID: -5839948174211102772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 41
+        width: 25
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66dd4d056073822a0800000000000000
+      internalID: -6762094340231340698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 40
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 919dd654f7402a950800000000000000
+      internalID: 6458729760274897177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 41
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e701ba7fca6e62260800000000000000
+      internalID: 7072593895395889278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 311
+        y: 46
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdd11e8673fbd51f0800000000000000
+      internalID: -1054476493031137825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 46
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6868268dee4df3cd0800000000000000
+      internalID: -2576106339534993786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 411
+        y: 47
+        width: 20
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cfdc7d0f99f25790800000000000000
+      internalID: -7542691964370755639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 5
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c1fa404912549cb0800000000000000
+      internalID: -4858167829619609145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 5
+        width: 20
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b9097c28abba17e0800000000000000
+      internalID: -1793915170578691655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 6
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c2a237e7ab0a83c0800000000000000
+      internalID: -4356656873761234236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 7
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e924bad44f4162d0800000000000000
+      internalID: -3287259095858140704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 8
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6234582dc92dbb70800000000000000
+      internalID: 8916328798385091182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 8
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ad73af70243a5100800000000000000
+      internalID: 97447656126905764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 9
+        width: 24
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ece08f13a30128f0800000000000000
+      internalID: -567168078928876312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 8
+        width: 17
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ceed7eb3fd816640800000000000000
+      internalID: 5071490733408382656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Goldenrod_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 10
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84a7361d6433d5070800000000000000
+      internalID: 8096684084335704648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Goldenrod_0_light_0: -7948362513628615843
+      Goldenrod_0_light_1: -329684232498252941
+      Goldenrod_0_light_10: 6458729760274897177
+      Goldenrod_0_light_11: 7072593895395889278
+      Goldenrod_0_light_12: -1054476493031137825
+      Goldenrod_0_light_13: -2576106339534993786
+      Goldenrod_0_light_14: -7542691964370755639
+      Goldenrod_0_light_15: -4858167829619609145
+      Goldenrod_0_light_16: -1793915170578691655
+      Goldenrod_0_light_17: -4356656873761234236
+      Goldenrod_0_light_18: -3287259095858140704
+      Goldenrod_0_light_19: 8916328798385091182
+      Goldenrod_0_light_2: -2047445578135896567
+      Goldenrod_0_light_20: 97447656126905764
+      Goldenrod_0_light_21: -567168078928876312
+      Goldenrod_0_light_22: 5071490733408382656
+      Goldenrod_0_light_23: 8096684084335704648
+      Goldenrod_0_light_3: 5853568758122686918
+      Goldenrod_0_light_4: -3495369444098407355
+      Goldenrod_0_light_5: 1501432471017761858
+      Goldenrod_0_light_6: -4391467395104193533
+      Goldenrod_0_light_7: 7516379427569363166
+      Goldenrod_0_light_8: -5839948174211102772
+      Goldenrod_0_light_9: -6762094340231340698
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

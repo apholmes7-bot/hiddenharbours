@@ -1,0 +1,1638 @@
+fileFormatVersion: 2
+guid: bbdcfc368f2903e409fc5c7db7216de0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8152933714835988259
+    second: StaghornSumac_0_unlit_0
+  - first:
+      213: -7967613982675089686
+    second: StaghornSumac_0_unlit_1
+  - first:
+      213: -1754542322214134959
+    second: StaghornSumac_0_unlit_2
+  - first:
+      213: 2973005534274697329
+    second: StaghornSumac_0_unlit_3
+  - first:
+      213: -1376204149890468979
+    second: StaghornSumac_0_unlit_4
+  - first:
+      213: -7407916304907017337
+    second: StaghornSumac_0_unlit_5
+  - first:
+      213: -3485334437281383005
+    second: StaghornSumac_0_unlit_6
+  - first:
+      213: -6084207849775737401
+    second: StaghornSumac_0_unlit_7
+  - first:
+      213: 7240990071803267287
+    second: StaghornSumac_0_unlit_8
+  - first:
+      213: 4048318741506274753
+    second: StaghornSumac_0_unlit_9
+  - first:
+      213: -4524094720245061738
+    second: StaghornSumac_0_unlit_10
+  - first:
+      213: -6721561640977252717
+    second: StaghornSumac_0_unlit_11
+  - first:
+      213: 5125675667576643405
+    second: StaghornSumac_0_unlit_12
+  - first:
+      213: 5720658046767804281
+    second: StaghornSumac_0_unlit_13
+  - first:
+      213: 1726625249710465703
+    second: StaghornSumac_0_unlit_14
+  - first:
+      213: 6509969015841543176
+    second: StaghornSumac_0_unlit_15
+  - first:
+      213: -7772695246337652578
+    second: StaghornSumac_0_unlit_16
+  - first:
+      213: 5596358801273227843
+    second: StaghornSumac_0_unlit_17
+  - first:
+      213: -1131331697446598843
+    second: StaghornSumac_0_unlit_18
+  - first:
+      213: 9124605294137491506
+    second: StaghornSumac_0_unlit_19
+  - first:
+      213: -7206673060874843589
+    second: StaghornSumac_0_unlit_20
+  - first:
+      213: -9109121329944286018
+    second: StaghornSumac_0_unlit_21
+  - first:
+      213: 4350272817096003790
+    second: StaghornSumac_0_unlit_22
+  - first:
+      213: 7453251833768825598
+    second: StaghornSumac_0_unlit_23
+  - first:
+      213: -4466976792284304662
+    second: StaghornSumac_0_unlit_24
+  - first:
+      213: -2121319839137827133
+    second: StaghornSumac_0_unlit_25
+  - first:
+      213: -5295028794744868285
+    second: StaghornSumac_0_unlit_26
+  - first:
+      213: 5426359331140728861
+    second: StaghornSumac_0_unlit_27
+  - first:
+      213: 7543069598559465409
+    second: StaghornSumac_0_unlit_28
+  - first:
+      213: -546384643874495367
+    second: StaghornSumac_0_unlit_29
+  - first:
+      213: -5489101646445697742
+    second: StaghornSumac_0_unlit_30
+  - first:
+      213: -5848968599157184349
+    second: StaghornSumac_0_unlit_31
+  - first:
+      213: 1354791352786076933
+    second: StaghornSumac_0_unlit_32
+  - first:
+      213: 6445758635177933740
+    second: StaghornSumac_0_unlit_33
+  - first:
+      213: -6243354950522882913
+    second: StaghornSumac_0_unlit_34
+  - first:
+      213: -5998317238070643302
+    second: StaghornSumac_0_unlit_35
+  - first:
+      213: -1645501386322657391
+    second: StaghornSumac_0_unlit_36
+  - first:
+      213: -5484022765527779220
+    second: StaghornSumac_0_unlit_37
+  - first:
+      213: -4995925335860334792
+    second: StaghornSumac_0_unlit_38
+  - first:
+      213: 5438490060506096038
+    second: StaghornSumac_0_unlit_39
+  - first:
+      213: 2042270259002542768
+    second: StaghornSumac_0_unlit_40
+  - first:
+      213: 1447925460959720951
+    second: StaghornSumac_0_unlit_41
+  - first:
+      213: -6018749671376198828
+    second: StaghornSumac_0_unlit_42
+  - first:
+      213: -7800725649429991706
+    second: StaghornSumac_0_unlit_43
+  - first:
+      213: -3626976282944630770
+    second: StaghornSumac_0_unlit_44
+  - first:
+      213: 7409756260002879646
+    second: StaghornSumac_0_unlit_45
+  - first:
+      213: 7712798912243261126
+    second: StaghornSumac_0_unlit_46
+  - first:
+      213: 7766044346799873352
+    second: StaghornSumac_0_unlit_47
+  - first:
+      213: 4189248048241870380
+    second: StaghornSumac_0_unlit_48
+  - first:
+      213: -5481051776117492112
+    second: StaghornSumac_0_unlit_49
+  - first:
+      213: 5087245704790583010
+    second: StaghornSumac_0_unlit_50
+  - first:
+      213: 7555860233546445238
+    second: StaghornSumac_0_unlit_51
+  - first:
+      213: -299706357950056597
+    second: StaghornSumac_0_unlit_52
+  - first:
+      213: 3111401393440137137
+    second: StaghornSumac_0_unlit_53
+  - first:
+      213: 9010866992906458709
+    second: StaghornSumac_0_unlit_54
+  - first:
+      213: 1961175329646721765
+    second: StaghornSumac_0_unlit_55
+  - first:
+      213: 4605469702749918105
+    second: StaghornSumac_0_unlit_56
+  - first:
+      213: 4492928197024962221
+    second: StaghornSumac_0_unlit_57
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 536
+        width: 54
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32fda1e740a052170800000000000000
+      internalID: 8152933714835988259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 536
+        width: 93
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae647370c495d6190800000000000000
+      internalID: -7967613982675089686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 536
+        width: 55
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15b990dcd0d96a7e0800000000000000
+      internalID: -1754542322214134959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 536
+        width: 96
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 178b6b128cc324920800000000000000
+      internalID: 2973005534274697329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 536
+        width: 50
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d833c5bfd9db6ece0800000000000000
+      internalID: -1376204149890468979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 536
+        width: 92
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78361389e5bc13990800000000000000
+      internalID: -7407916304907017337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 538
+        width: 73
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ad386e9bca91afc0800000000000000
+      internalID: -3485334437281383005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 623
+        y: 549
+        width: 44
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c55976323d809ba0800000000000000
+      internalID: -6084207849775737401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 548
+        width: 44
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d8c6fb1b1a2d7460800000000000000
+      internalID: 7240990071803267287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 436
+        width: 94
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c5b90d42748e2830800000000000000
+      internalID: 4048318741506274753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 436
+        width: 95
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 697a29552df2731c0800000000000000
+      internalID: -4524094720245061738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 436
+        width: 94
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39eb8a5cc4738b2a0800000000000000
+      internalID: -6721561640977252717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 437
+        width: 46
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4fd4c7dcde022740800000000000000
+      internalID: 5125675667576643405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 437
+        width: 37
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97f23172f2cd36f40800000000000000
+      internalID: 5720658046767804281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 441
+        width: 91
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a2663d348436f710800000000000000
+      internalID: 1726625249710465703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 341
+        width: 90
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 804d800245e085a50800000000000000
+      internalID: 6509969015841543176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 341
+        width: 87
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e984daedad6d12490800000000000000
+      internalID: -7772695246337652578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 343
+        width: 110
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34a8581dda24aad40800000000000000
+      internalID: 5596358801273227843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 343
+        width: 108
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5474e82b0d3bc40f0800000000000000
+      internalID: -1131331697446598843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 343
+        width: 105
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 230c6b8bb2c11ae70800000000000000
+      internalID: 9124605294137491506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 254
+        width: 40
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3a8d22a801ccfb90800000000000000
+      internalID: -7206673060874843589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 254
+        width: 46
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebcacb0a966e59180800000000000000
+      internalID: -9109121329944286018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 257
+        width: 54
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec09b0314164f5c30800000000000000
+      internalID: 4350272817096003790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 259
+        width: 96
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef2d155cd054f6760800000000000000
+      internalID: 7453251833768825598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 260
+        width: 45
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeaeaf3464c1202c0800000000000000
+      internalID: -4466976792284304662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 259
+        width: 78
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c6733578de8f82e0800000000000000
+      internalID: -2121319839137827133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 259
+        width: 90
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34274cd8d574486b0800000000000000
+      internalID: -5295028794744868285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 626
+        y: 267
+        width: 82
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d18f444cf0d4e4b40800000000000000
+      internalID: 5426359331140728861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 179
+        width: 80
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cf6f22c5dd5ea860800000000000000
+      internalID: 7543069598559465409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 179
+        width: 80
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 974e12faf0ada68f0800000000000000
+      internalID: -546384643874495367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 179
+        width: 38
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 235a793922bc2d3b0800000000000000
+      internalID: -5489101646445697742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 179
+        width: 28
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a862d85c0a44dea0800000000000000
+      internalID: -5848968599157184349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 182
+        width: 94
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 505c59fae8f2dc210800000000000000
+      internalID: 1354791352786076933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 182
+        width: 91
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cabffadd35fe37950800000000000000
+      internalID: 6445758635177933740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 182
+        width: 88
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f94386f40c52b59a0800000000000000
+      internalID: -6243354950522882913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 107
+        width: 33
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9572be9042b1cca0800000000000000
+      internalID: -5998317238070643302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 106
+        width: 33
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19f33d615310a29e0800000000000000
+      internalID: -1645501386322657391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 107
+        width: 75
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c68bf80b956d4e3b0800000000000000
+      internalID: -5484022765527779220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 107
+        width: 73
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83faba76068eaaab0800000000000000
+      internalID: -4995925335860334792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 107
+        width: 72
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a165fa45e5697b40800000000000000
+      internalID: 5438490060506096038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 112
+        width: 29
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ba013beaf9975c10800000000000000
+      internalID: 2042270259002542768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 112
+        width: 40
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f57fb90980181410800000000000000
+      internalID: 1447925460959720951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 124
+        width: 50
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4536f95001b197ca0800000000000000
+      internalID: -6018749671376198828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 123
+        width: 49
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ee62731a514eb390800000000000000
+      internalID: -7800725649429991706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 52
+        width: 48
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e00915689446aadc0800000000000000
+      internalID: -3626976282944630770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 53
+        width: 53
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e98d2b55f0eb4d660800000000000000
+      internalID: 7409756260002879646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 54
+        width: 48
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ce574c1fbd590b60800000000000000
+      internalID: 7712798912243261126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 54
+        width: 50
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84ddfe8ef2886cb60800000000000000
+      internalID: 7766044346799873352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_48
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 54
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c26847f77e2332a30800000000000000
+      internalID: 4189248048241870380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_49
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 57
+        width: 25
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0763ef013746fe3b0800000000000000
+      internalID: -5481051776117492112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_50
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 56
+        width: 24
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e6ac2fd307899640800000000000000
+      internalID: 5087245704790583010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_51
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 58
+        width: 31
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b1390989decbd860800000000000000
+      internalID: 7555860233546445238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_52
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 59
+        width: 61
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b67f575c7aa37dbf0800000000000000
+      internalID: -299706357950056597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_53
+      rect:
+        serializedVersion: 2
+        x: 637
+        y: 59
+        width: 58
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bf97a9151bed2b20800000000000000
+      internalID: 3111401393440137137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_54
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 4
+        width: 55
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5565b76d9c70d0d70800000000000000
+      internalID: 9010866992906458709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_55
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 6
+        width: 51
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ea3ad1529e773b10800000000000000
+      internalID: 1961175329646721765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_56
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 7
+        width: 49
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9939b383b4ae9ef30800000000000000
+      internalID: 4605469702749918105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StaghornSumac_0_unlit_57
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 7
+        width: 45
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da6520104661a5e30800000000000000
+      internalID: 4492928197024962221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      StaghornSumac_0_unlit_0: 8152933714835988259
+      StaghornSumac_0_unlit_1: -7967613982675089686
+      StaghornSumac_0_unlit_10: -4524094720245061738
+      StaghornSumac_0_unlit_11: -6721561640977252717
+      StaghornSumac_0_unlit_12: 5125675667576643405
+      StaghornSumac_0_unlit_13: 5720658046767804281
+      StaghornSumac_0_unlit_14: 1726625249710465703
+      StaghornSumac_0_unlit_15: 6509969015841543176
+      StaghornSumac_0_unlit_16: -7772695246337652578
+      StaghornSumac_0_unlit_17: 5596358801273227843
+      StaghornSumac_0_unlit_18: -1131331697446598843
+      StaghornSumac_0_unlit_19: 9124605294137491506
+      StaghornSumac_0_unlit_2: -1754542322214134959
+      StaghornSumac_0_unlit_20: -7206673060874843589
+      StaghornSumac_0_unlit_21: -9109121329944286018
+      StaghornSumac_0_unlit_22: 4350272817096003790
+      StaghornSumac_0_unlit_23: 7453251833768825598
+      StaghornSumac_0_unlit_24: -4466976792284304662
+      StaghornSumac_0_unlit_25: -2121319839137827133
+      StaghornSumac_0_unlit_26: -5295028794744868285
+      StaghornSumac_0_unlit_27: 5426359331140728861
+      StaghornSumac_0_unlit_28: 7543069598559465409
+      StaghornSumac_0_unlit_29: -546384643874495367
+      StaghornSumac_0_unlit_3: 2973005534274697329
+      StaghornSumac_0_unlit_30: -5489101646445697742
+      StaghornSumac_0_unlit_31: -5848968599157184349
+      StaghornSumac_0_unlit_32: 1354791352786076933
+      StaghornSumac_0_unlit_33: 6445758635177933740
+      StaghornSumac_0_unlit_34: -6243354950522882913
+      StaghornSumac_0_unlit_35: -5998317238070643302
+      StaghornSumac_0_unlit_36: -1645501386322657391
+      StaghornSumac_0_unlit_37: -5484022765527779220
+      StaghornSumac_0_unlit_38: -4995925335860334792
+      StaghornSumac_0_unlit_39: 5438490060506096038
+      StaghornSumac_0_unlit_4: -1376204149890468979
+      StaghornSumac_0_unlit_40: 2042270259002542768
+      StaghornSumac_0_unlit_41: 1447925460959720951
+      StaghornSumac_0_unlit_42: -6018749671376198828
+      StaghornSumac_0_unlit_43: -7800725649429991706
+      StaghornSumac_0_unlit_44: -3626976282944630770
+      StaghornSumac_0_unlit_45: 7409756260002879646
+      StaghornSumac_0_unlit_46: 7712798912243261126
+      StaghornSumac_0_unlit_47: 7766044346799873352
+      StaghornSumac_0_unlit_48: 4189248048241870380
+      StaghornSumac_0_unlit_49: -5481051776117492112
+      StaghornSumac_0_unlit_5: -7407916304907017337
+      StaghornSumac_0_unlit_50: 5087245704790583010
+      StaghornSumac_0_unlit_51: 7555860233546445238
+      StaghornSumac_0_unlit_52: -299706357950056597
+      StaghornSumac_0_unlit_53: 3111401393440137137
+      StaghornSumac_0_unlit_54: 9010866992906458709
+      StaghornSumac_0_unlit_55: 1961175329646721765
+      StaghornSumac_0_unlit_56: 4605469702749918105
+      StaghornSumac_0_unlit_57: 4492928197024962221
+      StaghornSumac_0_unlit_6: -3485334437281383005
+      StaghornSumac_0_unlit_7: -6084207849775737401
+      StaghornSumac_0_unlit_8: 7240990071803267287
+      StaghornSumac_0_unlit_9: 4048318741506274753
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

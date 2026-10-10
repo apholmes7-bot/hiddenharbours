@@ -1,0 +1,6370 @@
+fileFormatVersion: 2
+guid: b4c991605b2696b43acad99d635373c3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4651808264514932626
+    second: SugarKelp_0_normal_0
+  - first:
+      213: 3810880781313240809
+    second: SugarKelp_0_normal_1
+  - first:
+      213: -8367949107750338254
+    second: SugarKelp_0_normal_2
+  - first:
+      213: -5301205943154910650
+    second: SugarKelp_0_normal_3
+  - first:
+      213: 8615401221809622373
+    second: SugarKelp_0_normal_4
+  - first:
+      213: -8536184072756843184
+    second: SugarKelp_0_normal_5
+  - first:
+      213: 8338968571779333676
+    second: SugarKelp_0_normal_6
+  - first:
+      213: -4446879525670867073
+    second: SugarKelp_0_normal_7
+  - first:
+      213: 5807219887249393930
+    second: SugarKelp_0_normal_8
+  - first:
+      213: 6874275269840349663
+    second: SugarKelp_0_normal_9
+  - first:
+      213: 903435283914915573
+    second: SugarKelp_0_normal_10
+  - first:
+      213: 3170823358918480317
+    second: SugarKelp_0_normal_11
+  - first:
+      213: 6665231828679175349
+    second: SugarKelp_0_normal_12
+  - first:
+      213: -8940088557072800546
+    second: SugarKelp_0_normal_13
+  - first:
+      213: -4016097541175735510
+    second: SugarKelp_0_normal_14
+  - first:
+      213: 2449798073227357457
+    second: SugarKelp_0_normal_15
+  - first:
+      213: -5808749013075138630
+    second: SugarKelp_0_normal_16
+  - first:
+      213: 476518934524623503
+    second: SugarKelp_0_normal_17
+  - first:
+      213: 1227895128828265704
+    second: SugarKelp_0_normal_18
+  - first:
+      213: 5770694268836549410
+    second: SugarKelp_0_normal_19
+  - first:
+      213: -8078587152667306407
+    second: SugarKelp_0_normal_20
+  - first:
+      213: 3631344993141892833
+    second: SugarKelp_0_normal_21
+  - first:
+      213: 5163386080894949370
+    second: SugarKelp_0_normal_22
+  - first:
+      213: -8842074118573470103
+    second: SugarKelp_0_normal_23
+  - first:
+      213: -2175134583044912326
+    second: SugarKelp_0_normal_24
+  - first:
+      213: 3300608925529954277
+    second: SugarKelp_0_normal_25
+  - first:
+      213: 1919717373927898280
+    second: SugarKelp_0_normal_26
+  - first:
+      213: 64289664243364051
+    second: SugarKelp_0_normal_27
+  - first:
+      213: 3121262455564940881
+    second: SugarKelp_0_normal_28
+  - first:
+      213: 1213599305677437661
+    second: SugarKelp_0_normal_29
+  - first:
+      213: 6221120227337973759
+    second: SugarKelp_0_normal_30
+  - first:
+      213: -6103745522425295126
+    second: SugarKelp_0_normal_31
+  - first:
+      213: -5026513610200112740
+    second: SugarKelp_0_normal_32
+  - first:
+      213: -6942619360925423614
+    second: SugarKelp_0_normal_33
+  - first:
+      213: -4538623227179608093
+    second: SugarKelp_0_normal_34
+  - first:
+      213: 5218802312302819118
+    second: SugarKelp_0_normal_35
+  - first:
+      213: -1998266928444540898
+    second: SugarKelp_0_normal_36
+  - first:
+      213: 5804007943978923458
+    second: SugarKelp_0_normal_37
+  - first:
+      213: -7198939909454377763
+    second: SugarKelp_0_normal_38
+  - first:
+      213: -164133035024130122
+    second: SugarKelp_0_normal_39
+  - first:
+      213: -6784392773042182188
+    second: SugarKelp_0_normal_40
+  - first:
+      213: 3160515955070862101
+    second: SugarKelp_0_normal_41
+  - first:
+      213: 2150679132326760550
+    second: SugarKelp_0_normal_42
+  - first:
+      213: 6242873755735010689
+    second: SugarKelp_0_normal_43
+  - first:
+      213: 6973507585603088252
+    second: SugarKelp_0_normal_44
+  - first:
+      213: 4454673182327448726
+    second: SugarKelp_0_normal_45
+  - first:
+      213: 5457324767595281145
+    second: SugarKelp_0_normal_46
+  - first:
+      213: 4963256661084361565
+    second: SugarKelp_0_normal_47
+  - first:
+      213: -4824021460246579187
+    second: SugarKelp_0_normal_48
+  - first:
+      213: -7917239876974243911
+    second: SugarKelp_0_normal_49
+  - first:
+      213: -7205448153327165797
+    second: SugarKelp_0_normal_50
+  - first:
+      213: -5149034060108217873
+    second: SugarKelp_0_normal_51
+  - first:
+      213: 1483796621767900527
+    second: SugarKelp_0_normal_52
+  - first:
+      213: -6393351268272725059
+    second: SugarKelp_0_normal_53
+  - first:
+      213: -8108259859348625447
+    second: SugarKelp_0_normal_54
+  - first:
+      213: -3104749065736894907
+    second: SugarKelp_0_normal_55
+  - first:
+      213: -4685734769429183691
+    second: SugarKelp_0_normal_56
+  - first:
+      213: 1723771934254348721
+    second: SugarKelp_0_normal_57
+  - first:
+      213: -4230368544779783331
+    second: SugarKelp_0_normal_58
+  - first:
+      213: -1465510855330822958
+    second: SugarKelp_0_normal_59
+  - first:
+      213: 6276792385368795101
+    second: SugarKelp_0_normal_60
+  - first:
+      213: -8410466292842309444
+    second: SugarKelp_0_normal_61
+  - first:
+      213: 8885642344543999610
+    second: SugarKelp_0_normal_62
+  - first:
+      213: 3507255870664359981
+    second: SugarKelp_0_normal_63
+  - first:
+      213: -624768551045075540
+    second: SugarKelp_0_normal_64
+  - first:
+      213: 8605704154093702764
+    second: SugarKelp_0_normal_65
+  - first:
+      213: -2226896455844012339
+    second: SugarKelp_0_normal_66
+  - first:
+      213: 8463247795660588439
+    second: SugarKelp_0_normal_67
+  - first:
+      213: -7664796757607676304
+    second: SugarKelp_0_normal_68
+  - first:
+      213: -5168190087305880825
+    second: SugarKelp_0_normal_69
+  - first:
+      213: -3597690099159650116
+    second: SugarKelp_0_normal_70
+  - first:
+      213: -8957606517150059037
+    second: SugarKelp_0_normal_71
+  - first:
+      213: 6553145820146552013
+    second: SugarKelp_0_normal_72
+  - first:
+      213: -6493865775966714141
+    second: SugarKelp_0_normal_73
+  - first:
+      213: 8260304525104479683
+    second: SugarKelp_0_normal_74
+  - first:
+      213: -5220408078846918734
+    second: SugarKelp_0_normal_75
+  - first:
+      213: -3635815940686322568
+    second: SugarKelp_0_normal_76
+  - first:
+      213: -5355895530261467832
+    second: SugarKelp_0_normal_77
+  - first:
+      213: 2530841262005323304
+    second: SugarKelp_0_normal_78
+  - first:
+      213: 4743415687254222447
+    second: SugarKelp_0_normal_79
+  - first:
+      213: 8586942257900860688
+    second: SugarKelp_0_normal_80
+  - first:
+      213: 1753057727392855028
+    second: SugarKelp_0_normal_81
+  - first:
+      213: 958569193902544074
+    second: SugarKelp_0_normal_82
+  - first:
+      213: 7802489006412324692
+    second: SugarKelp_0_normal_83
+  - first:
+      213: -3894164706118484076
+    second: SugarKelp_0_normal_84
+  - first:
+      213: -609149780505174360
+    second: SugarKelp_0_normal_85
+  - first:
+      213: -5762941488197824820
+    second: SugarKelp_0_normal_86
+  - first:
+      213: 6625497613506230734
+    second: SugarKelp_0_normal_87
+  - first:
+      213: 7865214102286085469
+    second: SugarKelp_0_normal_88
+  - first:
+      213: 6191290877521468224
+    second: SugarKelp_0_normal_89
+  - first:
+      213: -773407514938642054
+    second: SugarKelp_0_normal_90
+  - first:
+      213: -6214092905725007338
+    second: SugarKelp_0_normal_91
+  - first:
+      213: 4952608845415808132
+    second: SugarKelp_0_normal_92
+  - first:
+      213: -8101029586990115750
+    second: SugarKelp_0_normal_93
+  - first:
+      213: 2969340027750763530
+    second: SugarKelp_0_normal_94
+  - first:
+      213: 3807486335823472776
+    second: SugarKelp_0_normal_95
+  - first:
+      213: -5307748779812511102
+    second: SugarKelp_0_normal_96
+  - first:
+      213: 8846858695315283788
+    second: SugarKelp_0_normal_97
+  - first:
+      213: 1777876574764351409
+    second: SugarKelp_0_normal_98
+  - first:
+      213: -3265086741387520856
+    second: SugarKelp_0_normal_99
+  - first:
+      213: -4848576536228172588
+    second: SugarKelp_0_normal_100
+  - first:
+      213: 6457138035172349179
+    second: SugarKelp_0_normal_101
+  - first:
+      213: -8951675330788021936
+    second: SugarKelp_0_normal_102
+  - first:
+      213: 6903155872093579958
+    second: SugarKelp_0_normal_103
+  - first:
+      213: -8179973219965469633
+    second: SugarKelp_0_normal_104
+  - first:
+      213: 8983419165744418800
+    second: SugarKelp_0_normal_105
+  - first:
+      213: 459366925179381153
+    second: SugarKelp_0_normal_106
+  - first:
+      213: -3194102273808551187
+    second: SugarKelp_0_normal_107
+  - first:
+      213: -2689813544352991202
+    second: SugarKelp_0_normal_108
+  - first:
+      213: -4324807831914645916
+    second: SugarKelp_0_normal_109
+  - first:
+      213: 2026994657411057220
+    second: SugarKelp_0_normal_110
+  - first:
+      213: -1079302905267305956
+    second: SugarKelp_0_normal_111
+  - first:
+      213: 1646577382363588386
+    second: SugarKelp_0_normal_112
+  - first:
+      213: 4722649580252246464
+    second: SugarKelp_0_normal_113
+  - first:
+      213: -2950895541636304373
+    second: SugarKelp_0_normal_114
+  - first:
+      213: 3058203528100680125
+    second: SugarKelp_0_normal_115
+  - first:
+      213: -3524790696377903142
+    second: SugarKelp_0_normal_116
+  - first:
+      213: -6803654037552303472
+    second: SugarKelp_0_normal_117
+  - first:
+      213: -2460232797150163904
+    second: SugarKelp_0_normal_118
+  - first:
+      213: -1280583023037647153
+    second: SugarKelp_0_normal_119
+  - first:
+      213: -6466267363794716151
+    second: SugarKelp_0_normal_120
+  - first:
+      213: -5801340188473818841
+    second: SugarKelp_0_normal_121
+  - first:
+      213: -1361162773245027231
+    second: SugarKelp_0_normal_122
+  - first:
+      213: 1472693868545285420
+    second: SugarKelp_0_normal_123
+  - first:
+      213: 8447174410796209955
+    second: SugarKelp_0_normal_124
+  - first:
+      213: -4693028822672756383
+    second: SugarKelp_0_normal_125
+  - first:
+      213: 1488696172813165215
+    second: SugarKelp_0_normal_126
+  - first:
+      213: -7105736461492661463
+    second: SugarKelp_0_normal_127
+  - first:
+      213: -5417999338290538648
+    second: SugarKelp_0_normal_128
+  - first:
+      213: 6249278517819087186
+    second: SugarKelp_0_normal_129
+  - first:
+      213: 652665879745552647
+    second: SugarKelp_0_normal_130
+  - first:
+      213: -3174302590080055056
+    second: SugarKelp_0_normal_131
+  - first:
+      213: 7663682558476933753
+    second: SugarKelp_0_normal_132
+  - first:
+      213: 231195095292311169
+    second: SugarKelp_0_normal_133
+  - first:
+      213: -6476336325725028995
+    second: SugarKelp_0_normal_134
+  - first:
+      213: 3806925575785827805
+    second: SugarKelp_0_normal_135
+  - first:
+      213: 7492418078081810318
+    second: SugarKelp_0_normal_136
+  - first:
+      213: -2595166163200141858
+    second: SugarKelp_0_normal_137
+  - first:
+      213: 7748492292319251906
+    second: SugarKelp_0_normal_138
+  - first:
+      213: 4325989858762247907
+    second: SugarKelp_0_normal_139
+  - first:
+      213: -1347317151091674010
+    second: SugarKelp_0_normal_140
+  - first:
+      213: -5154501554518939623
+    second: SugarKelp_0_normal_141
+  - first:
+      213: 2348957206663621559
+    second: SugarKelp_0_normal_142
+  - first:
+      213: -1162430643237658700
+    second: SugarKelp_0_normal_143
+  - first:
+      213: 4839928370365095572
+    second: SugarKelp_0_normal_144
+  - first:
+      213: 2908227793170837889
+    second: SugarKelp_0_normal_145
+  - first:
+      213: -4411367353048450228
+    second: SugarKelp_0_normal_146
+  - first:
+      213: -5702345495523928030
+    second: SugarKelp_0_normal_147
+  - first:
+      213: 6644368937327737746
+    second: SugarKelp_0_normal_148
+  - first:
+      213: 8859573639094542765
+    second: SugarKelp_0_normal_149
+  - first:
+      213: -3943988333286083950
+    second: SugarKelp_0_normal_150
+  - first:
+      213: 902727324270939868
+    second: SugarKelp_0_normal_151
+  - first:
+      213: 2234212983243843787
+    second: SugarKelp_0_normal_152
+  - first:
+      213: -8562707991726463482
+    second: SugarKelp_0_normal_153
+  - first:
+      213: 5984864680534600796
+    second: SugarKelp_0_normal_154
+  - first:
+      213: 7632901720420634559
+    second: SugarKelp_0_normal_155
+  - first:
+      213: 3423420161113266574
+    second: SugarKelp_0_normal_156
+  - first:
+      213: -8305986655611206096
+    second: SugarKelp_0_normal_157
+  - first:
+      213: -3589606500538199220
+    second: SugarKelp_0_normal_158
+  - first:
+      213: -4846413678253875543
+    second: SugarKelp_0_normal_159
+  - first:
+      213: 5395590781956289954
+    second: SugarKelp_0_normal_160
+  - first:
+      213: -8843763606207378661
+    second: SugarKelp_0_normal_161
+  - first:
+      213: 656922956096541772
+    second: SugarKelp_0_normal_162
+  - first:
+      213: 5479942970172785363
+    second: SugarKelp_0_normal_163
+  - first:
+      213: -6605978793589305747
+    second: SugarKelp_0_normal_164
+  - first:
+      213: -3414855020868377983
+    second: SugarKelp_0_normal_165
+  - first:
+      213: 2976315507767532774
+    second: SugarKelp_0_normal_166
+  - first:
+      213: -441126390896513602
+    second: SugarKelp_0_normal_167
+  - first:
+      213: 27530151847465170
+    second: SugarKelp_0_normal_168
+  - first:
+      213: -7575790486849515416
+    second: SugarKelp_0_normal_169
+  - first:
+      213: 3154359195537880208
+    second: SugarKelp_0_normal_170
+  - first:
+      213: 2449299426061656507
+    second: SugarKelp_0_normal_171
+  - first:
+      213: -6207156085879691131
+    second: SugarKelp_0_normal_172
+  - first:
+      213: -5272267193646702369
+    second: SugarKelp_0_normal_173
+  - first:
+      213: 5860188993674841038
+    second: SugarKelp_0_normal_174
+  - first:
+      213: 2913056796450603417
+    second: SugarKelp_0_normal_175
+  - first:
+      213: 8413890798092295205
+    second: SugarKelp_0_normal_176
+  - first:
+      213: -6913193666603182717
+    second: SugarKelp_0_normal_177
+  - first:
+      213: 6425547191361366807
+    second: SugarKelp_0_normal_178
+  - first:
+      213: -5826713655788400838
+    second: SugarKelp_0_normal_179
+  - first:
+      213: 6472482451800447767
+    second: SugarKelp_0_normal_180
+  - first:
+      213: -2763459510623305428
+    second: SugarKelp_0_normal_181
+  - first:
+      213: -8678304578020664729
+    second: SugarKelp_0_normal_182
+  - first:
+      213: -7260195226456759308
+    second: SugarKelp_0_normal_183
+  - first:
+      213: -4952242130879167040
+    second: SugarKelp_0_normal_184
+  - first:
+      213: -3571847043792799650
+    second: SugarKelp_0_normal_185
+  - first:
+      213: 5649015454519156341
+    second: SugarKelp_0_normal_186
+  - first:
+      213: 2994789452222632582
+    second: SugarKelp_0_normal_187
+  - first:
+      213: -5620911315802020215
+    second: SugarKelp_0_normal_188
+  - first:
+      213: -1843705156983626686
+    second: SugarKelp_0_normal_189
+  - first:
+      213: -400938688726832299
+    second: SugarKelp_0_normal_190
+  - first:
+      213: -156683619273041652
+    second: SugarKelp_0_normal_191
+  - first:
+      213: 6494611254882150096
+    second: SugarKelp_0_normal_192
+  - first:
+      213: 4983989818326196262
+    second: SugarKelp_0_normal_193
+  - first:
+      213: -8780527146490198690
+    second: SugarKelp_0_normal_194
+  - first:
+      213: -5108441802380674579
+    second: SugarKelp_0_normal_195
+  - first:
+      213: -4041052861857802058
+    second: SugarKelp_0_normal_196
+  - first:
+      213: -7502073937465870182
+    second: SugarKelp_0_normal_197
+  - first:
+      213: 8008456360919815640
+    second: SugarKelp_0_normal_198
+  - first:
+      213: -1694299168628532025
+    second: SugarKelp_0_normal_199
+  - first:
+      213: 9075254898226779931
+    second: SugarKelp_0_normal_200
+  - first:
+      213: -5007926066207247959
+    second: SugarKelp_0_normal_201
+  - first:
+      213: -2121907841479162543
+    second: SugarKelp_0_normal_202
+  - first:
+      213: -8186892096809640374
+    second: SugarKelp_0_normal_203
+  - first:
+      213: 2232668264589955856
+    second: SugarKelp_0_normal_204
+  - first:
+      213: 313126106469507460
+    second: SugarKelp_0_normal_205
+  - first:
+      213: 4624588173763167785
+    second: SugarKelp_0_normal_206
+  - first:
+      213: 818487103589255108
+    second: SugarKelp_0_normal_207
+  - first:
+      213: -7912379788004598744
+    second: SugarKelp_0_normal_208
+  - first:
+      213: 1944845697300048462
+    second: SugarKelp_0_normal_209
+  - first:
+      213: 2191622140933374906
+    second: SugarKelp_0_normal_210
+  - first:
+      213: 5880809534666990085
+    second: SugarKelp_0_normal_211
+  - first:
+      213: 6529447433542108938
+    second: SugarKelp_0_normal_212
+  - first:
+      213: -1771709164979451669
+    second: SugarKelp_0_normal_213
+  - first:
+      213: 424763544891006550
+    second: SugarKelp_0_normal_214
+  - first:
+      213: -7695650486813024253
+    second: SugarKelp_0_normal_215
+  - first:
+      213: -4823715991304933148
+    second: SugarKelp_0_normal_216
+  - first:
+      213: -4305528092738164081
+    second: SugarKelp_0_normal_217
+  - first:
+      213: 3035348207012435105
+    second: SugarKelp_0_normal_218
+  - first:
+      213: -8718101656124013891
+    second: SugarKelp_0_normal_219
+  - first:
+      213: -5111692169095459575
+    second: SugarKelp_0_normal_220
+  - first:
+      213: -615802686441006365
+    second: SugarKelp_0_normal_221
+  - first:
+      213: 7143775542626723068
+    second: SugarKelp_0_normal_222
+  - first:
+      213: 5933212311905103284
+    second: SugarKelp_0_normal_223
+  - first:
+      213: 6611691914868669222
+    second: SugarKelp_0_normal_224
+  - first:
+      213: -7452660052906663764
+    second: SugarKelp_0_normal_225
+  - first:
+      213: -5820962847281973593
+    second: SugarKelp_0_normal_226
+  - first:
+      213: -5658075576770020205
+    second: SugarKelp_0_normal_227
+  - first:
+      213: 3459228121431663718
+    second: SugarKelp_0_normal_228
+  - first:
+      213: -7618853304883326360
+    second: SugarKelp_0_normal_229
+  - first:
+      213: 4836918745873785285
+    second: SugarKelp_0_normal_230
+  - first:
+      213: 4703380182088492933
+    second: SugarKelp_0_normal_231
+  - first:
+      213: 8838185734836048051
+    second: SugarKelp_0_normal_232
+  - first:
+      213: -4382374135605724847
+    second: SugarKelp_0_normal_233
+  - first:
+      213: -4347259886127270321
+    second: SugarKelp_0_normal_234
+  - first:
+      213: -5262622233705338043
+    second: SugarKelp_0_normal_235
+  - first:
+      213: -3455235346806269122
+    second: SugarKelp_0_normal_236
+  - first:
+      213: -9040518272957858675
+    second: SugarKelp_0_normal_237
+  - first:
+      213: 8247767501427689686
+    second: SugarKelp_0_normal_238
+  - first:
+      213: 6536199006649163102
+    second: SugarKelp_0_normal_239
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 599
+        width: 97
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e607c5e9705717fb0800000000000000
+      internalID: -4651808264514932626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 599
+        width: 97
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9eee98331e7f2e430800000000000000
+      internalID: 3810880781313240809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 600
+        width: 98
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2318efd2f921fdb80800000000000000
+      internalID: -8367949107750338254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 600
+        width: 98
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64adf0d18455e66b0800000000000000
+      internalID: -5301205943154910650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 599
+        width: 90
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56dcd6fc3cd009770800000000000000
+      internalID: 8615401221809622373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 599
+        width: 90
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05d2bfdffc1698980800000000000000
+      internalID: -8536184072756843184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 599
+        width: 90
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2ebd0afbb7f9b370800000000000000
+      internalID: 8338968571779333676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 599
+        width: 90
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7f2e69c1a28942c0800000000000000
+      internalID: -4446879525670867073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 978
+        y: 599
+        width: 90
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a09851038b3679050800000000000000
+      internalID: 5807219887249393930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 1095
+        y: 599
+        width: 90
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd9261bbfe4566f50800000000000000
+      internalID: 6874275269840349663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 1212
+        y: 601
+        width: 140
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fe7d47aa95a98c00800000000000000
+      internalID: 903435283914915573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 1379
+        y: 601
+        width: 140
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db1d8d19b07010c20800000000000000
+      internalID: 3170823358918480317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 545
+        width: 108
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bcac06c809af7c50800000000000000
+      internalID: 6665231828679175349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 545
+        width: 108
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed4242fe2dc6ee380800000000000000
+      internalID: -8940088557072800546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 545
+        width: 108
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2b86e28094f348c0800000000000000
+      internalID: -4016097541175735510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 545
+        width: 108
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11d27263e5e6ff120800000000000000
+      internalID: 2449798073227357457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 545
+        width: 108
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab761467c8d236fa0800000000000000
+      internalID: -5808749013075138630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 545
+        width: 108
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8a761d327fec9600800000000000000
+      internalID: 476518934524623503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 830
+        y: 545
+        width: 95
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e4cd3f2d1c5a0110800000000000000
+      internalID: 1227895128828265704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 545
+        width: 96
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2239261fcdf951050800000000000000
+      internalID: 5770694268836549410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 1080
+        y: 545
+        width: 87
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9561b3e69c713ef80800000000000000
+      internalID: -8078587152667306407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 1197
+        y: 545
+        width: 87
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e6ad151801256230800000000000000
+      internalID: 3631344993141892833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 1314
+        y: 545
+        width: 87
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af790f5a84808a740800000000000000
+      internalID: 5163386080894949370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 492
+        width: 140
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96ec0ccbf64aa4580800000000000000
+      internalID: -8842074118573470103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 492
+        width: 111
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3bc0fefe9e50d1e0800000000000000
+      internalID: -2175134583044912326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 492
+        width: 111
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e752b4945e1ecd20800000000000000
+      internalID: 3300608925529954277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 492
+        width: 111
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ac3e1ec7c434aa10800000000000000
+      internalID: 1919717373927898280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 492
+        width: 96
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d074f7eb1764e000800000000000000
+      internalID: 64289664243364051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 492
+        width: 96
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15636ba8aa3f05b20800000000000000
+      internalID: 3121262455564940881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 837
+        y: 492
+        width: 95
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dda709a732297d010800000000000000
+      internalID: 1213599305677437661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 493
+        width: 95
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fff2a77c2ebd55650800000000000000
+      internalID: 6221120227337973759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 1085
+        y: 492
+        width: 87
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aee857059c32b4ba0800000000000000
+      internalID: -6103745522425295126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 1202
+        y: 492
+        width: 87
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c912b5dc08c3e3ab0800000000000000
+      internalID: -5026513610200112740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 1319
+        y: 492
+        width: 87
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2086a4d897cd6af90800000000000000
+      internalID: -6942619360925423614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 439
+        width: 87
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e75f96b8329301c0800000000000000
+      internalID: -4538623227179608093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 439
+        width: 87
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e27fbc97d09ec6840800000000000000
+      internalID: 5218802312302819118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 439
+        width: 87
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e18f6abd0dab444e0800000000000000
+      internalID: -1998266928444540898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 440
+        width: 139
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c5b86e597afb8050800000000000000
+      internalID: 5804007943978923458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 439
+        width: 120
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddcc6914b4a381c90800000000000000
+      internalID: -7198939909454377763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 678
+        y: 439
+        width: 120
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bfda7fcfd1e8bdf0800000000000000
+      internalID: -164133035024130122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 825
+        y: 439
+        width: 120
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d7e71ad7bef8d1a0800000000000000
+      internalID: -6784392773042182188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 972
+        y: 439
+        width: 120
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51304f814886cdb20800000000000000
+      internalID: 3160515955070862101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 1119
+        y: 439
+        width: 120
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6609e2ca64fb8dd10800000000000000
+      internalID: 2150679132326760550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 1266
+        y: 439
+        width: 120
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18da13cca9423a650800000000000000
+      internalID: 6242873755735010689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 387
+        width: 139
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7f2d5ea330e6c060800000000000000
+      internalID: 6973507585603088252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 388
+        width: 119
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 694261f48ad22dd30800000000000000
+      internalID: 4454673182327448726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 388
+        width: 119
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fa357446ff4cbb40800000000000000
+      internalID: 5457324767595281145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 388
+        width: 119
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d53560503a701e440800000000000000
+      internalID: 4963256661084361565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_48
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 387
+        width: 110
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0834296a02ad0db0800000000000000
+      internalID: -4824021460246579187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_49
+      rect:
+        serializedVersion: 2
+        x: 755
+        y: 388
+        width: 110
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bf846b7740502290800000000000000
+      internalID: -7917239876974243911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_50
+      rect:
+        serializedVersion: 2
+        x: 890
+        y: 387
+        width: 110
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9e9075a41b110c90800000000000000
+      internalID: -7205448153327165797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_51
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 388
+        width: 110
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe1ccd69dc4fa88b0800000000000000
+      internalID: -5149034060108217873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_52
+      rect:
+        serializedVersion: 2
+        x: 1160
+        y: 387
+        width: 110
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6d766f7a21879410800000000000000
+      internalID: 1483796621767900527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_53
+      rect:
+        serializedVersion: 2
+        x: 1295
+        y: 388
+        width: 110
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db3af4a15e04647a0800000000000000
+      internalID: -6393351268272725059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_54
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 339
+        width: 119
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d767f80e9ca97f80800000000000000
+      internalID: -8108259859348625447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_55
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 339
+        width: 119
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 546c604ac27b9e4d0800000000000000
+      internalID: -3104749065736894907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_56
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 339
+        width: 119
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5330a74ad0de8feb0800000000000000
+      internalID: -4685734769429183691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_57
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 339
+        width: 119
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b9b407f0711ce710800000000000000
+      internalID: 1723771934254348721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_58
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 339
+        width: 119
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d533a63d836ba45c0800000000000000
+      internalID: -4230368544779783331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_59
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 339
+        width: 119
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d4078544a579abe0800000000000000
+      internalID: -1465510855330822958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_60
+      rect:
+        serializedVersion: 2
+        x: 890
+        y: 339
+        width: 105
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd7a8ca2b65ab1750800000000000000
+      internalID: 6276792385368795101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_61
+      rect:
+        serializedVersion: 2
+        x: 1023
+        y: 339
+        width: 105
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb8dcbb9775084b80800000000000000
+      internalID: -8410466292842309444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_62
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 340
+        width: 128
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a76d6bb52a4205b70800000000000000
+      internalID: 8885642344543999610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_63
+      rect:
+        serializedVersion: 2
+        x: 1309
+        y: 340
+        width: 128
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d204a53d1a64ca030800000000000000
+      internalID: 3507255870664359981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_64
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 291
+        width: 128
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cad6f1020506457f0800000000000000
+      internalID: -624768551045075540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_65
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 291
+        width: 128
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6ecbda455a9d6770800000000000000
+      internalID: 8605704154093702764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_66
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 291
+        width: 128
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dce57d5d8797811e0800000000000000
+      internalID: -2226896455844012339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_67
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 291
+        width: 128
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 795057aa70f737570800000000000000
+      internalID: 8463247795660588439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_68
+      rect:
+        serializedVersion: 2
+        x: 628
+        y: 292
+        width: 128
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0768a3375fb21a590800000000000000
+      internalID: -7664796757607676304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_69
+      rect:
+        serializedVersion: 2
+        x: 782
+        y: 292
+        width: 128
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70b10727f76e648b0800000000000000
+      internalID: -5168190087305880825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_70
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 292
+        width: 128
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb036ab8aef621ec0800000000000000
+      internalID: -3597690099159650116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_71
+      rect:
+        serializedVersion: 2
+        x: 1092
+        y: 292
+        width: 105
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e5fb83055030b380800000000000000
+      internalID: -8957606517150059037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_72
+      rect:
+        serializedVersion: 2
+        x: 1223
+        y: 294
+        width: 128
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcccb23476371fa50800000000000000
+      internalID: 6553145820146552013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_73
+      rect:
+        serializedVersion: 2
+        x: 1377
+        y: 294
+        width: 128
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e600749b7721e5a0800000000000000
+      internalID: -6493865775966714141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_74
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 246
+        width: 128
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cd776b533f72a270800000000000000
+      internalID: 8260304525104479683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_75
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 246
+        width: 128
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bfffbdd2826d87b0800000000000000
+      internalID: -5220408078846918734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_76
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 246
+        width: 128
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87460b25aacfa8dc0800000000000000
+      internalID: -3635815940686322568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_77
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 246
+        width: 128
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84da9a854690ca5b0800000000000000
+      internalID: -5355895530261467832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_78
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 245
+        width: 105
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8268ab408ba5f1320800000000000000
+      internalID: 2530841262005323304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_79
+      rect:
+        serializedVersion: 2
+        x: 761
+        y: 245
+        width: 105
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f66adc49f6ff3d140800000000000000
+      internalID: 4743415687254222447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_80
+      rect:
+        serializedVersion: 2
+        x: 893
+        y: 249
+        width: 53
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 015b8fcec72fa2770800000000000000
+      internalID: 8586942257900860688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_81
+      rect:
+        serializedVersion: 2
+        x: 974
+        y: 249
+        width: 53
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f3310807bc145810800000000000000
+      internalID: 1753057727392855028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_82
+      rect:
+        serializedVersion: 2
+        x: 1055
+        y: 249
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac491376a958d4d00800000000000000
+      internalID: 958569193902544074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_83
+      rect:
+        serializedVersion: 2
+        x: 1134
+        y: 249
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45fd8177962084c60800000000000000
+      internalID: 7802489006412324692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_84
+      rect:
+        serializedVersion: 2
+        x: 1213
+        y: 249
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49fb1faf4d525f9c0800000000000000
+      internalID: -3894164706118484076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_85
+      rect:
+        serializedVersion: 2
+        x: 1292
+        y: 249
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae5bf5808ddb87f0800000000000000
+      internalID: -609149780505174360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_86
+      rect:
+        serializedVersion: 2
+        x: 1371
+        y: 249
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cce8b96ff3be500b0800000000000000
+      internalID: -5762941488197824820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_87
+      rect:
+        serializedVersion: 2
+        x: 1450
+        y: 249
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec9bc31e9fe72fb50800000000000000
+      internalID: 6625497613506230734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_88
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 203
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5da729ed8ad62d60800000000000000
+      internalID: 7865214102286085469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_89
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 203
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04b98cf0042ebe550800000000000000
+      internalID: 6191290877521468224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_90
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 203
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a71f67d76fd4445f0800000000000000
+      internalID: -773407514938642054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_91
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 203
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61a6cf80d6b13c9a0800000000000000
+      internalID: -6214092905725007338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_92
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 203
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48c777e31833bb440800000000000000
+      internalID: 4952608845415808132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_93
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 203
+        width: 49
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a545680038c539f80800000000000000
+      internalID: -8101029586990115750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_94
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 204
+        width: 57
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0cce63e507353920800000000000000
+      internalID: 2969340027750763530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_95
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 204
+        width: 57
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88869e546a8e6d430800000000000000
+      internalID: 3807486335823472776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_96
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 205
+        width: 54
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 282234e3b961756b0800000000000000
+      internalID: -5307748779812511102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_97
+      rect:
+        serializedVersion: 2
+        x: 719
+        y: 205
+        width: 54
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4fd7585c1b56ca70800000000000000
+      internalID: 8846858695315283788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_98
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 205
+        width: 54
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bf315d33594ca810800000000000000
+      internalID: 1777876574764351409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_99
+      rect:
+        serializedVersion: 2
+        x: 881
+        y: 205
+        width: 50
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a452ca68e410b2d0800000000000000
+      internalID: -3265086741387520856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_100
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 205
+        width: 50
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dc63d3445566bcb0800000000000000
+      internalID: -4848576536228172588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_101
+      rect:
+        serializedVersion: 2
+        x: 1039
+        y: 205
+        width: 50
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf49c14e4dc5c9950800000000000000
+      internalID: 6457138035172349179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_102
+      rect:
+        serializedVersion: 2
+        x: 1118
+        y: 205
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 059a0c3f6b245c380800000000000000
+      internalID: -8951675330788021936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_103
+      rect:
+        serializedVersion: 2
+        x: 1194
+        y: 205
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ba2a41f0bfeccf50800000000000000
+      internalID: 6903155872093579958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_104
+      rect:
+        serializedVersion: 2
+        x: 1270
+        y: 205
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3cffbf12b5ea7e80800000000000000
+      internalID: -8179973219965469633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_105
+      rect:
+        serializedVersion: 2
+        x: 1347
+        y: 206
+        width: 57
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ffc1a292248bac70800000000000000
+      internalID: 8983419165744418800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_106
+      rect:
+        serializedVersion: 2
+        x: 1429
+        y: 206
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a561ecd8cfff5600800000000000000
+      internalID: 459366925179381153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_107
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 165
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de2bf51b7e44ca3d0800000000000000
+      internalID: -3194102273808551187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_108
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 165
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e183ec825dcdbaad0800000000000000
+      internalID: -2689813544352991202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_109
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 165
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46676e0d0323bf3c0800000000000000
+      internalID: -4324807831914645916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_110
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 165
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 446c994c6e4512c10800000000000000
+      internalID: 2026994657411057220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_111
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 165
+        width: 50
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c12ce7ed9bb8501f0800000000000000
+      internalID: -1079302905267305956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_112
+      rect:
+        serializedVersion: 2
+        x: 409
+        y: 165
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22769f2c761d9d610800000000000000
+      internalID: 1646577382363588386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_113
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 165
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c1359585c83a8140800000000000000
+      internalID: 4722649580252246464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_114
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 165
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b02fb7fa3205c07d0800000000000000
+      internalID: -2950895541636304373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_115
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 165
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db1994fd7ebe07a20800000000000000
+      internalID: 3058203528100680125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_116
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 165
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad71bca698d651fc0800000000000000
+      internalID: -3524790696377903142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_117
+      rect:
+        serializedVersion: 2
+        x: 784
+        y: 165
+        width: 49
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 092fa0d33b09491a0800000000000000
+      internalID: -6803654037552303472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_118
+      rect:
+        serializedVersion: 2
+        x: 860
+        y: 166
+        width: 57
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04c491d4e4f7bddd0800000000000000
+      internalID: -2460232797150163904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_119
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 166
+        width: 57
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc6f17e76847a3ee0800000000000000
+      internalID: -1280583023037647153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_120
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 167
+        width: 58
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90a7056a7143346a0800000000000000
+      internalID: -6466267363794716151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_121
+      rect:
+        serializedVersion: 2
+        x: 1113
+        y: 167
+        width: 58
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72102dcd5df7d7fa0800000000000000
+      internalID: -5801340188473818841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_122
+      rect:
+        serializedVersion: 2
+        x: 1201
+        y: 168
+        width: 59
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16c9e336bad2c1de0800000000000000
+      internalID: -1361162773245027231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_123
+      rect:
+        serializedVersion: 2
+        x: 1286
+        y: 168
+        width: 41
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2d9981554f007410800000000000000
+      internalID: 1472693868545285420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_124
+      rect:
+        serializedVersion: 2
+        x: 1359
+        y: 168
+        width: 41
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 327174f1f546a3570800000000000000
+      internalID: 8447174410796209955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_125
+      rect:
+        serializedVersion: 2
+        x: 1429
+        y: 170
+        width: 61
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 161bbe786230fdeb0800000000000000
+      internalID: -4693028822672756383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_126
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 131
+        width: 61
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f92230f1849e8a410800000000000000
+      internalID: 1488696172813165215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_127
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 131
+        width: 61
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9235039065a536d90800000000000000
+      internalID: -7105736461492661463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_128
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 131
+        width: 61
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86714efbe466fc4b0800000000000000
+      internalID: -5417999338290538648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_129
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 131
+        width: 61
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 259161da3b5e9b650800000000000000
+      internalID: 6249278517819087186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_130
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 131
+        width: 61
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 701604fd82cbe0900800000000000000
+      internalID: 652665879745552647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_131
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 131
+        width: 59
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f80daccc9c92f3d0800000000000000
+      internalID: -3174302590080055056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_132
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 131
+        width: 59
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97adf59deaeda5a60800000000000000
+      internalID: 7663682558476933753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_133
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 130
+        width: 51
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 186f5b8d6be553300800000000000000
+      internalID: 231195095292311169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_134
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 130
+        width: 51
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7d7333cc6e6f16a0800000000000000
+      internalID: -6476336325725028995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_135
+      rect:
+        serializedVersion: 2
+        x: 778
+        y: 131
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddd401724aae4d430800000000000000
+      internalID: 3806925575785827805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_136
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 130
+        width: 51
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8ff7c4ab8a6af760800000000000000
+      internalID: 7492418078081810318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_137
+      rect:
+        serializedVersion: 2
+        x: 932
+        y: 130
+        width: 51
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed59755df1e1cfbd0800000000000000
+      internalID: -2595166163200141858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_138
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 131
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cd8a84cfac288b60800000000000000
+      internalID: 7748492292319251906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_139
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 130
+        width: 51
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ee47714bd0090c30800000000000000
+      internalID: 4325989858762247907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_140
+      rect:
+        serializedVersion: 2
+        x: 1166
+        y: 130
+        width: 51
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 664b361803e5d4de0800000000000000
+      internalID: -1347317151091674010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_141
+      rect:
+        serializedVersion: 2
+        x: 1246
+        y: 131
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91823b855288778b0800000000000000
+      internalID: -5154501554518939623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_142
+      rect:
+        serializedVersion: 2
+        x: 1326
+        y: 130
+        width: 41
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bb67c7522c299020800000000000000
+      internalID: 2348957206663621559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_143
+      rect:
+        serializedVersion: 2
+        x: 1396
+        y: 132
+        width: 61
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bf5ac12d773edfe0800000000000000
+      internalID: -1162430643237658700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_144
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 98
+        width: 61
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49e52f5b531ea2340800000000000000
+      internalID: 4839928370365095572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_145
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 98
+        width: 61
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 181bdd9f4c91c5820800000000000000
+      internalID: 2908227793170837889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_146
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 97
+        width: 61
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4bbacbc3cca7c2c0800000000000000
+      internalID: -4411367353048450228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_147
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 98
+        width: 61
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2285fb0fbf23dd0b0800000000000000
+      internalID: -5702345495523928030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_148
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 98
+        width: 61
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29b3f0a585a853c50800000000000000
+      internalID: 6644368937327737746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_149
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 97
+        width: 61
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da125a3e84783fa70800000000000000
+      internalID: 8859573639094542765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_150
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 98
+        width: 61
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 292b23cc1832449c0800000000000000
+      internalID: -3943988333286083950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_151
+      rect:
+        serializedVersion: 2
+        x: 623
+        y: 98
+        width: 61
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cde4534f7b1278c00800000000000000
+      internalID: 902727324270939868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_152
+      rect:
+        serializedVersion: 2
+        x: 711
+        y: 97
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc8a0d2fed4810f10800000000000000
+      internalID: 2234212983243843787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_153
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 97
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 606eebdd2762b2980800000000000000
+      internalID: -8562707991726463482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_154
+      rect:
+        serializedVersion: 2
+        x: 867
+        y: 97
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5ceb00c7b28e0350800000000000000
+      internalID: 5984864680534600796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_155
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 97
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbfc3238ca38de960800000000000000
+      internalID: 7632901720420634559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_156
+      rect:
+        serializedVersion: 2
+        x: 1023
+        y: 97
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e89111c9f7e628f20800000000000000
+      internalID: 3423420161113266574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_157
+      rect:
+        serializedVersion: 2
+        x: 1101
+        y: 97
+        width: 51
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 036c82bc4253bbc80800000000000000
+      internalID: -8305986655611206096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_158
+      rect:
+        serializedVersion: 2
+        x: 1181
+        y: 95
+        width: 41
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c43dcf308e72f2ec0800000000000000
+      internalID: -3589606500538199220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_159
+      rect:
+        serializedVersion: 2
+        x: 1253
+        y: 95
+        width: 41
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ae5511ef641ebcb0800000000000000
+      internalID: -4846413678253875543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_160
+      rect:
+        serializedVersion: 2
+        x: 1321
+        y: 100
+        width: 32
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a570e7aa3df0ea40800000000000000
+      internalID: 5395590781956289954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_161
+      rect:
+        serializedVersion: 2
+        x: 1381
+        y: 100
+        width: 32
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1b4b7e3bd3a44580800000000000000
+      internalID: -8843763606207378661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_162
+      rect:
+        serializedVersion: 2
+        x: 1442
+        y: 99
+        width: 29
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c441fe2b2fbdd1900800000000000000
+      internalID: 656922956096541772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_163
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 65
+        width: 29
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d24c8ee81bac0c40800000000000000
+      internalID: 5479942970172785363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_164
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 67
+        width: 28
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6e88568949d254a0800000000000000
+      internalID: -6605978793589305747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_165
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 67
+        width: 28
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1826ea1837ffb90d0800000000000000
+      internalID: -3414855020868377983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_166
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 67
+        width: 28
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ec58f36f2ffd4920800000000000000
+      internalID: 2976315507767532774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_167
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 66
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebd209972edc0e9f0800000000000000
+      internalID: -441126390896513602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_168
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 66
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d01b79f68ec16000800000000000000
+      internalID: 27530151847465170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_169
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 66
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8601d82c0b26dd690800000000000000
+      internalID: -7575790486849515416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_170
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 66
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 094b500d9f886cb20800000000000000
+      internalID: 3154359195537880208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_171
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 66
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb129fed9d8adf120800000000000000
+      internalID: 2449299426061656507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_172
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 66
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 588acb34d60cbd9a0800000000000000
+      internalID: -6207156085879691131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_173
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 65
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd02eb9cbe425d6b0800000000000000
+      internalID: -5272267193646702369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_174
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 65
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecb84a457d2935150800000000000000
+      internalID: 5860188993674841038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_175
+      rect:
+        serializedVersion: 2
+        x: 707
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 991c9fae8b14d6820800000000000000
+      internalID: 2913056796450603417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_176
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52c18372a1524c470800000000000000
+      internalID: 8413890798092295205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_177
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38513a6ecf66f00a0800000000000000
+      internalID: -6913193666603182717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_178
+      rect:
+        serializedVersion: 2
+        x: 873
+        y: 65
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71b6a9460212c2950800000000000000
+      internalID: 6425547191361366807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_179
+      rect:
+        serializedVersion: 2
+        x: 929
+        y: 65
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3f80d22dca532fa0800000000000000
+      internalID: -5826713655788400838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_180
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71bd38a4f70e2d950800000000000000
+      internalID: 6472482451800447767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_181
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c218f1e673836a9d0800000000000000
+      internalID: -2763459510623305428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_182
+      rect:
+        serializedVersion: 2
+        x: 1099
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76a9e6647f7709780800000000000000
+      internalID: -8678304578020664729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_183
+      rect:
+        serializedVersion: 2
+        x: 1153
+        y: 65
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f3ee0f58ea9e3b90800000000000000
+      internalID: -7260195226456759308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_184
+      rect:
+        serializedVersion: 2
+        x: 1209
+        y: 65
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c54933250a164bb0800000000000000
+      internalID: -4952242130879167040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_185
+      rect:
+        serializedVersion: 2
+        x: 1267
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5873b2c9004e6ec0800000000000000
+      internalID: -3571847043792799650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_186
+      rect:
+        serializedVersion: 2
+        x: 1323
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57e5e4940a5556e40800000000000000
+      internalID: 5649015454519156341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_187
+      rect:
+        serializedVersion: 2
+        x: 1379
+        y: 66
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68211d4c321af8920800000000000000
+      internalID: 2994789452222632582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_188
+      rect:
+        serializedVersion: 2
+        x: 1433
+        y: 68
+        width: 32
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 986a5ab60f28ef1b0800000000000000
+      internalID: -5620911315802020215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_189
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 37
+        width: 32
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2446f679de7d966e0800000000000000
+      internalID: -1843705156983626686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_190
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 37
+        width: 32
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55be9b903649f6af0800000000000000
+      internalID: -400938688726832299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_191
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c099b13141953ddf0800000000000000
+      internalID: -156683619273041652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_192
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d62181c68e712a50800000000000000
+      internalID: 6494611254882150096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_193
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6202f7d5550ba2540800000000000000
+      internalID: 4983989818326196262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_194
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5507ccd41d452680800000000000000
+      internalID: -8780527146490198690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_195
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de9f7551f3b2b19b0800000000000000
+      internalID: -5108441802380674579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_196
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b8d36225db4be7c0800000000000000
+      internalID: -4041052861857802058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_197
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9871a6608743e790800000000000000
+      internalID: -7502073937465870182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_198
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d5d7df21a0c32f60800000000000000
+      internalID: 8008456360919815640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_199
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 36
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cc18a602e3ac78e0800000000000000
+      internalID: -1694299168628532025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_200
+      rect:
+        serializedVersion: 2
+        x: 648
+        y: 39
+        width: 31
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b175ee64f38c1fd70800000000000000
+      internalID: 9075254898226779931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_201
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 39
+        width: 31
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a13c42a6c5408ab0800000000000000
+      internalID: -5007926066207247959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_202
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 155c48e7f087d82e0800000000000000
+      internalID: -2121907841479162543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_203
+      rect:
+        serializedVersion: 2
+        x: 833
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4e55339301526e80800000000000000
+      internalID: -8186892096809640374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_204
+      rect:
+        serializedVersion: 2
+        x: 894
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0131c2c15f70cfe10800000000000000
+      internalID: 2232668264589955856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_205
+      rect:
+        serializedVersion: 2
+        x: 953
+        y: 39
+        width: 31
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 481240ae882785400800000000000000
+      internalID: 313126106469507460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_206
+      rect:
+        serializedVersion: 2
+        x: 1014
+        y: 39
+        width: 31
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92640a12176dd2040800000000000000
+      internalID: 4624588173763167785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_207
+      rect:
+        serializedVersion: 2
+        x: 1077
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c70da62fa9db5b00800000000000000
+      internalID: 818487103589255108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_208
+      rect:
+        serializedVersion: 2
+        x: 1138
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82c51002184913290800000000000000
+      internalID: -7912379788004598744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_209
+      rect:
+        serializedVersion: 2
+        x: 1199
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4a24828bda7dfa10800000000000000
+      internalID: 1944845697300048462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_210
+      rect:
+        serializedVersion: 2
+        x: 1258
+        y: 39
+        width: 31
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab30738b9b43a6e10800000000000000
+      internalID: 2191622140933374906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_211
+      rect:
+        serializedVersion: 2
+        x: 1319
+        y: 39
+        width: 31
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5026e892d15dc9150800000000000000
+      internalID: 5880809534666990085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_212
+      rect:
+        serializedVersion: 2
+        x: 1382
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a070dd7a8d14d9a50800000000000000
+      internalID: 6529447433542108938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_213
+      rect:
+        serializedVersion: 2
+        x: 1443
+        y: 39
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be88810c6ef9967e0800000000000000
+      internalID: -1771709164979451669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_214
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65e93ce813015e500800000000000000
+      internalID: 424763544891006550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_215
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 7
+        width: 33
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 300a2f1d7ae833590800000000000000
+      internalID: -7695650486813024253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_216
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 7
+        width: 33
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e0f5e0fcd7be0db0800000000000000
+      internalID: -4823715991304933148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_217
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 8
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8a60e5e201bf34c0800000000000000
+      internalID: -4305528092738164081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_218
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 8
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a45890cc19bf1a20800000000000000
+      internalID: 3035348207012435105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_219
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 8
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db2cbf6fbb4130780800000000000000
+      internalID: -8718101656124013891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_220
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 8
+        width: 29
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90d4beb1e0f9f09b0800000000000000
+      internalID: -5111692169095459575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_221
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 8
+        width: 29
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ead3f628ba3477f0800000000000000
+      internalID: -615802686441006365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_222
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf4a365b10ac32360800000000000000
+      internalID: 7143775542626723068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_223
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4bde3148921075250800000000000000
+      internalID: 5933212311905103284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_224
+      rect:
+        serializedVersion: 2
+        x: 602
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62bb11e24c271cb50800000000000000
+      internalID: 6611691914868669222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_225
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 8
+        width: 29
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca021c2fa25d29890800000000000000
+      internalID: -7452660052906663764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_226
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 8
+        width: 29
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a6f2059129c73fa0800000000000000
+      internalID: -5820962847281973593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_227
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39c3f4e9d3a7a71b0800000000000000
+      internalID: -5658075576770020205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_228
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 664e9fe06a5a10030800000000000000
+      internalID: 3459228121431663718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_229
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8625e9e1945644690800000000000000
+      internalID: -7618853304883326360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_230
+      rect:
+        serializedVersion: 2
+        x: 936
+        y: 8
+        width: 29
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c12c37e8ff202340800000000000000
+      internalID: 4836918745873785285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_231
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 8
+        width: 29
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5872ff42b53c54140800000000000000
+      internalID: 4703380182088492933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_232
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b0d3df591b87aa70800000000000000
+      internalID: 8838185734836048051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_233
+      rect:
+        serializedVersion: 2
+        x: 1106
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1597c5641fdae23c0800000000000000
+      internalID: -4382374135605724847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_234
+      rect:
+        serializedVersion: 2
+        x: 1162
+        y: 9
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4634159a2e6ba3c0800000000000000
+      internalID: -4347259886127270321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_235
+      rect:
+        serializedVersion: 2
+        x: 1219
+        y: 8
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54babe406f867f6b0800000000000000
+      internalID: -5262622233705338043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_236
+      rect:
+        serializedVersion: 2
+        x: 1275
+        y: 8
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3b1d3a32c98c00d0800000000000000
+      internalID: -3455235346806269122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_237
+      rect:
+        serializedVersion: 2
+        x: 1333
+        y: 9
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8c3bea8780a98280800000000000000
+      internalID: -9040518272957858675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_238
+      rect:
+        serializedVersion: 2
+        x: 1389
+        y: 9
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d8cb9018d4f57270800000000000000
+      internalID: 8247767501427689686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_0_normal_239
+      rect:
+        serializedVersion: 2
+        x: 1445
+        y: 9
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5d9594cd5e35ba50800000000000000
+      internalID: 6536199006649163102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SugarKelp_0_normal_0: -4651808264514932626
+      SugarKelp_0_normal_1: 3810880781313240809
+      SugarKelp_0_normal_10: 903435283914915573
+      SugarKelp_0_normal_100: -4848576536228172588
+      SugarKelp_0_normal_101: 6457138035172349179
+      SugarKelp_0_normal_102: -8951675330788021936
+      SugarKelp_0_normal_103: 6903155872093579958
+      SugarKelp_0_normal_104: -8179973219965469633
+      SugarKelp_0_normal_105: 8983419165744418800
+      SugarKelp_0_normal_106: 459366925179381153
+      SugarKelp_0_normal_107: -3194102273808551187
+      SugarKelp_0_normal_108: -2689813544352991202
+      SugarKelp_0_normal_109: -4324807831914645916
+      SugarKelp_0_normal_11: 3170823358918480317
+      SugarKelp_0_normal_110: 2026994657411057220
+      SugarKelp_0_normal_111: -1079302905267305956
+      SugarKelp_0_normal_112: 1646577382363588386
+      SugarKelp_0_normal_113: 4722649580252246464
+      SugarKelp_0_normal_114: -2950895541636304373
+      SugarKelp_0_normal_115: 3058203528100680125
+      SugarKelp_0_normal_116: -3524790696377903142
+      SugarKelp_0_normal_117: -6803654037552303472
+      SugarKelp_0_normal_118: -2460232797150163904
+      SugarKelp_0_normal_119: -1280583023037647153
+      SugarKelp_0_normal_12: 6665231828679175349
+      SugarKelp_0_normal_120: -6466267363794716151
+      SugarKelp_0_normal_121: -5801340188473818841
+      SugarKelp_0_normal_122: -1361162773245027231
+      SugarKelp_0_normal_123: 1472693868545285420
+      SugarKelp_0_normal_124: 8447174410796209955
+      SugarKelp_0_normal_125: -4693028822672756383
+      SugarKelp_0_normal_126: 1488696172813165215
+      SugarKelp_0_normal_127: -7105736461492661463
+      SugarKelp_0_normal_128: -5417999338290538648
+      SugarKelp_0_normal_129: 6249278517819087186
+      SugarKelp_0_normal_13: -8940088557072800546
+      SugarKelp_0_normal_130: 652665879745552647
+      SugarKelp_0_normal_131: -3174302590080055056
+      SugarKelp_0_normal_132: 7663682558476933753
+      SugarKelp_0_normal_133: 231195095292311169
+      SugarKelp_0_normal_134: -6476336325725028995
+      SugarKelp_0_normal_135: 3806925575785827805
+      SugarKelp_0_normal_136: 7492418078081810318
+      SugarKelp_0_normal_137: -2595166163200141858
+      SugarKelp_0_normal_138: 7748492292319251906
+      SugarKelp_0_normal_139: 4325989858762247907
+      SugarKelp_0_normal_14: -4016097541175735510
+      SugarKelp_0_normal_140: -1347317151091674010
+      SugarKelp_0_normal_141: -5154501554518939623
+      SugarKelp_0_normal_142: 2348957206663621559
+      SugarKelp_0_normal_143: -1162430643237658700
+      SugarKelp_0_normal_144: 4839928370365095572
+      SugarKelp_0_normal_145: 2908227793170837889
+      SugarKelp_0_normal_146: -4411367353048450228
+      SugarKelp_0_normal_147: -5702345495523928030
+      SugarKelp_0_normal_148: 6644368937327737746
+      SugarKelp_0_normal_149: 8859573639094542765
+      SugarKelp_0_normal_15: 2449798073227357457
+      SugarKelp_0_normal_150: -3943988333286083950
+      SugarKelp_0_normal_151: 902727324270939868
+      SugarKelp_0_normal_152: 2234212983243843787
+      SugarKelp_0_normal_153: -8562707991726463482
+      SugarKelp_0_normal_154: 5984864680534600796
+      SugarKelp_0_normal_155: 7632901720420634559
+      SugarKelp_0_normal_156: 3423420161113266574
+      SugarKelp_0_normal_157: -8305986655611206096
+      SugarKelp_0_normal_158: -3589606500538199220
+      SugarKelp_0_normal_159: -4846413678253875543
+      SugarKelp_0_normal_16: -5808749013075138630
+      SugarKelp_0_normal_160: 5395590781956289954
+      SugarKelp_0_normal_161: -8843763606207378661
+      SugarKelp_0_normal_162: 656922956096541772
+      SugarKelp_0_normal_163: 5479942970172785363
+      SugarKelp_0_normal_164: -6605978793589305747
+      SugarKelp_0_normal_165: -3414855020868377983
+      SugarKelp_0_normal_166: 2976315507767532774
+      SugarKelp_0_normal_167: -441126390896513602
+      SugarKelp_0_normal_168: 27530151847465170
+      SugarKelp_0_normal_169: -7575790486849515416
+      SugarKelp_0_normal_17: 476518934524623503
+      SugarKelp_0_normal_170: 3154359195537880208
+      SugarKelp_0_normal_171: 2449299426061656507
+      SugarKelp_0_normal_172: -6207156085879691131
+      SugarKelp_0_normal_173: -5272267193646702369
+      SugarKelp_0_normal_174: 5860188993674841038
+      SugarKelp_0_normal_175: 2913056796450603417
+      SugarKelp_0_normal_176: 8413890798092295205
+      SugarKelp_0_normal_177: -6913193666603182717
+      SugarKelp_0_normal_178: 6425547191361366807
+      SugarKelp_0_normal_179: -5826713655788400838
+      SugarKelp_0_normal_18: 1227895128828265704
+      SugarKelp_0_normal_180: 6472482451800447767
+      SugarKelp_0_normal_181: -2763459510623305428
+      SugarKelp_0_normal_182: -8678304578020664729
+      SugarKelp_0_normal_183: -7260195226456759308
+      SugarKelp_0_normal_184: -4952242130879167040
+      SugarKelp_0_normal_185: -3571847043792799650
+      SugarKelp_0_normal_186: 5649015454519156341
+      SugarKelp_0_normal_187: 2994789452222632582
+      SugarKelp_0_normal_188: -5620911315802020215
+      SugarKelp_0_normal_189: -1843705156983626686
+      SugarKelp_0_normal_19: 5770694268836549410
+      SugarKelp_0_normal_190: -400938688726832299
+      SugarKelp_0_normal_191: -156683619273041652
+      SugarKelp_0_normal_192: 6494611254882150096
+      SugarKelp_0_normal_193: 4983989818326196262
+      SugarKelp_0_normal_194: -8780527146490198690
+      SugarKelp_0_normal_195: -5108441802380674579
+      SugarKelp_0_normal_196: -4041052861857802058
+      SugarKelp_0_normal_197: -7502073937465870182
+      SugarKelp_0_normal_198: 8008456360919815640
+      SugarKelp_0_normal_199: -1694299168628532025
+      SugarKelp_0_normal_2: -8367949107750338254
+      SugarKelp_0_normal_20: -8078587152667306407
+      SugarKelp_0_normal_200: 9075254898226779931
+      SugarKelp_0_normal_201: -5007926066207247959
+      SugarKelp_0_normal_202: -2121907841479162543
+      SugarKelp_0_normal_203: -8186892096809640374
+      SugarKelp_0_normal_204: 2232668264589955856
+      SugarKelp_0_normal_205: 313126106469507460
+      SugarKelp_0_normal_206: 4624588173763167785
+      SugarKelp_0_normal_207: 818487103589255108
+      SugarKelp_0_normal_208: -7912379788004598744
+      SugarKelp_0_normal_209: 1944845697300048462
+      SugarKelp_0_normal_21: 3631344993141892833
+      SugarKelp_0_normal_210: 2191622140933374906
+      SugarKelp_0_normal_211: 5880809534666990085
+      SugarKelp_0_normal_212: 6529447433542108938
+      SugarKelp_0_normal_213: -1771709164979451669
+      SugarKelp_0_normal_214: 424763544891006550
+      SugarKelp_0_normal_215: -7695650486813024253
+      SugarKelp_0_normal_216: -4823715991304933148
+      SugarKelp_0_normal_217: -4305528092738164081
+      SugarKelp_0_normal_218: 3035348207012435105
+      SugarKelp_0_normal_219: -8718101656124013891
+      SugarKelp_0_normal_22: 5163386080894949370
+      SugarKelp_0_normal_220: -5111692169095459575
+      SugarKelp_0_normal_221: -615802686441006365
+      SugarKelp_0_normal_222: 7143775542626723068
+      SugarKelp_0_normal_223: 5933212311905103284
+      SugarKelp_0_normal_224: 6611691914868669222
+      SugarKelp_0_normal_225: -7452660052906663764
+      SugarKelp_0_normal_226: -5820962847281973593
+      SugarKelp_0_normal_227: -5658075576770020205
+      SugarKelp_0_normal_228: 3459228121431663718
+      SugarKelp_0_normal_229: -7618853304883326360
+      SugarKelp_0_normal_23: -8842074118573470103
+      SugarKelp_0_normal_230: 4836918745873785285
+      SugarKelp_0_normal_231: 4703380182088492933
+      SugarKelp_0_normal_232: 8838185734836048051
+      SugarKelp_0_normal_233: -4382374135605724847
+      SugarKelp_0_normal_234: -4347259886127270321
+      SugarKelp_0_normal_235: -5262622233705338043
+      SugarKelp_0_normal_236: -3455235346806269122
+      SugarKelp_0_normal_237: -9040518272957858675
+      SugarKelp_0_normal_238: 8247767501427689686
+      SugarKelp_0_normal_239: 6536199006649163102
+      SugarKelp_0_normal_24: -2175134583044912326
+      SugarKelp_0_normal_25: 3300608925529954277
+      SugarKelp_0_normal_26: 1919717373927898280
+      SugarKelp_0_normal_27: 64289664243364051
+      SugarKelp_0_normal_28: 3121262455564940881
+      SugarKelp_0_normal_29: 1213599305677437661
+      SugarKelp_0_normal_3: -5301205943154910650
+      SugarKelp_0_normal_30: 6221120227337973759
+      SugarKelp_0_normal_31: -6103745522425295126
+      SugarKelp_0_normal_32: -5026513610200112740
+      SugarKelp_0_normal_33: -6942619360925423614
+      SugarKelp_0_normal_34: -4538623227179608093
+      SugarKelp_0_normal_35: 5218802312302819118
+      SugarKelp_0_normal_36: -1998266928444540898
+      SugarKelp_0_normal_37: 5804007943978923458
+      SugarKelp_0_normal_38: -7198939909454377763
+      SugarKelp_0_normal_39: -164133035024130122
+      SugarKelp_0_normal_4: 8615401221809622373
+      SugarKelp_0_normal_40: -6784392773042182188
+      SugarKelp_0_normal_41: 3160515955070862101
+      SugarKelp_0_normal_42: 2150679132326760550
+      SugarKelp_0_normal_43: 6242873755735010689
+      SugarKelp_0_normal_44: 6973507585603088252
+      SugarKelp_0_normal_45: 4454673182327448726
+      SugarKelp_0_normal_46: 5457324767595281145
+      SugarKelp_0_normal_47: 4963256661084361565
+      SugarKelp_0_normal_48: -4824021460246579187
+      SugarKelp_0_normal_49: -7917239876974243911
+      SugarKelp_0_normal_5: -8536184072756843184
+      SugarKelp_0_normal_50: -7205448153327165797
+      SugarKelp_0_normal_51: -5149034060108217873
+      SugarKelp_0_normal_52: 1483796621767900527
+      SugarKelp_0_normal_53: -6393351268272725059
+      SugarKelp_0_normal_54: -8108259859348625447
+      SugarKelp_0_normal_55: -3104749065736894907
+      SugarKelp_0_normal_56: -4685734769429183691
+      SugarKelp_0_normal_57: 1723771934254348721
+      SugarKelp_0_normal_58: -4230368544779783331
+      SugarKelp_0_normal_59: -1465510855330822958
+      SugarKelp_0_normal_6: 8338968571779333676
+      SugarKelp_0_normal_60: 6276792385368795101
+      SugarKelp_0_normal_61: -8410466292842309444
+      SugarKelp_0_normal_62: 8885642344543999610
+      SugarKelp_0_normal_63: 3507255870664359981
+      SugarKelp_0_normal_64: -624768551045075540
+      SugarKelp_0_normal_65: 8605704154093702764
+      SugarKelp_0_normal_66: -2226896455844012339
+      SugarKelp_0_normal_67: 8463247795660588439
+      SugarKelp_0_normal_68: -7664796757607676304
+      SugarKelp_0_normal_69: -5168190087305880825
+      SugarKelp_0_normal_7: -4446879525670867073
+      SugarKelp_0_normal_70: -3597690099159650116
+      SugarKelp_0_normal_71: -8957606517150059037
+      SugarKelp_0_normal_72: 6553145820146552013
+      SugarKelp_0_normal_73: -6493865775966714141
+      SugarKelp_0_normal_74: 8260304525104479683
+      SugarKelp_0_normal_75: -5220408078846918734
+      SugarKelp_0_normal_76: -3635815940686322568
+      SugarKelp_0_normal_77: -5355895530261467832
+      SugarKelp_0_normal_78: 2530841262005323304
+      SugarKelp_0_normal_79: 4743415687254222447
+      SugarKelp_0_normal_8: 5807219887249393930
+      SugarKelp_0_normal_80: 8586942257900860688
+      SugarKelp_0_normal_81: 1753057727392855028
+      SugarKelp_0_normal_82: 958569193902544074
+      SugarKelp_0_normal_83: 7802489006412324692
+      SugarKelp_0_normal_84: -3894164706118484076
+      SugarKelp_0_normal_85: -609149780505174360
+      SugarKelp_0_normal_86: -5762941488197824820
+      SugarKelp_0_normal_87: 6625497613506230734
+      SugarKelp_0_normal_88: 7865214102286085469
+      SugarKelp_0_normal_89: 6191290877521468224
+      SugarKelp_0_normal_9: 6874275269840349663
+      SugarKelp_0_normal_90: -773407514938642054
+      SugarKelp_0_normal_91: -6214092905725007338
+      SugarKelp_0_normal_92: 4952608845415808132
+      SugarKelp_0_normal_93: -8101029586990115750
+      SugarKelp_0_normal_94: 2969340027750763530
+      SugarKelp_0_normal_95: 3807486335823472776
+      SugarKelp_0_normal_96: -5307748779812511102
+      SugarKelp_0_normal_97: 8846858695315283788
+      SugarKelp_0_normal_98: 1777876574764351409
+      SugarKelp_0_normal_99: -3265086741387520856
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

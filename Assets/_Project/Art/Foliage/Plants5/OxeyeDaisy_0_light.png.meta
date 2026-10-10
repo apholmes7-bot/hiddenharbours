@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: d5440b9443bf51845b01d43466f9620c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4191017275407359376
+    second: OxeyeDaisy_0_light_0
+  - first:
+      213: -5152342758046777003
+    second: OxeyeDaisy_0_light_1
+  - first:
+      213: -4514966296529857242
+    second: OxeyeDaisy_0_light_2
+  - first:
+      213: 7212724939983469494
+    second: OxeyeDaisy_0_light_3
+  - first:
+      213: 5109326968995650017
+    second: OxeyeDaisy_0_light_4
+  - first:
+      213: 8659496195369040699
+    second: OxeyeDaisy_0_light_5
+  - first:
+      213: -7035725464317948693
+    second: OxeyeDaisy_0_light_6
+  - first:
+      213: 7054196453260838209
+    second: OxeyeDaisy_0_light_7
+  - first:
+      213: 5706517509076967945
+    second: OxeyeDaisy_0_light_8
+  - first:
+      213: 8052505784925226935
+    second: OxeyeDaisy_0_light_9
+  - first:
+      213: 5759686426700559557
+    second: OxeyeDaisy_0_light_10
+  - first:
+      213: -303110419005627314
+    second: OxeyeDaisy_0_light_11
+  - first:
+      213: -7569421840189723073
+    second: OxeyeDaisy_0_light_12
+  - first:
+      213: -8643955993691954704
+    second: OxeyeDaisy_0_light_13
+  - first:
+      213: -4502012675544040801
+    second: OxeyeDaisy_0_light_14
+  - first:
+      213: -8766737301965953655
+    second: OxeyeDaisy_0_light_15
+  - first:
+      213: 7478230555809131502
+    second: OxeyeDaisy_0_light_16
+  - first:
+      213: 8209430059875543310
+    second: OxeyeDaisy_0_light_17
+  - first:
+      213: 4656944137197656554
+    second: OxeyeDaisy_0_light_18
+  - first:
+      213: 4567255301480508135
+    second: OxeyeDaisy_0_light_19
+  - first:
+      213: -5345469866806599013
+    second: OxeyeDaisy_0_light_20
+  - first:
+      213: -7294388025362122099
+    second: OxeyeDaisy_0_light_21
+  - first:
+      213: 2601198094371788211
+    second: OxeyeDaisy_0_light_22
+  - first:
+      213: -3070963851991294117
+    second: OxeyeDaisy_0_light_23
+  - first:
+      213: 4451554391827658922
+    second: OxeyeDaisy_0_light_24
+  - first:
+      213: -4290754998817062746
+    second: OxeyeDaisy_0_light_25
+  - first:
+      213: -5061796567683321561
+    second: OxeyeDaisy_0_light_26
+  - first:
+      213: -5620501809868839947
+    second: OxeyeDaisy_0_light_27
+  - first:
+      213: 6709748640634549247
+    second: OxeyeDaisy_0_light_28
+  - first:
+      213: -3990837439225408563
+    second: OxeyeDaisy_0_light_29
+  - first:
+      213: -657399843326910989
+    second: OxeyeDaisy_0_light_30
+  - first:
+      213: -698495551631194090
+    second: OxeyeDaisy_0_light_31
+  - first:
+      213: -3860046965465801478
+    second: OxeyeDaisy_0_light_32
+  - first:
+      213: -2067479030446516446
+    second: OxeyeDaisy_0_light_33
+  - first:
+      213: -4822338276351437575
+    second: OxeyeDaisy_0_light_34
+  - first:
+      213: 5085065158457578489
+    second: OxeyeDaisy_0_light_35
+  - first:
+      213: 5627179723205194047
+    second: OxeyeDaisy_0_light_36
+  - first:
+      213: -41463114936146894
+    second: OxeyeDaisy_0_light_37
+  - first:
+      213: 6338485236758609245
+    second: OxeyeDaisy_0_light_38
+  - first:
+      213: 4801537772464034246
+    second: OxeyeDaisy_0_light_39
+  - first:
+      213: 4695436106842809612
+    second: OxeyeDaisy_0_light_40
+  - first:
+      213: 3890098584825636803
+    second: OxeyeDaisy_0_light_41
+  - first:
+      213: -3232129611420497845
+    second: OxeyeDaisy_0_light_42
+  - first:
+      213: -5366325708755752976
+    second: OxeyeDaisy_0_light_43
+  - first:
+      213: 7131435820751189715
+    second: OxeyeDaisy_0_light_44
+  - first:
+      213: -5958912539761942284
+    second: OxeyeDaisy_0_light_45
+  - first:
+      213: 5236106301998560097
+    second: OxeyeDaisy_0_light_46
+  - first:
+      213: -7528622716598456634
+    second: OxeyeDaisy_0_light_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 117
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09d5e2cc10c792a30800000000000000
+      internalID: 4191017275407359376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 117
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 551c0915f833f78b0800000000000000
+      internalID: -5152342758046777003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 118
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6251a7a131e9751c0800000000000000
+      internalID: -4514966296529857242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 118
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bbb0564e1fb81460800000000000000
+      internalID: 7212724939983469494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 119
+        width: 16
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e91f44dec9f7e640800000000000000
+      internalID: 5109326968995650017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 119
+        width: 19
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3b71d2e8e5bc2870800000000000000
+      internalID: 8659496195369040699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 120
+        width: 14
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bec882297f41c5e90800000000000000
+      internalID: -7035725464317948693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 79
+        width: 19
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 145ce6cac4a85e160800000000000000
+      internalID: 7054196453260838209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 78
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9026419a07f913f40800000000000000
+      internalID: 5706517509076967945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 80
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b70f3ee85f30cf60800000000000000
+      internalID: 8052505784925226935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 79
+        width: 18
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c43029f9448eef40800000000000000
+      internalID: 5759686426700559557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 81
+        width: 22
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e44237b0ea22bcbf0800000000000000
+      internalID: -303110419005627314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 81
+        width: 14
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3e686cd0f204f690800000000000000
+      internalID: -7569421840189723073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 83
+        width: 14
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f1e1e542df7a0880800000000000000
+      internalID: -8643955993691954704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 84
+        width: 13
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9a34e30353a581c0800000000000000
+      internalID: -4502012675544040801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 48
+        width: 17
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 985272d3fda465680800000000000000
+      internalID: -8766737301965953655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 48
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eeba973b11308c760800000000000000
+      internalID: 7478230555809131502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 49
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e09ab4fd421cde170800000000000000
+      internalID: 8209430059875543310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 50
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae9118ce40ac0a040800000000000000
+      internalID: 4656944137197656554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 50
+        width: 14
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7eae3439f76226f30800000000000000
+      internalID: 4567255301480508135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 51
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9220774a7311d5b0800000000000000
+      internalID: -5345469866806599013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 50
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8a7d6efcb025ca90800000000000000
+      internalID: -7294388025362122099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 51
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b5147592ef491420800000000000000
+      internalID: 2601198094371788211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 51
+        width: 13
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5f5ef3b5aeb165d0800000000000000
+      internalID: -3070963851991294117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 25
+        width: 17
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa8b73f422917cd30800000000000000
+      internalID: 4451554391827658922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 26
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a0074ddf0d2474c0800000000000000
+      internalID: -4290754998817062746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 26
+        width: 24
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 721b1f917d2e0c9b0800000000000000
+      internalID: -5061796567683321561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 26
+        width: 18
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f3e353f167fff1b0800000000000000
+      internalID: -5620501809868839947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 27
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff3be21c6d0dd1d50800000000000000
+      internalID: 6709748640634549247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 28
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc3d3ae4e72bd98c0800000000000000
+      internalID: -3990837439225408563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 27
+        width: 15
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fd1a17535270e6f0800000000000000
+      internalID: -657399843326910989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 28
+        width: 16
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61805df1ff17e46f0800000000000000
+      internalID: -698495551631194090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 28
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afc161f7cbb5e6ac0800000000000000
+      internalID: -3860046965465801478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 286
+        y: 28
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2279aa996c6de43e0800000000000000
+      internalID: -2067479030446516446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 28
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f49d4333ec931db0800000000000000
+      internalID: -4822338276351437575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 28
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f3549dd1d7c19640800000000000000
+      internalID: 5085065158457578489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f313de8e422c71e40800000000000000
+      internalID: 5627179723205194047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23423f24481bc6ff0800000000000000
+      internalID: -41463114936146894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5dfd077db2d6f750800000000000000
+      internalID: 6338485236758609245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 5
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c1d6571a2d72a240800000000000000
+      internalID: 4801537772464034246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c05a8edf24a892140800000000000000
+      internalID: 4695436106842809612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c728c16d086cf530800000000000000
+      internalID: 3890098584825636803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4882433e3b2523d0800000000000000
+      internalID: -3232129611420497845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f7219c233bf685b0800000000000000
+      internalID: -5366325708755752976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d6fe525813f7f260800000000000000
+      internalID: 7131435820751189715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f06ed3ed90bd4da0800000000000000
+      internalID: -5958912539761942284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 163fec880f26aa840800000000000000
+      internalID: 5236106301998560097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: OxeyeDaisy_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 6
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ce66311785f48790800000000000000
+      internalID: -7528622716598456634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      OxeyeDaisy_0_light_0: 4191017275407359376
+      OxeyeDaisy_0_light_1: -5152342758046777003
+      OxeyeDaisy_0_light_10: 5759686426700559557
+      OxeyeDaisy_0_light_11: -303110419005627314
+      OxeyeDaisy_0_light_12: -7569421840189723073
+      OxeyeDaisy_0_light_13: -8643955993691954704
+      OxeyeDaisy_0_light_14: -4502012675544040801
+      OxeyeDaisy_0_light_15: -8766737301965953655
+      OxeyeDaisy_0_light_16: 7478230555809131502
+      OxeyeDaisy_0_light_17: 8209430059875543310
+      OxeyeDaisy_0_light_18: 4656944137197656554
+      OxeyeDaisy_0_light_19: 4567255301480508135
+      OxeyeDaisy_0_light_2: -4514966296529857242
+      OxeyeDaisy_0_light_20: -5345469866806599013
+      OxeyeDaisy_0_light_21: -7294388025362122099
+      OxeyeDaisy_0_light_22: 2601198094371788211
+      OxeyeDaisy_0_light_23: -3070963851991294117
+      OxeyeDaisy_0_light_24: 4451554391827658922
+      OxeyeDaisy_0_light_25: -4290754998817062746
+      OxeyeDaisy_0_light_26: -5061796567683321561
+      OxeyeDaisy_0_light_27: -5620501809868839947
+      OxeyeDaisy_0_light_28: 6709748640634549247
+      OxeyeDaisy_0_light_29: -3990837439225408563
+      OxeyeDaisy_0_light_3: 7212724939983469494
+      OxeyeDaisy_0_light_30: -657399843326910989
+      OxeyeDaisy_0_light_31: -698495551631194090
+      OxeyeDaisy_0_light_32: -3860046965465801478
+      OxeyeDaisy_0_light_33: -2067479030446516446
+      OxeyeDaisy_0_light_34: -4822338276351437575
+      OxeyeDaisy_0_light_35: 5085065158457578489
+      OxeyeDaisy_0_light_36: 5627179723205194047
+      OxeyeDaisy_0_light_37: -41463114936146894
+      OxeyeDaisy_0_light_38: 6338485236758609245
+      OxeyeDaisy_0_light_39: 4801537772464034246
+      OxeyeDaisy_0_light_4: 5109326968995650017
+      OxeyeDaisy_0_light_40: 4695436106842809612
+      OxeyeDaisy_0_light_41: 3890098584825636803
+      OxeyeDaisy_0_light_42: -3232129611420497845
+      OxeyeDaisy_0_light_43: -5366325708755752976
+      OxeyeDaisy_0_light_44: 7131435820751189715
+      OxeyeDaisy_0_light_45: -5958912539761942284
+      OxeyeDaisy_0_light_46: 5236106301998560097
+      OxeyeDaisy_0_light_47: -7528622716598456634
+      OxeyeDaisy_0_light_5: 8659496195369040699
+      OxeyeDaisy_0_light_6: -7035725464317948693
+      OxeyeDaisy_0_light_7: 7054196453260838209
+      OxeyeDaisy_0_light_8: 5706517509076967945
+      OxeyeDaisy_0_light_9: 8052505784925226935
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

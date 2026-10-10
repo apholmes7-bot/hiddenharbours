@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 7dc0748f7074e8e4d918464d7625886e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3473194136167072174
+    second: TussockSedge_0_unlit_0
+  - first:
+      213: 6342060606060759599
+    second: TussockSedge_0_unlit_1
+  - first:
+      213: 1200379619826255299
+    second: TussockSedge_0_unlit_2
+  - first:
+      213: 8894241396593651930
+    second: TussockSedge_0_unlit_3
+  - first:
+      213: 6304858833069007946
+    second: TussockSedge_0_unlit_4
+  - first:
+      213: -7564102062634687632
+    second: TussockSedge_0_unlit_5
+  - first:
+      213: -8082771273590810195
+    second: TussockSedge_0_unlit_6
+  - first:
+      213: -1761288271054007337
+    second: TussockSedge_0_unlit_7
+  - first:
+      213: -1827159603351825980
+    second: TussockSedge_0_unlit_8
+  - first:
+      213: -1843576448741086043
+    second: TussockSedge_0_unlit_9
+  - first:
+      213: -5371218443032509181
+    second: TussockSedge_0_unlit_10
+  - first:
+      213: 6400417979544113645
+    second: TussockSedge_0_unlit_11
+  - first:
+      213: 6095907633598066223
+    second: TussockSedge_0_unlit_12
+  - first:
+      213: 2115051434205056919
+    second: TussockSedge_0_unlit_13
+  - first:
+      213: -6485789318159297347
+    second: TussockSedge_0_unlit_14
+  - first:
+      213: 1323548179721652138
+    second: TussockSedge_0_unlit_15
+  - first:
+      213: 2864047791730660442
+    second: TussockSedge_0_unlit_16
+  - first:
+      213: -8659436827218874182
+    second: TussockSedge_0_unlit_17
+  - first:
+      213: 745941886478104559
+    second: TussockSedge_0_unlit_18
+  - first:
+      213: 5386111069458742037
+    second: TussockSedge_0_unlit_19
+  - first:
+      213: 215292301572521212
+    second: TussockSedge_0_unlit_20
+  - first:
+      213: 2524690826214899625
+    second: TussockSedge_0_unlit_21
+  - first:
+      213: 1215317887712448668
+    second: TussockSedge_0_unlit_22
+  - first:
+      213: 8112665124213959549
+    second: TussockSedge_0_unlit_23
+  - first:
+      213: 9099738093326979393
+    second: TussockSedge_0_unlit_24
+  - first:
+      213: -2530914507608815602
+    second: TussockSedge_0_unlit_25
+  - first:
+      213: -3427880068058630287
+    second: TussockSedge_0_unlit_26
+  - first:
+      213: -8156144339416559976
+    second: TussockSedge_0_unlit_27
+  - first:
+      213: 1177258540454726522
+    second: TussockSedge_0_unlit_28
+  - first:
+      213: 5979926295058119793
+    second: TussockSedge_0_unlit_29
+  - first:
+      213: 2267343716987149681
+    second: TussockSedge_0_unlit_30
+  - first:
+      213: 6039702804296172518
+    second: TussockSedge_0_unlit_31
+  - first:
+      213: 25324630798652950
+    second: TussockSedge_0_unlit_32
+  - first:
+      213: -1757819197352465874
+    second: TussockSedge_0_unlit_33
+  - first:
+      213: 915938085111786370
+    second: TussockSedge_0_unlit_34
+  - first:
+      213: 4750613001685016252
+    second: TussockSedge_0_unlit_35
+  - first:
+      213: -5842835907699807310
+    second: TussockSedge_0_unlit_36
+  - first:
+      213: 846897377485975648
+    second: TussockSedge_0_unlit_37
+  - first:
+      213: 7897202671986430648
+    second: TussockSedge_0_unlit_38
+  - first:
+      213: -956149792357115860
+    second: TussockSedge_0_unlit_39
+  - first:
+      213: -8061969236128106140
+    second: TussockSedge_0_unlit_40
+  - first:
+      213: 4744745035899583506
+    second: TussockSedge_0_unlit_41
+  - first:
+      213: 5245996608581593650
+    second: TussockSedge_0_unlit_42
+  - first:
+      213: -2513603180229074808
+    second: TussockSedge_0_unlit_43
+  - first:
+      213: -6113219824010543615
+    second: TussockSedge_0_unlit_44
+  - first:
+      213: -5383493820707127044
+    second: TussockSedge_0_unlit_45
+  - first:
+      213: 339822831286916495
+    second: TussockSedge_0_unlit_46
+  - first:
+      213: 3131249989926033401
+    second: TussockSedge_0_unlit_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 130
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea145324aa3433030800000000000000
+      internalID: 3473194136167072174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 130
+        width: 40
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2a00400586830850800000000000000
+      internalID: 6342060606060759599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 129
+        width: 39
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c5cc5387ea98a010800000000000000
+      internalID: 1200379619826255299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 129
+        width: 39
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad0f98e2d61be6b70800000000000000
+      internalID: 8894241396593651930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 131
+        width: 40
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a44ef0044bb5f7750800000000000000
+      internalID: 6304858833069007946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 131
+        width: 40
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0732cd71049e60790800000000000000
+      internalID: -7564102062634687632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 132
+        width: 40
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da953ecd95a34df80800000000000000
+      internalID: -8082771273590810195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 645
+        y: 132
+        width: 40
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d393c036a5ae87e0800000000000000
+      internalID: -1761288271054007337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 730
+        y: 133
+        width: 39
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c1554e7500a4a6e0800000000000000
+      internalID: -1827159603351825980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 79
+        width: 39
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ace280dcfc4a66e0800000000000000
+      internalID: -1843576448741086043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 82
+        width: 40
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3054504b8499575b0800000000000000
+      internalID: -5371218443032509181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 84
+        width: 40
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de110c4dd3ad2d850800000000000000
+      internalID: 6400417979544113645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 84
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2e643cf1b3099450800000000000000
+      internalID: 6095907633598066223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 84
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79f0979c21c2a5d10800000000000000
+      internalID: 2115051434205056919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 85
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db497137af8ddf5a0800000000000000
+      internalID: -6485789318159297347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 85
+        width: 35
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa78c679e003e5210800000000000000
+      internalID: 1323548179721652138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 548
+        y: 85
+        width: 34
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5419ddca442fb720800000000000000
+      internalID: 2864047791730660442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 621
+        y: 85
+        width: 34
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab0fea6d51083d780800000000000000
+      internalID: -8659436827218874182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 85
+        width: 34
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe7bc9e813e1a5a00800000000000000
+      internalID: 745941886478104559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 766
+        y: 85
+        width: 34
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51b33e71b7f4fba40800000000000000
+      internalID: 5386111069458742037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 37
+        width: 38
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfc3b16253fdcf200800000000000000
+      internalID: 215292301572521212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 39
+        width: 39
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9aff9381ee0890320800000000000000
+      internalID: 2524690826214899625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 39
+        width: 39
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c90574a0e2dadd010800000000000000
+      internalID: 1215317887712448668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 41
+        width: 38
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7b297e92f9f59070800000000000000
+      internalID: 8112665124213959549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 41
+        width: 34
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14158d95593c84e70800000000000000
+      internalID: 9099738093326979393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 42
+        width: 34
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0808192aa260ecd0800000000000000
+      internalID: -2530914507608815602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 42
+        width: 34
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17739b26d39bd60d0800000000000000
+      internalID: -3427880068058630287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 46
+        width: 34
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89e4348bfed8fce80800000000000000
+      internalID: -8156144339416559976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 46
+        width: 31
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7b4998b766765010800000000000000
+      internalID: 1177258540454726522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 47
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17cf4f74847fcf250800000000000000
+      internalID: 5979926295058119793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 47
+        width: 29
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17d9bb20919377f10800000000000000
+      internalID: 2267343716987149681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 47
+        width: 29
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e3010763b551d350800000000000000
+      internalID: 6039702804296172518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 762
+        y: 47
+        width: 29
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61652d61e98f95000800000000000000
+      internalID: 25324630798652950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 5
+        width: 34
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2aa17ad0c8fa97e0800000000000000
+      internalID: -1757819197352465874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 5
+        width: 34
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28be657e5d016bc00800000000000000
+      internalID: 915938085111786370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 6
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbe99ceea519de140800000000000000
+      internalID: 4750613001685016252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 6
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bbe7a8d2b31aeea0800000000000000
+      internalID: -5842835907699807310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 6
+        width: 29
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 060f2428da8c0cb00800000000000000
+      internalID: 846897377485975648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 6
+        width: 29
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b2540f2dff789d60800000000000000
+      internalID: 7897202671986430648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 6
+        width: 33
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c289d7a64d21bb2f0800000000000000
+      internalID: -956149792357115860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 8
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 469f472a1b12e1090800000000000000
+      internalID: -8061969236128106140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 9
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21cb79ea878b8d140800000000000000
+      internalID: 4744745035899583506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 11
+        width: 26
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23ae86bfe168dc840800000000000000
+      internalID: 5245996608581593650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 11
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8806728a933ed1dd0800000000000000
+      internalID: -2513603180229074808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 13
+        width: 25
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10eb9f395fa792ba0800000000000000
+      internalID: -6113219824010543615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 13
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf0cd3e94ecf945b0800000000000000
+      internalID: -5383493820707127044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 13
+        width: 23
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f859c69801b47b400800000000000000
+      internalID: 339822831286916495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TussockSedge_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 751
+        y: 13
+        width: 25
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f79c78964f647b20800000000000000
+      internalID: 3131249989926033401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TussockSedge_0_unlit_0: 3473194136167072174
+      TussockSedge_0_unlit_1: 6342060606060759599
+      TussockSedge_0_unlit_10: -5371218443032509181
+      TussockSedge_0_unlit_11: 6400417979544113645
+      TussockSedge_0_unlit_12: 6095907633598066223
+      TussockSedge_0_unlit_13: 2115051434205056919
+      TussockSedge_0_unlit_14: -6485789318159297347
+      TussockSedge_0_unlit_15: 1323548179721652138
+      TussockSedge_0_unlit_16: 2864047791730660442
+      TussockSedge_0_unlit_17: -8659436827218874182
+      TussockSedge_0_unlit_18: 745941886478104559
+      TussockSedge_0_unlit_19: 5386111069458742037
+      TussockSedge_0_unlit_2: 1200379619826255299
+      TussockSedge_0_unlit_20: 215292301572521212
+      TussockSedge_0_unlit_21: 2524690826214899625
+      TussockSedge_0_unlit_22: 1215317887712448668
+      TussockSedge_0_unlit_23: 8112665124213959549
+      TussockSedge_0_unlit_24: 9099738093326979393
+      TussockSedge_0_unlit_25: -2530914507608815602
+      TussockSedge_0_unlit_26: -3427880068058630287
+      TussockSedge_0_unlit_27: -8156144339416559976
+      TussockSedge_0_unlit_28: 1177258540454726522
+      TussockSedge_0_unlit_29: 5979926295058119793
+      TussockSedge_0_unlit_3: 8894241396593651930
+      TussockSedge_0_unlit_30: 2267343716987149681
+      TussockSedge_0_unlit_31: 6039702804296172518
+      TussockSedge_0_unlit_32: 25324630798652950
+      TussockSedge_0_unlit_33: -1757819197352465874
+      TussockSedge_0_unlit_34: 915938085111786370
+      TussockSedge_0_unlit_35: 4750613001685016252
+      TussockSedge_0_unlit_36: -5842835907699807310
+      TussockSedge_0_unlit_37: 846897377485975648
+      TussockSedge_0_unlit_38: 7897202671986430648
+      TussockSedge_0_unlit_39: -956149792357115860
+      TussockSedge_0_unlit_4: 6304858833069007946
+      TussockSedge_0_unlit_40: -8061969236128106140
+      TussockSedge_0_unlit_41: 4744745035899583506
+      TussockSedge_0_unlit_42: 5245996608581593650
+      TussockSedge_0_unlit_43: -2513603180229074808
+      TussockSedge_0_unlit_44: -6113219824010543615
+      TussockSedge_0_unlit_45: -5383493820707127044
+      TussockSedge_0_unlit_46: 339822831286916495
+      TussockSedge_0_unlit_47: 3131249989926033401
+      TussockSedge_0_unlit_5: -7564102062634687632
+      TussockSedge_0_unlit_6: -8082771273590810195
+      TussockSedge_0_unlit_7: -1761288271054007337
+      TussockSedge_0_unlit_8: -1827159603351825980
+      TussockSedge_0_unlit_9: -1843576448741086043
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

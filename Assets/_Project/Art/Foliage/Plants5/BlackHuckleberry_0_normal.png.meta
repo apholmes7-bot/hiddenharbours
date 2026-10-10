@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 9bfaf06b652127f4aa1fa834fac48630
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4493005094643807026
+    second: BlackHuckleberry_0_normal_0
+  - first:
+      213: -6376421937754578450
+    second: BlackHuckleberry_0_normal_1
+  - first:
+      213: -6085603701477348454
+    second: BlackHuckleberry_0_normal_2
+  - first:
+      213: -4259118333225448932
+    second: BlackHuckleberry_0_normal_3
+  - first:
+      213: 661796688284696403
+    second: BlackHuckleberry_0_normal_4
+  - first:
+      213: -8779775467534586283
+    second: BlackHuckleberry_0_normal_5
+  - first:
+      213: -5596304731776193294
+    second: BlackHuckleberry_0_normal_6
+  - first:
+      213: 3490252610414883575
+    second: BlackHuckleberry_0_normal_7
+  - first:
+      213: -5619465239634060964
+    second: BlackHuckleberry_0_normal_8
+  - first:
+      213: -4421318614971168514
+    second: BlackHuckleberry_0_normal_9
+  - first:
+      213: -1911870943649708429
+    second: BlackHuckleberry_0_normal_10
+  - first:
+      213: 787422303246687104
+    second: BlackHuckleberry_0_normal_11
+  - first:
+      213: 5083218313530667117
+    second: BlackHuckleberry_0_normal_12
+  - first:
+      213: 4745310515451227854
+    second: BlackHuckleberry_0_normal_13
+  - first:
+      213: -5404497240296814024
+    second: BlackHuckleberry_0_normal_14
+  - first:
+      213: -4122089613099311499
+    second: BlackHuckleberry_0_normal_15
+  - first:
+      213: 942729730533002278
+    second: BlackHuckleberry_0_normal_16
+  - first:
+      213: -4105486492282590917
+    second: BlackHuckleberry_0_normal_17
+  - first:
+      213: 7619062169499600770
+    second: BlackHuckleberry_0_normal_18
+  - first:
+      213: -1810731003866992289
+    second: BlackHuckleberry_0_normal_19
+  - first:
+      213: 587333735462337962
+    second: BlackHuckleberry_0_normal_20
+  - first:
+      213: -5982512459362642658
+    second: BlackHuckleberry_0_normal_21
+  - first:
+      213: -8270469847534171359
+    second: BlackHuckleberry_0_normal_22
+  - first:
+      213: 501239322874036766
+    second: BlackHuckleberry_0_normal_23
+  - first:
+      213: -8112438146214656774
+    second: BlackHuckleberry_0_normal_24
+  - first:
+      213: 7277600627920815245
+    second: BlackHuckleberry_0_normal_25
+  - first:
+      213: -5536061924785393415
+    second: BlackHuckleberry_0_normal_26
+  - first:
+      213: -1853304692301860434
+    second: BlackHuckleberry_0_normal_27
+  - first:
+      213: 6448372795957489725
+    second: BlackHuckleberry_0_normal_28
+  - first:
+      213: -7165471335337892840
+    second: BlackHuckleberry_0_normal_29
+  - first:
+      213: 5965664731567804763
+    second: BlackHuckleberry_0_normal_30
+  - first:
+      213: 6147109475064038158
+    second: BlackHuckleberry_0_normal_31
+  - first:
+      213: 6636266324136258017
+    second: BlackHuckleberry_0_normal_32
+  - first:
+      213: -466710464778164939
+    second: BlackHuckleberry_0_normal_33
+  - first:
+      213: 913106917117106804
+    second: BlackHuckleberry_0_normal_34
+  - first:
+      213: 9184343060146727679
+    second: BlackHuckleberry_0_normal_35
+  - first:
+      213: -272614437907458791
+    second: BlackHuckleberry_0_normal_36
+  - first:
+      213: -6139173126621785141
+    second: BlackHuckleberry_0_normal_37
+  - first:
+      213: -3936225186510934599
+    second: BlackHuckleberry_0_normal_38
+  - first:
+      213: -6853828174691024635
+    second: BlackHuckleberry_0_normal_39
+  - first:
+      213: -1072394291343683626
+    second: BlackHuckleberry_0_normal_40
+  - first:
+      213: -7216767146601164466
+    second: BlackHuckleberry_0_normal_41
+  - first:
+      213: 7716850136321938644
+    second: BlackHuckleberry_0_normal_42
+  - first:
+      213: 4940895103118209142
+    second: BlackHuckleberry_0_normal_43
+  - first:
+      213: 4034614468446286199
+    second: BlackHuckleberry_0_normal_44
+  - first:
+      213: 948175547199988576
+    second: BlackHuckleberry_0_normal_45
+  - first:
+      213: -501358614519246528
+    second: BlackHuckleberry_0_normal_46
+  - first:
+      213: -3750858639875591423
+    second: BlackHuckleberry_0_normal_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 103
+        width: 33
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecc4cbfdba3a5a1c0800000000000000
+      internalID: -4493005094643807026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 103
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee1612608066287a0800000000000000
+      internalID: -6376421937754578450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 103
+        width: 31
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9be3a92da79b8ba0800000000000000
+      internalID: -6085603701477348454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 104
+        width: 25
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1a4eb3117294e4c0800000000000000
+      internalID: -4259118333225448932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 104
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35f3db6e49c2f2900800000000000000
+      internalID: 661796688284696403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 104
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55e69e1cab8f72680800000000000000
+      internalID: -8779775467534586283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 104
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fc64a73f7ee552b0800000000000000
+      internalID: -5596304731776193294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 104
+        width: 29
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f2b82cc14edf6030800000000000000
+      internalID: 3490252610414883575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 106
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c59d4f34326a302b0800000000000000
+      internalID: -5619465239634060964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 106
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef842d3152254a2c0800000000000000
+      internalID: -4421318614971168514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 64
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3764e5b918ba775e0800000000000000
+      internalID: -1911870943649708429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 64
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08b1d31b96c7dea00800000000000000
+      internalID: 787422303246687104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 65
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6071c5cf183b8640800000000000000
+      internalID: 5083218313530667117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 66
+        width: 25
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ece6566a5cabad140800000000000000
+      internalID: 4745310515451227854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 66
+        width: 25
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83a878ae46e5ff4b0800000000000000
+      internalID: -5404497240296814024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 66
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57e53ee26556bc6c0800000000000000
+      internalID: -4122089613099311499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 70
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62c8e93f1bf351d00800000000000000
+      internalID: 942729730533002278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 70
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b39e45d79c16607c0800000000000000
+      internalID: -4105486492282590917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 70
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28704a6fca85cb960800000000000000
+      internalID: 7619062169499600770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 70
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f51b8b2eebdfed6e0800000000000000
+      internalID: -1810731003866992289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 70
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aadf5daabe0a62800800000000000000
+      internalID: 587333735462337962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 32
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e15575b6d98d9fca0800000000000000
+      internalID: -5982512459362642658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 32
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12b85241e73693d80800000000000000
+      internalID: -8270469847534171359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 31
+        width: 22
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e124d5b2282c4f600800000000000000
+      internalID: 501239322874036766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 32
+        width: 25
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af40c80dc74da6f80800000000000000
+      internalID: -8112438146214656774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 33
+        width: 22
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d844164763b3ff460800000000000000
+      internalID: 7277600627920815245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 34
+        width: 23
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f0f99eb205fb23b0800000000000000
+      internalID: -5536061924785393415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 34
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea178ca933db746e0800000000000000
+      internalID: -1853304692301860434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 34
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d30b65a94e83d7950800000000000000
+      internalID: 6448372795957489725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 34
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 814e0f8e8c12f8c90800000000000000
+      internalID: -7165471335337892840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 34
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b51dc26477c4ac250800000000000000
+      internalID: 5965664731567804763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 34
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0341a0bf7bee4550800000000000000
+      internalID: 6147109475064038158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 39
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e96705bf01c81c50800000000000000
+      internalID: 6636266324136258017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 38
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 535a0f51e49e589f0800000000000000
+      internalID: -466710464778164939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 6
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47a97bc37e10cac00800000000000000
+      internalID: 913106917117106804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 5
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffaae5b3a57557f70800000000000000
+      internalID: 9184343060146727679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 6
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91512e3fc9a773cf0800000000000000
+      internalID: -272614437907458791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 6
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc3951d61964dcaa0800000000000000
+      internalID: -6139173126621785141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 6
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bde1124c08bf59c0800000000000000
+      internalID: -3936225186510934599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 6
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5014af7969f42e0a0800000000000000
+      internalID: -6853828174691024635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 6
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6df8d45e2171e11f0800000000000000
+      internalID: -1072394291343683626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 5
+        width: 19
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e41d0282484e8db90800000000000000
+      internalID: -7216767146601164466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 6
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d4d4683052c71b60800000000000000
+      internalID: 7716850136321938644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 7
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 670f3d51be5919440800000000000000
+      internalID: 4940895103118209142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 7
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77174659b74ddf730800000000000000
+      internalID: 4034614468446286199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 7
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0632193f2a8982d00800000000000000
+      internalID: 948175547199988576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 8
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0419f741ff0da09f0800000000000000
+      internalID: -501358614519246528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackHuckleberry_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 8
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 103b28f90f542fbc0800000000000000
+      internalID: -3750858639875591423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BlackHuckleberry_0_normal_0: -4493005094643807026
+      BlackHuckleberry_0_normal_1: -6376421937754578450
+      BlackHuckleberry_0_normal_10: -1911870943649708429
+      BlackHuckleberry_0_normal_11: 787422303246687104
+      BlackHuckleberry_0_normal_12: 5083218313530667117
+      BlackHuckleberry_0_normal_13: 4745310515451227854
+      BlackHuckleberry_0_normal_14: -5404497240296814024
+      BlackHuckleberry_0_normal_15: -4122089613099311499
+      BlackHuckleberry_0_normal_16: 942729730533002278
+      BlackHuckleberry_0_normal_17: -4105486492282590917
+      BlackHuckleberry_0_normal_18: 7619062169499600770
+      BlackHuckleberry_0_normal_19: -1810731003866992289
+      BlackHuckleberry_0_normal_2: -6085603701477348454
+      BlackHuckleberry_0_normal_20: 587333735462337962
+      BlackHuckleberry_0_normal_21: -5982512459362642658
+      BlackHuckleberry_0_normal_22: -8270469847534171359
+      BlackHuckleberry_0_normal_23: 501239322874036766
+      BlackHuckleberry_0_normal_24: -8112438146214656774
+      BlackHuckleberry_0_normal_25: 7277600627920815245
+      BlackHuckleberry_0_normal_26: -5536061924785393415
+      BlackHuckleberry_0_normal_27: -1853304692301860434
+      BlackHuckleberry_0_normal_28: 6448372795957489725
+      BlackHuckleberry_0_normal_29: -7165471335337892840
+      BlackHuckleberry_0_normal_3: -4259118333225448932
+      BlackHuckleberry_0_normal_30: 5965664731567804763
+      BlackHuckleberry_0_normal_31: 6147109475064038158
+      BlackHuckleberry_0_normal_32: 6636266324136258017
+      BlackHuckleberry_0_normal_33: -466710464778164939
+      BlackHuckleberry_0_normal_34: 913106917117106804
+      BlackHuckleberry_0_normal_35: 9184343060146727679
+      BlackHuckleberry_0_normal_36: -272614437907458791
+      BlackHuckleberry_0_normal_37: -6139173126621785141
+      BlackHuckleberry_0_normal_38: -3936225186510934599
+      BlackHuckleberry_0_normal_39: -6853828174691024635
+      BlackHuckleberry_0_normal_4: 661796688284696403
+      BlackHuckleberry_0_normal_40: -1072394291343683626
+      BlackHuckleberry_0_normal_41: -7216767146601164466
+      BlackHuckleberry_0_normal_42: 7716850136321938644
+      BlackHuckleberry_0_normal_43: 4940895103118209142
+      BlackHuckleberry_0_normal_44: 4034614468446286199
+      BlackHuckleberry_0_normal_45: 948175547199988576
+      BlackHuckleberry_0_normal_46: -501358614519246528
+      BlackHuckleberry_0_normal_47: -3750858639875591423
+      BlackHuckleberry_0_normal_5: -8779775467534586283
+      BlackHuckleberry_0_normal_6: -5596304731776193294
+      BlackHuckleberry_0_normal_7: 3490252610414883575
+      BlackHuckleberry_0_normal_8: -5619465239634060964
+      BlackHuckleberry_0_normal_9: -4421318614971168514
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

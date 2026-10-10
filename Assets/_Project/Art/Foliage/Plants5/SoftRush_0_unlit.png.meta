@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 94f63957e38c27b45b38268c76fe9f60
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6455860673645376647
+    second: SoftRush_0_unlit_0
+  - first:
+      213: 6930817688467044957
+    second: SoftRush_0_unlit_1
+  - first:
+      213: 6760261039284679547
+    second: SoftRush_0_unlit_2
+  - first:
+      213: -1695558136189895348
+    second: SoftRush_0_unlit_3
+  - first:
+      213: -8512177933266301687
+    second: SoftRush_0_unlit_4
+  - first:
+      213: -1699209593652354541
+    second: SoftRush_0_unlit_5
+  - first:
+      213: -1529306795241287621
+    second: SoftRush_0_unlit_6
+  - first:
+      213: 5773666478767081550
+    second: SoftRush_0_unlit_7
+  - first:
+      213: -1995830608992455290
+    second: SoftRush_0_unlit_8
+  - first:
+      213: 4838375201784416042
+    second: SoftRush_0_unlit_9
+  - first:
+      213: 8588861490008666589
+    second: SoftRush_0_unlit_10
+  - first:
+      213: 4210046906267628633
+    second: SoftRush_0_unlit_11
+  - first:
+      213: -5883481088838955029
+    second: SoftRush_0_unlit_12
+  - first:
+      213: -5633518273126159078
+    second: SoftRush_0_unlit_13
+  - first:
+      213: 622432195726275747
+    second: SoftRush_0_unlit_14
+  - first:
+      213: -6849203564690589187
+    second: SoftRush_0_unlit_15
+  - first:
+      213: -6282370525829057671
+    second: SoftRush_0_unlit_16
+  - first:
+      213: -7106559014602293255
+    second: SoftRush_0_unlit_17
+  - first:
+      213: -648447174702763443
+    second: SoftRush_0_unlit_18
+  - first:
+      213: 7226046789029993028
+    second: SoftRush_0_unlit_19
+  - first:
+      213: -3265307951728339940
+    second: SoftRush_0_unlit_20
+  - first:
+      213: -7492787273707415444
+    second: SoftRush_0_unlit_21
+  - first:
+      213: -4756887224034483347
+    second: SoftRush_0_unlit_22
+  - first:
+      213: 6544033234024605529
+    second: SoftRush_0_unlit_23
+  - first:
+      213: -1992007851683222003
+    second: SoftRush_0_unlit_24
+  - first:
+      213: -6224923645892536844
+    second: SoftRush_0_unlit_25
+  - first:
+      213: 868357570634395124
+    second: SoftRush_0_unlit_26
+  - first:
+      213: 629301161525663950
+    second: SoftRush_0_unlit_27
+  - first:
+      213: 172851277850099841
+    second: SoftRush_0_unlit_28
+  - first:
+      213: -4108454776201611982
+    second: SoftRush_0_unlit_29
+  - first:
+      213: 820243803827786181
+    second: SoftRush_0_unlit_30
+  - first:
+      213: -6417341862647066831
+    second: SoftRush_0_unlit_31
+  - first:
+      213: -408177838370071155
+    second: SoftRush_0_unlit_32
+  - first:
+      213: 8622598145510046093
+    second: SoftRush_0_unlit_33
+  - first:
+      213: -7320518022406046814
+    second: SoftRush_0_unlit_34
+  - first:
+      213: -4647811077760669385
+    second: SoftRush_0_unlit_35
+  - first:
+      213: 4151061519177409750
+    second: SoftRush_0_unlit_36
+  - first:
+      213: 721737988029774456
+    second: SoftRush_0_unlit_37
+  - first:
+      213: -3207531948357031937
+    second: SoftRush_0_unlit_38
+  - first:
+      213: 1105885511294216985
+    second: SoftRush_0_unlit_39
+  - first:
+      213: -2726842530320678904
+    second: SoftRush_0_unlit_40
+  - first:
+      213: 6353072792742692398
+    second: SoftRush_0_unlit_41
+  - first:
+      213: 8522245528255534667
+    second: SoftRush_0_unlit_42
+  - first:
+      213: -1947666079488049021
+    second: SoftRush_0_unlit_43
+  - first:
+      213: -249033343893989334
+    second: SoftRush_0_unlit_44
+  - first:
+      213: 4881539477522218601
+    second: SoftRush_0_unlit_45
+  - first:
+      213: 3362920595824200006
+    second: SoftRush_0_unlit_46
+  - first:
+      213: -4271598640794342744
+    second: SoftRush_0_unlit_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 112
+        width: 32
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 784fb0cf313d79950800000000000000
+      internalID: 6455860673645376647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 112
+        width: 32
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5a721477f53f2060800000000000000
+      internalID: 6930817688467044957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 113
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b73f97b099541dd50800000000000000
+      internalID: 6760261039284679547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 113
+        width: 32
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4db06ccbda2878e0800000000000000
+      internalID: -1695558136189895348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 114
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90d4eb6e44baed980800000000000000
+      internalID: -8512177933266301687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 114
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3126a6b90e13b68e0800000000000000
+      internalID: -1699209593652354541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 114
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b305d05829fc6cae0800000000000000
+      internalID: -1529306795241287621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 114
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e480e7e721f202050800000000000000
+      internalID: 5773666478767081550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 654
+        y: 120
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 685372fa2a26d44e0800000000000000
+      internalID: -1995830608992455290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 72
+        width: 33
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a274b687c9c552340800000000000000
+      internalID: 4838375201784416042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 73
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd1bff8f404c13770800000000000000
+      internalID: 8588861490008666589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 73
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95470dffa571d6a30800000000000000
+      internalID: 4210046906267628633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 73
+        width: 33
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bef86092f1da95ea0800000000000000
+      internalID: -5883481088838955029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 72
+        width: 28
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1da4ae6af8b1d1b0800000000000000
+      internalID: -5633518273126159078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 72
+        width: 28
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a4f703c8c253a800800000000000000
+      internalID: 622432195726275747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 73
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df9374485adb2f0a0800000000000000
+      internalID: -6849203564690589187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 73
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 973339cca4980d8a0800000000000000
+      internalID: -6282370525829057671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 74
+        width: 28
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ffb7477a3e606d90800000000000000
+      internalID: -7106559014602293255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 73
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d427c30fab04007f0800000000000000
+      internalID: -648447174702763443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 74
+        width: 28
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44a1c76f443184460800000000000000
+      internalID: 7226046789029993028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 34
+        width: 30
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1459fed7bb4fa2d0800000000000000
+      internalID: -3265307951728339940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 35
+        width: 29
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c681a1d4ca5440890800000000000000
+      internalID: -7492787273707415444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 36
+        width: 30
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d63a4d6d5442cfdb0800000000000000
+      internalID: -4756887224034483347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 38
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9572368fd8311da50800000000000000
+      internalID: 6544033234024605529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 39
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0ee1aab967fa54e0800000000000000
+      internalID: -1992007851683222003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 41
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f555a4dce0ac99a0800000000000000
+      internalID: -6224923645892536844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 40
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fd2fa71c960d0c00800000000000000
+      internalID: 868357570634395124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 42
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec85a7d721abbb800800000000000000
+      internalID: 629301161525663950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 491
+        y: 43
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1804a374257166200800000000000000
+      internalID: 172851277850099841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 43
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 235feb80626dbf6c0800000000000000
+      internalID: -4108454776201611982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 590
+        y: 41
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c1de5cc467126b00800000000000000
+      internalID: 820243803827786181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 42
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13f8da2939501f6a0800000000000000
+      internalID: -6417341862647066831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 44
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8dd3ca2b6cd55af0800000000000000
+      internalID: -408177838370071155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 7
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d897110345f99a770800000000000000
+      internalID: 8622598145510046093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 6
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ab74a6f4ab486a90800000000000000
+      internalID: -7320518022406046814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 6
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73923fe2378af7fb0800000000000000
+      internalID: -4647811077760669385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 6
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d4ec5b55788b9930800000000000000
+      internalID: 4151061519177409750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 6
+        width: 22
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87a7b6d40e0240a00800000000000000
+      internalID: 721737988029774456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 5
+        width: 25
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff7667cefae8c73d0800000000000000
+      internalID: -3207531948357031937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 311
+        y: 8
+        width: 25
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91b61f66305e85f00800000000000000
+      internalID: 1105885511294216985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 9
+        width: 21
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8000fc58a2f482ad0800000000000000
+      internalID: -2726842530320678904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 11
+        width: 24
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2680a38b06aa2850800000000000000
+      internalID: 6353072792742692398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 11
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b461558b729154670800000000000000
+      internalID: 8522245528255534667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 11
+        width: 22
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3808907150088f4e0800000000000000
+      internalID: -1947666079488049021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 11
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2898ff3e714b8cf0800000000000000
+      internalID: -249033343893989334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 11
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96ef1c29a46beb340800000000000000
+      internalID: 4881539477522218601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 13
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64942f1e67e7bae20800000000000000
+      internalID: 3362920595824200006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftRush_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 12
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aa69680bab38b4c0800000000000000
+      internalID: -4271598640794342744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SoftRush_0_unlit_0: 6455860673645376647
+      SoftRush_0_unlit_1: 6930817688467044957
+      SoftRush_0_unlit_10: 8588861490008666589
+      SoftRush_0_unlit_11: 4210046906267628633
+      SoftRush_0_unlit_12: -5883481088838955029
+      SoftRush_0_unlit_13: -5633518273126159078
+      SoftRush_0_unlit_14: 622432195726275747
+      SoftRush_0_unlit_15: -6849203564690589187
+      SoftRush_0_unlit_16: -6282370525829057671
+      SoftRush_0_unlit_17: -7106559014602293255
+      SoftRush_0_unlit_18: -648447174702763443
+      SoftRush_0_unlit_19: 7226046789029993028
+      SoftRush_0_unlit_2: 6760261039284679547
+      SoftRush_0_unlit_20: -3265307951728339940
+      SoftRush_0_unlit_21: -7492787273707415444
+      SoftRush_0_unlit_22: -4756887224034483347
+      SoftRush_0_unlit_23: 6544033234024605529
+      SoftRush_0_unlit_24: -1992007851683222003
+      SoftRush_0_unlit_25: -6224923645892536844
+      SoftRush_0_unlit_26: 868357570634395124
+      SoftRush_0_unlit_27: 629301161525663950
+      SoftRush_0_unlit_28: 172851277850099841
+      SoftRush_0_unlit_29: -4108454776201611982
+      SoftRush_0_unlit_3: -1695558136189895348
+      SoftRush_0_unlit_30: 820243803827786181
+      SoftRush_0_unlit_31: -6417341862647066831
+      SoftRush_0_unlit_32: -408177838370071155
+      SoftRush_0_unlit_33: 8622598145510046093
+      SoftRush_0_unlit_34: -7320518022406046814
+      SoftRush_0_unlit_35: -4647811077760669385
+      SoftRush_0_unlit_36: 4151061519177409750
+      SoftRush_0_unlit_37: 721737988029774456
+      SoftRush_0_unlit_38: -3207531948357031937
+      SoftRush_0_unlit_39: 1105885511294216985
+      SoftRush_0_unlit_4: -8512177933266301687
+      SoftRush_0_unlit_40: -2726842530320678904
+      SoftRush_0_unlit_41: 6353072792742692398
+      SoftRush_0_unlit_42: 8522245528255534667
+      SoftRush_0_unlit_43: -1947666079488049021
+      SoftRush_0_unlit_44: -249033343893989334
+      SoftRush_0_unlit_45: 4881539477522218601
+      SoftRush_0_unlit_46: 3362920595824200006
+      SoftRush_0_unlit_47: -4271598640794342744
+      SoftRush_0_unlit_5: -1699209593652354541
+      SoftRush_0_unlit_6: -1529306795241287621
+      SoftRush_0_unlit_7: 5773666478767081550
+      SoftRush_0_unlit_8: -1995830608992455290
+      SoftRush_0_unlit_9: 4838375201784416042
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,1456 @@
+fileFormatVersion: 2
+guid: 8f240c6345acf274a8ef579cbb7500a5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3576750000696680990
+    second: Buttercup_0_normal_0
+  - first:
+      213: -7887113131311089890
+    second: Buttercup_0_normal_1
+  - first:
+      213: -5575000740018884209
+    second: Buttercup_0_normal_2
+  - first:
+      213: -8479040924013322899
+    second: Buttercup_0_normal_3
+  - first:
+      213: -8938659870633873310
+    second: Buttercup_0_normal_4
+  - first:
+      213: 3440310860507389992
+    second: Buttercup_0_normal_5
+  - first:
+      213: -7155009352055376086
+    second: Buttercup_0_normal_6
+  - first:
+      213: -1894261186991402434
+    second: Buttercup_0_normal_7
+  - first:
+      213: 5073465181158239027
+    second: Buttercup_0_normal_8
+  - first:
+      213: -2188327664749986712
+    second: Buttercup_0_normal_9
+  - first:
+      213: 2828999689501542184
+    second: Buttercup_0_normal_10
+  - first:
+      213: -632741386205306765
+    second: Buttercup_0_normal_11
+  - first:
+      213: 4888348407539097947
+    second: Buttercup_0_normal_12
+  - first:
+      213: 6314243657914130202
+    second: Buttercup_0_normal_13
+  - first:
+      213: -4997961429630339387
+    second: Buttercup_0_normal_14
+  - first:
+      213: 5198532326535249101
+    second: Buttercup_0_normal_15
+  - first:
+      213: 4676574209980800635
+    second: Buttercup_0_normal_16
+  - first:
+      213: 7088498401858998637
+    second: Buttercup_0_normal_17
+  - first:
+      213: 8827169157876449404
+    second: Buttercup_0_normal_18
+  - first:
+      213: 341755765467417375
+    second: Buttercup_0_normal_19
+  - first:
+      213: -7677767710859462798
+    second: Buttercup_0_normal_20
+  - first:
+      213: 2085233385499658490
+    second: Buttercup_0_normal_21
+  - first:
+      213: -6526853064266566657
+    second: Buttercup_0_normal_22
+  - first:
+      213: -5772072978244089642
+    second: Buttercup_0_normal_23
+  - first:
+      213: -8225207796122706040
+    second: Buttercup_0_normal_24
+  - first:
+      213: -15353228127285852
+    second: Buttercup_0_normal_25
+  - first:
+      213: -7705746366671618143
+    second: Buttercup_0_normal_26
+  - first:
+      213: -1086971819315194190
+    second: Buttercup_0_normal_27
+  - first:
+      213: 1322499405663771772
+    second: Buttercup_0_normal_28
+  - first:
+      213: 2600564097006584454
+    second: Buttercup_0_normal_29
+  - first:
+      213: -7401529354578821297
+    second: Buttercup_0_normal_30
+  - first:
+      213: 8304403210268495735
+    second: Buttercup_0_normal_31
+  - first:
+      213: 5707642541864114946
+    second: Buttercup_0_normal_32
+  - first:
+      213: 811967380436605220
+    second: Buttercup_0_normal_33
+  - first:
+      213: -3217901417266822802
+    second: Buttercup_0_normal_34
+  - first:
+      213: -1022909915309417628
+    second: Buttercup_0_normal_35
+  - first:
+      213: 1051665193086143865
+    second: Buttercup_0_normal_36
+  - first:
+      213: 4878031181250422601
+    second: Buttercup_0_normal_37
+  - first:
+      213: 3625194826865306610
+    second: Buttercup_0_normal_38
+  - first:
+      213: 3104591252603249860
+    second: Buttercup_0_normal_39
+  - first:
+      213: 4961813350595870982
+    second: Buttercup_0_normal_40
+  - first:
+      213: -5237849250798130744
+    second: Buttercup_0_normal_41
+  - first:
+      213: 9124459143710827733
+    second: Buttercup_0_normal_42
+  - first:
+      213: -1634274008093012792
+    second: Buttercup_0_normal_43
+  - first:
+      213: 8416861825474578942
+    second: Buttercup_0_normal_44
+  - first:
+      213: -6813798124981754622
+    second: Buttercup_0_normal_45
+  - first:
+      213: -6994576790365988166
+    second: Buttercup_0_normal_46
+  - first:
+      213: -1593631978922277562
+    second: Buttercup_0_normal_47
+  - first:
+      213: -7231118080325438739
+    second: Buttercup_0_normal_48
+  - first:
+      213: 2113964234339239006
+    second: Buttercup_0_normal_49
+  - first:
+      213: 2380999939038527379
+    second: Buttercup_0_normal_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Buttercup_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 81
+        width: 33
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ed981623d4dc5ec0800000000000000
+      internalID: -3576750000696680990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 81
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1732e015685b8290800000000000000
+      internalID: -7887113131311089890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 81
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8172a45d5e91a2b0800000000000000
+      internalID: -5575000740018884209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 82
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6d9f281435645a80800000000000000
+      internalID: -8479040924013322899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 83
+        width: 27
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26034dae43083f380800000000000000
+      internalID: -8938659870633873310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 84
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 820267500807ebf20800000000000000
+      internalID: 3440310860507389992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 84
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a27342637ec44bc90800000000000000
+      internalID: -7155009352055376086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 84
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3251959c7b36b5e0800000000000000
+      internalID: -1894261186991402434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 84
+        width: 32
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33bef3fa3b1986640800000000000000
+      internalID: 5073465181158239027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 51
+        width: 31
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86cba6a459f71a1e0800000000000000
+      internalID: -2188327664749986712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 51
+        width: 31
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8270e6a9a30a24720800000000000000
+      internalID: 2828999689501542184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 51
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3706b88cf0d0837f0800000000000000
+      internalID: -632741386205306765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 52
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b51e6b12af6e6d340800000000000000
+      internalID: 4888348407539097947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 53
+        width: 20
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1f1c3f0723b0a750800000000000000
+      internalID: 6314243657914130202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 53
+        width: 20
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c6b7c16f8ca3aab0800000000000000
+      internalID: -4997961429630339387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 52
+        width: 13
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dccb484ab95e42840800000000000000
+      internalID: 5198532326535249101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 55
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7e98a7677786e040800000000000000
+      internalID: 4676574209980800635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 55
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d61dab17db76f5260800000000000000
+      internalID: 7088498401858998637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 53
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c70828ba497608a70800000000000000
+      internalID: 8827169157876449404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 52
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1b80a8de092eb400800000000000000
+      internalID: 341755765467417375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 23
+        width: 12
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 277f14e02f6137590800000000000000
+      internalID: -7677767710859462798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 23
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af80e7057bc30fc10800000000000000
+      internalID: 2085233385499658490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 25
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff3b83308b5fb65a0800000000000000
+      internalID: -6526853064266566657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 25
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d84122453a75efa0800000000000000
+      internalID: -5772072978244089642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 23
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88f1554a6113add80800000000000000
+      internalID: -8225207796122706040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 25
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ad4153025479cff0800000000000000
+      internalID: -15353228127285852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 25
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aff74d9180bf0590800000000000000
+      internalID: -7705746366671618143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 25
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b69bdca3ec4ae0f0800000000000000
+      internalID: -1086971819315194190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 26
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7c114ad3367a5210800000000000000
+      internalID: 1322499405663771772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 26
+        width: 17
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68246b1944f071420800000000000000
+      internalID: 2600564097006584454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 30
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4ff3b9544c784990800000000000000
+      internalID: -7401529354578821297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 27
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77fcaab98ba2f3370800000000000000
+      internalID: 8304403210268495735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 28
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20bd7b4c6ae953f40800000000000000
+      internalID: 5707642541864114946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 28
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 429d020d700b44b00800000000000000
+      internalID: 811967380436605220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 30
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e61c59dc5b7b753d0800000000000000
+      internalID: -3217901417266822802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 5
+        width: 18
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46bd1c40ad4edc1f0800000000000000
+      internalID: -1022909915309417628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 5
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97dca80dbe3489e00800000000000000
+      internalID: 1051665193086143865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 5
+        width: 18
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 947e5b1b38f32b340800000000000000
+      internalID: 4878031181250422601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 5
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fbe3e8ec774f4230800000000000000
+      internalID: 3625194826865306610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 5
+        width: 18
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c4a330ab49b51b20800000000000000
+      internalID: 3104591252603249860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 5
+        width: 19
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 601ce0c14f6ebd440800000000000000
+      internalID: 4961813350595870982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 6
+        width: 16
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c9a1239bdb6f47b0800000000000000
+      internalID: -5237849250798130744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 6
+        width: 16
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d4e27c6f3790ae70800000000000000
+      internalID: 9124459143710827733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 6
+        width: 16
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cc46f9c274e159e0800000000000000
+      internalID: -1634274008093012792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 5
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef945fe5c33bec470800000000000000
+      internalID: 8416861825474578942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 5
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2056d35d4b68071a0800000000000000
+      internalID: -6813798124981754622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 5
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aba1b00d7754eee90800000000000000
+      internalID: -6994576790365988166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 373
+        y: 8
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64582a9982842e9e0800000000000000
+      internalID: -1593631978922277562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_48
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 8
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de23c450b68e5ab90800000000000000
+      internalID: -7231118080325438739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_49
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 9
+        width: 11
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e54cba7554f465d10800000000000000
+      internalID: 2113964234339239006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttercup_0_normal_50
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 9
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39f3e9854d20b0120800000000000000
+      internalID: 2380999939038527379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Buttercup_0_normal_0: -3576750000696680990
+      Buttercup_0_normal_1: -7887113131311089890
+      Buttercup_0_normal_10: 2828999689501542184
+      Buttercup_0_normal_11: -632741386205306765
+      Buttercup_0_normal_12: 4888348407539097947
+      Buttercup_0_normal_13: 6314243657914130202
+      Buttercup_0_normal_14: -4997961429630339387
+      Buttercup_0_normal_15: 5198532326535249101
+      Buttercup_0_normal_16: 4676574209980800635
+      Buttercup_0_normal_17: 7088498401858998637
+      Buttercup_0_normal_18: 8827169157876449404
+      Buttercup_0_normal_19: 341755765467417375
+      Buttercup_0_normal_2: -5575000740018884209
+      Buttercup_0_normal_20: -7677767710859462798
+      Buttercup_0_normal_21: 2085233385499658490
+      Buttercup_0_normal_22: -6526853064266566657
+      Buttercup_0_normal_23: -5772072978244089642
+      Buttercup_0_normal_24: -8225207796122706040
+      Buttercup_0_normal_25: -15353228127285852
+      Buttercup_0_normal_26: -7705746366671618143
+      Buttercup_0_normal_27: -1086971819315194190
+      Buttercup_0_normal_28: 1322499405663771772
+      Buttercup_0_normal_29: 2600564097006584454
+      Buttercup_0_normal_3: -8479040924013322899
+      Buttercup_0_normal_30: -7401529354578821297
+      Buttercup_0_normal_31: 8304403210268495735
+      Buttercup_0_normal_32: 5707642541864114946
+      Buttercup_0_normal_33: 811967380436605220
+      Buttercup_0_normal_34: -3217901417266822802
+      Buttercup_0_normal_35: -1022909915309417628
+      Buttercup_0_normal_36: 1051665193086143865
+      Buttercup_0_normal_37: 4878031181250422601
+      Buttercup_0_normal_38: 3625194826865306610
+      Buttercup_0_normal_39: 3104591252603249860
+      Buttercup_0_normal_4: -8938659870633873310
+      Buttercup_0_normal_40: 4961813350595870982
+      Buttercup_0_normal_41: -5237849250798130744
+      Buttercup_0_normal_42: 9124459143710827733
+      Buttercup_0_normal_43: -1634274008093012792
+      Buttercup_0_normal_44: 8416861825474578942
+      Buttercup_0_normal_45: -6813798124981754622
+      Buttercup_0_normal_46: -6994576790365988166
+      Buttercup_0_normal_47: -1593631978922277562
+      Buttercup_0_normal_48: -7231118080325438739
+      Buttercup_0_normal_49: 2113964234339239006
+      Buttercup_0_normal_5: 3440310860507389992
+      Buttercup_0_normal_50: 2380999939038527379
+      Buttercup_0_normal_6: -7155009352055376086
+      Buttercup_0_normal_7: -1894261186991402434
+      Buttercup_0_normal_8: 5073465181158239027
+      Buttercup_0_normal_9: -2188327664749986712
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

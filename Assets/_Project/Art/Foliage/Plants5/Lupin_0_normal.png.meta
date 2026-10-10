@@ -1,0 +1,1430 @@
+fileFormatVersion: 2
+guid: fe1748b950934ef46a0b7310cd47f5d8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1183069718061635932
+    second: Lupin_0_normal_0
+  - first:
+      213: -4198291950142202707
+    second: Lupin_0_normal_1
+  - first:
+      213: -7311862339869274162
+    second: Lupin_0_normal_2
+  - first:
+      213: 9107391603125987018
+    second: Lupin_0_normal_3
+  - first:
+      213: 847812794048073820
+    second: Lupin_0_normal_4
+  - first:
+      213: 1423347862397957279
+    second: Lupin_0_normal_5
+  - first:
+      213: -4847750658647006391
+    second: Lupin_0_normal_6
+  - first:
+      213: 1489498981662977742
+    second: Lupin_0_normal_7
+  - first:
+      213: -3057792182538230784
+    second: Lupin_0_normal_8
+  - first:
+      213: 1259246494513535660
+    second: Lupin_0_normal_9
+  - first:
+      213: 4281877346442628281
+    second: Lupin_0_normal_10
+  - first:
+      213: 2791069795260321646
+    second: Lupin_0_normal_11
+  - first:
+      213: -3347768230165929743
+    second: Lupin_0_normal_12
+  - first:
+      213: -7016497743374689978
+    second: Lupin_0_normal_13
+  - first:
+      213: 2516823185886868381
+    second: Lupin_0_normal_14
+  - first:
+      213: 9066551980454533955
+    second: Lupin_0_normal_15
+  - first:
+      213: 2260315644764275130
+    second: Lupin_0_normal_16
+  - first:
+      213: 6740550176952681010
+    second: Lupin_0_normal_17
+  - first:
+      213: 3237847766900766167
+    second: Lupin_0_normal_18
+  - first:
+      213: 1582573147308572379
+    second: Lupin_0_normal_19
+  - first:
+      213: 1233487354483347488
+    second: Lupin_0_normal_20
+  - first:
+      213: -2994111619065028525
+    second: Lupin_0_normal_21
+  - first:
+      213: -3762315974003660541
+    second: Lupin_0_normal_22
+  - first:
+      213: -5667660769618476748
+    second: Lupin_0_normal_23
+  - first:
+      213: 620824708228876959
+    second: Lupin_0_normal_24
+  - first:
+      213: 6511174058136566290
+    second: Lupin_0_normal_25
+  - first:
+      213: 1358127287038721650
+    second: Lupin_0_normal_26
+  - first:
+      213: -2846460875581821848
+    second: Lupin_0_normal_27
+  - first:
+      213: 9002095300704354623
+    second: Lupin_0_normal_28
+  - first:
+      213: -6414860961975223225
+    second: Lupin_0_normal_29
+  - first:
+      213: 3254465525374100150
+    second: Lupin_0_normal_30
+  - first:
+      213: -1240469149854741686
+    second: Lupin_0_normal_31
+  - first:
+      213: 6555209890849909161
+    second: Lupin_0_normal_32
+  - first:
+      213: 2682162993707660031
+    second: Lupin_0_normal_33
+  - first:
+      213: 5758837406247095967
+    second: Lupin_0_normal_34
+  - first:
+      213: -4215497401953809068
+    second: Lupin_0_normal_35
+  - first:
+      213: -1279616575202419252
+    second: Lupin_0_normal_36
+  - first:
+      213: -7919270850376911771
+    second: Lupin_0_normal_37
+  - first:
+      213: -1769806126554290815
+    second: Lupin_0_normal_38
+  - first:
+      213: -7676487017298968481
+    second: Lupin_0_normal_39
+  - first:
+      213: 724686209747317757
+    second: Lupin_0_normal_40
+  - first:
+      213: -6828662366956225001
+    second: Lupin_0_normal_41
+  - first:
+      213: -3693657587252161340
+    second: Lupin_0_normal_42
+  - first:
+      213: -1184795569809785276
+    second: Lupin_0_normal_43
+  - first:
+      213: 2323222224559677993
+    second: Lupin_0_normal_44
+  - first:
+      213: 7140492761653379227
+    second: Lupin_0_normal_45
+  - first:
+      213: 6259825382915823511
+    second: Lupin_0_normal_46
+  - first:
+      213: 8767039874086207713
+    second: Lupin_0_normal_47
+  - first:
+      213: 8599387169570572404
+    second: Lupin_0_normal_48
+  - first:
+      213: 2726605361526510966
+    second: Lupin_0_normal_49
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Lupin_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 67
+        width: 24
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c59d591f3ab1b6010800000000000000
+      internalID: 1183069718061635932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 67
+        width: 24
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dac546007bbacb5c0800000000000000
+      internalID: -4198291950142202707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 67
+        width: 22
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecf098911fb078a90800000000000000
+      internalID: -7311862339869274162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 67
+        width: 22
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac623b6f864f36e70800000000000000
+      internalID: 9107391603125987018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 67
+        width: 31
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5054498e3904cb00800000000000000
+      internalID: 847812794048073820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 67
+        width: 31
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f94ba02f65fb0c310800000000000000
+      internalID: 1423347862397957279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 70
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 943edafd57459bcb0800000000000000
+      internalID: -4847750658647006391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 70
+        width: 24
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecee35f9e63cba410800000000000000
+      internalID: 1489498981662977742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 71
+        width: 10
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 004a7daf53a8095d0800000000000000
+      internalID: -3057792182538230784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 71
+        width: 7
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caa9226d30eb97110800000000000000
+      internalID: 1259246494513535660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 72
+        width: 6
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bc418e92c84c6b30800000000000000
+      internalID: 4281877346442628281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 73
+        width: 9
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6f40d9e03fdbb620800000000000000
+      internalID: 2791069795260321646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 619
+        y: 72
+        width: 7
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f02f9a28865a81d0800000000000000
+      internalID: -3347768230165929743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 74
+        width: 6
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64952d63a7460ae90800000000000000
+      internalID: -7016497743374689978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 75
+        width: 7
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d93f0455a5d8de220800000000000000
+      internalID: 2516823185886868381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 29
+        width: 17
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34b5b945dfcd2dd70800000000000000
+      internalID: 9066551980454533955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 26
+        width: 9
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab1ce6e6a114e5f10800000000000000
+      internalID: 2260315644764275130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 30
+        width: 17
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23206f74cae3b8d50800000000000000
+      internalID: 6740550176952681010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 29
+        width: 17
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d579ee93652fec20800000000000000
+      internalID: 3237847766900766167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 30
+        width: 17
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bde366484ed66f510800000000000000
+      internalID: 1582573147308572379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 32
+        width: 19
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0209aeea63a3e1110800000000000000
+      internalID: 1233487354483347488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 32
+        width: 19
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35062cf8857c276d0800000000000000
+      internalID: -2994111619065028525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 34
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 309ebb42e8199cbc0800000000000000
+      internalID: -3762315974003660541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 34
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 431497ffe8c6851b0800000000000000
+      internalID: -5667660769618476748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 35
+        width: 7
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9a84c968cc9d9800800000000000000
+      internalID: 620824708228876959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 34
+        width: 6
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21af7f5ee465c5a50800000000000000
+      internalID: 6511174058136566290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 34
+        width: 8
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27e35b7629909d210800000000000000
+      internalID: 1358127287038721650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 35
+        width: 11
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86ce5e33ae65f78d0800000000000000
+      internalID: -2846460875581821848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 37
+        width: 6
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3142b81bfdddec70800000000000000
+      internalID: 9002095300704354623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 38
+        width: 6
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74c32f541f5d9f6a0800000000000000
+      internalID: -6414860961975223225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 44
+        width: 25
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b2ada5072f2a2d20800000000000000
+      internalID: 3254465525374100150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 44
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4bc31861e7f8cee0800000000000000
+      internalID: -1240469149854741686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 7
+        width: 26
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a96c3c2aa8c8fa50800000000000000
+      internalID: 6555209890849909161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 7
+        width: 18
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff2b4a53805f83520800000000000000
+      internalID: 2682162993707660031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 7
+        width: 16
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9e079efb108bef40800000000000000
+      internalID: 5758837406247095967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 7
+        width: 16
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45d06f4927b8f75c0800000000000000
+      internalID: -4215497401953809068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 7
+        width: 16
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccd9b5a2183ed3ee0800000000000000
+      internalID: -1279616575202419252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 6
+        width: 16
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 564bd23ae19191290800000000000000
+      internalID: -7919270850376911771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 8
+        width: 23
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 185eb6964b26077e0800000000000000
+      internalID: -1769806126554290815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 8
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f504ff2cab3a77590800000000000000
+      internalID: -7676487017298968481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 7
+        width: 18
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df3fc99a44a9e0a00800000000000000
+      internalID: 724686209747317757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 8
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71efe7ec1c7bb31a0800000000000000
+      internalID: -6828662366956225001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 8
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c498e58efd7dbcc0800000000000000
+      internalID: -3693657587252161340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 8
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44ef702e4b2ce8fe0800000000000000
+      internalID: -1184795569809785276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 430
+        y: 8
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9222c25ed4ebd3020800000000000000
+      internalID: 2323222224559677993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 8
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b900993b550281360800000000000000
+      internalID: 7140492761653379227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 8
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 797dba0150e5fd650800000000000000
+      internalID: 6259825382915823511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 8
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e00892d058caa970800000000000000
+      internalID: 8767039874086207713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_48
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 8
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4784e48b119275770800000000000000
+      internalID: 8599387169570572404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lupin_0_normal_49
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 8
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67596705129d6d520800000000000000
+      internalID: 2726605361526510966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Lupin_0_normal_0: 1183069718061635932
+      Lupin_0_normal_1: -4198291950142202707
+      Lupin_0_normal_10: 4281877346442628281
+      Lupin_0_normal_11: 2791069795260321646
+      Lupin_0_normal_12: -3347768230165929743
+      Lupin_0_normal_13: -7016497743374689978
+      Lupin_0_normal_14: 2516823185886868381
+      Lupin_0_normal_15: 9066551980454533955
+      Lupin_0_normal_16: 2260315644764275130
+      Lupin_0_normal_17: 6740550176952681010
+      Lupin_0_normal_18: 3237847766900766167
+      Lupin_0_normal_19: 1582573147308572379
+      Lupin_0_normal_2: -7311862339869274162
+      Lupin_0_normal_20: 1233487354483347488
+      Lupin_0_normal_21: -2994111619065028525
+      Lupin_0_normal_22: -3762315974003660541
+      Lupin_0_normal_23: -5667660769618476748
+      Lupin_0_normal_24: 620824708228876959
+      Lupin_0_normal_25: 6511174058136566290
+      Lupin_0_normal_26: 1358127287038721650
+      Lupin_0_normal_27: -2846460875581821848
+      Lupin_0_normal_28: 9002095300704354623
+      Lupin_0_normal_29: -6414860961975223225
+      Lupin_0_normal_3: 9107391603125987018
+      Lupin_0_normal_30: 3254465525374100150
+      Lupin_0_normal_31: -1240469149854741686
+      Lupin_0_normal_32: 6555209890849909161
+      Lupin_0_normal_33: 2682162993707660031
+      Lupin_0_normal_34: 5758837406247095967
+      Lupin_0_normal_35: -4215497401953809068
+      Lupin_0_normal_36: -1279616575202419252
+      Lupin_0_normal_37: -7919270850376911771
+      Lupin_0_normal_38: -1769806126554290815
+      Lupin_0_normal_39: -7676487017298968481
+      Lupin_0_normal_4: 847812794048073820
+      Lupin_0_normal_40: 724686209747317757
+      Lupin_0_normal_41: -6828662366956225001
+      Lupin_0_normal_42: -3693657587252161340
+      Lupin_0_normal_43: -1184795569809785276
+      Lupin_0_normal_44: 2323222224559677993
+      Lupin_0_normal_45: 7140492761653379227
+      Lupin_0_normal_46: 6259825382915823511
+      Lupin_0_normal_47: 8767039874086207713
+      Lupin_0_normal_48: 8599387169570572404
+      Lupin_0_normal_49: 2726605361526510966
+      Lupin_0_normal_5: 1423347862397957279
+      Lupin_0_normal_6: -4847750658647006391
+      Lupin_0_normal_7: 1489498981662977742
+      Lupin_0_normal_8: -3057792182538230784
+      Lupin_0_normal_9: 1259246494513535660
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

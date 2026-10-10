@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: f4b6e8958a4c9fc4ea8cd26436d06cee
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6292258700694625186
+    second: CommonJuniper_0_unlit_0
+  - first:
+      213: 4609402538583116637
+    second: CommonJuniper_0_unlit_1
+  - first:
+      213: 1619676808026817130
+    second: CommonJuniper_0_unlit_2
+  - first:
+      213: 2400146622078557657
+    second: CommonJuniper_0_unlit_3
+  - first:
+      213: -1278524498895583364
+    second: CommonJuniper_0_unlit_4
+  - first:
+      213: 2187986989635087093
+    second: CommonJuniper_0_unlit_5
+  - first:
+      213: 7233035950361007093
+    second: CommonJuniper_0_unlit_6
+  - first:
+      213: 8724853456744608133
+    second: CommonJuniper_0_unlit_7
+  - first:
+      213: 6910311841350637718
+    second: CommonJuniper_0_unlit_8
+  - first:
+      213: -4657891304208418706
+    second: CommonJuniper_0_unlit_9
+  - first:
+      213: -1183858854988589303
+    second: CommonJuniper_0_unlit_10
+  - first:
+      213: 7721965341404830538
+    second: CommonJuniper_0_unlit_11
+  - first:
+      213: 5406830409941442847
+    second: CommonJuniper_0_unlit_12
+  - first:
+      213: 8955575316709620793
+    second: CommonJuniper_0_unlit_13
+  - first:
+      213: -2172036026358136741
+    second: CommonJuniper_0_unlit_14
+  - first:
+      213: 8234720062359063345
+    second: CommonJuniper_0_unlit_15
+  - first:
+      213: -3831662801458652609
+    second: CommonJuniper_0_unlit_16
+  - first:
+      213: 8954279262229107051
+    second: CommonJuniper_0_unlit_17
+  - first:
+      213: -8977803244552242874
+    second: CommonJuniper_0_unlit_18
+  - first:
+      213: -2303632377632257841
+    second: CommonJuniper_0_unlit_19
+  - first:
+      213: -1249148540838836318
+    second: CommonJuniper_0_unlit_20
+  - first:
+      213: 1129106693020688964
+    second: CommonJuniper_0_unlit_21
+  - first:
+      213: -862857908816187537
+    second: CommonJuniper_0_unlit_22
+  - first:
+      213: -473729083812559647
+    second: CommonJuniper_0_unlit_23
+  - first:
+      213: 4255555024569037133
+    second: CommonJuniper_0_unlit_24
+  - first:
+      213: -4450879010938398213
+    second: CommonJuniper_0_unlit_25
+  - first:
+      213: -4564436587971044522
+    second: CommonJuniper_0_unlit_26
+  - first:
+      213: 594110189978819448
+    second: CommonJuniper_0_unlit_27
+  - first:
+      213: -1727842327959611966
+    second: CommonJuniper_0_unlit_28
+  - first:
+      213: 8821477381171414188
+    second: CommonJuniper_0_unlit_29
+  - first:
+      213: -2935901588517382248
+    second: CommonJuniper_0_unlit_30
+  - first:
+      213: -807990417284447935
+    second: CommonJuniper_0_unlit_31
+  - first:
+      213: 5557994655685324490
+    second: CommonJuniper_0_unlit_32
+  - first:
+      213: 7301594842994053810
+    second: CommonJuniper_0_unlit_33
+  - first:
+      213: 2594785010233369919
+    second: CommonJuniper_0_unlit_34
+  - first:
+      213: -8083941670022567267
+    second: CommonJuniper_0_unlit_35
+  - first:
+      213: 6421090812259575516
+    second: CommonJuniper_0_unlit_36
+  - first:
+      213: -2421949200401816775
+    second: CommonJuniper_0_unlit_37
+  - first:
+      213: -5314722400435816320
+    second: CommonJuniper_0_unlit_38
+  - first:
+      213: 7132113463441259139
+    second: CommonJuniper_0_unlit_39
+  - first:
+      213: 4917494776628915018
+    second: CommonJuniper_0_unlit_40
+  - first:
+      213: -3272191107814718497
+    second: CommonJuniper_0_unlit_41
+  - first:
+      213: 4964534440290436002
+    second: CommonJuniper_0_unlit_42
+  - first:
+      213: 4359231412698664796
+    second: CommonJuniper_0_unlit_43
+  - first:
+      213: 5144086550657216450
+    second: CommonJuniper_0_unlit_44
+  - first:
+      213: -5141907576712154930
+    second: CommonJuniper_0_unlit_45
+  - first:
+      213: 8240490424281447409
+    second: CommonJuniper_0_unlit_46
+  - first:
+      213: 419281206963318735
+    second: CommonJuniper_0_unlit_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 83
+        width: 60
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ab93c153f7925750800000000000000
+      internalID: 6292258700694625186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 85
+        width: 57
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5bc70bef23e7ff30800000000000000
+      internalID: 4609402538583116637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 157
+        y: 85
+        width: 57
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a628069b97f3a7610800000000000000
+      internalID: 1619676808026817130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 86
+        width: 56
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dd98d1e2a80f4120800000000000000
+      internalID: 2400146622078557657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 87
+        width: 61
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c77c1befdb4c14ee0800000000000000
+      internalID: -1278524498895583364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 87
+        width: 61
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fa206a139a4d5e10800000000000000
+      internalID: 2187986989635087093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 87
+        width: 61
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f3d5e4efd7e06460800000000000000
+      internalID: 7233035950361007093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 86
+        width: 57
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 581f99e1ef7e41970800000000000000
+      internalID: 8724853456744608133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 88
+        width: 60
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69851eed10c56ef50800000000000000
+      internalID: 6910311841350637718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 88
+        width: 59
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e68b6429988db5fb0800000000000000
+      internalID: -4657891304208418706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 762
+        y: 88
+        width: 59
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 907543cc4a6129fe0800000000000000
+      internalID: -1183858854988589303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 88
+        width: 55
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4b1056b09ee92b60800000000000000
+      internalID: 7721965341404830538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 911
+        y: 88
+        width: 55
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f11e6597c9be80b40800000000000000
+      internalID: 5406830409941442847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 982
+        y: 87
+        width: 54
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93cbbb74d48984c70800000000000000
+      internalID: 8955575316709620793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 40
+        width: 57
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b508291fdb06bd1e0800000000000000
+      internalID: -2172036026358136741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 43
+        width: 49
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13bc1bd644a974270800000000000000
+      internalID: 8234720062359063345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 43
+        width: 50
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3a9afbabf233dac0800000000000000
+      internalID: -3831662801458652609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 43
+        width: 50
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6110d41c8df34c70800000000000000
+      internalID: 8954279262229107051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 43
+        width: 52
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6493d19f38f686380800000000000000
+      internalID: -8977803244552242874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 43
+        width: 52
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc80426ce8ad700e0800000000000000
+      internalID: -2303632377632257841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 43
+        width: 52
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a78a9735022aaee0800000000000000
+      internalID: -1249148540838836318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 45
+        width: 46
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 442a3071e846baf00800000000000000
+      internalID: 1129106693020688964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 551
+        y: 45
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6fef55bd438604f0800000000000000
+      internalID: -862857908816187537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 45
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e4c49f78e9fc69f0800000000000000
+      internalID: -473729083812559647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 47
+        width: 53
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d41f0997fb4ce0b30800000000000000
+      internalID: 4255555024569037133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 48
+        width: 48
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf956ce0f1d4b32c0800000000000000
+      internalID: -4450879010938398213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 808
+        y: 47
+        width: 43
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65b903e4b1dd7a0c0800000000000000
+      internalID: -4564436587971044522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 47
+        width: 43
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87b902fe114be3800800000000000000
+      internalID: 594110189978819448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 925
+        y: 47
+        width: 43
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c55516ae887508e0800000000000000
+      internalID: -1727842327959611966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 986
+        y: 47
+        width: 53
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca48dd2a0fe2c6a70800000000000000
+      internalID: 8821477381171414188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 5
+        width: 44
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8979ae07f059147d0800000000000000
+      internalID: -2935901588517382248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 7
+        width: 44
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14147d31ff079c4f0800000000000000
+      internalID: -807990417284447935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 7
+        width: 44
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acea4ab11b6f12d40800000000000000
+      internalID: 5557994655685324490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 7
+        width: 44
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b21c7ef2d9745560800000000000000
+      internalID: 7301594842994053810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 6
+        width: 40
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f35e7731837820420800000000000000
+      internalID: 2594785010233369919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 7
+        width: 47
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9aa355b1e110df80800000000000000
+      internalID: -8083941670022567267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 8
+        width: 42
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd6a147c21c4c1950800000000000000
+      internalID: 6421090812259575516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 8
+        width: 48
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9332206c802836ed0800000000000000
+      internalID: -2421949200401816775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 8
+        width: 48
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 088363aa2205e36b0800000000000000
+      internalID: -5314722400435816320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 8
+        width: 47
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38a723e486b5af260800000000000000
+      internalID: 7132113463441259139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 9
+        width: 42
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4b2ec102737e3440800000000000000
+      internalID: 4917494776628915018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 673
+        y: 8
+        width: 36
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd303853687d692d0800000000000000
+      internalID: -3272191107814718497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 8
+        width: 36
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a344bc25c195e440800000000000000
+      internalID: 4964534440290436002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 9
+        width: 36
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5fc0a7afd91f7c30800000000000000
+      internalID: 4359231412698664796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 10
+        width: 35
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cfa9c99677736740800000000000000
+      internalID: 5144086550657216450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 878
+        y: 11
+        width: 42
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec0be2e4d4644a8b0800000000000000
+      internalID: -5141907576712154930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 9
+        width: 41
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fbbd42816a1c5270800000000000000
+      internalID: 8240490424281447409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CommonJuniper_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 9
+        width: 41
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcfab0a490691d500800000000000000
+      internalID: 419281206963318735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      CommonJuniper_0_unlit_0: 6292258700694625186
+      CommonJuniper_0_unlit_1: 4609402538583116637
+      CommonJuniper_0_unlit_10: -1183858854988589303
+      CommonJuniper_0_unlit_11: 7721965341404830538
+      CommonJuniper_0_unlit_12: 5406830409941442847
+      CommonJuniper_0_unlit_13: 8955575316709620793
+      CommonJuniper_0_unlit_14: -2172036026358136741
+      CommonJuniper_0_unlit_15: 8234720062359063345
+      CommonJuniper_0_unlit_16: -3831662801458652609
+      CommonJuniper_0_unlit_17: 8954279262229107051
+      CommonJuniper_0_unlit_18: -8977803244552242874
+      CommonJuniper_0_unlit_19: -2303632377632257841
+      CommonJuniper_0_unlit_2: 1619676808026817130
+      CommonJuniper_0_unlit_20: -1249148540838836318
+      CommonJuniper_0_unlit_21: 1129106693020688964
+      CommonJuniper_0_unlit_22: -862857908816187537
+      CommonJuniper_0_unlit_23: -473729083812559647
+      CommonJuniper_0_unlit_24: 4255555024569037133
+      CommonJuniper_0_unlit_25: -4450879010938398213
+      CommonJuniper_0_unlit_26: -4564436587971044522
+      CommonJuniper_0_unlit_27: 594110189978819448
+      CommonJuniper_0_unlit_28: -1727842327959611966
+      CommonJuniper_0_unlit_29: 8821477381171414188
+      CommonJuniper_0_unlit_3: 2400146622078557657
+      CommonJuniper_0_unlit_30: -2935901588517382248
+      CommonJuniper_0_unlit_31: -807990417284447935
+      CommonJuniper_0_unlit_32: 5557994655685324490
+      CommonJuniper_0_unlit_33: 7301594842994053810
+      CommonJuniper_0_unlit_34: 2594785010233369919
+      CommonJuniper_0_unlit_35: -8083941670022567267
+      CommonJuniper_0_unlit_36: 6421090812259575516
+      CommonJuniper_0_unlit_37: -2421949200401816775
+      CommonJuniper_0_unlit_38: -5314722400435816320
+      CommonJuniper_0_unlit_39: 7132113463441259139
+      CommonJuniper_0_unlit_4: -1278524498895583364
+      CommonJuniper_0_unlit_40: 4917494776628915018
+      CommonJuniper_0_unlit_41: -3272191107814718497
+      CommonJuniper_0_unlit_42: 4964534440290436002
+      CommonJuniper_0_unlit_43: 4359231412698664796
+      CommonJuniper_0_unlit_44: 5144086550657216450
+      CommonJuniper_0_unlit_45: -5141907576712154930
+      CommonJuniper_0_unlit_46: 8240490424281447409
+      CommonJuniper_0_unlit_47: 419281206963318735
+      CommonJuniper_0_unlit_5: 2187986989635087093
+      CommonJuniper_0_unlit_6: 7233035950361007093
+      CommonJuniper_0_unlit_7: 8724853456744608133
+      CommonJuniper_0_unlit_8: 6910311841350637718
+      CommonJuniper_0_unlit_9: -4657891304208418706
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

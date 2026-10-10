@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 318a1af687802f24ea927b53de41fcb8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7825847775225008988
+    second: MeadowGrass_0_light_0
+  - first:
+      213: 1025688692455375786
+    second: MeadowGrass_0_light_1
+  - first:
+      213: 2092315783827151992
+    second: MeadowGrass_0_light_2
+  - first:
+      213: -6655220440403031509
+    second: MeadowGrass_0_light_3
+  - first:
+      213: 1945069751427901779
+    second: MeadowGrass_0_light_4
+  - first:
+      213: 3443917571186071180
+    second: MeadowGrass_0_light_5
+  - first:
+      213: -3710552458266519334
+    second: MeadowGrass_0_light_6
+  - first:
+      213: 7718583769217505013
+    second: MeadowGrass_0_light_7
+  - first:
+      213: 2708009734297863311
+    second: MeadowGrass_0_light_8
+  - first:
+      213: -5899187996950930143
+    second: MeadowGrass_0_light_9
+  - first:
+      213: -7854082133259472022
+    second: MeadowGrass_0_light_10
+  - first:
+      213: 719000809872530392
+    second: MeadowGrass_0_light_11
+  - first:
+      213: 3707083205154036772
+    second: MeadowGrass_0_light_12
+  - first:
+      213: -2913394335656707910
+    second: MeadowGrass_0_light_13
+  - first:
+      213: -5521851389104615380
+    second: MeadowGrass_0_light_14
+  - first:
+      213: -3473106955601192470
+    second: MeadowGrass_0_light_15
+  - first:
+      213: -92064323155301840
+    second: MeadowGrass_0_light_16
+  - first:
+      213: -5950986958698764392
+    second: MeadowGrass_0_light_17
+  - first:
+      213: -6834171897344487155
+    second: MeadowGrass_0_light_18
+  - first:
+      213: -6242357080006819502
+    second: MeadowGrass_0_light_19
+  - first:
+      213: 1227920238490965637
+    second: MeadowGrass_0_light_20
+  - first:
+      213: 3074415883240271675
+    second: MeadowGrass_0_light_21
+  - first:
+      213: -134562862751807863
+    second: MeadowGrass_0_light_22
+  - first:
+      213: 1646268399933380412
+    second: MeadowGrass_0_light_23
+  - first:
+      213: 261739216587267410
+    second: MeadowGrass_0_light_24
+  - first:
+      213: 1579292404863197526
+    second: MeadowGrass_0_light_25
+  - first:
+      213: -674307315208830984
+    second: MeadowGrass_0_light_26
+  - first:
+      213: 267197245389987876
+    second: MeadowGrass_0_light_27
+  - first:
+      213: -3890871104370693670
+    second: MeadowGrass_0_light_28
+  - first:
+      213: 1419049785939377255
+    second: MeadowGrass_0_light_29
+  - first:
+      213: -5612088729450944739
+    second: MeadowGrass_0_light_30
+  - first:
+      213: 952415368658342563
+    second: MeadowGrass_0_light_31
+  - first:
+      213: 2086401079794481465
+    second: MeadowGrass_0_light_32
+  - first:
+      213: 1061107030584543178
+    second: MeadowGrass_0_light_33
+  - first:
+      213: 4502586128899437155
+    second: MeadowGrass_0_light_34
+  - first:
+      213: 7666709456040144730
+    second: MeadowGrass_0_light_35
+  - first:
+      213: -3504693046808189856
+    second: MeadowGrass_0_light_36
+  - first:
+      213: -5554568171903921732
+    second: MeadowGrass_0_light_37
+  - first:
+      213: 8293794122688322452
+    second: MeadowGrass_0_light_38
+  - first:
+      213: 3106453618839694163
+    second: MeadowGrass_0_light_39
+  - first:
+      213: -3303148680210853482
+    second: MeadowGrass_0_light_40
+  - first:
+      213: 5142816049832607086
+    second: MeadowGrass_0_light_41
+  - first:
+      213: 1688336776584822871
+    second: MeadowGrass_0_light_42
+  - first:
+      213: -4219500638876490710
+    second: MeadowGrass_0_light_43
+  - first:
+      213: -4398408421830581132
+    second: MeadowGrass_0_light_44
+  - first:
+      213: 5258089930342199199
+    second: MeadowGrass_0_light_45
+  - first:
+      213: 4421339694857082239
+    second: MeadowGrass_0_light_46
+  - first:
+      213: -3564404692266157821
+    second: MeadowGrass_0_light_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 97
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c535194a61ffa9c60800000000000000
+      internalID: 7825847775225008988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 97
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa300f37e6afb3e00800000000000000
+      internalID: 1025688692455375786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 98
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87cd5fcae16690d10800000000000000
+      internalID: 2092315783827151992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 98
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2acbd33548e3a3a0800000000000000
+      internalID: -6655220440403031509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 99
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 359a73d22a64efa10800000000000000
+      internalID: 1945069751427901779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 99
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c86954ac8c04bcf20800000000000000
+      internalID: 3443917571186071180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 101
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad85294d238718cc0800000000000000
+      internalID: -3710552458266519334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 101
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f61e451b0bed1b60800000000000000
+      internalID: 7718583769217505013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 101
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f84cf157188c49520800000000000000
+      internalID: 2708009734297863311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 63
+        width: 32
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12ddd72a5cfd12ea0800000000000000
+      internalID: -5899187996950930143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a63b35a99e1b00390800000000000000
+      internalID: -7854082133259472022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 64
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8db9ba95d676af900800000000000000
+      internalID: 719000809872530392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42cd50cb884327330800000000000000
+      internalID: 3707083205154036772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 64
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab8fb8c994b8197d0800000000000000
+      internalID: -2913394335656707910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 311
+        y: 63
+        width: 26
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c201ce9ea617e53b0800000000000000
+      internalID: -5521851389104615380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 63
+        width: 26
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae9d37c00ab0dcfc0800000000000000
+      internalID: -3473106955601192470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03a67d16cfbe8bef0800000000000000
+      internalID: -92064323155301840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 65
+        width: 28
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89727c704e8d96da0800000000000000
+      internalID: -5950986958698764392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 64
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0113dc4ed42821a0800000000000000
+      internalID: -6834171897344487155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 596
+        y: 64
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2518c052f41be59a0800000000000000
+      internalID: -6242357080006819502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 31
+        width: 29
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58654cb73f27a0110800000000000000
+      internalID: 1227920238490965637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 31
+        width: 30
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3fea54f4f48aaa20800000000000000
+      internalID: 3074415883240271675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 34
+        width: 30
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98608bd0acfe12ef0800000000000000
+      internalID: -134562862751807863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 31
+        width: 26
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c37dafe2368b8d610800000000000000
+      internalID: 1646268399933380412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 33
+        width: 30
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25d19744e62e1a300800000000000000
+      internalID: 261739216587267410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 34
+        width: 26
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 651e7542316cae510800000000000000
+      internalID: 1579292404863197526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 36
+        width: 26
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ffb787c11164a6f0800000000000000
+      internalID: -674307315208830984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 35
+        width: 27
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 420ee60aa7645b300800000000000000
+      internalID: 267197245389987876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 38
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad927256859d00ac0800000000000000
+      internalID: -3890871104370693670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 36
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76cb289034a71b310800000000000000
+      internalID: 1419049785939377255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 39
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d176a11e80bdd12b0800000000000000
+      internalID: -5612088729450944739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 39
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a2d08f4bb8a73d00800000000000000
+      internalID: 952415368658342563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 38
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93934245ab264fc10800000000000000
+      internalID: 2086401079794481465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 4
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac749aae83fc9be00800000000000000
+      internalID: 1061107030584543178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 4
+        width: 21
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 362f6af7a366c7e30800000000000000
+      internalID: 4502586128899437155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 6
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5fa66b51af956a60800000000000000
+      internalID: 7666709456040144730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 7
+        width: 24
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 064673a1e34dc5fc0800000000000000
+      internalID: -3504693046808189856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 7
+        width: 23
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb1d9f05da53ae2b0800000000000000
+      internalID: -5554568171903921732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 7
+        width: 24
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49b5f0befc9791370800000000000000
+      internalID: 8293794122688322452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 7
+        width: 23
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35baa2e8b175c1b20800000000000000
+      internalID: 3106453618839694163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 7
+        width: 21
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6915bb3b6cbd822d0800000000000000
+      internalID: -3303148680210853482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 9
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6d337313f3fe5740800000000000000
+      internalID: 5142816049832607086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 412
+        y: 9
+        width: 21
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75001956a5d2e6710800000000000000
+      internalID: 1688336776584822871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 10
+        width: 20
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a24ab3a56825175c0800000000000000
+      internalID: -4219500638876490710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 494
+        y: 11
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 474a3b718d6b5f2c0800000000000000
+      internalID: -4398408421830581132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 11
+        width: 19
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9fea1fdeec78f840800000000000000
+      internalID: 5258089930342199199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 9
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f755a47f601cb5d30800000000000000
+      internalID: 4421339694857082239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MeadowGrass_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 11
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3097db141d0b88ec0800000000000000
+      internalID: -3564404692266157821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MeadowGrass_0_light_0: 7825847775225008988
+      MeadowGrass_0_light_1: 1025688692455375786
+      MeadowGrass_0_light_10: -7854082133259472022
+      MeadowGrass_0_light_11: 719000809872530392
+      MeadowGrass_0_light_12: 3707083205154036772
+      MeadowGrass_0_light_13: -2913394335656707910
+      MeadowGrass_0_light_14: -5521851389104615380
+      MeadowGrass_0_light_15: -3473106955601192470
+      MeadowGrass_0_light_16: -92064323155301840
+      MeadowGrass_0_light_17: -5950986958698764392
+      MeadowGrass_0_light_18: -6834171897344487155
+      MeadowGrass_0_light_19: -6242357080006819502
+      MeadowGrass_0_light_2: 2092315783827151992
+      MeadowGrass_0_light_20: 1227920238490965637
+      MeadowGrass_0_light_21: 3074415883240271675
+      MeadowGrass_0_light_22: -134562862751807863
+      MeadowGrass_0_light_23: 1646268399933380412
+      MeadowGrass_0_light_24: 261739216587267410
+      MeadowGrass_0_light_25: 1579292404863197526
+      MeadowGrass_0_light_26: -674307315208830984
+      MeadowGrass_0_light_27: 267197245389987876
+      MeadowGrass_0_light_28: -3890871104370693670
+      MeadowGrass_0_light_29: 1419049785939377255
+      MeadowGrass_0_light_3: -6655220440403031509
+      MeadowGrass_0_light_30: -5612088729450944739
+      MeadowGrass_0_light_31: 952415368658342563
+      MeadowGrass_0_light_32: 2086401079794481465
+      MeadowGrass_0_light_33: 1061107030584543178
+      MeadowGrass_0_light_34: 4502586128899437155
+      MeadowGrass_0_light_35: 7666709456040144730
+      MeadowGrass_0_light_36: -3504693046808189856
+      MeadowGrass_0_light_37: -5554568171903921732
+      MeadowGrass_0_light_38: 8293794122688322452
+      MeadowGrass_0_light_39: 3106453618839694163
+      MeadowGrass_0_light_4: 1945069751427901779
+      MeadowGrass_0_light_40: -3303148680210853482
+      MeadowGrass_0_light_41: 5142816049832607086
+      MeadowGrass_0_light_42: 1688336776584822871
+      MeadowGrass_0_light_43: -4219500638876490710
+      MeadowGrass_0_light_44: -4398408421830581132
+      MeadowGrass_0_light_45: 5258089930342199199
+      MeadowGrass_0_light_46: 4421339694857082239
+      MeadowGrass_0_light_47: -3564404692266157821
+      MeadowGrass_0_light_5: 3443917571186071180
+      MeadowGrass_0_light_6: -3710552458266519334
+      MeadowGrass_0_light_7: 7718583769217505013
+      MeadowGrass_0_light_8: 2708009734297863311
+      MeadowGrass_0_light_9: -5899187996950930143
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

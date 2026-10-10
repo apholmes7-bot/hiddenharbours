@@ -1,0 +1,1560 @@
+fileFormatVersion: 2
+guid: f1491b968c0bbe94d8f2d5d500f92d43
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4052804535109571148
+    second: WinterberryHolly_0_normal_0
+  - first:
+      213: 60336062217356932
+    second: WinterberryHolly_0_normal_1
+  - first:
+      213: -5792059338705858590
+    second: WinterberryHolly_0_normal_2
+  - first:
+      213: -2864926539941126113
+    second: WinterberryHolly_0_normal_3
+  - first:
+      213: -3046827288241663754
+    second: WinterberryHolly_0_normal_4
+  - first:
+      213: 2858796126368442316
+    second: WinterberryHolly_0_normal_5
+  - first:
+      213: 7876879526170842581
+    second: WinterberryHolly_0_normal_6
+  - first:
+      213: -2354946401685182636
+    second: WinterberryHolly_0_normal_7
+  - first:
+      213: -370469290109205256
+    second: WinterberryHolly_0_normal_8
+  - first:
+      213: 8360440365872151510
+    second: WinterberryHolly_0_normal_9
+  - first:
+      213: -2476197704177566586
+    second: WinterberryHolly_0_normal_10
+  - first:
+      213: -7271459301107889777
+    second: WinterberryHolly_0_normal_11
+  - first:
+      213: 5901035444357618545
+    second: WinterberryHolly_0_normal_12
+  - first:
+      213: -4719935341289646767
+    second: WinterberryHolly_0_normal_13
+  - first:
+      213: -8337407616064317840
+    second: WinterberryHolly_0_normal_14
+  - first:
+      213: -6434706240424969067
+    second: WinterberryHolly_0_normal_15
+  - first:
+      213: -7093189345452661254
+    second: WinterberryHolly_0_normal_16
+  - first:
+      213: -2893124184188779580
+    second: WinterberryHolly_0_normal_17
+  - first:
+      213: -3690976093937692812
+    second: WinterberryHolly_0_normal_18
+  - first:
+      213: 7772547230109973690
+    second: WinterberryHolly_0_normal_19
+  - first:
+      213: 151873411250527165
+    second: WinterberryHolly_0_normal_20
+  - first:
+      213: 2635867257874207984
+    second: WinterberryHolly_0_normal_21
+  - first:
+      213: -5805816147463094173
+    second: WinterberryHolly_0_normal_22
+  - first:
+      213: -8620608740304706341
+    second: WinterberryHolly_0_normal_23
+  - first:
+      213: -7931830929396435766
+    second: WinterberryHolly_0_normal_24
+  - first:
+      213: 7655265783693801401
+    second: WinterberryHolly_0_normal_25
+  - first:
+      213: 5266786380090001452
+    second: WinterberryHolly_0_normal_26
+  - first:
+      213: -5477290009119353717
+    second: WinterberryHolly_0_normal_27
+  - first:
+      213: 7617432593745333586
+    second: WinterberryHolly_0_normal_28
+  - first:
+      213: 2420041235488568675
+    second: WinterberryHolly_0_normal_29
+  - first:
+      213: -2113152444706171994
+    second: WinterberryHolly_0_normal_30
+  - first:
+      213: -8200596278736526783
+    second: WinterberryHolly_0_normal_31
+  - first:
+      213: -7021410954602349962
+    second: WinterberryHolly_0_normal_32
+  - first:
+      213: -2887465377851778778
+    second: WinterberryHolly_0_normal_33
+  - first:
+      213: 3965459904358098862
+    second: WinterberryHolly_0_normal_34
+  - first:
+      213: 5958363754878153811
+    second: WinterberryHolly_0_normal_35
+  - first:
+      213: 5064211397401255385
+    second: WinterberryHolly_0_normal_36
+  - first:
+      213: -6429009618333884701
+    second: WinterberryHolly_0_normal_37
+  - first:
+      213: 5402514298688935877
+    second: WinterberryHolly_0_normal_38
+  - first:
+      213: -8847954564475903629
+    second: WinterberryHolly_0_normal_39
+  - first:
+      213: -94516769638266921
+    second: WinterberryHolly_0_normal_40
+  - first:
+      213: 5006867904519801174
+    second: WinterberryHolly_0_normal_41
+  - first:
+      213: 6521777478982037648
+    second: WinterberryHolly_0_normal_42
+  - first:
+      213: 7231827507909936959
+    second: WinterberryHolly_0_normal_43
+  - first:
+      213: -5691425143468271393
+    second: WinterberryHolly_0_normal_44
+  - first:
+      213: 6489881659921788972
+    second: WinterberryHolly_0_normal_45
+  - first:
+      213: -5672945834887019210
+    second: WinterberryHolly_0_normal_46
+  - first:
+      213: -3818944121348118496
+    second: WinterberryHolly_0_normal_47
+  - first:
+      213: 7843104044519023080
+    second: WinterberryHolly_0_normal_48
+  - first:
+      213: 5912000149683759739
+    second: WinterberryHolly_0_normal_49
+  - first:
+      213: -7969883393769737518
+    second: WinterberryHolly_0_normal_50
+  - first:
+      213: 4505028933575411886
+    second: WinterberryHolly_0_normal_51
+  - first:
+      213: 3343715079192831252
+    second: WinterberryHolly_0_normal_52
+  - first:
+      213: -1004869896435361134
+    second: WinterberryHolly_0_normal_53
+  - first:
+      213: 3872181048065112897
+    second: WinterberryHolly_0_normal_54
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 359
+        width: 50
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c425c4380447e3830800000000000000
+      internalID: 4052804535109571148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 359
+        width: 51
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4868c93345b56d000800000000000000
+      internalID: 60336062217356932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 359
+        width: 36
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ef047618b87e9fa0800000000000000
+      internalID: -5792059338705858590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 360
+        width: 23
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f10683fad7cbd38d0800000000000000
+      internalID: -2864926539941126113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 364
+        width: 45
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f0936069be77b5d0800000000000000
+      internalID: -3046827288241663754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 364
+        width: 45
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc7247d2eeb7ca720800000000000000
+      internalID: 2858796126368442316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 280
+        width: 44
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d5d5ff023c405d60800000000000000
+      internalID: 7876879526170842581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 281
+        width: 42
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 457687689bc815fd0800000000000000
+      internalID: -2354946401685182636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 282
+        width: 18
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f489dab424dbdaf0800000000000000
+      internalID: -370469290109205256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 280
+        width: 29
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6db75ad9730460470800000000000000
+      internalID: 8360440365872151510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 281
+        width: 27
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68cbbd8be47c2add0800000000000000
+      internalID: -2476197704177566586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 286
+        width: 17
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8901ce9a46961b90800000000000000
+      internalID: -7271459301107889777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 283
+        width: 22
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17bdcebb870b4e150800000000000000
+      internalID: 5901035444357618545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 282
+        width: 41
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1555e9b70db6f7eb0800000000000000
+      internalID: -4719935341289646767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 283
+        width: 23
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07699d852f39b4c80800000000000000
+      internalID: -8337407616064317840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 209
+        width: 48
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59cfa7154c453b6a0800000000000000
+      internalID: -6434706240424969067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 209
+        width: 44
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af565b32fddef8d90800000000000000
+      internalID: -7093189345452661254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 209
+        width: 45
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c3065602ee89d7d0800000000000000
+      internalID: -2893124184188779580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 215
+        width: 44
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47f82665cc407ccc0800000000000000
+      internalID: -3690976093937692812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 215
+        width: 42
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abcb6aa6682addb60800000000000000
+      internalID: 7772547230109973690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 215
+        width: 41
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb1a6810109b1200800000000000000
+      internalID: 151873411250527165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 151
+        width: 36
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f4dcac3e4b749420800000000000000
+      internalID: 2635867257874207984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 151
+        width: 35
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3604c3379f89d6fa0800000000000000
+      internalID: -5805816147463094173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 151
+        width: 36
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd4a28e46027d5880800000000000000
+      internalID: -8620608740304706341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 153
+        width: 39
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac47eda5bc97ce190800000000000000
+      internalID: -7931830929396435766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 154
+        width: 37
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b77542cba7fc3a60800000000000000
+      internalID: 7655265783693801401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 154
+        width: 36
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c28412dde42671940800000000000000
+      internalID: 5266786380090001452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 154
+        width: 18
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8415a2b1c1ccf3b0800000000000000
+      internalID: -5477290009119353717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 154
+        width: 17
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25d4caac59e86b960800000000000000
+      internalID: 7617432593745333586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 95
+        width: 34
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 365f7178ea6b59120800000000000000
+      internalID: 2420041235488568675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 94
+        width: 29
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a35a092c039ca2e0800000000000000
+      internalID: -2113152444706171994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 96
+        width: 38
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 142e4831221a13e80800000000000000
+      internalID: -8200596278736526783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 96
+        width: 38
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67af3e410ffee8e90800000000000000
+      internalID: -7021410954602349962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 96
+        width: 35
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 629d7eb8989ade7d0800000000000000
+      internalID: -2887465377851778778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 99
+        width: 29
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea7a15ae5c4280730800000000000000
+      internalID: 3965459904358098862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 100
+        width: 29
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 354331c244c50b250800000000000000
+      internalID: 5958363754878153811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 45
+        width: 29
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dd16914f61b74640800000000000000
+      internalID: 5064211397401255385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 44
+        width: 27
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ee93a180d197c6a0800000000000000
+      internalID: -6429009618333884701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 53
+        width: 26
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c79253812699fa40800000000000000
+      internalID: 5402514298688935877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 52
+        width: 26
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3712e9bb330c53580800000000000000
+      internalID: -8847954564475903629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 53
+        width: 26
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d7c460bf7530bef0800000000000000
+      internalID: -94516769638266921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 55
+        width: 27
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6590536e4d7fb7540800000000000000
+      internalID: 5006867904519801174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 55
+        width: 24
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 090fdd23012028a50800000000000000
+      internalID: 6521777478982037648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 55
+        width: 24
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f37ced57dcc9c5460800000000000000
+      internalID: 7231827507909936959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 430
+        y: 55
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd8d8d98cfef301b0800000000000000
+      internalID: -5691425143468271393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 5
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c20f5fd1cf0b01a50800000000000000
+      internalID: 6489881659921788972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 5
+        width: 21
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6350789d1d5a541b0800000000000000
+      internalID: -5672945834887019210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 5
+        width: 28
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 028aaf52e82600bc0800000000000000
+      internalID: -3818944121348118496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_48
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 5
+        width: 13
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e16cfde29d48dc60800000000000000
+      internalID: 7843104044519023080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_49
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 5
+        width: 13
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7ae4f120d4ab0250800000000000000
+      internalID: 5912000149683759739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_50
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 6
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d2f1159749456190800000000000000
+      internalID: -7969883393769737518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_51
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 8
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea88e9842f3158e30800000000000000
+      internalID: 4505028933575411886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_52
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 8
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 415e7651623476e20800000000000000
+      internalID: 3343715079192831252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_53
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 8
+        width: 23
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29a9c79372cfd02f0800000000000000
+      internalID: -1004869896435361134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WinterberryHolly_0_normal_54
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 8
+        width: 23
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14bbbe3c520ccb530800000000000000
+      internalID: 3872181048065112897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WinterberryHolly_0_normal_0: 4052804535109571148
+      WinterberryHolly_0_normal_1: 60336062217356932
+      WinterberryHolly_0_normal_10: -2476197704177566586
+      WinterberryHolly_0_normal_11: -7271459301107889777
+      WinterberryHolly_0_normal_12: 5901035444357618545
+      WinterberryHolly_0_normal_13: -4719935341289646767
+      WinterberryHolly_0_normal_14: -8337407616064317840
+      WinterberryHolly_0_normal_15: -6434706240424969067
+      WinterberryHolly_0_normal_16: -7093189345452661254
+      WinterberryHolly_0_normal_17: -2893124184188779580
+      WinterberryHolly_0_normal_18: -3690976093937692812
+      WinterberryHolly_0_normal_19: 7772547230109973690
+      WinterberryHolly_0_normal_2: -5792059338705858590
+      WinterberryHolly_0_normal_20: 151873411250527165
+      WinterberryHolly_0_normal_21: 2635867257874207984
+      WinterberryHolly_0_normal_22: -5805816147463094173
+      WinterberryHolly_0_normal_23: -8620608740304706341
+      WinterberryHolly_0_normal_24: -7931830929396435766
+      WinterberryHolly_0_normal_25: 7655265783693801401
+      WinterberryHolly_0_normal_26: 5266786380090001452
+      WinterberryHolly_0_normal_27: -5477290009119353717
+      WinterberryHolly_0_normal_28: 7617432593745333586
+      WinterberryHolly_0_normal_29: 2420041235488568675
+      WinterberryHolly_0_normal_3: -2864926539941126113
+      WinterberryHolly_0_normal_30: -2113152444706171994
+      WinterberryHolly_0_normal_31: -8200596278736526783
+      WinterberryHolly_0_normal_32: -7021410954602349962
+      WinterberryHolly_0_normal_33: -2887465377851778778
+      WinterberryHolly_0_normal_34: 3965459904358098862
+      WinterberryHolly_0_normal_35: 5958363754878153811
+      WinterberryHolly_0_normal_36: 5064211397401255385
+      WinterberryHolly_0_normal_37: -6429009618333884701
+      WinterberryHolly_0_normal_38: 5402514298688935877
+      WinterberryHolly_0_normal_39: -8847954564475903629
+      WinterberryHolly_0_normal_4: -3046827288241663754
+      WinterberryHolly_0_normal_40: -94516769638266921
+      WinterberryHolly_0_normal_41: 5006867904519801174
+      WinterberryHolly_0_normal_42: 6521777478982037648
+      WinterberryHolly_0_normal_43: 7231827507909936959
+      WinterberryHolly_0_normal_44: -5691425143468271393
+      WinterberryHolly_0_normal_45: 6489881659921788972
+      WinterberryHolly_0_normal_46: -5672945834887019210
+      WinterberryHolly_0_normal_47: -3818944121348118496
+      WinterberryHolly_0_normal_48: 7843104044519023080
+      WinterberryHolly_0_normal_49: 5912000149683759739
+      WinterberryHolly_0_normal_5: 2858796126368442316
+      WinterberryHolly_0_normal_50: -7969883393769737518
+      WinterberryHolly_0_normal_51: 4505028933575411886
+      WinterberryHolly_0_normal_52: 3343715079192831252
+      WinterberryHolly_0_normal_53: -1004869896435361134
+      WinterberryHolly_0_normal_54: 3872181048065112897
+      WinterberryHolly_0_normal_6: 7876879526170842581
+      WinterberryHolly_0_normal_7: -2354946401685182636
+      WinterberryHolly_0_normal_8: -370469290109205256
+      WinterberryHolly_0_normal_9: 8360440365872151510
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 7067015fb62c4db409930937ab426d4f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6477914233162341241
+    second: Steeplebush_0_unlit_0
+  - first:
+      213: -501598239913959014
+    second: Steeplebush_0_unlit_1
+  - first:
+      213: -7088984238237132056
+    second: Steeplebush_0_unlit_2
+  - first:
+      213: -6539317992497300183
+    second: Steeplebush_0_unlit_3
+  - first:
+      213: -447488868926473186
+    second: Steeplebush_0_unlit_4
+  - first:
+      213: -9198124733624909084
+    second: Steeplebush_0_unlit_5
+  - first:
+      213: -7107055567051859004
+    second: Steeplebush_0_unlit_6
+  - first:
+      213: -8579642771375611880
+    second: Steeplebush_0_unlit_7
+  - first:
+      213: 705271551614341596
+    second: Steeplebush_0_unlit_8
+  - first:
+      213: -2917683017746958118
+    second: Steeplebush_0_unlit_9
+  - first:
+      213: -3667877342835224635
+    second: Steeplebush_0_unlit_10
+  - first:
+      213: 2484985600747117069
+    second: Steeplebush_0_unlit_11
+  - first:
+      213: -4078375293704674993
+    second: Steeplebush_0_unlit_12
+  - first:
+      213: 6557656348858196258
+    second: Steeplebush_0_unlit_13
+  - first:
+      213: -3139089988924729531
+    second: Steeplebush_0_unlit_14
+  - first:
+      213: -412744762706952265
+    second: Steeplebush_0_unlit_15
+  - first:
+      213: -4196477970086078740
+    second: Steeplebush_0_unlit_16
+  - first:
+      213: -235199225449001684
+    second: Steeplebush_0_unlit_17
+  - first:
+      213: -3224788031662196563
+    second: Steeplebush_0_unlit_18
+  - first:
+      213: -7014675907459314684
+    second: Steeplebush_0_unlit_19
+  - first:
+      213: 5801851986328951077
+    second: Steeplebush_0_unlit_20
+  - first:
+      213: -3585376686955013775
+    second: Steeplebush_0_unlit_21
+  - first:
+      213: -6408611398903912324
+    second: Steeplebush_0_unlit_22
+  - first:
+      213: 4262451559805098984
+    second: Steeplebush_0_unlit_23
+  - first:
+      213: 7876230245158225004
+    second: Steeplebush_0_unlit_24
+  - first:
+      213: -1348334221343949210
+    second: Steeplebush_0_unlit_25
+  - first:
+      213: 1318183522791306456
+    second: Steeplebush_0_unlit_26
+  - first:
+      213: -287046721953068793
+    second: Steeplebush_0_unlit_27
+  - first:
+      213: 7174838515997856526
+    second: Steeplebush_0_unlit_28
+  - first:
+      213: 4616970999569260679
+    second: Steeplebush_0_unlit_29
+  - first:
+      213: 1059223085259678212
+    second: Steeplebush_0_unlit_30
+  - first:
+      213: -6761032310727706191
+    second: Steeplebush_0_unlit_31
+  - first:
+      213: -6342653195067062765
+    second: Steeplebush_0_unlit_32
+  - first:
+      213: 9143276987559600701
+    second: Steeplebush_0_unlit_33
+  - first:
+      213: -402929946249547067
+    second: Steeplebush_0_unlit_34
+  - first:
+      213: 8303319690228324942
+    second: Steeplebush_0_unlit_35
+  - first:
+      213: 4561539836276396525
+    second: Steeplebush_0_unlit_36
+  - first:
+      213: 6330075720796352878
+    second: Steeplebush_0_unlit_37
+  - first:
+      213: -5094462227722753222
+    second: Steeplebush_0_unlit_38
+  - first:
+      213: -7884317078963702656
+    second: Steeplebush_0_unlit_39
+  - first:
+      213: -292937282059742868
+    second: Steeplebush_0_unlit_40
+  - first:
+      213: 847545990925661457
+    second: Steeplebush_0_unlit_41
+  - first:
+      213: 6643103462551468597
+    second: Steeplebush_0_unlit_42
+  - first:
+      213: -4679303148517421112
+    second: Steeplebush_0_unlit_43
+  - first:
+      213: 288117327549865867
+    second: Steeplebush_0_unlit_44
+  - first:
+      213: -5592316095023676300
+    second: Steeplebush_0_unlit_45
+  - first:
+      213: 518891110555505678
+    second: Steeplebush_0_unlit_46
+  - first:
+      213: -3712309671572697022
+    second: Steeplebush_0_unlit_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 111
+        width: 28
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97b96117cac26e950800000000000000
+      internalID: 6477914233162341241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 111
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a91a7f1fe07f909f0800000000000000
+      internalID: -501598239913959014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 111
+        width: 28
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ea5885f46ede9d90800000000000000
+      internalID: -7088984238237132056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 112
+        width: 30
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92db0efbeecaf35a0800000000000000
+      internalID: -6539317992497300183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 113
+        width: 29
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1c32be9e333ac9f0800000000000000
+      internalID: -447488868926473186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 112
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e28d8cd942b95080800000000000000
+      internalID: -9198124733624909084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 112
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cb59e6dd9aae5d90800000000000000
+      internalID: -7107055567051859004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 112
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 810a8683b5cfee880800000000000000
+      internalID: -8579642771375611880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 112
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd159205db0a9c900800000000000000
+      internalID: 705271551614341596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 112
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad8b00001ce4287d0800000000000000
+      internalID: -2917683017746958118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 69
+        width: 25
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cf4a9c6df4191dc0800000000000000
+      internalID: -3667877342835224635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 70
+        width: 26
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0a1e74ec317c7220800000000000000
+      internalID: 2484985600747117069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 70
+        width: 25
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f41e00e4743b667c0800000000000000
+      internalID: -4078375293704674993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 71
+        width: 25
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22127c094b9710b50800000000000000
+      internalID: 6557656348858196258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 71
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54718246946bf64d0800000000000000
+      internalID: -3139089988924729531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 71
+        width: 24
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bff2fb33d2a54af0800000000000000
+      internalID: -412744762706952265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 74
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce65445258d13c5c0800000000000000
+      internalID: -4196477970086078740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 76
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2d4aa3fc876cbcf0800000000000000
+      internalID: -235199225449001684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 76
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da8f7d0fe504f33d0800000000000000
+      internalID: -3224788031662196563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 77
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40c85617d6dd6ae90800000000000000
+      internalID: -7014675907459314684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 76
+        width: 23
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 529188c54a1548050800000000000000
+      internalID: 5801851986328951077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 34
+        width: 22
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 179541c36ee2e3ec0800000000000000
+      internalID: -3585376686955013775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 34
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7820d013e90017a0800000000000000
+      internalID: -6408611398903912324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 36
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8eb1e763c15472b30800000000000000
+      internalID: 4262451559805098984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 35
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6408db8dadfd4d60800000000000000
+      internalID: 7876230245158225004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 35
+        width: 21
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66e7a426b21c94de0800000000000000
+      internalID: -1348334221343949210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 34
+        width: 21
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d4bfb01ee02b4210800000000000000
+      internalID: 1318183522791306456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 35
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7090c08f684340cf0800000000000000
+      internalID: -287046721953068793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 35
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e03d7dacd95229360800000000000000
+      internalID: 7174838515997856526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 35
+        width: 21
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7802b9f89a6c21040800000000000000
+      internalID: 4616970999569260679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 35
+        width: 21
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 402ebc6b8cd13be00800000000000000
+      internalID: 1059223085259678212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 35
+        width: 19
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b9f2245fecfb22a0800000000000000
+      internalID: -6761032310727706191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 40
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 316088e168e5af7a0800000000000000
+      internalID: -6342653195067062765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 511
+        y: 39
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d326e7e1af173ee70800000000000000
+      internalID: 9143276987559600701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 5
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c2bd644951886af0800000000000000
+      internalID: -402929946249547067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 5
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4ad090f3415b3370800000000000000
+      internalID: 8303319690228324942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 5
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de15c022058dd4f30800000000000000
+      internalID: 4561539836276396525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 5
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6134637452f8d750800000000000000
+      internalID: 6330075720796352878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 6
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3ba0f27895dc49b0800000000000000
+      internalID: -5094462227722753222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 6
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 084b2dbb367459290800000000000000
+      internalID: -7884317078963702656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 6
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c615c5118174febf0800000000000000
+      internalID: -292937282059742868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 7
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1153ee7969613cb00800000000000000
+      internalID: 847545990925661457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 6
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53a3c8b076b013c50800000000000000
+      internalID: 6643103462551468597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 7
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cf80441496cf0fb0800000000000000
+      internalID: -4679303148517421112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 7
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8f9e32de299ff300800000000000000
+      internalID: 288117327549865867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 7
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4740a64142a1462b0800000000000000
+      internalID: -5592316095023676300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 8
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e04d4c147b8733700800000000000000
+      internalID: 518891110555505678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Steeplebush_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 7
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24099a9b50a3b7cc0800000000000000
+      internalID: -3712309671572697022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Steeplebush_0_unlit_0: 6477914233162341241
+      Steeplebush_0_unlit_1: -501598239913959014
+      Steeplebush_0_unlit_10: -3667877342835224635
+      Steeplebush_0_unlit_11: 2484985600747117069
+      Steeplebush_0_unlit_12: -4078375293704674993
+      Steeplebush_0_unlit_13: 6557656348858196258
+      Steeplebush_0_unlit_14: -3139089988924729531
+      Steeplebush_0_unlit_15: -412744762706952265
+      Steeplebush_0_unlit_16: -4196477970086078740
+      Steeplebush_0_unlit_17: -235199225449001684
+      Steeplebush_0_unlit_18: -3224788031662196563
+      Steeplebush_0_unlit_19: -7014675907459314684
+      Steeplebush_0_unlit_2: -7088984238237132056
+      Steeplebush_0_unlit_20: 5801851986328951077
+      Steeplebush_0_unlit_21: -3585376686955013775
+      Steeplebush_0_unlit_22: -6408611398903912324
+      Steeplebush_0_unlit_23: 4262451559805098984
+      Steeplebush_0_unlit_24: 7876230245158225004
+      Steeplebush_0_unlit_25: -1348334221343949210
+      Steeplebush_0_unlit_26: 1318183522791306456
+      Steeplebush_0_unlit_27: -287046721953068793
+      Steeplebush_0_unlit_28: 7174838515997856526
+      Steeplebush_0_unlit_29: 4616970999569260679
+      Steeplebush_0_unlit_3: -6539317992497300183
+      Steeplebush_0_unlit_30: 1059223085259678212
+      Steeplebush_0_unlit_31: -6761032310727706191
+      Steeplebush_0_unlit_32: -6342653195067062765
+      Steeplebush_0_unlit_33: 9143276987559600701
+      Steeplebush_0_unlit_34: -402929946249547067
+      Steeplebush_0_unlit_35: 8303319690228324942
+      Steeplebush_0_unlit_36: 4561539836276396525
+      Steeplebush_0_unlit_37: 6330075720796352878
+      Steeplebush_0_unlit_38: -5094462227722753222
+      Steeplebush_0_unlit_39: -7884317078963702656
+      Steeplebush_0_unlit_4: -447488868926473186
+      Steeplebush_0_unlit_40: -292937282059742868
+      Steeplebush_0_unlit_41: 847545990925661457
+      Steeplebush_0_unlit_42: 6643103462551468597
+      Steeplebush_0_unlit_43: -4679303148517421112
+      Steeplebush_0_unlit_44: 288117327549865867
+      Steeplebush_0_unlit_45: -5592316095023676300
+      Steeplebush_0_unlit_46: 518891110555505678
+      Steeplebush_0_unlit_47: -3712309671572697022
+      Steeplebush_0_unlit_5: -9198124733624909084
+      Steeplebush_0_unlit_6: -7107055567051859004
+      Steeplebush_0_unlit_7: -8579642771375611880
+      Steeplebush_0_unlit_8: 705271551614341596
+      Steeplebush_0_unlit_9: -2917683017746958118
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

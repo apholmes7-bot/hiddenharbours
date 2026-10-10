@@ -1,0 +1,6526 @@
+fileFormatVersion: 2
+guid: 31341cb9411880c4f91c3d19dd0844e4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5909712292559616456
+    second: Bladderwrack_0_unlit_0
+  - first:
+      213: -1610311182322492177
+    second: Bladderwrack_0_unlit_1
+  - first:
+      213: 945249458044803177
+    second: Bladderwrack_0_unlit_2
+  - first:
+      213: -5024477645313741529
+    second: Bladderwrack_0_unlit_3
+  - first:
+      213: 3596440272286171567
+    second: Bladderwrack_0_unlit_4
+  - first:
+      213: -7790968031865242228
+    second: Bladderwrack_0_unlit_5
+  - first:
+      213: -7492928823655108551
+    second: Bladderwrack_0_unlit_6
+  - first:
+      213: 2172436859025407351
+    second: Bladderwrack_0_unlit_7
+  - first:
+      213: -8418616824624312141
+    second: Bladderwrack_0_unlit_8
+  - first:
+      213: 6436042844060619397
+    second: Bladderwrack_0_unlit_9
+  - first:
+      213: 159956321539861898
+    second: Bladderwrack_0_unlit_10
+  - first:
+      213: -8039326762456099006
+    second: Bladderwrack_0_unlit_11
+  - first:
+      213: -1173075089072257844
+    second: Bladderwrack_0_unlit_12
+  - first:
+      213: 3336426540543509
+    second: Bladderwrack_0_unlit_13
+  - first:
+      213: -7111536304266804752
+    second: Bladderwrack_0_unlit_14
+  - first:
+      213: -1032208719276762480
+    second: Bladderwrack_0_unlit_15
+  - first:
+      213: -118202935681458176
+    second: Bladderwrack_0_unlit_16
+  - first:
+      213: 9201864986708772939
+    second: Bladderwrack_0_unlit_17
+  - first:
+      213: 7704233800074780262
+    second: Bladderwrack_0_unlit_18
+  - first:
+      213: -3973550336664973550
+    second: Bladderwrack_0_unlit_19
+  - first:
+      213: -4713958370045716257
+    second: Bladderwrack_0_unlit_20
+  - first:
+      213: 38987357894457057
+    second: Bladderwrack_0_unlit_21
+  - first:
+      213: 3179149904271340949
+    second: Bladderwrack_0_unlit_22
+  - first:
+      213: 1413830693494642695
+    second: Bladderwrack_0_unlit_23
+  - first:
+      213: -759121255110763676
+    second: Bladderwrack_0_unlit_24
+  - first:
+      213: -5147217948545556559
+    second: Bladderwrack_0_unlit_25
+  - first:
+      213: -7569903694686900738
+    second: Bladderwrack_0_unlit_26
+  - first:
+      213: -2225685390956125833
+    second: Bladderwrack_0_unlit_27
+  - first:
+      213: 3308685771874954593
+    second: Bladderwrack_0_unlit_28
+  - first:
+      213: 4806604981812328103
+    second: Bladderwrack_0_unlit_29
+  - first:
+      213: 5807692491099425835
+    second: Bladderwrack_0_unlit_30
+  - first:
+      213: 2444177221530625159
+    second: Bladderwrack_0_unlit_31
+  - first:
+      213: -7237665901342376010
+    second: Bladderwrack_0_unlit_32
+  - first:
+      213: 5120826313311996023
+    second: Bladderwrack_0_unlit_33
+  - first:
+      213: -4245377086642011484
+    second: Bladderwrack_0_unlit_34
+  - first:
+      213: 6646302444244129499
+    second: Bladderwrack_0_unlit_35
+  - first:
+      213: 9040676561184760880
+    second: Bladderwrack_0_unlit_36
+  - first:
+      213: -3113021883035207859
+    second: Bladderwrack_0_unlit_37
+  - first:
+      213: -791242874965035963
+    second: Bladderwrack_0_unlit_38
+  - first:
+      213: 3269609553340818486
+    second: Bladderwrack_0_unlit_39
+  - first:
+      213: -8370847901004125759
+    second: Bladderwrack_0_unlit_40
+  - first:
+      213: 2599026703923102946
+    second: Bladderwrack_0_unlit_41
+  - first:
+      213: 740172691656766769
+    second: Bladderwrack_0_unlit_42
+  - first:
+      213: -7472677160649574399
+    second: Bladderwrack_0_unlit_43
+  - first:
+      213: -6666258914449406898
+    second: Bladderwrack_0_unlit_44
+  - first:
+      213: 1499316731060766259
+    second: Bladderwrack_0_unlit_45
+  - first:
+      213: 2188023673827858809
+    second: Bladderwrack_0_unlit_46
+  - first:
+      213: 3619854973428195680
+    second: Bladderwrack_0_unlit_47
+  - first:
+      213: 5875846554749347193
+    second: Bladderwrack_0_unlit_48
+  - first:
+      213: -5620109812468578656
+    second: Bladderwrack_0_unlit_49
+  - first:
+      213: 7851256927070020004
+    second: Bladderwrack_0_unlit_50
+  - first:
+      213: -5062052282099287990
+    second: Bladderwrack_0_unlit_51
+  - first:
+      213: 7840624835139905039
+    second: Bladderwrack_0_unlit_52
+  - first:
+      213: 5132360273846089639
+    second: Bladderwrack_0_unlit_53
+  - first:
+      213: 6104097058754832053
+    second: Bladderwrack_0_unlit_54
+  - first:
+      213: 2410230926614950878
+    second: Bladderwrack_0_unlit_55
+  - first:
+      213: -2434517380086276542
+    second: Bladderwrack_0_unlit_56
+  - first:
+      213: 3408902058278940339
+    second: Bladderwrack_0_unlit_57
+  - first:
+      213: 5946999222375373669
+    second: Bladderwrack_0_unlit_58
+  - first:
+      213: -705077637046589127
+    second: Bladderwrack_0_unlit_59
+  - first:
+      213: 8014932455092061543
+    second: Bladderwrack_0_unlit_60
+  - first:
+      213: 7066164460753635283
+    second: Bladderwrack_0_unlit_61
+  - first:
+      213: -1374986901349216029
+    second: Bladderwrack_0_unlit_62
+  - first:
+      213: -3073882728674951063
+    second: Bladderwrack_0_unlit_63
+  - first:
+      213: 6215989509986602485
+    second: Bladderwrack_0_unlit_64
+  - first:
+      213: -5452686425329598743
+    second: Bladderwrack_0_unlit_65
+  - first:
+      213: -7493459150765115745
+    second: Bladderwrack_0_unlit_66
+  - first:
+      213: 8062353022509372933
+    second: Bladderwrack_0_unlit_67
+  - first:
+      213: 754347213004603389
+    second: Bladderwrack_0_unlit_68
+  - first:
+      213: 3526599241119128164
+    second: Bladderwrack_0_unlit_69
+  - first:
+      213: 144389331019774514
+    second: Bladderwrack_0_unlit_70
+  - first:
+      213: -3852443341255052559
+    second: Bladderwrack_0_unlit_71
+  - first:
+      213: -3050281280947201721
+    second: Bladderwrack_0_unlit_72
+  - first:
+      213: -8064781483413569843
+    second: Bladderwrack_0_unlit_73
+  - first:
+      213: 8551064198940969544
+    second: Bladderwrack_0_unlit_74
+  - first:
+      213: 3957062887558139329
+    second: Bladderwrack_0_unlit_75
+  - first:
+      213: 6620833898247305395
+    second: Bladderwrack_0_unlit_76
+  - first:
+      213: 2438488620848282040
+    second: Bladderwrack_0_unlit_77
+  - first:
+      213: -2010548132459195504
+    second: Bladderwrack_0_unlit_78
+  - first:
+      213: 8189917601867761331
+    second: Bladderwrack_0_unlit_79
+  - first:
+      213: 6485874640234711499
+    second: Bladderwrack_0_unlit_80
+  - first:
+      213: 76172349638320044
+    second: Bladderwrack_0_unlit_81
+  - first:
+      213: -3176798832784882110
+    second: Bladderwrack_0_unlit_82
+  - first:
+      213: 1582827504605852340
+    second: Bladderwrack_0_unlit_83
+  - first:
+      213: -324657898762297109
+    second: Bladderwrack_0_unlit_84
+  - first:
+      213: 4156729477580296823
+    second: Bladderwrack_0_unlit_85
+  - first:
+      213: -4391786896772505727
+    second: Bladderwrack_0_unlit_86
+  - first:
+      213: 8416393291973375178
+    second: Bladderwrack_0_unlit_87
+  - first:
+      213: 1801547916142547244
+    second: Bladderwrack_0_unlit_88
+  - first:
+      213: -55533962799033424
+    second: Bladderwrack_0_unlit_89
+  - first:
+      213: -7288271816029633852
+    second: Bladderwrack_0_unlit_90
+  - first:
+      213: -3130167118700051164
+    second: Bladderwrack_0_unlit_91
+  - first:
+      213: 8846773872273689500
+    second: Bladderwrack_0_unlit_92
+  - first:
+      213: -2049220094578342822
+    second: Bladderwrack_0_unlit_93
+  - first:
+      213: -1209300066862886845
+    second: Bladderwrack_0_unlit_94
+  - first:
+      213: -7977341336718998600
+    second: Bladderwrack_0_unlit_95
+  - first:
+      213: -7354489086208930861
+    second: Bladderwrack_0_unlit_96
+  - first:
+      213: -5108424717642021910
+    second: Bladderwrack_0_unlit_97
+  - first:
+      213: -3714476943620302907
+    second: Bladderwrack_0_unlit_98
+  - first:
+      213: 8656900699470880595
+    second: Bladderwrack_0_unlit_99
+  - first:
+      213: -1894899719654708695
+    second: Bladderwrack_0_unlit_100
+  - first:
+      213: -2888712719917086225
+    second: Bladderwrack_0_unlit_101
+  - first:
+      213: 5375889735493155846
+    second: Bladderwrack_0_unlit_102
+  - first:
+      213: 2729319552376758626
+    second: Bladderwrack_0_unlit_103
+  - first:
+      213: -7887167238308078804
+    second: Bladderwrack_0_unlit_104
+  - first:
+      213: 2198940637940244569
+    second: Bladderwrack_0_unlit_105
+  - first:
+      213: 1233239989189326703
+    second: Bladderwrack_0_unlit_106
+  - first:
+      213: -2297181029371623228
+    second: Bladderwrack_0_unlit_107
+  - first:
+      213: 7807279952615225767
+    second: Bladderwrack_0_unlit_108
+  - first:
+      213: -1795393002196316454
+    second: Bladderwrack_0_unlit_109
+  - first:
+      213: -8733743504102080651
+    second: Bladderwrack_0_unlit_110
+  - first:
+      213: 7013106691216147856
+    second: Bladderwrack_0_unlit_111
+  - first:
+      213: -7456633247479812399
+    second: Bladderwrack_0_unlit_112
+  - first:
+      213: 5832071517503798814
+    second: Bladderwrack_0_unlit_113
+  - first:
+      213: 1987476408710442984
+    second: Bladderwrack_0_unlit_114
+  - first:
+      213: -4171950566184855931
+    second: Bladderwrack_0_unlit_115
+  - first:
+      213: -2713207513956007958
+    second: Bladderwrack_0_unlit_116
+  - first:
+      213: -7809405046557775974
+    second: Bladderwrack_0_unlit_117
+  - first:
+      213: -3392913838158812603
+    second: Bladderwrack_0_unlit_118
+  - first:
+      213: -8177167337472518909
+    second: Bladderwrack_0_unlit_119
+  - first:
+      213: -3106902800291278186
+    second: Bladderwrack_0_unlit_120
+  - first:
+      213: 1773001620373531204
+    second: Bladderwrack_0_unlit_121
+  - first:
+      213: -5559152346757993006
+    second: Bladderwrack_0_unlit_122
+  - first:
+      213: 2073806803842923105
+    second: Bladderwrack_0_unlit_123
+  - first:
+      213: -6403729957013998330
+    second: Bladderwrack_0_unlit_124
+  - first:
+      213: 1466817325551096645
+    second: Bladderwrack_0_unlit_125
+  - first:
+      213: -5862987247183491044
+    second: Bladderwrack_0_unlit_126
+  - first:
+      213: -4116639017189593142
+    second: Bladderwrack_0_unlit_127
+  - first:
+      213: -2201818015706275396
+    second: Bladderwrack_0_unlit_128
+  - first:
+      213: -7470382429265408497
+    second: Bladderwrack_0_unlit_129
+  - first:
+      213: -4297219404102142357
+    second: Bladderwrack_0_unlit_130
+  - first:
+      213: 4622381535255815723
+    second: Bladderwrack_0_unlit_131
+  - first:
+      213: -9191184161504626681
+    second: Bladderwrack_0_unlit_132
+  - first:
+      213: 4042599523601668518
+    second: Bladderwrack_0_unlit_133
+  - first:
+      213: -2013234256828484475
+    second: Bladderwrack_0_unlit_134
+  - first:
+      213: 7083094144064481704
+    second: Bladderwrack_0_unlit_135
+  - first:
+      213: -5126559306754147990
+    second: Bladderwrack_0_unlit_136
+  - first:
+      213: 3137641770606332420
+    second: Bladderwrack_0_unlit_137
+  - first:
+      213: -6203691655084683276
+    second: Bladderwrack_0_unlit_138
+  - first:
+      213: -1510067508405804925
+    second: Bladderwrack_0_unlit_139
+  - first:
+      213: -839522413360729674
+    second: Bladderwrack_0_unlit_140
+  - first:
+      213: 2536368170673214042
+    second: Bladderwrack_0_unlit_141
+  - first:
+      213: -4126251853697124629
+    second: Bladderwrack_0_unlit_142
+  - first:
+      213: -4321325919022789403
+    second: Bladderwrack_0_unlit_143
+  - first:
+      213: 4194959699615821301
+    second: Bladderwrack_0_unlit_144
+  - first:
+      213: -2967732905269659422
+    second: Bladderwrack_0_unlit_145
+  - first:
+      213: 5215457440711891870
+    second: Bladderwrack_0_unlit_146
+  - first:
+      213: -5376288634058710902
+    second: Bladderwrack_0_unlit_147
+  - first:
+      213: -5715764950216111419
+    second: Bladderwrack_0_unlit_148
+  - first:
+      213: 4378944149699744263
+    second: Bladderwrack_0_unlit_149
+  - first:
+      213: -2580079916134495034
+    second: Bladderwrack_0_unlit_150
+  - first:
+      213: -7306504728999088762
+    second: Bladderwrack_0_unlit_151
+  - first:
+      213: 1612172176867896653
+    second: Bladderwrack_0_unlit_152
+  - first:
+      213: -4614969972245861331
+    second: Bladderwrack_0_unlit_153
+  - first:
+      213: 3708510936177190187
+    second: Bladderwrack_0_unlit_154
+  - first:
+      213: -874494328870480689
+    second: Bladderwrack_0_unlit_155
+  - first:
+      213: -3608913051279937757
+    second: Bladderwrack_0_unlit_156
+  - first:
+      213: -8590766051546961736
+    second: Bladderwrack_0_unlit_157
+  - first:
+      213: -6385800314223057674
+    second: Bladderwrack_0_unlit_158
+  - first:
+      213: -9202660626680569516
+    second: Bladderwrack_0_unlit_159
+  - first:
+      213: -511538438537493513
+    second: Bladderwrack_0_unlit_160
+  - first:
+      213: -4357896398097220116
+    second: Bladderwrack_0_unlit_161
+  - first:
+      213: 238195230656023592
+    second: Bladderwrack_0_unlit_162
+  - first:
+      213: 3664159983543953933
+    second: Bladderwrack_0_unlit_163
+  - first:
+      213: 1353702361547563081
+    second: Bladderwrack_0_unlit_164
+  - first:
+      213: -6727432243456553578
+    second: Bladderwrack_0_unlit_165
+  - first:
+      213: -644840073984778375
+    second: Bladderwrack_0_unlit_166
+  - first:
+      213: 2650134409517738276
+    second: Bladderwrack_0_unlit_167
+  - first:
+      213: -7540318362778974118
+    second: Bladderwrack_0_unlit_168
+  - first:
+      213: -4271320218443631477
+    second: Bladderwrack_0_unlit_169
+  - first:
+      213: 7002118126438138739
+    second: Bladderwrack_0_unlit_170
+  - first:
+      213: 6906612721826881055
+    second: Bladderwrack_0_unlit_171
+  - first:
+      213: -2998708747795154150
+    second: Bladderwrack_0_unlit_172
+  - first:
+      213: 4555385012373258143
+    second: Bladderwrack_0_unlit_173
+  - first:
+      213: -6682548198903824551
+    second: Bladderwrack_0_unlit_174
+  - first:
+      213: -892819554238857847
+    second: Bladderwrack_0_unlit_175
+  - first:
+      213: 1744646030227024196
+    second: Bladderwrack_0_unlit_176
+  - first:
+      213: -6558228505877391072
+    second: Bladderwrack_0_unlit_177
+  - first:
+      213: -1312510857196928359
+    second: Bladderwrack_0_unlit_178
+  - first:
+      213: -6843010120800136506
+    second: Bladderwrack_0_unlit_179
+  - first:
+      213: -3247105433598159537
+    second: Bladderwrack_0_unlit_180
+  - first:
+      213: -3313539870941296648
+    second: Bladderwrack_0_unlit_181
+  - first:
+      213: -628299951198291818
+    second: Bladderwrack_0_unlit_182
+  - first:
+      213: 6320385758669631473
+    second: Bladderwrack_0_unlit_183
+  - first:
+      213: 8823871336285757833
+    second: Bladderwrack_0_unlit_184
+  - first:
+      213: -7900793919336096486
+    second: Bladderwrack_0_unlit_185
+  - first:
+      213: 8888618473257733167
+    second: Bladderwrack_0_unlit_186
+  - first:
+      213: -6322622288190362480
+    second: Bladderwrack_0_unlit_187
+  - first:
+      213: 6934542798305251372
+    second: Bladderwrack_0_unlit_188
+  - first:
+      213: -5551457121037737776
+    second: Bladderwrack_0_unlit_189
+  - first:
+      213: 6412089711803847813
+    second: Bladderwrack_0_unlit_190
+  - first:
+      213: -7314407164387220945
+    second: Bladderwrack_0_unlit_191
+  - first:
+      213: 6808050725840667347
+    second: Bladderwrack_0_unlit_192
+  - first:
+      213: 7865780467270273263
+    second: Bladderwrack_0_unlit_193
+  - first:
+      213: -1787339092404554103
+    second: Bladderwrack_0_unlit_194
+  - first:
+      213: -2102450429665063969
+    second: Bladderwrack_0_unlit_195
+  - first:
+      213: -6146648913119082477
+    second: Bladderwrack_0_unlit_196
+  - first:
+      213: -8004912920515296967
+    second: Bladderwrack_0_unlit_197
+  - first:
+      213: 8789843891887469810
+    second: Bladderwrack_0_unlit_198
+  - first:
+      213: 2087290461998496301
+    second: Bladderwrack_0_unlit_199
+  - first:
+      213: 5204827651755066474
+    second: Bladderwrack_0_unlit_200
+  - first:
+      213: 8296943277570300291
+    second: Bladderwrack_0_unlit_201
+  - first:
+      213: -5577823473057853497
+    second: Bladderwrack_0_unlit_202
+  - first:
+      213: 5702946521813015864
+    second: Bladderwrack_0_unlit_203
+  - first:
+      213: -6822606324090164329
+    second: Bladderwrack_0_unlit_204
+  - first:
+      213: -4143555056503465735
+    second: Bladderwrack_0_unlit_205
+  - first:
+      213: 8842495891620639094
+    second: Bladderwrack_0_unlit_206
+  - first:
+      213: -7262666085156086279
+    second: Bladderwrack_0_unlit_207
+  - first:
+      213: 7824156453010407541
+    second: Bladderwrack_0_unlit_208
+  - first:
+      213: -266135288684970478
+    second: Bladderwrack_0_unlit_209
+  - first:
+      213: 7024024815404732753
+    second: Bladderwrack_0_unlit_210
+  - first:
+      213: 3489051291424813573
+    second: Bladderwrack_0_unlit_211
+  - first:
+      213: 337482376311071391
+    second: Bladderwrack_0_unlit_212
+  - first:
+      213: 6287780600471647418
+    second: Bladderwrack_0_unlit_213
+  - first:
+      213: -1785337531676389574
+    second: Bladderwrack_0_unlit_214
+  - first:
+      213: 7312216000957286372
+    second: Bladderwrack_0_unlit_215
+  - first:
+      213: 871847285271076354
+    second: Bladderwrack_0_unlit_216
+  - first:
+      213: 4582411363468477625
+    second: Bladderwrack_0_unlit_217
+  - first:
+      213: -8654882375495850639
+    second: Bladderwrack_0_unlit_218
+  - first:
+      213: 3819783048339510550
+    second: Bladderwrack_0_unlit_219
+  - first:
+      213: 7767615015503461322
+    second: Bladderwrack_0_unlit_220
+  - first:
+      213: 5506413535231852617
+    second: Bladderwrack_0_unlit_221
+  - first:
+      213: -680435594931919148
+    second: Bladderwrack_0_unlit_222
+  - first:
+      213: 8340889740193388546
+    second: Bladderwrack_0_unlit_223
+  - first:
+      213: -37921832729694855
+    second: Bladderwrack_0_unlit_224
+  - first:
+      213: 4652966544753877445
+    second: Bladderwrack_0_unlit_225
+  - first:
+      213: -7131056702342105197
+    second: Bladderwrack_0_unlit_226
+  - first:
+      213: -3137532453945743015
+    second: Bladderwrack_0_unlit_227
+  - first:
+      213: 7024617409565989289
+    second: Bladderwrack_0_unlit_228
+  - first:
+      213: 5523143881909466332
+    second: Bladderwrack_0_unlit_229
+  - first:
+      213: 8539604791819999029
+    second: Bladderwrack_0_unlit_230
+  - first:
+      213: 3981854989620650244
+    second: Bladderwrack_0_unlit_231
+  - first:
+      213: -6095762080967240488
+    second: Bladderwrack_0_unlit_232
+  - first:
+      213: 452967252321332798
+    second: Bladderwrack_0_unlit_233
+  - first:
+      213: -1111708900013963786
+    second: Bladderwrack_0_unlit_234
+  - first:
+      213: -6706754687311202529
+    second: Bladderwrack_0_unlit_235
+  - first:
+      213: 4305185195309726439
+    second: Bladderwrack_0_unlit_236
+  - first:
+      213: -8349639036878338120
+    second: Bladderwrack_0_unlit_237
+  - first:
+      213: -1650525465901971703
+    second: Bladderwrack_0_unlit_238
+  - first:
+      213: -3570454540485533146
+    second: Bladderwrack_0_unlit_239
+  - first:
+      213: -1539059588964400649
+    second: Bladderwrack_0_unlit_240
+  - first:
+      213: 6750291180024916602
+    second: Bladderwrack_0_unlit_241
+  - first:
+      213: -6688808757370732119
+    second: Bladderwrack_0_unlit_242
+  - first:
+      213: -5562328385574674943
+    second: Bladderwrack_0_unlit_243
+  - first:
+      213: -920458916777109611
+    second: Bladderwrack_0_unlit_244
+  - first:
+      213: -4112321063233616429
+    second: Bladderwrack_0_unlit_245
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 311
+        width: 42
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 836893d1bfb7cfda0800000000000000
+      internalID: -5909712292559616456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 311
+        width: 42
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fec14dfe28607a9e0800000000000000
+      internalID: -1610311182322492177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 316
+        width: 24
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96814eabf533e1d00800000000000000
+      internalID: 945249458044803177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 317
+        width: 19
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72dee21d338754ab0800000000000000
+      internalID: -5024477645313741529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 311
+        width: 42
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa1c6857f5f19e130800000000000000
+      internalID: 3596440272286171567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 311
+        width: 42
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8d7f347adbe0e390800000000000000
+      internalID: -7790968031865242228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 316
+        width: 24
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93070c22fe4c30890800000000000000
+      internalID: -7492928823655108551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 317
+        width: 19
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77dbc2f20db062e10800000000000000
+      internalID: 2172436859025407351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 311
+        width: 42
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b0142c0a901b2b80800000000000000
+      internalID: -8418616824624312141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 497
+        y: 311
+        width: 42
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5829d67fdda615950800000000000000
+      internalID: 6436042844060619397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 316
+        width: 24
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8d26fc4d67483200800000000000000
+      internalID: 159956321539861898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 317
+        width: 19
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 247538a57e29e6090800000000000000
+      internalID: -8039326762456099006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 311
+        width: 39
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc40df4fb6668bfe0800000000000000
+      internalID: -1173075089072257844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 311
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51ea4c6567adb0000800000000000000
+      internalID: 3336426540543509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 771
+        y: 316
+        width: 39
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f102e8e86fbe4d90800000000000000
+      internalID: -7111536304266804752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 311
+        width: 39
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09a927183abdca1f0800000000000000
+      internalID: -1032208719276762480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 907
+        y: 311
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0006c476e0f0c5ef0800000000000000
+      internalID: -118202935681458176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 975
+        y: 316
+        width: 39
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4881eba37793bf70800000000000000
+      internalID: 9201864986708772939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 311
+        width: 39
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66ed30882dfeaea60800000000000000
+      internalID: 7704233800074780262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 1111
+        y: 311
+        width: 39
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21f43f5850d1bd8c0800000000000000
+      internalID: -3973550336664973550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 1179
+        y: 316
+        width: 39
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd8127b86d7a49eb0800000000000000
+      internalID: -4713958370045716257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 1246
+        y: 312
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e6b702abc28a8000800000000000000
+      internalID: 38987357894457057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 273
+        width: 44
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5957fcb7efb9e1c20800000000000000
+      internalID: 3179149904271340949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 278
+        width: 44
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 708da42668fee9310800000000000000
+      internalID: 1413830693494642695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 274
+        width: 47
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46b9caf8d3f0775f0800000000000000
+      internalID: -759121255110763676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 274
+        width: 47
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bf5d630c886198b0800000000000000
+      internalID: -5147217948545556559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 279
+        width: 47
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efd254e52bc42f690800000000000000
+      internalID: -7569903694686900738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 375
+        y: 273
+        width: 45
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 771a84adde6cc11e0800000000000000
+      internalID: -2225685390956125833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 273
+        width: 43
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16deef9ed20daed20800000000000000
+      internalID: 3308685771874954593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 278
+        width: 43
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a6fb84b3cd74b240800000000000000
+      internalID: 4806604981812328103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 275
+        width: 49
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2c4fa8dc81199050800000000000000
+      internalID: 5807692491099425835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 662
+        y: 275
+        width: 51
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7842f61bb367be120800000000000000
+      internalID: 2444177221530625159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 280
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bfb783a535ae8b90800000000000000
+      internalID: -7237665901342376010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 751
+        y: 280
+        width: 37
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7784f619664d01740800000000000000
+      internalID: 5120826313311996023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 275
+        width: 49
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a2ce1d58046515c0800000000000000
+      internalID: -4245377086642011484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 275
+        width: 51
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd65bf20cd86c3c50800000000000000
+      internalID: 6646302444244129499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 962
+        y: 280
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0342e9ece6fe67d70800000000000000
+      internalID: 9040676561184760880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 280
+        width: 37
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d473ba347135cc4d0800000000000000
+      internalID: -3113021883035207859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 275
+        width: 49
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54476a22cc0f405f0800000000000000
+      internalID: -791242874965035963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 1112
+        y: 275
+        width: 51
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6346a1dc09cff5d20800000000000000
+      internalID: 3269609553340818486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 1187
+        y: 280
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c923d74f26c4db80800000000000000
+      internalID: -8370847901004125759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 1201
+        y: 280
+        width: 37
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e447195409911420800000000000000
+      internalID: 2599026703923102946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 1264
+        y: 275
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13575a6342f954a00800000000000000
+      internalID: 740172691656766769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 237
+        width: 40
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 108be4ed6b7bb4890800000000000000
+      internalID: -7472677160649574399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 242
+        width: 40
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e44467f26d0bc73a0800000000000000
+      internalID: -6666258914449406898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 237
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3364da88f94aec410800000000000000
+      internalID: 1499316731060766259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 237
+        width: 40
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97997ae40fb6d5e10800000000000000
+      internalID: 2188023673827858809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 242
+        width: 40
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0616e956bee4c3230800000000000000
+      internalID: 3619854973428195680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_48
+      rect:
+        serializedVersion: 2
+        x: 364
+        y: 237
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 975a98a5f433b8150800000000000000
+      internalID: 5875846554749347193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_49
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 237
+        width: 40
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a68f15f6eb5102b0800000000000000
+      internalID: -5620109812468578656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_50
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 242
+        width: 40
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a16552d39445fc60800000000000000
+      internalID: 7851256927070020004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_51
+      rect:
+        serializedVersion: 2
+        x: 575
+        y: 238
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a483403f44affb9b0800000000000000
+      internalID: -5062052282099287990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_52
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 238
+        width: 41
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f06ae930fbe7fcc60800000000000000
+      internalID: 7840624835139905039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_53
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 243
+        width: 41
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a73ce50a7ec93740800000000000000
+      internalID: 5132360273846089639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_54
+      rect:
+        serializedVersion: 2
+        x: 774
+        y: 239
+        width: 53
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b6a69d1feb16b450800000000000000
+      internalID: 6104097058754832053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_55
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 239
+        width: 53
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed37b8ff14cd27120800000000000000
+      internalID: 2410230926614950878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_56
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 239
+        width: 53
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24e5178675bd63ed0800000000000000
+      internalID: -2434517380086276542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_57
+      rect:
+        serializedVersion: 2
+        x: 1014
+        y: 239
+        width: 53
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3be60d16c5ade4f20800000000000000
+      internalID: 3408902058278940339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_58
+      rect:
+        serializedVersion: 2
+        x: 1094
+        y: 239
+        width: 53
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56b5531c84cf78250800000000000000
+      internalID: 5946999222375373669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_59
+      rect:
+        serializedVersion: 2
+        x: 1174
+        y: 239
+        width: 53
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93924c0ff9f0736f0800000000000000
+      internalID: -705077637046589127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_60
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 239
+        width: 44
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 765038c5a92ca3f60800000000000000
+      internalID: 8014932455092061543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_61
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 203
+        width: 44
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d7c5bf832f001260800000000000000
+      internalID: 7066164460753635283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_62
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 203
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e0d34eb2b01bece0800000000000000
+      internalID: -1374986901349216029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_63
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 203
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9600f14c1ff5755d0800000000000000
+      internalID: -3073882728674951063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_64
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 203
+        width: 47
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fd4e4e8681a34650800000000000000
+      internalID: 6215989509986602485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_65
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 203
+        width: 47
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ee72a2f59a2454b0800000000000000
+      internalID: -5452686425329598743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_66
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 203
+        width: 47
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f96bebbba92e10890800000000000000
+      internalID: -7493459150765115745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_67
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 203
+        width: 47
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 506d7789b5b33ef60800000000000000
+      internalID: 8062353022509372933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_68
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 203
+        width: 47
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfff1742bcaf77a00800000000000000
+      internalID: 754347213004603389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_69
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 203
+        width: 47
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46a5118335ff0f030800000000000000
+      internalID: 3526599241119128164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_70
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 204
+        width: 43
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23a3ac0e459f00200800000000000000
+      internalID: 144389331019774514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_71
+      rect:
+        serializedVersion: 2
+        x: 754
+        y: 204
+        width: 43
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f27c27313f598ac0800000000000000
+      internalID: -3852443341255052559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_72
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 205
+        width: 56
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7495e1806593ba5d0800000000000000
+      internalID: -3050281280947201721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_73
+      rect:
+        serializedVersion: 2
+        x: 907
+        y: 205
+        width: 56
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dce7cf948f3241090800000000000000
+      internalID: -8064781483413569843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_74
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 205
+        width: 56
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84acf6d559b7ba670800000000000000
+      internalID: 8551064198940969544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_75
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 205
+        width: 56
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cdc8c61bbf4ae630800000000000000
+      internalID: 3957062887558139329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_76
+      rect:
+        serializedVersion: 2
+        x: 1156
+        y: 205
+        width: 56
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b835ed0a5de1eb50800000000000000
+      internalID: 6620833898247305395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_77
+      rect:
+        serializedVersion: 2
+        x: 1239
+        y: 205
+        width: 56
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b97e722b7047d120800000000000000
+      internalID: 2438488620848282040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_78
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 171
+        width: 47
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 093d1f830291914e0800000000000000
+      internalID: -2010548132459195504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_79
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 171
+        width: 47
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b60c07baae68a170800000000000000
+      internalID: 8189917601867761331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_80
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 171
+        width: 47
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc987e42f94720a50800000000000000
+      internalID: 6485874640234711499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_81
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 171
+        width: 47
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caf16e1395e9e0100800000000000000
+      internalID: 76172349638320044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_82
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 171
+        width: 47
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2464bf00b4eb9e3d0800000000000000
+      internalID: -3176798832784882110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_83
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 171
+        width: 47
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b2ffb0ba3557f510800000000000000
+      internalID: 1582827504605852340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_84
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 171
+        width: 32
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be0afb67c559e7bf0800000000000000
+      internalID: -324657898762297109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_85
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 171
+        width: 32
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7729192cf6bafa930800000000000000
+      internalID: 4156729477580296823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_86
+      rect:
+        serializedVersion: 2
+        x: 573
+        y: 177
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18fd8a8061d3d03c0800000000000000
+      internalID: -4391786896772505727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_87
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 184
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac4bd0a6b190dc470800000000000000
+      internalID: 8416393291973375178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_88
+      rect:
+        serializedVersion: 2
+        x: 598
+        y: 179
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c219583e842600910800000000000000
+      internalID: 1801547916142547244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_89
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 171
+        width: 31
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b3d462b724ba3ff0800000000000000
+      internalID: -55533962799033424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_90
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 171
+        width: 31
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c20013f56bdada90800000000000000
+      internalID: -7288271816029633852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_91
+      rect:
+        serializedVersion: 2
+        x: 753
+        y: 177
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 425864207996f84d0800000000000000
+      internalID: -3130167118700051164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_92
+      rect:
+        serializedVersion: 2
+        x: 774
+        y: 178
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9b8411f6fd06ca70800000000000000
+      internalID: 8846773872273689500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_93
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 171
+        width: 31
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a54c0146e25bf83e0800000000000000
+      internalID: -2049220094578342822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_94
+      rect:
+        serializedVersion: 2
+        x: 871
+        y: 171
+        width: 31
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34018cf0ff3b73fe0800000000000000
+      internalID: -1209300066862886845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_95
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 177
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b303dce15aca4190800000000000000
+      internalID: -7977341336718998600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_96
+      rect:
+        serializedVersion: 2
+        x: 951
+        y: 178
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3db8700542b9fe990800000000000000
+      internalID: -7354489086208930861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_97
+      rect:
+        serializedVersion: 2
+        x: 989
+        y: 171
+        width: 31
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae34f1fe8ca3b19b0800000000000000
+      internalID: -5108424717642021910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_98
+      rect:
+        serializedVersion: 2
+        x: 1048
+        y: 171
+        width: 31
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c7122166e6837cc0800000000000000
+      internalID: -3714476943620302907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_99
+      rect:
+        serializedVersion: 2
+        x: 1107
+        y: 177
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35fdac7e15d732870800000000000000
+      internalID: 8656900699470880595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_100
+      rect:
+        serializedVersion: 2
+        x: 1128
+        y: 178
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92a6efc9eb6f3b5e0800000000000000
+      internalID: -1894899719654708695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_101
+      rect:
+        serializedVersion: 2
+        x: 1167
+        y: 172
+        width: 31
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe98037161b39e7d0800000000000000
+      internalID: -2888712719917086225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_102
+      rect:
+        serializedVersion: 2
+        x: 1228
+        y: 172
+        width: 31
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60cfcb35b3ffa9a40800000000000000
+      internalID: 5375889735493155846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_103
+      rect:
+        serializedVersion: 2
+        x: 1289
+        y: 179
+        width: 26
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 261e1fd1cad70e520800000000000000
+      internalID: 2729319552376758626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_104
+      rect:
+        serializedVersion: 2
+        x: 1313
+        y: 179
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2b5c8c4f272b8290800000000000000
+      internalID: -7887167238308078804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_105
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 140
+        width: 29
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95069961cd4348e10800000000000000
+      internalID: 2198940637940244569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_106
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 140
+        width: 29
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f67bf667c395d1110800000000000000
+      internalID: 1233239989189326703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_107
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 146
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c8c9875606ce10e0800000000000000
+      internalID: -2297181029371623228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_108
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 153
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a9b8ad80c7095c60800000000000000
+      internalID: 7807279952615225767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_109
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 146
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adecddfa39b7517e0800000000000000
+      internalID: -1795393002196316454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_110
+      rect:
+        serializedVersion: 2
+        x: 191
+        y: 119
+        width: 43
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57fbe9e6e828bc680800000000000000
+      internalID: -8733743504102080651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_111
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 140
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0958adde06f835160800000000000000
+      internalID: 7013106691216147856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_112
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 147
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1de299f7197b48890800000000000000
+      internalID: -7456633247479812399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_113
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 147
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1ebc71452eafe050800000000000000
+      internalID: 5832071517503798814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_114
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 140
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8efa7ac734fe49b10800000000000000
+      internalID: 1987476408710442984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_115
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 140
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 586df0260114a16c0800000000000000
+      internalID: -4171950566184855931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_116
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 147
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aef3bb82420c85ad0800000000000000
+      internalID: -2713207513956007958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_117
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 147
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a97e7c47c7b6f9390800000000000000
+      internalID: -7809405046557775974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_118
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 140
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54a690337d2f9e0d0800000000000000
+      internalID: -3392913838158812603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_119
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 140
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 305160d81add48e80800000000000000
+      internalID: -8177167337472518909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_120
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 147
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 692d8fc3d5012e4d0800000000000000
+      internalID: -3106902800291278186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_121
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 147
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44a6e887497fa9810800000000000000
+      internalID: 1773001620373531204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_122
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 140
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dde53fe46ce9d2b0800000000000000
+      internalID: -5559152346757993006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_123
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 140
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16a78d3fc44a7cc10800000000000000
+      internalID: 2073806803842923105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_124
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 149
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60537a258816127a0800000000000000
+      internalID: -6403729957013998330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_125
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 152
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5439cd7069e2b5410800000000000000
+      internalID: 1466817325551096645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_126
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 140
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c109bf0892c72aea0800000000000000
+      internalID: -5862987247183491044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_127
+      rect:
+        serializedVersion: 2
+        x: 938
+        y: 140
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acfa6efef92ced6c0800000000000000
+      internalID: -4116639017189593142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_128
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 149
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb1a5c13e229171e0800000000000000
+      internalID: -2201818015706275396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_129
+      rect:
+        serializedVersion: 2
+        x: 1014
+        y: 152
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0ec057a2ced35890800000000000000
+      internalID: -7470382429265408497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_130
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 140
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b66739838b53d54c0800000000000000
+      internalID: -4297219404102142357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_131
+      rect:
+        serializedVersion: 2
+        x: 1106
+        y: 140
+        width: 28
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b266f31148ff52040800000000000000
+      internalID: 4622381535255815723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_132
+      rect:
+        serializedVersion: 2
+        x: 1162
+        y: 149
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 708f15cb3ba527080800000000000000
+      internalID: -9191184161504626681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_133
+      rect:
+        serializedVersion: 2
+        x: 1182
+        y: 152
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a9d07d19d23a1830800000000000000
+      internalID: 4042599523601668518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_134
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 141
+        width: 55
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58437182c1e8f04e0800000000000000
+      internalID: -2013234256828484475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_135
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 110
+        width: 55
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a9ec9f98943c4260800000000000000
+      internalID: 7083094144064481704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_136
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 111
+        width: 25
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6932f0e87dcad8b0800000000000000
+      internalID: -5126559306754147990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_137
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 111
+        width: 25
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40a0b6101942b8b20800000000000000
+      internalID: 3137641770606332420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_138
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 111
+        width: 38
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ff4f9aee4f08e9a0800000000000000
+      internalID: -6203691655084683276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_139
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 111
+        width: 38
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 380ec9e0a992b0be0800000000000000
+      internalID: -1510067508405804925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_140
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 111
+        width: 38
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b1b7a220da6954f0800000000000000
+      internalID: -839522413360729674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_141
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 111
+        width: 38
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a529598b96df23320800000000000000
+      internalID: 2536368170673214042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_142
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 111
+        width: 38
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be6f5960dcb9cb6c0800000000000000
+      internalID: -4126251853697124629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_143
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 111
+        width: 38
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ec45f5d8f09704c0800000000000000
+      internalID: -4321325919022789403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_144
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 111
+        width: 36
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fd2ea6fe9d773a30800000000000000
+      internalID: 4194959699615821301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_145
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 111
+        width: 36
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e8f92975ae70d6d0800000000000000
+      internalID: -2967732905269659422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_146
+      rect:
+        serializedVersion: 2
+        x: 785
+        y: 111
+        width: 35
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9bdcced8e6016840800000000000000
+      internalID: 5215457440711891870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_147
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 111
+        width: 35
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a80e5fcd8f59365b0800000000000000
+      internalID: -5376288634058710902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_148
+      rect:
+        serializedVersion: 2
+        x: 909
+        y: 111
+        width: 35
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ca8dbaaf068da0b0800000000000000
+      internalID: -5715764950216111419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_149
+      rect:
+        serializedVersion: 2
+        x: 971
+        y: 111
+        width: 35
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 702d026e08225cc30800000000000000
+      internalID: 4378944149699744263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_150
+      rect:
+        serializedVersion: 2
+        x: 1033
+        y: 111
+        width: 35
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cc0fa27cf6b13cd0800000000000000
+      internalID: -2580079916134495034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_151
+      rect:
+        serializedVersion: 2
+        x: 1095
+        y: 111
+        width: 35
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68d2c4619a41a9a90800000000000000
+      internalID: -7306504728999088762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_152
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 111
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4daafe9d069f5610800000000000000
+      internalID: 1612172176867896653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_153
+      rect:
+        serializedVersion: 2
+        x: 1218
+        y: 111
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2ce03be24554ffb0800000000000000
+      internalID: -4614969972245861331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_154
+      rect:
+        serializedVersion: 2
+        x: 1279
+        y: 118
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b252e744c07477330800000000000000
+      internalID: 3708510936177190187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_155
+      rect:
+        serializedVersion: 2
+        x: 1305
+        y: 119
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc4d4998a0c2dd3f0800000000000000
+      internalID: -874494328870480689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_156
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 81
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32f203163b09aedc0800000000000000
+      internalID: -3608913051279937757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_157
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 81
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b8ee0dbac777c880800000000000000
+      internalID: -8590766051546961736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_158
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 88
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f4282892741167a0800000000000000
+      internalID: -6385800314223057674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_159
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 89
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4512b36fae4994080800000000000000
+      internalID: -9202660626680569516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_160
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 81
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f3c30a1086a6e8f0800000000000000
+      internalID: -511538438537493513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_161
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 81
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cedf577a054a583c0800000000000000
+      internalID: -4357896398097220116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_162
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 88
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82cc17edc4d3e4300800000000000000
+      internalID: 238195230656023592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_163
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 89
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0aa65b6716b9d230800000000000000
+      internalID: 3664159983543953933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_164
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 81
+        width: 30
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94066a7202159c210800000000000000
+      internalID: 1353702361547563081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_165
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 81
+        width: 30
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69d434e940c53a2a0800000000000000
+      internalID: -6727432243456553578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_166
+      rect:
+        serializedVersion: 2
+        x: 493
+        y: 82
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97f53358e511d07f0800000000000000
+      internalID: -644840073984778375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_167
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 82
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4292856543b27c420800000000000000
+      internalID: 2650134409517738276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_168
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 82
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a58443d36686b5790800000000000000
+      internalID: -7540318362778974118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_169
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 82
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8439b944e839b4c0800000000000000
+      internalID: -4271320218443631477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_170
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 82
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3734ba156558c2160800000000000000
+      internalID: 7002118126438138739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_171
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 82
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1e5fad7da739df50800000000000000
+      internalID: 6906612721826881055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_172
+      rect:
+        serializedVersion: 2
+        x: 860
+        y: 82
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1b30de18427266d0800000000000000
+      internalID: -2998708747795154150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_173
+      rect:
+        serializedVersion: 2
+        x: 921
+        y: 82
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9f75a5888af73f30800000000000000
+      internalID: 4555385012373258143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_174
+      rect:
+        serializedVersion: 2
+        x: 981
+        y: 82
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95f39e991d1d243a0800000000000000
+      internalID: -6682548198903824551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_175
+      rect:
+        serializedVersion: 2
+        x: 1042
+        y: 82
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98df11588511c93f0800000000000000
+      internalID: -892819554238857847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_176
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 82
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4492a7a225a363810800000000000000
+      internalID: 1744646030227024196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_177
+      rect:
+        serializedVersion: 2
+        x: 1165
+        y: 82
+        width: 33
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 029565fbbed7cf4a0800000000000000
+      internalID: -6558228505877391072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_178
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 81
+        width: 32
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9920fe0545609cde0800000000000000
+      internalID: -1312510857196928359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_179
+      rect:
+        serializedVersion: 2
+        x: 1284
+        y: 81
+        width: 32
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c21e4b0d8eb801a0800000000000000
+      internalID: -6843010120800136506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_180
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 54
+        width: 38
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f451422efc6ffe2d0800000000000000
+      internalID: -3247105433598159537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_181
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 54
+        width: 38
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f743731b01f302d0800000000000000
+      internalID: -3313539870941296648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_182
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 55
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6983e64f584d747f0800000000000000
+      internalID: -628299951198291818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_183
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 55
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ffe0f45c5586b750800000000000000
+      internalID: 6320385758669631473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_184
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 55
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 981601fba30b47a70800000000000000
+      internalID: 8823871336285757833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_185
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 55
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1dd7626acdba5290800000000000000
+      internalID: -7900793919336096486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_186
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 55
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2c80825867ba5b70800000000000000
+      internalID: 8888618473257733167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_187
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 55
+        width: 23
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09c227f07888148a0800000000000000
+      internalID: -6322622288190362480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_188
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 56
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c205abc2fe17c3060800000000000000
+      internalID: 6934542798305251372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_189
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 56
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d0abba492345f2b0800000000000000
+      internalID: -5551457121037737776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_190
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 56
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5845104ce915cf850800000000000000
+      internalID: 6412089711803847813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_191
+      rect:
+        serializedVersion: 2
+        x: 727
+        y: 56
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f22a028ff610e7a90800000000000000
+      internalID: -7314407164387220945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_192
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 56
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d2c296801e0b7e50800000000000000
+      internalID: 6808050725840667347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_193
+      rect:
+        serializedVersion: 2
+        x: 827
+        y: 56
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe8c9d809add82d60800000000000000
+      internalID: 7865780467270273263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_194
+      rect:
+        serializedVersion: 2
+        x: 877
+        y: 56
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 986be00b0981237e0800000000000000
+      internalID: -1787339092404554103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_195
+      rect:
+        serializedVersion: 2
+        x: 927
+        y: 56
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdb42f5397892d2e0800000000000000
+      internalID: -2102450429665063969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_196
+      rect:
+        serializedVersion: 2
+        x: 977
+        y: 56
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3180f7e3167b2baa0800000000000000
+      internalID: -6146648913119082477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_197
+      rect:
+        serializedVersion: 2
+        x: 1027
+        y: 56
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93140c25c16d8e090800000000000000
+      internalID: -8004912920515296967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_198
+      rect:
+        serializedVersion: 2
+        x: 1077
+        y: 56
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f4f617f27ccbf970800000000000000
+      internalID: 8789843891887469810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_199
+      rect:
+        serializedVersion: 2
+        x: 1127
+        y: 56
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2a3b72cd9b87fc10800000000000000
+      internalID: 2087290461998496301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_200
+      rect:
+        serializedVersion: 2
+        x: 1178
+        y: 56
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a64cdf34c234b3840800000000000000
+      internalID: 5204827651755066474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_201
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 56
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 389942da3f9a42370800000000000000
+      internalID: 8296943277570300291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_202
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 30
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cf0d849a179792b0800000000000000
+      internalID: -5577823473057853497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_203
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 30
+        width: 20
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83dd6b565afe42f40800000000000000
+      internalID: 5702946521813015864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_204
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79ba54a22bb3151a0800000000000000
+      internalID: -6822606324090164329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_205
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f856dd21a22f76c0800000000000000
+      internalID: -4143555056503465735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_206
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67136e3f92bd6ba70800000000000000
+      internalID: 8842495891620639094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_207
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fd9effbca3d53b90800000000000000
+      internalID: -7262666085156086279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_208
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57004c007dcf49c60800000000000000
+      internalID: 7824156453010407541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_209
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21e7cbf6d5f7e4cf0800000000000000
+      internalID: -266135288684970478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_210
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1515abfca595a7160800000000000000
+      internalID: 7024024815404732753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_211
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 30
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5027e7ce9a99b6030800000000000000
+      internalID: 3489051291424813573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_212
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 32
+        width: 25
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f92e9f5ee6afea400800000000000000
+      internalID: 337482376311071391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_213
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 32
+        width: 25
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab474bc542fa24750800000000000000
+      internalID: 6287780600471647418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_214
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 31
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3f814c59f43937e0800000000000000
+      internalID: -1785337531676389574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_215
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 31
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e78cf906b53a7560800000000000000
+      internalID: 7312216000957286372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_216
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 31
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20e98f89c7c691c00800000000000000
+      internalID: 871847285271076354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_217
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 31
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b4804e3bdef79f30800000000000000
+      internalID: 4582411363468477625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_218
+      rect:
+        serializedVersion: 2
+        x: 1093
+        y: 31
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 175e7c3c55ea3e780800000000000000
+      internalID: -8654882375495850639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_219
+      rect:
+        serializedVersion: 2
+        x: 1143
+        y: 31
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 615d553c178920530800000000000000
+      internalID: 3819783048339510550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_220
+      rect:
+        serializedVersion: 2
+        x: 1242
+        y: 30
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acbf217b3bc1ccb60800000000000000
+      internalID: 7767615015503461322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_221
+      rect:
+        serializedVersion: 2
+        x: 1292
+        y: 30
+        width: 23
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 940c5e1afe5ba6c40800000000000000
+      internalID: 5506413535231852617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_222
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d62d877e6b9e86f0800000000000000
+      internalID: -680435594931919148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_223
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2085dead60bc0c370800000000000000
+      internalID: 8340889740193388546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_224
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97d2ae64b46497ff0800000000000000
+      internalID: -37921832729694855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_225
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c1e4d38b68a29040800000000000000
+      internalID: 4652966544753877445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_226
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 397fabf06b5690d90800000000000000
+      internalID: -7131056702342105197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_227
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 959ed434bde3574d0800000000000000
+      internalID: -3137532453945743015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_228
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a99434e0547c7160800000000000000
+      internalID: 7024617409565989289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_229
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd4f594091626ac40800000000000000
+      internalID: 5523143881909466332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_230
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53797aa3055c28670800000000000000
+      internalID: 8539604791819999029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_231
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 401a47b2404624730800000000000000
+      internalID: 3981854989620650244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_232
+      rect:
+        serializedVersion: 2
+        x: 503
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d4d6a02fa0876ba0800000000000000
+      internalID: -6095762080967240488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_233
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 6
+        width: 22
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3e6f79e053494600800000000000000
+      internalID: 452967252321332798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_234
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 5
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f5070145aa6290f0800000000000000
+      internalID: -1111708900013963786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_235
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 5
+        width: 22
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1731235522dce2a0800000000000000
+      internalID: -6706754687311202529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_236
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 5
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7eaf4b210271fbb30800000000000000
+      internalID: 4305185195309726439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_237
+      rect:
+        serializedVersion: 2
+        x: 744
+        y: 5
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b7c124c88f102c80800000000000000
+      internalID: -8349639036878338120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_238
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 6
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9074d2865d72819e0800000000000000
+      internalID: -1650525465901971703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_239
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 6
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 622eda33382337ec0800000000000000
+      internalID: -3570454540485533146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_240
+      rect:
+        serializedVersion: 2
+        x: 931
+        y: 6
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f14e97457924aae0800000000000000
+      internalID: -1539059588964400649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_241
+      rect:
+        serializedVersion: 2
+        x: 977
+        y: 6
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7a66db401addad50800000000000000
+      internalID: 6750291180024916602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_242
+      rect:
+        serializedVersion: 2
+        x: 1069
+        y: 6
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a1456ebfd39c23a0800000000000000
+      internalID: -6688808757370732119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_243
+      rect:
+        serializedVersion: 2
+        x: 1115
+        y: 6
+        width: 19
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10edfb5cdc3aec2b0800000000000000
+      internalID: -5562328385574674943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_244
+      rect:
+        serializedVersion: 2
+        x: 1207
+        y: 6
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 597d823fd7fd933f0800000000000000
+      internalID: -920458916777109611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_0_unlit_245
+      rect:
+        serializedVersion: 2
+        x: 1252
+        y: 6
+        width: 18
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d58a9fe7c91ee6c0800000000000000
+      internalID: -4112321063233616429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bladderwrack_0_unlit_0: -5909712292559616456
+      Bladderwrack_0_unlit_1: -1610311182322492177
+      Bladderwrack_0_unlit_10: 159956321539861898
+      Bladderwrack_0_unlit_100: -1894899719654708695
+      Bladderwrack_0_unlit_101: -2888712719917086225
+      Bladderwrack_0_unlit_102: 5375889735493155846
+      Bladderwrack_0_unlit_103: 2729319552376758626
+      Bladderwrack_0_unlit_104: -7887167238308078804
+      Bladderwrack_0_unlit_105: 2198940637940244569
+      Bladderwrack_0_unlit_106: 1233239989189326703
+      Bladderwrack_0_unlit_107: -2297181029371623228
+      Bladderwrack_0_unlit_108: 7807279952615225767
+      Bladderwrack_0_unlit_109: -1795393002196316454
+      Bladderwrack_0_unlit_11: -8039326762456099006
+      Bladderwrack_0_unlit_110: -8733743504102080651
+      Bladderwrack_0_unlit_111: 7013106691216147856
+      Bladderwrack_0_unlit_112: -7456633247479812399
+      Bladderwrack_0_unlit_113: 5832071517503798814
+      Bladderwrack_0_unlit_114: 1987476408710442984
+      Bladderwrack_0_unlit_115: -4171950566184855931
+      Bladderwrack_0_unlit_116: -2713207513956007958
+      Bladderwrack_0_unlit_117: -7809405046557775974
+      Bladderwrack_0_unlit_118: -3392913838158812603
+      Bladderwrack_0_unlit_119: -8177167337472518909
+      Bladderwrack_0_unlit_12: -1173075089072257844
+      Bladderwrack_0_unlit_120: -3106902800291278186
+      Bladderwrack_0_unlit_121: 1773001620373531204
+      Bladderwrack_0_unlit_122: -5559152346757993006
+      Bladderwrack_0_unlit_123: 2073806803842923105
+      Bladderwrack_0_unlit_124: -6403729957013998330
+      Bladderwrack_0_unlit_125: 1466817325551096645
+      Bladderwrack_0_unlit_126: -5862987247183491044
+      Bladderwrack_0_unlit_127: -4116639017189593142
+      Bladderwrack_0_unlit_128: -2201818015706275396
+      Bladderwrack_0_unlit_129: -7470382429265408497
+      Bladderwrack_0_unlit_13: 3336426540543509
+      Bladderwrack_0_unlit_130: -4297219404102142357
+      Bladderwrack_0_unlit_131: 4622381535255815723
+      Bladderwrack_0_unlit_132: -9191184161504626681
+      Bladderwrack_0_unlit_133: 4042599523601668518
+      Bladderwrack_0_unlit_134: -2013234256828484475
+      Bladderwrack_0_unlit_135: 7083094144064481704
+      Bladderwrack_0_unlit_136: -5126559306754147990
+      Bladderwrack_0_unlit_137: 3137641770606332420
+      Bladderwrack_0_unlit_138: -6203691655084683276
+      Bladderwrack_0_unlit_139: -1510067508405804925
+      Bladderwrack_0_unlit_14: -7111536304266804752
+      Bladderwrack_0_unlit_140: -839522413360729674
+      Bladderwrack_0_unlit_141: 2536368170673214042
+      Bladderwrack_0_unlit_142: -4126251853697124629
+      Bladderwrack_0_unlit_143: -4321325919022789403
+      Bladderwrack_0_unlit_144: 4194959699615821301
+      Bladderwrack_0_unlit_145: -2967732905269659422
+      Bladderwrack_0_unlit_146: 5215457440711891870
+      Bladderwrack_0_unlit_147: -5376288634058710902
+      Bladderwrack_0_unlit_148: -5715764950216111419
+      Bladderwrack_0_unlit_149: 4378944149699744263
+      Bladderwrack_0_unlit_15: -1032208719276762480
+      Bladderwrack_0_unlit_150: -2580079916134495034
+      Bladderwrack_0_unlit_151: -7306504728999088762
+      Bladderwrack_0_unlit_152: 1612172176867896653
+      Bladderwrack_0_unlit_153: -4614969972245861331
+      Bladderwrack_0_unlit_154: 3708510936177190187
+      Bladderwrack_0_unlit_155: -874494328870480689
+      Bladderwrack_0_unlit_156: -3608913051279937757
+      Bladderwrack_0_unlit_157: -8590766051546961736
+      Bladderwrack_0_unlit_158: -6385800314223057674
+      Bladderwrack_0_unlit_159: -9202660626680569516
+      Bladderwrack_0_unlit_16: -118202935681458176
+      Bladderwrack_0_unlit_160: -511538438537493513
+      Bladderwrack_0_unlit_161: -4357896398097220116
+      Bladderwrack_0_unlit_162: 238195230656023592
+      Bladderwrack_0_unlit_163: 3664159983543953933
+      Bladderwrack_0_unlit_164: 1353702361547563081
+      Bladderwrack_0_unlit_165: -6727432243456553578
+      Bladderwrack_0_unlit_166: -644840073984778375
+      Bladderwrack_0_unlit_167: 2650134409517738276
+      Bladderwrack_0_unlit_168: -7540318362778974118
+      Bladderwrack_0_unlit_169: -4271320218443631477
+      Bladderwrack_0_unlit_17: 9201864986708772939
+      Bladderwrack_0_unlit_170: 7002118126438138739
+      Bladderwrack_0_unlit_171: 6906612721826881055
+      Bladderwrack_0_unlit_172: -2998708747795154150
+      Bladderwrack_0_unlit_173: 4555385012373258143
+      Bladderwrack_0_unlit_174: -6682548198903824551
+      Bladderwrack_0_unlit_175: -892819554238857847
+      Bladderwrack_0_unlit_176: 1744646030227024196
+      Bladderwrack_0_unlit_177: -6558228505877391072
+      Bladderwrack_0_unlit_178: -1312510857196928359
+      Bladderwrack_0_unlit_179: -6843010120800136506
+      Bladderwrack_0_unlit_18: 7704233800074780262
+      Bladderwrack_0_unlit_180: -3247105433598159537
+      Bladderwrack_0_unlit_181: -3313539870941296648
+      Bladderwrack_0_unlit_182: -628299951198291818
+      Bladderwrack_0_unlit_183: 6320385758669631473
+      Bladderwrack_0_unlit_184: 8823871336285757833
+      Bladderwrack_0_unlit_185: -7900793919336096486
+      Bladderwrack_0_unlit_186: 8888618473257733167
+      Bladderwrack_0_unlit_187: -6322622288190362480
+      Bladderwrack_0_unlit_188: 6934542798305251372
+      Bladderwrack_0_unlit_189: -5551457121037737776
+      Bladderwrack_0_unlit_19: -3973550336664973550
+      Bladderwrack_0_unlit_190: 6412089711803847813
+      Bladderwrack_0_unlit_191: -7314407164387220945
+      Bladderwrack_0_unlit_192: 6808050725840667347
+      Bladderwrack_0_unlit_193: 7865780467270273263
+      Bladderwrack_0_unlit_194: -1787339092404554103
+      Bladderwrack_0_unlit_195: -2102450429665063969
+      Bladderwrack_0_unlit_196: -6146648913119082477
+      Bladderwrack_0_unlit_197: -8004912920515296967
+      Bladderwrack_0_unlit_198: 8789843891887469810
+      Bladderwrack_0_unlit_199: 2087290461998496301
+      Bladderwrack_0_unlit_2: 945249458044803177
+      Bladderwrack_0_unlit_20: -4713958370045716257
+      Bladderwrack_0_unlit_200: 5204827651755066474
+      Bladderwrack_0_unlit_201: 8296943277570300291
+      Bladderwrack_0_unlit_202: -5577823473057853497
+      Bladderwrack_0_unlit_203: 5702946521813015864
+      Bladderwrack_0_unlit_204: -6822606324090164329
+      Bladderwrack_0_unlit_205: -4143555056503465735
+      Bladderwrack_0_unlit_206: 8842495891620639094
+      Bladderwrack_0_unlit_207: -7262666085156086279
+      Bladderwrack_0_unlit_208: 7824156453010407541
+      Bladderwrack_0_unlit_209: -266135288684970478
+      Bladderwrack_0_unlit_21: 38987357894457057
+      Bladderwrack_0_unlit_210: 7024024815404732753
+      Bladderwrack_0_unlit_211: 3489051291424813573
+      Bladderwrack_0_unlit_212: 337482376311071391
+      Bladderwrack_0_unlit_213: 6287780600471647418
+      Bladderwrack_0_unlit_214: -1785337531676389574
+      Bladderwrack_0_unlit_215: 7312216000957286372
+      Bladderwrack_0_unlit_216: 871847285271076354
+      Bladderwrack_0_unlit_217: 4582411363468477625
+      Bladderwrack_0_unlit_218: -8654882375495850639
+      Bladderwrack_0_unlit_219: 3819783048339510550
+      Bladderwrack_0_unlit_22: 3179149904271340949
+      Bladderwrack_0_unlit_220: 7767615015503461322
+      Bladderwrack_0_unlit_221: 5506413535231852617
+      Bladderwrack_0_unlit_222: -680435594931919148
+      Bladderwrack_0_unlit_223: 8340889740193388546
+      Bladderwrack_0_unlit_224: -37921832729694855
+      Bladderwrack_0_unlit_225: 4652966544753877445
+      Bladderwrack_0_unlit_226: -7131056702342105197
+      Bladderwrack_0_unlit_227: -3137532453945743015
+      Bladderwrack_0_unlit_228: 7024617409565989289
+      Bladderwrack_0_unlit_229: 5523143881909466332
+      Bladderwrack_0_unlit_23: 1413830693494642695
+      Bladderwrack_0_unlit_230: 8539604791819999029
+      Bladderwrack_0_unlit_231: 3981854989620650244
+      Bladderwrack_0_unlit_232: -6095762080967240488
+      Bladderwrack_0_unlit_233: 452967252321332798
+      Bladderwrack_0_unlit_234: -1111708900013963786
+      Bladderwrack_0_unlit_235: -6706754687311202529
+      Bladderwrack_0_unlit_236: 4305185195309726439
+      Bladderwrack_0_unlit_237: -8349639036878338120
+      Bladderwrack_0_unlit_238: -1650525465901971703
+      Bladderwrack_0_unlit_239: -3570454540485533146
+      Bladderwrack_0_unlit_24: -759121255110763676
+      Bladderwrack_0_unlit_240: -1539059588964400649
+      Bladderwrack_0_unlit_241: 6750291180024916602
+      Bladderwrack_0_unlit_242: -6688808757370732119
+      Bladderwrack_0_unlit_243: -5562328385574674943
+      Bladderwrack_0_unlit_244: -920458916777109611
+      Bladderwrack_0_unlit_245: -4112321063233616429
+      Bladderwrack_0_unlit_25: -5147217948545556559
+      Bladderwrack_0_unlit_26: -7569903694686900738
+      Bladderwrack_0_unlit_27: -2225685390956125833
+      Bladderwrack_0_unlit_28: 3308685771874954593
+      Bladderwrack_0_unlit_29: 4806604981812328103
+      Bladderwrack_0_unlit_3: -5024477645313741529
+      Bladderwrack_0_unlit_30: 5807692491099425835
+      Bladderwrack_0_unlit_31: 2444177221530625159
+      Bladderwrack_0_unlit_32: -7237665901342376010
+      Bladderwrack_0_unlit_33: 5120826313311996023
+      Bladderwrack_0_unlit_34: -4245377086642011484
+      Bladderwrack_0_unlit_35: 6646302444244129499
+      Bladderwrack_0_unlit_36: 9040676561184760880
+      Bladderwrack_0_unlit_37: -3113021883035207859
+      Bladderwrack_0_unlit_38: -791242874965035963
+      Bladderwrack_0_unlit_39: 3269609553340818486
+      Bladderwrack_0_unlit_4: 3596440272286171567
+      Bladderwrack_0_unlit_40: -8370847901004125759
+      Bladderwrack_0_unlit_41: 2599026703923102946
+      Bladderwrack_0_unlit_42: 740172691656766769
+      Bladderwrack_0_unlit_43: -7472677160649574399
+      Bladderwrack_0_unlit_44: -6666258914449406898
+      Bladderwrack_0_unlit_45: 1499316731060766259
+      Bladderwrack_0_unlit_46: 2188023673827858809
+      Bladderwrack_0_unlit_47: 3619854973428195680
+      Bladderwrack_0_unlit_48: 5875846554749347193
+      Bladderwrack_0_unlit_49: -5620109812468578656
+      Bladderwrack_0_unlit_5: -7790968031865242228
+      Bladderwrack_0_unlit_50: 7851256927070020004
+      Bladderwrack_0_unlit_51: -5062052282099287990
+      Bladderwrack_0_unlit_52: 7840624835139905039
+      Bladderwrack_0_unlit_53: 5132360273846089639
+      Bladderwrack_0_unlit_54: 6104097058754832053
+      Bladderwrack_0_unlit_55: 2410230926614950878
+      Bladderwrack_0_unlit_56: -2434517380086276542
+      Bladderwrack_0_unlit_57: 3408902058278940339
+      Bladderwrack_0_unlit_58: 5946999222375373669
+      Bladderwrack_0_unlit_59: -705077637046589127
+      Bladderwrack_0_unlit_6: -7492928823655108551
+      Bladderwrack_0_unlit_60: 8014932455092061543
+      Bladderwrack_0_unlit_61: 7066164460753635283
+      Bladderwrack_0_unlit_62: -1374986901349216029
+      Bladderwrack_0_unlit_63: -3073882728674951063
+      Bladderwrack_0_unlit_64: 6215989509986602485
+      Bladderwrack_0_unlit_65: -5452686425329598743
+      Bladderwrack_0_unlit_66: -7493459150765115745
+      Bladderwrack_0_unlit_67: 8062353022509372933
+      Bladderwrack_0_unlit_68: 754347213004603389
+      Bladderwrack_0_unlit_69: 3526599241119128164
+      Bladderwrack_0_unlit_7: 2172436859025407351
+      Bladderwrack_0_unlit_70: 144389331019774514
+      Bladderwrack_0_unlit_71: -3852443341255052559
+      Bladderwrack_0_unlit_72: -3050281280947201721
+      Bladderwrack_0_unlit_73: -8064781483413569843
+      Bladderwrack_0_unlit_74: 8551064198940969544
+      Bladderwrack_0_unlit_75: 3957062887558139329
+      Bladderwrack_0_unlit_76: 6620833898247305395
+      Bladderwrack_0_unlit_77: 2438488620848282040
+      Bladderwrack_0_unlit_78: -2010548132459195504
+      Bladderwrack_0_unlit_79: 8189917601867761331
+      Bladderwrack_0_unlit_8: -8418616824624312141
+      Bladderwrack_0_unlit_80: 6485874640234711499
+      Bladderwrack_0_unlit_81: 76172349638320044
+      Bladderwrack_0_unlit_82: -3176798832784882110
+      Bladderwrack_0_unlit_83: 1582827504605852340
+      Bladderwrack_0_unlit_84: -324657898762297109
+      Bladderwrack_0_unlit_85: 4156729477580296823
+      Bladderwrack_0_unlit_86: -4391786896772505727
+      Bladderwrack_0_unlit_87: 8416393291973375178
+      Bladderwrack_0_unlit_88: 1801547916142547244
+      Bladderwrack_0_unlit_89: -55533962799033424
+      Bladderwrack_0_unlit_9: 6436042844060619397
+      Bladderwrack_0_unlit_90: -7288271816029633852
+      Bladderwrack_0_unlit_91: -3130167118700051164
+      Bladderwrack_0_unlit_92: 8846773872273689500
+      Bladderwrack_0_unlit_93: -2049220094578342822
+      Bladderwrack_0_unlit_94: -1209300066862886845
+      Bladderwrack_0_unlit_95: -7977341336718998600
+      Bladderwrack_0_unlit_96: -7354489086208930861
+      Bladderwrack_0_unlit_97: -5108424717642021910
+      Bladderwrack_0_unlit_98: -3714476943620302907
+      Bladderwrack_0_unlit_99: 8656900699470880595
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

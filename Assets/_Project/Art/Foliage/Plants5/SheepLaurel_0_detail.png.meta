@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 336a5a0b0e6b171458a456266ec1137d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7850739213071275523
+    second: SheepLaurel_0_detail_0
+  - first:
+      213: 2402128767398691471
+    second: SheepLaurel_0_detail_1
+  - first:
+      213: -2541218369173360288
+    second: SheepLaurel_0_detail_2
+  - first:
+      213: -539348038265534191
+    second: SheepLaurel_0_detail_3
+  - first:
+      213: -8801874838573199118
+    second: SheepLaurel_0_detail_4
+  - first:
+      213: -1282341803733441647
+    second: SheepLaurel_0_detail_5
+  - first:
+      213: -3742181265427625422
+    second: SheepLaurel_0_detail_6
+  - first:
+      213: 1045710983491997715
+    second: SheepLaurel_0_detail_7
+  - first:
+      213: -8991773998805528818
+    second: SheepLaurel_0_detail_8
+  - first:
+      213: -1730576059564296609
+    second: SheepLaurel_0_detail_9
+  - first:
+      213: -3205446798932094778
+    second: SheepLaurel_0_detail_10
+  - first:
+      213: 7163710790485369013
+    second: SheepLaurel_0_detail_11
+  - first:
+      213: -4834226256217844478
+    second: SheepLaurel_0_detail_12
+  - first:
+      213: 6577692251845016333
+    second: SheepLaurel_0_detail_13
+  - first:
+      213: -7678360303228298759
+    second: SheepLaurel_0_detail_14
+  - first:
+      213: -5791580476846259951
+    second: SheepLaurel_0_detail_15
+  - first:
+      213: 6593548825542794206
+    second: SheepLaurel_0_detail_16
+  - first:
+      213: 8903276101417489610
+    second: SheepLaurel_0_detail_17
+  - first:
+      213: -5457660321170278486
+    second: SheepLaurel_0_detail_18
+  - first:
+      213: 4708236752566450843
+    second: SheepLaurel_0_detail_19
+  - first:
+      213: 2234116969142213762
+    second: SheepLaurel_0_detail_20
+  - first:
+      213: -49830034372237464
+    second: SheepLaurel_0_detail_21
+  - first:
+      213: -8156015737796070908
+    second: SheepLaurel_0_detail_22
+  - first:
+      213: 3350218671985133167
+    second: SheepLaurel_0_detail_23
+  - first:
+      213: -1848028262418149587
+    second: SheepLaurel_0_detail_24
+  - first:
+      213: 75230900296899753
+    second: SheepLaurel_0_detail_25
+  - first:
+      213: -2598035507703477505
+    second: SheepLaurel_0_detail_26
+  - first:
+      213: 826962085685923065
+    second: SheepLaurel_0_detail_27
+  - first:
+      213: 1756668950397876821
+    second: SheepLaurel_0_detail_28
+  - first:
+      213: 586313003184930954
+    second: SheepLaurel_0_detail_29
+  - first:
+      213: -3908465489753172015
+    second: SheepLaurel_0_detail_30
+  - first:
+      213: -7809247318580092903
+    second: SheepLaurel_0_detail_31
+  - first:
+      213: 3443559062698396603
+    second: SheepLaurel_0_detail_32
+  - first:
+      213: 5864985001053834259
+    second: SheepLaurel_0_detail_33
+  - first:
+      213: 682300522839282231
+    second: SheepLaurel_0_detail_34
+  - first:
+      213: -7264227330721578696
+    second: SheepLaurel_0_detail_35
+  - first:
+      213: -2256734775029070646
+    second: SheepLaurel_0_detail_36
+  - first:
+      213: 6840979722791672587
+    second: SheepLaurel_0_detail_37
+  - first:
+      213: -2996183407299832145
+    second: SheepLaurel_0_detail_38
+  - first:
+      213: -6701439762680007704
+    second: SheepLaurel_0_detail_39
+  - first:
+      213: -2263643036432089193
+    second: SheepLaurel_0_detail_40
+  - first:
+      213: -3724807595252346945
+    second: SheepLaurel_0_detail_41
+  - first:
+      213: 1712125374658688553
+    second: SheepLaurel_0_detail_42
+  - first:
+      213: 7359551872147614311
+    second: SheepLaurel_0_detail_43
+  - first:
+      213: 3560498521343339039
+    second: SheepLaurel_0_detail_44
+  - first:
+      213: -2154952961000546156
+    second: SheepLaurel_0_detail_45
+  - first:
+      213: -3927136775315527949
+    second: SheepLaurel_0_detail_46
+  - first:
+      213: 7645789681259431754
+    second: SheepLaurel_0_detail_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 185
+        width: 26
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df928acd7429c0390800000000000000
+      internalID: -7850739213071275523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 185
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f82cb8d0363165120800000000000000
+      internalID: 2402128767398691471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 185
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06179b07b57cbbcd0800000000000000
+      internalID: -2541218369173360288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 186
+        width: 26
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11901e811d9d388f0800000000000000
+      internalID: -539348038265534191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 186
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f05569f77579d580800000000000000
+      internalID: -8801874838573199118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 186
+        width: 22
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 193a5d37ce4343ee0800000000000000
+      internalID: -1282341803733441647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 147
+        width: 22
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23a801d47f9111cc0800000000000000
+      internalID: -3742181265427625422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 147
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 310d3cc599c138e00800000000000000
+      internalID: 1045710983491997715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 148
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0f4a94403dc63380800000000000000
+      internalID: -8991773998805528818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 149
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f56ffd82e32cbf7e0800000000000000
+      internalID: -1730576059564296609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 148
+        width: 25
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c05d3b9e17f383d0800000000000000
+      internalID: -3205446798932094778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 148
+        width: 25
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b0638c420d9a6360800000000000000
+      internalID: 7163710790485369013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 111
+        width: 24
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 205d44235d069ecb0800000000000000
+      internalID: -4834226256217844478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 111
+        width: 29
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0bbf01c048a84b50800000000000000
+      internalID: 6577692251845016333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 111
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f9dd946cfbf07590800000000000000
+      internalID: -7678360303228298759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 111
+        width: 27
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 111cd7dcd3c20afa0800000000000000
+      internalID: -5791580476846259951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 116
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edb1ca309bdf08b50800000000000000
+      internalID: 6593548825542794206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 116
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac4d632517ace8b70800000000000000
+      internalID: 8903276101417489610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 80
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa7b6e39ade7244b0800000000000000
+      internalID: -5457660321170278486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 80
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9a79239164075140800000000000000
+      internalID: 4708236752566450843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 81
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28cd46ceb8d210f10800000000000000
+      internalID: 2234116969142213762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 81
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 867e81609d7fe4ff0800000000000000
+      internalID: -49830034372237464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 81
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4027b2e16e200de80800000000000000
+      internalID: -8156015737796070908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 81
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f660e87c12e5e7e20800000000000000
+      internalID: 3350218671985133167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 81
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2f0fab261c7a56e0800000000000000
+      internalID: -1848028262418149587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 51
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ac5450fa164b0100800000000000000
+      internalID: 75230900296899753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 51
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffa8b71887ce1fbd0800000000000000
+      internalID: -2598035507703477505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 51
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fc8600b2a5f97b00800000000000000
+      internalID: 826962085685923065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 51
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55a7c686a11f06810800000000000000
+      internalID: 1756668950397876821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 51
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a80c70ae190032800800000000000000
+      internalID: 586313003184930954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 52
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d79362585752c9c0800000000000000
+      internalID: -3908465489753172015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 51
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 910acdc50faff9390800000000000000
+      internalID: -7809247318580092903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 27
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbb073709baf9cf20800000000000000
+      internalID: 3443559062698396603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 27
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31ccec0d8cc946150800000000000000
+      internalID: 5864985001053834259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 28
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73216e5e5b4087900800000000000000
+      internalID: 682300522839282231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 28
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83108a0fab7403b90800000000000000
+      internalID: -7264227330721578696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 28
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac40f16cda77ea0e0800000000000000
+      internalID: -2256734775029070646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 27
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0bd5a410da00fe50800000000000000
+      internalID: 6840979722791672587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 28
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa659f5c01b6b66d0800000000000000
+      internalID: -2996183407299832145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 27
+        width: 13
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e3b7c5aa04bff2a0800000000000000
+      internalID: -6701439762680007704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 4
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79fbd23d6ace590e0800000000000000
+      internalID: -2263643036432089193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 4
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbf8e4c1a33de4cc0800000000000000
+      internalID: -3724807595252346945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 4
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 926b67ff4f0b2c710800000000000000
+      internalID: 1712125374658688553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 4
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76a6b656f61622660800000000000000
+      internalID: 7359551872147614311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 4
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1a29f37a8e696130800000000000000
+      internalID: 3560498521343339039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 4
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 490e2eb03b11812e0800000000000000
+      internalID: -2154952961000546156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 5
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f6e1f2e8e10089c0800000000000000
+      internalID: -3927136775315527949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SheepLaurel_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 5
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a47c0dab43d4b1a60800000000000000
+      internalID: 7645789681259431754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SheepLaurel_0_detail_0: -7850739213071275523
+      SheepLaurel_0_detail_1: 2402128767398691471
+      SheepLaurel_0_detail_10: -3205446798932094778
+      SheepLaurel_0_detail_11: 7163710790485369013
+      SheepLaurel_0_detail_12: -4834226256217844478
+      SheepLaurel_0_detail_13: 6577692251845016333
+      SheepLaurel_0_detail_14: -7678360303228298759
+      SheepLaurel_0_detail_15: -5791580476846259951
+      SheepLaurel_0_detail_16: 6593548825542794206
+      SheepLaurel_0_detail_17: 8903276101417489610
+      SheepLaurel_0_detail_18: -5457660321170278486
+      SheepLaurel_0_detail_19: 4708236752566450843
+      SheepLaurel_0_detail_2: -2541218369173360288
+      SheepLaurel_0_detail_20: 2234116969142213762
+      SheepLaurel_0_detail_21: -49830034372237464
+      SheepLaurel_0_detail_22: -8156015737796070908
+      SheepLaurel_0_detail_23: 3350218671985133167
+      SheepLaurel_0_detail_24: -1848028262418149587
+      SheepLaurel_0_detail_25: 75230900296899753
+      SheepLaurel_0_detail_26: -2598035507703477505
+      SheepLaurel_0_detail_27: 826962085685923065
+      SheepLaurel_0_detail_28: 1756668950397876821
+      SheepLaurel_0_detail_29: 586313003184930954
+      SheepLaurel_0_detail_3: -539348038265534191
+      SheepLaurel_0_detail_30: -3908465489753172015
+      SheepLaurel_0_detail_31: -7809247318580092903
+      SheepLaurel_0_detail_32: 3443559062698396603
+      SheepLaurel_0_detail_33: 5864985001053834259
+      SheepLaurel_0_detail_34: 682300522839282231
+      SheepLaurel_0_detail_35: -7264227330721578696
+      SheepLaurel_0_detail_36: -2256734775029070646
+      SheepLaurel_0_detail_37: 6840979722791672587
+      SheepLaurel_0_detail_38: -2996183407299832145
+      SheepLaurel_0_detail_39: -6701439762680007704
+      SheepLaurel_0_detail_4: -8801874838573199118
+      SheepLaurel_0_detail_40: -2263643036432089193
+      SheepLaurel_0_detail_41: -3724807595252346945
+      SheepLaurel_0_detail_42: 1712125374658688553
+      SheepLaurel_0_detail_43: 7359551872147614311
+      SheepLaurel_0_detail_44: 3560498521343339039
+      SheepLaurel_0_detail_45: -2154952961000546156
+      SheepLaurel_0_detail_46: -3927136775315527949
+      SheepLaurel_0_detail_47: 7645789681259431754
+      SheepLaurel_0_detail_5: -1282341803733441647
+      SheepLaurel_0_detail_6: -3742181265427625422
+      SheepLaurel_0_detail_7: 1045710983491997715
+      SheepLaurel_0_detail_8: -8991773998805528818
+      SheepLaurel_0_detail_9: -1730576059564296609
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

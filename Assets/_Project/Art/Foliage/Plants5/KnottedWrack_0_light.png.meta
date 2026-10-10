@@ -1,0 +1,6370 @@
+fileFormatVersion: 2
+guid: a65a7351a7ad177418967ff961ed3802
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5657688443951664707
+    second: KnottedWrack_0_light_0
+  - first:
+      213: -546494032534423579
+    second: KnottedWrack_0_light_1
+  - first:
+      213: 3335686014170961409
+    second: KnottedWrack_0_light_2
+  - first:
+      213: 8234412747717765399
+    second: KnottedWrack_0_light_3
+  - first:
+      213: 6311157149628820452
+    second: KnottedWrack_0_light_4
+  - first:
+      213: -968262939256896346
+    second: KnottedWrack_0_light_5
+  - first:
+      213: 5676057739739453283
+    second: KnottedWrack_0_light_6
+  - first:
+      213: -1161621072436861129
+    second: KnottedWrack_0_light_7
+  - first:
+      213: 2384167564102853170
+    second: KnottedWrack_0_light_8
+  - first:
+      213: 4669573048210148251
+    second: KnottedWrack_0_light_9
+  - first:
+      213: -8479047255339110994
+    second: KnottedWrack_0_light_10
+  - first:
+      213: 3358696370616042474
+    second: KnottedWrack_0_light_11
+  - first:
+      213: 8715189873132318122
+    second: KnottedWrack_0_light_12
+  - first:
+      213: 6495497643603860964
+    second: KnottedWrack_0_light_13
+  - first:
+      213: 3803803910543837907
+    second: KnottedWrack_0_light_14
+  - first:
+      213: 7696444402097510787
+    second: KnottedWrack_0_light_15
+  - first:
+      213: 1456764193821785115
+    second: KnottedWrack_0_light_16
+  - first:
+      213: -3408480139508155319
+    second: KnottedWrack_0_light_17
+  - first:
+      213: -678718210705746675
+    second: KnottedWrack_0_light_18
+  - first:
+      213: 3617518754210158971
+    second: KnottedWrack_0_light_19
+  - first:
+      213: -7023936847043051248
+    second: KnottedWrack_0_light_20
+  - first:
+      213: -5636456151606310585
+    second: KnottedWrack_0_light_21
+  - first:
+      213: -3269343546463966205
+    second: KnottedWrack_0_light_22
+  - first:
+      213: 8558016013006462540
+    second: KnottedWrack_0_light_23
+  - first:
+      213: -5118613179447541414
+    second: KnottedWrack_0_light_24
+  - first:
+      213: -3841642528933332503
+    second: KnottedWrack_0_light_25
+  - first:
+      213: 1154303894613374209
+    second: KnottedWrack_0_light_26
+  - first:
+      213: -1368185018985811300
+    second: KnottedWrack_0_light_27
+  - first:
+      213: -8670959371120899362
+    second: KnottedWrack_0_light_28
+  - first:
+      213: -8753857740765443047
+    second: KnottedWrack_0_light_29
+  - first:
+      213: -4905393073131815634
+    second: KnottedWrack_0_light_30
+  - first:
+      213: -6185426761664980909
+    second: KnottedWrack_0_light_31
+  - first:
+      213: -3726295953664693777
+    second: KnottedWrack_0_light_32
+  - first:
+      213: 8572639649413027150
+    second: KnottedWrack_0_light_33
+  - first:
+      213: -7214654052320871659
+    second: KnottedWrack_0_light_34
+  - first:
+      213: 4328494277131393980
+    second: KnottedWrack_0_light_35
+  - first:
+      213: -658590674480371790
+    second: KnottedWrack_0_light_36
+  - first:
+      213: -1402750339930808979
+    second: KnottedWrack_0_light_37
+  - first:
+      213: -4634877608880115449
+    second: KnottedWrack_0_light_38
+  - first:
+      213: 8375992736889636970
+    second: KnottedWrack_0_light_39
+  - first:
+      213: -2879071207400116288
+    second: KnottedWrack_0_light_40
+  - first:
+      213: -7592173096452808510
+    second: KnottedWrack_0_light_41
+  - first:
+      213: 3861866807540939559
+    second: KnottedWrack_0_light_42
+  - first:
+      213: 3919260732134600194
+    second: KnottedWrack_0_light_43
+  - first:
+      213: 2995230913060779704
+    second: KnottedWrack_0_light_44
+  - first:
+      213: 8674811591711522354
+    second: KnottedWrack_0_light_45
+  - first:
+      213: 2073970437527487203
+    second: KnottedWrack_0_light_46
+  - first:
+      213: -5327422339455504001
+    second: KnottedWrack_0_light_47
+  - first:
+      213: 5002061386306841736
+    second: KnottedWrack_0_light_48
+  - first:
+      213: 2029130315148698392
+    second: KnottedWrack_0_light_49
+  - first:
+      213: -6709147885076623263
+    second: KnottedWrack_0_light_50
+  - first:
+      213: -5853742548163337604
+    second: KnottedWrack_0_light_51
+  - first:
+      213: 1978304105110668439
+    second: KnottedWrack_0_light_52
+  - first:
+      213: 9009640689516593654
+    second: KnottedWrack_0_light_53
+  - first:
+      213: -6351761743282237788
+    second: KnottedWrack_0_light_54
+  - first:
+      213: 3258669275176975859
+    second: KnottedWrack_0_light_55
+  - first:
+      213: 3365928561578224548
+    second: KnottedWrack_0_light_56
+  - first:
+      213: -2751537862115742558
+    second: KnottedWrack_0_light_57
+  - first:
+      213: -3069111349162876354
+    second: KnottedWrack_0_light_58
+  - first:
+      213: 2121643305175950887
+    second: KnottedWrack_0_light_59
+  - first:
+      213: 8437869091044634159
+    second: KnottedWrack_0_light_60
+  - first:
+      213: 2335108060897223880
+    second: KnottedWrack_0_light_61
+  - first:
+      213: -8242490667970121662
+    second: KnottedWrack_0_light_62
+  - first:
+      213: -8700374956914304408
+    second: KnottedWrack_0_light_63
+  - first:
+      213: 7706305025018538344
+    second: KnottedWrack_0_light_64
+  - first:
+      213: 210342888810644351
+    second: KnottedWrack_0_light_65
+  - first:
+      213: 903880294819940421
+    second: KnottedWrack_0_light_66
+  - first:
+      213: -3366746594325570794
+    second: KnottedWrack_0_light_67
+  - first:
+      213: -8974799867590936584
+    second: KnottedWrack_0_light_68
+  - first:
+      213: 9108503463407764139
+    second: KnottedWrack_0_light_69
+  - first:
+      213: -7580410075181678393
+    second: KnottedWrack_0_light_70
+  - first:
+      213: -8937534794387646980
+    second: KnottedWrack_0_light_71
+  - first:
+      213: -3942404086706185778
+    second: KnottedWrack_0_light_72
+  - first:
+      213: -1041848196060792201
+    second: KnottedWrack_0_light_73
+  - first:
+      213: -4758962963869163866
+    second: KnottedWrack_0_light_74
+  - first:
+      213: 5857744444259248639
+    second: KnottedWrack_0_light_75
+  - first:
+      213: -748365943822242213
+    second: KnottedWrack_0_light_76
+  - first:
+      213: 1518154581927241696
+    second: KnottedWrack_0_light_77
+  - first:
+      213: -2549208933487712444
+    second: KnottedWrack_0_light_78
+  - first:
+      213: 3604320496326159762
+    second: KnottedWrack_0_light_79
+  - first:
+      213: 1926254310728517204
+    second: KnottedWrack_0_light_80
+  - first:
+      213: 149116330377448115
+    second: KnottedWrack_0_light_81
+  - first:
+      213: -5014160042760990328
+    second: KnottedWrack_0_light_82
+  - first:
+      213: 5693358151433575911
+    second: KnottedWrack_0_light_83
+  - first:
+      213: 7560825395020589470
+    second: KnottedWrack_0_light_84
+  - first:
+      213: 5484326671519338120
+    second: KnottedWrack_0_light_85
+  - first:
+      213: -1427466634891773016
+    second: KnottedWrack_0_light_86
+  - first:
+      213: 3449107438682356504
+    second: KnottedWrack_0_light_87
+  - first:
+      213: -5089334312010835171
+    second: KnottedWrack_0_light_88
+  - first:
+      213: -852023552207618696
+    second: KnottedWrack_0_light_89
+  - first:
+      213: -1669146304241580055
+    second: KnottedWrack_0_light_90
+  - first:
+      213: -4938058540764134883
+    second: KnottedWrack_0_light_91
+  - first:
+      213: -8712349795062068290
+    second: KnottedWrack_0_light_92
+  - first:
+      213: -2682854739070145968
+    second: KnottedWrack_0_light_93
+  - first:
+      213: 4894339221658180252
+    second: KnottedWrack_0_light_94
+  - first:
+      213: -457885478565481968
+    second: KnottedWrack_0_light_95
+  - first:
+      213: -7807516411765720228
+    second: KnottedWrack_0_light_96
+  - first:
+      213: -9138506086683445590
+    second: KnottedWrack_0_light_97
+  - first:
+      213: -9189414548913113518
+    second: KnottedWrack_0_light_98
+  - first:
+      213: 5889165477925285942
+    second: KnottedWrack_0_light_99
+  - first:
+      213: 2142305485121494305
+    second: KnottedWrack_0_light_100
+  - first:
+      213: -3915269170144914278
+    second: KnottedWrack_0_light_101
+  - first:
+      213: 6390484023666299211
+    second: KnottedWrack_0_light_102
+  - first:
+      213: -5055865470166568381
+    second: KnottedWrack_0_light_103
+  - first:
+      213: -930659720801011825
+    second: KnottedWrack_0_light_104
+  - first:
+      213: -2705820208653819320
+    second: KnottedWrack_0_light_105
+  - first:
+      213: -6274984541175602478
+    second: KnottedWrack_0_light_106
+  - first:
+      213: -9141737412863492552
+    second: KnottedWrack_0_light_107
+  - first:
+      213: 1147890627232672870
+    second: KnottedWrack_0_light_108
+  - first:
+      213: 2244438521105116203
+    second: KnottedWrack_0_light_109
+  - first:
+      213: -7050503955564378368
+    second: KnottedWrack_0_light_110
+  - first:
+      213: -4490545498017592476
+    second: KnottedWrack_0_light_111
+  - first:
+      213: 3155534999596996040
+    second: KnottedWrack_0_light_112
+  - first:
+      213: -3271952724923879429
+    second: KnottedWrack_0_light_113
+  - first:
+      213: 5825840186125840289
+    second: KnottedWrack_0_light_114
+  - first:
+      213: -4384693234489665979
+    second: KnottedWrack_0_light_115
+  - first:
+      213: -3660374964487683916
+    second: KnottedWrack_0_light_116
+  - first:
+      213: -7162839297397444180
+    second: KnottedWrack_0_light_117
+  - first:
+      213: -2361140218677048706
+    second: KnottedWrack_0_light_118
+  - first:
+      213: 3825425656899387324
+    second: KnottedWrack_0_light_119
+  - first:
+      213: -3343363165475897377
+    second: KnottedWrack_0_light_120
+  - first:
+      213: 7526154647999617586
+    second: KnottedWrack_0_light_121
+  - first:
+      213: -815278081951957224
+    second: KnottedWrack_0_light_122
+  - first:
+      213: 5712562426830361411
+    second: KnottedWrack_0_light_123
+  - first:
+      213: 8207124268247770031
+    second: KnottedWrack_0_light_124
+  - first:
+      213: 2982852020572479569
+    second: KnottedWrack_0_light_125
+  - first:
+      213: -8455409252852876380
+    second: KnottedWrack_0_light_126
+  - first:
+      213: 3425780462958063496
+    second: KnottedWrack_0_light_127
+  - first:
+      213: -2174197843099921455
+    second: KnottedWrack_0_light_128
+  - first:
+      213: -1250779524935661643
+    second: KnottedWrack_0_light_129
+  - first:
+      213: 1674852039631100932
+    second: KnottedWrack_0_light_130
+  - first:
+      213: 388377540577769890
+    second: KnottedWrack_0_light_131
+  - first:
+      213: 4015141838822342212
+    second: KnottedWrack_0_light_132
+  - first:
+      213: -6370288955469025985
+    second: KnottedWrack_0_light_133
+  - first:
+      213: -6390832318279620737
+    second: KnottedWrack_0_light_134
+  - first:
+      213: 8392716847754551000
+    second: KnottedWrack_0_light_135
+  - first:
+      213: 8367827557952969197
+    second: KnottedWrack_0_light_136
+  - first:
+      213: 1285732382341534930
+    second: KnottedWrack_0_light_137
+  - first:
+      213: -7228312238914969013
+    second: KnottedWrack_0_light_138
+  - first:
+      213: -363291598645080067
+    second: KnottedWrack_0_light_139
+  - first:
+      213: 3283214201610959176
+    second: KnottedWrack_0_light_140
+  - first:
+      213: -5329742714348216707
+    second: KnottedWrack_0_light_141
+  - first:
+      213: -530457498140715327
+    second: KnottedWrack_0_light_142
+  - first:
+      213: -8935997834440774515
+    second: KnottedWrack_0_light_143
+  - first:
+      213: 8487217851395283655
+    second: KnottedWrack_0_light_144
+  - first:
+      213: 948118921247132735
+    second: KnottedWrack_0_light_145
+  - first:
+      213: -4031417453641928501
+    second: KnottedWrack_0_light_146
+  - first:
+      213: -8952829246415082610
+    second: KnottedWrack_0_light_147
+  - first:
+      213: 3920512953358631417
+    second: KnottedWrack_0_light_148
+  - first:
+      213: 5287154899749201596
+    second: KnottedWrack_0_light_149
+  - first:
+      213: 8408838624485028090
+    second: KnottedWrack_0_light_150
+  - first:
+      213: 5201717469061438465
+    second: KnottedWrack_0_light_151
+  - first:
+      213: 751169427264699549
+    second: KnottedWrack_0_light_152
+  - first:
+      213: -7422851032968143527
+    second: KnottedWrack_0_light_153
+  - first:
+      213: 4279061364052332426
+    second: KnottedWrack_0_light_154
+  - first:
+      213: -8442147440931316370
+    second: KnottedWrack_0_light_155
+  - first:
+      213: 7387682583397922889
+    second: KnottedWrack_0_light_156
+  - first:
+      213: 6382129023180275424
+    second: KnottedWrack_0_light_157
+  - first:
+      213: -4994064716143272548
+    second: KnottedWrack_0_light_158
+  - first:
+      213: -2444176661295369898
+    second: KnottedWrack_0_light_159
+  - first:
+      213: 8630365901936846199
+    second: KnottedWrack_0_light_160
+  - first:
+      213: 3070811571364419080
+    second: KnottedWrack_0_light_161
+  - first:
+      213: -5410249925740436507
+    second: KnottedWrack_0_light_162
+  - first:
+      213: -3617003503499686012
+    second: KnottedWrack_0_light_163
+  - first:
+      213: 6625215550272494612
+    second: KnottedWrack_0_light_164
+  - first:
+      213: 6780123578470196653
+    second: KnottedWrack_0_light_165
+  - first:
+      213: -8899360521092251650
+    second: KnottedWrack_0_light_166
+  - first:
+      213: 4668876558933286605
+    second: KnottedWrack_0_light_167
+  - first:
+      213: 3136967363029245036
+    second: KnottedWrack_0_light_168
+  - first:
+      213: -915082111143925737
+    second: KnottedWrack_0_light_169
+  - first:
+      213: -1775388347826568247
+    second: KnottedWrack_0_light_170
+  - first:
+      213: 5957389298521067690
+    second: KnottedWrack_0_light_171
+  - first:
+      213: -5417266632436815227
+    second: KnottedWrack_0_light_172
+  - first:
+      213: -3445249597066261662
+    second: KnottedWrack_0_light_173
+  - first:
+      213: 1668699381256827789
+    second: KnottedWrack_0_light_174
+  - first:
+      213: -8621297469657433858
+    second: KnottedWrack_0_light_175
+  - first:
+      213: -6793854577248850241
+    second: KnottedWrack_0_light_176
+  - first:
+      213: 1142129841315759965
+    second: KnottedWrack_0_light_177
+  - first:
+      213: 563280651609064684
+    second: KnottedWrack_0_light_178
+  - first:
+      213: 319703047797640127
+    second: KnottedWrack_0_light_179
+  - first:
+      213: -1798578781762489714
+    second: KnottedWrack_0_light_180
+  - first:
+      213: -942906705659842689
+    second: KnottedWrack_0_light_181
+  - first:
+      213: 925855060788408168
+    second: KnottedWrack_0_light_182
+  - first:
+      213: -4004066617602607965
+    second: KnottedWrack_0_light_183
+  - first:
+      213: -49443238442573609
+    second: KnottedWrack_0_light_184
+  - first:
+      213: 3102079403428370661
+    second: KnottedWrack_0_light_185
+  - first:
+      213: 3313685210472469439
+    second: KnottedWrack_0_light_186
+  - first:
+      213: -4462634252457502891
+    second: KnottedWrack_0_light_187
+  - first:
+      213: -24497654177411255
+    second: KnottedWrack_0_light_188
+  - first:
+      213: -712868193646749413
+    second: KnottedWrack_0_light_189
+  - first:
+      213: -6437497345512300397
+    second: KnottedWrack_0_light_190
+  - first:
+      213: 650159573489764111
+    second: KnottedWrack_0_light_191
+  - first:
+      213: -5194282078682011226
+    second: KnottedWrack_0_light_192
+  - first:
+      213: -560145137202539745
+    second: KnottedWrack_0_light_193
+  - first:
+      213: -3153840096780922554
+    second: KnottedWrack_0_light_194
+  - first:
+      213: -5794742992789826417
+    second: KnottedWrack_0_light_195
+  - first:
+      213: 3787849050719098156
+    second: KnottedWrack_0_light_196
+  - first:
+      213: 2330375492473922337
+    second: KnottedWrack_0_light_197
+  - first:
+      213: -6294088219588818681
+    second: KnottedWrack_0_light_198
+  - first:
+      213: 369446283529993497
+    second: KnottedWrack_0_light_199
+  - first:
+      213: -8560503811889152551
+    second: KnottedWrack_0_light_200
+  - first:
+      213: 6765911129821802006
+    second: KnottedWrack_0_light_201
+  - first:
+      213: 7090073971915893458
+    second: KnottedWrack_0_light_202
+  - first:
+      213: 6572270230171317540
+    second: KnottedWrack_0_light_203
+  - first:
+      213: -4687504750949777942
+    second: KnottedWrack_0_light_204
+  - first:
+      213: -6272239284429351913
+    second: KnottedWrack_0_light_205
+  - first:
+      213: -5580182462380292220
+    second: KnottedWrack_0_light_206
+  - first:
+      213: -4164510609610194197
+    second: KnottedWrack_0_light_207
+  - first:
+      213: 6208774872209775608
+    second: KnottedWrack_0_light_208
+  - first:
+      213: 4344759422796780925
+    second: KnottedWrack_0_light_209
+  - first:
+      213: -3284835713430972821
+    second: KnottedWrack_0_light_210
+  - first:
+      213: -899303853152306915
+    second: KnottedWrack_0_light_211
+  - first:
+      213: -3954262730167638267
+    second: KnottedWrack_0_light_212
+  - first:
+      213: -5992486176689600124
+    second: KnottedWrack_0_light_213
+  - first:
+      213: 5526999447368354291
+    second: KnottedWrack_0_light_214
+  - first:
+      213: -4977152798534616110
+    second: KnottedWrack_0_light_215
+  - first:
+      213: -9109442717869314390
+    second: KnottedWrack_0_light_216
+  - first:
+      213: -3581398444333153080
+    second: KnottedWrack_0_light_217
+  - first:
+      213: 5859596811478697052
+    second: KnottedWrack_0_light_218
+  - first:
+      213: -308448758975186701
+    second: KnottedWrack_0_light_219
+  - first:
+      213: -5779564341901302645
+    second: KnottedWrack_0_light_220
+  - first:
+      213: 705344584285414296
+    second: KnottedWrack_0_light_221
+  - first:
+      213: -1277557662812251339
+    second: KnottedWrack_0_light_222
+  - first:
+      213: 3091469524757469947
+    second: KnottedWrack_0_light_223
+  - first:
+      213: -1077759287220939049
+    second: KnottedWrack_0_light_224
+  - first:
+      213: 8237307409846571740
+    second: KnottedWrack_0_light_225
+  - first:
+      213: -6796721286341196352
+    second: KnottedWrack_0_light_226
+  - first:
+      213: 2465638341327703916
+    second: KnottedWrack_0_light_227
+  - first:
+      213: 8395332314509849949
+    second: KnottedWrack_0_light_228
+  - first:
+      213: -5515611969049032264
+    second: KnottedWrack_0_light_229
+  - first:
+      213: -4816985130326788029
+    second: KnottedWrack_0_light_230
+  - first:
+      213: 696478976170364159
+    second: KnottedWrack_0_light_231
+  - first:
+      213: 2145041512483444716
+    second: KnottedWrack_0_light_232
+  - first:
+      213: 3615136583896805019
+    second: KnottedWrack_0_light_233
+  - first:
+      213: 3254571280279159074
+    second: KnottedWrack_0_light_234
+  - first:
+      213: -655320751819431641
+    second: KnottedWrack_0_light_235
+  - first:
+      213: 7200661749317635080
+    second: KnottedWrack_0_light_236
+  - first:
+      213: 3881887037489352019
+    second: KnottedWrack_0_light_237
+  - first:
+      213: 4121768298252479316
+    second: KnottedWrack_0_light_238
+  - first:
+      213: -3363232813652480469
+    second: KnottedWrack_0_light_239
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 447
+        width: 71
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34e429ff9a5248e40800000000000000
+      internalID: 5657688443951664707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_1
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 447
+        width: 71
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e73ae6a2967a68f0800000000000000
+      internalID: -546494032534423579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_2
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 447
+        width: 71
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10616e4b1ccba4e20800000000000000
+      internalID: 3335686014170961409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_3
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 447
+        width: 71
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7196aa924c2864270800000000000000
+      internalID: 8234412747717765399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_4
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 447
+        width: 71
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ebea495dfbb59750800000000000000
+      internalID: 6311157149628820452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_5
+      rect:
+        serializedVersion: 2
+        x: 503
+        y: 447
+        width: 71
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a4ca60acf90092f0800000000000000
+      internalID: -968262939256896346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_6
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 447
+        width: 68
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 367d6c5f07865ce40800000000000000
+      internalID: 5676057739739453283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_7
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 447
+        width: 68
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 737eac50ac711efe0800000000000000
+      internalID: -1161621072436861129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_8
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 447
+        width: 82
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 232eb5784c3461120800000000000000
+      internalID: 2384167564102853170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_9
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 447
+        width: 82
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9bcd4762f7adc040800000000000000
+      internalID: 4669573048210148251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_10
+      rect:
+        serializedVersion: 2
+        x: 1007
+        y: 447
+        width: 82
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eade2c7f17f545a80800000000000000
+      internalID: -8479047255339110994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_11
+      rect:
+        serializedVersion: 2
+        x: 1116
+        y: 447
+        width: 82
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae386fecd8c7c9e20800000000000000
+      internalID: 3358696370616042474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_12
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 447
+        width: 82
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aad222ab30392f870800000000000000
+      internalID: 8715189873132318122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_13
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 405
+        width: 82
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ed156631b4a42a50800000000000000
+      internalID: 6495497643603860964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_14
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 407
+        width: 69
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3da0533d083d9c430800000000000000
+      internalID: 3803803910543837907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_15
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 407
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 389d09cf7634fca60800000000000000
+      internalID: 7696444402097510787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_16
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 407
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1c7146e057773410800000000000000
+      internalID: 1456764193821785115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_17
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 407
+        width: 69
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94c74ac3f55a2b0d0800000000000000
+      internalID: -3408480139508155319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_18
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 407
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d059b442265b496f0800000000000000
+      internalID: -678718210705746675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_19
+      rect:
+        serializedVersion: 2
+        x: 607
+        y: 407
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b799209f322043230800000000000000
+      internalID: 3617518754210158971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_20
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 407
+        width: 69
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 011c83be6a6f58e90800000000000000
+      internalID: -7023936847043051248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_21
+      rect:
+        serializedVersion: 2
+        x: 801
+        y: 407
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 749c07b4ef847c1b0800000000000000
+      internalID: -5636456151606310585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_22
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 407
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30cac40cd55f0a2d0800000000000000
+      internalID: -3269343546463966205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_23
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 407
+        width: 71
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4eda55b83e24c670800000000000000
+      internalID: 8558016013006462540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_24
+      rect:
+        serializedVersion: 2
+        x: 1087
+        y: 407
+        width: 71
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a518560de6807f8b0800000000000000
+      internalID: -5118613179447541414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_25
+      rect:
+        serializedVersion: 2
+        x: 1181
+        y: 407
+        width: 71
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e935ec497ebfaac0800000000000000
+      internalID: -3841642528933332503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_26
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 366
+        width: 64
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 105b741c649e40010800000000000000
+      internalID: 1154303894613374209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_27
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 366
+        width: 64
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c92f65469fa330de0800000000000000
+      internalID: -1368185018985811300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_28
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eda8e7684609aa780800000000000000
+      internalID: -8670959371120899362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_29
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91c4f53c3cc048680800000000000000
+      internalID: -8753857740765443047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_30
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2df0586dfa8cebb0800000000000000
+      internalID: -4905393073131815634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_31
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35893cec123f82aa0800000000000000
+      internalID: -6185426761664980909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_32
+      rect:
+        serializedVersion: 2
+        x: 626
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe927d9a299894cc0800000000000000
+      internalID: -3726295953664693777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_33
+      rect:
+        serializedVersion: 2
+        x: 734
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4551b2675228f670800000000000000
+      internalID: 8572639649413027150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_34
+      rect:
+        serializedVersion: 2
+        x: 842
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51bf4124d5660eb90800000000000000
+      internalID: -7214654052320871659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_35
+      rect:
+        serializedVersion: 2
+        x: 950
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbb5ab89c96e11c30800000000000000
+      internalID: 4328494277131393980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_36
+      rect:
+        serializedVersion: 2
+        x: 1058
+        y: 367
+        width: 82
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b7663b55473cd6f0800000000000000
+      internalID: -658590674480371790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_37
+      rect:
+        serializedVersion: 2
+        x: 1167
+        y: 367
+        width: 73
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6d9dd77ffd688ce0800000000000000
+      internalID: -1402750339930808979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_38
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 327
+        width: 73
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 701f9411f5b9dafb0800000000000000
+      internalID: -4634877608880115449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_39
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 327
+        width: 69
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a680f8b24018d3470800000000000000
+      internalID: 8375992736889636970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_40
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 327
+        width: 69
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cf6cd7adfb7b08d0800000000000000
+      internalID: -2879071207400116288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_41
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 327
+        width: 69
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c027a83bce23a690800000000000000
+      internalID: -7592173096452808510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_42
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 327
+        width: 69
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72b7951866b189530800000000000000
+      internalID: 3861866807540939559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_43
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 327
+        width: 69
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20e2509eed2046630800000000000000
+      internalID: 3919260732134600194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_44
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 327
+        width: 69
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b6b14165a2319920800000000000000
+      internalID: 2995230913060779704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_45
+      rect:
+        serializedVersion: 2
+        x: 694
+        y: 328
+        width: 75
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23ef7697e2f136870800000000000000
+      internalID: 8674811591711522354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_46
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 328
+        width: 75
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e2cc73ef1938cc10800000000000000
+      internalID: 2073970437527487203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_47
+      rect:
+        serializedVersion: 2
+        x: 897
+        y: 328
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f713640bb913116b0800000000000000
+      internalID: -5327422339455504001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_48
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 328
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88c648b2454ea6540800000000000000
+      internalID: 5002061386306841736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_49
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 328
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8132a65554be82c10800000000000000
+      internalID: 2029130315148698392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_50
+      rect:
+        serializedVersion: 2
+        x: 1185
+        y: 328
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 160d17c8b8154e2a0800000000000000
+      internalID: -6709147885076623263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_51
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 289
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c72622aba2453cea0800000000000000
+      internalID: -5853742548163337604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_52
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 289
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79481d22a19547b10800000000000000
+      internalID: 1978304105110668439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_53
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 289
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f1ca84d87ca80d70800000000000000
+      internalID: 9009640689516593654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_54
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 289
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ae0fb9f8520ad7a0800000000000000
+      internalID: -6351761743282237788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_55
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 289
+        width: 70
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fd376bc07e193d20800000000000000
+      internalID: 3258669275176975859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_56
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 289
+        width: 63
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ab263c713e26be20800000000000000
+      internalID: 3365928561578224548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_57
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 289
+        width: 63
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2acad8684e290d9d0800000000000000
+      internalID: -2751537862115742558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_58
+      rect:
+        serializedVersion: 2
+        x: 675
+        y: 289
+        width: 63
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e32e6012d735865d0800000000000000
+      internalID: -3069111349162876354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_59
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 288
+        width: 49
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72629195857917d10800000000000000
+      internalID: 2121643305175950887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_60
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 288
+        width: 49
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2ea6f88b35591570800000000000000
+      internalID: 8437869091044634159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_61
+      rect:
+        serializedVersion: 2
+        x: 915
+        y: 288
+        width: 49
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c42ee1d868f76020800000000000000
+      internalID: 2335108060897223880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_62
+      rect:
+        serializedVersion: 2
+        x: 991
+        y: 288
+        width: 49
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2403b27786acc9d80800000000000000
+      internalID: -8242490667970121662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_63
+      rect:
+        serializedVersion: 2
+        x: 1067
+        y: 288
+        width: 49
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86a1b60c21f024780800000000000000
+      internalID: -8700374956914304408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_64
+      rect:
+        serializedVersion: 2
+        x: 1143
+        y: 288
+        width: 49
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 869a90b279b42fa60800000000000000
+      internalID: 7706305025018538344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_65
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 290
+        width: 68
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7386903eb94be200800000000000000
+      internalID: 210342888810644351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_66
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 252
+        width: 46
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 548c734d65a3b8c00800000000000000
+      internalID: 903880294819940421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_67
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 252
+        width: 46
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61bd77c6fc9e641d0800000000000000
+      internalID: -3366746594325570794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_68
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 252
+        width: 46
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f7f40a221b137380800000000000000
+      internalID: -8974799867590936584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_69
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 253
+        width: 73
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba2c5db14a7e76e70800000000000000
+      internalID: 9108503463407764139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_70
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 253
+        width: 68
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c001090339fcc690800000000000000
+      internalID: -7580410075181678393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_71
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 253
+        width: 68
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf594d4257f77f380800000000000000
+      internalID: -8937534794387646980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_72
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 253
+        width: 46
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec954d2fe54c949c0800000000000000
+      internalID: -3942404086706185778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_73
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 253
+        width: 46
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77a3aebe59c9a81f0800000000000000
+      internalID: -1041848196060792201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_74
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 253
+        width: 46
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ae965ff564c4fdb0800000000000000
+      internalID: -4758962963869163866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_75
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 253
+        width: 46
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff927115983ea4150800000000000000
+      internalID: 5857744444259248639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_76
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 253
+        width: 46
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5ea97c93254d95f0800000000000000
+      internalID: -748365943822242213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_77
+      rect:
+        serializedVersion: 2
+        x: 913
+        y: 253
+        width: 46
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e7a7e97c81911510800000000000000
+      internalID: 1518154581927241696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_78
+      rect:
+        serializedVersion: 2
+        x: 989
+        y: 254
+        width: 73
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44766353bf36f9cd0800000000000000
+      internalID: -2549208933487712444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_79
+      rect:
+        serializedVersion: 2
+        x: 1090
+        y: 254
+        width: 73
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29d2e28156e150230800000000000000
+      internalID: 3604320496326159762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_80
+      rect:
+        serializedVersion: 2
+        x: 1189
+        y: 254
+        width: 49
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 456c902071e6bba10800000000000000
+      internalID: 1926254310728517204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_81
+      rect:
+        serializedVersion: 2
+        x: 1265
+        y: 254
+        width: 49
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ba8b5e2384c11200800000000000000
+      internalID: 149116330377448115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_82
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 217
+        width: 59
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 881164cd1002a6ab0800000000000000
+      internalID: -5014160042760990328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_83
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 217
+        width: 59
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7edd543f21fd20f40800000000000000
+      internalID: 5693358151433575911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_84
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 217
+        width: 59
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9964f643a27de860800000000000000
+      internalID: 7560825395020589470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_85
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 217
+        width: 59
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88e4c10fc0e3c1c40800000000000000
+      internalID: 5484326671519338120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_86
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 217
+        width: 59
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8abbd8a98ae903ce0800000000000000
+      internalID: -1427466634891773016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_87
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 217
+        width: 59
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81bb1daf0f0bddf20800000000000000
+      internalID: 3449107438682356504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_88
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 217
+        width: 50
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1b136d586d0f59b0800000000000000
+      internalID: -5089334312010835171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_89
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 217
+        width: 50
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87df56ee7110d24f0800000000000000
+      internalID: -852023552207618696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_90
+      rect:
+        serializedVersion: 2
+        x: 677
+        y: 217
+        width: 50
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e74681a74006d8e0800000000000000
+      internalID: -1669146304241580055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_91
+      rect:
+        serializedVersion: 2
+        x: 754
+        y: 217
+        width: 50
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d128bad8bed787bb0800000000000000
+      internalID: -4938058540764134883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_92
+      rect:
+        serializedVersion: 2
+        x: 831
+        y: 217
+        width: 50
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebbc06a7504871780800000000000000
+      internalID: -8712349795062068290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_93
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 217
+        width: 50
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05a20c544d594cad0800000000000000
+      internalID: -2682854739070145968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_94
+      rect:
+        serializedVersion: 2
+        x: 985
+        y: 218
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9a923d379f2ce340800000000000000
+      internalID: 4894339221658180252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_95
+      rect:
+        serializedVersion: 2
+        x: 1061
+        y: 218
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0127b4e459345a9f0800000000000000
+      internalID: -457885478565481968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_96
+      rect:
+        serializedVersion: 2
+        x: 1137
+        y: 218
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5bfba2803126a390800000000000000
+      internalID: -7807516411765720228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_97
+      rect:
+        serializedVersion: 2
+        x: 1213
+        y: 218
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa6fc7dc1218d2180800000000000000
+      internalID: -9138506086683445590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_98
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 184
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2563a36c724a87080800000000000000
+      internalID: -9189414548913113518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_99
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 184
+        width: 50
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 630fa3fccc48ab150800000000000000
+      internalID: 5889165477925285942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_100
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 184
+        width: 43
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12d99010d7ffabd10800000000000000
+      internalID: 2142305485121494305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_101
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 184
+        width: 43
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9459790f6b2aa9c0800000000000000
+      internalID: -3915269170144914278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_102
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b41507d7c5f8fa850800000000000000
+      internalID: 6390484023666299211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_103
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 342fe8a5425f5d9b0800000000000000
+      internalID: -5055865470166568381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_104
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8734ee2ae1a513f0800000000000000
+      internalID: -930659720801011825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_105
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 842ad153bdef27ad0800000000000000
+      internalID: -2705820208653819320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_106
+      rect:
+        serializedVersion: 2
+        x: 643
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d2292c5ec6cae8a0800000000000000
+      internalID: -6274984541175602478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_107
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83e7f5c0246022180800000000000000
+      internalID: -9141737412863492552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_108
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66c243591702eef00800000000000000
+      internalID: 1147890627232672870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_109
+      rect:
+        serializedVersion: 2
+        x: 898
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2c6ca281f8d52f10800000000000000
+      internalID: 2244438521105116203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_110
+      rect:
+        serializedVersion: 2
+        x: 983
+        y: 185
+        width: 59
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0074911f104972e90800000000000000
+      internalID: -7050503955564378368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_111
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 185
+        width: 52
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46b8ee659a06ea1c0800000000000000
+      internalID: -4490545498017592476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_112
+      rect:
+        serializedVersion: 2
+        x: 1147
+        y: 185
+        width: 52
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c59a470d56bacb20800000000000000
+      internalID: 3155534999596996040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_113
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 184
+        width: 51
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bff6a0d0550b792d0800000000000000
+      internalID: -3271952724923879429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_114
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 150
+        width: 51
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1afe93c58ca89d050800000000000000
+      internalID: 5825840186125840289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_115
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 150
+        width: 51
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5465f2dfbb07623c0800000000000000
+      internalID: -4384693234489665979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_116
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 152
+        width: 54
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b08af00d5cb33dc0800000000000000
+      internalID: -3660374964487683916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_117
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 152
+        width: 54
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca1ba6ffb9b789c90800000000000000
+      internalID: -7162839297397444180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_118
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 152
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7acdd02b7b8b3fd0800000000000000
+      internalID: -2361140218677048706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_119
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 152
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbf3722fd54a61530800000000000000
+      internalID: 3825425656899387324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_120
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 152
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdffea63aecf991d0800000000000000
+      internalID: -3343363165475897377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_121
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 152
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23a1caee6c5427860800000000000000
+      internalID: 7526154647999617586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_122
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 152
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81f771c67ec8fa4f0800000000000000
+      internalID: -815278081951957224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_123
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 152
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3439770c249174f40800000000000000
+      internalID: 5712562426830361411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_124
+      rect:
+        serializedVersion: 2
+        x: 782
+        y: 152
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa3656ce90095e170800000000000000
+      internalID: 8207124268247770031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_125
+      rect:
+        serializedVersion: 2
+        x: 858
+        y: 152
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15067cfdb18356920800000000000000
+      internalID: 2982852020572479569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_126
+      rect:
+        serializedVersion: 2
+        x: 934
+        y: 152
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ab372d451a58aa80800000000000000
+      internalID: -8455409252852876380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_127
+      rect:
+        serializedVersion: 2
+        x: 1010
+        y: 152
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88fa6153e21da8f20800000000000000
+      internalID: 3425780462958063496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_128
+      rect:
+        serializedVersion: 2
+        x: 1086
+        y: 152
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d3db92c492b3d1e0800000000000000
+      internalID: -2174197843099921455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_129
+      rect:
+        serializedVersion: 2
+        x: 1162
+        y: 152
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b7c0e326a654aee0800000000000000
+      internalID: -1250779524935661643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_130
+      rect:
+        serializedVersion: 2
+        x: 1238
+        y: 152
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40cdc896e054e3710800000000000000
+      internalID: 1674852039631100932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_131
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 119
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a9b0e0c05bc36500800000000000000
+      internalID: 388377540577769890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_132
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 119
+        width: 48
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44e70d1ba36a8b730800000000000000
+      internalID: 4015141838822342212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_133
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 119
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3dacac32ff2897a0800000000000000
+      internalID: -6370288955469025985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_134
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 119
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f776bd9ddd33f47a0800000000000000
+      internalID: -6390832318279620737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_135
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 119
+        width: 49
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8de98daa18be87470800000000000000
+      internalID: 8392716847754551000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_136
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 119
+        width: 44
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de9d28d44de702470800000000000000
+      internalID: 8367827557952969197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_137
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 119
+        width: 44
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d41fa52ac6d7d110800000000000000
+      internalID: 1285732382341534930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_138
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 119
+        width: 44
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b426dd1e050efab90800000000000000
+      internalID: -7228312238914969013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_139
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 118
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dff40e0473455faf0800000000000000
+      internalID: -363291598645080067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_140
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 118
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 849f980dbe1509d20800000000000000
+      internalID: 3283214201610959176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_141
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 118
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7e5c0f4d33f806b0800000000000000
+      internalID: -5329742714348216707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_142
+      rect:
+        serializedVersion: 2
+        x: 780
+        y: 118
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c651e647bf63a8f0800000000000000
+      internalID: -530457498140715327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_143
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 118
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8c6f748055fcf380800000000000000
+      internalID: -8935997834440774515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_144
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 118
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ca15cb2ba7a8c570800000000000000
+      internalID: 8487217851395283655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_145
+      rect:
+        serializedVersion: 2
+        x: 962
+        y: 120
+        width: 49
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3c03c1b225682d00800000000000000
+      internalID: 948118921247132735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_146
+      rect:
+        serializedVersion: 2
+        x: 1040
+        y: 120
+        width: 49
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc0fc5e6f278d08c0800000000000000
+      internalID: -4031417453641928501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_147
+      rect:
+        serializedVersion: 2
+        x: 1118
+        y: 120
+        width: 49
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8b63b80c3921c380800000000000000
+      internalID: -8952829246415082610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_148
+      rect:
+        serializedVersion: 2
+        x: 1194
+        y: 120
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f1424262c5786630800000000000000
+      internalID: 3920512953358631417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_149
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 120
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb664086e5fbf5940800000000000000
+      internalID: 5287154899749201596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_150
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 88
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af0b3025d2232b470800000000000000
+      internalID: 8408838624485028090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_151
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 88
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10cd95d6a76303840800000000000000
+      internalID: 5201717469061438465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_152
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 88
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9cfe3e3d90bc6a00800000000000000
+      internalID: 751169427264699549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_153
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 88
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95dda4f305cbcf890800000000000000
+      internalID: -7422851032968143527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_154
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 88
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8f0070a3a7426b30800000000000000
+      internalID: 4279061364052332426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_155
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 88
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6dd0d181a777da80800000000000000
+      internalID: -8442147440931316370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_156
+      rect:
+        serializedVersion: 2
+        x: 373
+        y: 88
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 948f5c00b22568660800000000000000
+      internalID: 7387682583397922889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_157
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 89
+        width: 54
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0eefe595880e19850800000000000000
+      internalID: 6382129023180275424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_158
+      rect:
+        serializedVersion: 2
+        x: 515
+        y: 89
+        width: 54
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9dd7f0b99481bab0800000000000000
+      internalID: -4994064716143272548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_159
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 89
+        width: 54
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 651703fb64a841ed0800000000000000
+      internalID: -2444176661295369898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_160
+      rect:
+        serializedVersion: 2
+        x: 673
+        y: 90
+        width: 37
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 775e69aef0835c770800000000000000
+      internalID: 8630365901936846199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_161
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 90
+        width: 37
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 806d553bad6bd9a20800000000000000
+      internalID: 3070811571364419080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_162
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 90
+        width: 37
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e368267b5eeae4b0800000000000000
+      internalID: -5410249925740436507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_163
+      rect:
+        serializedVersion: 2
+        x: 862
+        y: 90
+        width: 37
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48fce8e2a72ddcdc0800000000000000
+      internalID: -3617003503499686012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_164
+      rect:
+        serializedVersion: 2
+        x: 925
+        y: 90
+        width: 37
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41cd26ae07e71fb50800000000000000
+      internalID: 6625215550272494612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_165
+      rect:
+        serializedVersion: 2
+        x: 988
+        y: 90
+        width: 37
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da567f3d876d71e50800000000000000
+      internalID: 6780123578470196653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_166
+      rect:
+        serializedVersion: 2
+        x: 1051
+        y: 90
+        width: 31
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eff3924c1ce1f7480800000000000000
+      internalID: -8899360521092251650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_167
+      rect:
+        serializedVersion: 2
+        x: 1109
+        y: 90
+        width: 31
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcedd5b5e7e2bc040800000000000000
+      internalID: 4668876558933286605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_168
+      rect:
+        serializedVersion: 2
+        x: 1167
+        y: 90
+        width: 31
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6c1a51423fb88b20800000000000000
+      internalID: 3136967363029245036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_169
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 90
+        width: 31
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 718a3f01ba9fc43f0800000000000000
+      internalID: -915082111143925737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_170
+      rect:
+        serializedVersion: 2
+        x: 1283
+        y: 90
+        width: 31
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c30e6d34bd8c57e0800000000000000
+      internalID: -1775388347826568247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_171
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 59
+        width: 31
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa0df0fd006eca250800000000000000
+      internalID: 5957389298521067690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_172
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 59
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58ae60023b002d4b0800000000000000
+      internalID: -5417266632436815227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_173
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 59
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26bce44ceb30030d0800000000000000
+      internalID: -3445249597066261662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_174
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d833ab00f39682710800000000000000
+      internalID: 1668699381256827789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_175
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef8381201affa5880800000000000000
+      internalID: -8621297469657433858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_176
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbeab63e14167b1a0800000000000000
+      internalID: -6793854577248850241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_177
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d57cff61a09a9df00800000000000000
+      internalID: 1142129841315759965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_178
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce4420ca4cc21d700800000000000000
+      internalID: 563280651609064684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_179
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbb86956a30df6400800000000000000
+      internalID: 319703047797640127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_180
+      rect:
+        serializedVersion: 2
+        x: 529
+        y: 59
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e82fd74902a2a07e0800000000000000
+      internalID: -1798578781762489714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_181
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 59
+        width: 28
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7fafc0d85f1ae2f0800000000000000
+      internalID: -942906705659842689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_182
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86f6acbb54c49dc00800000000000000
+      internalID: 925855060788408168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_183
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a4fbc030a2be68c0800000000000000
+      internalID: -4004066617602607965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_184
+      rect:
+        serializedVersion: 2
+        x: 764
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d0e518f2a7505ff0800000000000000
+      internalID: -49443238442573609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_185
+      rect:
+        serializedVersion: 2
+        x: 827
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e8576a28cccc0b20800000000000000
+      internalID: 3102079403428370661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_186
+      rect:
+        serializedVersion: 2
+        x: 890
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb35dab64239cfd20800000000000000
+      internalID: 3313685210472469439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_187
+      rect:
+        serializedVersion: 2
+        x: 953
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55797cb9ac98112c0800000000000000
+      internalID: -4462634252457502891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_188
+      rect:
+        serializedVersion: 2
+        x: 1016
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94fcce86387f8aff0800000000000000
+      internalID: -24497654177411255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_189
+      rect:
+        serializedVersion: 2
+        x: 1079
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b19d202a7226b16f0800000000000000
+      internalID: -712868193646749413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_190
+      rect:
+        serializedVersion: 2
+        x: 1142
+        y: 60
+        width: 37
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3902836854a69a6a0800000000000000
+      internalID: -6437497345512300397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_191
+      rect:
+        serializedVersion: 2
+        x: 1204
+        y: 60
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f074d29ffa4d50900800000000000000
+      internalID: 650159573489764111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_192
+      rect:
+        serializedVersion: 2
+        x: 1264
+        y: 60
+        width: 34
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a92bfc48f33ae7b0800000000000000
+      internalID: -5194282078682011226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_193
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 32
+        width: 34
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f13516a27f6f938f0800000000000000
+      internalID: -560145137202539745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_194
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 32
+        width: 34
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6415df8442f4b34d0800000000000000
+      internalID: -3153840096780922554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_195
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 32
+        width: 34
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f84141e23ffe49fa0800000000000000
+      internalID: -5794742992789826417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_196
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2599ea84a4219430800000000000000
+      internalID: 3787849050719098156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_197
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1232f2ed928275020800000000000000
+      internalID: 2330375492473922337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_198
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 709007e9c18e6a8a0800000000000000
+      internalID: -6294088219588818681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_199
+      rect:
+        serializedVersion: 2
+        x: 359
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91db46dff69802500800000000000000
+      internalID: 369446283529993497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_200
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dd38f9732bf23980800000000000000
+      internalID: -8560503811889152551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_201
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61ee3e2435855ed50800000000000000
+      internalID: 6765911129821802006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_202
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2da2a4f66b0056260800000000000000
+      internalID: 7090073971915893458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_203
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4257c35f3f4653b50800000000000000
+      internalID: 6572270230171317540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_204
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aedbea4b343a2feb0800000000000000
+      internalID: -4687504750949777942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_205
+      rect:
+        serializedVersion: 2
+        x: 701
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71496514a9784f8a0800000000000000
+      internalID: -6272239284429351913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_206
+      rect:
+        serializedVersion: 2
+        x: 758
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48745f39d953f82b0800000000000000
+      internalID: -5580182462380292220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_207
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be2c6d24aafa436c0800000000000000
+      internalID: -4164510609610194197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_208
+      rect:
+        serializedVersion: 2
+        x: 872
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fb5f6cc9dff92650800000000000000
+      internalID: 6208774872209775608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_209
+      rect:
+        serializedVersion: 2
+        x: 929
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d75555eecafab4c30800000000000000
+      internalID: 4344759422796780925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_210
+      rect:
+        serializedVersion: 2
+        x: 986
+        y: 33
+        width: 30
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b661e6b825be962d0800000000000000
+      internalID: -3284835713430972821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_211
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1977b709e70583f0800000000000000
+      internalID: -899303853152306915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_212
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 507aacb5ff2af19c0800000000000000
+      internalID: -3954262730167638267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_213
+      rect:
+        serializedVersion: 2
+        x: 1157
+        y: 33
+        width: 32
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4894af4629966dca0800000000000000
+      internalID: -5992486176689600124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_214
+      rect:
+        serializedVersion: 2
+        x: 1212
+        y: 33
+        width: 29
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f9cb2ec6b8d3bc40800000000000000
+      internalID: 5526999447368354291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_215
+      rect:
+        serializedVersion: 2
+        x: 1265
+        y: 33
+        width: 29
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dbb08a56e99deab0800000000000000
+      internalID: -4977152798534616110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_216
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 6
+        width: 29
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aae61abac12c49180800000000000000
+      internalID: -9109442717869314390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_217
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 5
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c4c26607115c4ec0800000000000000
+      internalID: -3581398444333153080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_218
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 5
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c54033b2148715150800000000000000
+      internalID: 5859596811478697052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_219
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 5
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f8bfd9ec7b28bbf0800000000000000
+      internalID: -308448758975186701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_220
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 5
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b84657c3adcdacfa0800000000000000
+      internalID: -5779564341901302645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_221
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 5
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 893e39e8923e9c900800000000000000
+      internalID: 705344584285414296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_222
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 5
+        width: 24
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53b5fff0314354ee0800000000000000
+      internalID: -1277557662812251339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_223
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 6
+        width: 34
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfa5d19472b17ea20800000000000000
+      internalID: 3091469524757469947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_224
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 6
+        width: 34
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d651d373a70b01f0800000000000000
+      internalID: -1077759287220939049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_225
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 7
+        width: 36
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd21995327bc05270800000000000000
+      internalID: 8237307409846571740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_226
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 7
+        width: 36
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c50c4a20023da1a0800000000000000
+      internalID: -6796721286341196352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_227
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 7
+        width: 36
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6fcb670205b73220800000000000000
+      internalID: 2465638341327703916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_228
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 6
+        width: 32
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d55b7b97246328470800000000000000
+      internalID: 8395332314509849949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_229
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 6
+        width: 32
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b980f9132c9473b0800000000000000
+      internalID: -5515611969049032264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_230
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 6
+        width: 32
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3487882ab81a62db0800000000000000
+      internalID: -4816985130326788029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_231
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffc892050f36aa900800000000000000
+      internalID: 696478976170364159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_232
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce7da0404e7b4cd10800000000000000
+      internalID: 2145041512483444716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_233
+      rect:
+        serializedVersion: 2
+        x: 950
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9e20b9b19b8b2230800000000000000
+      internalID: 3615136583896805019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_234
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2214a31065f8a2d20800000000000000
+      internalID: 3254571280279159074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_235
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7216cdd8f35d7e6f0800000000000000
+      internalID: -655320751819431641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_236
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80c02d3d5b3ede360800000000000000
+      internalID: 7200661749317635080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_237
+      rect:
+        serializedVersion: 2
+        x: 1150
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35d0fb781bb3fd530800000000000000
+      internalID: 3881887037489352019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_238
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45b2ecfdd66733930800000000000000
+      internalID: 4121768298252479316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_0_light_239
+      rect:
+        serializedVersion: 2
+        x: 1250
+        y: 6
+        width: 25
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2e6e4d33956351d0800000000000000
+      internalID: -3363232813652480469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      KnottedWrack_0_light_0: 5657688443951664707
+      KnottedWrack_0_light_1: -546494032534423579
+      KnottedWrack_0_light_10: -8479047255339110994
+      KnottedWrack_0_light_100: 2142305485121494305
+      KnottedWrack_0_light_101: -3915269170144914278
+      KnottedWrack_0_light_102: 6390484023666299211
+      KnottedWrack_0_light_103: -5055865470166568381
+      KnottedWrack_0_light_104: -930659720801011825
+      KnottedWrack_0_light_105: -2705820208653819320
+      KnottedWrack_0_light_106: -6274984541175602478
+      KnottedWrack_0_light_107: -9141737412863492552
+      KnottedWrack_0_light_108: 1147890627232672870
+      KnottedWrack_0_light_109: 2244438521105116203
+      KnottedWrack_0_light_11: 3358696370616042474
+      KnottedWrack_0_light_110: -7050503955564378368
+      KnottedWrack_0_light_111: -4490545498017592476
+      KnottedWrack_0_light_112: 3155534999596996040
+      KnottedWrack_0_light_113: -3271952724923879429
+      KnottedWrack_0_light_114: 5825840186125840289
+      KnottedWrack_0_light_115: -4384693234489665979
+      KnottedWrack_0_light_116: -3660374964487683916
+      KnottedWrack_0_light_117: -7162839297397444180
+      KnottedWrack_0_light_118: -2361140218677048706
+      KnottedWrack_0_light_119: 3825425656899387324
+      KnottedWrack_0_light_12: 8715189873132318122
+      KnottedWrack_0_light_120: -3343363165475897377
+      KnottedWrack_0_light_121: 7526154647999617586
+      KnottedWrack_0_light_122: -815278081951957224
+      KnottedWrack_0_light_123: 5712562426830361411
+      KnottedWrack_0_light_124: 8207124268247770031
+      KnottedWrack_0_light_125: 2982852020572479569
+      KnottedWrack_0_light_126: -8455409252852876380
+      KnottedWrack_0_light_127: 3425780462958063496
+      KnottedWrack_0_light_128: -2174197843099921455
+      KnottedWrack_0_light_129: -1250779524935661643
+      KnottedWrack_0_light_13: 6495497643603860964
+      KnottedWrack_0_light_130: 1674852039631100932
+      KnottedWrack_0_light_131: 388377540577769890
+      KnottedWrack_0_light_132: 4015141838822342212
+      KnottedWrack_0_light_133: -6370288955469025985
+      KnottedWrack_0_light_134: -6390832318279620737
+      KnottedWrack_0_light_135: 8392716847754551000
+      KnottedWrack_0_light_136: 8367827557952969197
+      KnottedWrack_0_light_137: 1285732382341534930
+      KnottedWrack_0_light_138: -7228312238914969013
+      KnottedWrack_0_light_139: -363291598645080067
+      KnottedWrack_0_light_14: 3803803910543837907
+      KnottedWrack_0_light_140: 3283214201610959176
+      KnottedWrack_0_light_141: -5329742714348216707
+      KnottedWrack_0_light_142: -530457498140715327
+      KnottedWrack_0_light_143: -8935997834440774515
+      KnottedWrack_0_light_144: 8487217851395283655
+      KnottedWrack_0_light_145: 948118921247132735
+      KnottedWrack_0_light_146: -4031417453641928501
+      KnottedWrack_0_light_147: -8952829246415082610
+      KnottedWrack_0_light_148: 3920512953358631417
+      KnottedWrack_0_light_149: 5287154899749201596
+      KnottedWrack_0_light_15: 7696444402097510787
+      KnottedWrack_0_light_150: 8408838624485028090
+      KnottedWrack_0_light_151: 5201717469061438465
+      KnottedWrack_0_light_152: 751169427264699549
+      KnottedWrack_0_light_153: -7422851032968143527
+      KnottedWrack_0_light_154: 4279061364052332426
+      KnottedWrack_0_light_155: -8442147440931316370
+      KnottedWrack_0_light_156: 7387682583397922889
+      KnottedWrack_0_light_157: 6382129023180275424
+      KnottedWrack_0_light_158: -4994064716143272548
+      KnottedWrack_0_light_159: -2444176661295369898
+      KnottedWrack_0_light_16: 1456764193821785115
+      KnottedWrack_0_light_160: 8630365901936846199
+      KnottedWrack_0_light_161: 3070811571364419080
+      KnottedWrack_0_light_162: -5410249925740436507
+      KnottedWrack_0_light_163: -3617003503499686012
+      KnottedWrack_0_light_164: 6625215550272494612
+      KnottedWrack_0_light_165: 6780123578470196653
+      KnottedWrack_0_light_166: -8899360521092251650
+      KnottedWrack_0_light_167: 4668876558933286605
+      KnottedWrack_0_light_168: 3136967363029245036
+      KnottedWrack_0_light_169: -915082111143925737
+      KnottedWrack_0_light_17: -3408480139508155319
+      KnottedWrack_0_light_170: -1775388347826568247
+      KnottedWrack_0_light_171: 5957389298521067690
+      KnottedWrack_0_light_172: -5417266632436815227
+      KnottedWrack_0_light_173: -3445249597066261662
+      KnottedWrack_0_light_174: 1668699381256827789
+      KnottedWrack_0_light_175: -8621297469657433858
+      KnottedWrack_0_light_176: -6793854577248850241
+      KnottedWrack_0_light_177: 1142129841315759965
+      KnottedWrack_0_light_178: 563280651609064684
+      KnottedWrack_0_light_179: 319703047797640127
+      KnottedWrack_0_light_18: -678718210705746675
+      KnottedWrack_0_light_180: -1798578781762489714
+      KnottedWrack_0_light_181: -942906705659842689
+      KnottedWrack_0_light_182: 925855060788408168
+      KnottedWrack_0_light_183: -4004066617602607965
+      KnottedWrack_0_light_184: -49443238442573609
+      KnottedWrack_0_light_185: 3102079403428370661
+      KnottedWrack_0_light_186: 3313685210472469439
+      KnottedWrack_0_light_187: -4462634252457502891
+      KnottedWrack_0_light_188: -24497654177411255
+      KnottedWrack_0_light_189: -712868193646749413
+      KnottedWrack_0_light_19: 3617518754210158971
+      KnottedWrack_0_light_190: -6437497345512300397
+      KnottedWrack_0_light_191: 650159573489764111
+      KnottedWrack_0_light_192: -5194282078682011226
+      KnottedWrack_0_light_193: -560145137202539745
+      KnottedWrack_0_light_194: -3153840096780922554
+      KnottedWrack_0_light_195: -5794742992789826417
+      KnottedWrack_0_light_196: 3787849050719098156
+      KnottedWrack_0_light_197: 2330375492473922337
+      KnottedWrack_0_light_198: -6294088219588818681
+      KnottedWrack_0_light_199: 369446283529993497
+      KnottedWrack_0_light_2: 3335686014170961409
+      KnottedWrack_0_light_20: -7023936847043051248
+      KnottedWrack_0_light_200: -8560503811889152551
+      KnottedWrack_0_light_201: 6765911129821802006
+      KnottedWrack_0_light_202: 7090073971915893458
+      KnottedWrack_0_light_203: 6572270230171317540
+      KnottedWrack_0_light_204: -4687504750949777942
+      KnottedWrack_0_light_205: -6272239284429351913
+      KnottedWrack_0_light_206: -5580182462380292220
+      KnottedWrack_0_light_207: -4164510609610194197
+      KnottedWrack_0_light_208: 6208774872209775608
+      KnottedWrack_0_light_209: 4344759422796780925
+      KnottedWrack_0_light_21: -5636456151606310585
+      KnottedWrack_0_light_210: -3284835713430972821
+      KnottedWrack_0_light_211: -899303853152306915
+      KnottedWrack_0_light_212: -3954262730167638267
+      KnottedWrack_0_light_213: -5992486176689600124
+      KnottedWrack_0_light_214: 5526999447368354291
+      KnottedWrack_0_light_215: -4977152798534616110
+      KnottedWrack_0_light_216: -9109442717869314390
+      KnottedWrack_0_light_217: -3581398444333153080
+      KnottedWrack_0_light_218: 5859596811478697052
+      KnottedWrack_0_light_219: -308448758975186701
+      KnottedWrack_0_light_22: -3269343546463966205
+      KnottedWrack_0_light_220: -5779564341901302645
+      KnottedWrack_0_light_221: 705344584285414296
+      KnottedWrack_0_light_222: -1277557662812251339
+      KnottedWrack_0_light_223: 3091469524757469947
+      KnottedWrack_0_light_224: -1077759287220939049
+      KnottedWrack_0_light_225: 8237307409846571740
+      KnottedWrack_0_light_226: -6796721286341196352
+      KnottedWrack_0_light_227: 2465638341327703916
+      KnottedWrack_0_light_228: 8395332314509849949
+      KnottedWrack_0_light_229: -5515611969049032264
+      KnottedWrack_0_light_23: 8558016013006462540
+      KnottedWrack_0_light_230: -4816985130326788029
+      KnottedWrack_0_light_231: 696478976170364159
+      KnottedWrack_0_light_232: 2145041512483444716
+      KnottedWrack_0_light_233: 3615136583896805019
+      KnottedWrack_0_light_234: 3254571280279159074
+      KnottedWrack_0_light_235: -655320751819431641
+      KnottedWrack_0_light_236: 7200661749317635080
+      KnottedWrack_0_light_237: 3881887037489352019
+      KnottedWrack_0_light_238: 4121768298252479316
+      KnottedWrack_0_light_239: -3363232813652480469
+      KnottedWrack_0_light_24: -5118613179447541414
+      KnottedWrack_0_light_25: -3841642528933332503
+      KnottedWrack_0_light_26: 1154303894613374209
+      KnottedWrack_0_light_27: -1368185018985811300
+      KnottedWrack_0_light_28: -8670959371120899362
+      KnottedWrack_0_light_29: -8753857740765443047
+      KnottedWrack_0_light_3: 8234412747717765399
+      KnottedWrack_0_light_30: -4905393073131815634
+      KnottedWrack_0_light_31: -6185426761664980909
+      KnottedWrack_0_light_32: -3726295953664693777
+      KnottedWrack_0_light_33: 8572639649413027150
+      KnottedWrack_0_light_34: -7214654052320871659
+      KnottedWrack_0_light_35: 4328494277131393980
+      KnottedWrack_0_light_36: -658590674480371790
+      KnottedWrack_0_light_37: -1402750339930808979
+      KnottedWrack_0_light_38: -4634877608880115449
+      KnottedWrack_0_light_39: 8375992736889636970
+      KnottedWrack_0_light_4: 6311157149628820452
+      KnottedWrack_0_light_40: -2879071207400116288
+      KnottedWrack_0_light_41: -7592173096452808510
+      KnottedWrack_0_light_42: 3861866807540939559
+      KnottedWrack_0_light_43: 3919260732134600194
+      KnottedWrack_0_light_44: 2995230913060779704
+      KnottedWrack_0_light_45: 8674811591711522354
+      KnottedWrack_0_light_46: 2073970437527487203
+      KnottedWrack_0_light_47: -5327422339455504001
+      KnottedWrack_0_light_48: 5002061386306841736
+      KnottedWrack_0_light_49: 2029130315148698392
+      KnottedWrack_0_light_5: -968262939256896346
+      KnottedWrack_0_light_50: -6709147885076623263
+      KnottedWrack_0_light_51: -5853742548163337604
+      KnottedWrack_0_light_52: 1978304105110668439
+      KnottedWrack_0_light_53: 9009640689516593654
+      KnottedWrack_0_light_54: -6351761743282237788
+      KnottedWrack_0_light_55: 3258669275176975859
+      KnottedWrack_0_light_56: 3365928561578224548
+      KnottedWrack_0_light_57: -2751537862115742558
+      KnottedWrack_0_light_58: -3069111349162876354
+      KnottedWrack_0_light_59: 2121643305175950887
+      KnottedWrack_0_light_6: 5676057739739453283
+      KnottedWrack_0_light_60: 8437869091044634159
+      KnottedWrack_0_light_61: 2335108060897223880
+      KnottedWrack_0_light_62: -8242490667970121662
+      KnottedWrack_0_light_63: -8700374956914304408
+      KnottedWrack_0_light_64: 7706305025018538344
+      KnottedWrack_0_light_65: 210342888810644351
+      KnottedWrack_0_light_66: 903880294819940421
+      KnottedWrack_0_light_67: -3366746594325570794
+      KnottedWrack_0_light_68: -8974799867590936584
+      KnottedWrack_0_light_69: 9108503463407764139
+      KnottedWrack_0_light_7: -1161621072436861129
+      KnottedWrack_0_light_70: -7580410075181678393
+      KnottedWrack_0_light_71: -8937534794387646980
+      KnottedWrack_0_light_72: -3942404086706185778
+      KnottedWrack_0_light_73: -1041848196060792201
+      KnottedWrack_0_light_74: -4758962963869163866
+      KnottedWrack_0_light_75: 5857744444259248639
+      KnottedWrack_0_light_76: -748365943822242213
+      KnottedWrack_0_light_77: 1518154581927241696
+      KnottedWrack_0_light_78: -2549208933487712444
+      KnottedWrack_0_light_79: 3604320496326159762
+      KnottedWrack_0_light_8: 2384167564102853170
+      KnottedWrack_0_light_80: 1926254310728517204
+      KnottedWrack_0_light_81: 149116330377448115
+      KnottedWrack_0_light_82: -5014160042760990328
+      KnottedWrack_0_light_83: 5693358151433575911
+      KnottedWrack_0_light_84: 7560825395020589470
+      KnottedWrack_0_light_85: 5484326671519338120
+      KnottedWrack_0_light_86: -1427466634891773016
+      KnottedWrack_0_light_87: 3449107438682356504
+      KnottedWrack_0_light_88: -5089334312010835171
+      KnottedWrack_0_light_89: -852023552207618696
+      KnottedWrack_0_light_9: 4669573048210148251
+      KnottedWrack_0_light_90: -1669146304241580055
+      KnottedWrack_0_light_91: -4938058540764134883
+      KnottedWrack_0_light_92: -8712349795062068290
+      KnottedWrack_0_light_93: -2682854739070145968
+      KnottedWrack_0_light_94: 4894339221658180252
+      KnottedWrack_0_light_95: -457885478565481968
+      KnottedWrack_0_light_96: -7807516411765720228
+      KnottedWrack_0_light_97: -9138506086683445590
+      KnottedWrack_0_light_98: -9189414548913113518
+      KnottedWrack_0_light_99: 5889165477925285942
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

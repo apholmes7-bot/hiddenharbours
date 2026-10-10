@@ -1,0 +1,6370 @@
+fileFormatVersion: 2
+guid: b16e9a6df93d8b14d97e136578180b80
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3415628280913135150
+    second: Cattail_0_detail_0
+  - first:
+      213: -1906675257265660106
+    second: Cattail_0_detail_1
+  - first:
+      213: 8494840801018294515
+    second: Cattail_0_detail_2
+  - first:
+      213: 4260336525588233174
+    second: Cattail_0_detail_3
+  - first:
+      213: -2970101214872669048
+    second: Cattail_0_detail_4
+  - first:
+      213: 1877624155955557359
+    second: Cattail_0_detail_5
+  - first:
+      213: 8529185369674840201
+    second: Cattail_0_detail_6
+  - first:
+      213: 6925890431474982997
+    second: Cattail_0_detail_7
+  - first:
+      213: -3730773386921833850
+    second: Cattail_0_detail_8
+  - first:
+      213: -3854179430029800707
+    second: Cattail_0_detail_9
+  - first:
+      213: 3011721578950050567
+    second: Cattail_0_detail_10
+  - first:
+      213: -4722801385921177302
+    second: Cattail_0_detail_11
+  - first:
+      213: -5880614473781565368
+    second: Cattail_0_detail_12
+  - first:
+      213: 8593993524680513059
+    second: Cattail_0_detail_13
+  - first:
+      213: -3915457870291830143
+    second: Cattail_0_detail_14
+  - first:
+      213: 3373977393511733551
+    second: Cattail_0_detail_15
+  - first:
+      213: 2077510887985560679
+    second: Cattail_0_detail_16
+  - first:
+      213: 6198921698362256687
+    second: Cattail_0_detail_17
+  - first:
+      213: 8868491323006641181
+    second: Cattail_0_detail_18
+  - first:
+      213: 5187189507173565732
+    second: Cattail_0_detail_19
+  - first:
+      213: 5140294676824097734
+    second: Cattail_0_detail_20
+  - first:
+      213: -4593874406336102161
+    second: Cattail_0_detail_21
+  - first:
+      213: 215044215684114663
+    second: Cattail_0_detail_22
+  - first:
+      213: 2659794343374932133
+    second: Cattail_0_detail_23
+  - first:
+      213: -5680507161091970454
+    second: Cattail_0_detail_24
+  - first:
+      213: -562520262414047384
+    second: Cattail_0_detail_25
+  - first:
+      213: -5268251553046158994
+    second: Cattail_0_detail_26
+  - first:
+      213: -7467145717164102526
+    second: Cattail_0_detail_27
+  - first:
+      213: 6357395454368058717
+    second: Cattail_0_detail_28
+  - first:
+      213: -440395137299322241
+    second: Cattail_0_detail_29
+  - first:
+      213: -4039549699327297846
+    second: Cattail_0_detail_30
+  - first:
+      213: -5821333612017264714
+    second: Cattail_0_detail_31
+  - first:
+      213: 676239530539310807
+    second: Cattail_0_detail_32
+  - first:
+      213: 4797397142554488468
+    second: Cattail_0_detail_33
+  - first:
+      213: 8134546555460022528
+    second: Cattail_0_detail_34
+  - first:
+      213: 1624905787624537932
+    second: Cattail_0_detail_35
+  - first:
+      213: 8687804187672836256
+    second: Cattail_0_detail_36
+  - first:
+      213: -4286971536271242644
+    second: Cattail_0_detail_37
+  - first:
+      213: 299394381946546135
+    second: Cattail_0_detail_38
+  - first:
+      213: 3934209532687988854
+    second: Cattail_0_detail_39
+  - first:
+      213: -7984421017849067139
+    second: Cattail_0_detail_40
+  - first:
+      213: 6194135945068276428
+    second: Cattail_0_detail_41
+  - first:
+      213: 7542508654847202457
+    second: Cattail_0_detail_42
+  - first:
+      213: 3096139954260767501
+    second: Cattail_0_detail_43
+  - first:
+      213: -546772696533788479
+    second: Cattail_0_detail_44
+  - first:
+      213: 2488355128770666018
+    second: Cattail_0_detail_45
+  - first:
+      213: 2886715800793684636
+    second: Cattail_0_detail_46
+  - first:
+      213: 1459829099159782096
+    second: Cattail_0_detail_47
+  - first:
+      213: -8032108755751047441
+    second: Cattail_0_detail_48
+  - first:
+      213: 2166763307079630179
+    second: Cattail_0_detail_49
+  - first:
+      213: -2506266816891649531
+    second: Cattail_0_detail_50
+  - first:
+      213: 4334561346719793679
+    second: Cattail_0_detail_51
+  - first:
+      213: 2172810020274702419
+    second: Cattail_0_detail_52
+  - first:
+      213: 5881996113254544698
+    second: Cattail_0_detail_53
+  - first:
+      213: -1999787640578663516
+    second: Cattail_0_detail_54
+  - first:
+      213: -886332726855675361
+    second: Cattail_0_detail_55
+  - first:
+      213: 1755944875606158410
+    second: Cattail_0_detail_56
+  - first:
+      213: -2151434972899710875
+    second: Cattail_0_detail_57
+  - first:
+      213: -2001686516736922774
+    second: Cattail_0_detail_58
+  - first:
+      213: -1866901823349331787
+    second: Cattail_0_detail_59
+  - first:
+      213: 2058197696518879768
+    second: Cattail_0_detail_60
+  - first:
+      213: 1263531160258478715
+    second: Cattail_0_detail_61
+  - first:
+      213: 4550379715213603990
+    second: Cattail_0_detail_62
+  - first:
+      213: 4165228796302537026
+    second: Cattail_0_detail_63
+  - first:
+      213: -4623360774470596536
+    second: Cattail_0_detail_64
+  - first:
+      213: 1655435473729207446
+    second: Cattail_0_detail_65
+  - first:
+      213: -2980486540271409630
+    second: Cattail_0_detail_66
+  - first:
+      213: -6299270626047098230
+    second: Cattail_0_detail_67
+  - first:
+      213: 4683978826577732655
+    second: Cattail_0_detail_68
+  - first:
+      213: -4428391184300193958
+    second: Cattail_0_detail_69
+  - first:
+      213: 5383308401276033623
+    second: Cattail_0_detail_70
+  - first:
+      213: -8618936929813981781
+    second: Cattail_0_detail_71
+  - first:
+      213: -4547519123838297650
+    second: Cattail_0_detail_72
+  - first:
+      213: 213732475273345865
+    second: Cattail_0_detail_73
+  - first:
+      213: -1933244125922752268
+    second: Cattail_0_detail_74
+  - first:
+      213: 6366740211098177371
+    second: Cattail_0_detail_75
+  - first:
+      213: 8186168033888506050
+    second: Cattail_0_detail_76
+  - first:
+      213: 7278623145505740444
+    second: Cattail_0_detail_77
+  - first:
+      213: 7655696145655339554
+    second: Cattail_0_detail_78
+  - first:
+      213: -7397838316221888806
+    second: Cattail_0_detail_79
+  - first:
+      213: 2940549790129030999
+    second: Cattail_0_detail_80
+  - first:
+      213: -1253229701563672661
+    second: Cattail_0_detail_81
+  - first:
+      213: -755570350604800445
+    second: Cattail_0_detail_82
+  - first:
+      213: 6038015446000867349
+    second: Cattail_0_detail_83
+  - first:
+      213: -746598331010145709
+    second: Cattail_0_detail_84
+  - first:
+      213: -5225490785571986134
+    second: Cattail_0_detail_85
+  - first:
+      213: -3960898928373011548
+    second: Cattail_0_detail_86
+  - first:
+      213: 8433893918310972648
+    second: Cattail_0_detail_87
+  - first:
+      213: -1169392626739084136
+    second: Cattail_0_detail_88
+  - first:
+      213: -8353125477537474702
+    second: Cattail_0_detail_89
+  - first:
+      213: -127327371079204418
+    second: Cattail_0_detail_90
+  - first:
+      213: -8821614951542802685
+    second: Cattail_0_detail_91
+  - first:
+      213: 8394553408189210014
+    second: Cattail_0_detail_92
+  - first:
+      213: -4097819103671990977
+    second: Cattail_0_detail_93
+  - first:
+      213: 6350044012173069946
+    second: Cattail_0_detail_94
+  - first:
+      213: -8193798209525778050
+    second: Cattail_0_detail_95
+  - first:
+      213: -8109950965107340194
+    second: Cattail_0_detail_96
+  - first:
+      213: -6084005719938538238
+    second: Cattail_0_detail_97
+  - first:
+      213: 8469170995692998195
+    second: Cattail_0_detail_98
+  - first:
+      213: -8654687420248598085
+    second: Cattail_0_detail_99
+  - first:
+      213: 1538566741978989989
+    second: Cattail_0_detail_100
+  - first:
+      213: -679261393796172195
+    second: Cattail_0_detail_101
+  - first:
+      213: 3084847025856769440
+    second: Cattail_0_detail_102
+  - first:
+      213: -965198406212740716
+    second: Cattail_0_detail_103
+  - first:
+      213: 2953219143410457188
+    second: Cattail_0_detail_104
+  - first:
+      213: -2242780834570605630
+    second: Cattail_0_detail_105
+  - first:
+      213: 1680506170962266752
+    second: Cattail_0_detail_106
+  - first:
+      213: -8783289103202134244
+    second: Cattail_0_detail_107
+  - first:
+      213: -554355430541701249
+    second: Cattail_0_detail_108
+  - first:
+      213: 8546730019681580005
+    second: Cattail_0_detail_109
+  - first:
+      213: 4738273989266493332
+    second: Cattail_0_detail_110
+  - first:
+      213: 6788437952094854583
+    second: Cattail_0_detail_111
+  - first:
+      213: 4717956203682521680
+    second: Cattail_0_detail_112
+  - first:
+      213: -129757931827513775
+    second: Cattail_0_detail_113
+  - first:
+      213: -8361529298643830031
+    second: Cattail_0_detail_114
+  - first:
+      213: 7472066905681448686
+    second: Cattail_0_detail_115
+  - first:
+      213: -3050525591886489117
+    second: Cattail_0_detail_116
+  - first:
+      213: 8797711578544010297
+    second: Cattail_0_detail_117
+  - first:
+      213: 2269585054831497693
+    second: Cattail_0_detail_118
+  - first:
+      213: -7123688321118135466
+    second: Cattail_0_detail_119
+  - first:
+      213: -2905314883725993713
+    second: Cattail_0_detail_120
+  - first:
+      213: -6298556293596121151
+    second: Cattail_0_detail_121
+  - first:
+      213: 587106655270209125
+    second: Cattail_0_detail_122
+  - first:
+      213: 6702328179409738478
+    second: Cattail_0_detail_123
+  - first:
+      213: -1553231080975995834
+    second: Cattail_0_detail_124
+  - first:
+      213: 8213045346347585732
+    second: Cattail_0_detail_125
+  - first:
+      213: -8882457738069334427
+    second: Cattail_0_detail_126
+  - first:
+      213: 5693129050099746687
+    second: Cattail_0_detail_127
+  - first:
+      213: 4826143653624628291
+    second: Cattail_0_detail_128
+  - first:
+      213: 772663644870978356
+    second: Cattail_0_detail_129
+  - first:
+      213: -8167645826779933984
+    second: Cattail_0_detail_130
+  - first:
+      213: -6618067196276762148
+    second: Cattail_0_detail_131
+  - first:
+      213: 4594580392003948877
+    second: Cattail_0_detail_132
+  - first:
+      213: 5023019755268922940
+    second: Cattail_0_detail_133
+  - first:
+      213: -4616608312711508728
+    second: Cattail_0_detail_134
+  - first:
+      213: -2009279481517198046
+    second: Cattail_0_detail_135
+  - first:
+      213: -9112342698457778438
+    second: Cattail_0_detail_136
+  - first:
+      213: 4076298465338809228
+    second: Cattail_0_detail_137
+  - first:
+      213: -2831430635229895384
+    second: Cattail_0_detail_138
+  - first:
+      213: 6220389987890559611
+    second: Cattail_0_detail_139
+  - first:
+      213: -4038049387458700193
+    second: Cattail_0_detail_140
+  - first:
+      213: 1319561437593156845
+    second: Cattail_0_detail_141
+  - first:
+      213: 2250014507995235310
+    second: Cattail_0_detail_142
+  - first:
+      213: -2036008693013503260
+    second: Cattail_0_detail_143
+  - first:
+      213: 7283171876025912036
+    second: Cattail_0_detail_144
+  - first:
+      213: -1895662342681754154
+    second: Cattail_0_detail_145
+  - first:
+      213: -791967039095335096
+    second: Cattail_0_detail_146
+  - first:
+      213: 1313360394965983720
+    second: Cattail_0_detail_147
+  - first:
+      213: -5972604081503505377
+    second: Cattail_0_detail_148
+  - first:
+      213: 7125651487881911107
+    second: Cattail_0_detail_149
+  - first:
+      213: -5668535190748195798
+    second: Cattail_0_detail_150
+  - first:
+      213: -7880770981347388714
+    second: Cattail_0_detail_151
+  - first:
+      213: 2678413883166375164
+    second: Cattail_0_detail_152
+  - first:
+      213: 1820543277653294243
+    second: Cattail_0_detail_153
+  - first:
+      213: -1613574285268518630
+    second: Cattail_0_detail_154
+  - first:
+      213: -4523135169743972507
+    second: Cattail_0_detail_155
+  - first:
+      213: -9007870589921923775
+    second: Cattail_0_detail_156
+  - first:
+      213: 4797324083205659324
+    second: Cattail_0_detail_157
+  - first:
+      213: -8666415138430457504
+    second: Cattail_0_detail_158
+  - first:
+      213: 7317126732066610559
+    second: Cattail_0_detail_159
+  - first:
+      213: -8534403613479900997
+    second: Cattail_0_detail_160
+  - first:
+      213: -8977048312221768615
+    second: Cattail_0_detail_161
+  - first:
+      213: -49385769330362643
+    second: Cattail_0_detail_162
+  - first:
+      213: -3834415975326543126
+    second: Cattail_0_detail_163
+  - first:
+      213: -7517781197100535754
+    second: Cattail_0_detail_164
+  - first:
+      213: -7363027604142083362
+    second: Cattail_0_detail_165
+  - first:
+      213: -7299375250406810596
+    second: Cattail_0_detail_166
+  - first:
+      213: 8453174781955317993
+    second: Cattail_0_detail_167
+  - first:
+      213: 1679528526696808284
+    second: Cattail_0_detail_168
+  - first:
+      213: 5748574568044368058
+    second: Cattail_0_detail_169
+  - first:
+      213: -846770602497603974
+    second: Cattail_0_detail_170
+  - first:
+      213: 4027162977281894848
+    second: Cattail_0_detail_171
+  - first:
+      213: -7517495153321549801
+    second: Cattail_0_detail_172
+  - first:
+      213: -269967988722585887
+    second: Cattail_0_detail_173
+  - first:
+      213: 3741585043643046299
+    second: Cattail_0_detail_174
+  - first:
+      213: -1940116456770113993
+    second: Cattail_0_detail_175
+  - first:
+      213: 4028443479071970891
+    second: Cattail_0_detail_176
+  - first:
+      213: 4885945921377487233
+    second: Cattail_0_detail_177
+  - first:
+      213: 1105805876905712015
+    second: Cattail_0_detail_178
+  - first:
+      213: -372820277087233290
+    second: Cattail_0_detail_179
+  - first:
+      213: 1744071054130992603
+    second: Cattail_0_detail_180
+  - first:
+      213: 7351506442222321414
+    second: Cattail_0_detail_181
+  - first:
+      213: -3991803527449185440
+    second: Cattail_0_detail_182
+  - first:
+      213: -243065341020530858
+    second: Cattail_0_detail_183
+  - first:
+      213: 2553975991082641167
+    second: Cattail_0_detail_184
+  - first:
+      213: -208838554722374804
+    second: Cattail_0_detail_185
+  - first:
+      213: 8082051116594518716
+    second: Cattail_0_detail_186
+  - first:
+      213: -3808550323513119373
+    second: Cattail_0_detail_187
+  - first:
+      213: -4742941509163552306
+    second: Cattail_0_detail_188
+  - first:
+      213: 693612346607626933
+    second: Cattail_0_detail_189
+  - first:
+      213: 663916583058124957
+    second: Cattail_0_detail_190
+  - first:
+      213: 3143747372523322254
+    second: Cattail_0_detail_191
+  - first:
+      213: -567306462671427221
+    second: Cattail_0_detail_192
+  - first:
+      213: 5576058698513552093
+    second: Cattail_0_detail_193
+  - first:
+      213: 7317498970478050632
+    second: Cattail_0_detail_194
+  - first:
+      213: 8458901612207839517
+    second: Cattail_0_detail_195
+  - first:
+      213: -2305196235960225000
+    second: Cattail_0_detail_196
+  - first:
+      213: -3756375021083029784
+    second: Cattail_0_detail_197
+  - first:
+      213: -227909113035844520
+    second: Cattail_0_detail_198
+  - first:
+      213: 7687541759254555190
+    second: Cattail_0_detail_199
+  - first:
+      213: -6719181184988390131
+    second: Cattail_0_detail_200
+  - first:
+      213: 1623423501047377021
+    second: Cattail_0_detail_201
+  - first:
+      213: -106383719235715816
+    second: Cattail_0_detail_202
+  - first:
+      213: 7447322910146273440
+    second: Cattail_0_detail_203
+  - first:
+      213: -4740745199209734534
+    second: Cattail_0_detail_204
+  - first:
+      213: 4766381551471027939
+    second: Cattail_0_detail_205
+  - first:
+      213: 2568328737362718691
+    second: Cattail_0_detail_206
+  - first:
+      213: 917313039178428729
+    second: Cattail_0_detail_207
+  - first:
+      213: 1907110922277271172
+    second: Cattail_0_detail_208
+  - first:
+      213: 3158124180498797886
+    second: Cattail_0_detail_209
+  - first:
+      213: 6389608103832573752
+    second: Cattail_0_detail_210
+  - first:
+      213: -3235689469889169490
+    second: Cattail_0_detail_211
+  - first:
+      213: -2252171505335399643
+    second: Cattail_0_detail_212
+  - first:
+      213: -7919115455588467803
+    second: Cattail_0_detail_213
+  - first:
+      213: 5339430990871787184
+    second: Cattail_0_detail_214
+  - first:
+      213: 2251073162833623840
+    second: Cattail_0_detail_215
+  - first:
+      213: 3564494569105394926
+    second: Cattail_0_detail_216
+  - first:
+      213: -1133074647532558196
+    second: Cattail_0_detail_217
+  - first:
+      213: -3497147333960696347
+    second: Cattail_0_detail_218
+  - first:
+      213: 7637640134695407562
+    second: Cattail_0_detail_219
+  - first:
+      213: -5396509247312250227
+    second: Cattail_0_detail_220
+  - first:
+      213: -4721638790508647683
+    second: Cattail_0_detail_221
+  - first:
+      213: -34528964247744719
+    second: Cattail_0_detail_222
+  - first:
+      213: 3454046517222043265
+    second: Cattail_0_detail_223
+  - first:
+      213: -7844437646896575562
+    second: Cattail_0_detail_224
+  - first:
+      213: -6155510056734356905
+    second: Cattail_0_detail_225
+  - first:
+      213: 5780099030877140441
+    second: Cattail_0_detail_226
+  - first:
+      213: 8200224323874446649
+    second: Cattail_0_detail_227
+  - first:
+      213: -5175341592729695637
+    second: Cattail_0_detail_228
+  - first:
+      213: 6566491364683556915
+    second: Cattail_0_detail_229
+  - first:
+      213: -2576578143330521561
+    second: Cattail_0_detail_230
+  - first:
+      213: 2636025352017664238
+    second: Cattail_0_detail_231
+  - first:
+      213: 1545803476507554158
+    second: Cattail_0_detail_232
+  - first:
+      213: 1815696344118335401
+    second: Cattail_0_detail_233
+  - first:
+      213: -63570396712712560
+    second: Cattail_0_detail_234
+  - first:
+      213: -644471012715873695
+    second: Cattail_0_detail_235
+  - first:
+      213: -8164504137493376145
+    second: Cattail_0_detail_236
+  - first:
+      213: -404312969671364062
+    second: Cattail_0_detail_237
+  - first:
+      213: -9159091514694489296
+    second: Cattail_0_detail_238
+  - first:
+      213: 5968912054205569206
+    second: Cattail_0_detail_239
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cattail_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e260b9023dfb66f20800000000000000
+      internalID: 3415628280913135150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63f57ac94f02a85e0800000000000000
+      internalID: -1906675257265660106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f0b03073bcb3e570800000000000000
+      internalID: 8494840801018294515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dbfe4f6f71cf1b30800000000000000
+      internalID: 4260336525588233174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 884fe8c6ea418c6d0800000000000000
+      internalID: -2970101214872669048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe37c65c839ae0a10800000000000000
+      internalID: 1877624155955557359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 761
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9887de677e0cd5670800000000000000
+      internalID: 8529185369674840201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 550e75907a4bd1060800000000000000
+      internalID: 6925890431474982997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 1003
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68a0b0ffe51a93cc0800000000000000
+      internalID: -3730773386921833850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 1125
+        y: 714
+        width: 49
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfac47c8a34338ac0800000000000000
+      internalID: -3854179430029800707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 1244
+        y: 716
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70342bbb1d8cbc920800000000000000
+      internalID: 3011721578950050567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a291277792d357eb0800000000000000
+      internalID: -4722801385921177302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 848aa3dfa4cd36ea0800000000000000
+      internalID: -5880614473781565368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 326d698e39ff34770800000000000000
+      internalID: 8593993524680513059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18a7f3cdfcf79a9c0800000000000000
+      internalID: -3915457870291830143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2917743096c2de20800000000000000
+      internalID: 3373977393511733551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76cb26f352dc4dc10800000000000000
+      internalID: 2077510887985560679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 730
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2de75df07ef60650800000000000000
+      internalID: 6198921698362256687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d14e179fed5331b70800000000000000
+      internalID: 8868491323006641181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 962
+        y: 643
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 425c6b5bf599cf740800000000000000
+      internalID: 5187189507173565732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 1077
+        y: 646
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c38eec26cef55740800000000000000
+      internalID: 5140294676824097734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 1189
+        y: 646
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe0049b11974f30c0800000000000000
+      internalID: -4593874406336102161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 576
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e8aad6239dfbf200800000000000000
+      internalID: 215044215684114663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 576
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a8c474fcdc79e420800000000000000
+      internalID: 2659794343374932133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 576
+        width: 45
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6aec0765d8ca21b0800000000000000
+      internalID: -5680507161091970454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 576
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 867e9db3dc68138f0800000000000000
+      internalID: -562520262414047384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 576
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e61a849ff1963e6b0800000000000000
+      internalID: -5268251553046158994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 593
+        y: 576
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28caa5a688e5f5890800000000000000
+      internalID: -7467145717164102526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 576
+        width: 46
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5d8a4a9b710a3850800000000000000
+      internalID: 6357395454368058717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 818
+        y: 576
+        width: 45
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7ae678b4f663e9f0800000000000000
+      internalID: -440395137299322241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 578
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac67f0f63f2a0f7c0800000000000000
+      internalID: -4039549699327297846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 578
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b75ba03ce7763fa0800000000000000
+      internalID: -5821333612017264714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 1140
+        y: 578
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7de5fd8254c726900800000000000000
+      internalID: 676239530539310807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 1246
+        y: 578
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49e2f609847c39240800000000000000
+      internalID: 4797397142554488468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 511
+        width: 42
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00172175ef6b3e070800000000000000
+      internalID: 8134546555460022528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 511
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4f36d86433dc8610800000000000000
+      internalID: 1624905787624537932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 511
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a8f364f0e7419870800000000000000
+      internalID: 8687804187672836256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 511
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6a8752e91e9184c0800000000000000
+      internalID: -4286971536271242644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 511
+        width: 41
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d7eba7aa99a72400800000000000000
+      internalID: 299394381946546135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 562
+        y: 511
+        width: 42
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 678b2d3c9be199630800000000000000
+      internalID: 3934209532687988854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 664
+        y: 519
+        width: 51
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7981f53363a13190800000000000000
+      internalID: -7984421017849067139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 771
+        y: 519
+        width: 51
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccae548f2ddf5f550800000000000000
+      internalID: 6194135945068276428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 878
+        y: 519
+        width: 51
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9941a7fd8af5ca860800000000000000
+      internalID: 7542508654847202457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 986
+        y: 519
+        width: 50
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d037b9462e2b7fa20800000000000000
+      internalID: 3096139954260767501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 1093
+        y: 519
+        width: 50
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c8983221297968f0800000000000000
+      internalID: -546772696533788479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 1199
+        y: 522
+        width: 41
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22e95654ec9688220800000000000000
+      internalID: 2488355128770666018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 456
+        width: 41
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9a90d1f9bcaf0820800000000000000
+      internalID: 2886715800793684636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 456
+        width: 41
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d28238c4da524410800000000000000
+      internalID: 1459829099159782096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_48
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 456
+        width: 41
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fee672084a7388090800000000000000
+      internalID: -8032108755751047441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_49
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 456
+        width: 41
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36df4de6fb3e11e10800000000000000
+      internalID: 2166763307079630179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_50
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50203dadb93f73dd0800000000000000
+      internalID: -2506266816891649531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_51
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f024f505494772c30800000000000000
+      internalID: 4334561346719793679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_52
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35802ee833f572e10800000000000000
+      internalID: 2172810020274702419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_53
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a35f3c40d4c01a150800000000000000
+      internalID: 5881996113254544698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_54
+      rect:
+        serializedVersion: 2
+        x: 791
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ab97197cb35f34e0800000000000000
+      internalID: -1999787640578663516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_55
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f12d6f6b41d13b3f0800000000000000
+      internalID: -886332726855675361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_56
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4c2cab9f8e5e5810800000000000000
+      internalID: 1755944875606158410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_57
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 568e5fa7a419422e0800000000000000
+      internalID: -2151434972899710875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_58
+      rect:
+        serializedVersion: 2
+        x: 1167
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6be43ae7b49834e0800000000000000
+      internalID: -2001686516736922774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_59
+      rect:
+        serializedVersion: 2
+        x: 1261
+        y: 456
+        width: 40
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b8ebb4deae6716e0800000000000000
+      internalID: -1866901823349331787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_60
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 401
+        width: 48
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81af88276ef209c10800000000000000
+      internalID: 2058197696518879768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_61
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 401
+        width: 48
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7208d155e6f88110800000000000000
+      internalID: 1263531160258478715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_62
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 401
+        width: 48
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6943376fd32362f30800000000000000
+      internalID: 4550379715213603990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_63
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 401
+        width: 47
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24137db958dddc930800000000000000
+      internalID: 4165228796302537026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_64
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 401
+        width: 47
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84884390fd586dfb0800000000000000
+      internalID: -4623360774470596536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_65
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 401
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69cb530eac949f610800000000000000
+      internalID: 1655435473729207446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_66
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 401
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2262a4d684f23a6d0800000000000000
+      internalID: -2980486540271409630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_67
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 401
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8209669dbe7498a0800000000000000
+      internalID: -6299270626047098230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_68
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 401
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f24ed9d0de5d00140800000000000000
+      internalID: 4683978826577732655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_69
+      rect:
+        serializedVersion: 2
+        x: 923
+        y: 401
+        width: 45
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a57c0553ea13b82c0800000000000000
+      internalID: -4428391184300193958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_70
+      rect:
+        serializedVersion: 2
+        x: 1021
+        y: 403
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75a1f6e087a55ba40800000000000000
+      internalID: 5383308401276033623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_71
+      rect:
+        serializedVersion: 2
+        x: 1111
+        y: 403
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba511f40782636880800000000000000
+      internalID: -8618936929813981781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_72
+      rect:
+        serializedVersion: 2
+        x: 1201
+        y: 403
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec9925e5377f3e0c0800000000000000
+      internalID: -4547519123838297650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_73
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 349
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94bf1a9cd8457f200800000000000000
+      internalID: 213732475273345865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_74
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 349
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f88342d5bcbb25e0800000000000000
+      internalID: -1933244125922752268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_75
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 349
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5fc3b35d743b5850800000000000000
+      internalID: 6366740211098177371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_76
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 349
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c01593647c1b9170800000000000000
+      internalID: 8186168033888506050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_77
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 349
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c965ec1ef2dd20560800000000000000
+      internalID: 7278623145505740444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_78
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 349
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22a1d16351f7e3a60800000000000000
+      internalID: 7655696145655339554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_79
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 349
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad602df2f39955990800000000000000
+      internalID: -7397838316221888806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_80
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 349
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7578df4547eeec820800000000000000
+      internalID: 2940549790129030999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_81
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 349
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba71450f932ab9ee0800000000000000
+      internalID: -1253229701563672661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_82
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 349
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34e2261f4cca385f0800000000000000
+      internalID: -755570350604800445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_83
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 349
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 518143fae075bc350800000000000000
+      internalID: 6038015446000867349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_84
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 349
+        width: 33
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 352ad3a06cc83a5f0800000000000000
+      internalID: -746598331010145709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_85
+      rect:
+        serializedVersion: 2
+        x: 1086
+        y: 349
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a25a7ecf0d35b77b0800000000000000
+      internalID: -5225490785571986134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_86
+      rect:
+        serializedVersion: 2
+        x: 1172
+        y: 349
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4abe91f096f0809c0800000000000000
+      internalID: -3960898928373011548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_87
+      rect:
+        serializedVersion: 2
+        x: 1258
+        y: 349
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ecb04285d53b0570800000000000000
+      internalID: 8433893918310972648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_88
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 296
+        width: 34
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89481480a9b75cfe0800000000000000
+      internalID: -1169392626739084136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_89
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 296
+        width: 33
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2771d1b82acb31c80800000000000000
+      internalID: -8353125477537474702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_90
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb1c3ac3e64ab3ef0800000000000000
+      internalID: -127327371079204418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_91
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3073404c0f3539580800000000000000
+      internalID: -8821614951542802685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_92
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9d992739d17f7470800000000000000
+      internalID: 8394553408189210014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_93
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3542d38c3f9127c0800000000000000
+      internalID: -4097819103671990977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_94
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 296
+        width: 31
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7e0ca59263ef1850800000000000000
+      internalID: 6350044012173069946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_95
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e79fbf7e0f7c94e80800000000000000
+      internalID: -8193798209525778050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_96
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5cc0fac09aa37f80800000000000000
+      internalID: -8109950965107340194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_97
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2056e9b3805419ba0800000000000000
+      internalID: -6084005719938538238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_98
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 296
+        width: 30
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33e8254262a888570800000000000000
+      internalID: 8469170995692998195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_99
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 296
+        width: 31
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb95a0255af54e780800000000000000
+      internalID: -8654687420248598085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_100
+      rect:
+        serializedVersion: 2
+        x: 1047
+        y: 296
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a543e6dc461a5510800000000000000
+      internalID: 1538566741978989989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_101
+      rect:
+        serializedVersion: 2
+        x: 1137
+        y: 296
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5674297c57c296f0800000000000000
+      internalID: -679261393796172195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_102
+      rect:
+        serializedVersion: 2
+        x: 1227
+        y: 296
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0adec9a96049fca20800000000000000
+      internalID: 3084847025856769440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_103
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 243
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4999ae3d92dea92f0800000000000000
+      internalID: -965198406212740716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_104
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 243
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46a1dd20a21fbf820800000000000000
+      internalID: 2953219143410457188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_105
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 244
+        width: 39
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cb6d56b6ba00e0e0800000000000000
+      internalID: -2242780834570605630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_106
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 244
+        width: 39
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08ace03757b525710800000000000000
+      internalID: 1680506170962266752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_107
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 244
+        width: 39
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c17d314b81d7b1680800000000000000
+      internalID: -8783289103202134244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_108
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 244
+        width: 39
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7fc04b4ca88e48f0800000000000000
+      internalID: -554355430541701249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_109
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 244
+        width: 39
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e3b94e9ba51c9670800000000000000
+      internalID: 8546730019681580005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_110
+      rect:
+        serializedVersion: 2
+        x: 654
+        y: 246
+        width: 39
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49fc3bab61bb1c140800000000000000
+      internalID: 4738273989266493332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_111
+      rect:
+        serializedVersion: 2
+        x: 741
+        y: 246
+        width: 39
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bdd46ac950653e50800000000000000
+      internalID: 6788437952094854583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_112
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 246
+        width: 39
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 052e852ab2c897140800000000000000
+      internalID: 4717956203682521680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_113
+      rect:
+        serializedVersion: 2
+        x: 915
+        y: 246
+        width: 39
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 156b1a639d1033ef0800000000000000
+      internalID: -129757931827513775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_114
+      rect:
+        serializedVersion: 2
+        x: 1002
+        y: 246
+        width: 39
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fa30577761e5fb80800000000000000
+      internalID: -8361529298643830031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_115
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 247
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eee4813134d12b760800000000000000
+      internalID: 7472066905681448686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_116
+      rect:
+        serializedVersion: 2
+        x: 1166
+        y: 247
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e91e55f22b5aa5d0800000000000000
+      internalID: -3050525591886489117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_117
+      rect:
+        serializedVersion: 2
+        x: 1244
+        y: 247
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 934f4738110c71a70800000000000000
+      internalID: 8797711578544010297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_118
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 195
+        width: 31
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd154c4259f2f7f10800000000000000
+      internalID: 2269585054831497693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_119
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 195
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65b97210733932d90800000000000000
+      internalID: -7123688321118135466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_120
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 199
+        width: 31
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f095bda918f3ea7d0800000000000000
+      internalID: -2905314883725993713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_121
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 199
+        width: 31
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c7f6621c680798a0800000000000000
+      internalID: -6298556293596121151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_122
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 199
+        width: 31
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56606a07462d52800800000000000000
+      internalID: 587106655270209125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_123
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 199
+        width: 31
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eeadecdf7f3730d50800000000000000
+      internalID: 6702328179409738478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_124
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 199
+        width: 31
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64c645caf80d17ae0800000000000000
+      internalID: -1553231080975995834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_125
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 199
+        width: 32
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c019395a399af170800000000000000
+      internalID: 8213045346347585732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_126
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 199
+        width: 32
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56625fd9fbb2bb480800000000000000
+      internalID: -8882457738069334427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_127
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 199
+        width: 32
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7707a325be020f40800000000000000
+      internalID: 5693129050099746687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_128
+      rect:
+        serializedVersion: 2
+        x: 790
+        y: 199
+        width: 33
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3444d4d3518e9f240800000000000000
+      internalID: 4826143653624628291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_129
+      rect:
+        serializedVersion: 2
+        x: 869
+        y: 199
+        width: 33
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43ba463cd7d09ba00800000000000000
+      internalID: 772663644870978356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_130
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 201
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e294930561b6ae80800000000000000
+      internalID: -8167645826779933984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_131
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 201
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd91242f2f6e724a0800000000000000
+      internalID: -6618067196276762148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_132
+      rect:
+        serializedVersion: 2
+        x: 1102
+        y: 201
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d41de5df58a33cf30800000000000000
+      internalID: 4594580392003948877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_133
+      rect:
+        serializedVersion: 2
+        x: 1178
+        y: 201
+        width: 33
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3ed294bad955b540800000000000000
+      internalID: 5023019755268922940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_134
+      rect:
+        serializedVersion: 2
+        x: 1255
+        y: 201
+        width: 33
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80d07bd03338eefb0800000000000000
+      internalID: -4616608312711508728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_135
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 155
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 225bfa905fa9d14e0800000000000000
+      internalID: -2009279481517198046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_136
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 155
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af6bcc258947a8180800000000000000
+      internalID: -9112342698457778438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_137
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 155
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8b5df86bdbe19830800000000000000
+      internalID: 4076298465338809228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_138
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 155
+        width: 37
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 825a6fcb6dcb4b8d0800000000000000
+      internalID: -2831430635229895384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_139
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 155
+        width: 37
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7afc98acb3435650800000000000000
+      internalID: 6220389987890559611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_140
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 155
+        width: 29
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5c5a030a77f5f7c0800000000000000
+      internalID: -4038049387458700193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_141
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 155
+        width: 29
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dec3b0bd226005210800000000000000
+      internalID: 1319561437593156845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_142
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 155
+        width: 29
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee308802648a93f10800000000000000
+      internalID: 2250014507995235310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_143
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 155
+        width: 29
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e2a25581e4aeb3e0800000000000000
+      internalID: -2036008693013503260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_144
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 155
+        width: 29
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4eac3acbb36031560800000000000000
+      internalID: 7283171876025912036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_145
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 157
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d58e5a942141b5e0800000000000000
+      internalID: -1895662342681754154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_146
+      rect:
+        serializedVersion: 2
+        x: 831
+        y: 157
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84797e88c2e5205f0800000000000000
+      internalID: -791967039095335096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_147
+      rect:
+        serializedVersion: 2
+        x: 902
+        y: 157
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e1a30c125ef93210800000000000000
+      internalID: 1313360394965983720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_148
+      rect:
+        serializedVersion: 2
+        x: 973
+        y: 157
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f147fe96b3c0d1da0800000000000000
+      internalID: -5972604081503505377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_149
+      rect:
+        serializedVersion: 2
+        x: 1044
+        y: 157
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34b5f60664663e260800000000000000
+      internalID: 7125651487881911107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_150
+      rect:
+        serializedVersion: 2
+        x: 1114
+        y: 157
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2417a6f6415551b0800000000000000
+      internalID: -5668535190748195798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_151
+      rect:
+        serializedVersion: 2
+        x: 1180
+        y: 157
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d2159ceb80e1a290800000000000000
+      internalID: -7880770981347388714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_152
+      rect:
+        serializedVersion: 2
+        x: 1246
+        y: 157
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfc3b936c33ab2520800000000000000
+      internalID: 2678413883166375164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_153
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 115
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3acffb2277ed34910800000000000000
+      internalID: 1820543277653294243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_154
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 115
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a197dd39cbe6b99e0800000000000000
+      internalID: -1613574285268518630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_155
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 115
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 567955817889a31c0800000000000000
+      internalID: -4523135169743972507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_156
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 115
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14de3099c6d9df280800000000000000
+      internalID: -9007870589921923775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_157
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 115
+        width: 27
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cba56eb16d4839240800000000000000
+      internalID: 4797324083205659324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_158
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 115
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 069e8c52955bab780800000000000000
+      internalID: -8666415138430457504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_159
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 115
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7d5859bef7ab8560800000000000000
+      internalID: 7317126732066610559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_160
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 116
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb868b87125bf8980800000000000000
+      internalID: -8534403613479900997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_161
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 116
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 954608a5f1e1b6380800000000000000
+      internalID: -8977048312221768615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_162
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 116
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de6ba1a87eb805ff0800000000000000
+      internalID: -49385769330362643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_163
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 116
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae2149d6cfa69cac0800000000000000
+      internalID: -3834415975326543126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_164
+      rect:
+        serializedVersion: 2
+        x: 738
+        y: 116
+        width: 24
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63036b705d97ba790800000000000000
+      internalID: -7517781197100535754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_165
+      rect:
+        serializedVersion: 2
+        x: 804
+        y: 115
+        width: 20
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed237bfa76541d990800000000000000
+      internalID: -7363027604142083362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_166
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 115
+        width: 20
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1c593d22e863ba90800000000000000
+      internalID: -7299375250406810596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_167
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 115
+        width: 20
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e0acb66da5bf4570800000000000000
+      internalID: 8453174781955317993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_168
+      rect:
+        serializedVersion: 2
+        x: 989
+        y: 115
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5ff5e7eb42ee4710800000000000000
+      internalID: 1679528526696808284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_169
+      rect:
+        serializedVersion: 2
+        x: 1051
+        y: 115
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab01125cc1a07cf40800000000000000
+      internalID: 5748574568044368058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_170
+      rect:
+        serializedVersion: 2
+        x: 1111
+        y: 116
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7603e79f9aaf34f0800000000000000
+      internalID: -846770602497603974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_171
+      rect:
+        serializedVersion: 2
+        x: 1169
+        y: 116
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c9ed79146b53e730800000000000000
+      internalID: 4027162977281894848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_172
+      rect:
+        serializedVersion: 2
+        x: 1227
+        y: 116
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7106c89ccfd7ca790800000000000000
+      internalID: -7517495153321549801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_173
+      rect:
+        serializedVersion: 2
+        x: 1285
+        y: 116
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1eea67b6b81e04cf0800000000000000
+      internalID: -269967988722585887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_174
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 76
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b99124ff5c7cce330800000000000000
+      internalID: 3741585043643046299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_175
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 76
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73ee35b9c525315e0800000000000000
+      internalID: -1940116456770113993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_176
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 76
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b46d2d72008e7e730800000000000000
+      internalID: 4028443479071970891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_177
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 76
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 189497bbded5ec340800000000000000
+      internalID: 4885945921377487233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_178
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 76
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f891183169c985f00800000000000000
+      internalID: 1105805876905712015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_179
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 76
+        width: 20
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fa172beee973daf0800000000000000
+      internalID: -372820277087233290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_180
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd5d48c126f243810800000000000000
+      internalID: 1744071054130992603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_181
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60f38a4c82cc50660800000000000000
+      internalID: 7351506442222321414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_182
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0637d3d57d34a98c0800000000000000
+      internalID: -3991803527449185440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_183
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65713433c5570acf0800000000000000
+      internalID: -243065341020530858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_184
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f076b51e1ab817320800000000000000
+      internalID: 2553975991082641167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_185
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6bed52e07e0a1df0800000000000000
+      internalID: -208838554722374804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_186
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cba5a258ba6392070800000000000000
+      internalID: 8082051116594518716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_187
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37d2dc9c8af452bc0800000000000000
+      internalID: -3808550323513119373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_188
+      rect:
+        serializedVersion: 2
+        x: 903
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec1f9db93dfad2eb0800000000000000
+      internalID: -4742941509163552306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_189
+      rect:
+        serializedVersion: 2
+        x: 970
+        y: 77
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ba6f5b11c430a900800000000000000
+      internalID: 693612346607626933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_190
+      rect:
+        serializedVersion: 2
+        x: 1037
+        y: 77
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d90bbad5d94b63900800000000000000
+      internalID: 663916583058124957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_191
+      rect:
+        serializedVersion: 2
+        x: 1098
+        y: 77
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8bf1da3495d0ab20800000000000000
+      internalID: 3143747372523322254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_192
+      rect:
+        serializedVersion: 2
+        x: 1159
+        y: 77
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b69afa527c58028f0800000000000000
+      internalID: -567306462671427221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_193
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 77
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd290a3d7d3226d40800000000000000
+      internalID: 5576058698513552093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_194
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 77
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84d71ab3b8afc8560800000000000000
+      internalID: 7317498970478050632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_195
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 38
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1990a9f23e046570800000000000000
+      internalID: 8458901612207839517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_196
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 38
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 813f502ac3c4200e0800000000000000
+      internalID: -2305196235960225000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_197
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 38
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ee023902dcaedbc0800000000000000
+      internalID: -3756375021083029784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_198
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 38
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8549c648edd46dcf0800000000000000
+      internalID: -227909113035844520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_199
+      rect:
+        serializedVersion: 2
+        x: 263
+        y: 38
+        width: 23
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63a695cef72afaa60800000000000000
+      internalID: 7687541759254555190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_200
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 42
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0d574fdf4ca0c2a0800000000000000
+      internalID: -6719181184988390131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_201
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 42
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7c23fba21f878610800000000000000
+      internalID: 1623423501047377021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_202
+      rect:
+        serializedVersion: 2
+        x: 436
+        y: 42
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81df11d229c068ef0800000000000000
+      internalID: -106383719235715816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_203
+      rect:
+        serializedVersion: 2
+        x: 493
+        y: 42
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a0a5eaaab43a5760800000000000000
+      internalID: 7447322910146273440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_204
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 42
+        width: 23
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7e177edb5d753eb0800000000000000
+      internalID: -4740745199209734534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_205
+      rect:
+        serializedVersion: 2
+        x: 606
+        y: 43
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e6e76784c6952240800000000000000
+      internalID: 4766381551471027939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_206
+      rect:
+        serializedVersion: 2
+        x: 662
+        y: 43
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3efaee8016984a320800000000000000
+      internalID: 2568328737362718691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_207
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 43
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93170185953fabc00800000000000000
+      internalID: 917313039178428729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_208
+      rect:
+        serializedVersion: 2
+        x: 773
+        y: 43
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 486ba9d874b677a10800000000000000
+      internalID: 1907110922277271172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_209
+      rect:
+        serializedVersion: 2
+        x: 829
+        y: 43
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e35d33fa539e3db20800000000000000
+      internalID: 3158124180498797886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_210
+      rect:
+        serializedVersion: 2
+        x: 886
+        y: 43
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 837d5e287b27ca850800000000000000
+      internalID: 6389608103832573752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_211
+      rect:
+        serializedVersion: 2
+        x: 941
+        y: 43
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea7b8cf02958813d0800000000000000
+      internalID: -3235689469889169490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_212
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 43
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52b0a3bc2fdaeb0e0800000000000000
+      internalID: -2252171505335399643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_213
+      rect:
+        serializedVersion: 2
+        x: 1051
+        y: 43
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5abf75e4376a91290800000000000000
+      internalID: -7919115455588467803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_214
+      rect:
+        serializedVersion: 2
+        x: 1106
+        y: 43
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b6ff995238791a40800000000000000
+      internalID: 5339430990871787184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_215
+      rect:
+        serializedVersion: 2
+        x: 1160
+        y: 44
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02bfc1a6d1b6d3f10800000000000000
+      internalID: 2251073162833623840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_216
+      rect:
+        serializedVersion: 2
+        x: 1213
+        y: 44
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eec0653dce0a77130800000000000000
+      internalID: 3564494569105394926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_217
+      rect:
+        serializedVersion: 2
+        x: 1266
+        y: 44
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8822d18c928640f0800000000000000
+      internalID: -1133074647532558196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_218
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 6
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ed71184703a77fc0800000000000000
+      internalID: -3497147333960696347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_219
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 6
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acf49ce8c395ef960800000000000000
+      internalID: 7637640134695407562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_220
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 8
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8ab7d67e6fbb15b0800000000000000
+      internalID: -5396509247312250227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_221
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 8
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfae60e498e597eb0800000000000000
+      internalID: -4721638790508647683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_222
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 8
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13f0d870714558ff0800000000000000
+      internalID: -34528964247744719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_223
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 8
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18ee1b0d10d3fef20800000000000000
+      internalID: 3454046517222043265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_224
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 8
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bb47029585f22390800000000000000
+      internalID: -7844437646896575562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_225
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 7
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75a0109773c339aa0800000000000000
+      internalID: -6155510056734356905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_226
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 7
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d5f20eb179073050800000000000000
+      internalID: 5780099030877140441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_227
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 7
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93ddd0f639c0dc170800000000000000
+      internalID: 8200224323874446649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_228
+      rect:
+        serializedVersion: 2
+        x: 526
+        y: 7
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6aca06dd3e7d28b0800000000000000
+      internalID: -5175341592729695637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_229
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 7
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33822acfa1dd02b50800000000000000
+      internalID: 6566491364683556915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_230
+      rect:
+        serializedVersion: 2
+        x: 626
+        y: 8
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72eafb674d72e3cd0800000000000000
+      internalID: -2576578143330521561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_231
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 8
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee8dfe5671b059420800000000000000
+      internalID: 2636025352017664238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_232
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 8
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e61fbc5621cc37510800000000000000
+      internalID: 1545803476507554158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_233
+      rect:
+        serializedVersion: 2
+        x: 764
+        y: 8
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a7162b7436a23910800000000000000
+      internalID: 1815696344118335401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_234
+      rect:
+        serializedVersion: 2
+        x: 810
+        y: 8
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09645bd9f072e1ff0800000000000000
+      internalID: -63570396712712560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_235
+      rect:
+        serializedVersion: 2
+        x: 856
+        y: 8
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16ab80b47016e07f0800000000000000
+      internalID: -644471012715873695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_236
+      rect:
+        serializedVersion: 2
+        x: 903
+        y: 8
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f63108d8ebad1be80800000000000000
+      internalID: -8164504137493376145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_237
+      rect:
+        serializedVersion: 2
+        x: 950
+        y: 8
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 222b7a80f77936af0800000000000000
+      internalID: -404312969671364062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_238
+      rect:
+        serializedVersion: 2
+        x: 997
+        y: 8
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03b27595bce54e080800000000000000
+      internalID: -9159091514694489296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_0_detail_239
+      rect:
+        serializedVersion: 2
+        x: 1044
+        y: 8
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b8587e73e5d5d250800000000000000
+      internalID: 5968912054205569206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cattail_0_detail_0: 3415628280913135150
+      Cattail_0_detail_1: -1906675257265660106
+      Cattail_0_detail_10: 3011721578950050567
+      Cattail_0_detail_100: 1538566741978989989
+      Cattail_0_detail_101: -679261393796172195
+      Cattail_0_detail_102: 3084847025856769440
+      Cattail_0_detail_103: -965198406212740716
+      Cattail_0_detail_104: 2953219143410457188
+      Cattail_0_detail_105: -2242780834570605630
+      Cattail_0_detail_106: 1680506170962266752
+      Cattail_0_detail_107: -8783289103202134244
+      Cattail_0_detail_108: -554355430541701249
+      Cattail_0_detail_109: 8546730019681580005
+      Cattail_0_detail_11: -4722801385921177302
+      Cattail_0_detail_110: 4738273989266493332
+      Cattail_0_detail_111: 6788437952094854583
+      Cattail_0_detail_112: 4717956203682521680
+      Cattail_0_detail_113: -129757931827513775
+      Cattail_0_detail_114: -8361529298643830031
+      Cattail_0_detail_115: 7472066905681448686
+      Cattail_0_detail_116: -3050525591886489117
+      Cattail_0_detail_117: 8797711578544010297
+      Cattail_0_detail_118: 2269585054831497693
+      Cattail_0_detail_119: -7123688321118135466
+      Cattail_0_detail_12: -5880614473781565368
+      Cattail_0_detail_120: -2905314883725993713
+      Cattail_0_detail_121: -6298556293596121151
+      Cattail_0_detail_122: 587106655270209125
+      Cattail_0_detail_123: 6702328179409738478
+      Cattail_0_detail_124: -1553231080975995834
+      Cattail_0_detail_125: 8213045346347585732
+      Cattail_0_detail_126: -8882457738069334427
+      Cattail_0_detail_127: 5693129050099746687
+      Cattail_0_detail_128: 4826143653624628291
+      Cattail_0_detail_129: 772663644870978356
+      Cattail_0_detail_13: 8593993524680513059
+      Cattail_0_detail_130: -8167645826779933984
+      Cattail_0_detail_131: -6618067196276762148
+      Cattail_0_detail_132: 4594580392003948877
+      Cattail_0_detail_133: 5023019755268922940
+      Cattail_0_detail_134: -4616608312711508728
+      Cattail_0_detail_135: -2009279481517198046
+      Cattail_0_detail_136: -9112342698457778438
+      Cattail_0_detail_137: 4076298465338809228
+      Cattail_0_detail_138: -2831430635229895384
+      Cattail_0_detail_139: 6220389987890559611
+      Cattail_0_detail_14: -3915457870291830143
+      Cattail_0_detail_140: -4038049387458700193
+      Cattail_0_detail_141: 1319561437593156845
+      Cattail_0_detail_142: 2250014507995235310
+      Cattail_0_detail_143: -2036008693013503260
+      Cattail_0_detail_144: 7283171876025912036
+      Cattail_0_detail_145: -1895662342681754154
+      Cattail_0_detail_146: -791967039095335096
+      Cattail_0_detail_147: 1313360394965983720
+      Cattail_0_detail_148: -5972604081503505377
+      Cattail_0_detail_149: 7125651487881911107
+      Cattail_0_detail_15: 3373977393511733551
+      Cattail_0_detail_150: -5668535190748195798
+      Cattail_0_detail_151: -7880770981347388714
+      Cattail_0_detail_152: 2678413883166375164
+      Cattail_0_detail_153: 1820543277653294243
+      Cattail_0_detail_154: -1613574285268518630
+      Cattail_0_detail_155: -4523135169743972507
+      Cattail_0_detail_156: -9007870589921923775
+      Cattail_0_detail_157: 4797324083205659324
+      Cattail_0_detail_158: -8666415138430457504
+      Cattail_0_detail_159: 7317126732066610559
+      Cattail_0_detail_16: 2077510887985560679
+      Cattail_0_detail_160: -8534403613479900997
+      Cattail_0_detail_161: -8977048312221768615
+      Cattail_0_detail_162: -49385769330362643
+      Cattail_0_detail_163: -3834415975326543126
+      Cattail_0_detail_164: -7517781197100535754
+      Cattail_0_detail_165: -7363027604142083362
+      Cattail_0_detail_166: -7299375250406810596
+      Cattail_0_detail_167: 8453174781955317993
+      Cattail_0_detail_168: 1679528526696808284
+      Cattail_0_detail_169: 5748574568044368058
+      Cattail_0_detail_17: 6198921698362256687
+      Cattail_0_detail_170: -846770602497603974
+      Cattail_0_detail_171: 4027162977281894848
+      Cattail_0_detail_172: -7517495153321549801
+      Cattail_0_detail_173: -269967988722585887
+      Cattail_0_detail_174: 3741585043643046299
+      Cattail_0_detail_175: -1940116456770113993
+      Cattail_0_detail_176: 4028443479071970891
+      Cattail_0_detail_177: 4885945921377487233
+      Cattail_0_detail_178: 1105805876905712015
+      Cattail_0_detail_179: -372820277087233290
+      Cattail_0_detail_18: 8868491323006641181
+      Cattail_0_detail_180: 1744071054130992603
+      Cattail_0_detail_181: 7351506442222321414
+      Cattail_0_detail_182: -3991803527449185440
+      Cattail_0_detail_183: -243065341020530858
+      Cattail_0_detail_184: 2553975991082641167
+      Cattail_0_detail_185: -208838554722374804
+      Cattail_0_detail_186: 8082051116594518716
+      Cattail_0_detail_187: -3808550323513119373
+      Cattail_0_detail_188: -4742941509163552306
+      Cattail_0_detail_189: 693612346607626933
+      Cattail_0_detail_19: 5187189507173565732
+      Cattail_0_detail_190: 663916583058124957
+      Cattail_0_detail_191: 3143747372523322254
+      Cattail_0_detail_192: -567306462671427221
+      Cattail_0_detail_193: 5576058698513552093
+      Cattail_0_detail_194: 7317498970478050632
+      Cattail_0_detail_195: 8458901612207839517
+      Cattail_0_detail_196: -2305196235960225000
+      Cattail_0_detail_197: -3756375021083029784
+      Cattail_0_detail_198: -227909113035844520
+      Cattail_0_detail_199: 7687541759254555190
+      Cattail_0_detail_2: 8494840801018294515
+      Cattail_0_detail_20: 5140294676824097734
+      Cattail_0_detail_200: -6719181184988390131
+      Cattail_0_detail_201: 1623423501047377021
+      Cattail_0_detail_202: -106383719235715816
+      Cattail_0_detail_203: 7447322910146273440
+      Cattail_0_detail_204: -4740745199209734534
+      Cattail_0_detail_205: 4766381551471027939
+      Cattail_0_detail_206: 2568328737362718691
+      Cattail_0_detail_207: 917313039178428729
+      Cattail_0_detail_208: 1907110922277271172
+      Cattail_0_detail_209: 3158124180498797886
+      Cattail_0_detail_21: -4593874406336102161
+      Cattail_0_detail_210: 6389608103832573752
+      Cattail_0_detail_211: -3235689469889169490
+      Cattail_0_detail_212: -2252171505335399643
+      Cattail_0_detail_213: -7919115455588467803
+      Cattail_0_detail_214: 5339430990871787184
+      Cattail_0_detail_215: 2251073162833623840
+      Cattail_0_detail_216: 3564494569105394926
+      Cattail_0_detail_217: -1133074647532558196
+      Cattail_0_detail_218: -3497147333960696347
+      Cattail_0_detail_219: 7637640134695407562
+      Cattail_0_detail_22: 215044215684114663
+      Cattail_0_detail_220: -5396509247312250227
+      Cattail_0_detail_221: -4721638790508647683
+      Cattail_0_detail_222: -34528964247744719
+      Cattail_0_detail_223: 3454046517222043265
+      Cattail_0_detail_224: -7844437646896575562
+      Cattail_0_detail_225: -6155510056734356905
+      Cattail_0_detail_226: 5780099030877140441
+      Cattail_0_detail_227: 8200224323874446649
+      Cattail_0_detail_228: -5175341592729695637
+      Cattail_0_detail_229: 6566491364683556915
+      Cattail_0_detail_23: 2659794343374932133
+      Cattail_0_detail_230: -2576578143330521561
+      Cattail_0_detail_231: 2636025352017664238
+      Cattail_0_detail_232: 1545803476507554158
+      Cattail_0_detail_233: 1815696344118335401
+      Cattail_0_detail_234: -63570396712712560
+      Cattail_0_detail_235: -644471012715873695
+      Cattail_0_detail_236: -8164504137493376145
+      Cattail_0_detail_237: -404312969671364062
+      Cattail_0_detail_238: -9159091514694489296
+      Cattail_0_detail_239: 5968912054205569206
+      Cattail_0_detail_24: -5680507161091970454
+      Cattail_0_detail_25: -562520262414047384
+      Cattail_0_detail_26: -5268251553046158994
+      Cattail_0_detail_27: -7467145717164102526
+      Cattail_0_detail_28: 6357395454368058717
+      Cattail_0_detail_29: -440395137299322241
+      Cattail_0_detail_3: 4260336525588233174
+      Cattail_0_detail_30: -4039549699327297846
+      Cattail_0_detail_31: -5821333612017264714
+      Cattail_0_detail_32: 676239530539310807
+      Cattail_0_detail_33: 4797397142554488468
+      Cattail_0_detail_34: 8134546555460022528
+      Cattail_0_detail_35: 1624905787624537932
+      Cattail_0_detail_36: 8687804187672836256
+      Cattail_0_detail_37: -4286971536271242644
+      Cattail_0_detail_38: 299394381946546135
+      Cattail_0_detail_39: 3934209532687988854
+      Cattail_0_detail_4: -2970101214872669048
+      Cattail_0_detail_40: -7984421017849067139
+      Cattail_0_detail_41: 6194135945068276428
+      Cattail_0_detail_42: 7542508654847202457
+      Cattail_0_detail_43: 3096139954260767501
+      Cattail_0_detail_44: -546772696533788479
+      Cattail_0_detail_45: 2488355128770666018
+      Cattail_0_detail_46: 2886715800793684636
+      Cattail_0_detail_47: 1459829099159782096
+      Cattail_0_detail_48: -8032108755751047441
+      Cattail_0_detail_49: 2166763307079630179
+      Cattail_0_detail_5: 1877624155955557359
+      Cattail_0_detail_50: -2506266816891649531
+      Cattail_0_detail_51: 4334561346719793679
+      Cattail_0_detail_52: 2172810020274702419
+      Cattail_0_detail_53: 5881996113254544698
+      Cattail_0_detail_54: -1999787640578663516
+      Cattail_0_detail_55: -886332726855675361
+      Cattail_0_detail_56: 1755944875606158410
+      Cattail_0_detail_57: -2151434972899710875
+      Cattail_0_detail_58: -2001686516736922774
+      Cattail_0_detail_59: -1866901823349331787
+      Cattail_0_detail_6: 8529185369674840201
+      Cattail_0_detail_60: 2058197696518879768
+      Cattail_0_detail_61: 1263531160258478715
+      Cattail_0_detail_62: 4550379715213603990
+      Cattail_0_detail_63: 4165228796302537026
+      Cattail_0_detail_64: -4623360774470596536
+      Cattail_0_detail_65: 1655435473729207446
+      Cattail_0_detail_66: -2980486540271409630
+      Cattail_0_detail_67: -6299270626047098230
+      Cattail_0_detail_68: 4683978826577732655
+      Cattail_0_detail_69: -4428391184300193958
+      Cattail_0_detail_7: 6925890431474982997
+      Cattail_0_detail_70: 5383308401276033623
+      Cattail_0_detail_71: -8618936929813981781
+      Cattail_0_detail_72: -4547519123838297650
+      Cattail_0_detail_73: 213732475273345865
+      Cattail_0_detail_74: -1933244125922752268
+      Cattail_0_detail_75: 6366740211098177371
+      Cattail_0_detail_76: 8186168033888506050
+      Cattail_0_detail_77: 7278623145505740444
+      Cattail_0_detail_78: 7655696145655339554
+      Cattail_0_detail_79: -7397838316221888806
+      Cattail_0_detail_8: -3730773386921833850
+      Cattail_0_detail_80: 2940549790129030999
+      Cattail_0_detail_81: -1253229701563672661
+      Cattail_0_detail_82: -755570350604800445
+      Cattail_0_detail_83: 6038015446000867349
+      Cattail_0_detail_84: -746598331010145709
+      Cattail_0_detail_85: -5225490785571986134
+      Cattail_0_detail_86: -3960898928373011548
+      Cattail_0_detail_87: 8433893918310972648
+      Cattail_0_detail_88: -1169392626739084136
+      Cattail_0_detail_89: -8353125477537474702
+      Cattail_0_detail_9: -3854179430029800707
+      Cattail_0_detail_90: -127327371079204418
+      Cattail_0_detail_91: -8821614951542802685
+      Cattail_0_detail_92: 8394553408189210014
+      Cattail_0_detail_93: -4097819103671990977
+      Cattail_0_detail_94: 6350044012173069946
+      Cattail_0_detail_95: -8193798209525778050
+      Cattail_0_detail_96: -8109950965107340194
+      Cattail_0_detail_97: -6084005719938538238
+      Cattail_0_detail_98: 8469170995692998195
+      Cattail_0_detail_99: -8654687420248598085
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

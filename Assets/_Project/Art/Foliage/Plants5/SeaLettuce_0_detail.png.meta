@@ -1,0 +1,7618 @@
+fileFormatVersion: 2
+guid: 225d9db8464f96e44a1a353afe05b0e4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3165290447159707531
+    second: SeaLettuce_0_detail_0
+  - first:
+      213: -2421172428964041576
+    second: SeaLettuce_0_detail_1
+  - first:
+      213: 7812103798256337920
+    second: SeaLettuce_0_detail_2
+  - first:
+      213: -2537081565283621171
+    second: SeaLettuce_0_detail_3
+  - first:
+      213: -173078957080931609
+    second: SeaLettuce_0_detail_4
+  - first:
+      213: -1577418815815648554
+    second: SeaLettuce_0_detail_5
+  - first:
+      213: -1825135397321440033
+    second: SeaLettuce_0_detail_6
+  - first:
+      213: -1191404556926610410
+    second: SeaLettuce_0_detail_7
+  - first:
+      213: 6855393050646265683
+    second: SeaLettuce_0_detail_8
+  - first:
+      213: 8979392326610165693
+    second: SeaLettuce_0_detail_9
+  - first:
+      213: -1210805013074723410
+    second: SeaLettuce_0_detail_10
+  - first:
+      213: 8767994025343852634
+    second: SeaLettuce_0_detail_11
+  - first:
+      213: -7704962499764250051
+    second: SeaLettuce_0_detail_12
+  - first:
+      213: -1377075816231116088
+    second: SeaLettuce_0_detail_13
+  - first:
+      213: 723910655052043762
+    second: SeaLettuce_0_detail_14
+  - first:
+      213: 3705330392053166223
+    second: SeaLettuce_0_detail_15
+  - first:
+      213: -1782426912864748793
+    second: SeaLettuce_0_detail_16
+  - first:
+      213: -1554952165265996528
+    second: SeaLettuce_0_detail_17
+  - first:
+      213: 500238087169954878
+    second: SeaLettuce_0_detail_18
+  - first:
+      213: -2645232547925540527
+    second: SeaLettuce_0_detail_19
+  - first:
+      213: -9016088662985294295
+    second: SeaLettuce_0_detail_20
+  - first:
+      213: 2767458370733813634
+    second: SeaLettuce_0_detail_21
+  - first:
+      213: -6120280313811998867
+    second: SeaLettuce_0_detail_22
+  - first:
+      213: 337387578245344361
+    second: SeaLettuce_0_detail_23
+  - first:
+      213: -5035326568582235537
+    second: SeaLettuce_0_detail_24
+  - first:
+      213: 6409897091814149242
+    second: SeaLettuce_0_detail_25
+  - first:
+      213: -5391081278671669863
+    second: SeaLettuce_0_detail_26
+  - first:
+      213: 4878041787950072936
+    second: SeaLettuce_0_detail_27
+  - first:
+      213: 8716013747289887988
+    second: SeaLettuce_0_detail_28
+  - first:
+      213: -6033618528788432652
+    second: SeaLettuce_0_detail_29
+  - first:
+      213: -6743431548086262641
+    second: SeaLettuce_0_detail_30
+  - first:
+      213: -546809246594200176
+    second: SeaLettuce_0_detail_31
+  - first:
+      213: 8801126819317516577
+    second: SeaLettuce_0_detail_32
+  - first:
+      213: 2368481165140605098
+    second: SeaLettuce_0_detail_33
+  - first:
+      213: 6099849723296092995
+    second: SeaLettuce_0_detail_34
+  - first:
+      213: 6344631371908161042
+    second: SeaLettuce_0_detail_35
+  - first:
+      213: 4413990622608378669
+    second: SeaLettuce_0_detail_36
+  - first:
+      213: -5464604730120085701
+    second: SeaLettuce_0_detail_37
+  - first:
+      213: -8698369483199501994
+    second: SeaLettuce_0_detail_38
+  - first:
+      213: 6165678645396546556
+    second: SeaLettuce_0_detail_39
+  - first:
+      213: 3942511310053611811
+    second: SeaLettuce_0_detail_40
+  - first:
+      213: 6231697730678394378
+    second: SeaLettuce_0_detail_41
+  - first:
+      213: -3095072599722945039
+    second: SeaLettuce_0_detail_42
+  - first:
+      213: 2359958486556197339
+    second: SeaLettuce_0_detail_43
+  - first:
+      213: 6990791939073498451
+    second: SeaLettuce_0_detail_44
+  - first:
+      213: -5394316356348098346
+    second: SeaLettuce_0_detail_45
+  - first:
+      213: 8131256751634515506
+    second: SeaLettuce_0_detail_46
+  - first:
+      213: -994299151310050267
+    second: SeaLettuce_0_detail_47
+  - first:
+      213: -6954468970947048470
+    second: SeaLettuce_0_detail_48
+  - first:
+      213: -5508095324657004191
+    second: SeaLettuce_0_detail_49
+  - first:
+      213: 5949249908160994894
+    second: SeaLettuce_0_detail_50
+  - first:
+      213: 5729539902151975322
+    second: SeaLettuce_0_detail_51
+  - first:
+      213: 4512751250480711766
+    second: SeaLettuce_0_detail_52
+  - first:
+      213: 7769157134218061831
+    second: SeaLettuce_0_detail_53
+  - first:
+      213: 7454487676527853155
+    second: SeaLettuce_0_detail_54
+  - first:
+      213: -7921765256209357580
+    second: SeaLettuce_0_detail_55
+  - first:
+      213: 6361374193244097380
+    second: SeaLettuce_0_detail_56
+  - first:
+      213: 5015793530102820845
+    second: SeaLettuce_0_detail_57
+  - first:
+      213: 2955930070653370738
+    second: SeaLettuce_0_detail_58
+  - first:
+      213: 2227219022789223517
+    second: SeaLettuce_0_detail_59
+  - first:
+      213: -8193930671610324752
+    second: SeaLettuce_0_detail_60
+  - first:
+      213: 4715742981395560922
+    second: SeaLettuce_0_detail_61
+  - first:
+      213: 7064653244756549261
+    second: SeaLettuce_0_detail_62
+  - first:
+      213: 5836909207014322478
+    second: SeaLettuce_0_detail_63
+  - first:
+      213: 237850542341048820
+    second: SeaLettuce_0_detail_64
+  - first:
+      213: -5664790966284246854
+    second: SeaLettuce_0_detail_65
+  - first:
+      213: -1288593103910923805
+    second: SeaLettuce_0_detail_66
+  - first:
+      213: 4323534929402398970
+    second: SeaLettuce_0_detail_67
+  - first:
+      213: -6192663816952570481
+    second: SeaLettuce_0_detail_68
+  - first:
+      213: 7524048211141143563
+    second: SeaLettuce_0_detail_69
+  - first:
+      213: 2552985872855407664
+    second: SeaLettuce_0_detail_70
+  - first:
+      213: 9145988188765120662
+    second: SeaLettuce_0_detail_71
+  - first:
+      213: 592642662315305961
+    second: SeaLettuce_0_detail_72
+  - first:
+      213: -491593349164023393
+    second: SeaLettuce_0_detail_73
+  - first:
+      213: -9015498573511536301
+    second: SeaLettuce_0_detail_74
+  - first:
+      213: -3579239292741010195
+    second: SeaLettuce_0_detail_75
+  - first:
+      213: 3409071965433816471
+    second: SeaLettuce_0_detail_76
+  - first:
+      213: -2465022955936033446
+    second: SeaLettuce_0_detail_77
+  - first:
+      213: 36622503048023937
+    second: SeaLettuce_0_detail_78
+  - first:
+      213: 5695171250541639070
+    second: SeaLettuce_0_detail_79
+  - first:
+      213: 3308883836193907913
+    second: SeaLettuce_0_detail_80
+  - first:
+      213: 1440602908293879000
+    second: SeaLettuce_0_detail_81
+  - first:
+      213: -8475107113590965033
+    second: SeaLettuce_0_detail_82
+  - first:
+      213: 1430814621114935146
+    second: SeaLettuce_0_detail_83
+  - first:
+      213: -6129362627637528302
+    second: SeaLettuce_0_detail_84
+  - first:
+      213: -8989545378427291476
+    second: SeaLettuce_0_detail_85
+  - first:
+      213: -3358165595547920687
+    second: SeaLettuce_0_detail_86
+  - first:
+      213: -5926507065883027936
+    second: SeaLettuce_0_detail_87
+  - first:
+      213: -6234630194498039907
+    second: SeaLettuce_0_detail_88
+  - first:
+      213: -6601153356290456611
+    second: SeaLettuce_0_detail_89
+  - first:
+      213: -7781333514198569803
+    second: SeaLettuce_0_detail_90
+  - first:
+      213: -5347608617329003397
+    second: SeaLettuce_0_detail_91
+  - first:
+      213: -3101444175102640755
+    second: SeaLettuce_0_detail_92
+  - first:
+      213: 4928726802312783959
+    second: SeaLettuce_0_detail_93
+  - first:
+      213: -4570539746631916465
+    second: SeaLettuce_0_detail_94
+  - first:
+      213: -1614174132672676212
+    second: SeaLettuce_0_detail_95
+  - first:
+      213: 4433601432986509959
+    second: SeaLettuce_0_detail_96
+  - first:
+      213: -4613739079226455229
+    second: SeaLettuce_0_detail_97
+  - first:
+      213: 2563416155417918219
+    second: SeaLettuce_0_detail_98
+  - first:
+      213: -6657282996394167286
+    second: SeaLettuce_0_detail_99
+  - first:
+      213: 1899744300643642465
+    second: SeaLettuce_0_detail_100
+  - first:
+      213: 8354448852464523653
+    second: SeaLettuce_0_detail_101
+  - first:
+      213: 7408714466699114593
+    second: SeaLettuce_0_detail_102
+  - first:
+      213: 1036138251273270798
+    second: SeaLettuce_0_detail_103
+  - first:
+      213: -1599698490591794898
+    second: SeaLettuce_0_detail_104
+  - first:
+      213: 5956708986125305696
+    second: SeaLettuce_0_detail_105
+  - first:
+      213: 6577368511992848584
+    second: SeaLettuce_0_detail_106
+  - first:
+      213: 3669374182198204817
+    second: SeaLettuce_0_detail_107
+  - first:
+      213: -8602809005768387957
+    second: SeaLettuce_0_detail_108
+  - first:
+      213: 2108067924370076516
+    second: SeaLettuce_0_detail_109
+  - first:
+      213: -4262421834452721515
+    second: SeaLettuce_0_detail_110
+  - first:
+      213: 1579205575097641284
+    second: SeaLettuce_0_detail_111
+  - first:
+      213: -9157037501726010427
+    second: SeaLettuce_0_detail_112
+  - first:
+      213: -6745126390608691848
+    second: SeaLettuce_0_detail_113
+  - first:
+      213: 2104338841719058858
+    second: SeaLettuce_0_detail_114
+  - first:
+      213: -6342894803106554348
+    second: SeaLettuce_0_detail_115
+  - first:
+      213: -6326690099927581121
+    second: SeaLettuce_0_detail_116
+  - first:
+      213: 7270976719178650252
+    second: SeaLettuce_0_detail_117
+  - first:
+      213: 6621342674807302155
+    second: SeaLettuce_0_detail_118
+  - first:
+      213: -4192215747577043468
+    second: SeaLettuce_0_detail_119
+  - first:
+      213: 728605603247240006
+    second: SeaLettuce_0_detail_120
+  - first:
+      213: 1899753903268787681
+    second: SeaLettuce_0_detail_121
+  - first:
+      213: -3976484148892737635
+    second: SeaLettuce_0_detail_122
+  - first:
+      213: 9180462196697418985
+    second: SeaLettuce_0_detail_123
+  - first:
+      213: 9198155836650383956
+    second: SeaLettuce_0_detail_124
+  - first:
+      213: -8941349751058254669
+    second: SeaLettuce_0_detail_125
+  - first:
+      213: -446705362996594331
+    second: SeaLettuce_0_detail_126
+  - first:
+      213: -3852353760495104744
+    second: SeaLettuce_0_detail_127
+  - first:
+      213: 5218514455424528346
+    second: SeaLettuce_0_detail_128
+  - first:
+      213: 8483233404937999564
+    second: SeaLettuce_0_detail_129
+  - first:
+      213: 961249320179449162
+    second: SeaLettuce_0_detail_130
+  - first:
+      213: -3775536402955119524
+    second: SeaLettuce_0_detail_131
+  - first:
+      213: -1389773747344189892
+    second: SeaLettuce_0_detail_132
+  - first:
+      213: -3646852121134929015
+    second: SeaLettuce_0_detail_133
+  - first:
+      213: -8779386017422597613
+    second: SeaLettuce_0_detail_134
+  - first:
+      213: -8022552196531412162
+    second: SeaLettuce_0_detail_135
+  - first:
+      213: -6089399250615750968
+    second: SeaLettuce_0_detail_136
+  - first:
+      213: -8086957182652954929
+    second: SeaLettuce_0_detail_137
+  - first:
+      213: -8040929380669291103
+    second: SeaLettuce_0_detail_138
+  - first:
+      213: 1628953921523144760
+    second: SeaLettuce_0_detail_139
+  - first:
+      213: 6485579441735490270
+    second: SeaLettuce_0_detail_140
+  - first:
+      213: 366115852982796300
+    second: SeaLettuce_0_detail_141
+  - first:
+      213: -8454719983989406362
+    second: SeaLettuce_0_detail_142
+  - first:
+      213: -4218732510280595485
+    second: SeaLettuce_0_detail_143
+  - first:
+      213: 348930917527266211
+    second: SeaLettuce_0_detail_144
+  - first:
+      213: 5682613693571852445
+    second: SeaLettuce_0_detail_145
+  - first:
+      213: 8425191543051488404
+    second: SeaLettuce_0_detail_146
+  - first:
+      213: 8692743023223659508
+    second: SeaLettuce_0_detail_147
+  - first:
+      213: -8459846127893600264
+    second: SeaLettuce_0_detail_148
+  - first:
+      213: 1246864261147204950
+    second: SeaLettuce_0_detail_149
+  - first:
+      213: 6452860045985800885
+    second: SeaLettuce_0_detail_150
+  - first:
+      213: -2488157065248953529
+    second: SeaLettuce_0_detail_151
+  - first:
+      213: -3369491717336369882
+    second: SeaLettuce_0_detail_152
+  - first:
+      213: 1145931969126389598
+    second: SeaLettuce_0_detail_153
+  - first:
+      213: -6096434823531801321
+    second: SeaLettuce_0_detail_154
+  - first:
+      213: -1335546150355359442
+    second: SeaLettuce_0_detail_155
+  - first:
+      213: 1246619301571393750
+    second: SeaLettuce_0_detail_156
+  - first:
+      213: -2124543802936325743
+    second: SeaLettuce_0_detail_157
+  - first:
+      213: -3061429963634378671
+    second: SeaLettuce_0_detail_158
+  - first:
+      213: -6835889699109888925
+    second: SeaLettuce_0_detail_159
+  - first:
+      213: -1346053313866772577
+    second: SeaLettuce_0_detail_160
+  - first:
+      213: 670154833306984609
+    second: SeaLettuce_0_detail_161
+  - first:
+      213: -6102528431411252997
+    second: SeaLettuce_0_detail_162
+  - first:
+      213: 8813661032891483857
+    second: SeaLettuce_0_detail_163
+  - first:
+      213: -3941191569843626022
+    second: SeaLettuce_0_detail_164
+  - first:
+      213: -6157141516518472488
+    second: SeaLettuce_0_detail_165
+  - first:
+      213: 5857090844207690779
+    second: SeaLettuce_0_detail_166
+  - first:
+      213: 1297307086230437041
+    second: SeaLettuce_0_detail_167
+  - first:
+      213: -873911152862304636
+    second: SeaLettuce_0_detail_168
+  - first:
+      213: 1987038394206253986
+    second: SeaLettuce_0_detail_169
+  - first:
+      213: -5020743207053448976
+    second: SeaLettuce_0_detail_170
+  - first:
+      213: -6508722722151559423
+    second: SeaLettuce_0_detail_171
+  - first:
+      213: -7353752926429220115
+    second: SeaLettuce_0_detail_172
+  - first:
+      213: 3156757223215270132
+    second: SeaLettuce_0_detail_173
+  - first:
+      213: 1412007905705656285
+    second: SeaLettuce_0_detail_174
+  - first:
+      213: -1652906141814803738
+    second: SeaLettuce_0_detail_175
+  - first:
+      213: -7067904712946020977
+    second: SeaLettuce_0_detail_176
+  - first:
+      213: -2275185572351140003
+    second: SeaLettuce_0_detail_177
+  - first:
+      213: 4533881814879431592
+    second: SeaLettuce_0_detail_178
+  - first:
+      213: -8912104903564753846
+    second: SeaLettuce_0_detail_179
+  - first:
+      213: -3697519634168907501
+    second: SeaLettuce_0_detail_180
+  - first:
+      213: 4867443077767478088
+    second: SeaLettuce_0_detail_181
+  - first:
+      213: -2275864056948852654
+    second: SeaLettuce_0_detail_182
+  - first:
+      213: 6897121011428604532
+    second: SeaLettuce_0_detail_183
+  - first:
+      213: 2937279220267625052
+    second: SeaLettuce_0_detail_184
+  - first:
+      213: -7340442849380486435
+    second: SeaLettuce_0_detail_185
+  - first:
+      213: -1449757265520038219
+    second: SeaLettuce_0_detail_186
+  - first:
+      213: 5931839770562350184
+    second: SeaLettuce_0_detail_187
+  - first:
+      213: 6402902330159968830
+    second: SeaLettuce_0_detail_188
+  - first:
+      213: -6628133983660898026
+    second: SeaLettuce_0_detail_189
+  - first:
+      213: -3937320752822241346
+    second: SeaLettuce_0_detail_190
+  - first:
+      213: 7002551386310148168
+    second: SeaLettuce_0_detail_191
+  - first:
+      213: -7606522159078178093
+    second: SeaLettuce_0_detail_192
+  - first:
+      213: -7277008237248794951
+    second: SeaLettuce_0_detail_193
+  - first:
+      213: -2048471499134559390
+    second: SeaLettuce_0_detail_194
+  - first:
+      213: -7009811744106931872
+    second: SeaLettuce_0_detail_195
+  - first:
+      213: 21080344517466988
+    second: SeaLettuce_0_detail_196
+  - first:
+      213: -597433632267323545
+    second: SeaLettuce_0_detail_197
+  - first:
+      213: 8829795320773970943
+    second: SeaLettuce_0_detail_198
+  - first:
+      213: -828187770399982870
+    second: SeaLettuce_0_detail_199
+  - first:
+      213: -3392180419945821508
+    second: SeaLettuce_0_detail_200
+  - first:
+      213: -5863725494459109564
+    second: SeaLettuce_0_detail_201
+  - first:
+      213: 2052621262514129730
+    second: SeaLettuce_0_detail_202
+  - first:
+      213: -5520314822311944169
+    second: SeaLettuce_0_detail_203
+  - first:
+      213: 6274462177897569271
+    second: SeaLettuce_0_detail_204
+  - first:
+      213: -2673164189693038872
+    second: SeaLettuce_0_detail_205
+  - first:
+      213: -7289481586146461016
+    second: SeaLettuce_0_detail_206
+  - first:
+      213: 4364376153182542858
+    second: SeaLettuce_0_detail_207
+  - first:
+      213: -4978476034978264575
+    second: SeaLettuce_0_detail_208
+  - first:
+      213: -1095109812349685793
+    second: SeaLettuce_0_detail_209
+  - first:
+      213: 9020721517373643003
+    second: SeaLettuce_0_detail_210
+  - first:
+      213: 6789641886111690597
+    second: SeaLettuce_0_detail_211
+  - first:
+      213: 4594581988130103836
+    second: SeaLettuce_0_detail_212
+  - first:
+      213: -6777406107160504268
+    second: SeaLettuce_0_detail_213
+  - first:
+      213: -3459327151937035433
+    second: SeaLettuce_0_detail_214
+  - first:
+      213: -9100441145681457074
+    second: SeaLettuce_0_detail_215
+  - first:
+      213: -7061107058745850790
+    second: SeaLettuce_0_detail_216
+  - first:
+      213: -8443535555810031284
+    second: SeaLettuce_0_detail_217
+  - first:
+      213: 7506838148845600160
+    second: SeaLettuce_0_detail_218
+  - first:
+      213: 2502003713643511273
+    second: SeaLettuce_0_detail_219
+  - first:
+      213: -2023661085001091350
+    second: SeaLettuce_0_detail_220
+  - first:
+      213: -8367643372082996203
+    second: SeaLettuce_0_detail_221
+  - first:
+      213: -1725591775611169729
+    second: SeaLettuce_0_detail_222
+  - first:
+      213: -7662326603307166568
+    second: SeaLettuce_0_detail_223
+  - first:
+      213: -1997373755304361618
+    second: SeaLettuce_0_detail_224
+  - first:
+      213: 817195272271100813
+    second: SeaLettuce_0_detail_225
+  - first:
+      213: -9193898422773161862
+    second: SeaLettuce_0_detail_226
+  - first:
+      213: 4833139335830689912
+    second: SeaLettuce_0_detail_227
+  - first:
+      213: -5882930347290731028
+    second: SeaLettuce_0_detail_228
+  - first:
+      213: -774767927962363064
+    second: SeaLettuce_0_detail_229
+  - first:
+      213: -4992677880079214879
+    second: SeaLettuce_0_detail_230
+  - first:
+      213: -5991610438564465725
+    second: SeaLettuce_0_detail_231
+  - first:
+      213: -9050558834075111055
+    second: SeaLettuce_0_detail_232
+  - first:
+      213: 4858060789317194312
+    second: SeaLettuce_0_detail_233
+  - first:
+      213: 8319522188097798084
+    second: SeaLettuce_0_detail_234
+  - first:
+      213: 1812448574856032136
+    second: SeaLettuce_0_detail_235
+  - first:
+      213: 8677768538195221727
+    second: SeaLettuce_0_detail_236
+  - first:
+      213: 7948591495821809300
+    second: SeaLettuce_0_detail_237
+  - first:
+      213: -8039381222254232222
+    second: SeaLettuce_0_detail_238
+  - first:
+      213: 7868969956636737688
+    second: SeaLettuce_0_detail_239
+  - first:
+      213: 1895058805671084775
+    second: SeaLettuce_0_detail_240
+  - first:
+      213: 4471124093983485799
+    second: SeaLettuce_0_detail_241
+  - first:
+      213: 4144215043256194366
+    second: SeaLettuce_0_detail_242
+  - first:
+      213: 2078220041894555284
+    second: SeaLettuce_0_detail_243
+  - first:
+      213: -7556725638331578304
+    second: SeaLettuce_0_detail_244
+  - first:
+      213: -6123167123340904472
+    second: SeaLettuce_0_detail_245
+  - first:
+      213: 2146265540658032296
+    second: SeaLettuce_0_detail_246
+  - first:
+      213: 1256203901793506135
+    second: SeaLettuce_0_detail_247
+  - first:
+      213: -2406822918719441651
+    second: SeaLettuce_0_detail_248
+  - first:
+      213: 3779428727439265793
+    second: SeaLettuce_0_detail_249
+  - first:
+      213: 703072614172542833
+    second: SeaLettuce_0_detail_250
+  - first:
+      213: -5773521857886031456
+    second: SeaLettuce_0_detail_251
+  - first:
+      213: 2024917299695826302
+    second: SeaLettuce_0_detail_252
+  - first:
+      213: 5352447032211765726
+    second: SeaLettuce_0_detail_253
+  - first:
+      213: 301848616670971929
+    second: SeaLettuce_0_detail_254
+  - first:
+      213: 5563969543392713768
+    second: SeaLettuce_0_detail_255
+  - first:
+      213: -4382602424434588063
+    second: SeaLettuce_0_detail_256
+  - first:
+      213: -4179593054797227596
+    second: SeaLettuce_0_detail_257
+  - first:
+      213: 8909854273417062919
+    second: SeaLettuce_0_detail_258
+  - first:
+      213: -7981071862387547836
+    second: SeaLettuce_0_detail_259
+  - first:
+      213: -4828483649698024238
+    second: SeaLettuce_0_detail_260
+  - first:
+      213: -4594475984412768909
+    second: SeaLettuce_0_detail_261
+  - first:
+      213: -3864608321868174931
+    second: SeaLettuce_0_detail_262
+  - first:
+      213: 7865519102185010106
+    second: SeaLettuce_0_detail_263
+  - first:
+      213: -4036661925682174729
+    second: SeaLettuce_0_detail_264
+  - first:
+      213: 7257755418296000933
+    second: SeaLettuce_0_detail_265
+  - first:
+      213: -4890657213483307987
+    second: SeaLettuce_0_detail_266
+  - first:
+      213: 4301716294911285115
+    second: SeaLettuce_0_detail_267
+  - first:
+      213: 1637471720263676335
+    second: SeaLettuce_0_detail_268
+  - first:
+      213: 8853602710946269389
+    second: SeaLettuce_0_detail_269
+  - first:
+      213: -4602706715810277495
+    second: SeaLettuce_0_detail_270
+  - first:
+      213: -3483018036633731653
+    second: SeaLettuce_0_detail_271
+  - first:
+      213: 2480690397878043948
+    second: SeaLettuce_0_detail_272
+  - first:
+      213: -7677395748634699781
+    second: SeaLettuce_0_detail_273
+  - first:
+      213: 2736856834241992143
+    second: SeaLettuce_0_detail_274
+  - first:
+      213: 2915292469351790905
+    second: SeaLettuce_0_detail_275
+  - first:
+      213: -4728788232249674935
+    second: SeaLettuce_0_detail_276
+  - first:
+      213: -2641460708484842792
+    second: SeaLettuce_0_detail_277
+  - first:
+      213: 5094018237133668833
+    second: SeaLettuce_0_detail_278
+  - first:
+      213: -7224427223561387250
+    second: SeaLettuce_0_detail_279
+  - first:
+      213: -2180967146080120814
+    second: SeaLettuce_0_detail_280
+  - first:
+      213: -952649159761728024
+    second: SeaLettuce_0_detail_281
+  - first:
+      213: -4291026642565079937
+    second: SeaLettuce_0_detail_282
+  - first:
+      213: 8647676869151988165
+    second: SeaLettuce_0_detail_283
+  - first:
+      213: 4104808441142382592
+    second: SeaLettuce_0_detail_284
+  - first:
+      213: 3141247736734827787
+    second: SeaLettuce_0_detail_285
+  - first:
+      213: -1066384861097115980
+    second: SeaLettuce_0_detail_286
+  - first:
+      213: -7919746258014832580
+    second: SeaLettuce_0_detail_287
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 578bb16db11a214d0800000000000000
+      internalID: -3165290447159707531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89ce0a7f084466ed0800000000000000
+      internalID: -2421172428964041576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0048c83a30b2a6c60800000000000000
+      internalID: 7812103798256337920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc6e31722c97accd0800000000000000
+      internalID: -2537081565283621171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e298150b99199df0800000000000000
+      internalID: -173078957080931609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6da7a4dc1f1eb1ae0800000000000000
+      internalID: -1577418815815648554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd40aafa601dba6e0800000000000000
+      internalID: -1825135397321440033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6149b982ed7477fe0800000000000000
+      internalID: -1191404556926610410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35fb37b78af332f50800000000000000
+      internalID: 6855393050646265683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbf97760fb53d9c70800000000000000
+      internalID: 8979392326610165693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ead3b67714b523fe0800000000000000
+      internalID: -1210805013074723410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a502e597c1c2ea970800000000000000
+      internalID: 8767994025343852634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3a98d9dd69721590800000000000000
+      internalID: -7704962499764250051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c263c857d4a3ece0800000000000000
+      internalID: -1377075816231116088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f55f73c7e8db0a00800000000000000
+      internalID: 723910655052043762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f80b9c12c5afb6330800000000000000
+      internalID: 3705330392053166223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 268
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70bb99c9a2c8347e0800000000000000
+      internalID: -1782426912864748793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 262
+        width: 26
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01588928e33bb6ae0800000000000000
+      internalID: -1554952165265996528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 571
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e34d2e0d3e331f600800000000000000
+      internalID: 500238087169954878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 151c890430f3a4bd0800000000000000
+      internalID: -2645232547925540527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 699
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92eb55b512b60e280800000000000000
+      internalID: -9016088662985294295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28f254eb9bcf76620800000000000000
+      internalID: 2767458370733813634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 827
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d676b613b75601ba0800000000000000
+      internalID: -6120280313811998867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 891
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96c61f00734aea400800000000000000
+      internalID: 337387578245344361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 955
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6ab1970a2dee1ab0800000000000000
+      internalID: -5035326568582235537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 1019
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7c4464a17784f850800000000000000
+      internalID: 6409897091814149242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 1083
+        y: 264
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9953485e3280f25b0800000000000000
+      internalID: -5391081278671669863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 1146
+        y: 269
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8648642492942b340800000000000000
+      internalID: 4878041787950072936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 1158
+        y: 263
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f492a0e25085f870800000000000000
+      internalID: 8716013747289887988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 1164
+        y: 268
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f8b9516ae7444ca0800000000000000
+      internalID: -6033618528788432652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 1208
+        y: 269
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f84e7293cb48a62a0800000000000000
+      internalID: -6743431548086262641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 263
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09d8ad823e75968f0800000000000000
+      internalID: -546809246594200176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 1226
+        y: 268
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12985983632e32a70800000000000000
+      internalID: 8801126819317516577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 1270
+        y: 269
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa8b86922198ed020800000000000000
+      internalID: 2368481165140605098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 1282
+        y: 263
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3431454410507a450800000000000000
+      internalID: 6099849723296092995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 268
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21e92611e98ac0850800000000000000
+      internalID: 6344631371908161042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 269
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2b4a7eb515a14d30800000000000000
+      internalID: 4413990622608378669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 263
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3fd54f53f2d924b0800000000000000
+      internalID: -5464604730120085701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 1350
+        y: 268
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 659abcc7a0f294780800000000000000
+      internalID: -8698369483199501994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 237
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf3a2129f04e09550800000000000000
+      internalID: 6165678645396546556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 231
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32994bee52d96b630800000000000000
+      internalID: 3942511310053611811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 236
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0e81b0b1107b7650800000000000000
+      internalID: 6231697730678394378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 237
+        width: 17
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f518737ed71c05d0800000000000000
+      internalID: -3095072599722945039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 231
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd1c9db6db140c020800000000000000
+      internalID: 2359958486556197339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 236
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35dd323da38440160800000000000000
+      internalID: 6990791939073498451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 232
+        width: 33
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d8cacdaad98325b0800000000000000
+      internalID: -5394316356348098346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 232
+        width: 33
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2360ca23fe608d070800000000000000
+      internalID: 8131256751634515506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 232
+        width: 33
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52c21bd903a8332f0800000000000000
+      internalID: -994299151310050267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_48
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 232
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeb89393153cc7f90800000000000000
+      internalID: -6954468970947048470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_49
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 232
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16154d04c705f83b0800000000000000
+      internalID: -5508095324657004191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_50
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 232
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4e16ff554bff8250800000000000000
+      internalID: 5949249908160994894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_51
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 232
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a91e1324f2a638f40800000000000000
+      internalID: 5729539902151975322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_52
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 232
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6584a9c4a5380ae30800000000000000
+      internalID: 4512751250480711766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_53
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 232
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7086245304791db60800000000000000
+      internalID: 7769157134218061831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_54
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 232
+        width: 33
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36e38f5db09a37760800000000000000
+      internalID: 7454487676527853155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_55
+      rect:
+        serializedVersion: 2
+        x: 725
+        y: 235
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f42c95887c301290800000000000000
+      internalID: -7921765256209357580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_56
+      rect:
+        serializedVersion: 2
+        x: 761
+        y: 232
+        width: 33
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46bc6afef14284850800000000000000
+      internalID: 6361374193244097380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_57
+      rect:
+        serializedVersion: 2
+        x: 789
+        y: 235
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: def2b7c04adab9540800000000000000
+      internalID: 5015793530102820845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_58
+      rect:
+        serializedVersion: 2
+        x: 825
+        y: 232
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2718032fcb2950920800000000000000
+      internalID: 2955930070653370738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_59
+      rect:
+        serializedVersion: 2
+        x: 852
+        y: 235
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d542852a6eba8ee10800000000000000
+      internalID: 2227219022789223517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_60
+      rect:
+        serializedVersion: 2
+        x: 889
+        y: 232
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f81d7ca77f494e80800000000000000
+      internalID: -8193930671610324752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_61
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 235
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad9bf1aa14fa17140800000000000000
+      internalID: 4715742981395560922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_62
+      rect:
+        serializedVersion: 2
+        x: 953
+        y: 232
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8e560b22b0ba0260800000000000000
+      internalID: 7064653244756549261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_63
+      rect:
+        serializedVersion: 2
+        x: 980
+        y: 235
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e21bb4e9ffdd00150800000000000000
+      internalID: 5836909207014322478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_64
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 232
+        width: 39
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f94fdddec30d4300800000000000000
+      internalID: 237850542341048820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_65
+      rect:
+        serializedVersion: 2
+        x: 1080
+        y: 232
+        width: 39
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab029c721ae9261b0800000000000000
+      internalID: -5664790966284246854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_66
+      rect:
+        serializedVersion: 2
+        x: 1142
+        y: 233
+        width: 39
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e11f55366ffd1ee0800000000000000
+      internalID: -1288593103910923805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_67
+      rect:
+        serializedVersion: 2
+        x: 1205
+        y: 233
+        width: 39
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af806097c18400c30800000000000000
+      internalID: 4323534929402398970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_68
+      rect:
+        serializedVersion: 2
+        x: 1268
+        y: 233
+        width: 39
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8d9021911d3f0aa0800000000000000
+      internalID: -6192663816952570481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_69
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 232
+        width: 35
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0c2bf1ebf9ca6860800000000000000
+      internalID: 7524048211141143563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_70
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 201
+        width: 35
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03c132400270e6320800000000000000
+      internalID: 2552985872855407664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_71
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 202
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6986347dcc31dee70800000000000000
+      internalID: 9145988188765120662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_72
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 202
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ebab068c5d793800800000000000000
+      internalID: 592642662315305961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_73
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f91422914728d29f0800000000000000
+      internalID: -491593349164023393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_74
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 351ddc440d382e280800000000000000
+      internalID: -9015498573511536301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_75
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dec3d0ea3dcf35ec0800000000000000
+      internalID: -3579239292741010195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_76
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 202
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 795ec69f3e47f4f20800000000000000
+      internalID: 3409071965433816471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_77
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 202
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a55df3c8eaa7acdd0800000000000000
+      internalID: -2465022955936033446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_78
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18f86f4f8fb128000800000000000000
+      internalID: 36622503048023937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_79
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e953d8bf310590f40800000000000000
+      internalID: 5695171250541639070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_80
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c4ae5b51548bed20800000000000000
+      internalID: 3308883836193907913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_81
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 202
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d4504366bc0ef310800000000000000
+      internalID: 1440602908293879000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_82
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 202
+        width: 34
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dc3605bbfe526a80800000000000000
+      internalID: -8475107113590965033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_83
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a67adfe21564bd310800000000000000
+      internalID: 1430814621114935146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_84
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2193c183a2120faa0800000000000000
+      internalID: -6129362627637528302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_85
+      rect:
+        serializedVersion: 2
+        x: 884
+        y: 201
+        width: 34
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca836926b18be3380800000000000000
+      internalID: -8989545378427291476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_86
+      rect:
+        serializedVersion: 2
+        x: 941
+        y: 204
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d69d64ee266561d0800000000000000
+      internalID: -3358165595547920687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_87
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 201
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 026133b3931d0cda0800000000000000
+      internalID: -5926507065883027936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_88
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 204
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9f050fded42a79a0800000000000000
+      internalID: -6234630194498039907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_89
+      rect:
+        serializedVersion: 2
+        x: 1003
+        y: 201
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd30e623ffdf364a0800000000000000
+      internalID: -6601153356290456611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_90
+      rect:
+        serializedVersion: 2
+        x: 1051
+        y: 203
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bc2a576566230490800000000000000
+      internalID: -7781333514198569803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_91
+      rect:
+        serializedVersion: 2
+        x: 1059
+        y: 202
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b74794e9b4a79c5b0800000000000000
+      internalID: -5347608617329003397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_92
+      rect:
+        serializedVersion: 2
+        x: 1106
+        y: 203
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8d7d4474f475f4d0800000000000000
+      internalID: -3101444175102640755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_93
+      rect:
+        serializedVersion: 2
+        x: 1114
+        y: 202
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 758ecc6c9ea566440800000000000000
+      internalID: 4928726802312783959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_94
+      rect:
+        serializedVersion: 2
+        x: 1161
+        y: 203
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f446332f05e2290c0800000000000000
+      internalID: -4570539746631916465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_95
+      rect:
+        serializedVersion: 2
+        x: 1169
+        y: 202
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8ebb68bd2d4999e0800000000000000
+      internalID: -1614174132672676212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_96
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 204
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 782e2d85301578d30800000000000000
+      internalID: 4433601432986509959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_97
+      rect:
+        serializedVersion: 2
+        x: 1223
+        y: 201
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34b8e5880c4b8ffb0800000000000000
+      internalID: -4613739079226455229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_98
+      rect:
+        serializedVersion: 2
+        x: 1271
+        y: 204
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0bbe2b6965139320800000000000000
+      internalID: 2563416155417918219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_99
+      rect:
+        serializedVersion: 2
+        x: 1278
+        y: 201
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a047da6f2649c93a0800000000000000
+      internalID: -6657282996394167286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_100
+      rect:
+        serializedVersion: 2
+        x: 1326
+        y: 203
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16cefeb406f3d5a10800000000000000
+      internalID: 1899744300643642465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_101
+      rect:
+        serializedVersion: 2
+        x: 1334
+        y: 202
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5895151b7f6f0f370800000000000000
+      internalID: 8354448852464523653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_102
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 173
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 168f5eded8a01d660800000000000000
+      internalID: 7408714466699114593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_103
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 172
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e067655ff3a116e00800000000000000
+      internalID: 1036138251273270798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_104
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 173
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e292c88c2babcc9e0800000000000000
+      internalID: -1599698490591794898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_105
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 172
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 067406c434b7aa250800000000000000
+      internalID: 5956708986125305696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_106
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 174
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c06c2230d1874b50800000000000000
+      internalID: 6577368511992848584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_107
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 171
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 199d9e5a06c3ce230800000000000000
+      internalID: 3669374182198204817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_108
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 174
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b82d4a4f9ceac9880800000000000000
+      internalID: -8602809005768387957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_109
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 171
+        width: 23
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4633972bb9c514d10800000000000000
+      internalID: 2108067924370076516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_110
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 173
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 590a392cce5d8d4c0800000000000000
+      internalID: -4262421834452721515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_111
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 172
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 449e2038a177ae510800000000000000
+      internalID: 1579205575097641284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_112
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 173
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c3d0b288eaabe080800000000000000
+      internalID: -9157037501726010427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_113
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 172
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87df7a2f84f7462a0800000000000000
+      internalID: -6745126390608691848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_114
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 173
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa1b8bbf60d143d10800000000000000
+      internalID: 2104338841719058858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_115
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 172
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41e992d58c289f7a0800000000000000
+      internalID: -6342894803106554348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_116
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 173
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3ef5d5dfd41338a0800000000000000
+      internalID: -6326690099927581121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_117
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 173
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8257c48dc2b7e460800000000000000
+      internalID: 7270976719178650252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_118
+      rect:
+        serializedVersion: 2
+        x: 519
+        y: 173
+        width: 35
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b082604d41cb3eb50800000000000000
+      internalID: 6621342674807302155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_119
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 172
+        width: 37
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f52fd72df142d5c0800000000000000
+      internalID: -4192215747577043468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_120
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 172
+        width: 37
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64339e29fe68c1a00800000000000000
+      internalID: 728605603247240006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_121
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 172
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e57ff41c184d5a10800000000000000
+      internalID: 1899753903268787681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_122
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 172
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9fd6422cb0b0d8c0800000000000000
+      internalID: -3976484148892737635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_123
+      rect:
+        serializedVersion: 2
+        x: 824
+        y: 172
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ec4d0c4abd876f70800000000000000
+      internalID: 9180462196697418985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_124
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 172
+        width: 37
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45a6b30eff966af70800000000000000
+      internalID: 9198155836650383956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_125
+      rect:
+        serializedVersion: 2
+        x: 946
+        y: 172
+        width: 37
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b435a356c1f9e380800000000000000
+      internalID: -8941349751058254669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_126
+      rect:
+        serializedVersion: 2
+        x: 1007
+        y: 172
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 569735fc6dbfcc9f0800000000000000
+      internalID: -446705362996594331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_127
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 172
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81d8c8c5aa0b98ac0800000000000000
+      internalID: -3852353760495104744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_128
+      rect:
+        serializedVersion: 2
+        x: 1129
+        y: 172
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adfe1d29f33eb6840800000000000000
+      internalID: 5218514455424528346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_129
+      rect:
+        serializedVersion: 2
+        x: 1190
+        y: 172
+        width: 37
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc49e00f5df7ab570800000000000000
+      internalID: 8483233404937999564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_130
+      rect:
+        serializedVersion: 2
+        x: 1251
+        y: 172
+        width: 37
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4db1ede92b075d00800000000000000
+      internalID: 961249320179449162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_131
+      rect:
+        serializedVersion: 2
+        x: 1312
+        y: 172
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c54dd4925a99a9bc0800000000000000
+      internalID: -3775536402955119524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_132
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 142
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c36d26fd32886bce0800000000000000
+      internalID: -1389773747344189892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_133
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 142
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98b6f535157c36dc0800000000000000
+      internalID: -3646852121134929015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_134
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 312ae7daeea592680800000000000000
+      internalID: -8779386017422597613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_135
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3327b5584b2aa090800000000000000
+      internalID: -8022552196531412162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_136
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cea48305ab1e7ba0800000000000000
+      internalID: -6089399250615750968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_137
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc64d26f94b55cf80800000000000000
+      internalID: -8086957182652954929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_138
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a58439b451e86090800000000000000
+      internalID: -8040929380669291103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_139
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 838ddd706f43b9610800000000000000
+      internalID: 1628953921523144760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_140
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eda5833e328610a50800000000000000
+      internalID: 6485579441735490270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_141
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c00cda3bd64b41500800000000000000
+      internalID: 366115852982796300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_142
+      rect:
+        serializedVersion: 2
+        x: 591
+        y: 142
+        width: 33
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6654ae638fccaaa80800000000000000
+      internalID: -8454719983989406362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_143
+      rect:
+        serializedVersion: 2
+        x: 647
+        y: 143
+        width: 32
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e7455a322d0475c0800000000000000
+      internalID: -4218732510280595485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_144
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 143
+        width: 32
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a32d5e12d6a7d400800000000000000
+      internalID: 348930917527266211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_145
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 142
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d98ee19eb03bcde40800000000000000
+      internalID: 5682613693571852445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_146
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 142
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49c8530e11b4ce470800000000000000
+      internalID: 8425191543051488404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_147
+      rect:
+        serializedVersion: 2
+        x: 872
+        y: 142
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fb500739b3d2a870800000000000000
+      internalID: 8692743023223659508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_148
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f72074d4c6989a80800000000000000
+      internalID: -8459846127893600264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_149
+      rect:
+        serializedVersion: 2
+        x: 983
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65d1fc87070cd4110800000000000000
+      internalID: 1246864261147204950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_150
+      rect:
+        serializedVersion: 2
+        x: 1038
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b26b4ae50a2d8950800000000000000
+      internalID: 6452860045985800885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_151
+      rect:
+        serializedVersion: 2
+        x: 1093
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74b257cf45a487dd0800000000000000
+      internalID: -2488157065248953529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_152
+      rect:
+        serializedVersion: 2
+        x: 1148
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6257b8aa2292d31d0800000000000000
+      internalID: -3369491717336369882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_153
+      rect:
+        serializedVersion: 2
+        x: 1203
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e57da84fd0b27ef00800000000000000
+      internalID: 1145931969126389598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_154
+      rect:
+        serializedVersion: 2
+        x: 1258
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 715d01b04dc156ba0800000000000000
+      internalID: -6096434823531801321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_155
+      rect:
+        serializedVersion: 2
+        x: 1313
+        y: 143
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e29adee2adf277de0800000000000000
+      internalID: -1335546150355359442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_156
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 114
+        width: 31
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d8fe4066a1ec4110800000000000000
+      internalID: 1246619301571393750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_157
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 114
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1990934eaaa1482e0800000000000000
+      internalID: -2124543802936325743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_158
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 114
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 158f5d01bad9385d0800000000000000
+      internalID: -3061429963634378671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_159
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36c9dc8698a0221a0800000000000000
+      internalID: -6835889699109888925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_160
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9fcb3a84abd15de0800000000000000
+      internalID: -1346053313866772577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_161
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a026cf254edc4900800000000000000
+      internalID: 670154833306984609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_162
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 114
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf0b20669b67f4ba0800000000000000
+      internalID: -6102528431411252997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_163
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 114
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d6033c330a605a70800000000000000
+      internalID: 8813661032891483857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_164
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adfd4b706231e49c0800000000000000
+      internalID: -3941191569843626022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_165
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d44b14a9607d8aa0800000000000000
+      internalID: -6157141516518472488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_166
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1431323711984150800000000000000
+      internalID: 5857090844207690779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_167
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 114
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bcbc57ebe5f00210800000000000000
+      internalID: 1297307086230437041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_168
+      rect:
+        serializedVersion: 2
+        x: 639
+        y: 114
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 486e368cf6e3fd3f0800000000000000
+      internalID: -873911152862304636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_169
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a3f9b944e0639b10800000000000000
+      internalID: 1987038394206253986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_170
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f8af1b77acb25ab0800000000000000
+      internalID: -5020743207053448976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_171
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 113
+        width: 30
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10f84ac3b2f5ca5a0800000000000000
+      internalID: -6508722722151559423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_172
+      rect:
+        serializedVersion: 2
+        x: 847
+        y: 115
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de2723edca832f990800000000000000
+      internalID: -7353752926429220115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_173
+      rect:
+        serializedVersion: 2
+        x: 874
+        y: 118
+        width: 18
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f805e328fd0fcb20800000000000000
+      internalID: 3156757223215270132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_174
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 115
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddff0a785b5789310800000000000000
+      internalID: 1412007905705656285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_175
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 118
+        width: 18
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e2311a1f92bf09e0800000000000000
+      internalID: -1652906141814803738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_176
+      rect:
+        serializedVersion: 2
+        x: 985
+        y: 114
+        width: 36
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8d0b866c12c9ed90800000000000000
+      internalID: -7067904712946020977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_177
+      rect:
+        serializedVersion: 2
+        x: 1046
+        y: 114
+        width: 36
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5f9ae1c6caec60e0800000000000000
+      internalID: -2275185572351140003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_178
+      rect:
+        serializedVersion: 2
+        x: 1107
+        y: 114
+        width: 35
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8abed753d759bee30800000000000000
+      internalID: 4533881814879431592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_179
+      rect:
+        serializedVersion: 2
+        x: 1166
+        y: 114
+        width: 35
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a44810efec7d15480800000000000000
+      internalID: -8912104903564753846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_180
+      rect:
+        serializedVersion: 2
+        x: 1224
+        y: 120
+        width: 30
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3197457ab75cfacc0800000000000000
+      internalID: -3697519634168907501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_181
+      rect:
+        serializedVersion: 2
+        x: 1228
+        y: 114
+        width: 31
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84bb3ceb0b1ac8340800000000000000
+      internalID: 4867443077767478088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_182
+      rect:
+        serializedVersion: 2
+        x: 1283
+        y: 120
+        width: 30
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 258fb70c2b18a60e0800000000000000
+      internalID: -2275864056948852654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_183
+      rect:
+        serializedVersion: 2
+        x: 1287
+        y: 114
+        width: 31
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47ab513740f77bf50800000000000000
+      internalID: 6897121011428604532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_184
+      rect:
+        serializedVersion: 2
+        x: 1342
+        y: 120
+        width: 30
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5a203273ef43c820800000000000000
+      internalID: 2937279220267625052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_185
+      rect:
+        serializedVersion: 2
+        x: 1346
+        y: 114
+        width: 31
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd2be9cae12812a90800000000000000
+      internalID: -7340442849380486435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_186
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 85
+        width: 34
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bee22ab27d61ebe0800000000000000
+      internalID: -1449757265520038219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_187
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 85
+        width: 34
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86c47e4d7d0225250800000000000000
+      internalID: 5931839770562350184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_188
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e32b4b8cebdabd850800000000000000
+      internalID: 6402902330159968830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_189
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 619823c52432404a0800000000000000
+      internalID: -6628133983660898026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_190
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb7b149d2a3db59c0800000000000000
+      internalID: -3937320752822241346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_191
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 85
+        width: 34
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8408f6e726f0e2160800000000000000
+      internalID: 7002551386310148168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_192
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 85
+        width: 34
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d2020cb564307690800000000000000
+      internalID: -7606522159078178093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_193
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bea13f309fd20b90800000000000000
+      internalID: -7277008237248794951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_194
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26b9299560e5293e0800000000000000
+      internalID: -2048471499134559390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_195
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 069152abb5528be90800000000000000
+      internalID: -7009811744106931872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_196
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 85
+        width: 34
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6bd4be2674ea4000800000000000000
+      internalID: 21080344517466988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_197
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 85
+        width: 34
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 767b5dbd64d75b7f0800000000000000
+      internalID: -597433632267323545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_198
+      rect:
+        serializedVersion: 2
+        x: 709
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffb832edf0cb98a70800000000000000
+      internalID: 8829795320773970943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_199
+      rect:
+        serializedVersion: 2
+        x: 767
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aea7cf95c9fa184f0800000000000000
+      internalID: -828187770399982870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_200
+      rect:
+        serializedVersion: 2
+        x: 825
+        y: 86
+        width: 34
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cba081f61ed8ce0d0800000000000000
+      internalID: -3392180419945821508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_201
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 85
+        width: 33
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44fec5aeabcdf9ea0800000000000000
+      internalID: -5863725494459109564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_202
+      rect:
+        serializedVersion: 2
+        x: 939
+        y: 85
+        width: 33
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24b819ab9206c7c10800000000000000
+      internalID: 2052621262514129730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_203
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 85
+        width: 33
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 710e5cfbae6e363b0800000000000000
+      internalID: -5520314822311944169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_204
+      rect:
+        serializedVersion: 2
+        x: 1053
+        y: 85
+        width: 33
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fb55367b1e531750800000000000000
+      internalID: 6274462177897569271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_205
+      rect:
+        serializedVersion: 2
+        x: 1110
+        y: 85
+        width: 33
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ee2d0f155307ead0800000000000000
+      internalID: -2673164189693038872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_206
+      rect:
+        serializedVersion: 2
+        x: 1167
+        y: 85
+        width: 33
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aa3df46e1f86da90800000000000000
+      internalID: -7289481586146461016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_207
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 86
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0c91a4ecf0619c30800000000000000
+      internalID: 4364376153182542858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_208
+      rect:
+        serializedVersion: 2
+        x: 1278
+        y: 86
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10a435c5c66e8eab0800000000000000
+      internalID: -4978476034978264575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_209
+      rect:
+        serializedVersion: 2
+        x: 1331
+        y: 86
+        width: 27
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdf2ad48d636dc0f0800000000000000
+      internalID: -1095109812349685793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_210
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 58
+        width: 45
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf857cc1d6a003d70800000000000000
+      internalID: 9020721517373643003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_211
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 58
+        width: 45
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56fecc58257a93e50800000000000000
+      internalID: 6789641886111690597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_212
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 58
+        width: 45
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1227ed99fb33cf30800000000000000
+      internalID: 4594581988130103836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_213
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 59
+        width: 33
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4389224cd01d1f1a0800000000000000
+      internalID: -6777406107160504268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_214
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 59
+        width: 33
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 753edea98400effc0800000000000000
+      internalID: -3459327151937035433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_215
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 58
+        width: 31
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e40de448efcb4b180800000000000000
+      internalID: -9100441145681457074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_216
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 58
+        width: 31
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a54437a9a88e10e90800000000000000
+      internalID: -7061107058745850790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_217
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 58
+        width: 31
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c490093d52982da80800000000000000
+      internalID: -8443535555810031284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_218
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0adfa400685ad2860800000000000000
+      internalID: 7506838148845600160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_219
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9edfd621f17e8b220800000000000000
+      internalID: 2502003713643511273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_220
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 58
+        width: 30
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae67aba07f28ae3e0800000000000000
+      internalID: -2023661085001091350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_221
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 58
+        width: 30
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51c57dfcfa820eb80800000000000000
+      internalID: -8367643372082996203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_222
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f345c533c677d08e0800000000000000
+      internalID: -1725591775611169729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_223
+      rect:
+        serializedVersion: 2
+        x: 779
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 894d9d01d82f9a590800000000000000
+      internalID: -7662326603307166568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_224
+      rect:
+        serializedVersion: 2
+        x: 834
+        y: 58
+        width: 30
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e61456fe627e744e0800000000000000
+      internalID: -1997373755304361618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_225
+      rect:
+        serializedVersion: 2
+        x: 889
+        y: 58
+        width: 30
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8bf8db35c2475b00800000000000000
+      internalID: 817195272271100813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_226
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a70e4998816b86080800000000000000
+      internalID: -9193898422773161862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_227
+      rect:
+        serializedVersion: 2
+        x: 999
+        y: 59
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 878d72e6e92c21340800000000000000
+      internalID: 4833139335830689912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_228
+      rect:
+        serializedVersion: 2
+        x: 1054
+        y: 58
+        width: 30
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cedde5ba402ab5ea0800000000000000
+      internalID: -5882930347290731028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_229
+      rect:
+        serializedVersion: 2
+        x: 1109
+        y: 58
+        width: 30
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84b1076aca87f35f0800000000000000
+      internalID: -774767927962363064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_230
+      rect:
+        serializedVersion: 2
+        x: 1164
+        y: 59
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e69def9be176bab0800000000000000
+      internalID: -4992677880079214879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_231
+      rect:
+        serializedVersion: 2
+        x: 1218
+        y: 59
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c3b7d01d0689dca0800000000000000
+      internalID: -5991610438564465725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_232
+      rect:
+        serializedVersion: 2
+        x: 1273
+        y: 59
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 171fd2c31b4f56280800000000000000
+      internalID: -9050558834075111055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_233
+      rect:
+        serializedVersion: 2
+        x: 1327
+        y: 59
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 842518c7c8c4b6340800000000000000
+      internalID: 4858060789317194312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_234
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cfbc82f951e47370800000000000000
+      internalID: 8319522188097798084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_235
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88fe4f5406c172910800000000000000
+      internalID: 1812448574856032136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_236
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdcdf2a3280ad6870800000000000000
+      internalID: 8677768538195221727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_237
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 496562d1ad11f4e60800000000000000
+      internalID: 7948591495821809300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_238
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26d37917f516e6090800000000000000
+      internalID: -8039381222254232222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_239
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 890cd85eb72343d60800000000000000
+      internalID: 7868969956636737688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_240
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e2408c71f99c4a10800000000000000
+      internalID: 1895058805671084775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_241
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76f6398acaf9c0e30800000000000000
+      internalID: 4471124093983485799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_242
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e359d16ff95338930800000000000000
+      internalID: 4144215043256194366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_243
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49ee8320e1257dc10800000000000000
+      internalID: 2078220041894555284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_244
+      rect:
+        serializedVersion: 2
+        x: 553
+        y: 32
+        width: 30
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 048c826b11e112790800000000000000
+      internalID: -7556725638331578304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_245
+      rect:
+        serializedVersion: 2
+        x: 606
+        y: 31
+        width: 29
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e73ae871f3260ba0800000000000000
+      internalID: -6123167123340904472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_246
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 31
+        width: 29
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ae6598432119cd10800000000000000
+      internalID: 2146265540658032296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_247
+      rect:
+        serializedVersion: 2
+        x: 712
+        y: 31
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7539cd30bceee6110800000000000000
+      internalID: 1256203901793506135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_248
+      rect:
+        serializedVersion: 2
+        x: 757
+        y: 31
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d05757cae4f399ed0800000000000000
+      internalID: -2406822918719441651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_249
+      rect:
+        serializedVersion: 2
+        x: 803
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1009ce0476a337430800000000000000
+      internalID: 3779428727439265793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_250
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1774f0b41d0d1c900800000000000000
+      internalID: 703072614172542833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_251
+      rect:
+        serializedVersion: 2
+        x: 893
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a1ffbda57450efa0800000000000000
+      internalID: -5773521857886031456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_252
+      rect:
+        serializedVersion: 2
+        x: 937
+        y: 31
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e75b9eb3e83f91c10800000000000000
+      internalID: 2024917299695826302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_253
+      rect:
+        serializedVersion: 2
+        x: 982
+        y: 31
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed97312a736b74a40800000000000000
+      internalID: 5352447032211765726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_254
+      rect:
+        serializedVersion: 2
+        x: 1028
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 918cd94b7b1603400800000000000000
+      internalID: 301848616670971929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_255
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82cd30f02d0373d40800000000000000
+      internalID: 5563969543392713768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_256
+      rect:
+        serializedVersion: 2
+        x: 1118
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1668fc3a05edd23c0800000000000000
+      internalID: -4382602424434588063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_257
+      rect:
+        serializedVersion: 2
+        x: 1162
+        y: 31
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b91f17d24a1ff5c0800000000000000
+      internalID: -4179593054797227596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_258
+      rect:
+        serializedVersion: 2
+        x: 1207
+        y: 31
+        width: 20
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70a2587514926ab70800000000000000
+      internalID: 8909854273417062919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_259
+      rect:
+        serializedVersion: 2
+        x: 1253
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 441668b3d698d3190800000000000000
+      internalID: -7981071862387547836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_260
+      rect:
+        serializedVersion: 2
+        x: 1298
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d4b7f7f3b7cdfcb0800000000000000
+      internalID: -4828483649698024238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_261
+      rect:
+        serializedVersion: 2
+        x: 1343
+        y: 31
+        width: 22
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 375830c4f642d30c0800000000000000
+      internalID: -4594475984412768909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_262
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 6
+        width: 41
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da96703f4372e5ac0800000000000000
+      internalID: -3864608321868174931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_263
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 6
+        width: 41
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab379cb33ffe72d60800000000000000
+      internalID: 7865519102185010106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_264
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 6
+        width: 41
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f4ae51ad55eaf7c0800000000000000
+      internalID: -4036661925682174729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_265
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 6
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a12336891ab8b460800000000000000
+      internalID: 7257755418296000933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_266
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 6
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2c20281d25e02cb0800000000000000
+      internalID: -4890657213483307987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_267
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 6
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7752b2cd24c2bb30800000000000000
+      internalID: 4301716294911285115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_268
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 6
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa170189ad779b610800000000000000
+      internalID: 1637471720263676335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_269
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 6
+        width: 32
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc84368d1c05eda70800000000000000
+      internalID: 8853602710946269389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_270
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 987d2dec0a6ef10c0800000000000000
+      internalID: -4602706715810277495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_271
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbdfa2cac85d9afc0800000000000000
+      internalID: -3483018036633731653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_272
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c254e3b06ce2d6220800000000000000
+      internalID: 2480690397878043948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_273
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf7d8824e39647590800000000000000
+      internalID: -7677395748634699781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_274
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc5181e4ac44bf520800000000000000
+      internalID: 2736856834241992143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_275
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 939b5141e03357820800000000000000
+      internalID: 2915292469351790905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_276
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 943f5be2828ff5eb0800000000000000
+      internalID: -4728788232249674935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_277
+      rect:
+        serializedVersion: 2
+        x: 870
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8dafb9e0b75a75bd0800000000000000
+      internalID: -2641460708484842792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_278
+      rect:
+        serializedVersion: 2
+        x: 925
+        y: 5
+        width: 31
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e1c6bfe89691b640800000000000000
+      internalID: 5094018237133668833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_279
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 6
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0346f187bdadbb90800000000000000
+      internalID: -7224427223561387250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_280
+      rect:
+        serializedVersion: 2
+        x: 1003
+        y: 7
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 210d8179fe5abb1e0800000000000000
+      internalID: -2180967146080120814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_281
+      rect:
+        serializedVersion: 2
+        x: 1043
+        y: 6
+        width: 25
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ede3d4f2a287c2f0800000000000000
+      internalID: -952649159761728024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_282
+      rect:
+        serializedVersion: 2
+        x: 1067
+        y: 7
+        width: 16
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7cdb20e0063374c0800000000000000
+      internalID: -4291026642565079937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_283
+      rect:
+        serializedVersion: 2
+        x: 1107
+        y: 6
+        width: 35
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c99a2e8b48b20870800000000000000
+      internalID: 8647676869151988165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_284
+      rect:
+        serializedVersion: 2
+        x: 1166
+        y: 6
+        width: 35
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 000115d678537f830800000000000000
+      internalID: 4104808441142382592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_285
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 6
+        width: 35
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b05449b6c24f79b20800000000000000
+      internalID: 3141247736734827787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_286
+      rect:
+        serializedVersion: 2
+        x: 1284
+        y: 7
+        width: 34
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4beb3786e907331f0800000000000000
+      internalID: -1066384861097115980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_0_detail_287
+      rect:
+        serializedVersion: 2
+        x: 1343
+        y: 7
+        width: 34
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c38fbcb2db8671290800000000000000
+      internalID: -7919746258014832580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SeaLettuce_0_detail_0: -3165290447159707531
+      SeaLettuce_0_detail_1: -2421172428964041576
+      SeaLettuce_0_detail_10: -1210805013074723410
+      SeaLettuce_0_detail_100: 1899744300643642465
+      SeaLettuce_0_detail_101: 8354448852464523653
+      SeaLettuce_0_detail_102: 7408714466699114593
+      SeaLettuce_0_detail_103: 1036138251273270798
+      SeaLettuce_0_detail_104: -1599698490591794898
+      SeaLettuce_0_detail_105: 5956708986125305696
+      SeaLettuce_0_detail_106: 6577368511992848584
+      SeaLettuce_0_detail_107: 3669374182198204817
+      SeaLettuce_0_detail_108: -8602809005768387957
+      SeaLettuce_0_detail_109: 2108067924370076516
+      SeaLettuce_0_detail_11: 8767994025343852634
+      SeaLettuce_0_detail_110: -4262421834452721515
+      SeaLettuce_0_detail_111: 1579205575097641284
+      SeaLettuce_0_detail_112: -9157037501726010427
+      SeaLettuce_0_detail_113: -6745126390608691848
+      SeaLettuce_0_detail_114: 2104338841719058858
+      SeaLettuce_0_detail_115: -6342894803106554348
+      SeaLettuce_0_detail_116: -6326690099927581121
+      SeaLettuce_0_detail_117: 7270976719178650252
+      SeaLettuce_0_detail_118: 6621342674807302155
+      SeaLettuce_0_detail_119: -4192215747577043468
+      SeaLettuce_0_detail_12: -7704962499764250051
+      SeaLettuce_0_detail_120: 728605603247240006
+      SeaLettuce_0_detail_121: 1899753903268787681
+      SeaLettuce_0_detail_122: -3976484148892737635
+      SeaLettuce_0_detail_123: 9180462196697418985
+      SeaLettuce_0_detail_124: 9198155836650383956
+      SeaLettuce_0_detail_125: -8941349751058254669
+      SeaLettuce_0_detail_126: -446705362996594331
+      SeaLettuce_0_detail_127: -3852353760495104744
+      SeaLettuce_0_detail_128: 5218514455424528346
+      SeaLettuce_0_detail_129: 8483233404937999564
+      SeaLettuce_0_detail_13: -1377075816231116088
+      SeaLettuce_0_detail_130: 961249320179449162
+      SeaLettuce_0_detail_131: -3775536402955119524
+      SeaLettuce_0_detail_132: -1389773747344189892
+      SeaLettuce_0_detail_133: -3646852121134929015
+      SeaLettuce_0_detail_134: -8779386017422597613
+      SeaLettuce_0_detail_135: -8022552196531412162
+      SeaLettuce_0_detail_136: -6089399250615750968
+      SeaLettuce_0_detail_137: -8086957182652954929
+      SeaLettuce_0_detail_138: -8040929380669291103
+      SeaLettuce_0_detail_139: 1628953921523144760
+      SeaLettuce_0_detail_14: 723910655052043762
+      SeaLettuce_0_detail_140: 6485579441735490270
+      SeaLettuce_0_detail_141: 366115852982796300
+      SeaLettuce_0_detail_142: -8454719983989406362
+      SeaLettuce_0_detail_143: -4218732510280595485
+      SeaLettuce_0_detail_144: 348930917527266211
+      SeaLettuce_0_detail_145: 5682613693571852445
+      SeaLettuce_0_detail_146: 8425191543051488404
+      SeaLettuce_0_detail_147: 8692743023223659508
+      SeaLettuce_0_detail_148: -8459846127893600264
+      SeaLettuce_0_detail_149: 1246864261147204950
+      SeaLettuce_0_detail_15: 3705330392053166223
+      SeaLettuce_0_detail_150: 6452860045985800885
+      SeaLettuce_0_detail_151: -2488157065248953529
+      SeaLettuce_0_detail_152: -3369491717336369882
+      SeaLettuce_0_detail_153: 1145931969126389598
+      SeaLettuce_0_detail_154: -6096434823531801321
+      SeaLettuce_0_detail_155: -1335546150355359442
+      SeaLettuce_0_detail_156: 1246619301571393750
+      SeaLettuce_0_detail_157: -2124543802936325743
+      SeaLettuce_0_detail_158: -3061429963634378671
+      SeaLettuce_0_detail_159: -6835889699109888925
+      SeaLettuce_0_detail_16: -1782426912864748793
+      SeaLettuce_0_detail_160: -1346053313866772577
+      SeaLettuce_0_detail_161: 670154833306984609
+      SeaLettuce_0_detail_162: -6102528431411252997
+      SeaLettuce_0_detail_163: 8813661032891483857
+      SeaLettuce_0_detail_164: -3941191569843626022
+      SeaLettuce_0_detail_165: -6157141516518472488
+      SeaLettuce_0_detail_166: 5857090844207690779
+      SeaLettuce_0_detail_167: 1297307086230437041
+      SeaLettuce_0_detail_168: -873911152862304636
+      SeaLettuce_0_detail_169: 1987038394206253986
+      SeaLettuce_0_detail_17: -1554952165265996528
+      SeaLettuce_0_detail_170: -5020743207053448976
+      SeaLettuce_0_detail_171: -6508722722151559423
+      SeaLettuce_0_detail_172: -7353752926429220115
+      SeaLettuce_0_detail_173: 3156757223215270132
+      SeaLettuce_0_detail_174: 1412007905705656285
+      SeaLettuce_0_detail_175: -1652906141814803738
+      SeaLettuce_0_detail_176: -7067904712946020977
+      SeaLettuce_0_detail_177: -2275185572351140003
+      SeaLettuce_0_detail_178: 4533881814879431592
+      SeaLettuce_0_detail_179: -8912104903564753846
+      SeaLettuce_0_detail_18: 500238087169954878
+      SeaLettuce_0_detail_180: -3697519634168907501
+      SeaLettuce_0_detail_181: 4867443077767478088
+      SeaLettuce_0_detail_182: -2275864056948852654
+      SeaLettuce_0_detail_183: 6897121011428604532
+      SeaLettuce_0_detail_184: 2937279220267625052
+      SeaLettuce_0_detail_185: -7340442849380486435
+      SeaLettuce_0_detail_186: -1449757265520038219
+      SeaLettuce_0_detail_187: 5931839770562350184
+      SeaLettuce_0_detail_188: 6402902330159968830
+      SeaLettuce_0_detail_189: -6628133983660898026
+      SeaLettuce_0_detail_19: -2645232547925540527
+      SeaLettuce_0_detail_190: -3937320752822241346
+      SeaLettuce_0_detail_191: 7002551386310148168
+      SeaLettuce_0_detail_192: -7606522159078178093
+      SeaLettuce_0_detail_193: -7277008237248794951
+      SeaLettuce_0_detail_194: -2048471499134559390
+      SeaLettuce_0_detail_195: -7009811744106931872
+      SeaLettuce_0_detail_196: 21080344517466988
+      SeaLettuce_0_detail_197: -597433632267323545
+      SeaLettuce_0_detail_198: 8829795320773970943
+      SeaLettuce_0_detail_199: -828187770399982870
+      SeaLettuce_0_detail_2: 7812103798256337920
+      SeaLettuce_0_detail_20: -9016088662985294295
+      SeaLettuce_0_detail_200: -3392180419945821508
+      SeaLettuce_0_detail_201: -5863725494459109564
+      SeaLettuce_0_detail_202: 2052621262514129730
+      SeaLettuce_0_detail_203: -5520314822311944169
+      SeaLettuce_0_detail_204: 6274462177897569271
+      SeaLettuce_0_detail_205: -2673164189693038872
+      SeaLettuce_0_detail_206: -7289481586146461016
+      SeaLettuce_0_detail_207: 4364376153182542858
+      SeaLettuce_0_detail_208: -4978476034978264575
+      SeaLettuce_0_detail_209: -1095109812349685793
+      SeaLettuce_0_detail_21: 2767458370733813634
+      SeaLettuce_0_detail_210: 9020721517373643003
+      SeaLettuce_0_detail_211: 6789641886111690597
+      SeaLettuce_0_detail_212: 4594581988130103836
+      SeaLettuce_0_detail_213: -6777406107160504268
+      SeaLettuce_0_detail_214: -3459327151937035433
+      SeaLettuce_0_detail_215: -9100441145681457074
+      SeaLettuce_0_detail_216: -7061107058745850790
+      SeaLettuce_0_detail_217: -8443535555810031284
+      SeaLettuce_0_detail_218: 7506838148845600160
+      SeaLettuce_0_detail_219: 2502003713643511273
+      SeaLettuce_0_detail_22: -6120280313811998867
+      SeaLettuce_0_detail_220: -2023661085001091350
+      SeaLettuce_0_detail_221: -8367643372082996203
+      SeaLettuce_0_detail_222: -1725591775611169729
+      SeaLettuce_0_detail_223: -7662326603307166568
+      SeaLettuce_0_detail_224: -1997373755304361618
+      SeaLettuce_0_detail_225: 817195272271100813
+      SeaLettuce_0_detail_226: -9193898422773161862
+      SeaLettuce_0_detail_227: 4833139335830689912
+      SeaLettuce_0_detail_228: -5882930347290731028
+      SeaLettuce_0_detail_229: -774767927962363064
+      SeaLettuce_0_detail_23: 337387578245344361
+      SeaLettuce_0_detail_230: -4992677880079214879
+      SeaLettuce_0_detail_231: -5991610438564465725
+      SeaLettuce_0_detail_232: -9050558834075111055
+      SeaLettuce_0_detail_233: 4858060789317194312
+      SeaLettuce_0_detail_234: 8319522188097798084
+      SeaLettuce_0_detail_235: 1812448574856032136
+      SeaLettuce_0_detail_236: 8677768538195221727
+      SeaLettuce_0_detail_237: 7948591495821809300
+      SeaLettuce_0_detail_238: -8039381222254232222
+      SeaLettuce_0_detail_239: 7868969956636737688
+      SeaLettuce_0_detail_24: -5035326568582235537
+      SeaLettuce_0_detail_240: 1895058805671084775
+      SeaLettuce_0_detail_241: 4471124093983485799
+      SeaLettuce_0_detail_242: 4144215043256194366
+      SeaLettuce_0_detail_243: 2078220041894555284
+      SeaLettuce_0_detail_244: -7556725638331578304
+      SeaLettuce_0_detail_245: -6123167123340904472
+      SeaLettuce_0_detail_246: 2146265540658032296
+      SeaLettuce_0_detail_247: 1256203901793506135
+      SeaLettuce_0_detail_248: -2406822918719441651
+      SeaLettuce_0_detail_249: 3779428727439265793
+      SeaLettuce_0_detail_25: 6409897091814149242
+      SeaLettuce_0_detail_250: 703072614172542833
+      SeaLettuce_0_detail_251: -5773521857886031456
+      SeaLettuce_0_detail_252: 2024917299695826302
+      SeaLettuce_0_detail_253: 5352447032211765726
+      SeaLettuce_0_detail_254: 301848616670971929
+      SeaLettuce_0_detail_255: 5563969543392713768
+      SeaLettuce_0_detail_256: -4382602424434588063
+      SeaLettuce_0_detail_257: -4179593054797227596
+      SeaLettuce_0_detail_258: 8909854273417062919
+      SeaLettuce_0_detail_259: -7981071862387547836
+      SeaLettuce_0_detail_26: -5391081278671669863
+      SeaLettuce_0_detail_260: -4828483649698024238
+      SeaLettuce_0_detail_261: -4594475984412768909
+      SeaLettuce_0_detail_262: -3864608321868174931
+      SeaLettuce_0_detail_263: 7865519102185010106
+      SeaLettuce_0_detail_264: -4036661925682174729
+      SeaLettuce_0_detail_265: 7257755418296000933
+      SeaLettuce_0_detail_266: -4890657213483307987
+      SeaLettuce_0_detail_267: 4301716294911285115
+      SeaLettuce_0_detail_268: 1637471720263676335
+      SeaLettuce_0_detail_269: 8853602710946269389
+      SeaLettuce_0_detail_27: 4878041787950072936
+      SeaLettuce_0_detail_270: -4602706715810277495
+      SeaLettuce_0_detail_271: -3483018036633731653
+      SeaLettuce_0_detail_272: 2480690397878043948
+      SeaLettuce_0_detail_273: -7677395748634699781
+      SeaLettuce_0_detail_274: 2736856834241992143
+      SeaLettuce_0_detail_275: 2915292469351790905
+      SeaLettuce_0_detail_276: -4728788232249674935
+      SeaLettuce_0_detail_277: -2641460708484842792
+      SeaLettuce_0_detail_278: 5094018237133668833
+      SeaLettuce_0_detail_279: -7224427223561387250
+      SeaLettuce_0_detail_28: 8716013747289887988
+      SeaLettuce_0_detail_280: -2180967146080120814
+      SeaLettuce_0_detail_281: -952649159761728024
+      SeaLettuce_0_detail_282: -4291026642565079937
+      SeaLettuce_0_detail_283: 8647676869151988165
+      SeaLettuce_0_detail_284: 4104808441142382592
+      SeaLettuce_0_detail_285: 3141247736734827787
+      SeaLettuce_0_detail_286: -1066384861097115980
+      SeaLettuce_0_detail_287: -7919746258014832580
+      SeaLettuce_0_detail_29: -6033618528788432652
+      SeaLettuce_0_detail_3: -2537081565283621171
+      SeaLettuce_0_detail_30: -6743431548086262641
+      SeaLettuce_0_detail_31: -546809246594200176
+      SeaLettuce_0_detail_32: 8801126819317516577
+      SeaLettuce_0_detail_33: 2368481165140605098
+      SeaLettuce_0_detail_34: 6099849723296092995
+      SeaLettuce_0_detail_35: 6344631371908161042
+      SeaLettuce_0_detail_36: 4413990622608378669
+      SeaLettuce_0_detail_37: -5464604730120085701
+      SeaLettuce_0_detail_38: -8698369483199501994
+      SeaLettuce_0_detail_39: 6165678645396546556
+      SeaLettuce_0_detail_4: -173078957080931609
+      SeaLettuce_0_detail_40: 3942511310053611811
+      SeaLettuce_0_detail_41: 6231697730678394378
+      SeaLettuce_0_detail_42: -3095072599722945039
+      SeaLettuce_0_detail_43: 2359958486556197339
+      SeaLettuce_0_detail_44: 6990791939073498451
+      SeaLettuce_0_detail_45: -5394316356348098346
+      SeaLettuce_0_detail_46: 8131256751634515506
+      SeaLettuce_0_detail_47: -994299151310050267
+      SeaLettuce_0_detail_48: -6954468970947048470
+      SeaLettuce_0_detail_49: -5508095324657004191
+      SeaLettuce_0_detail_5: -1577418815815648554
+      SeaLettuce_0_detail_50: 5949249908160994894
+      SeaLettuce_0_detail_51: 5729539902151975322
+      SeaLettuce_0_detail_52: 4512751250480711766
+      SeaLettuce_0_detail_53: 7769157134218061831
+      SeaLettuce_0_detail_54: 7454487676527853155
+      SeaLettuce_0_detail_55: -7921765256209357580
+      SeaLettuce_0_detail_56: 6361374193244097380
+      SeaLettuce_0_detail_57: 5015793530102820845
+      SeaLettuce_0_detail_58: 2955930070653370738
+      SeaLettuce_0_detail_59: 2227219022789223517
+      SeaLettuce_0_detail_6: -1825135397321440033
+      SeaLettuce_0_detail_60: -8193930671610324752
+      SeaLettuce_0_detail_61: 4715742981395560922
+      SeaLettuce_0_detail_62: 7064653244756549261
+      SeaLettuce_0_detail_63: 5836909207014322478
+      SeaLettuce_0_detail_64: 237850542341048820
+      SeaLettuce_0_detail_65: -5664790966284246854
+      SeaLettuce_0_detail_66: -1288593103910923805
+      SeaLettuce_0_detail_67: 4323534929402398970
+      SeaLettuce_0_detail_68: -6192663816952570481
+      SeaLettuce_0_detail_69: 7524048211141143563
+      SeaLettuce_0_detail_7: -1191404556926610410
+      SeaLettuce_0_detail_70: 2552985872855407664
+      SeaLettuce_0_detail_71: 9145988188765120662
+      SeaLettuce_0_detail_72: 592642662315305961
+      SeaLettuce_0_detail_73: -491593349164023393
+      SeaLettuce_0_detail_74: -9015498573511536301
+      SeaLettuce_0_detail_75: -3579239292741010195
+      SeaLettuce_0_detail_76: 3409071965433816471
+      SeaLettuce_0_detail_77: -2465022955936033446
+      SeaLettuce_0_detail_78: 36622503048023937
+      SeaLettuce_0_detail_79: 5695171250541639070
+      SeaLettuce_0_detail_8: 6855393050646265683
+      SeaLettuce_0_detail_80: 3308883836193907913
+      SeaLettuce_0_detail_81: 1440602908293879000
+      SeaLettuce_0_detail_82: -8475107113590965033
+      SeaLettuce_0_detail_83: 1430814621114935146
+      SeaLettuce_0_detail_84: -6129362627637528302
+      SeaLettuce_0_detail_85: -8989545378427291476
+      SeaLettuce_0_detail_86: -3358165595547920687
+      SeaLettuce_0_detail_87: -5926507065883027936
+      SeaLettuce_0_detail_88: -6234630194498039907
+      SeaLettuce_0_detail_89: -6601153356290456611
+      SeaLettuce_0_detail_9: 8979392326610165693
+      SeaLettuce_0_detail_90: -7781333514198569803
+      SeaLettuce_0_detail_91: -5347608617329003397
+      SeaLettuce_0_detail_92: -3101444175102640755
+      SeaLettuce_0_detail_93: 4928726802312783959
+      SeaLettuce_0_detail_94: -4570539746631916465
+      SeaLettuce_0_detail_95: -1614174132672676212
+      SeaLettuce_0_detail_96: 4433601432986509959
+      SeaLettuce_0_detail_97: -4613739079226455229
+      SeaLettuce_0_detail_98: 2563416155417918219
+      SeaLettuce_0_detail_99: -6657282996394167286
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

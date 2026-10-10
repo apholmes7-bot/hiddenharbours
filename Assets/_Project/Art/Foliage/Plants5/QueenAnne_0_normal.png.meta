@@ -1,0 +1,1326 @@
+fileFormatVersion: 2
+guid: 0aca459c0ed318843896d847bc3908b5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4401550067494561775
+    second: QueenAnne_0_normal_0
+  - first:
+      213: 9156040433859431474
+    second: QueenAnne_0_normal_1
+  - first:
+      213: 654272613018464443
+    second: QueenAnne_0_normal_2
+  - first:
+      213: 3072380665470333984
+    second: QueenAnne_0_normal_3
+  - first:
+      213: -832114338641841840
+    second: QueenAnne_0_normal_4
+  - first:
+      213: -8837690249270022941
+    second: QueenAnne_0_normal_5
+  - first:
+      213: 2261867997790536164
+    second: QueenAnne_0_normal_6
+  - first:
+      213: 2871473941549655854
+    second: QueenAnne_0_normal_7
+  - first:
+      213: -1057231697169311266
+    second: QueenAnne_0_normal_8
+  - first:
+      213: 5783162091673941755
+    second: QueenAnne_0_normal_9
+  - first:
+      213: -1454065718681887438
+    second: QueenAnne_0_normal_10
+  - first:
+      213: 9118669602484088920
+    second: QueenAnne_0_normal_11
+  - first:
+      213: 170513752806637093
+    second: QueenAnne_0_normal_12
+  - first:
+      213: 9139738971941370729
+    second: QueenAnne_0_normal_13
+  - first:
+      213: 5434072912582320313
+    second: QueenAnne_0_normal_14
+  - first:
+      213: 2493681914362473086
+    second: QueenAnne_0_normal_15
+  - first:
+      213: 1842607256071140211
+    second: QueenAnne_0_normal_16
+  - first:
+      213: -7351848868702869798
+    second: QueenAnne_0_normal_17
+  - first:
+      213: -860494363926455169
+    second: QueenAnne_0_normal_18
+  - first:
+      213: 4384921430977000251
+    second: QueenAnne_0_normal_19
+  - first:
+      213: 5058421138571978181
+    second: QueenAnne_0_normal_20
+  - first:
+      213: 7949582474734435813
+    second: QueenAnne_0_normal_21
+  - first:
+      213: 3260924030346292035
+    second: QueenAnne_0_normal_22
+  - first:
+      213: 2867928805970344371
+    second: QueenAnne_0_normal_23
+  - first:
+      213: -8801186880088927046
+    second: QueenAnne_0_normal_24
+  - first:
+      213: 2160340998052152649
+    second: QueenAnne_0_normal_25
+  - first:
+      213: -3211275634483819503
+    second: QueenAnne_0_normal_26
+  - first:
+      213: 3076341029296854356
+    second: QueenAnne_0_normal_27
+  - first:
+      213: -8326603213335086188
+    second: QueenAnne_0_normal_28
+  - first:
+      213: 6041740199432488378
+    second: QueenAnne_0_normal_29
+  - first:
+      213: 2919817668647166409
+    second: QueenAnne_0_normal_30
+  - first:
+      213: -1213140150383631795
+    second: QueenAnne_0_normal_31
+  - first:
+      213: -4747158525387318104
+    second: QueenAnne_0_normal_32
+  - first:
+      213: -1681085775349130887
+    second: QueenAnne_0_normal_33
+  - first:
+      213: 120584585358996738
+    second: QueenAnne_0_normal_34
+  - first:
+      213: 8254454916558309959
+    second: QueenAnne_0_normal_35
+  - first:
+      213: 6980164793415786834
+    second: QueenAnne_0_normal_36
+  - first:
+      213: -2585669363517749884
+    second: QueenAnne_0_normal_37
+  - first:
+      213: -6192395875828131378
+    second: QueenAnne_0_normal_38
+  - first:
+      213: -306719083032531170
+    second: QueenAnne_0_normal_39
+  - first:
+      213: 417239508310583657
+    second: QueenAnne_0_normal_40
+  - first:
+      213: -8809046705966082012
+    second: QueenAnne_0_normal_41
+  - first:
+      213: 9109236666010857746
+    second: QueenAnne_0_normal_42
+  - first:
+      213: -3617360445763724393
+    second: QueenAnne_0_normal_43
+  - first:
+      213: -5230465968106841426
+    second: QueenAnne_0_normal_44
+  - first:
+      213: 4811905337900703821
+    second: QueenAnne_0_normal_45
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 141
+        width: 20
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe72c1a4772751d30800000000000000
+      internalID: 4401550067494561775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 141
+        width: 18
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23c0e49834ac01f70800000000000000
+      internalID: 9156040433859431474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 143
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb07b3d9971741900800000000000000
+      internalID: 654272613018464443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 143
+        width: 24
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0243324efe943aa20800000000000000
+      internalID: 3072380665470333984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 144
+        width: 26
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0517eb0fa6cb374f0800000000000000
+      internalID: -832114338641841840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 144
+        width: 25
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3eca359da873a5580800000000000000
+      internalID: -8837690249270022941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 96
+        width: 21
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e10129c5f4c36f10800000000000000
+      internalID: 2261867997790536164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 99
+        width: 22
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e27abdb065689d720800000000000000
+      internalID: 2871473941549655854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 99
+        width: 19
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed990f47f55f351f0800000000000000
+      internalID: -1057231697169311266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 98
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf6fab8284be14050800000000000000
+      internalID: 5783162091673941755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 101
+        width: 18
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23d94edceee12dbe0800000000000000
+      internalID: -1454065718681887438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 101
+        width: 19
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8507730d0b50c8e70800000000000000
+      internalID: 9118669602484088920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 101
+        width: 19
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52ebb51da59cd5200800000000000000
+      internalID: 170513752806637093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 58
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96bfb5aab20e6de70800000000000000
+      internalID: 9139738971941370729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 58
+        width: 16
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b0aa06e584b96b40800000000000000
+      internalID: 5434072912582320313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 59
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7a24603d765b9220800000000000000
+      internalID: 2493681914362473086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 60
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3737dae6981429910800000000000000
+      internalID: 1842607256071140211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 60
+        width: 14
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad6ab9ad76cf8f990800000000000000
+      internalID: -7351848868702869798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 61
+        width: 15
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7c10f26fe8ee04f0800000000000000
+      internalID: -860494363926455169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 61
+        width: 18
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b33b1652fce5adc30800000000000000
+      internalID: 4384921430977000251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 334
+        y: 62
+        width: 9
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c5e8e0993f133640800000000000000
+      internalID: 5058421138571978181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 24
+        width: 10
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ed773f5427925e60800000000000000
+      internalID: 7949582474734435813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 27
+        width: 9
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34b6354e021214d20800000000000000
+      internalID: 3260924030346292035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 25
+        width: 8
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b9f8f8dd0eecc720800000000000000
+      internalID: 2867928805970344371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 27
+        width: 9
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab4987ac927ebd580800000000000000
+      internalID: -8801186880088927046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 27
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9458c9611b21bfd10800000000000000
+      internalID: 2160340998052152649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 36
+        width: 22
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11c89b213d14f63d0800000000000000
+      internalID: -3211275634483819503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 36
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 455d233fddb51ba20800000000000000
+      internalID: 3076341029296854356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 36
+        width: 20
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49b39836e76f17c80800000000000000
+      internalID: -8326603213335086188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 36
+        width: 19
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab50f5c63b298d350800000000000000
+      internalID: 6041740199432488378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 37
+        width: 18
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c1af9423b6458820800000000000000
+      internalID: 2919817668647166409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 37
+        width: 25
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d42ae91f57f0a2fe0800000000000000
+      internalID: -1213140150383631795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 37
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ac52d10974be1eb0800000000000000
+      internalID: -4747158525387318104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 6
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9795a53e4659ba8e0800000000000000
+      internalID: -1681085775349130887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 7
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 205f5bf9a076ca100800000000000000
+      internalID: 120584585358996738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 6
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74a4feb3307bd8270800000000000000
+      internalID: 8254454916558309959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 7
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2516c39a5e68ed060800000000000000
+      internalID: 6980164793415786834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 6
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4850ae0d96bdd1cd0800000000000000
+      internalID: -2585669363517749884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 7
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec99ba872c0301aa0800000000000000
+      internalID: -6192395875828131378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 6
+        width: 13
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1f230a7e905ebbf0800000000000000
+      internalID: -306719083032531170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 7
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9696c174f155ac500800000000000000
+      internalID: 417239508310583657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 7
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 428111971baffb580800000000000000
+      internalID: -8809046705966082012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 249
+        y: 7
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2117a842c728a6e70800000000000000
+      internalID: 9109236666010857746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 7
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79b54b517dd8ccdc0800000000000000
+      internalID: -3617360445763724393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 7
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaad8390ae6a967b0800000000000000
+      internalID: -5230465968106841426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: QueenAnne_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 7
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d40a066096257c240800000000000000
+      internalID: 4811905337900703821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      QueenAnne_0_normal_0: 4401550067494561775
+      QueenAnne_0_normal_1: 9156040433859431474
+      QueenAnne_0_normal_10: -1454065718681887438
+      QueenAnne_0_normal_11: 9118669602484088920
+      QueenAnne_0_normal_12: 170513752806637093
+      QueenAnne_0_normal_13: 9139738971941370729
+      QueenAnne_0_normal_14: 5434072912582320313
+      QueenAnne_0_normal_15: 2493681914362473086
+      QueenAnne_0_normal_16: 1842607256071140211
+      QueenAnne_0_normal_17: -7351848868702869798
+      QueenAnne_0_normal_18: -860494363926455169
+      QueenAnne_0_normal_19: 4384921430977000251
+      QueenAnne_0_normal_2: 654272613018464443
+      QueenAnne_0_normal_20: 5058421138571978181
+      QueenAnne_0_normal_21: 7949582474734435813
+      QueenAnne_0_normal_22: 3260924030346292035
+      QueenAnne_0_normal_23: 2867928805970344371
+      QueenAnne_0_normal_24: -8801186880088927046
+      QueenAnne_0_normal_25: 2160340998052152649
+      QueenAnne_0_normal_26: -3211275634483819503
+      QueenAnne_0_normal_27: 3076341029296854356
+      QueenAnne_0_normal_28: -8326603213335086188
+      QueenAnne_0_normal_29: 6041740199432488378
+      QueenAnne_0_normal_3: 3072380665470333984
+      QueenAnne_0_normal_30: 2919817668647166409
+      QueenAnne_0_normal_31: -1213140150383631795
+      QueenAnne_0_normal_32: -4747158525387318104
+      QueenAnne_0_normal_33: -1681085775349130887
+      QueenAnne_0_normal_34: 120584585358996738
+      QueenAnne_0_normal_35: 8254454916558309959
+      QueenAnne_0_normal_36: 6980164793415786834
+      QueenAnne_0_normal_37: -2585669363517749884
+      QueenAnne_0_normal_38: -6192395875828131378
+      QueenAnne_0_normal_39: -306719083032531170
+      QueenAnne_0_normal_4: -832114338641841840
+      QueenAnne_0_normal_40: 417239508310583657
+      QueenAnne_0_normal_41: -8809046705966082012
+      QueenAnne_0_normal_42: 9109236666010857746
+      QueenAnne_0_normal_43: -3617360445763724393
+      QueenAnne_0_normal_44: -5230465968106841426
+      QueenAnne_0_normal_45: 4811905337900703821
+      QueenAnne_0_normal_5: -8837690249270022941
+      QueenAnne_0_normal_6: 2261867997790536164
+      QueenAnne_0_normal_7: 2871473941549655854
+      QueenAnne_0_normal_8: -1057231697169311266
+      QueenAnne_0_normal_9: 5783162091673941755
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

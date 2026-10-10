@@ -1,0 +1,1482 @@
+fileFormatVersion: 2
+guid: 53e18c41cdc74d644a5128b12b120549
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6521325662467609901
+    second: Rhodora_0_normal_0
+  - first:
+      213: -6297608782781055581
+    second: Rhodora_0_normal_1
+  - first:
+      213: 3058536888790033949
+    second: Rhodora_0_normal_2
+  - first:
+      213: -9002770471253159817
+    second: Rhodora_0_normal_3
+  - first:
+      213: 6367189096172395169
+    second: Rhodora_0_normal_4
+  - first:
+      213: -3068870151681562434
+    second: Rhodora_0_normal_5
+  - first:
+      213: 4849402846883224711
+    second: Rhodora_0_normal_6
+  - first:
+      213: 1665697688946766610
+    second: Rhodora_0_normal_7
+  - first:
+      213: -4078031118416662985
+    second: Rhodora_0_normal_8
+  - first:
+      213: -4753263506890227010
+    second: Rhodora_0_normal_9
+  - first:
+      213: -2453268593139053619
+    second: Rhodora_0_normal_10
+  - first:
+      213: 1481036652621879114
+    second: Rhodora_0_normal_11
+  - first:
+      213: -6711869571375738882
+    second: Rhodora_0_normal_12
+  - first:
+      213: 5058023682582506683
+    second: Rhodora_0_normal_13
+  - first:
+      213: -4987565585666010545
+    second: Rhodora_0_normal_14
+  - first:
+      213: -551486745564819648
+    second: Rhodora_0_normal_15
+  - first:
+      213: 2166892251883755623
+    second: Rhodora_0_normal_16
+  - first:
+      213: 4295420918863724572
+    second: Rhodora_0_normal_17
+  - first:
+      213: 319762902184128677
+    second: Rhodora_0_normal_18
+  - first:
+      213: -764593496132640822
+    second: Rhodora_0_normal_19
+  - first:
+      213: -7723968599246428829
+    second: Rhodora_0_normal_20
+  - first:
+      213: 1546950999097189601
+    second: Rhodora_0_normal_21
+  - first:
+      213: 313492543823636562
+    second: Rhodora_0_normal_22
+  - first:
+      213: -5831081905839368448
+    second: Rhodora_0_normal_23
+  - first:
+      213: 796895759150393305
+    second: Rhodora_0_normal_24
+  - first:
+      213: -5776675356522296427
+    second: Rhodora_0_normal_25
+  - first:
+      213: -6167242751124312552
+    second: Rhodora_0_normal_26
+  - first:
+      213: 8602680218818156102
+    second: Rhodora_0_normal_27
+  - first:
+      213: -7316555646730037499
+    second: Rhodora_0_normal_28
+  - first:
+      213: -636412529597775150
+    second: Rhodora_0_normal_29
+  - first:
+      213: -7224118775049095595
+    second: Rhodora_0_normal_30
+  - first:
+      213: -8972824388760661052
+    second: Rhodora_0_normal_31
+  - first:
+      213: -7550102264161528825
+    second: Rhodora_0_normal_32
+  - first:
+      213: 4236337587663293805
+    second: Rhodora_0_normal_33
+  - first:
+      213: 1083580803877847981
+    second: Rhodora_0_normal_34
+  - first:
+      213: -7018744179847158665
+    second: Rhodora_0_normal_35
+  - first:
+      213: 2930852119857432872
+    second: Rhodora_0_normal_36
+  - first:
+      213: 4193910834370214421
+    second: Rhodora_0_normal_37
+  - first:
+      213: 1764064759865459194
+    second: Rhodora_0_normal_38
+  - first:
+      213: 4510018667149976800
+    second: Rhodora_0_normal_39
+  - first:
+      213: -2094808143774911718
+    second: Rhodora_0_normal_40
+  - first:
+      213: 553113313673239819
+    second: Rhodora_0_normal_41
+  - first:
+      213: 6948108618161910763
+    second: Rhodora_0_normal_42
+  - first:
+      213: -9084799412412032341
+    second: Rhodora_0_normal_43
+  - first:
+      213: 5760929483443436039
+    second: Rhodora_0_normal_44
+  - first:
+      213: -5683344487159231734
+    second: Rhodora_0_normal_45
+  - first:
+      213: -7063751012162419866
+    second: Rhodora_0_normal_46
+  - first:
+      213: -3697824511701382538
+    second: Rhodora_0_normal_47
+  - first:
+      213: 6571901360954967237
+    second: Rhodora_0_normal_48
+  - first:
+      213: -3243431426830170534
+    second: Rhodora_0_normal_49
+  - first:
+      213: 5135346488329012775
+    second: Rhodora_0_normal_50
+  - first:
+      213: 6452189082794951321
+    second: Rhodora_0_normal_51
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Rhodora_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 306
+        width: 29
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2555087327608a50800000000000000
+      internalID: 6521325662467609901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 306
+        width: 31
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ad74ff9d266a98a0800000000000000
+      internalID: -6297608782781055581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 306
+        width: 31
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1622c4781b127a20800000000000000
+      internalID: 3058536888790033949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 306
+        width: 28
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 770549284fbbf0380800000000000000
+      internalID: -9002770471253159817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 263
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1aa98178fbccc5850800000000000000
+      internalID: 6367189096172395169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 263
+        width: 29
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb8a83b4bde2965d0800000000000000
+      internalID: -3068870151681562434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 264
+        width: 35
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78c1e3d223a8c4340800000000000000
+      internalID: 4849402846883224711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 263
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2137cdc093fbd1710800000000000000
+      internalID: 1665697688946766610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 220
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73e29cbdd4ce767c0800000000000000
+      internalID: -4078031118416662985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 220
+        width: 34
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb20bfb3604090eb0800000000000000
+      internalID: -4753263506890227010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 221
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcb0357663d34fdd0800000000000000
+      internalID: -2453268593139053619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 224
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a475cda1df2bd8410800000000000000
+      internalID: 1481036652621879114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 182
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eff45639f26aad2a0800000000000000
+      internalID: -6711869571375738882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 183
+        width: 17
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbce7d1adb5b13640800000000000000
+      internalID: 5058023682582506683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 183
+        width: 22
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f421a6c668b98cab0800000000000000
+      internalID: -4987565585666010545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 184
+        width: 22
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04fc5401ab9b858f0800000000000000
+      internalID: -551486745564819648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 185
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 768d31cb509521e10800000000000000
+      internalID: 2166892251883755623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 149
+        width: 24
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1087ad41966c9b30800000000000000
+      internalID: 4295420918863724572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 148
+        width: 22
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a078055aa6007400800000000000000
+      internalID: 319762902184128677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 149
+        width: 21
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acf9079244e9365f0800000000000000
+      internalID: -764593496132640822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 149
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36525a97b73fec490800000000000000
+      internalID: -7723968599246428829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 150
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e4af12dcbfd77510800000000000000
+      internalID: 1546950999097189601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 116
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2586752cecfb95400800000000000000
+      internalID: 313492543823636562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 116
+        width: 26
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0079c3aa6e5d31fa0800000000000000
+      internalID: -5831081905839368448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 116
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d7ac2788742f0b00800000000000000
+      internalID: 796895759150393305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 117
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59b4cbf8e5025dfa0800000000000000
+      internalID: -5776675356522296427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 117
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81ee1afa46d896aa0800000000000000
+      internalID: -6167242751124312552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 83
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6469fee741cd26770800000000000000
+      internalID: 8602680218818156102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 85
+        width: 13
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5071741776f567a90800000000000000
+      internalID: -7316555646730037499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 85
+        width: 15
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d287ba1d220b27f0800000000000000
+      internalID: -636412529597775150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 85
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 556f7f5cf36cebb90800000000000000
+      internalID: -7224118775049095595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 138
+        y: 86
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c395fb22cf1a7380800000000000000
+      internalID: -8972824388760661052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 86
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70497ce2ef5a83790800000000000000
+      internalID: -7550102264161528825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 55
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6d4e45479e7aca30800000000000000
+      internalID: 4236337587663293805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 55
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da342940007a90f00800000000000000
+      internalID: 1083580803877847981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 58
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 774aed6fa59689e90800000000000000
+      internalID: -7018744179847158665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 58
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8298d45897a7ca820800000000000000
+      internalID: 2930852119857432872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 58
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51a7c4efea3c33a30800000000000000
+      internalID: 4193910834370214421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 58
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af1c09c7d873b7810800000000000000
+      internalID: 1764064759865459194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 29
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e4ead9251ec69e30800000000000000
+      internalID: 4510018667149976800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 29
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1373bd871fbde2e0800000000000000
+      internalID: -2094808143774911718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 29
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0d5806d0ad0da700800000000000000
+      internalID: 553113313673239819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 29
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be3fe5eb9f3ac6060800000000000000
+      internalID: 6948108618161910763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 29
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: baad087511f4ce180800000000000000
+      internalID: -9084799412412032341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 29
+        width: 18
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70a78bca7dee2ff40800000000000000
+      internalID: 5760929483443436039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 4
+        width: 19
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0b03b2fc44b021b0800000000000000
+      internalID: -5683344487159231734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 5
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 663c04a31e388fd90800000000000000
+      internalID: -7063751012162419866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 5
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67a8e42d230beacc0800000000000000
+      internalID: -3697824511701382538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_48
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 5
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c480a6e775143b50800000000000000
+      internalID: 6571901360954967237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_49
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 5
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a56037e3d440df2d0800000000000000
+      internalID: -3243431426830170534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_50
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 5
+        width: 8
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72686634c6a644740800000000000000
+      internalID: 5135346488329012775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Rhodora_0_normal_51
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 5
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99285af19c7ca8950800000000000000
+      internalID: 6452189082794951321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Rhodora_0_normal_0: 6521325662467609901
+      Rhodora_0_normal_1: -6297608782781055581
+      Rhodora_0_normal_10: -2453268593139053619
+      Rhodora_0_normal_11: 1481036652621879114
+      Rhodora_0_normal_12: -6711869571375738882
+      Rhodora_0_normal_13: 5058023682582506683
+      Rhodora_0_normal_14: -4987565585666010545
+      Rhodora_0_normal_15: -551486745564819648
+      Rhodora_0_normal_16: 2166892251883755623
+      Rhodora_0_normal_17: 4295420918863724572
+      Rhodora_0_normal_18: 319762902184128677
+      Rhodora_0_normal_19: -764593496132640822
+      Rhodora_0_normal_2: 3058536888790033949
+      Rhodora_0_normal_20: -7723968599246428829
+      Rhodora_0_normal_21: 1546950999097189601
+      Rhodora_0_normal_22: 313492543823636562
+      Rhodora_0_normal_23: -5831081905839368448
+      Rhodora_0_normal_24: 796895759150393305
+      Rhodora_0_normal_25: -5776675356522296427
+      Rhodora_0_normal_26: -6167242751124312552
+      Rhodora_0_normal_27: 8602680218818156102
+      Rhodora_0_normal_28: -7316555646730037499
+      Rhodora_0_normal_29: -636412529597775150
+      Rhodora_0_normal_3: -9002770471253159817
+      Rhodora_0_normal_30: -7224118775049095595
+      Rhodora_0_normal_31: -8972824388760661052
+      Rhodora_0_normal_32: -7550102264161528825
+      Rhodora_0_normal_33: 4236337587663293805
+      Rhodora_0_normal_34: 1083580803877847981
+      Rhodora_0_normal_35: -7018744179847158665
+      Rhodora_0_normal_36: 2930852119857432872
+      Rhodora_0_normal_37: 4193910834370214421
+      Rhodora_0_normal_38: 1764064759865459194
+      Rhodora_0_normal_39: 4510018667149976800
+      Rhodora_0_normal_4: 6367189096172395169
+      Rhodora_0_normal_40: -2094808143774911718
+      Rhodora_0_normal_41: 553113313673239819
+      Rhodora_0_normal_42: 6948108618161910763
+      Rhodora_0_normal_43: -9084799412412032341
+      Rhodora_0_normal_44: 5760929483443436039
+      Rhodora_0_normal_45: -5683344487159231734
+      Rhodora_0_normal_46: -7063751012162419866
+      Rhodora_0_normal_47: -3697824511701382538
+      Rhodora_0_normal_48: 6571901360954967237
+      Rhodora_0_normal_49: -3243431426830170534
+      Rhodora_0_normal_5: -3068870151681562434
+      Rhodora_0_normal_50: 5135346488329012775
+      Rhodora_0_normal_51: 6452189082794951321
+      Rhodora_0_normal_6: 4849402846883224711
+      Rhodora_0_normal_7: 1665697688946766610
+      Rhodora_0_normal_8: -4078031118416662985
+      Rhodora_0_normal_9: -4753263506890227010
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

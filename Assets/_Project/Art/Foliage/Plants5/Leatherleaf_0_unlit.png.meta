@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: d43aa38d8e5f63241b86fcac4e7e1d58
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3073160475307414883
+    second: Leatherleaf_0_unlit_0
+  - first:
+      213: -7886128010205727277
+    second: Leatherleaf_0_unlit_1
+  - first:
+      213: -6604411164495021681
+    second: Leatherleaf_0_unlit_2
+  - first:
+      213: -5222596321366596950
+    second: Leatherleaf_0_unlit_3
+  - first:
+      213: -4640770042848897759
+    second: Leatherleaf_0_unlit_4
+  - first:
+      213: 3520416847570551554
+    second: Leatherleaf_0_unlit_5
+  - first:
+      213: -7369707050928542450
+    second: Leatherleaf_0_unlit_6
+  - first:
+      213: 5764116430595674501
+    second: Leatherleaf_0_unlit_7
+  - first:
+      213: 5111954600443824648
+    second: Leatherleaf_0_unlit_8
+  - first:
+      213: -2974741277667873279
+    second: Leatherleaf_0_unlit_9
+  - first:
+      213: -1006454013694193023
+    second: Leatherleaf_0_unlit_10
+  - first:
+      213: 7924684028469037373
+    second: Leatherleaf_0_unlit_11
+  - first:
+      213: 3546752248097816143
+    second: Leatherleaf_0_unlit_12
+  - first:
+      213: -3272082615359938234
+    second: Leatherleaf_0_unlit_13
+  - first:
+      213: -8975288454717368118
+    second: Leatherleaf_0_unlit_14
+  - first:
+      213: -2795526285002477176
+    second: Leatherleaf_0_unlit_15
+  - first:
+      213: -6313263180083508452
+    second: Leatherleaf_0_unlit_16
+  - first:
+      213: 971731049184957424
+    second: Leatherleaf_0_unlit_17
+  - first:
+      213: -6558863600038877952
+    second: Leatherleaf_0_unlit_18
+  - first:
+      213: -4102104156770206033
+    second: Leatherleaf_0_unlit_19
+  - first:
+      213: -6689964367114971716
+    second: Leatherleaf_0_unlit_20
+  - first:
+      213: 2553207602284555674
+    second: Leatherleaf_0_unlit_21
+  - first:
+      213: 2520580180458980933
+    second: Leatherleaf_0_unlit_22
+  - first:
+      213: -1060856991545138271
+    second: Leatherleaf_0_unlit_23
+  - first:
+      213: 6179064506643867071
+    second: Leatherleaf_0_unlit_24
+  - first:
+      213: 7428369256651418756
+    second: Leatherleaf_0_unlit_25
+  - first:
+      213: -3897660097003687237
+    second: Leatherleaf_0_unlit_26
+  - first:
+      213: -1430909290527373565
+    second: Leatherleaf_0_unlit_27
+  - first:
+      213: 3109916307193835094
+    second: Leatherleaf_0_unlit_28
+  - first:
+      213: 3061789193331176049
+    second: Leatherleaf_0_unlit_29
+  - first:
+      213: 2756926033754697660
+    second: Leatherleaf_0_unlit_30
+  - first:
+      213: -3167066350615880063
+    second: Leatherleaf_0_unlit_31
+  - first:
+      213: -9212306989087952173
+    second: Leatherleaf_0_unlit_32
+  - first:
+      213: -4785041566551276162
+    second: Leatherleaf_0_unlit_33
+  - first:
+      213: 4896092163107206069
+    second: Leatherleaf_0_unlit_34
+  - first:
+      213: -5596316565719976510
+    second: Leatherleaf_0_unlit_35
+  - first:
+      213: 1560010153144151009
+    second: Leatherleaf_0_unlit_36
+  - first:
+      213: -1481602944235394524
+    second: Leatherleaf_0_unlit_37
+  - first:
+      213: 8614830021345642850
+    second: Leatherleaf_0_unlit_38
+  - first:
+      213: -2728821939076545913
+    second: Leatherleaf_0_unlit_39
+  - first:
+      213: 6497654302867683643
+    second: Leatherleaf_0_unlit_40
+  - first:
+      213: -4715422306408328133
+    second: Leatherleaf_0_unlit_41
+  - first:
+      213: 3479590781232575906
+    second: Leatherleaf_0_unlit_42
+  - first:
+      213: 5644628947873470934
+    second: Leatherleaf_0_unlit_43
+  - first:
+      213: -7214907832789195525
+    second: Leatherleaf_0_unlit_44
+  - first:
+      213: 3912459975173491993
+    second: Leatherleaf_0_unlit_45
+  - first:
+      213: -8554137774784421928
+    second: Leatherleaf_0_unlit_46
+  - first:
+      213: -4415949574602432828
+    second: Leatherleaf_0_unlit_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_0
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 96
+        width: 31
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9ae78b74d0f955d0800000000000000
+      internalID: -3073160475307414883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_1
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 96
+        width: 31
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d5fd627b58de8290800000000000000
+      internalID: -7886128010205727277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 96
+        width: 30
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8976ad990b6854a0800000000000000
+      internalID: -6604411164495021681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_3
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 96
+        width: 30
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa2aea3f05c9587b0800000000000000
+      internalID: -5222596321366596950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_4
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 95
+        width: 31
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12597bfdb3ca89fb0800000000000000
+      internalID: -4640770042848897759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_5
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 96
+        width: 27
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2034ebc88780bd030800000000000000
+      internalID: 3520416847570551554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_6
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 95
+        width: 25
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0d66bacb7a89b990800000000000000
+      internalID: -7369707050928542450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_7
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 97
+        width: 26
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 581d5a1aa514eff40800000000000000
+      internalID: 5764116430595674501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_8
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 97
+        width: 26
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80ac063ff9f41f640800000000000000
+      internalID: 5111954600443824648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_9
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 97
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10e2aed919897b6d0800000000000000
+      internalID: -2974741277667873279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_10
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 61
+        width: 27
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 182ddfe286b5802f0800000000000000
+      internalID: -1006454013694193023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_11
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 61
+        width: 26
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d39cb1a13222afd60800000000000000
+      internalID: 7924684028469037373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_12
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 61
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4e303ec068983130800000000000000
+      internalID: 3546752248097816143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_13
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 62
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6416db3923a3792d0800000000000000
+      internalID: -3272082615359938234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_14
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 62
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac818eb14be517380800000000000000
+      internalID: -8975288454717368118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_15
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 62
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 881f826b7ab4439d0800000000000000
+      internalID: -2795526285002477176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_16
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 64
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1bc1993698c268a0800000000000000
+      internalID: -6313263180083508452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_17
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 66
+        width: 25
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f313e3ad384c7d00800000000000000
+      internalID: 971731049184957424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_18
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 65
+        width: 26
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 005617d5e4c3af4a0800000000000000
+      internalID: -6558863600038877952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_19
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 66
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faefe08d0066217c0800000000000000
+      internalID: -4102104156770206033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_20
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 65
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb557126ad87823a0800000000000000
+      internalID: -6689964367114971716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_21
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 31
+        width: 24
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9d6ffb69c0de6320800000000000000
+      internalID: 2553207602284555674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_22
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 30
+        width: 23
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 546c52cc156eaf220800000000000000
+      internalID: 2520580180458980933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_23
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 32
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a36675df241741f0800000000000000
+      internalID: -1060856991545138271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_24
+      rect:
+        serializedVersion: 2
+        x: 131
+        y: 32
+        width: 21
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb56bb24e6270c550800000000000000
+      internalID: 6179064506643867071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_25
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 32
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48ce3235b7ed61760800000000000000
+      internalID: 7428369256651418756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_26
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 32
+        width: 25
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb271eedacab8e9c0800000000000000
+      internalID: -3897660097003687237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_27
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 32
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3074f40e493642ce0800000000000000
+      internalID: -1430909290527373565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_28
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 31
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65eab738764a82b20800000000000000
+      internalID: 3109916307193835094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_29
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 31
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17272ad9c09ad7a20800000000000000
+      internalID: 3061789193331176049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_30
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 32
+        width: 22
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbfa9f1fe91924620800000000000000
+      internalID: 2756926033754697660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_31
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 32
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18e92771fe15c04d0800000000000000
+      internalID: -3167066350615880063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_32
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 35
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d270913a9f472080800000000000000
+      internalID: -9212306989087952173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_33
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 5
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e758b362c0e189db0800000000000000
+      internalID: -4785041566551276162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_34
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 7
+        width: 19
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b33499b1e962f340800000000000000
+      internalID: 4896092163107206069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_35
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 6
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c570a9ebb3e552b0800000000000000
+      internalID: -5596316565719976510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_36
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 6
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ebe82018f446a510800000000000000
+      internalID: 1560010153144151009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_37
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 7
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42a2daad8f9407be0800000000000000
+      internalID: -1481602944235394524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_38
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 6
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2698da6d2460e8770800000000000000
+      internalID: 8614830021345642850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_39
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 6
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 782cc0287e6412ad0800000000000000
+      internalID: -2728821939076545913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_40
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 6
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3977b3992e4c2a50800000000000000
+      internalID: 6497654302867683643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_41
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 7
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b34149c45647f8eb0800000000000000
+      internalID: -4715422306408328133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_42
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 7
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a5771f316df94030800000000000000
+      internalID: 3479590781232575906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_43
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 7
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d992ee1f10c55e40800000000000000
+      internalID: 5644628947873470934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_44
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 8
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf4aa636d8f7fdb90800000000000000
+      internalID: -7214907832789195525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_45
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 7
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91d462a4e99db4630800000000000000
+      internalID: 3912459975173491993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_46
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 7
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8df593ef309994980800000000000000
+      internalID: -8554137774784421928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Leatherleaf_0_unlit_47
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 8
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ced8c3324567b2c0800000000000000
+      internalID: -4415949574602432828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Leatherleaf_0_unlit_0: -3073160475307414883
+      Leatherleaf_0_unlit_1: -7886128010205727277
+      Leatherleaf_0_unlit_10: -1006454013694193023
+      Leatherleaf_0_unlit_11: 7924684028469037373
+      Leatherleaf_0_unlit_12: 3546752248097816143
+      Leatherleaf_0_unlit_13: -3272082615359938234
+      Leatherleaf_0_unlit_14: -8975288454717368118
+      Leatherleaf_0_unlit_15: -2795526285002477176
+      Leatherleaf_0_unlit_16: -6313263180083508452
+      Leatherleaf_0_unlit_17: 971731049184957424
+      Leatherleaf_0_unlit_18: -6558863600038877952
+      Leatherleaf_0_unlit_19: -4102104156770206033
+      Leatherleaf_0_unlit_2: -6604411164495021681
+      Leatherleaf_0_unlit_20: -6689964367114971716
+      Leatherleaf_0_unlit_21: 2553207602284555674
+      Leatherleaf_0_unlit_22: 2520580180458980933
+      Leatherleaf_0_unlit_23: -1060856991545138271
+      Leatherleaf_0_unlit_24: 6179064506643867071
+      Leatherleaf_0_unlit_25: 7428369256651418756
+      Leatherleaf_0_unlit_26: -3897660097003687237
+      Leatherleaf_0_unlit_27: -1430909290527373565
+      Leatherleaf_0_unlit_28: 3109916307193835094
+      Leatherleaf_0_unlit_29: 3061789193331176049
+      Leatherleaf_0_unlit_3: -5222596321366596950
+      Leatherleaf_0_unlit_30: 2756926033754697660
+      Leatherleaf_0_unlit_31: -3167066350615880063
+      Leatherleaf_0_unlit_32: -9212306989087952173
+      Leatherleaf_0_unlit_33: -4785041566551276162
+      Leatherleaf_0_unlit_34: 4896092163107206069
+      Leatherleaf_0_unlit_35: -5596316565719976510
+      Leatherleaf_0_unlit_36: 1560010153144151009
+      Leatherleaf_0_unlit_37: -1481602944235394524
+      Leatherleaf_0_unlit_38: 8614830021345642850
+      Leatherleaf_0_unlit_39: -2728821939076545913
+      Leatherleaf_0_unlit_4: -4640770042848897759
+      Leatherleaf_0_unlit_40: 6497654302867683643
+      Leatherleaf_0_unlit_41: -4715422306408328133
+      Leatherleaf_0_unlit_42: 3479590781232575906
+      Leatherleaf_0_unlit_43: 5644628947873470934
+      Leatherleaf_0_unlit_44: -7214907832789195525
+      Leatherleaf_0_unlit_45: 3912459975173491993
+      Leatherleaf_0_unlit_46: -8554137774784421928
+      Leatherleaf_0_unlit_47: -4415949574602432828
+      Leatherleaf_0_unlit_5: 3520416847570551554
+      Leatherleaf_0_unlit_6: -7369707050928542450
+      Leatherleaf_0_unlit_7: 5764116430595674501
+      Leatherleaf_0_unlit_8: 5111954600443824648
+      Leatherleaf_0_unlit_9: -2974741277667873279
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

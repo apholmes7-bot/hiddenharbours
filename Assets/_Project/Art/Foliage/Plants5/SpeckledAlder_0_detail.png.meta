@@ -1,0 +1,1404 @@
+fileFormatVersion: 2
+guid: be9758fab8850414c8c41be627b249df
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 137829223723839771
+    second: SpeckledAlder_0_detail_0
+  - first:
+      213: 5332275012773899759
+    second: SpeckledAlder_0_detail_1
+  - first:
+      213: -8819994317766034757
+    second: SpeckledAlder_0_detail_2
+  - first:
+      213: -8346671575385593020
+    second: SpeckledAlder_0_detail_3
+  - first:
+      213: -553516180465493286
+    second: SpeckledAlder_0_detail_4
+  - first:
+      213: -8562548141601318881
+    second: SpeckledAlder_0_detail_5
+  - first:
+      213: 2514325091331812862
+    second: SpeckledAlder_0_detail_6
+  - first:
+      213: 1433006307282517562
+    second: SpeckledAlder_0_detail_7
+  - first:
+      213: -6083943116591640865
+    second: SpeckledAlder_0_detail_8
+  - first:
+      213: 3494723388807698051
+    second: SpeckledAlder_0_detail_9
+  - first:
+      213: 2896184170111449960
+    second: SpeckledAlder_0_detail_10
+  - first:
+      213: 4652157305817882830
+    second: SpeckledAlder_0_detail_11
+  - first:
+      213: -4496895364359262949
+    second: SpeckledAlder_0_detail_12
+  - first:
+      213: 8792574089323608856
+    second: SpeckledAlder_0_detail_13
+  - first:
+      213: -2171175618310963285
+    second: SpeckledAlder_0_detail_14
+  - first:
+      213: 1948956607431273407
+    second: SpeckledAlder_0_detail_15
+  - first:
+      213: 1189068882801902908
+    second: SpeckledAlder_0_detail_16
+  - first:
+      213: -3439929201826455508
+    second: SpeckledAlder_0_detail_17
+  - first:
+      213: -4733544945584734597
+    second: SpeckledAlder_0_detail_18
+  - first:
+      213: 4270455732703881355
+    second: SpeckledAlder_0_detail_19
+  - first:
+      213: -5587003570290440540
+    second: SpeckledAlder_0_detail_20
+  - first:
+      213: 7253924388711545487
+    second: SpeckledAlder_0_detail_21
+  - first:
+      213: 8863300398393168116
+    second: SpeckledAlder_0_detail_22
+  - first:
+      213: 4109080723857090824
+    second: SpeckledAlder_0_detail_23
+  - first:
+      213: -8851123271297071298
+    second: SpeckledAlder_0_detail_24
+  - first:
+      213: -2469262613624379017
+    second: SpeckledAlder_0_detail_25
+  - first:
+      213: -1954491695854989322
+    second: SpeckledAlder_0_detail_26
+  - first:
+      213: -4379990691377242776
+    second: SpeckledAlder_0_detail_27
+  - first:
+      213: -2150423053534593749
+    second: SpeckledAlder_0_detail_28
+  - first:
+      213: -8109881621504557343
+    second: SpeckledAlder_0_detail_29
+  - first:
+      213: 8782198895826142904
+    second: SpeckledAlder_0_detail_30
+  - first:
+      213: -8084759882182075177
+    second: SpeckledAlder_0_detail_31
+  - first:
+      213: 6264805033911884894
+    second: SpeckledAlder_0_detail_32
+  - first:
+      213: 8586351044331732708
+    second: SpeckledAlder_0_detail_33
+  - first:
+      213: -7962138020975280035
+    second: SpeckledAlder_0_detail_34
+  - first:
+      213: -9020158284423187525
+    second: SpeckledAlder_0_detail_35
+  - first:
+      213: -5653470777264164851
+    second: SpeckledAlder_0_detail_36
+  - first:
+      213: 1958134822177212022
+    second: SpeckledAlder_0_detail_37
+  - first:
+      213: -6502078699399885721
+    second: SpeckledAlder_0_detail_38
+  - first:
+      213: 4926591467045482943
+    second: SpeckledAlder_0_detail_39
+  - first:
+      213: 5062970324515322777
+    second: SpeckledAlder_0_detail_40
+  - first:
+      213: -5053716833975818627
+    second: SpeckledAlder_0_detail_41
+  - first:
+      213: 818346610347897671
+    second: SpeckledAlder_0_detail_42
+  - first:
+      213: -8405449702252262888
+    second: SpeckledAlder_0_detail_43
+  - first:
+      213: -9029422992142040509
+    second: SpeckledAlder_0_detail_44
+  - first:
+      213: -8344128304511203053
+    second: SpeckledAlder_0_detail_45
+  - first:
+      213: 2085819302221686695
+    second: SpeckledAlder_0_detail_46
+  - first:
+      213: -9150450718806111721
+    second: SpeckledAlder_0_detail_47
+  - first:
+      213: 6885517302775319802
+    second: SpeckledAlder_0_detail_48
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_0
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 807
+        width: 66
+        height: 117
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b113abfd2faa9e100800000000000000
+      internalID: 137829223723839771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_1
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 808
+        width: 68
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fed641d5fdb000a40800000000000000
+      internalID: 5332275012773899759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_2
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 808
+        width: 68
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bba7798f5e5199580800000000000000
+      internalID: -8819994317766034757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_3
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 809
+        width: 66
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44baa4cbc6aaa2c80800000000000000
+      internalID: -8346671575385593020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_4
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 688
+        width: 70
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ada5ced67f38158f0800000000000000
+      internalID: -553516180465493286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_5
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 688
+        width: 69
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f181cafd4d7bb2980800000000000000
+      internalID: -8562548141601318881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_6
+      rect:
+        serializedVersion: 2
+        x: 271
+        y: 688
+        width: 68
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efd2fae595da4e220800000000000000
+      internalID: 2514325091331812862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_7
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 689
+        width: 71
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3ef772e4af03e310800000000000000
+      internalID: 1433006307282517562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_8
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 569
+        width: 71
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fde4fd538fd719ba0800000000000000
+      internalID: -6083943116591640865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_9
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 569
+        width: 70
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 386d1220860cf7030800000000000000
+      internalID: 3494723388807698051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_10
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 574
+        width: 68
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86b3a977820513820800000000000000
+      internalID: 2896184170111449960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_11
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 575
+        width: 65
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec06384eb68cf8040800000000000000
+      internalID: 4652157305817882830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_12
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 460
+        width: 74
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1de34fdd71d791c0800000000000000
+      internalID: -4496895364359262949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_13
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 460
+        width: 72
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81bff679c8f750a70800000000000000
+      internalID: 8792574089323608856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_14
+      rect:
+        serializedVersion: 2
+        x: 274
+        y: 460
+        width: 71
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: baff59d474f6ed1e0800000000000000
+      internalID: -2171175618310963285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_15
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 462
+        width: 66
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbb679c55b51c0b10800000000000000
+      internalID: 1948956607431273407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_16
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 367
+        width: 47
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c35c0e459db608010800000000000000
+      internalID: 1189068882801902908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_17
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 369
+        width: 48
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2024a0dd9ae240d0800000000000000
+      internalID: -3439929201826455508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_18
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 370
+        width: 54
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7e731e83f11f4eb0800000000000000
+      internalID: -4733544945584734597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_19
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 369
+        width: 52
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8868d0fcd4b34b30800000000000000
+      internalID: 4270455732703881355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_20
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 370
+        width: 52
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a6cff1aad9f672b0800000000000000
+      internalID: -5587003570290440540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_21
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 278
+        width: 52
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8ab1b07ccd1ba460800000000000000
+      internalID: 7253924388711545487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_22
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 278
+        width: 47
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f09dc7a0c4c00b70800000000000000
+      internalID: 8863300398393168116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_23
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 280
+        width: 58
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80928e2c523660930800000000000000
+      internalID: 4109080723857090824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_24
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 280
+        width: 58
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e37052fa74e7a2580800000000000000
+      internalID: -8851123271297071298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_25
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 280
+        width: 57
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77924c15cba6bbdd0800000000000000
+      internalID: -2469262613624379017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_26
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 193
+        width: 46
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ffcc10782040e4e0800000000000000
+      internalID: -1954491695854989322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_27
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 193
+        width: 50
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86d11f02ca52733c0800000000000000
+      internalID: -4379990691377242776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_28
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 196
+        width: 55
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2d724150a92822e0800000000000000
+      internalID: -2150423053534593749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_29
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 196
+        width: 57
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ee70cb12a9e37f80800000000000000
+      internalID: -8109881621504557343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_30
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 196
+        width: 58
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b68b8c9d53a0e970800000000000000
+      internalID: 8782198895826142904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_31
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 114
+        width: 57
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dc5538d8b92dcf80800000000000000
+      internalID: -8084759882182075177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_32
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 133
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5c95696cfe01f650800000000000000
+      internalID: 6264805033911884894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_33
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 133
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ee723a48c8d82770800000000000000
+      internalID: 8586351044331732708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_34
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 133
+        width: 34
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d500327b7adc08190800000000000000
+      internalID: -7962138020975280035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_35
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 133
+        width: 32
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb3b827c4d5f1d280800000000000000
+      internalID: -9020158284423187525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_36
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 133
+        width: 31
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d003e1d0846da81b0800000000000000
+      internalID: -5653470777264164851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_37
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 133
+        width: 32
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67602320f31bc2b10800000000000000
+      internalID: 1958134822177212022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_38
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 57
+        width: 37
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76cc2a45fd9f3c5a0800000000000000
+      internalID: -6502078699399885721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_39
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 58
+        width: 19
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb177ba46d4ce5440800000000000000
+      internalID: 4926591467045482943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_40
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 58
+        width: 19
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99b74157fa8434640800000000000000
+      internalID: 5062970324515322777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_41
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 59
+        width: 42
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d76a573b0579dd9b0800000000000000
+      internalID: -5053716833975818627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_42
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 59
+        width: 39
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7437ee408e95b5b00800000000000000
+      internalID: 818346610347897671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_43
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 58
+        width: 33
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81a47df9708d95b80800000000000000
+      internalID: -8405449702252262888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_44
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 60
+        width: 38
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34201aae0ab01b280800000000000000
+      internalID: -9029422992142040509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_45
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 59
+        width: 36
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 319c3512483b33c80800000000000000
+      internalID: -8344128304511203053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_46
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 4
+        width: 36
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a7a39eaa9152fc10800000000000000
+      internalID: 2085819302221686695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_47
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 6
+        width: 41
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71a08da6d81130180800000000000000
+      internalID: -9150450718806111721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SpeckledAlder_0_detail_48
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 7
+        width: 31
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afc8abe71854e8f50800000000000000
+      internalID: 6885517302775319802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SpeckledAlder_0_detail_0: 137829223723839771
+      SpeckledAlder_0_detail_1: 5332275012773899759
+      SpeckledAlder_0_detail_10: 2896184170111449960
+      SpeckledAlder_0_detail_11: 4652157305817882830
+      SpeckledAlder_0_detail_12: -4496895364359262949
+      SpeckledAlder_0_detail_13: 8792574089323608856
+      SpeckledAlder_0_detail_14: -2171175618310963285
+      SpeckledAlder_0_detail_15: 1948956607431273407
+      SpeckledAlder_0_detail_16: 1189068882801902908
+      SpeckledAlder_0_detail_17: -3439929201826455508
+      SpeckledAlder_0_detail_18: -4733544945584734597
+      SpeckledAlder_0_detail_19: 4270455732703881355
+      SpeckledAlder_0_detail_2: -8819994317766034757
+      SpeckledAlder_0_detail_20: -5587003570290440540
+      SpeckledAlder_0_detail_21: 7253924388711545487
+      SpeckledAlder_0_detail_22: 8863300398393168116
+      SpeckledAlder_0_detail_23: 4109080723857090824
+      SpeckledAlder_0_detail_24: -8851123271297071298
+      SpeckledAlder_0_detail_25: -2469262613624379017
+      SpeckledAlder_0_detail_26: -1954491695854989322
+      SpeckledAlder_0_detail_27: -4379990691377242776
+      SpeckledAlder_0_detail_28: -2150423053534593749
+      SpeckledAlder_0_detail_29: -8109881621504557343
+      SpeckledAlder_0_detail_3: -8346671575385593020
+      SpeckledAlder_0_detail_30: 8782198895826142904
+      SpeckledAlder_0_detail_31: -8084759882182075177
+      SpeckledAlder_0_detail_32: 6264805033911884894
+      SpeckledAlder_0_detail_33: 8586351044331732708
+      SpeckledAlder_0_detail_34: -7962138020975280035
+      SpeckledAlder_0_detail_35: -9020158284423187525
+      SpeckledAlder_0_detail_36: -5653470777264164851
+      SpeckledAlder_0_detail_37: 1958134822177212022
+      SpeckledAlder_0_detail_38: -6502078699399885721
+      SpeckledAlder_0_detail_39: 4926591467045482943
+      SpeckledAlder_0_detail_4: -553516180465493286
+      SpeckledAlder_0_detail_40: 5062970324515322777
+      SpeckledAlder_0_detail_41: -5053716833975818627
+      SpeckledAlder_0_detail_42: 818346610347897671
+      SpeckledAlder_0_detail_43: -8405449702252262888
+      SpeckledAlder_0_detail_44: -9029422992142040509
+      SpeckledAlder_0_detail_45: -8344128304511203053
+      SpeckledAlder_0_detail_46: 2085819302221686695
+      SpeckledAlder_0_detail_47: -9150450718806111721
+      SpeckledAlder_0_detail_48: 6885517302775319802
+      SpeckledAlder_0_detail_5: -8562548141601318881
+      SpeckledAlder_0_detail_6: 2514325091331812862
+      SpeckledAlder_0_detail_7: 1433006307282517562
+      SpeckledAlder_0_detail_8: -6083943116591640865
+      SpeckledAlder_0_detail_9: 3494723388807698051
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

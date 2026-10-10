@@ -1,0 +1,1872 @@
+fileFormatVersion: 2
+guid: a08d615bc78764c449055a2079d7afe3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1786192622594621690
+    second: WildRaisin_0_normal_0
+  - first:
+      213: 6277587393540539382
+    second: WildRaisin_0_normal_1
+  - first:
+      213: -7010599744625104939
+    second: WildRaisin_0_normal_2
+  - first:
+      213: -2442831000228043727
+    second: WildRaisin_0_normal_3
+  - first:
+      213: -5242565638237592932
+    second: WildRaisin_0_normal_4
+  - first:
+      213: 8747398061392111811
+    second: WildRaisin_0_normal_5
+  - first:
+      213: 4465557258145695617
+    second: WildRaisin_0_normal_6
+  - first:
+      213: 6568770569224312341
+    second: WildRaisin_0_normal_7
+  - first:
+      213: 3003668295898304558
+    second: WildRaisin_0_normal_8
+  - first:
+      213: 7802013171274090182
+    second: WildRaisin_0_normal_9
+  - first:
+      213: 815406299407030326
+    second: WildRaisin_0_normal_10
+  - first:
+      213: -3427878572234640219
+    second: WildRaisin_0_normal_11
+  - first:
+      213: -6623149607342142231
+    second: WildRaisin_0_normal_12
+  - first:
+      213: 6839156942983263665
+    second: WildRaisin_0_normal_13
+  - first:
+      213: -5532339357464944326
+    second: WildRaisin_0_normal_14
+  - first:
+      213: -5960470249633464538
+    second: WildRaisin_0_normal_15
+  - first:
+      213: 6264206186738275538
+    second: WildRaisin_0_normal_16
+  - first:
+      213: 6472126480134758835
+    second: WildRaisin_0_normal_17
+  - first:
+      213: 7997716932257085953
+    second: WildRaisin_0_normal_18
+  - first:
+      213: 6894315186176826788
+    second: WildRaisin_0_normal_19
+  - first:
+      213: 7309309713799402924
+    second: WildRaisin_0_normal_20
+  - first:
+      213: 1962146269271157091
+    second: WildRaisin_0_normal_21
+  - first:
+      213: -207931838928496493
+    second: WildRaisin_0_normal_22
+  - first:
+      213: -5192484457955479109
+    second: WildRaisin_0_normal_23
+  - first:
+      213: -5218893588930826955
+    second: WildRaisin_0_normal_24
+  - first:
+      213: 6548808850630933081
+    second: WildRaisin_0_normal_25
+  - first:
+      213: -5855639168588113565
+    second: WildRaisin_0_normal_26
+  - first:
+      213: -279194070583315335
+    second: WildRaisin_0_normal_27
+  - first:
+      213: 4922593950700364410
+    second: WildRaisin_0_normal_28
+  - first:
+      213: -6381976248724497276
+    second: WildRaisin_0_normal_29
+  - first:
+      213: -548710366903487125
+    second: WildRaisin_0_normal_30
+  - first:
+      213: 4248519584190341165
+    second: WildRaisin_0_normal_31
+  - first:
+      213: 3098898684846266645
+    second: WildRaisin_0_normal_32
+  - first:
+      213: -2752076987594711695
+    second: WildRaisin_0_normal_33
+  - first:
+      213: -9187625801290950016
+    second: WildRaisin_0_normal_34
+  - first:
+      213: -5674061739730076881
+    second: WildRaisin_0_normal_35
+  - first:
+      213: 991084182836553286
+    second: WildRaisin_0_normal_36
+  - first:
+      213: 5162154360230021343
+    second: WildRaisin_0_normal_37
+  - first:
+      213: 3982778572137429740
+    second: WildRaisin_0_normal_38
+  - first:
+      213: -6775920144282177804
+    second: WildRaisin_0_normal_39
+  - first:
+      213: -3034722228111763885
+    second: WildRaisin_0_normal_40
+  - first:
+      213: 7562774678009117902
+    second: WildRaisin_0_normal_41
+  - first:
+      213: -3427120120716988247
+    second: WildRaisin_0_normal_42
+  - first:
+      213: -1981807320001704239
+    second: WildRaisin_0_normal_43
+  - first:
+      213: 3125029959314454351
+    second: WildRaisin_0_normal_44
+  - first:
+      213: 7561507773699175605
+    second: WildRaisin_0_normal_45
+  - first:
+      213: -7218590073002458219
+    second: WildRaisin_0_normal_46
+  - first:
+      213: -996532029540550373
+    second: WildRaisin_0_normal_47
+  - first:
+      213: -5201150250599861350
+    second: WildRaisin_0_normal_48
+  - first:
+      213: 7923414859116702519
+    second: WildRaisin_0_normal_49
+  - first:
+      213: 5459789467010533590
+    second: WildRaisin_0_normal_50
+  - first:
+      213: 4308152849551511647
+    second: WildRaisin_0_normal_51
+  - first:
+      213: 6965008754218291774
+    second: WildRaisin_0_normal_52
+  - first:
+      213: 8773521722823294471
+    second: WildRaisin_0_normal_53
+  - first:
+      213: -5635705961284907091
+    second: WildRaisin_0_normal_54
+  - first:
+      213: 272571366850754372
+    second: WildRaisin_0_normal_55
+  - first:
+      213: 995366233613101202
+    second: WildRaisin_0_normal_56
+  - first:
+      213: -3555229897684514062
+    second: WildRaisin_0_normal_57
+  - first:
+      213: 5184718079426947801
+    second: WildRaisin_0_normal_58
+  - first:
+      213: 3628009798961111964
+    second: WildRaisin_0_normal_59
+  - first:
+      213: 3638708919339875174
+    second: WildRaisin_0_normal_60
+  - first:
+      213: -5608933398311467301
+    second: WildRaisin_0_normal_61
+  - first:
+      213: -8381822520818314354
+    second: WildRaisin_0_normal_62
+  - first:
+      213: -357518643027419958
+    second: WildRaisin_0_normal_63
+  - first:
+      213: 126502739176475810
+    second: WildRaisin_0_normal_64
+  - first:
+      213: 1622455461483105787
+    second: WildRaisin_0_normal_65
+  - first:
+      213: 1713511872366941061
+    second: WildRaisin_0_normal_66
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 515
+        width: 50
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60ff2ddf54b2637e0800000000000000
+      internalID: -1786192622594621690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_1
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 515
+        width: 49
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f3447e69787e1750800000000000000
+      internalID: 6277587393540539382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_2
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 515
+        width: 50
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d72d2f0da855be90800000000000000
+      internalID: -7010599744625104939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_3
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 519
+        width: 26
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1346811e522591ed0800000000000000
+      internalID: -2442831000228043727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_4
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 519
+        width: 27
+        height: 75
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c92ed2d045aae37b0800000000000000
+      internalID: -5242565638237592932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_5
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 522
+        width: 25
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c8a73ee030056970800000000000000
+      internalID: 8747398061392111811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_6
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 431
+        width: 27
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18701ffaaa8d8fd30800000000000000
+      internalID: 4465557258145695617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_7
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 432
+        width: 28
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 516d7a5a706f82b50800000000000000
+      internalID: 6568770569224312341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_8
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 431
+        width: 26
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e201f18a66c2fa920800000000000000
+      internalID: 3003668295898304558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_9
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 432
+        width: 29
+        height: 63
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c606b674a1564c60800000000000000
+      internalID: 7802013171274090182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_10
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 431
+        width: 26
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63895c785b7e05b00800000000000000
+      internalID: 815406299407030326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_11
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 432
+        width: 29
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a4f7c8a99abd60d0800000000000000
+      internalID: -3427878572234640219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_12
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 435
+        width: 27
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ec8a18e588d514a0800000000000000
+      internalID: -6623149607342142231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_13
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 436
+        width: 21
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b5f9a5110199ee50800000000000000
+      internalID: 6839156942983263665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_14
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 352
+        width: 25
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a31a36d7aae2933b0800000000000000
+      internalID: -5532339357464944326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_15
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 353
+        width: 23
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62f305c43e7284da0800000000000000
+      internalID: -5960470249633464538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_16
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 352
+        width: 26
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d4d650765eeee650800000000000000
+      internalID: 6264206186738275538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_17
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 353
+        width: 22
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b1e4dd2ebc91d950800000000000000
+      internalID: 6472126480134758835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_18
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 357
+        width: 28
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10a7f491d299dfe60800000000000000
+      internalID: 7997716932257085953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_19
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 354
+        width: 30
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ad96a952278daf50800000000000000
+      internalID: 6894315186176826788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_20
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 357
+        width: 27
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca553545572ef6560800000000000000
+      internalID: 7309309713799402924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_21
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 354
+        width: 31
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 369e341d2a1fa3b10800000000000000
+      internalID: 1962146269271157091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_22
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 278
+        width: 27
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3985c2b18174d1df0800000000000000
+      internalID: -207931838928496493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_23
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 275
+        width: 30
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb1b3dd75e690f7b0800000000000000
+      internalID: -5192484457955479109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_24
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 276
+        width: 45
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53de6378ee3c297b0800000000000000
+      internalID: -5218893588930826955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_25
+      rect:
+        serializedVersion: 2
+        x: 194
+        y: 276
+        width: 39
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95a7acbd3fa02ea50800000000000000
+      internalID: 6548808850630933081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_26
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 276
+        width: 21
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 369117f53379cbea0800000000000000
+      internalID: -5855639168588113565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_27
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 280
+        width: 25
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9747c77d87a102cf0800000000000000
+      internalID: -279194070583315335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_28
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 278
+        width: 35
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a726bfcfd11905440800000000000000
+      internalID: 4922593950700364410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_29
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 210
+        width: 41
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48cdbc93a6aae67a0800000000000000
+      internalID: -6381976248724497276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_30
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 210
+        width: 40
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b65b42814d69268f0800000000000000
+      internalID: -548710366903487125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_31
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 210
+        width: 40
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d20a4fc5d06c5fa30800000000000000
+      internalID: 4248519584190341165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_32
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 214
+        width: 17
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 519df296fef710b20800000000000000
+      internalID: 3098898684846266645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_33
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 213
+        width: 22
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17dd3e79f88aec9d0800000000000000
+      internalID: -2752076987594711695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_34
+      rect:
+        serializedVersion: 2
+        x: 311
+        y: 212
+        width: 39
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08ad6d8030ffe7080800000000000000
+      internalID: -9187625801290950016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_35
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 149
+        width: 34
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2bf0c109eea141b0800000000000000
+      internalID: -5674061739730076881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_36
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 149
+        width: 34
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6462b7430d901cd00800000000000000
+      internalID: 991084182836553286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_37
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 149
+        width: 34
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd88e355a08a3a740800000000000000
+      internalID: 5162154360230021343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_38
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 149
+        width: 28
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ceaf94b720ca54730800000000000000
+      internalID: 3982778572137429740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_39
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 149
+        width: 26
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fea5a5778817f1a0800000000000000
+      internalID: -6775920144282177804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_40
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 149
+        width: 26
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3569a61563082e5d0800000000000000
+      internalID: -3034722228111763885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_41
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 93
+        width: 19
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecc7d07108f54f860800000000000000
+      internalID: 7562774678009117902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_42
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 93
+        width: 17
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a0f11a686c6070d0800000000000000
+      internalID: -3427120120716988247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_43
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 95
+        width: 15
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1de87061eb43f74e0800000000000000
+      internalID: -1981807320001704239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_44
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 94
+        width: 19
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f47346dd0365e5b20800000000000000
+      internalID: 3125029959314454351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_45
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 95
+        width: 32
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b4b1b1f14fdfe860800000000000000
+      internalID: 7561507773699175605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_46
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 95
+        width: 31
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5930787039a62db90800000000000000
+      internalID: -7218590073002458219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_47
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 95
+        width: 29
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b19bfe3266b9b22f0800000000000000
+      internalID: -996532029540550373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_48
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 103
+        width: 28
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a93bf89676dc1d7b0800000000000000
+      internalID: -5201150250599861350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_49
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 47
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73be3b595df95fd60800000000000000
+      internalID: 7923414859116702519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_50
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 47
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d80591d79115cb40800000000000000
+      internalID: 5459789467010533590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_51
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 49
+        width: 21
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f50da9be032a9cb30800000000000000
+      internalID: 4308152849551511647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_52
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 49
+        width: 20
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e32daac4f8ea8a060800000000000000
+      internalID: 6965008754218291774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_53
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 49
+        width: 21
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70e3e06d58fc1c970800000000000000
+      internalID: 8773521722823294471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_54
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 50
+        width: 13
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dafcf079943f9c1b0800000000000000
+      internalID: -5635705961284907091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_55
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 49
+        width: 17
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 447f419c63e58c300800000000000000
+      internalID: 272571366850754372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_56
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 50
+        width: 26
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2986de7d05040dd00800000000000000
+      internalID: 995366233613101202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_57
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 4
+        width: 26
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fa8aa59e3949aec0800000000000000
+      internalID: -3555229897684514062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_58
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 4
+        width: 24
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dae9c89f91d3f740800000000000000
+      internalID: 5184718079426947801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_59
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 5
+        width: 22
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c93a6bca0b7495230800000000000000
+      internalID: 3628009798961111964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_60
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 8
+        width: 14
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66b7c42cb7a4f7230800000000000000
+      internalID: 3638708919339875174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_61
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 8
+        width: 12
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd602d8aac01922b0800000000000000
+      internalID: -5608933398311467301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_62
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 10
+        width: 13
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e83514c73d8cdab80800000000000000
+      internalID: -8381822520818314354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_63
+      rect:
+        serializedVersion: 2
+        x: 215
+        y: 9
+        width: 14
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acc55c930b6d90bf0800000000000000
+      internalID: -357518643027419958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_64
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 9
+        width: 24
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ac4abf229d61c100800000000000000
+      internalID: 126502739176475810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_65
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 9
+        width: 23
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfdc79565ae148610800000000000000
+      internalID: 1622455461483105787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildRaisin_0_normal_66
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 9
+        width: 23
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58398d628fd97c710800000000000000
+      internalID: 1713511872366941061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WildRaisin_0_normal_0: -1786192622594621690
+      WildRaisin_0_normal_1: 6277587393540539382
+      WildRaisin_0_normal_10: 815406299407030326
+      WildRaisin_0_normal_11: -3427878572234640219
+      WildRaisin_0_normal_12: -6623149607342142231
+      WildRaisin_0_normal_13: 6839156942983263665
+      WildRaisin_0_normal_14: -5532339357464944326
+      WildRaisin_0_normal_15: -5960470249633464538
+      WildRaisin_0_normal_16: 6264206186738275538
+      WildRaisin_0_normal_17: 6472126480134758835
+      WildRaisin_0_normal_18: 7997716932257085953
+      WildRaisin_0_normal_19: 6894315186176826788
+      WildRaisin_0_normal_2: -7010599744625104939
+      WildRaisin_0_normal_20: 7309309713799402924
+      WildRaisin_0_normal_21: 1962146269271157091
+      WildRaisin_0_normal_22: -207931838928496493
+      WildRaisin_0_normal_23: -5192484457955479109
+      WildRaisin_0_normal_24: -5218893588930826955
+      WildRaisin_0_normal_25: 6548808850630933081
+      WildRaisin_0_normal_26: -5855639168588113565
+      WildRaisin_0_normal_27: -279194070583315335
+      WildRaisin_0_normal_28: 4922593950700364410
+      WildRaisin_0_normal_29: -6381976248724497276
+      WildRaisin_0_normal_3: -2442831000228043727
+      WildRaisin_0_normal_30: -548710366903487125
+      WildRaisin_0_normal_31: 4248519584190341165
+      WildRaisin_0_normal_32: 3098898684846266645
+      WildRaisin_0_normal_33: -2752076987594711695
+      WildRaisin_0_normal_34: -9187625801290950016
+      WildRaisin_0_normal_35: -5674061739730076881
+      WildRaisin_0_normal_36: 991084182836553286
+      WildRaisin_0_normal_37: 5162154360230021343
+      WildRaisin_0_normal_38: 3982778572137429740
+      WildRaisin_0_normal_39: -6775920144282177804
+      WildRaisin_0_normal_4: -5242565638237592932
+      WildRaisin_0_normal_40: -3034722228111763885
+      WildRaisin_0_normal_41: 7562774678009117902
+      WildRaisin_0_normal_42: -3427120120716988247
+      WildRaisin_0_normal_43: -1981807320001704239
+      WildRaisin_0_normal_44: 3125029959314454351
+      WildRaisin_0_normal_45: 7561507773699175605
+      WildRaisin_0_normal_46: -7218590073002458219
+      WildRaisin_0_normal_47: -996532029540550373
+      WildRaisin_0_normal_48: -5201150250599861350
+      WildRaisin_0_normal_49: 7923414859116702519
+      WildRaisin_0_normal_5: 8747398061392111811
+      WildRaisin_0_normal_50: 5459789467010533590
+      WildRaisin_0_normal_51: 4308152849551511647
+      WildRaisin_0_normal_52: 6965008754218291774
+      WildRaisin_0_normal_53: 8773521722823294471
+      WildRaisin_0_normal_54: -5635705961284907091
+      WildRaisin_0_normal_55: 272571366850754372
+      WildRaisin_0_normal_56: 995366233613101202
+      WildRaisin_0_normal_57: -3555229897684514062
+      WildRaisin_0_normal_58: 5184718079426947801
+      WildRaisin_0_normal_59: 3628009798961111964
+      WildRaisin_0_normal_6: 4465557258145695617
+      WildRaisin_0_normal_60: 3638708919339875174
+      WildRaisin_0_normal_61: -5608933398311467301
+      WildRaisin_0_normal_62: -8381822520818314354
+      WildRaisin_0_normal_63: -357518643027419958
+      WildRaisin_0_normal_64: 126502739176475810
+      WildRaisin_0_normal_65: 1622455461483105787
+      WildRaisin_0_normal_66: 1713511872366941061
+      WildRaisin_0_normal_7: 6568770569224312341
+      WildRaisin_0_normal_8: 3003668295898304558
+      WildRaisin_0_normal_9: 7802013171274090182
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
