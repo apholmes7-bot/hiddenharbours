@@ -1,7 +1,7 @@
 7b483a56d32329f4841f7f5678cadb18ff2dcdbbbf8c4ed68727c912f025df3b  ../modern2500.rig.js
 bb0d1e56ce3bf3b00bc348845cf93d9364df839e227be58821c6769058f46dd9  ../modern2500.contract.json
 7e1294987f97f2fbfa71547936b54dfabc85494b22120d8f5f5fb12bb4eef127  ../preview.html
-c808bcbf644c650ee54f2d7df36a6ae18acc8484b56861064e6ca56eef0f9ee2  ../README.md
+90b6f4b4f54f583dd3859468a0a1a778c77f0c5ad34d5c6c8d7cda56df09300b  ../README.md
 a1ccda44cfcee1779babcf7d358a3567cbf1f372d4b8f74bb77caac075e44d55  ../../gameplay/vehicles/modern2500.rig.gameplay.json
 b66f51ec62a8e34fa5582fb46f6ecbb5d734fc1f92c66525cd6474a3dcf36497  Modern2500_crimson_8dir.png
 1f4b6e7ad85650c4c6cdc80c07af09cf8f99be71200c4005e607975d3af514bd  Modern2500_doors_W.png
