@@ -382,6 +382,9 @@ namespace HiddenHarbours.Art
             "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_ReflectionChopScatter",
             "_ReflectionWindScatter", "_ReflectionSkyTint", "_ReflectionSmear", "_ReflectionSunStreak",
             "_ReflectionSunSharp",
+            // the wake's mid stop (W4-1, design 3A): how much brighter than its water churned water reads,
+            // and how far it whitens toward the foam — a look per mood (a fog can hush it), never physics.
+            "_WakeBodyLift", "_WakeBodyWhiten",
         };
         private static readonly string[] MoodColorNames =
         {
@@ -858,7 +861,8 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// Push the four ADR 0015 palette anchors onto the Core <see cref="SeaPalette"/> seam as they stand
-        /// after this frame's mood blend.
+        /// after this frame's mood blend — and, since W4-1 (design 3A), the wake's two dials and the water
+        /// body (<see cref="WaterBody"/>) the aged wake ends on.
         ///
         /// <para>Each anchor is read from the property BLOCK when the blend wrote one there and from the
         /// shared material otherwise — which is the honest reading of "what is this surface drawing with",
@@ -876,7 +880,61 @@ namespace HiddenHarbours.Art
                 EffectivePaletteColor(mat, PaletteDeepId),
                 EffectivePaletteColor(mat, PaletteMidId),
                 EffectivePaletteColor(mat, PaletteShallowId),
-                EffectivePaletteColor(mat, PaletteFoamId)));
+                EffectivePaletteColor(mat, PaletteFoamId),
+                EffectiveFloat(mat, WakeBodyLiftId, 1f),
+                EffectiveFloat(mat, WakeBodyWhitenId, 0f),
+                WaterBody(mat)));
+        }
+
+        /// <summary>
+        /// THE WATER ITSELF, as this surface draws it before any light layer (W4-1, design 3A): the depth
+        /// ramp or the two-colour lerp, the depth range and the deep-blue pull, each at the value the GPU
+        /// will see. An aged wake sprite ends on this at its own depth, as the band does in the shader.
+        ///
+        /// <para>The ramp's texels are read ONCE per ramp texture (<c>DepthRamp.png</c> is imported
+        /// readable for exactly this: 256×8 RGBA, 8 KB of CPU memory, no GPU readback), then shared by
+        /// reference every publish. A ramp that cannot be read publishes no water at all, so the sprites
+        /// keep ending on the mid anchor as they did before 3A, and it is said once in the console.</para>
+        /// </summary>
+        private SeaWaterBody WaterBody(Material mat)
+        {
+            Color32[] ramp = null;
+            if (mat.IsKeywordEnabled("_USE_DEPTHRAMP"))
+            {
+                ramp = DepthRampRow(mat.HasProperty(DepthRampId) ? mat.GetTexture(DepthRampId) : null);
+                if (ramp == null) return default;
+            }
+            return new SeaWaterBody(ramp,
+                EffectivePaletteColor(mat, ShallowColorId), EffectivePaletteColor(mat, DeepColorId),
+                EffectiveFloat(mat, ShallowDepthId, 0f), EffectiveFloat(mat, DeepDepthId, 1f),
+                EffectiveFloat(mat, DepthBandsId, 0f),
+                EffectivePaletteColor(mat, DeepBlueColorId),
+                EffectiveFloat(mat, DeepBlueStartId, 0f), EffectiveFloat(mat, DeepBlueStrengthId, 0f));
+        }
+
+        /// <summary>The row of the depth ramp the shader samples (v = 0.5, point: row ⌊h/2⌋), shallow end
+        /// first — read when the ramp texture changes, never per tick. Null when it cannot be read.</summary>
+        private Color32[] DepthRampRow(Texture texture)
+        {
+            if (ReferenceEquals(texture, _depthRampSource)) return _depthRampRow;
+            _depthRampSource = texture;
+            _depthRampRow = null;
+
+            var tex = texture as Texture2D;
+            if (tex != null && tex.isReadable && tex.width > 0 && tex.height > 0)
+            {
+                Color32[] all = tex.GetPixels32();
+                int row = Mathf.Min(tex.height / 2, tex.height - 1);
+                _depthRampRow = new Color32[tex.width];
+                System.Array.Copy(all, row * tex.width, _depthRampRow, 0, tex.width);
+            }
+            else if (texture != null)
+            {
+                Debug.LogWarning($"[WaterSurface] the depth ramp '{texture.name}' is not readable, so wake " +
+                                 "sprites cannot end on the water they ride on and keep ending on the mid " +
+                                 "anchor (W4-1). Tick Read/Write on its import.", this);
+            }
+            return _depthRampRow;
         }
 
         /// <summary>The value the GPU will actually see for one colour property: the MPB override where one
@@ -886,6 +944,30 @@ namespace HiddenHarbours.Art
             if (_mpb != null && _mpb.HasColor(id)) return _mpb.GetColor(id);
             return mat.HasProperty(id) ? mat.GetColor(id) : Color.white;
         }
+
+        /// <summary>The float twin of <see cref="EffectivePaletteColor"/>: the MPB value where the mood blend
+        /// wrote one, else the shared material's; <paramref name="fallback"/> if the shader has no such
+        /// property.</summary>
+        private float EffectiveFloat(Material mat, int id, float fallback)
+        {
+            if (_mpb != null && _mpb.HasFloat(id)) return _mpb.GetFloat(id);
+            return mat.HasProperty(id) ? mat.GetFloat(id) : fallback;
+        }
+
+        // W4-1 (design 3A): the wake's two dials and the water body's inputs, resolved once.
+        private static readonly int WakeBodyLiftId     = Shader.PropertyToID("_WakeBodyLift");
+        private static readonly int WakeBodyWhitenId   = Shader.PropertyToID("_WakeBodyWhiten");
+        private static readonly int DepthRampId        = Shader.PropertyToID("_DepthRamp");
+        private static readonly int ShallowColorId     = Shader.PropertyToID("_ShallowColor");
+        private static readonly int DeepColorId        = Shader.PropertyToID("_DeepColor");
+        private static readonly int ShallowDepthId     = Shader.PropertyToID("_ShallowDepth");
+        private static readonly int DeepDepthId        = Shader.PropertyToID("_DeepDepth");
+        private static readonly int DepthBandsId       = Shader.PropertyToID("_DepthBands");
+        private static readonly int DeepBlueColorId    = Shader.PropertyToID("_DeepBlueColor");
+        private static readonly int DeepBlueStartId    = Shader.PropertyToID("_DeepBlueStart");
+        private static readonly int DeepBlueStrengthId = Shader.PropertyToID("_DeepBlueStrength");
+        private Texture _depthRampSource;    // the ramp texture _depthRampRow was read from
+        private Color32[] _depthRampRow;     // its sampled row, shallow first (null = unreadable / none)
 
         // The four ADR 0015 anchor ids, resolved once. Deliberately independent of the MoodColorNames
         // array: the palette must publish whether or not the weather-mood blend is switched on.

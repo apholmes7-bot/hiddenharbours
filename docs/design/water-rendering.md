@@ -3934,24 +3934,26 @@ have continued into hue.
 
 ### 29.2 The ramp — `WakeFoamAgeing` (Core), and its HLSL twin
 
-`Core/Environment/WakeFoamAgeing.cs`. Foam is born at the sea's **foam** anchor and walks down the
-water's own ramp — **foam → shallow → mid** — over its life, through three owner-tunable knots:
+`Core/Environment/WakeFoamAgeing.cs`. Foam is born at the sea's **foam** anchor and walks **into the
+water it rides on** — **foam → the water lifted → the water** — over its life, through three
+owner-tunable knots (W4-1, design 3A, ruled 2026-10-10; §47):
 
 | Knot | Default | Means |
 |---|---|---|
 | `WhiteHold` | 0.12 | fraction of life held at pure white — *"white only at the moment of churn"* |
-| `BlueReach` | 0.45 | life at which it has become the sea's shallow blue |
-| `DeepReach` | 0.85 | life at which it lands on the mid blue and stops descending |
+| `BlueReach` | 0.45 | life at which it has become its water, lifted (the mid stop; ≈ 3.45 s astern on the band) |
+| `DeepReach` | 0.85 | life at which it IS its water, and stops (≈ 10.95 s astern on the band) |
 
-**The colours are never invented.** Every value returned is a convex combination of the live
-ADR 0015 palette anchors, so the "different shades of blue" are the ones the sea is already using and a
-preset swap or a mood turn carries the wake with it. That containment is a *provable* property, and
-`WakeFoamAgeingTests.EveryShade_StaysInsideTheSeasOwnPalette` pins it as a derived bound rather than a
-tolerance.
+**The colours are never invented.** The white stop is the live ADR 0015 foam anchor; the other two are
+the water at that spot. Every value returned is a convex combination of the foam and that water (the lift
+lies between them in every channel), so a preset swap or a mood turn carries the wake with it. That
+containment is a *provable* property, and `WakeFoamAgeingTests.EveryShade_StaysInsideTheSeasOwnPalette`
+pins it as a derived bound rather than a tolerance.
 
-**The last leg is the alpha fade, deliberately.** The ramp stops at the mid anchor; the existing fade
-takes it the rest of the way. The ambient ocean at any given spot is whatever depth, tide and light make
-it — dissolving into it beats guessing it.
+**The walk ends ON the water.** Until W4-1 the ramp stopped at the mid anchor and left the last leg to the
+alpha fade; on any water darker than that anchor the old wake read as a fixed light marine blue stripe
+(the owner's 2026-10-09 finding 3). Now the end stop is the water itself, so the fade has nothing left to
+hide.
 
 `_WakeFoamAgeStrength = 0` (shader) / `WakeAgeRamp.Strength = 0` (C#) is a **bit-exact** passthrough to
 the single-white look. The usual A/B contract.
@@ -4177,6 +4179,7 @@ key absent *everywhere* looks consistent and is invisible to a value-based check
 | `_WakeFoamAgeStrength` | the nine water materials | 0 = one flat white (the pre-#665 compose), 1 = full palette walk |
 | `_WakeFoamFreshFloor` | ” | freshness that still reads as churning *now*. Ships at 1 so the white hold has exactly one owner |
 | `_WakeFoamWhiteHold/BlueReach/DeepReach` | ” | the three knots, in age |
+| `_WakeBodyLift` / `_WakeBodyWhiten` | ” (mood-eased) | the mid stop: the water ×2, whitened 5% toward the foam (W4-1, §47) |
 | `_foamAgeHalfLifeSeconds` | `IsoFacetHullFeature` | how fast the colour walk runs. **Keep it under the coverage half-life** |
 | `AgeStrength` / `LengthJitter` / `OrientJitterDeg` | `WakeWaveConfig` | how much the crests age, and how much they differ from one another |
 | `SeaGain` / `ThrowPerSecond` / `BurstSlots` / `SizeBias` / `FallShrink` | `BowImpactConfig` | how hard the sea drives the bow, and how the throw reads |
@@ -4377,15 +4380,20 @@ The walk was lifted out of `WakeFoamAgedColor` into a shared entry point, and ev
 composes through it:
 
 ```hlsl
-float3 FoamAgedColor(float age01, float3 legacy, float strength)
+float3 FoamAgedColor(float age01, float3 legacy, float strength, float3 body)
 {
     float s = saturate(strength);
     if (s <= 0.001) return legacy;                 // the A/B, bit-exact, for every layer at once
     float  t    = WakeFoamKnots(age01, _WakeFoamWhiteHold, _WakeFoamBlueReach, _WakeFoamDeepReach);
-    float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb);
+    float3 lift = WakeBodyLift(body, _PaletteFoam.rgb, _WakeBodyLift, _WakeBodyWhiten);
+    float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, lift, body);
     return lerp(legacy, ramp, s);
 }
 ```
+
+(As of W4-1, §47. When this section was written the walk ran
+`WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb)`, and the measurements below were
+taken on that walk.)
 
 `WakeFoamAgedColor` became a two-line adapter onto it (the wake's freshness clock, `_FoamColor`,
 `_WakeFoamAgeStrength`); the caps pass `capAge01` and `_CapAgeStrength`; the surf passes its own age and
@@ -4454,6 +4462,10 @@ So the resolution claim is made over **the walk** — the samples strictly betwe
 knot, the stretch that used to be flat white — where **all 59 samples are 59 distinct colours**; and the
 band-wide claim became *the commonest colour must be one of the ramp's own end-stops, never a value the
 walk stalled on*. It is `_PaletteMid`, the tail's ambient blue, at 30.7 %.
+
+> **W4-1 (§47) moved the far end.** The band now dies into the water it rides on, not into `_PaletteMid`:
+> the test runs the sweep over Water.mat's water at 1 m (`DepthRamp.png` texel 56, #5e7e78), so "dying"
+> is that water and the span is foam → water. The table above is the measurement as it was taken.
 
 ### …and what it does on the plates (`SHEET-foam.png`)
 
@@ -6091,3 +6103,78 @@ photographed as her default **mesh** variant.
 ⚠ **Row 38 is not fixed by this, and is not made worse by it.** The lift reads the transom root the wake
 already publishes, so while the band is drawn off the track (§38) the lift stands off the track with it.
 That is one cause with two symptoms, and the cause is row 38's ruling to make.
+
+## 47. The wake fades into the water it rides on (W4-1, design 3A, owner ruling 2026-10-10)
+
+**The owner's 2026-10-09 finding 3:** an old wake faded into a fixed light marine blue, not into the
+water under it. Ruled 2026-10-10 (design 3A of the water-four lane's Phase A report): the wake walks from
+the sea's foam into **the water it rides on**.
+
+### 47.1 The walk, before and after
+
+**Before:** foam → `_PaletteShallow` → `_PaletteMid`, three fixed anchors (§29.2, §33). On any water darker
+than the mid anchor the dying wake sat on the sea as a pale stripe. In the Phase A report's frame (display
+sRGB at noon, graded, the band's core at full coverage), the base mood at 4 m: water #1e355b, the wake
+#357fb3 at 3.45 s astern (ΔE76 31.6, ×5.1 luma) and still #214780 at 10.95 s (ΔE76 13.6).
+
+**After:** foam → lift(body) → body, where the body is the water this pixel is:
+
+```hlsl
+float3 foamBody = col.rgb;   // after the depth ramp, the deep-blue pull and the seabed; before the swell tint
+float3 WakeBodyLift(float3 body, float3 foam, float lift, float whiten)
+{
+    return lerp(min(body * max(lift, 1.0), foam), foam, saturate(whiten));
+}
+```
+
+The knots keep their meaning: `WhiteHold` holds white, `BlueReach` is where the walk reaches the lifted
+water (≈ 3.45 s astern on the band), `DeepReach` is where it becomes the water (≈ 10.95 s). The lift has two
+guards: never below ×1 (the mid stop is never darker than its water) and capped at the foam per channel
+(never brighter than its white). Together they keep the walk's luma monotone, which
+`Luminance_NeverRises_AsFoamAges` still proves.
+
+### 47.2 The two dials
+
+| dial | ships | means |
+|---|---|---|
+| `_WakeBodyLift` | 2 | the mid stop is its water this many times brighter (linear, per channel, capped at the foam) |
+| `_WakeBodyWhiten` | 0.05 | …then whitened this far toward the sea's foam |
+
+Both are serialized on `Water.mat` and all eight presets (`WaterPresetMenu` copies every property on apply,
+so a dial on `Water.mat` alone would be lost) and are the shader's defaults. Both are in
+`WaterSurface.MoodFloatNames`: a look per mood, so the weather eases them. They are deliberately **not** in
+`FoamRealnessTests`' list of wake keys that must agree across presets.
+
+At the shipped arm the base mood reads #8ab1b0 at 1 m (ΔE76 19.4, ×2.2 luma) and #3b4d6d at 4 m (ΔE76 11.5,
+×2.0) at 3.45 s, and is the water exactly (ΔE 0) at 10.95 s, in all nine moods at every depth. On dark
+water the whiten dominates (at 4 m, ΔE76 11.5 against 4.1 with no whiten). The Phase C plates pick the arm.
+
+### 47.3 The caps and the surf follow, each through its own strength
+
+There is one walk (§33), so the whitecaps (`_CapAgeStrength`) and the surf and its lip (`_SurfAgeStrength`)
+also die into `foamBody`. Each strength at 0 is still its layer's legacy white, bit-exact. W4-1 changes
+neither strength. `PaletteGrade` and the envelope bands still read the four ADR 0015 anchors: 3A moves the
+foam only.
+
+### 47.4 The sprites speak the same language
+
+`BoatWakeEmitter` gives each foam puff, droplet, bubble and wave crest its own water, from
+`BoatCrossing.DepthAt` at its position, through `SeaPaletteState.BodyAt`. `WaterSurface` publishes what the
+CPU needs: the depth ramp's sampled row and the deep-blue dials, as a `SeaWaterBody`. `DepthRamp.png`
+imports readable for this (256×8 RGBA, 8 KB of CPU memory, read once per texture, no GPU readback). Two
+known gaps: the sprites' water has no seabed composite (the bed only ever darkens, so a sprite over a
+visible bed ends a little lighter than the band); and the plume and bow spray stay at `ShadeFresh`, age 0,
+which is the foam anchor in both walks. A ramp that cannot be read publishes no water, and the sprites
+fall back to the mid anchor, with one console warning.
+
+### 47.5 What is tested
+
+- `WakeFoamAgeingMeasurementTests.TheWake_EndsAsTheWaterItRidesOn_InEveryMood`: ΔE 0 at age 1, the nine
+  materials at 1, 2.5 and 4 m, against the test's own transcription of the shader's depth block from the
+  materials' YAML and the ramp's pixels; it also checks the water the CPU hands a sprite.
+- `…TheWakesMidStop_KeepsTheWatersHue`: the mid stop within 10° of its water's hue (display sRGB), half the
+  20° gap the Phase A report measured as the defect; the shallow anchor fails the same bar.
+- `…WakeBodyDials_OnAllNineMaterials_AndInMoodFloatNames`.
+- `WakeFoamAgeingShaderTests.FoamAgedColor_ReadsTheSavedBody_NotAnAnchor`: `foamBody` is saved once, after
+  the bed and before the swell tint, never rewritten, and handed to all four aged foam layers.
+- The ramp and the lift are compared line for line with their C# twins (`Ramp3`, `BodyLift`).
