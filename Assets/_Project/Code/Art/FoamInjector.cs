@@ -46,10 +46,13 @@ namespace HiddenHarbours.Art
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Art/Foam Injector (advected foam buffer)")]
     [DefaultExecutionOrder(30)]
-    public sealed class FoamInjector : MonoBehaviour
+    public sealed class FoamInjector : MonoBehaviour, IVesselWayListener
     {
         private IHullWakePoseSource _wakePoseSource;
         private Rigidbody2D _hullBody;
+        private VesselWay _way = VesselWay.UnderWay;
+
+        public void OnVesselWayChanged(VesselWay way) => _way = way;
         private Vector2 _wakeHeading = Vector2.up;
 
         /// <summary>Water-frame point used for this frame's newly deposited foam: the drawn transom with
@@ -94,6 +97,9 @@ namespace HiddenHarbours.Art
         [Min(0.01f)] [SerializeField] private float _wakeSpeedKnee = 3f;
         [Tooltip("Shaping exponent for speed. 1 = linear (a wake builds evenly with way).")]
         [Min(1f)] [SerializeField] private float _wakeExponent = 1f;
+        [Tooltip("Moored hulls meet the tidal current but have no propulsive wake. A cubic response keeps " +
+                 "a harbour stream below a solid foam deposit while retaining churn in strong flow.")]
+        [Min(1f)] [SerializeField] private float _mooredWakeExponent = 3f;
         [Tooltip("Weight of the wake channel in the sum. 0 = bobbing only.")]
         [Range(0f, 2f)] [SerializeField] private float _wakeWeight = 1f;
 
@@ -136,6 +142,7 @@ namespace HiddenHarbours.Art
         private bool _registered;
         private bool _primed;
         private Vector2 _previousPosition;
+        private double _previousGameSeconds;
         private float _hullY;
         private float _surfaceY;
         private float _previousHullY;
@@ -251,6 +258,7 @@ namespace HiddenHarbours.Art
 
         private void OnEnable()
         {
+            _way = GetComponentInParent<IVesselWay>()?.Way ?? VesselWay.UnderWay;
             _primed = false;
             _hasPending = false;
             _pendingFrame = -1;
@@ -293,6 +301,11 @@ namespace HiddenHarbours.Art
             }
 
             double now = clock.TotalSeconds;
+            // A clock seek changes the sampled wave phase instantly; it is not a physical slap.
+            double expectedStep = Time.unscaledDeltaTime * Mathf.Max(0f, clock.TimeScale);
+            bool clockSeek = _primed && (now < _previousGameSeconds ||
+                now - _previousGameSeconds > expectedStep + 1.0);
+            _previousGameSeconds = now;
             // The game's one depth rule, computed from Core directly (Art cannot reach Boats'
             // BoatCrossing, and must not — rule 4).
             float depth = TidalExposure.WaterDepth(env.WaterLevelAt(now), terrain.ElevationAt(trueStern));
@@ -310,6 +323,7 @@ namespace HiddenHarbours.Art
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
+            if (clockSeek) _animator.Reset();
             _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
                            sample.WindVector, sample.SeaState01, in field, in smoothing);
 
@@ -335,7 +349,7 @@ namespace HiddenHarbours.Art
                               (position - _previousPosition).sqrMagnitude >
                               _teleportMeters * _teleportMeters;
 
-            if (!_primed || teleported || dt <= 0f)
+            if (!_primed || teleported || clockSeek || dt <= 0f)
             {
                 // First tick after (re)entering the water: seed the history so the hull does not
                 // register a phantom slap from a standing start, and lay nothing this frame.
@@ -372,14 +386,16 @@ namespace HiddenHarbours.Art
             // Speed THROUGH THE WATER, not over the ground: a boat carried along by the stream is
             // stationary relative to the water she floats on and leaves no wake in it.
             // Rendered heave/pitch move the anchor but are not forward drive through water.
-            Vector2 groundVelocity = _hullBody != null
+            // A moored visual moves with tide and waves; that movement is not travel.
+            Vector2 groundVelocity = _way == VesselWay.Moored ? Vector2.zero : _hullBody != null
                 ? _hullBody.linearVelocity : (position - _previousPosition) / dt;
+            float wakeExponent = _way == VesselWay.Moored ? _mooredWakeExponent : _wakeExponent;
             float horizontalSpeed = (groundVelocity - sample.CurrentVector).magnitude;
             float verticalRate = FoamBuffer.RelativeHeaveRate(_surfaceY, _hullY,
                                                               _previousSurfaceY, _previousHullY, dt);
 
             float rate01 = FoamBuffer.Injection01(horizontalSpeed, verticalRate,
-                                                  _wakeSpeedKnee, _wakeExponent, _wakeWeight,
+                                                  _wakeSpeedKnee, wakeExponent, _wakeWeight,
                                                   _slapRateKnee, _slapExponent, _slapWeight);
             float amount = rate01 * Mathf.Max(_depositPerSecond, 0f) * dt * Mathf.Max(_strength, 0f);
             // The FRESHNESS mark (the buffer's age channel) is the dt-INDEPENDENT rate, scaled by this
@@ -400,7 +416,7 @@ namespace HiddenHarbours.Art
             // out of only that part of the stamp, which keeps the two conserved against each other at
             // any mix of the two channels. At rest the bob channel's churn is untouched.
             float wake01 = Mathf.Min(rate01,
-                FoamBuffer.Shape01(horizontalSpeed, _wakeSpeedKnee, _wakeExponent)
+                FoamBuffer.Shape01(horizontalSpeed, _wakeSpeedKnee, wakeExponent)
                 * Mathf.Max(_wakeWeight, 0f));
             float depositRate = wake01 * Mathf.Max(_depositPerSecond, 0f) * Mathf.Max(_strength, 0f);
             FoamDispersal dispersal = BuildDispersal(position, depositRate, horizontalSpeed, dt,

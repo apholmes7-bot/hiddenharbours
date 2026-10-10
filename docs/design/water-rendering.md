@@ -1787,6 +1787,7 @@ an independent art dial (push the dapple off the very edge if you want to), no l
 |---|---|---|
 | `_CausticDayGate` | `0` (**OFF**) | 0 = caustics always on (today); 1 = day-only (fades out at night). |
 | `_CausticShallowBias` | `0` m | Push the caustic band deeper off the very edge (0 = today's band). |
+| `_CausticClarity` | `1` (owner, 2026-10-08) | Full attenuation of the caustic add by the seabed's RGB transmission. Explicitly 1 in Water.mat and all eight presets; held fixed across moods (§17.12). |
 
 `_CausticDayGate` is in `WaterSurface.MoodFloatNames`, so the weather-driven palette (§14) and the preset
 library (§12) **ease** it per mood — e.g. a `FoggySmother` preset can kill the sun-dapple. This is art-lane
@@ -2057,6 +2058,64 @@ off/on values were 3.567/3.736 ms in St Peters and 12.219/10.820 ms in Nine Mile
 shared-pass comparison, not an isolated shader timer or a 60 fps certification. The first Direct3D12
 capture attempt crashed in GPU readback; the accepted captures use Direct3D11. No shader, scene, bake,
 depth, clip, walkability or simulation change belongs to C1.
+
+### 17.12 C2a: caustic clarity attenuation (ships at 1, 2026-10-08)
+
+The light nets previously added on top of an already absorbed seabed. C2a gives that add the same
+optical law: `sigma = AbsorptionSigma()` and `T = AbsorptionTransmission(sigma, depth)` =
+`exp(-sigma * 2d)`, followed by `AbsorptionBand(T, _AbsorptionBands)`. The new factor is
+`Tc = lerp(1, bandedT, saturate(_CausticClarity))`; the final caustic add multiplies by `Tc`
+after its existing depth and day gates. The pure `CausticMath.ClarityTransmission` twin calls
+`WaterAbsorption.IsActive`, `Transmission` and `BandTransmission`, with no second optical law.
+
+Three choices keep the effect consistent with light travelling through water:
+
+- Use **`depth`, the real water column**, not bias-shifted `causticDepth`. The shallow bias places
+  the light pattern; it must not shorten the optical path. The seabed uses cosmetic `depthC`
+  at its organic shore fringe; C2a deliberately uses the real column while sharing its 2d law.
+- Use **per-channel RGB transmission**, so red fades first and the nets shift toward cyan with
+  depth, like the seabed. No separate grey approximation or extinction ratio is introduced.
+- Apply **the same `_AbsorptionBands` before the clarity blend**. Six bands retain the seabed's
+  pixel-art steps; values below 1 keep smooth transmission. Partial clarity blends toward those steps.
+
+Clarity 0 is an exact factor of (1,1,1), and the summed sigma at or below `ABSORPTION_EPS`
+also returns exactly (1,1,1), at any clarity. Water.mat and all eight presets explicitly serialize
+`_CausticClarity: 1`, so the editor's wholesale `CopyPropertiesFromMaterial` restores one even
+onto a material seeded with 0. Clarity stays outside `WaterSurface.MoodFloatNames`: it is owner
+look policy; the existing mood-eased `_Turbidity` still changes the shared extinction.
+
+Worked example: StirredBrown turbidity 3 and ratio (1, 0.18, 0.08), at 0.5 m, give smooth
+T = (0.04978707, 0.58274825, 0.78662786). Six bands give (0, 0.5, 5/6); clarity 0.5 gives
+(0.5, 0.75, 11/12). At the waterline smooth and six-band T are (1,1,1).
+
+Source cost is one `exp` per channel per active shallow pixel, inside the existing `causticGate`
+branch and guarded by positive clarity and active sigma. There is no new texture sample, keyword,
+or property-block write. No extra optical work runs outside that branch; at zero clarity the new
+exponential is skipped. At shipped clarity 1, the branch computes clamped sigma, its active-sigma
+check, the down-and-back depth product and RGB exponential, band saturation/multiply/add/floor/divide,
+clarity saturation/lerp and the final RGB multiply inside the caustic gate. Transmission and banding are skipped for
+inactive sigma. Measured GPU cost remains **NOT VERIFIED**; Phase C supplied the owner-reviewed plates.
+
+The 28 new EditMode cases cover independent worked numbers, depth/turbidity monotonicity, bit-exact
+passthrough of the arithmetic factor, strength/depth clamps, all nine serialized ones, all nine preset
+copies from a seeded 0, shader wiring, and the mood-policy exclusion. Phase A+B used source/text
+checks without Unity; CI compiles and runs the tests. Phase C captured clarity 0/0.5/1 plus
+caustics-off controls in both played regions at noon and golden hour.
+
+**Phase D (owner, 2026-10-08).** The owner chose clarity **1** and accepted the measured default-off
+GPU residual: 91 changed RGB channel values in 28 of 96 fixed-clock pairs, maximum absolute
+difference 0.00048828125, isolated to the new final factor. The zero path is unchanged; the strict
+local diagnostic stays failing and uncommitted, with no relaxed test bar. GPU price is **NOT VERIFIED**.
+Water, DeepBlue, FoggySmother, GlassyCalm, NorthAtlantic, StirredBrown, StormGrey, Tropical and
+WarmShelter each serialize 1. The bare shader default also moves to 1 so fixtures and new materials
+start from the shipped sea. `WaterPresetMenu.ApplyVariant` copies the complete variant material, and
+`DisplacedWaterSurface` clones/copies the live material; both therefore carry 1. The eight older
+native `.preset` twins omit `_CausticClarity` altogether, so they contain no competing zero pin;
+they are not regenerated here. `WaterSurface` blends only its named mood properties and does not
+override clarity. The C# twin takes clarity explicitly and has no default to move. Part A changes
+data and matching guards without Unity. Part B needs a later owner-granted slot for isolated GPU
+timing, the Phase C clarity-1 anchors through shipped materials without an override, and the GPU
+classes whose measured premises predate clarity 1.
 
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 

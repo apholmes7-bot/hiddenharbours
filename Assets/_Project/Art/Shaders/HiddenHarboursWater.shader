@@ -722,6 +722,7 @@ Shader "HiddenHarbours/Water"
         // stays opaque and that cancellation is gone BY CONSTRUCTION.
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
+        _CausticClarity       ("Caustic clarity (0 = off, 1 = seabed transmission)", Range(0,1)) = 1.0
 
         [Header(Seabed absorption (ADR 0027 num 7)   the bottom seen THROUGH the column   col.rgb only)]
         // The painted _DepthRamp stays the colour authority for the WATER BODY (ADR 0027 finding 1: a
@@ -1601,6 +1602,7 @@ Shader "HiddenHarbours/Water"
                 // props that sat here are RETIRED by ADR 0027 #7's seabed absorption below.)
                 float  _CausticDayGate;
                 float  _CausticShallowBias;
+                float  _CausticClarity;
                 // ADR 0027 #2 — field-driven caustics (curvature of the shared wave field; default OFF).
                 float  _CausticCurvatureBlend;
                 float  _CausticCurvatureStep;
@@ -5329,7 +5331,21 @@ Shader "HiddenHarbours/Water"
                     float causticDnSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
                     float causticSunUp = (causticDnSum > 1e-3) ? saturate(_SunElevation) : 1.0;
                     float causticDay = lerp(1.0, causticSunUp, saturate(_CausticDayGate));
-                    col.rgb += _CausticColor.rgb * caustic * _CausticAmount * causticGate * causticDay;
+                    // C2a: real column depth, RGB down-and-back absorption, same bands as the seabed.
+                    // Owner look policy, ships at 1; zero clarity or inactive sigma is exactly one.
+                    // One exp per channel only inside this shallow branch when clarity and sigma are active.
+                    float3 causticTransmission = float3(1.0, 1.0, 1.0);
+                    if (_CausticClarity > 0.0)
+                    {
+                        float3 causticSigma = AbsorptionSigma();
+                        if (dot(causticSigma, float3(1.0, 1.0, 1.0)) > ABSORPTION_EPS)
+                        {
+                            float3 causticT = AbsorptionTransmission(causticSigma, depth);
+                            causticT = AbsorptionBand(causticT, _AbsorptionBands);
+                            causticTransmission = lerp(float3(1.0, 1.0, 1.0), causticT, saturate(_CausticClarity));
+                        }
+                    }
+                    col.rgb += _CausticColor.rgb * caustic * _CausticAmount * causticGate * causticDay * causticTransmission;
                 }
 
                 // ---- layer 4 specular glints (implied single sun; pixelized so it sparkles, not smears) -------

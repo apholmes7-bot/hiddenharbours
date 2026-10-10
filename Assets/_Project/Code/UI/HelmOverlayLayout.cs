@@ -18,15 +18,17 @@ namespace HiddenHarbours.UI
         /// placeholder): the small dash card sits at <c>SmallCenterX01</c>/<c>MarginY</c>, and the
         /// FOCUSED state rises from the same bottom anchor at <c>FocusScale</c>, so the rig's
         /// controls — and its hit geometry, which scales with the same rect — are properly
-        /// clickable. All anchors are data (rule 6).
+        /// clickable. Rig scale and bottom margin are HUD reference units, converted with the same
+        /// factor as the nav cluster. Horizontal anchors remain screen fractions (rule 6).
         /// </summary>
         public static Rect CardRect(bool focused, int rigW, int rigH, in HelmOverlaySettings s,
                                     float screenW, float screenH)
         {
-            float scale = focused ? s.FocusScale : s.SmallScale;
+            float hudScale = HudBandLayout.ScaleFactor(screenW, screenH);
+            float scale = (focused ? s.FocusScale : s.SmallScale) * hudScale;
             float w = rigW * scale, h = rigH * scale;
             float cx = screenW * (focused ? s.FocusCenterX01 : s.SmallCenterX01);
-            return new Rect(cx - w * 0.5f, s.MarginY, w, h);
+            return new Rect(cx - w * 0.5f, s.MarginY * hudScale, w, h);
         }
 
         /// <summary>
@@ -59,15 +61,36 @@ namespace HiddenHarbours.UI
         {
             float scale = focused ? s.DashFocusScale : s.DashSmallScale;
             if (scale <= 0f) scale = 1f;
+            float hudScale = HudBandLayout.ScaleFactor(screenW, screenH);
+            scale *= hudScale;
             if (rigW > 0 && screenW > 0f) scale = Mathf.Min(scale, screenW / rigW);
             // A window with no room left below the band collapses the card to nothing rather than
             // inverting it — the pre-S4.5 clamp could go negative on a screen shorter than MarginY.
-            float availH = screenH - s.MarginY - Mathf.Max(0f, reservedTopPx);
+            float availH = screenH - s.MarginY * hudScale - Mathf.Max(0f, reservedTopPx);
             if (rigH > 0) scale = Mathf.Min(scale, Mathf.Max(0f, availH) / rigH);
             float w = rigW * scale, h = rigH * scale;
             float cx = screenW * (focused ? s.FocusCenterX01 : s.SmallCenterX01);
-            return new Rect(cx - w * 0.5f, s.MarginY, w, h);
+            return new Rect(cx - w * 0.5f, s.MarginY * hudScale, w, h);
         }
+
+        /// <summary>The helm card's chrome uses the same HUD factor as its picture and margin.
+        /// Other instrument windows keep their own existing scale.</summary>
+        public static BoatUiWindowSettings WindowSettings(in BoatUiWindowSettings settings,
+                                                          float screenW, float screenH)
+        {
+            float scale = HudBandLayout.ScaleFactor(screenW, screenH);
+            var result = settings;
+            result.TitleBarPx *= scale;
+            result.ChromeButtonPx *= scale;
+            result.GripPx *= scale;
+            return result;
+        }
+
+        /// <summary>Reserve enough room above the dash for the lifted cluster AND its chrome.
+        /// The top band remains the minimum reserve; a focused dash cannot push the heading off screen.</summary>
+        public static float DashReservedTopPx(float screenW, float screenH, float bandPx, float titleBarPx)
+            => Mathf.Max(bandPx, HelmHudSuppression.HeadingTopRef
+                                * HudBandLayout.ScaleFactor(screenW, screenH) + titleBarPx);
 
         /// <summary>
         /// The tiller handle's Z rotation (deg, Unity CCW-positive) for a helm steer — the
