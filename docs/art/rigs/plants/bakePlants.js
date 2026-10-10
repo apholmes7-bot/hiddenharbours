@@ -3,27 +3,29 @@
     'use strict';
     const R = root.PlantRig5;
     if (!R || R.SPECIES.length !== 48) throw Error('PlantRig5: expected 48 keys');
+    const dormantStates = root.PlantDormant5.states;
+    const dormant = (key, o) => dormantStates.some(s => s.species === key && s.stage === o.stage && s.season === o.season && s.variants.includes(o.variant));
     const channels = ['unlit', 'normal', 'light', 'detail'];
     const tide = [-0.85, 0, 0.5, 1, 2];
     function frame(key, o) {
         if (!R.byKey[key]) throw Error('PlantRig5: unknown key ' + key);
+        if (dormant(key, o)) return null;
         return R.frame(key, Object.assign({ frame: 0, wind: { w: 0, gust: 0, dir: 1 } }, o));
     }
     function catalog() {
         const species = [];
         for (const sp of R.SPECIES) {
-            const cells = [], unavailable = [];
+            const cells = [], dormantCells = [];
             for (const stage of R.STAGE_KEYS) for (const season of R.SEASONS)
             for (let variant = 0; variant < R.VARIANTS; variant++)
             for (let t = 0; t < (sp.fam === 'shore' ? tide.length : 1); t++) {
                 const o = { stage, season, variant };
                 if (sp.fam === 'shore') o.water = tide[t];
-                try {
-                    const f = frame(sp.key, o);
-                    if (!f.v.a.some(x => x !== 0)) throw Error('empty raster');
-                    cells.push({ stage, season, variant, tide: t, w: f.v.w, h: f.v.h,
-                        pivot: [f.mdl.pivot.x, f.mdl.pivot.y], heightM: f.mdl.hmax / R.PPU });
-                } catch (e) { unavailable.push({ stage, season, variant, tide: t, reason: String(e) }); }
+                const f = frame(sp.key, o);
+                if (f === null) { dormantCells.push({ stage, season, variant, tide: t, state: 'DORMANT' }); continue; }
+                if (!f.v.a.some(x => x !== 0)) throw Error('empty raster outside dormant data');
+                cells.push({ stage, season, variant, tide: t, w: f.v.w, h: f.v.h,
+                    pivot: [f.mdl.pivot.x, f.mdl.pivot.y], heightM: f.mdl.hmax / R.PPU });
             }
             // Pack cells by height, retaining each cell's own size and pivot.
             const ordered = cells.map((c, i) => ({ c, i })).sort((a, b) => b.c.h - a.c.h || b.c.w - a.c.w || a.i - b.i);
@@ -45,7 +47,7 @@
             for (const p of best.placed) Object.assign(cells[p.i], { page: 0, x: p.x, y: p.y });
             const pages = [{ w: best.w, h: best.h }];
             species.push({ key: sp.key, family: sp.fam, habitat: sp.hab, standingHeightM: sp.h / R.PPU,
-                tide: sp.fam === 'shore' ? tide : [], cells, pages, unavailable });
+                tide: sp.fam === 'shore' ? tide : [], cells, pages, dormant: dormantCells });
             R.clearCache();
         }
         return { schema: 1, ppu: R.PPU, rigSha256: 'a80c485993a1a05930849298d688572864deaa873d6aa62435135bfc3ff0059b',

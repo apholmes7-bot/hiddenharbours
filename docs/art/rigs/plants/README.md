@@ -19,7 +19,9 @@ Each species occupies one page, at most 2048 on either side. Cells use height-so
 
 Maps import with Point sampling, no mipmaps, no compression and no rescaling. The normal basis carries the plant rig's north axis into the shared sun helper. Wind, snow, sun elevation and weather use existing globals. The scene overlay applies the day/night grade. No shared lighting include is edited. Four maps cannot reproduce the rig's voxel sun occlusion or palette ramp selection; an engine plate must assess that remaining difference.
 
-Of 5,376 state cells, 5,312 render. The rig throws on 64 flower cells across variants: seedling winter for Lupin, LadySlipper, QueenAnne and BlueFlag; every seedling season plus young and mature spring for Fireweed and Goldenrod. The catalog lists these gaps. A missing cell draws nothing and increments `MissingCells`; it never changes species or season. Adoption must settle the gap policy first.
+Of 5,376 state cells, 5,312 render and 64 are explicitly DORMANT. `dormant-states.json` lists the 16 species/stage/season states and all four variants. The bake wrapper returns no drawing for these states without calling the failing rig path; runtime cells carry dormancy and do not count as missing art. The pin test fails on any list change or if the rig starts drawing a listed cell. The rig remains intact.
+
+`unresolved-species.json` keeps MarshMarigold and OstrichFern as diagnostic markers. They receive no substitution, id or byte code in PR 3; those append only when their art arrives.
 
 ## Field contract
 
@@ -29,11 +31,11 @@ Of 5,376 state cells, 5,312 render. The rig throws on 64 flower cells across var
 
 Seed 9109, half-metre cells, 30 percent young plants, four variants and root jitter define the default scatter. Density and species weights live in the five recipe Defs. `GroundMetresPerY` defaults to 1/sin(40), matching the one-scene scatter's true-ground density conversion. It is a region setting, not a light setting. Chunks group by x bucket, sorting order, species and page; slow tide/season updates replace only changed groups. Footstep trails consume the existing eight-walker pool of 24 points. Tide states and submerged sorting use `ShorePlantTideMath`.
 
-## Provisional recipes
+## Catalog notes: PROVISIONAL recipes
 
 `recipe-seed.json` records PxKit9 recipe requests and raster material areas at 520 by 450, 32 pixels per metre. The five accepted placement JSON files used in the design plan were absent from the allowed sources. Requests total coast 151, barren 128, marsh 146, meadow 133 and swale 91; the plan accepted 146, 127, 144, 133 and 91. Requests include two SugarKelp on irishmoss, although the accepted coast scene had none. These weights satisfy the kelp succession slot but are not calibrated to the 90 old kelp.
 
-The density is the requested count divided by material area, capped at 3. Species weights retain request counts and shore elevation bands filter eligible choices. These are diagnostic starting values. They are not an approved match to the HH-st-peters-one-scene-package-2026-10-07 planting. Local density and mix calibration, exact terrain exclusions and the treatment of the 26 key-scene plant rows belong to PR 5p's data decision.
+The density is the requested count divided by material area, capped at 3. Species weights retain request counts and shore elevation bands filter eligible choices. These are diagnostic starting values. They are not an approved match to the HH-st-peters-one-scene-package-2026-10-07 planting. The five recipes ship as PROVISIONAL. PR 5p remeasures weights and zones after exact ground masks: within 10 percent of list density for materials with at least 20 listed plants and 10 square metres, and within 5 percentage points for species holding at least 5 percent of a frame. Rare and fixed rows are accounted for. Exact frame lists are the fallback only if five recipes cannot meet this gate without per-frame hacks. No runtime provisional flag is added.
 
 ## Validation and next phase
 

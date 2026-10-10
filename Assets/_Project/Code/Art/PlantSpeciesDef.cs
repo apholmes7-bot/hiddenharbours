@@ -17,7 +17,7 @@ namespace HiddenHarbours.Art
         {
             foreach (var c in Cells)
                 if (c.Stage == stage && c.Season == season && c.Variant == variant && c.Tide == tide) return c;
-            // Missing states are explicit bake gaps, never another species or season.
+            // An absent lookup is an unbound state, distinct from explicit dormancy.
             return null;
         }
     }
@@ -30,6 +30,7 @@ namespace HiddenHarbours.Art
     public sealed class PlantCell
     {
         public int Stage, Season, Variant, Tide, Page;
+        public bool Dormant;
         public Rect Rect;
         public Vector2 Pivot;
         public float HeightM;

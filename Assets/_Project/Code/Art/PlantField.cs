@@ -24,6 +24,7 @@ namespace HiddenHarbours.Art
         public int PlantCount => _sites.Count;
         public int ChunkCount => _chunks.Count;
         public int MissingCells { get; private set; }
+        public int DormantCells { get; private set; }
         public string EncodeCurrentField() => PlantFieldCodec.Encode(_plane);
         readonly List<Site> _sites = new List<Site>();
         readonly Dictionary<(int, int, int, int), (GameObject go, Mesh mesh)> _chunks = new Dictionary<(int, int, int, int), (GameObject, Mesh)>();
@@ -58,7 +59,7 @@ namespace HiddenHarbours.Art
                 _codes[sp.Code] = sp;
             }
             _sites.Clear(); _plane = new byte[Width * Height];
-            _season = _ground.PlantSeason; MissingCells = 0;
+            _season = _ground.PlantSeason; MissingCells = 0; DormantCells = 0;
             for (int y = 0; y < Height; y++) for (int x = 0; x < Width; x++)
             {
                 float px = Origin.x + (x + 0.5f) * CellSize + PlantFieldScatter.Offset(x, y, Seed, false, CellSize);
@@ -109,11 +110,12 @@ namespace HiddenHarbours.Art
         {
             if (dirty == null) ClearChunks();
             else foreach (var key in dirty) ClearChunk(key);
-            MissingCells = 0;
+            MissingCells = 0; DormantCells = 0;
             var groups = new Dictionary<(int, int, int, int), List<Site>>();
             foreach (var s in _sites)
             {
                 if (s.Cell == null) { MissingCells++; continue; }
+                if (s.Cell.Dormant) { DormantCells++; continue; }
                 var k = Key(s);
                 if (dirty != null && !dirty.Contains(k)) continue;
                 if (!groups.TryGetValue(k, out var list)) groups[k] = list = new List<Site>();

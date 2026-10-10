@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "species": [
+    {
+      "key": "MarshMarigold",
+      "state": "UNRESOLVED",
+      "count": 8
+    },
+    {
+      "key": "OstrichFern",
+      "state": "UNRESOLVED",
+      "count": 7
+    }
+  ],
+  "notes": "HH-st-peters-one-scene-package-2026-10-07 diagnostic markers only. No substitution, id or byte code."
+}

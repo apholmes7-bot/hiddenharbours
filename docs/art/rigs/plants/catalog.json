@@ -809,7 +809,7 @@
           "h": 212
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SheepLaurel",
@@ -1593,7 +1593,7 @@
           "h": 219
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Rhodora",
@@ -2377,7 +2377,7 @@
           "h": 344
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "BlackHuckleberry",
@@ -3161,7 +3161,7 @@
           "h": 140
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "CommonJuniper",
@@ -3945,7 +3945,7 @@
           "h": 125
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Leatherleaf",
@@ -4729,7 +4729,7 @@
           "h": 127
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SweetGale",
@@ -5513,7 +5513,7 @@
           "h": 366
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "WinterberryHolly",
@@ -6297,7 +6297,7 @@
           "h": 438
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SpeckledAlder",
@@ -7081,7 +7081,7 @@
           "h": 929
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "PussyWillow",
@@ -7865,7 +7865,7 @@
           "h": 515
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "RedOsierDogwood",
@@ -8649,7 +8649,7 @@
           "h": 379
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Meadowsweet",
@@ -9433,7 +9433,7 @@
           "h": 407
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Steeplebush",
@@ -10217,7 +10217,7 @@
           "h": 151
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Raspberry",
@@ -11001,7 +11001,7 @@
           "h": 237
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "WildRose",
@@ -11785,7 +11785,7 @@
           "h": 209
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "StaghornSumac",
@@ -12569,7 +12569,7 @@
           "h": 645
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Serviceberry",
@@ -13353,7 +13353,7 @@
           "h": 543
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "BeakedHazelnut",
@@ -14137,7 +14137,7 @@
           "h": 511
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "WildRaisin",
@@ -14921,7 +14921,7 @@
           "h": 598
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "RedElderberry",
@@ -15705,7 +15705,7 @@
           "h": 273
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SugarKelp",
@@ -19567,7 +19567,7 @@
           "h": 650
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "IrishMoss",
@@ -23429,7 +23429,7 @@
           "h": 347
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Eelgrass",
@@ -27291,7 +27291,7 @@
           "h": 401
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "KnottedWrack",
@@ -31153,7 +31153,7 @@
           "h": 483
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Bladderwrack",
@@ -35015,7 +35015,7 @@
           "h": 344
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SeaLettuce",
@@ -38877,7 +38877,7 @@
           "h": 289
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Cordgrass",
@@ -42739,7 +42739,7 @@
           "h": 595
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Glasswort",
@@ -46601,7 +46601,7 @@
           "h": 394
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SaltmeadowHay",
@@ -50463,7 +50463,7 @@
           "h": 283
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "BlackRush",
@@ -54325,7 +54325,7 @@
           "h": 366
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Cattail",
@@ -58187,7 +58187,7 @@
           "h": 782
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Threesquare",
@@ -62049,7 +62049,7 @@
           "h": 399
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "MarramGrass",
@@ -65911,7 +65911,7 @@
           "h": 315
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Bayberry",
@@ -69773,7 +69773,7 @@
           "h": 1138
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SweetFern",
@@ -73635,7 +73635,7 @@
           "h": 353
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "BeachPea",
@@ -77497,7 +77497,7 @@
           "h": 403
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Lupin",
@@ -78217,34 +78217,34 @@
           "h": 106
         }
       ],
-      "unavailable": [
+      "dormant": [
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         }
       ]
     },
@@ -78966,34 +78966,34 @@
           "h": 322
         }
       ],
-      "unavailable": [
+      "dormant": [
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         }
       ]
     },
@@ -79395,174 +79395,174 @@
           "h": 205
         }
       ],
-      "unavailable": [
+      "dormant": [
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         }
       ]
     },
@@ -80284,34 +80284,34 @@
           "h": 184
         }
       ],
-      "unavailable": [
+      "dormant": [
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         }
       ]
     },
@@ -80713,174 +80713,174 @@
           "h": 121
         }
       ],
-      "unavailable": [
+      "dormant": [
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "spring",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "summer",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "autumn",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "young",
           "season": "spring",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "mature",
           "season": "spring",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         }
       ]
     },
@@ -81666,7 +81666,7 @@
           "h": 152
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "BlueFlag",
@@ -82386,34 +82386,34 @@
           "h": 293
         }
       ],
-      "unavailable": [
+      "dormant": [
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 0,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 1,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 2,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         },
         {
           "stage": "seedling",
           "season": "winter",
           "variant": 3,
           "tide": 0,
-          "reason": "RangeError: Invalid typed array length: -9.999999810000001e+26"
+          "state": "DORMANT"
         }
       ]
     },
@@ -83199,7 +83199,7 @@
           "h": 108
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "MeadowGrass",
@@ -83983,7 +83983,7 @@
           "h": 135
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "Timothy",
@@ -84767,7 +84767,7 @@
           "h": 173
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "SoftRush",
@@ -85551,7 +85551,7 @@
           "h": 157
         }
       ],
-      "unavailable": []
+      "dormant": []
     },
     {
       "key": "TussockSedge",
@@ -86335,7 +86335,7 @@
           "h": 184
         }
       ],
-      "unavailable": []
+      "dormant": []
     }
   ]
 }

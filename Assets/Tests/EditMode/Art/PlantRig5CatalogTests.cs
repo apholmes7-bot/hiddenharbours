@@ -23,7 +23,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var dims = Regex.Matches(File.ReadAllText("docs/art/rigs/plants/catalog.json"), "\"[wh]\": (\\d+)");
             string catalog = File.ReadAllText("docs/art/rigs/plants/catalog.json");
             Assert.That(Regex.Matches(catalog, "\"stage\":").Count, Is.EqualTo(5376));
-            Assert.That(Regex.Matches(catalog, "\"reason\":").Count, Is.EqualTo(64));
+            Assert.That(Regex.Matches(catalog, "\"state\": \"DORMANT\"").Count, Is.EqualTo(64));
             Assert.That(dims.Count, Is.EqualTo((5312 + 48) * 2));
             foreach (Match m in dims) Assert.That(int.Parse(m.Groups[1].Value), Is.InRange(1, 2048));
         }

@@ -19,10 +19,10 @@ namespace HiddenHarbours.Art.Editor
             public string key;
             public Page[] pages;
             public Cell[] cells;
-            public Gap[] unavailable;
+            public Gap[] dormant;
         }
         [Serializable] public sealed class Page { public int w, h; }
-        [Serializable] public sealed class Gap { public string stage, season, reason; public int variant, tide; }
+        [Serializable] public sealed class Gap { public string stage, season, state; public int variant, tide; }
         [Serializable] public sealed class Cell
         {
             public string stage, season;
@@ -65,7 +65,7 @@ namespace HiddenHarbours.Art.Editor
                         Normal = Load(sp.key, p, "normal", sp.pages[p]), Light = Load(sp.key, p, "light", sp.pages[p]),
                         Detail = Load(sp.key, p, "detail", sp.pages[p]) };
                 }
-                def.Cells = new PlantCell[sp.cells.Length];
+                def.Cells = new PlantCell[sp.cells.Length + sp.dormant.Length];
                 for (int i = 0; i < sp.cells.Length; i++)
                 {
                     var c = sp.cells[i];
@@ -76,7 +76,16 @@ namespace HiddenHarbours.Art.Editor
                         Rect = new Rect(c.x, sp.pages[c.page].h - c.y - c.h, c.w, c.h),
                         Pivot = new Vector2(c.pivot[0], c.h - c.pivot[1]), HeightM = c.heightM };
                 }
-                gaps += sp.unavailable.Length;
+                for (int i = 0; i < sp.dormant.Length; i++)
+                {
+                    var d = sp.dormant[i];
+                    if (d.state != "DORMANT") throw new InvalidOperationException("Unknown dormant state");
+                    def.Cells[sp.cells.Length + i] = new PlantCell { Dormant = true,
+                        Stage = Array.IndexOf(new[] { "mature", "young", "seedling" }, d.stage),
+                        Season = Array.IndexOf(new[] { "spring", "summer", "autumn", "winter" }, d.season),
+                        Variant = d.variant, Tide = d.tide };
+                }
+                gaps += sp.dormant.Length;
                 EditorUtility.SetDirty(def);
             }
             var shader = Shader.Find("HiddenHarbours/Plant");
@@ -85,7 +94,7 @@ namespace HiddenHarbours.Art.Editor
             if (AssetDatabase.LoadAssetAtPath<Material>(matPath) == null)
                 AssetDatabase.CreateAsset(new Material(shader), matPath);
             AssetDatabase.SaveAssets();
-            Debug.Log("Plant rig 5: imported 48 species. Unavailable cells: " + gaps + ". See catalog before region adoption.");
+            Debug.Log("Plant rig 5: imported 48 species. Dormant cells: " + gaps + ".");
         }
         static Texture2D Load(string key, int page, string channel, Page spec)
         {
