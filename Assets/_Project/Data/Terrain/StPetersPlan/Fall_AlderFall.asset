@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b887af75052597897b39feda14ce6b18, type: 3}
   m_Name: Fall_AlderFall
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WaterfallDef
+  StreamStations: 010000000200000003000000
   Id: fall.stp_alder_fall
   DisplayName: Alder Fall
   Stream: {fileID: 11400000, guid: 035776fbedd76b94736f4e5117dfff21, type: 2}
@@ -107,4 +108,5 @@ MonoBehaviour:
   ChuteBarHalfWidth: 1.05
   ChuteBarAbove: 0.5
   SourceId: fall.stp_alder_fall
-  Why: 'The Alder Run breaks at the heath''s edge (alderFall.js): a glide, a slide, the sill and the lip, the plunge pool, and a chute down to the run''s own bed.'
+  Why: 'The Alder Run breaks at the heath''s edge (alderFall.js): a glide, a slide,
+    the sill and the lip, the plunge pool, and a chute down to the run''s own bed.'

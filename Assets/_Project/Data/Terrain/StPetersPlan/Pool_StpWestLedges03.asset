@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a214f70d740cd7fa1ba3fc6095fc8d8, type: 3}
+  m_Name: Pool_StpWestLedges03
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PondDef
+  Id: pool.stp_west_ledges_03
+  DisplayName: pool.stp_west_ledges_03
+  Kind: rock_pool
+  Centre: {x: -24.11, y: -63.89}
+  Radii: {x: 1.86, y: 1.02}
+  RotationDeg: -41
+  Surface: -1.124
+  Bed: -1.62
+  Basin: {x: 0, y: 0}
+  Outlet: {fileID: 0}
+  AdjustToSpill: 1
+  FloorZone: irishmoss
+  Why: '2026-10-07 island-ground@3 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad:
+    flood on imported ground; no second basin.'

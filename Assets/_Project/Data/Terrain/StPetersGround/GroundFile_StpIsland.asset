@@ -14,18 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.GroundFileDef
   Id: ground.stp_island
   DisplayName: 
-  Schema: hidden-harbours/island-ground@2
-  Package: HH-st-peters-one-scene-package-2026-10-01
-  FileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+  Schema: hidden-harbours/island-ground@3
+  Package: HH-st-peters-one-scene-package-2026-10-07
+  FileSha256: 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad
   Base: {fileID: 2800000, guid: a1037807c787a2b40b59cf215dd64c96, type: 3}
   BaseTexture: StPetersSeabed_HeightTex_pass9.png
   BasePixelsSha256: 8c077ea1eb31fa93bac381c8936c667dcb6e5bda1f77ed156a8833efef844544
-  BaseFileSha256: e3ad6b8bc1bd2803d4a334088de80a827a4447fce6d3a364538fbaaf64fead66
+  BaseFileSha256: 23131b615bb3d2983017ef65b21947af2d328402715a2ccee9f947efcb697f30
   BaseRange: {x: -4, y: 7}
   RectMin: {x: -380, y: -260}
   RectMax: {x: 380, y: 260}
   Asks:
-  - {fileID: 11400000, guid: 5ac8f8e37b144f344bd406f3a9a84c9a, type: 2}
   - {fileID: 11400000, guid: 67bb5bd67d4102c4d83ac2deb5c964d0, type: 2}
   - {fileID: 11400000, guid: 2b281669713ece0418b989cbfde1a5b4, type: 2}
   - {fileID: 11400000, guid: 89b7f3ff8345ad94cb18d30aea2a276e, type: 2}
@@ -33,6 +32,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8d16ed088eb00e348ba912f3ef446919, type: 2}
   - {fileID: 11400000, guid: 11d311d354486554db6c9843ef509480, type: 2}
   - {fileID: 11400000, guid: cf9de44a60510b44782f35649b4d563e, type: 2}
+  - {fileID: 11400000, guid: 5ac8f8e37b144f344bd406f3a9a84c9a, type: 2}
   - {fileID: 11400000, guid: 0430578bb881748d96c313c9fefa1912, type: 2}
   - {fileID: 11400000, guid: e559f57ad38bea0308da54f406a560f9, type: 2}
   - {fileID: 11400000, guid: 371aefe4f233236ad95ee77f204a16b2, type: 2}
@@ -80,4 +80,5 @@ MonoBehaviour:
   - 076
   - 077
   - 078
-  KeptWallsFrom: 'the Art desk''s walls-by-real-id.json (2026-10-01, sha256 b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46): its 39 kept and its 4 kept, toe lifted (068 to 071)'
+  KeptWallsFrom: 'the Art desk''s walls-by-real-id.json (2026-10-01, sha256 b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46):
+    its 39 kept and its 4 kept, toe lifted (068 to 071)'

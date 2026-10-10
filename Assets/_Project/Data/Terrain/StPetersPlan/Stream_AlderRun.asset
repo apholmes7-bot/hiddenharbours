@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StreamDef
   Id: stream.stp_alder_run
   DisplayName: Alder Run
-  Source: {fileID: 0}
+  Source: {fileID: 11400000, guid: e8b54913fbb44c5c8027f94d3840c373, type: 2}
   Points:
   - {x: 107, y: 55}
   - {x: 106.5, y: 58.5}
@@ -47,4 +47,5 @@ MonoBehaviour:
   - 2
   Depth: 0.14
   Bank: {x: 0.3, y: 0.55}
-  Why: 'The swale''s drain: out of the fen pool, down a gully in the cove''s bank, a channel across the mud.'
+  Why: 'The swale''s drain: out of the fen pool, down a gully in the cove''s bank,
+    a channel across the mud.'

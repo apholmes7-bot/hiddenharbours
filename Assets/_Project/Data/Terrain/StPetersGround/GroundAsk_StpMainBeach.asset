@@ -17,14 +17,20 @@ MonoBehaviour:
   Source: 0
   Kind: 0
   Retired: 0
+  IssueBoxes:
+  - {x: 13.68, y: -62.68, z: 14.68, w: -61.68}
+  - {x: 13.3, y: -64.1, z: 14.3, w: -63.1}
+  - {x: 12, y: -69.1, z: 13, w: -68.1}
+  - {x: 11.6, y: -74.1, z: 12.6, w: -73.1}
+  RetirementWhy: 
   Rule: "inside the bay, the ground is the profile across the shore, laid in ground
     metres from the mean-tide line (shore) to the rim; seaward it never lowers pass
     9 (a smooth max with the South Flats), so the sand runs out onto the flats without
     a line; it fades into pass 9 over 6 m past each end and 2 m past the rim, and
     east of x 52 it lays nothing seaward over the Weather Cliff\u2019s channel and
     the Old Man\u2019s gut"
-  Package: HH-st-peters-one-scene-package-2026-10-01
-  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+  Package: HH-st-peters-one-scene-package-2026-10-07
+  GroundFileSha256: 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad
   Scene: keyscene.stp_main_beach
   FileKind: cut and fill
   Ruled: 
@@ -34,7 +40,7 @@ MonoBehaviour:
   Width: 317
   Height: 178
   Patch: {fileID: 2800000, guid: c3279c3d82759b8448439e32aec07294, type: 3}
-  PatchSha256: 12b28c2dcf21638c9024dbd6d6aa9246fbd8cb208387f1a253b641ed40f8c6d2
+  PatchSha256: 0133279ae9e1f6b3790873d282a0c5166910db861e11507da564f20a165c0195
   PatchRange: {x: -4, y: 12}
   Line:
   - {x: -1.5, y: -67}
