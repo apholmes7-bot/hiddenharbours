@@ -1,18 +1,18 @@
 0601bc98435533aa024804532725c491d3cdc31b86b506706cd4cff79d3ced27  ../modern3500.rig.js
 9eaf8b6667f88beea0932b7bdabd0258f3b4eee4ca288b2aa16e3e5c1862791c  ../modern3500.contract.json
 bd1710e85954a620b3548b4dfa022afd00bdb79cff0a3705275dd905e55031b6  ../preview.html
-ad1782bd0d53e7de5e782b5d0bdc82ef059a2b57673f20216e0ea52e25a59e1b  ../README.md
+d10a087014330306813391116ef6a92db5a1e2efecf0abc96d7f0e9090127fdd  ../README.md
 eeb054ec396673b0151e0387d70b86bae9b57d10c23671f2d631e080eeab609b  ../../gameplay/vehicles/modern3500.rig.gameplay.json
 56b6903ca45d7813129388d358ee9a042c0f57e99ef6674061b1229c2145c445  Modern3500_doors_W.png
 9f4b7c628eb03addb2af14c24cee9bcd47984af9665ff6fadfbb4d29f013d73f  Modern3500_drive_W.png
-884dc62cd325c0370812b75840ac3d1ba76db1981f9bf3087087a9a2b981a023  Modern3500_gate_NE.png
-d40cddf04e4806a4118869007c36192d2f7759bd2b179defbed737b22f977f1e  Modern3500_graphite_8dir.png
-7a82ee2a0e5078ce3ed6a32e7d534bea4ce8eefa6439bef6ce623ef1e94117aa  Modern3500_hood_SE.png
-134d55f67bdcaddb7961e3c0bfbeacb708839391562c3db1702ad7bd6276cf5a  Modern3500_night_8dir.png
-7851a117b0861f19dd2489161cfff6eff4b8b5bd9ca98ee1611f2a8ad50a829d  Modern3500_open_8dir.png
-2edc028d178f134e55a8bf86cab301ff14c795120fe13dd48a9da5707cafd368  Modern3500_paints_SE.png
-c03af15ec51e08c6503f69836e5e61c64fba5c3101911d38b20f360196329d48  Modern3500_pearl_8dir.png
-60486e800d5eaa0c54f11db4c61f6007c617a0fc20031a5acd850f2c56336765  Modern3500_steer_SE.png
+795803946095dd5103eab9694f99813f0ffe1e7c26254781e8d915c4bbd1dba6  Modern3500_gate_NE.png
+ca01f738dde4210eeb67b58b789d31aa2f52c992a59e6cdad9658a9a66a68dd9  Modern3500_graphite_8dir.png
+67e450a84b30686e2da301eb33ce9f8975c80109a8122a0b4115cda9e2218d92  Modern3500_hood_SE.png
+f2f4849e7587f949c04ae556bee93c299451d445976e445beceb347c316a94f0  Modern3500_night_8dir.png
+6975e6728646e0497adadbc0794af9a3a213020dd0857f2b49f42a60a3ecaba4  Modern3500_open_8dir.png
+fd093266fbfee9d0bb95653fe91cc464321d9b6f371798e153da2300e433a0bf  Modern3500_paints_SE.png
+95a5ee83cf8ac1a7145ffaaedb473e93384882c5842c2d51330f2edb639fa181  Modern3500_pearl_8dir.png
+6129f6065aff9642fab1d9699b6bf1681444ac1fa3754c9e0e2861a2b094046d  Modern3500_steer_SE.png
 
 # Modern 3500 truck kit, Codex drop of 2026-09-13, intake PR.
 # Re-issued 2026-09-16: the rig folds its palette 27 ramps -> 16; the contract and the ten sheets
@@ -23,8 +23,9 @@ c03af15ec51e08c6503f69836e5e61c64fba5c3101911d38b20f360196329d48  Modern3500_pea
 # lettering draws were cut with nothing in their place (faces 2802 -> 2738, triangles 6856 -> 6728).
 # The contract's `rigSha256` and the sidecar's `derivedFromRigSha256` were re-derived from the cut
 # rig's bytes in the same commit, and the five text digests above were recomputed (the sidecar was
-# also re-keyed to the fleet schema, and the README records the rulings). The ten sheet lines are
-# unchanged: the sheets were not re-baked, predate the cut, and stay reference only. This is NOT the
+# also re-keyed to the fleet schema, and the README records the rulings). On 2026-10-10 the ten
+# sheets were re-rendered from the cut rig: 94 frames, 899 changed pixels, no alpha changes, and
+# exact PNG encode/decode roundtrips. The rig and its pins stay fixed. This is NOT the
 # refusal case at the foot of this file -- the rig moved HERE, under a ruling, and its stamps moved
 # with it. But the upstream Codex drop still draws the lettering, so a regeneration taken from
 # upstream brings the badge back: the D1 cut has to go upstream before one is re-taken.
