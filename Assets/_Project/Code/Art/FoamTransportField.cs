@@ -56,14 +56,14 @@ namespace HiddenHarbours.Art
             internal float BoundOverCell(Vector2 corner, float width, bool still)
             {
                 if(!_bound) return float.NegativeInfinity;
-                Vector2 lo=new Vector2((corner.x-_min.x)/_size.x,(corner.y-_min.y)/_size.y);
-                Vector2 hi=new Vector2((corner.x+width-_min.x)/_size.x,(corner.y+width-_min.y)/_size.y);
-                if(still && (lo.x<0 || lo.y<0 || hi.x>1 || hi.y>1)) return float.NegativeInfinity;
+                float loX=(corner.x-_min.x)/_size.x, loY=(corner.y-_min.y)/_size.y;
+                float hiX=(corner.x+width-_min.x)/_size.x, hiY=(corner.y+width-_min.y)/_size.y;
+                if(still && (loX<0 || loY<0 || hiX>1 || hiY>1)) return float.NegativeInfinity;
                 float offset=_point?0:.5f;
-                int x0=Mathf.Clamp(Mathf.FloorToInt(lo.x*_width-offset),0,_width-1);
-                int y0=Mathf.Clamp(Mathf.FloorToInt(lo.y*_height-offset),0,_height-1);
-                int x1=Mathf.Clamp(Mathf.FloorToInt(hi.x*_width-offset)+(_point?0:1),0,_width-1);
-                int y1=Mathf.Clamp(Mathf.FloorToInt(hi.y*_height-offset)+(_point?0:1),0,_height-1);
+                int x0=Mathf.Clamp(Mathf.FloorToInt(loX*_width-offset),0,_width-1);
+                int y0=Mathf.Clamp(Mathf.FloorToInt(loY*_height-offset),0,_height-1);
+                int x1=Mathf.Clamp(Mathf.FloorToInt(hiX*_width-offset)+(_point?0:1),0,_width-1);
+                int y1=Mathf.Clamp(Mathf.FloorToInt(hiY*_height-offset)+(_point?0:1),0,_height-1);
                 float result=still?float.PositiveInfinity:float.NegativeInfinity;
                 for(int y=y0;y<=y1;y++) for(int x=x0;x<=x1;x++)
                 {
@@ -78,7 +78,16 @@ namespace HiddenHarbours.Art
         }
     }
 
-    /// <summary>Per-camera, enabled-only storage. Raw texture backing is the upload buffer: no second copy.</summary>
+    // Observation only: no clock in production and no scheduling input; normally a null callback.
+    // The headless/slot harness supplies a cached callback and owns all timestamps/storage.
+    internal enum FoamTransportPreparationStage
+    {
+        Begin, InputsAndContacts, MapInputs, Terrain, Mask,
+        WaveFactors, WaveAccumulation, Collection, VelocityCompose, VelocityCopy, Finish
+    }
+
+    /// <summary>Per-camera, enabled-only storage. Raw texture backing is the upload buffer;
+    /// velocity computation uses one retained managed staging array for a single bulk copy.</summary>
     internal sealed class FoamTransportField : IDisposable
     {
         internal readonly int Resolution, FlowResolution;
@@ -118,6 +127,7 @@ namespace HiddenHarbours.Art
         internal int RebuiltVelocityNodes { get; private set; }
         internal int UploadedTextures { get; private set; }
         internal int UploadedBytes { get; private set; }
+        internal Action<FoamTransportPreparationStage> StageCompleted;
 
         internal FoamTransportField(int resolution, float extent)
         {
@@ -140,6 +150,7 @@ namespace HiddenHarbours.Art
                               float scale, Vector3 strengths, in FoamTransportMap bedInput, in FoamTransportMap stillInput,
                               FoamTransportContacts.Shape[] suppliedContacts=null, int suppliedCount=0)
         {
+            StageCompleted?.Invoke(FoamTransportPreparationStage.Begin);
             Fault=FoamTransport.Fault.None; Route=FoamTransport.Route.Hold; RebuiltCells=0; ContactCount=0;
             RebuiltMaskCells=0; RebuiltVelocityNodes=0; UploadedTextures=0; UploadedBytes=0;
             if(!FoamTransport.Finite(drawOrigin) || !FoamTransport.Finite(seaLevel) || !FoamTransport.Finite(drift) ||
@@ -165,6 +176,7 @@ namespace HiddenHarbours.Art
                 }
             }
             ContactCount=contactCount;
+            StageCompleted?.Invoke(FoamTransportPreparationStage.InputsAndContacts);
             FoamTransportMap bed=bedInput.Capture(), still=stillInput.Capture();
             if(!bed.TryReader(out var bedReader) || !still.TryReader(out var stillReader))
             { Fail(FoamTransport.Fault.Map); return; }
@@ -182,6 +194,7 @@ namespace HiddenHarbours.Art
             int dx=reuse?(int)delta.x:0, dy=reuse?(int)delta.y:0;
             _ringX=reuse?Mod(_ringX+dx,Resolution):0; _ringY=reuse?Mod(_ringY+dy,Resolution):0;
             var mask=Mask.GetRawTextureData<byte>();
+            StageCompleted?.Invoke(FoamTransportPreparationStage.MapInputs);
             if(!reuse)
             {
                 RebuildTerrain(0,0,Resolution,Resolution,drawOrigin,bedReader,stillReader);
@@ -200,6 +213,7 @@ namespace HiddenHarbours.Art
                 MarkMask(0,y0,x0,y1); MarkMask(x1,y0,Resolution,y1);
             }
             RefreshTerrainTiles();
+            StageCompleted?.Invoke(FoamTransportPreparationStage.Terrain);
             if(reuse && seaLevel!=_cachedSea) MarkTideChanges(seaLevel);
             if(contactsChanged || !reuse)
             {
@@ -214,6 +228,7 @@ namespace HiddenHarbours.Art
             _cachedBed=bed; _cachedStill=still; _cachedOrigin=drawOrigin; _cacheValid=true;
             _bedFilter=bed.Bound?bed.Texture.filterMode:FilterMode.Point;
             _stillFilter=still.Bound?still.Texture.filterMode:FilterMode.Point;
+            StageCompleted?.Invoke(FoamTransportPreparationStage.Mask);
 
             Vector2 flowOrigin=new Vector2(Mathf.Floor(drawOrigin.x/FoamTransport.FlowCellMeters)-1,
                                           Mathf.Floor(drawOrigin.y/FoamTransport.FlowCellMeters)-1)*FoamTransport.FlowCellMeters;
@@ -224,7 +239,7 @@ namespace HiddenHarbours.Art
             if(velocityChanged)
             {
                 if(!_velocity.Build(Velocity.GetRawTextureData<Vector2>(),FlowOrigin,drift,waves,scale,strengths,
-                    _contacts,contactCount,contactsChanged,out var uniformVelocity,out var maximum,out _uniform))
+                    _contacts,contactCount,contactsChanged,out var uniformVelocity,out var maximum,out _uniform,StageCompleted))
                 { Fail(FoamTransport.Fault.Inputs); return; }
                 UniformVelocity=uniformVelocity; MaxComponent=maximum;
                 RebuiltVelocityNodes=FlowResolution*FlowResolution; _velocityPending=true;
@@ -233,6 +248,7 @@ namespace HiddenHarbours.Art
             _cachedSea=seaLevel; _cachedDrift=drift; _cachedStrengths=strengths;
             _cachedWaves=waves; _cachedScale=scale; _preparedValid=true;
             Route=FoamTransport.Classify(strengths,true,true,_uniform,Occupied);
+            StageCompleted?.Invoke(FoamTransportPreparationStage.Finish);
         }
 
         private static bool SameContact(in FoamTransportContacts.Shape a, in FoamTransportContacts.Shape b) =>
@@ -242,15 +258,20 @@ namespace HiddenHarbours.Art
         private void RebuildTerrain(int x0,int y0,int x1,int y1,Vector2 origin,
             FoamTransportMap.Reader bed,FoamTransportMap.Reader still)
         {
-            for(int y=y0;y<y1;y++) for(int x=x0;x<x1;x++)
+            for(int y=y0;y<y1;y++)
             {
-                int rx=Mod(x+_ringX,Resolution), ry=Mod(y+_ringY,Resolution);
-                Vector2 corner=origin+new Vector2(x,y)*FoamBuffer.CellSize;
-                float height=bed.BoundOverCell(corner,FoamBuffer.CellSize,false);
-                float water=still.BoundOverCell(corner,FoamBuffer.CellSize,true);
-                _dryAt[ry*Resolution+rx]=height>=water?height:float.NegativeInfinity;
-                _terrainDirty[(ry/TileSize)*_tiles+rx/TileSize]=true;
-                RebuiltCells++;
+                int ry=Mod(y+_ringY,Resolution), row=ry*Resolution, tileRow=ry/TileSize*_tiles;
+                float worldY=origin.y+y*FoamBuffer.CellSize;
+                for(int x=x0;x<x1;x++)
+                {
+                    int rx=Mod(x+_ringX,Resolution);
+                    Vector2 corner=new Vector2(origin.x+x*FoamBuffer.CellSize,worldY);
+                    float height=bed.BoundOverCell(corner,FoamBuffer.CellSize,false);
+                    float water=still.BoundOverCell(corner,FoamBuffer.CellSize,true);
+                    _dryAt[row+rx]=height>=water?height:float.NegativeInfinity;
+                    _terrainDirty[tileRow+rx/TileSize]=true;
+                    RebuiltCells++;
+                }
             }
         }
 
@@ -318,17 +339,20 @@ namespace HiddenHarbours.Art
         private void ScrollMask(NativeArray<byte> mask,int dx,int dy)
         {
             NativeArray<byte>.Copy(mask,_scroll);
-            // Contiguous native row copies retain all overlap. Only exiting/entering strips are
-            // visited individually; the scratch is allocated once, never during preparation.
+            // One native copy covers the overlap's bounding linear interval. Its row-edge bytes
+            // are overwritten by the entering-strip clear below before anyone consumes the mask.
+            // This replaces up to 768 separately checked row copies on a one-cell pan.
             int x0=Math.Max(0,-dx),x1=Math.Min(Resolution,Resolution-dx);
             int y0=Math.Max(0,-dy),y1=Math.Min(Resolution,Resolution-dy);
+            if(x1>x0 && y1>y0)
+                NativeArray<byte>.Copy(_scroll,(y0+dy)*Resolution+x0+dx,mask,y0*Resolution+x0,
+                    (y1-y0-1)*Resolution+x1-x0);
             for(int y=0;y<Resolution;y++)
             {
                 int start=(y>=y0 && y<y1)?x0:Resolution;
                 int end=(y>=y0 && y<y1)?x1:Resolution;
                 for(int x=0;x<start;x++) mask[y*Resolution+x]=0;
                 for(int x=end;x<Resolution;x++) mask[y*Resolution+x]=0;
-                if(end>start) NativeArray<byte>.Copy(_scroll,(y+dy)*Resolution+x0+dx,mask,y*Resolution+x0,x1-x0);
                 // Count the old cells no longer represented in the shifted window.
                 int oldStart=(y>=y0+dy && y<y1+dy)?x0+dx:Resolution;
                 int oldEnd=(y>=y0+dy && y<y1+dy)?x1+dx:Resolution;

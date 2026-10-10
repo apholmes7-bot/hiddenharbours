@@ -8,8 +8,11 @@ namespace HiddenHarbours.Art
     internal sealed class FoamTransportVelocity
     {
         private readonly int _size;
-        private readonly Vector2[] _slope, _collection;
-        private readonly double[] _cosX, _sinX;
+        private readonly Vector2[] _collection, _output;
+        private readonly float[] _slopeX, _slopeY;
+        private readonly double[] _cosX, _sinX, _cosY, _sinY;
+        private readonly float[] _weights = new float[PackedWaveField.MaxTrains];
+        private float _normalizer;
         private readonly float[] _best;
         private readonly int[] _winner;
         private PackedWaveField _waves;
@@ -20,8 +23,11 @@ namespace HiddenHarbours.Art
         internal FoamTransportVelocity(int size)
         {
             _size=size;
-            _slope=new Vector2[size*size]; _collection=new Vector2[size*size];
-            _cosX=new double[size]; _sinX=new double[size];
+            _slopeX=new float[size*size]; _slopeY=new float[size*size];
+            _collection=new Vector2[size*size];
+            _output=new Vector2[size*size];
+            _cosX=new double[size*PackedWaveField.MaxTrains]; _sinX=new double[_cosX.Length];
+            _cosY=new double[_cosX.Length]; _sinY=new double[_cosX.Length];
             _best=new float[size*size]; _winner=new int[size*size];
         }
 
@@ -36,62 +42,103 @@ namespace HiddenHarbours.Art
         internal bool Build(NativeArray<Vector2> output, Vector2 origin, Vector2 drift,
             in PackedWaveField waves, float scale, Vector3 strengths,
             FoamTransportContacts.Shape[] contacts, int count, bool contactsChanged,
-            out Vector2 uniformVelocity, out float maximum, out bool uniform)
+            out Vector2 uniformVelocity, out float maximum, out bool uniform,
+            Action<FoamTransportPreparationStage> stageCompleted=null)
         {
             bool moved=!_valid || !origin.Equals(_origin);
-            if(moved || scale!=_scale || !SameWaves(waves,_waves)) BuildSlope(origin,waves,scale);
+            if(moved || scale!=_scale || !SameWaves(waves,_waves)) BuildSlope(origin,waves,scale,stageCompleted);
+            else
+            {
+                stageCompleted?.Invoke(FoamTransportPreparationStage.WaveFactors);
+                stageCompleted?.Invoke(FoamTransportPreparationStage.WaveAccumulation);
+            }
             if(moved || contactsChanged || !drift.Equals(_drift) || strengths.z!=_strength)
                 BuildCollection(origin,drift,Math.Max(0,strengths.z),contacts,count);
+            stageCompleted?.Invoke(FoamTransportPreparationStage.Collection);
             float strain=Math.Max(0,strengths.x), curl=Math.Max(0,strengths.y);
             uniformVelocity=default; maximum=0; uniform=true;
-            for(int i=0;i<output.Length;i++)
+            for(int i=0;i<_output.Length;i++)
             {
-                Vector2 slope=_slope[i];
-                Vector2 v=drift+(strain*slope+curl*new Vector2(-slope.y,slope.x))+_collection[i];
-                if(!FoamTransport.Finite(v)) { _valid=false; return false; }
-                output[i]=v;
-                if(i==0) uniformVelocity=v;
-                else if(!v.Equals(uniformVelocity)) uniform=false;
-                maximum=Math.Max(maximum,Math.Max(Math.Abs(v.x),Math.Abs(v.y)));
+                // Same float operations and parentheses as the Vector2 expression. Normalization
+                // is fused into the consumer, avoiding a separate full-grid read/write pass and
+                // Vector2 operators in the per-node loop (notably expensive in the editor Mono VM).
+                float sx=_slopeX[i]/_normalizer, sy=_slopeY[i]/_normalizer;
+                Vector2 collection=_collection[i];
+                float vx=(drift.x+(strain*sx+curl*(-sy)))+collection.x;
+                float vy=(drift.y+(strain*sy+curl*sx))+collection.y;
+                if(!FoamTransport.Finite(vx) || !FoamTransport.Finite(vy)) { _valid=false; return false; }
+                _output[i]=new Vector2(vx,vy);
+                if(i==0) uniformVelocity=new Vector2(vx,vy);
+                else if(vx!=uniformVelocity.x || vy!=uniformVelocity.y) uniform=false;
+                maximum=Math.Max(maximum,Math.Max(Math.Abs(vx),Math.Abs(vy)));
             }
+            stageCompleted?.Invoke(FoamTransportPreparationStage.VelocityCompose);
+            // Validate/copy once, instead of 9,801 NativeArray indexer safety checks in the editor.
+            // The managed staging array is owned for this field's lifetime, not allocated per frame.
+            NativeArray<Vector2>.Copy(_output,output);
+            stageCompleted?.Invoke(FoamTransportPreparationStage.VelocityCopy);
             _origin=origin; _drift=drift; _waves=waves; _scale=scale; _strength=strengths.z; _valid=true;
             return true;
         }
 
-        private void BuildSlope(Vector2 origin, in PackedWaveField waves, float scale)
+        private void BuildSlope(Vector2 origin, in PackedWaveField waves, float scale,
+            Action<FoamTransportPreparationStage> stageCompleted)
         {
-            Array.Clear(_slope,0,_slope.Length);
             float norm=0;
             for(int trainIndex=0;trainIndex<waves.Count;trainIndex++)
             {
                 Vector4 train=waves.Train(trainIndex);
                 float weight=train.w*train.z*scale;
+                _weights[trainIndex]=weight;
                 norm+=Math.Abs(weight);
                 // Evaluate world coordinates directly, never advance last frame's phase. Double
                 // angle addition replaces N*N cosines by 2*N sin/cos pairs per train. Rounding
                 // differs from the scalar oracle by a few float ulps; the field tests bound it.
                 double frequency=(double)train.z*scale;
+                int offset=trainIndex*_size;
+                float publishedPhase=waves.Phase(trainIndex);
                 for(int x=0;x<_size;x++)
                 {
-                    double phase=frequency*train.x*(origin.x+x*FoamTransport.FlowCellMeters)+waves.Phase(trainIndex);
+                    double phase=frequency*train.x*(origin.x+x*FoamTransport.FlowCellMeters)+publishedPhase;
                     phase-=Math.Floor(phase/(2*Math.PI))*(2*Math.PI);
-                    _cosX[x]=Math.Cos(phase); _sinX[x]=Math.Sin(phase);
+                    _cosX[offset+x]=Math.Cos(phase); _sinX[offset+x]=Math.Sin(phase);
                 }
-                for(int y=0;y<_size;y++)
+                // Published phase occurs ONLY in X above. Y is unchanged when time advances.
+                // Cache by the exact spatial inputs, never by accumulated phase or elapsed time.
+                Vector4 oldTrain=_waves.Train(trainIndex);
+                if(!_valid || trainIndex>=_waves.Count || origin.y!=_origin.y || scale!=_scale ||
+                    train.y!=oldTrain.y || train.z!=oldTrain.z)
                 {
-                    double phase=frequency*train.y*(origin.y+y*FoamTransport.FlowCellMeters);
-                    phase-=Math.Floor(phase/(2*Math.PI))*(2*Math.PI);
-                    double cy=Math.Cos(phase), sy=Math.Sin(phase);
-                    for(int x=0;x<_size;x++)
+                    for(int y=0;y<_size;y++)
                     {
-                        float value=weight*(float)(_cosX[x]*cy-_sinX[x]*sy);
-                        int i=y*_size+x;
-                        _slope[i].x+=train.x*value; _slope[i].y+=train.y*value;
+                        double phase=frequency*train.y*(origin.y+y*FoamTransport.FlowCellMeters);
+                        phase-=Math.Floor(phase/(2*Math.PI))*(2*Math.PI);
+                        _cosY[offset+y]=Math.Cos(phase); _sinY[offset+y]=Math.Sin(phase);
                     }
                 }
             }
-            norm=Math.Max(1,norm);
-            for(int i=0;i<_slope.Length;i++) { _slope[i].x/=norm; _slope[i].y/=norm; }
+            _normalizer=Math.Max(1,norm);
+            stageCompleted?.Invoke(FoamTransportPreparationStage.WaveFactors);
+            Array.Clear(_slopeX,0,_slopeX.Length); Array.Clear(_slopeY,0,_slopeY.Length);
+            // Train order and every multiply/add/cast remain identical to the Phase A evaluator.
+            float[] slopeX=_slopeX, slopeY=_slopeY;
+            for(int trainIndex=0;trainIndex<waves.Count;trainIndex++)
+            {
+                Vector4 train=waves.Train(trainIndex); float weight=_weights[trainIndex];
+                int offset=trainIndex*_size;
+                for(int y=0;y<_size;y++)
+                {
+                    double cy=_cosY[offset+y], sy=_sinY[offset+y];
+                    int row=y*_size;
+                    for(int x=0;x<_size;x++)
+                    {
+                        float value=weight*(float)(_cosX[offset+x]*cy-_sinX[offset+x]*sy);
+                        int i=row+x;
+                        slopeX[i]+=train.x*value; slopeY[i]+=train.y*value;
+                    }
+                }
+            }
+            stageCompleted?.Invoke(FoamTransportPreparationStage.WaveAccumulation);
         }
 
         private void BuildCollection(Vector2 origin, Vector2 drift, float strength,
