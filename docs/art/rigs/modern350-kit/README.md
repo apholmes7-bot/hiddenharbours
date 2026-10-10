@@ -106,8 +106,9 @@ Door points use the measured body half-width plus 0.51 m, and the rig's front/re
 `VehicleSidecarFacts.Read` reports zero errors, a drive door, a collider and a hidden driver.
 The duplicate top-level seat list was removed; enclosed seating stays in `CAB.seats`. The four
 absences are the open driver seat, FLOAT, fifth wheel and KINGPIN. No towing is enabled.
-Collision and door clearance in the world await the runtime plates. Cargo, reach and doorGroups
-remain unsettled. No journey or StandTheWorld coverage is claimed.
+Runtime plates cover a parked spawn, a twelve-metre drive and a full stop, with the driver hidden.
+Grass can overlap the truck on the dry strip. Broader collision and door clearance, cargo, reach
+and doorGroups remain unsettled. No journey or StandTheWorld coverage is claimed.
 
 `ModernTruckKitContractTests` guards the pins, text, sheets, fleet identities and sidecar shape.
 `ModernTruckKitProbeTests` checks the bake shim, ramp counts, collider bounds and six rigid hinges.
