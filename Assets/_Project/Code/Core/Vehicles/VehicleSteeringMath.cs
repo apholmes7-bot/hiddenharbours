@@ -24,6 +24,24 @@ namespace HiddenHarbours.Core
     public static class VehicleSteeringMath
     {
         /// <summary>
+        /// Divide the wheel position by this to soften steering above the start speed, equally
+        /// ahead and astern. At or below the start she has her whole lock; one half-speed beyond
+        /// it she has half. A non-positive half-speed disables the falloff.
+        ///
+        /// <para>Return the DIVISOR so callers keep <c>steer / divisor</c>: multiplying by its
+        /// reciprocal can round differently. A start of zero preserves the standstill curve
+        /// bit for bit.</para>
+        /// </summary>
+        public static float SteerFalloffDivisor(float speedMetersPerSecond,
+                                                float startMetersPerSecond,
+                                                float halfSpeedMetersPerSecond)
+        {
+            if (halfSpeedMetersPerSecond <= 0f) return 1f;
+            return 1f + Mathf.Max(0f, Mathf.Abs(speedMetersPerSecond) - startMetersPerSecond)
+                        / halfSpeedMetersPerSecond;
+        }
+
+        /// <summary>
         /// The two front-wheel angles for a steer input in <c>[−1, +1]</c>, Ackermann-split.
         ///
         /// <para><b>Sign, and it is measured rather than chosen:</b> <c>+1</c> is full LEFT lock —
