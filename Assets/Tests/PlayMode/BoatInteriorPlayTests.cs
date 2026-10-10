@@ -299,18 +299,26 @@ namespace HiddenHarbours.Tests.PlayMode
             WalkThroughTheDoorway();
         }
 
-        /// <summary>Cross the open threshold: one tick measurably clear of the doorway to arm the
-        /// approach, one standing in it to spend it. Both points are DERIVED from the door's own measured
-        /// opening, so a re-measured doorway needs no edit here.</summary>
+        /// <summary>One walker tick at sixty frames a second.</summary>
+        private const float TickSeconds = 1f / 60f;
+
+        /// <summary>Cross an open threshold as a walker does, once a tick: one tick clear of the doorway that
+        /// lasts its settle, then one on its wall line with her key held through it — out of the room while
+        /// she is inside, into it from the deck (owner ruling D1, 2026-09-30: in the band with the key
+        /// pointing through, she goes). The points, the key and the settle are all DERIVED from the door's
+        /// own measured opening and wall, so a re-measured doorway needs no edit here.</summary>
         private void WalkThroughTheDoorway()
         {
-            BoatInteriorDoor door = _door.Door;
-            Vector2 doorway = BoatCabinThreshold.PointOf(door);
-            Vector2 clear = doorway + Vector2.right *
-                            (BoatCabinThreshold.ReleaseRadiusMetres(door) + 1f);
+            BoatCabinDoor door = _door;
+            Assert.IsTrue(BoatCabinThreshold.TryWallLine(door.Interior.Def, door.Door, out _, out Vector2 onLine,
+                                                         out Vector2 outward),
+                          "the premise: her doorway is cut in a wall");
+            Vector2 clear = BoatCabinThreshold.PointOf(door.Door) + Vector2.right *
+                            (BoatCabinThreshold.BandRadiusMetres(door.Door) + 1f);
+            Vector2 through = door.Interior.IsInside ? outward : -outward;
 
-            _door.TryWalkThrough(clear);
-            Assert.IsTrue(_door.TryWalkThrough(doorway), "she walks through her own open door");
+            door.TryWalkThrough(clear, Vector2.zero, door.Door.CrossingSettle);
+            Assert.IsTrue(door.TryWalkThrough(onLine, through, TickSeconds), "she walks through her own open door");
         }
 
         /// <summary>

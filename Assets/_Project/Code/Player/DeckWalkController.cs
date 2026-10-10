@@ -96,8 +96,9 @@ namespace HiddenHarbours.Player
         // a plan-only clamp choose between the floors stacked under her.
         private bool _walkedInside;
 
-        // One latch per route — the doorway's one-crossing-per-approach rule, per stair: taken once on
-        // arriving at an end, not again until she has walked clear of both. Sized to the def and
+        // One latch per route — the one-crossing-per-approach rule the doorway kept until owner ruling D1
+        // (2026-09-30), per stair: taken once on arriving at an end, not again until she has walked clear
+        // of both. Sized to the def and
         // reallocated only when the def changes; re-seeded after every transition, door and snap.
         private bool[] _routeArmed = System.Array.Empty<bool>();
         private BoatInteriorDef _routesOf;
@@ -266,6 +267,21 @@ namespace HiddenHarbours.Player
             Vector2 centre = BoatCabinWalkMath.CentroidOf(level.Outline);
             return BoatCabinWalkMath.ClampToSole(level, wanted,
                                                  BoatCabinWalkMath.IsStandable(level, centre) ? centre : wanted);
+        }
+
+        /// <summary>
+        /// <b>Her held key in the hull's own frame</b> — the direction <see cref="StepInHullFrame"/> steps
+        /// her along for this input (the drawn heading and the bake's foreshortening inverted), at the
+        /// key's own length up to 1; zero for no key. What a cabin doorway is told alongside where she
+        /// stands (<see cref="ICabinThreshold"/>): a walker pressed against a door frame goes nowhere and
+        /// still means to go through.
+        /// </summary>
+        public static Vector2 HeldInHullFrame(Vector2 moveInput, float drawnHeadingDeg, float bakeElevationDegrees)
+        {
+            float mag = Mathf.Min(1f, moveInput.magnitude);
+            if (mag <= 1e-4f) return Vector2.zero;
+            Vector2 dir = DeckAreaMath.WorldDirectionToDeck(moveInput, drawnHeadingDeg, bakeElevationDegrees);
+            return dir.sqrMagnitude > 1e-10f ? dir.normalized * mag : Vector2.zero;
         }
 
         /// <summary>The input, turned into the hull-frame direction that draws along it and advanced one
@@ -1011,6 +1027,7 @@ namespace HiddenHarbours.Player
 
             Vector2 relative, stanceCenter, stanceHalfExtents;
             bool floorKnown;   // does _deckHeight name the floor she stands on? (the door's sill gate)
+            Vector2 held = Vector2.zero;   // her key in the hull's frame, as her step turned it (the door's)
 
             // Her cabin's floors, and the level she walks if she is inside on one with a way off it
             // (WalkableLevel) — null on every tick of every hull whose cabin has no placed route.
@@ -1047,6 +1064,7 @@ namespace HiddenHarbours.Player
                 if (!_walkedInside) _deckLocal = SeatOnLevel(level, _deckLocal);   // she just came in
                 _deckLocal = StepOnInteriorLevel(_deckLocal, input, _moveSpeed, Time.deltaTime,
                                                  drawnHeading, elevation, level);
+                held = HeldInHullFrame(input, drawnHeading, elevation);
                 _deckHeight = level.SoleZMeters;
                 _deckArea = -1;
                 _walkedInside = true;
@@ -1073,6 +1091,7 @@ namespace HiddenHarbours.Player
                 }
                 _deckLocal = StepOnDeckPolygon(_deckLocal, input, _moveSpeed, Time.deltaTime,
                                                drawnHeading, elevation, deck, ref _deckArea, out _deckHeight);
+                held = HeldInHullFrame(input, drawnHeading, elevation);
                 relative = DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight, drawnHeading, elevation);
                 floorKnown = true;
                 stanceCenter = deck.WalkCenter;
@@ -1086,6 +1105,7 @@ namespace HiddenHarbours.Player
                 relative = StepOnDeck(relative, input, _moveSpeed, Time.deltaTime,
                                       drawnHeading, _deckCenter, _deckHalfExtents);
                 _deckLocal = WorldToDeckFrame(relative, drawnHeading);
+                held = WorldToDeckFrame(Vector2.ClampMagnitude(input, 1f), drawnHeading);   // its world-axis step
                 _deckHeight = 0f;
                 _deckArea = -1;
                 floorKnown = false;   // a placeholder 0, not a floor: the doors are asked in plan
@@ -1098,8 +1118,10 @@ namespace HiddenHarbours.Player
 
             // ⭐ AND HER CABIN DOOR, if this hull has one standing open. The owner's 2026-08-28 ruling is
             // that "a player can walk through freely when opened", so the crossing is a step and not a
-            // press: the door owns the threshold band and the one-crossing-per-approach latch (both sides
-            // of one doorway must share one), and all this does is tell it where she is standing.
+            // press: the door owns the threshold band, its wall line and the settle after a crossing (both
+            // sides of one doorway must share one), and all this does is tell it where she is standing
+            // and which way her key points (ruling D1, 2026-09-30: in the band with the key pointing
+            // through, she goes).
             //
             // ⚠ Not on the rail. Out on the washboard _deckLocal is read back off her world offset with
             // no foreshortening inverted, so it is not the hull-frame point the threshold is measured in
@@ -1111,7 +1133,7 @@ namespace HiddenHarbours.Player
             // flybridge's end of the Convertible's stair stands 3.08 m over the saloon's.
             if (!_onWashboard)
             {
-                if (WalkThroughAnOpenCabinDoor(floorKnown))
+                if (WalkThroughAnOpenCabinDoor(floorKnown, held))
                     _routesSeeded = false;   // a doorway is a transition: the stairs re-read where she is
                 else if (floorKnown && TakeACabinRoute(floors, deck, level != null))
                     transform.position = boatPos + DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight,
@@ -1139,7 +1161,8 @@ namespace HiddenHarbours.Player
         /// question is asked of <see cref="ICabinThreshold"/> — Player says where she is standing, Boats
         /// decides whether that was a crossing and makes it (rule 4). Every part of the decision is on
         /// the far side: whether the leaf is open, whether she is inside the measured opening, whether
-        /// this approach has already been spent, which way it goes, and whether the room will have her.
+        /// the doorway has settled since it last took her, whether her key points through it, which way
+        /// it goes, and whether the room will have her.
         /// This component owns where the player stands and nothing else — the same division of labour it
         /// keeps with the hull presenter and the deck areas.</para>
         ///
@@ -1153,15 +1176,16 @@ namespace HiddenHarbours.Player
         ///
         /// <para>True when a door took her through this tick — so the same tick takes no stair.</para>
         /// </summary>
-        private bool WalkThroughAnOpenCabinDoor(bool floorKnown)
+        private bool WalkThroughAnOpenCabinDoor(bool floorKnown, Vector2 held)
         {
             ICabinThreshold[] doorways = LiveCabinThresholds();
+            float dt = Time.deltaTime;
             for (int i = 0; i < doorways.Length; i++)
             {
                 ICabinThreshold doorway = doorways[i];
                 bool crossed = floorKnown && doorway is ICabinThresholdAtHeight atHeight
-                    ? atHeight.TryWalkThroughAt(new Vector3(_deckLocal.x, _deckLocal.y, _deckHeight))
-                    : doorway.TryWalkThrough(_deckLocal);
+                    ? atHeight.TryWalkThroughAt(new Vector3(_deckLocal.x, _deckLocal.y, _deckHeight), held, dt)
+                    : doorway.TryWalkThrough(_deckLocal, held, dt);
                 if (crossed) return true;
             }
             return false;
@@ -1293,7 +1317,7 @@ namespace HiddenHarbours.Player
         /// end on the deck. Inside but walked on the deck areas (a level with no takeable route): none —
         /// by construction no route there has an end she could be on.</para>
         ///
-        /// <para><b>One route per arrival.</b> Each route is latched like a doorway: spent on any attempt,
+        /// <para><b>One route per arrival.</b> Each route is latched as the doorway once was: spent on any attempt,
         /// taken or refused, and re-armed only once she stands clear of both its ends
         /// (<see cref="RouteRearmReachMultiple"/> × the reach, or off the ends' floors). After every
         /// transition the latches re-seed from where she now stands, so she arrives ON the far end

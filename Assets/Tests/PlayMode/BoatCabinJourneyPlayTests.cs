@@ -865,26 +865,42 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
         }
 
-        /// <summary>Cross the threshold by handing the door where she is standing, exactly as a walker
-        /// does once a tick: one call measurably clear of the doorway arms the approach, one in it spends
-        /// it. Both points are DERIVED from the door's own measured opening.</summary>
+        /// <summary>One walker tick at sixty frames a second.</summary>
+        private const float TickSeconds = 1f / 60f;
+
+        /// <summary>Cross an open threshold as a walker does, once a tick: one tick clear of the doorway that
+        /// lasts its settle, then one on its wall line with her key held through it — out of the room while
+        /// she is inside, into it from the deck (owner ruling D1, 2026-09-30: in the band with the key
+        /// pointing through, she goes). The points, the key and the settle are all DERIVED from the door's
+        /// own measured opening and wall, so a re-measured doorway needs no edit here.</summary>
         private static void WalkTheDoorway(BoatCabinDoor door)
         {
-            Vector2 doorway = BoatCabinThreshold.PointOf(door.Door);
-            Vector2 clear = doorway + Vector2.right *
-                            (BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + 1f);
+            Assert.IsTrue(BoatCabinThreshold.TryWallLine(door.Interior.Def, door.Door, out _, out Vector2 onLine,
+                                                         out Vector2 outward),
+                          "the premise: her doorway is cut in a wall");
+            Vector2 clear = BoatCabinThreshold.PointOf(door.Door) + Vector2.right *
+                            (BoatCabinThreshold.BandRadiusMetres(door.Door) + 1f);
+            Vector2 through = door.Interior.IsInside ? outward : -outward;
 
-            door.TryWalkThrough(clear);
-            Assert.IsTrue(door.TryWalkThrough(doorway), "she walks through the open door");
+            door.TryWalkThrough(clear, Vector2.zero, door.Door.CrossingSettle);
+            Assert.IsTrue(door.TryWalkThrough(onLine, through, TickSeconds), "she walks through the open door");
         }
+
+        /// <summary>The frames a crossing on the shipped walk is given: half a second at
+        /// <see cref="TickSeconds"/>, the doorway's settle and her first step through with room to spare.</summary>
+        private const int CrossingFrames = 30;
 
         /// <summary>
         /// ⭐ The crossing driven through the SHIPPED walk, not through the door's API: her hull-frame
         /// position is snapped and <c>DeckWalkController.Update</c> is the thing that asks the doorway.
         /// That is the wiring the 09-04 playtest was missing, so it is the wiring this asserts.
         ///
-        /// <para>Two frames, and they are the two the latch needs: one measurably clear of the doorway to
-        /// arm the approach, one standing in it to spend it. ⚠ The snap is the only way in — the walk
+        /// <para>She is snapped onto the doorway's wall line and holds her key through it — out of the room
+        /// while she is inside, into it from the deck (owner ruling D1, 2026-09-30: in the band with the key
+        /// pointing through, she goes) — until the doorway takes her or <see cref="CrossingFrames"/> frames pass, on a clock pinned
+        /// to <see cref="TickSeconds"/> so the doorway's settle is the same number of frames on any machine. The key is handed
+        /// over as the keys would hand it, in the world: the hull-frame direction through the doorway turned
+        /// by her hull's drawn heading, which the walk turns back. ⚠ The snap is the only way in — the walk
         /// INTEGRATES its hull-frame point and never reads it back off the transform, so moving the
         /// player's transform would leave the frame it actually asks the doorway with untouched.</para>
         /// </summary>
@@ -892,15 +908,32 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var walk = rig.Player.GetComponent<DeckWalkController>();
             Assert.IsNotNull(walk, "the shipped deck walk is what carries her through a doorway");
+            Assert.IsTrue(BoatCabinThreshold.TryWallLine(door.Interior.Def, door.Door, out _, out Vector2 onLine,
+                                                         out Vector2 outward),
+                          "the premise: her doorway is cut in a wall");
 
-            Vector2 doorway = BoatCabinThreshold.PointOf(door.Door);
-            Vector2 clear = doorway + Vector2.right *
-                            (BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + 1f);
-
-            walk.SnapToDeckLocal(clear);
-            yield return null;
-            walk.SnapToDeckLocal(doorway);
-            yield return null;
+            BoatInterior cabin = door.Interior;
+            bool wasInside = cabin.IsInside;
+            Transform boat = rig.Boat.transform;
+            Vector2 key = DeckAreaMath.DeckToWorld(wasInside ? outward : -outward, 0f,
+                                                   DeckWalkController.DrawnHeadingDegreesOf(boat),
+                                                   DeckWalkController.BakeElevationDegreesOf(boat)).normalized;
+            var held = new HeldDeckIntents();
+            float captureBefore = Time.captureDeltaTime;
+            Time.captureDeltaTime = TickSeconds;
+            walk.ConfigureDeckInput(held);
+            try
+            {
+                walk.SnapToDeckLocal(onLine);
+                held.Walk(key);
+                for (int f = 0; f < CrossingFrames && cabin.IsInside == wasInside; f++) yield return null;
+            }
+            finally
+            {
+                held.Release();
+                walk.ConfigureDeckInput(null);
+                Time.captureDeltaTime = captureBefore;
+            }
         }
 
         /// <summary>Wait out the leaf, by SECONDS and a real deadline. Frames are not time.</summary>
