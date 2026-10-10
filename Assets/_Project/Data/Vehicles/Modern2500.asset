@@ -16,15 +16,15 @@ MonoBehaviour:
   DisplayName: Modern 2500
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: 7585b82b7fd84fa4faf2d6d6788775a0, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
-  MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
-  BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  MassKg: 3000
+  MaxSpeedMetersPerSecond: 12
+  MaxReverseSpeedMetersPerSecond: 4.2
+  AccelerationMetersPerSecondSquared: 4.8
+  BrakingMetersPerSecondSquared: 8.4
+  CoastDecelerationMetersPerSecondSquared: 2.3
+  SteerRateFullLocksPerSecond: 2.1
+  SteerReturnFullLocksPerSecond: 3.1
+  SteerFalloffHalfSpeedMetersPerSecond: 8.72
   TowingSpeedFraction: 0.72
   TowingAccelerationFraction: 0.45
   TowingBrakingFraction: 0.65

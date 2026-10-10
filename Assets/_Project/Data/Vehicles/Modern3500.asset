@@ -16,15 +16,15 @@ MonoBehaviour:
   DisplayName: Modern 3500
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: ae7a0226f1905ba41823b8b6ab7259fb, type: 2}
-  MassKg: 3500
+  MassKg: 3800
   MaxSpeedMetersPerSecond: 11
-  MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
+  MaxReverseSpeedMetersPerSecond: 3.6
+  AccelerationMetersPerSecondSquared: 4
   BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  CoastDecelerationMetersPerSecondSquared: 2
+  SteerRateFullLocksPerSecond: 1.7
+  SteerReturnFullLocksPerSecond: 2.6
+  SteerFalloffHalfSpeedMetersPerSecond: 9.77
   TowingSpeedFraction: 0.72
   TowingAccelerationFraction: 0.45
   TowingBrakingFraction: 0.65

@@ -16,15 +16,15 @@ MonoBehaviour:
   DisplayName: Modern 350
   KindToken: road_vehicle
   Mesh: {fileID: 11400000, guid: 0940d8e69a13089458a469a108c947f4, type: 2}
-  MassKg: 3500
-  MaxSpeedMetersPerSecond: 11
+  MassKg: 3200
+  MaxSpeedMetersPerSecond: 11.5
   MaxReverseSpeedMetersPerSecond: 4
-  AccelerationMetersPerSecondSquared: 4.5
-  BrakingMetersPerSecondSquared: 8
-  CoastDecelerationMetersPerSecondSquared: 2.2
-  SteerRateFullLocksPerSecond: 2
-  SteerReturnFullLocksPerSecond: 3
-  SteerFalloffHalfSpeedMetersPerSecond: 9
+  AccelerationMetersPerSecondSquared: 4.4
+  BrakingMetersPerSecondSquared: 8.2
+  CoastDecelerationMetersPerSecondSquared: 2.1
+  SteerRateFullLocksPerSecond: 1.9
+  SteerReturnFullLocksPerSecond: 2.8
+  SteerFalloffHalfSpeedMetersPerSecond: 9.23
   TowingSpeedFraction: 0.72
   TowingAccelerationFraction: 0.45
   TowingBrakingFraction: 0.65

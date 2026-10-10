@@ -36,6 +36,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             "AeroSemi", "ClassicSemi", "ConvBox", "CaboverBox", "HightopVan",
             "Dually3500", "UtilityQuad", "Trike200", "Enduro250", "Otter8x8",
+            "Modern350", "Modern2500", "Modern3500",
         };
 
         static readonly string[] Trailers =
