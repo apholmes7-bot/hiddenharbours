@@ -313,6 +313,31 @@
     for(const x of [-R.x*0.5,0,R.x*0.5]) bar(out,[x,R.y[0],z],[x,R.y[1],z],0.012,'iron',0.12);
   }
 
+  // Shared small fittings stay in the appropriate sprung / steering group.
+  function fuelCap(out,y,z){
+    tube(out,[0,y,z],[0,y,z+0.015],0.048,8,'rubber',-0.12);
+    bar(out,[-0.029,y,z+0.019],[0.029,y,z+0.019],0.009,'galv',0.05);
+  }
+  function controls(out,D){
+    for(const sx of [-1,1]){
+      bar(out,[sx*0.23,D.barY,D.barZ],[sx*0.24,D.barY+0.075,D.barZ-0.015],0.010,'iron',0.1);
+      bar(out,[sx*0.24,D.barY+0.075,D.barZ-0.015],[sx*(D.barHW-0.02),D.barY+0.06,D.barZ-0.015],0.010,'galv',0.1);
+    }
+  }
+  function saddle(out,hw,y0,y1,z0,zRear,zFront){
+    // Sloped shoulder facets soften the slab without moving its top or seat_ref.
+    const b=0.035, lo=[[-hw,y0,zRear-b],[hw,y0,zRear-b],[hw,y1,zFront-b],[-hw,y1,zFront-b]];
+    const hi=[[-hw+b,y0+b,zRear],[hw-b,y0+b,zRear],[hw-b,y1-b,zFront],[-hw+b,y1-b,zFront]];
+    wallY(out,y0,-hw,hw,z0,zRear-b,'cloth',-0.45,-1);
+    wallY(out,y1,-hw,hw,z0,zFront-b,'cloth',-0.15,1);
+    for(let i=0;i<4;i++){const j=(i+1)%4;quad(out,lo[i],lo[j],hi[j],hi[i],'cloth',0.12);}
+    for(const sx of [-1,1]) sidePanel(out,sx,[[hw,y0,z0],[hw,y1,z0],[hw,y1,zFront-b],[hw,y0,zRear-b]],'cloth',-0.25);
+    out.push(F(hi,'cloth',-0.08));
+  }
+  function coolingFins(out,hw,y0,y1,z0){
+    for(const z of [z0,z0+0.055,z0+0.11]) boxAt(out,-hw,hw,y0,y1,z,z+0.018,'alloy',-0.12);
+  }
+
   // ---- DIRTBIKE ----
   function buildDirtbike(body, rolling, s, dz){
     const D=SPECS.dirtbike, u=axisOf(D), Hd=headOf(D), th=s.steer*D.steerMax*DEG;
@@ -326,6 +351,7 @@
       for(const sx of [-1,1]) bar(T,[sx*0.05,c2[1],c2[2]+0.03],[sx*0.05,D.barY,D.barZ-0.01],0.02,'alloy',0);
       tube(T,[-D.barHW,D.barY,D.barZ],[D.barHW,D.barY,D.barZ],0.014,6,'galv',0.15,true);
       for(const sx of [-1,1]) tube(T,[sx*0.26,D.barY,D.barZ],[sx*D.barHW,D.barY,D.barZ],0.03,8,'rubber',-0.1,true);
+      controls(T,D);
       if(s.lamp){ boxAt(T,-0.10,0.10,0.50,0.585,0.79,0.98,'paint',0.05);
         wallY(T,0.59,-0.08,0.08,0.83,0.95,s.night?'glow':'head',0.35,+1); }
       else boxAt(T,-0.13,0.13,0.545,0.565,0.76,1.00,'trim',0.1);
@@ -350,15 +376,18 @@
     // engine
     boxAt(body,-0.15,0.15,-0.10,0.30,0.34,0.62,'iron',-0.15);
     boxAt(body,-0.09,0.09,0.10,0.30,0.62,0.80,'alloy',0.0);
+    coolingFins(body,0.105,0.09,0.31,0.635);
     boxAt(body,0.15,0.19,-0.06,0.14,0.38,0.54,'alloy',0.05);
     boxAt(body,-0.19,-0.15,-0.06,0.14,0.38,0.54,'alloy',-0.2);
     // plastics: tank, shrouds, side plates, seat, rear fender, tail lamp
     wedgeBox(body,-0.16,0.16,0.06,0.42,0.80,0.99,0.93,'paint',0.1);
+    fuelCap(body,0.20,0.974);
     for(const sx of [-1,1]){
       sidePanel(body,sx,[[0.18,0.18,0.66],[0.14,0.50,0.66],[0.15,0.44,0.96],[0.19,0.12,0.96]],'paint',sx>0?0.18:-0.42);
       sidePanel(body,sx,[[0.17,-0.70,0.60],[0.17,-0.30,0.60],[0.15,-0.30,0.86],[0.15,-0.70,0.86]],'paint',sx>0?0.18:-0.42);
     }
-    boxAt(body,-0.13,0.13,-0.74,0.08,0.86,0.94,'cloth',-0.25);
+    saddle(body,0.13,-0.74,0.08,0.86,0.94,0.94);
+    for(const sx of [-1,1]) sidePanel(body,sx,[[0.175,-0.64,0.70],[0.175,-0.38,0.70],[0.163,-0.38,0.78],[0.163,-0.64,0.78]],'alloy',-0.15);
     sheet(body,0.14,-0.70,0.94,-1.06,0.89,'paint',0.30);
     boxAt(body,-0.04,0.04,-1.07,-1.03,0.86,0.90,'lensR',0.2);
     // exhaust: header down the curb side into the muffler under the side plate
@@ -366,6 +395,7 @@
     tube(body,[0.17,0.46,0.56],[0.21,0.30,0.44],0.026,6,'galv',0.05,false);
     tube(body,[0.21,0.30,0.44],[0.20,-0.30,0.58],0.026,6,'galv',0.05,false);
     tube(body,[0.20,-0.30,0.60],[0.19,-0.98,0.66],0.05,8,'chrome',0.15,true);
+    tube(body,[0.19,-0.982,0.66],[0.19,-0.989,0.66],0.032,8,'rubber',-0.5,true);
     bar(body,[0,-0.36,0.42],[0,-0.20,0.84],0.028,'galv',0.0);                                // shock
     { const tip=lerp3(D.standStow,D.standTip,s.stand);                                        // side stand
       bar(body,D.standPivot,tip,0.02,'galv',-0.2);
@@ -389,6 +419,7 @@
       for(const sx of [-1,1]) bar(Q,[sx*0.06,c2[1],c2[2]+0.03],[sx*0.06,T.barY,T.barZ-0.01],0.02,'alloy',0);
       tube(Q,[-T.barHW,T.barY,T.barZ],[T.barHW,T.barY,T.barZ],0.014,6,'galv',0.15,true);
       for(const sx of [-1,1]) tube(Q,[sx*0.24,T.barY,T.barZ],[sx*T.barHW,T.barY,T.barZ],0.03,8,'rubber',-0.1,true);
+      controls(Q,T);
       tube(Q,[0,Hd[1]+0.03,Hd[2]+0.05],[0,Hd[1]+0.13,Hd[2]+0.05],0.08,10,'paint',0.05,false);     // lamp shell
       tube(Q,[0,Hd[1]+0.13,Hd[2]+0.05],[0,Hd[1]+0.14,Hd[2]+0.05],0.072,10,s.night?'glow':'head',0.3,true);
       fenderArc(Q,T.axF,T.rF,0.37,0.16,30,130,5,'paint',0.28,wear);
@@ -408,9 +439,11 @@
     // engine, airbox, tank, seat
     boxAt(body,-0.16,0.16,-0.14,0.22,0.30,0.56,'iron',-0.15);
     boxAt(body,-0.10,0.10,0.04,0.22,0.56,0.72,'alloy',0);
+    coolingFins(body,0.115,0.03,0.23,0.575);
     boxAt(body,-0.14,0.14,-0.24,0.02,0.44,0.64,'iron',-0.3);
     wedgeBox(body,-0.16,0.16,0.02,0.36,0.62,0.82,0.76,'paint',0.1);
-    boxAt(body,-0.17,0.17,-0.72,0.02,0.64,0.76,'cloth',-0.25);
+    fuelCap(body,0.14,0.804);
+    saddle(body,0.17,-0.72,0.02,0.64,0.76,0.76);
     // one-piece rear fender over both balloon tires, rack on it
     const R=T.fenderR;
     fenderShell(body,R.y[0],R.y[1],R.hwT,R.z,R.hwB,R.zB,'paint',0.0,wear);
@@ -418,6 +451,7 @@
     tube(body,[0.06,0.24,0.68],[0.24,0.40,0.52],0.026,6,'galv',0.1,false);
     tube(body,[0.24,0.40,0.52],[0.30,-0.10,0.66],0.026,6,'galv',0.05,false);
     tube(body,[0.30,-0.10,0.67],[0.30,-0.72,0.70],0.055,8,'chrome',0.15,true);                 // muffler, along the fender
+    tube(body,[0.30,-0.722,0.70],[0.30,-0.729,0.70],0.035,8,'rubber',-0.5,true);
     boxAt(body,-0.05,0.05,-0.935,-0.90,0.55,0.60,'lensR',0.2);
     for(const sx of [-1,1]) wheelBalloon(rolling,sx*T.rearX,T.axR,T.rR,T.wR,T.rimR,s.roll+s.rollR,sx,'galv');
   }
@@ -432,7 +466,13 @@
     boxAt(body,-0.16,0.16,-0.26,0.22,0.30,0.44,'iron',-0.15);                                   // engine, what shows of it
     boxAt(body,-0.20,0.20,-0.30,0.26,0.40,0.80,'paint',-0.12,false,wear);                       // centre body panel
     wedgeBox(body,-0.17,0.17,0.02,0.36,0.72,0.98,0.90,'paint',0.1);                             // tank
-    wedgeBox(body,-0.17,0.17,-0.66,0.02,0.80,0.94,0.90,'cloth',-0.25);                          // seat, rising aft
+    fuelCap(body,0.14,0.956);
+    saddle(body,0.17,-0.66,0.02,0.80,0.94,0.90);
+    // Ribbed footboards and inset side service covers break up the broad panels.
+    for(const sx of [-1,1]){
+      wallX(body,sx*0.201,-0.24,0.08,0.48,0.65,'iron',-0.15,sx);
+      for(const y of [-0.23,-0.07,0.09]) bar(body,[sx*0.24,y,0.372],[sx*0.43,y,0.372],0.009,'iron',0.1);
+    }
     fenderShell(body,FF.y[0],FF.y[1],FF.hw,FF.z,FF.hw+0.04,FF.z-0.12,'paint',0,wear);
     fenderShell(body,FR.y[0],FR.y[1],FR.hw,FR.z,FR.hw+0.04,FR.z-0.12,'paint',0,wear);
     wallY(body,FF.y[1],-FF.hw-0.04,FF.hw+0.04,0.44,FF.z-0.12,'paint',0.05,+1);                  // nose below the shell
@@ -454,9 +494,13 @@
         bar(P,[0,0.38,0.98],[0,Q.barY,Q.barZ-0.01],0.02,'alloy',0);
         tube(P,[-Q.barHW,Q.barY,Q.barZ],[Q.barHW,Q.barY,Q.barZ],0.014,6,'galv',0.15,true);
         for(const sx of [-1,1]) tube(P,[sx*0.24,Q.barY,Q.barZ],[sx*Q.barHW,Q.barY,Q.barZ],0.03,8,'rubber',-0.1,true);
+        controls(P,Q);
         boxAt(P,-0.09,0.09,0.33,0.42,0.98,1.06,'paint',0.05);
+        slab(P,[[-0.064,0.345],[0.064,0.345],[0.064,0.402],[-0.064,0.402]],1.062,'rubber',-0.2);
+        bar(P,[-0.034,0.37,1.065],[0.026,0.385,1.065],0.008,'galv',0.15);
       },(p)=>hingeZ(p,Q.stem[0],Q.stem[1],ca,sa)); }
     tube(body,[0.28,-0.56,0.50],[0.30,-1.04,0.52],0.05,8,'galv',0.05,true);                    // muffler, tip out past the tail
+    tube(body,[0.30,-1.04,0.52],[0.30,-1.041,0.52],0.032,8,'rubber',-0.5,true);
     if(s.hitch){ boxAt(body,-0.04,0.04,-1.10,-1.00,0.36,0.44,'iron',-0.1); tube(body,[0,Q.hitch[1],0.44],[0,Q.hitch[1],0.50],0.026,8,'chrome',0.3,true); }
     for(const sx of [-1,1]) boxAt(body,Math.min(sx*0.30,sx*0.42),Math.max(sx*0.30,sx*0.42),FR.y[0]-0.025,FR.y[0]+0.005,0.56,0.64,'lensR',0.2,false);
     // unsprung: solid rear axle + diff, swingarm and A-arms from the sprung frame down to the grounded hubs

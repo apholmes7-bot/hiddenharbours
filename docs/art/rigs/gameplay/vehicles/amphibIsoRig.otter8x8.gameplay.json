@@ -2,7 +2,7 @@
   "rig": "amphibIsoRig.js",
   "exportSymbol": "AmphibIso",
   "variant": "otter8x8",
-  "derivedFromRigSha256": "af6edea2fd32a2b703c430a1854a1d37983bae73e8cffd02eeed50ed7423ad0d",
+  "derivedFromRigSha256": "0815c67a372f1fa9e1f6e1ae88f89d7973b6e7628709b09f748d576494183d4a",
   "kind": "amphibious_xtv",
   "label": "Otter 8x8",
   "generated": "measured off the rig source by hand-transcription with per-value provenance; flotation numbers integrated numerically off the same station profiles the bake lathes",
