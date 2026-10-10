@@ -722,7 +722,7 @@ Shader "HiddenHarbours/Water"
         // stays opaque and that cancellation is gone BY CONSTRUCTION.
         _CausticDayGate       ("Caustic day gate (0 = off / always on, 1 = day only)", Range(0,1)) = 0.0
         _CausticShallowBias   ("Caustic band deepen bias (m; push dapple off the very edge)", Float) = 0.0
-        _CausticClarity       ("Caustic clarity (0 = off, 1 = seabed transmission)", Range(0,1)) = 0.0
+        _CausticClarity       ("Caustic clarity (0 = off, 1 = seabed transmission)", Range(0,1)) = 1.0
 
         [Header(Seabed absorption (ADR 0027 num 7)   the bottom seen THROUGH the column   col.rgb only)]
         // The painted _DepthRamp stays the colour authority for the WATER BODY (ADR 0027 finding 1: a
@@ -5332,7 +5332,7 @@ Shader "HiddenHarbours/Water"
                     float causticSunUp = (causticDnSum > 1e-3) ? saturate(_SunElevation) : 1.0;
                     float causticDay = lerp(1.0, causticSunUp, saturate(_CausticDayGate));
                     // C2a: real column depth, RGB down-and-back absorption, same bands as the seabed.
-                    // Owner look policy, default OFF; zero clarity or inactive sigma is exactly one.
+                    // Owner look policy, ships at 1; zero clarity or inactive sigma is exactly one.
                     // One exp per channel only inside this shallow branch when clarity and sigma are active.
                     float3 causticTransmission = float3(1.0, 1.0, 1.0);
                     if (_CausticClarity > 0.0)
