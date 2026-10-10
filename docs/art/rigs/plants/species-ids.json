@@ -1,0 +1,386 @@
+{
+  "LowbushBlueberry": {
+    "code": 1,
+    "id": "plant.lowbush_blueberry",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "SheepLaurel": {
+    "code": 2,
+    "id": "plant.sheep_laurel",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Rhodora": {
+    "code": 3,
+    "id": "plant.rhodora",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "BlackHuckleberry": {
+    "code": 4,
+    "id": "plant.black_huckleberry",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "CommonJuniper": {
+    "code": 5,
+    "id": "plant.common_juniper",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Leatherleaf": {
+    "code": 6,
+    "id": "plant.leatherleaf",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "SweetGale": {
+    "code": 7,
+    "id": "plant.sweet_gale",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "WinterberryHolly": {
+    "code": 8,
+    "id": "plant.winterberry_holly",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "SpeckledAlder": {
+    "code": 9,
+    "id": "plant.speckled_alder",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "PussyWillow": {
+    "code": 10,
+    "id": "plant.pussy_willow",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "RedOsierDogwood": {
+    "code": 11,
+    "id": "plant.red_osier_dogwood",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Meadowsweet": {
+    "code": 12,
+    "id": "plant.meadowsweet",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Steeplebush": {
+    "code": 13,
+    "id": "plant.steeplebush",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Raspberry": {
+    "code": 14,
+    "id": "plant.raspberry",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "WildRose": {
+    "code": 15,
+    "id": "plant.wild_rose",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "StaghornSumac": {
+    "code": 16,
+    "id": "plant.staghorn_sumac",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Serviceberry": {
+    "code": 17,
+    "id": "plant.serviceberry",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "BeakedHazelnut": {
+    "code": 18,
+    "id": "plant.beaked_hazelnut",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "WildRaisin": {
+    "code": 19,
+    "id": "plant.wild_raisin",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "RedElderberry": {
+    "code": 20,
+    "id": "plant.red_elderberry",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "SugarKelp": {
+    "code": 21,
+    "id": "shoreplant.sugar_kelp",
+    "band": [
+      -3.45,
+      -1.07
+    ]
+  },
+  "IrishMoss": {
+    "code": 22,
+    "id": "shoreplant.irish_moss",
+    "band": [
+      -3.45,
+      -1.07
+    ]
+  },
+  "Eelgrass": {
+    "code": 23,
+    "id": "shoreplant.eelgrass",
+    "band": [
+      -3.45,
+      -1.07
+    ]
+  },
+  "KnottedWrack": {
+    "code": 24,
+    "id": "shoreplant.knotted_wrack",
+    "band": [
+      -1.47,
+      0.25
+    ]
+  },
+  "Bladderwrack": {
+    "code": 25,
+    "id": "shoreplant.bladderwrack",
+    "band": [
+      -1.47,
+      0.25
+    ]
+  },
+  "SeaLettuce": {
+    "code": 26,
+    "id": "shoreplant.sea_lettuce",
+    "band": [
+      -1.47,
+      0.25
+    ]
+  },
+  "Cordgrass": {
+    "code": 27,
+    "id": "shoreplant.cordgrass",
+    "band": [
+      -0.15,
+      1.25
+    ]
+  },
+  "Glasswort": {
+    "code": 28,
+    "id": "shoreplant.glasswort",
+    "band": [
+      -0.15,
+      1.25
+    ]
+  },
+  "SaltmeadowHay": {
+    "code": 29,
+    "id": "shoreplant.saltmeadow_hay",
+    "band": [
+      0.85,
+      2.4
+    ]
+  },
+  "BlackRush": {
+    "code": 30,
+    "id": "shoreplant.black_rush",
+    "band": [
+      0.85,
+      2.4
+    ]
+  },
+  "Cattail": {
+    "code": 31,
+    "id": "shoreplant.cattail",
+    "band": [
+      0.85,
+      2.4
+    ]
+  },
+  "Threesquare": {
+    "code": 32,
+    "id": "shoreplant.threesquare",
+    "band": [
+      0.85,
+      2.4
+    ]
+  },
+  "MarramGrass": {
+    "code": 33,
+    "id": "shoreplant.marram_grass",
+    "band": [
+      2,
+      100
+    ]
+  },
+  "Bayberry": {
+    "code": 34,
+    "id": "shoreplant.bayberry",
+    "band": [
+      2,
+      100
+    ]
+  },
+  "SweetFern": {
+    "code": 35,
+    "id": "shoreplant.sweet_fern",
+    "band": [
+      2,
+      100
+    ]
+  },
+  "BeachPea": {
+    "code": 36,
+    "id": "shoreplant.beach_pea",
+    "band": [
+      2,
+      100
+    ]
+  },
+  "Lupin": {
+    "code": 37,
+    "id": "plant.lupin",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "LadySlipper": {
+    "code": 38,
+    "id": "plant.lady_slipper",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Fireweed": {
+    "code": 39,
+    "id": "plant.fireweed",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "QueenAnne": {
+    "code": 40,
+    "id": "plant.queen_anne",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Goldenrod": {
+    "code": 41,
+    "id": "plant.goldenrod",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "OxeyeDaisy": {
+    "code": 42,
+    "id": "plant.oxeye_daisy",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "BlueFlag": {
+    "code": 43,
+    "id": "plant.blue_flag",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Buttercup": {
+    "code": 44,
+    "id": "plant.buttercup",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "MeadowGrass": {
+    "code": 45,
+    "id": "plant.meadow_grass",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "Timothy": {
+    "code": 46,
+    "id": "plant.timothy",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "SoftRush": {
+    "code": 47,
+    "id": "plant.soft_rush",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "TussockSedge": {
+    "code": 48,
+    "id": "plant.tussock_sedge",
+    "band": [
+      -100,
+      100
+    ]
+  }
+}
