@@ -14,12 +14,15 @@ namespace HiddenHarbours.Core
     /// simply never reached COLOUR. So the churn read as a solid white sheet dissolving, never as water.</para>
     ///
     /// <para><b>The law.</b> Foam is born at the sea's own FOAM anchor (white, only at the moment of churn),
-    /// then walks DOWN the water's ramp — foam → shallow → mid — over its life. It is never given a colour
-    /// of its own: every value returned is a convex combination of the live
-    /// <see cref="SeaPaletteState"/> anchors (ADR 0015), so a preset swap or a mood turn moves the wake's
-    /// blues with the sea's, and no hex is ever invented on a particle component. The last leg into the
-    /// TRUE local sea is left to the existing alpha fade — the ambient ocean at that spot is whatever depth
-    /// and light make it, and dissolving into it beats guessing it.</para>
+    /// then walks into THE WATER IT RIDES ON — foam → lift(body) → body — over its life (W4-1, design 3A,
+    /// owner ruling 2026-10-10). <c>body</c> is the water at the element's own depth
+    /// (<see cref="SeaPaletteState.BodyAt"/>) and <see cref="BodyLift"/> is that water brightened and
+    /// barely whitened, in its own hue. It is never given a colour of its own: every value returned is a
+    /// convex combination of the live foam anchor and the live water (ADR 0015), so a preset swap or a
+    /// mood turn moves the wake with the sea, and no hex is ever invented on a particle component. Until
+    /// W4-1 the walk ended on the fixed mid anchor and left the last leg to the alpha fade; the owner's
+    /// 2026-10-09 look found that a light marine blue sitting on darker water, so the walk now ends on
+    /// the water itself and the alpha fade has nothing left to hide.</para>
     ///
     /// <para><b>Why the SCATTER is the load-bearing term.</b> The other half of the same ask is <i>"everything
     /// looks very organized and shader-like and not particle like"</i>. A ramp alone does not cure that: if
@@ -67,11 +70,11 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// Where along the three-stop ramp this element sits: <b>0 = the foam anchor</b> (the white of the
-        /// churn itself), <b>0.5 = the shallow anchor</b>, <b>1 = the mid anchor</b>.
+        /// churn itself), <b>0.5 = the lifted water</b>, <b>1 = the water itself</b>.
         ///
         /// <para>Piecewise-linear through three knots so each leg is independently tunable by the owner:
         /// it holds pure foam until <see cref="WakeAgeRamp.WhiteHold"/> of its life (the churn), reaches the
-        /// shallow blue at <see cref="WakeAgeRamp.BlueReach"/>, and lands on the mid blue at
+        /// lifted water at <see cref="WakeAgeRamp.BlueReach"/>, and becomes its water at
         /// <see cref="WakeAgeRamp.DeepReach"/>, holding there for whatever life remains. Non-decreasing in
         /// <paramref name="life01"/> by construction — water that has aged never gets younger.</para>
         ///
@@ -149,20 +152,52 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// The three-stop colour lookup: <paramref name="age01"/> 0 → <paramref name="foam"/>,
-        /// 0.5 → <paramref name="shallow"/>, 1 → <paramref name="mid"/>. Alpha is not touched — the
-        /// element's own life fade owns that, and this must never fight it.
+        /// 0.5 → <paramref name="lift"/>, 1 → <paramref name="body"/> (W4-1, 3A: the foam anchor, the
+        /// lifted water, the water itself). Alpha is not touched — the element's own life fade owns that,
+        /// and this must never fight it.
         ///
-        /// <para>Every returned value is a convex combination of the three anchors, which is the ADR 0015
-        /// guarantee in its strongest form: the wake cannot leave the sea's palette even at a mis-tuned
-        /// <paramref name="age01"/>.</para>
+        /// <para>Every returned value is a convex combination of the three stops, and the lift itself lies
+        /// between the water and the foam (<see cref="BodyLift"/>), so the wake cannot leave the span from
+        /// its water to the sea's foam even at a mis-tuned <paramref name="age01"/>, and at 1 it IS the
+        /// water.</para>
         /// </summary>
-        public static Color Ramp3(float age01, Color foam, Color shallow, Color mid)
+        public static Color Ramp3(float age01, Color foam, Color lift, Color body)
         {
             float t = Mathf.Clamp01(age01);
             return t <= 0.5f
-                ? Color.Lerp(foam, shallow, t * 2f)
-                : Color.Lerp(shallow, mid, (t - 0.5f) * 2f);
+                ? Color.Lerp(foam, lift, t * 2f)
+                : Color.Lerp(lift, body, (t - 0.5f) * 2f);
         }
+
+        /// <summary>
+        /// The walk's MID stop (W4-1, design 3A): the water <paramref name="body"/> brightened
+        /// ×<paramref name="lift"/> and whitened toward <paramref name="foam"/> by <paramref name="whiten"/>
+        /// — churned water is lighter than the water it sits in and keeps its hue. In LINEAR colour, like
+        /// the shader (the caller converts; <see cref="LiftOf"/> does it for the sprites).
+        ///
+        /// <para>Two guards, both no-ops at the shipped dials over the sea's own water: the lift is floored
+        /// at ×1 (it never darkens the water) and capped at the foam per channel (the mid stop is never
+        /// brighter than the churn). Together they keep the stop between the water and the foam, which is
+        /// what keeps the walk's luma from rising as it ages over any water darker than the foam.</para>
+        ///
+        /// <para>TWIN of <c>WakeBodyLift</c> in <c>HiddenHarboursWater.shader</c>, line for line.</para>
+        /// </summary>
+        public static Color BodyLift(Color body, Color foam, float lift, float whiten)
+        {
+            return Color.Lerp(Min(body * Mathf.Max(lift, 1f), foam), foam, Mathf.Clamp01(whiten));
+        }
+
+        /// <summary>The mid stop for a gamma colour (the sprites' space): <see cref="BodyLift"/> at the
+        /// published dials, run in linear as the shader runs it and handed back in gamma.</summary>
+        public static Color LiftOf(Color body, in SeaPaletteState palette)
+        {
+            return SeaPalette.ToGamma(BodyLift(SeaPalette.ToLinear(body), SeaPalette.ToLinear(palette.Foam),
+                                               palette.BodyLift, palette.BodyWhiten));
+        }
+
+        // HLSL's per-channel min, so BodyLift reads as its twin does.
+        private static Color Min(Color a, Color b)
+            => new Color(Mathf.Min(a.r, b.r), Mathf.Min(a.g, b.g), Mathf.Min(a.b, b.b), Mathf.Min(a.a, b.a));
 
         /// <summary>
         /// THE ENTRY POINT the renderers call: the RGB an element of this age should be drawn at.
@@ -174,20 +209,24 @@ namespace HiddenHarbours.Core
         ///
         /// <para><see cref="WakeAgeRamp.ShadeJitter"/> adds a per-particle value nudge on top — two puffs of
         /// the same age are still not the same puff. It is a MULTIPLY on the ramp colour, so it scales
-        /// within the palette rather than dragging chroma somewhere the palette does not go, and it is
-        /// bounded: every channel stays inside <c>[minAnchor·(1−jitter), maxAnchor·(1+jitter)]</c>, the
+        /// within the walk rather than dragging chroma somewhere the sea does not go, and it is bounded:
+        /// every channel stays inside <c>[min(body, foam)·(1−jitter), max(body, foam)·(1+jitter)]</c>, the
         /// bound the guard-rail test pins.</para>
+        ///
+        /// <para><paramref name="body"/> is the water this element rides on — the caller's
+        /// <see cref="SeaPaletteState.BodyAt"/> at the element's own depth (W4-1, design 3A). The walk
+        /// ends on it.</para>
         ///
         /// <para>Alpha is passed through from <paramref name="legacy"/> untouched — the caller has already
         /// computed the life fade, and colour must never quietly restate it.</para>
         /// </summary>
         public static Color Shade(Color legacy, float life01, float seed01, in WakeAgeRamp ramp,
-                                  in SeaPaletteState palette)
+                                  in SeaPaletteState palette, Color body)
         {
             float strength = Mathf.Clamp01(ramp.Strength);
             if (strength <= 0f) return legacy;
 
-            Color aged = Ramp3(Age01(life01, seed01, in ramp), palette.Foam, palette.Shallow, palette.Mid);
+            Color aged = Ramp3(Age01(life01, seed01, in ramp), palette.Foam, LiftOf(body, in palette), body);
 
             float jitter = Mathf.Clamp01(ramp.ShadeJitter);
             if (jitter > 0f)
@@ -215,20 +254,20 @@ namespace HiddenHarbours.Core
         /// statically … never manipulated"</i>: they were the one wake stream that never changed colour at
         /// all. A multiply is the operator that fits the case — it SCALES the sprite's own light and dark
         /// together, so the crest keeps every bit of its internal contrast while the whole thing walks
-        /// down the sea's blues.</para>
+        /// into the water it rides on.</para>
         ///
         /// <para><paramref name="strength"/> 0 multiplies by pure white, so it returns
         /// <paramref name="legacy"/> BIT-EXACTLY (x·1 is exact in IEEE) — the A/B, on the same terms as
         /// every other knob in this file. Alpha is passed through untouched; the caller's life fade owns
-        /// it.</para>
+        /// it. <paramref name="body"/> is the water the crest rides on, as for <see cref="Shade"/>.</para>
         /// </summary>
         public static Color ShadeMultiply(Color legacy, float life01, float seed01, float strength,
-                                          in WakeAgeRamp ramp, in SeaPaletteState palette)
+                                          in WakeAgeRamp ramp, in SeaPaletteState palette, Color body)
         {
             float k = Mathf.Clamp01(strength) * Mathf.Clamp01(ramp.Strength);
             if (k <= 0f) return legacy;
 
-            Color aged = Ramp3(Age01(life01, seed01, in ramp), palette.Foam, palette.Shallow, palette.Mid);
+            Color aged = Ramp3(Age01(life01, seed01, in ramp), palette.Foam, LiftOf(body, in palette), body);
             return new Color(legacy.r * Mathf.Lerp(1f, aged.r, k),
                              legacy.g * Mathf.Lerp(1f, aged.g, k),
                              legacy.b * Mathf.Lerp(1f, aged.b, k),
@@ -277,10 +316,10 @@ namespace HiddenHarbours.Core
         [Tooltip("Fraction of life the foam stays WHITE - the churn itself. Small: white is the moment of contact, not the trail.")]
         [Range(0f, 1f)] public float WhiteHold;
 
-        [Tooltip("Life fraction at which the foam has reached the sea's SHALLOW blue.")]
+        [Tooltip("Life fraction at which the foam has reached the LIFTED water (the walk's mid stop).")]
         [Range(0f, 1f)] public float BlueReach;
 
-        [Tooltip("Life fraction at which the foam has reached the sea's MID blue and stops descending.")]
+        [Tooltip("Life fraction at which the foam has become the WATER it rides on and stops descending.")]
         [Range(0f, 1f)] public float DeepReach;
 
         [Tooltip("+/- per-particle offset along the ramp, so one churn holds many ages at once instead of reading as a single sheet. 0 = every puff the same age.")]
@@ -291,8 +330,8 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// The shipped feel. <see cref="WhiteHold"/> 0.12 keeps white to the churn's first eighth of life;
-        /// the shallow blue lands at 0.45 and the mid blue at 0.85, so most of a trail's visible length is
-        /// spent walking through the sea's blues rather than sitting on white. Scatter 0.22 is roughly a
+        /// the lifted water lands at 0.45 and the water itself at 0.85, so most of a trail's visible length is
+        /// spent walking into its water rather than sitting on white. Scatter 0.22 is roughly a
         /// half-leg of the ramp: enough that neighbouring puffs are visibly different ages, not so much that
         /// fresh churn stops reading as fresh.
         /// </summary>

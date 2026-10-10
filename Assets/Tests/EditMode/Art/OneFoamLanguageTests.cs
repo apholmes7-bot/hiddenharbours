@@ -98,9 +98,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             Assert.AreEqual(1, CountOf(code, "float WakeFoamKnots(float t01, float whiteHold, float blueReach, float deepReach)"),
                 "the knot curve must be transcribed from WakeFoamAgeing.Knots exactly once");
-            Assert.AreEqual(1, CountOf(code, "float3 WakeFoamRamp3(float age01, float3 foam, float3 shallow, float3 mid)"),
+            // W4-1 (design 3A): the walk ends on the water the foam rides on, so the ramp's stops and the
+            // entry point both take that water (`body`); the one-entry-point law is unchanged.
+            Assert.AreEqual(1, CountOf(code, "float3 WakeFoamRamp3(float age01, float3 foam, float3 lift, float3 body)"),
                 "the three-stop lookup must be transcribed from WakeFoamAgeing.Ramp3 exactly once");
-            Assert.AreEqual(1, CountOf(code, "float3 FoamAgedColor(float age01, float3 legacy, float strength)"),
+            Assert.AreEqual(1, CountOf(code, "float3 FoamAgedColor(float age01, float3 legacy, float strength, float3 body)"),
                 "there is ONE place a foam colour is chosen; a second one is a second language");
 
             // The ramp may be reached only THROUGH the shared entry point. A layer that calls
@@ -115,11 +117,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // ...and every layer that HAS an age is actually wired to it.
             StringAssert.Contains("FoamAgedColor(WakeFoamAge01(freshness, _WakeFoamFreshFloor),", code,
                 "the advected wake buffer must compose through the shared walk");
-            StringAssert.Contains("FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength)", code,
+            StringAssert.Contains("FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength, foamBody)", code,
                 "the whitecaps must compose through the shared walk");
-            StringAssert.Contains("FoamAgedColor(surfAge01, _SurfColor.rgb,    _SurfAgeStrength)", code,
+            StringAssert.Contains("FoamAgedColor(surfAge01, _SurfColor.rgb,    _SurfAgeStrength, foamBody)", code,
                 "the surf's whitewater must compose through the shared walk — this is row 2");
-            StringAssert.Contains("FoamAgedColor(0.0,       _SurfLipColor.rgb, _SurfAgeStrength)", code,
+            StringAssert.Contains("FoamAgedColor(0.0,       _SurfLipColor.rgb, _SurfAgeStrength, foamBody)", code,
                 "the lip is the newest water in the frame: the shared walk at age 0, which is the sea's " +
                 "own foam anchor rather than a pure white of the surf's own");
         }

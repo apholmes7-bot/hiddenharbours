@@ -118,10 +118,11 @@ namespace HiddenHarbours.Boats
         [SerializeField] private WakeWaveConfig _wave = WakeWaveConfig.Default;
 
         [Header("THE AGE RAMP (owner ask 2026-08-27: churn white, then through the sea's blues)")]
-        [Tooltip("How churned water AGES in COLOUR: born at the sea's own foam anchor, then walking down " +
-                 "the water's palette — foam to shallow to mid — over each element's life, with a " +
+        [Tooltip("How churned water AGES in COLOUR: born at the sea's own foam anchor, then walking into " +
+                 "the water it rides on — foam, the lifted water, then the water itself at its own depth " +
+                 "(W4-1) — over each element's life, with a " +
                  "per-particle scatter so one churn holds many ages at once instead of reading as a " +
-                 "single sheet. The anchors are the LIVE ones the water is drawing itself with (ADR 0015), " +
+                 "single sheet. Foam and water are the LIVE ones the sea is drawing itself with (ADR 0015), " +
                  "read through the Core SeaPalette seam — never invented here. Strength = 0 restores the " +
                  "flat serialized tints below, bit-exact (the A/B).")]
         [SerializeField] private WakeAgeRamp _ageRamp = WakeAgeRamp.Default;
@@ -396,9 +397,12 @@ namespace HiddenHarbours.Boats
                 WaveFieldAnimatorSettings waveSmoothing = GameServices.WaveFieldAnimator;
                 _seaAnimator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
                                   s.WindVector, s.SeaState01, in waveField, in waveSmoothing);
-                if (displaced)
-                    lift = new SeaLift(_seaAnimator, GameServices.TidalTerrain, env, totalSeconds,
-                                       sea.ShoreFadeBandMeters, sea.Exaggeration);
+                // Not displaced: no animator, so every lift stays exactly 0 — but the context still answers
+                // DEPTH, which the age ramp needs to end each element on the water under it (W4-1, 3A).
+                lift = displaced
+                    ? new SeaLift(_seaAnimator, GameServices.TidalTerrain, env, totalSeconds,
+                                  sea.ShoreFadeBandMeters, sea.Exaggeration)
+                    : new SeaLift(null, GameServices.TidalTerrain, env, totalSeconds, 0f, 0f);
             }
 
             // THE SEA'S OWN PALETTE (ADR 0015, owner ask 2026-08-27): the anchors the water is drawing
@@ -466,7 +470,21 @@ namespace HiddenHarbours.Boats
                 float depth = BoatCrossing.DepthAt(_terrain, _environment, _totalSeconds, worldPos);
                 return ShoreFadeMath.DisplacedHeight(height, depth, _bandMeters, _exaggeration);
             }
+
+            /// <summary>Water depth (m) at <paramref name="worldPos"/> by the game's one depth rule, displaced
+            /// sea or not — +∞ off the terrain or with no context (open water: the deep end of the ramp).</summary>
+            public float DepthAt(Vector2 worldPos)
+                => BoatCrossing.DepthAt(_terrain, _environment, _totalSeconds, worldPos);
         }
+
+        /// <summary>
+        /// The water an aged element rides on (W4-1, design 3A): the sea's own body colour at the depth under
+        /// <paramref name="worldPos"/>, where the age ramp ends. Read only while the ramp is on — at
+        /// strength 0 the shade returns the legacy colour before it looks, so the A/B costs no depth read.
+        /// </summary>
+        private static Color BodyUnder(in SeaLift lift, in WakeAgeRamp ramp, in SeaPaletteState palette,
+                                       Vector2 worldPos)
+            => ramp.Strength > 0f ? palette.BodyAt(lift.DepthAt(worldPos)) : palette.Mid;
 
         /// <summary>
         /// Re-scan for boats. Adds a rig for any new <see cref="BoatController"/> (up to <see cref="_maxBoats"/>)
@@ -1959,7 +1977,8 @@ namespace HiddenHarbours.Boats
                     // THE AGE RAMP (owner ask 2026-08-27): white only at the churn, then down the sea's own
                     // palette. This is the line the old defect lived on — the tint used to be the same
                     // serialized white for the whole life, and only `alpha` ever moved.
-                    var col = WakeFoamAgeing.Shade(foamColor, life, p.Seed, in ramp, in palette);
+                    var col = WakeFoamAgeing.Shade(foamColor, life, p.Seed, in ramp, in palette,
+                                                   BodyUnder(in lift, in ramp, in palette, p.Pos));
                     col.a = alpha;
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
@@ -2008,7 +2027,8 @@ namespace HiddenHarbours.Boats
                     t.position = new Vector3(p.Pos.x, p.Pos.y + ride + _tideRise, 0f);
                     t.localScale = new Vector3(sizeM, sizeM, 1f);
                     // A thrown droplet ages too: bright at the stem, then the sea's blues as it falls back.
-                    var col = WakeFoamAgeing.Shade(sprayColor, life, p.Seed, in ramp, in palette);
+                    var col = WakeFoamAgeing.Shade(sprayColor, life, p.Seed, in ramp, in palette,
+                                                   BodyUnder(in lift, in ramp, in palette, p.Pos));
                     col.a = alpha;
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
@@ -2055,7 +2075,8 @@ namespace HiddenHarbours.Boats
                     // metres and never magnified past its texels.
                     float s = sizeM / BubbleNativeSize;
                     t.localScale = new Vector3(s, s, 1f);
-                    var col = WakeFoamAgeing.Shade(foamColor, life, b.Seed, in ramp, in palette);
+                    var col = WakeFoamAgeing.Shade(foamColor, life, b.Seed, in ramp, in palette,
+                                                   BodyUnder(in lift, in ramp, in palette, b.Pos));
                     col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
@@ -2163,9 +2184,10 @@ namespace HiddenHarbours.Boats
                     // from the ramp, and why the owner's next look found them "baked statically … never
                     // manipulated". ShadeMultiply SCALES the sprite's own light and dark together, so
                     // the profile survives intact while the crest walks down the sea's blues.
+                    Color body = BodyUnder(in lift, in ramp, in palette, p.Pos);
                     var col = asWave
-                        ? WakeFoamAgeing.ShadeMultiply(tint, life, p.Seed, wave.AgeStrength, in ramp, in palette)
-                        : WakeFoamAgeing.Shade(tint, life, p.Seed, in ramp, in palette);
+                        ? WakeFoamAgeing.ShadeMultiply(tint, life, p.Seed, wave.AgeStrength, in ramp, in palette, body)
+                        : WakeFoamAgeing.Shade(tint, life, p.Seed, in ramp, in palette, body);
                     col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);

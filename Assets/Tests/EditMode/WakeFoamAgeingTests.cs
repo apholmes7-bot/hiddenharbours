@@ -9,19 +9,38 @@ namespace HiddenHarbours.Tests.EditMode
     /// through the sea's blues and fades into the ambient ocean).
     ///
     /// <para>All of this is pure maths, so it is pinned by DERIVED bounds rather than by eyeballed
-    /// numbers: the ramp is a convex combination of the sea's own anchors, so "it never leaves the
-    /// palette" is a provable containment; Rec.601 luma is linear, so "it never brightens as it ages" is a
-    /// provable monotonicity. The render side is the owner's eyeball — no pixel is claimed here.</para>
+    /// numbers: since W4-1 (design 3A) the ramp is a convex combination of the sea's foam and the water
+    /// the element rides on, so "it never leaves the span from its water to the foam" is a provable
+    /// containment; Rec.601 luma is linear, so "it never brightens as it ages" is a provable monotonicity
+    /// over any water darker than the foam. The render side is the owner's eyeball — no pixel is claimed
+    /// here.</para>
     /// </summary>
     public class WakeFoamAgeingTests
     {
-        /// <summary>The SHIPPED Water.mat anchors, verbatim — so these tests measure the ramp against the
-        /// palette the game actually draws with rather than against a convenient invention.</summary>
+        /// <summary>The SHIPPED Water.mat anchors and wake dials (_WakeBodyLift 2, _WakeBodyWhiten 0.05),
+        /// verbatim — so these tests measure the ramp against the palette the game actually draws with
+        /// rather than against a convenient invention.</summary>
         static SeaPaletteState ShippedPalette() => new SeaPaletteState(
             deep:    new Color(0.02f, 0.08f, 0.26f, 1f),
             mid:     new Color(0.08f, 0.26f, 0.50f, 1f),
             shallow: new Color(0.16f, 0.50f, 0.72f, 1f),
-            foam:    new Color(0.92f, 0.97f, 1.00f, 1f));
+            foam:    new Color(0.92f, 0.97f, 1.00f, 1f),
+            bodyLift: 2f, bodyWhiten: 0.05f, water: default);
+
+        /// <summary>
+        /// Water the shipped sea actually draws, as the bodies an element can ride on (W4-1). Three are
+        /// <c>DepthRamp.png</c> texels byte for byte: 0 (the shallowest water), 56 (Water.mat at 1 m,
+        /// u = 0.85 / 3.85) and 255 (the deepest, where a mood has no deep-blue pull). The fourth is
+        /// Water.mat at 4 m and beyond: texel 255 pulled 45% toward its _DeepBlueColor in linear, rounded
+        /// to bytes. Any water darker than the foam would do; these are the ones the owner sees.
+        /// </summary>
+        static readonly Color[] Waters =
+        {
+            new Color32(0x8e, 0xa5, 0x9c, 0xff),     // DepthRamp texel 0: the shallowest water
+            new Color32(0x5e, 0x7e, 0x78, 0xff),     // texel 56: Water.mat at 1 m
+            new Color32(0x0b, 0x1e, 0x3b, 0xff),     // Water.mat at 4 m and open water
+            new Color32(0x0f, 0x22, 0x27, 0xff),     // texel 255: the deepest, no navy pull
+        };
 
         /// <summary>The legacy serialized foam tint on <c>BoatWakeEmitter</c> — the thing strength 0 must
         /// return untouched.</summary>
@@ -40,7 +59,8 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 float life = i / 20f;
                 float seed = s / 8f;
-                Color got = WakeFoamAgeing.Shade(LegacyFoam, life, seed, in ramp, in palette);
+                Color water = Waters[s % Waters.Length];
+                Color got = WakeFoamAgeing.Shade(LegacyFoam, life, seed, in ramp, in palette, water);
                 Assert.AreEqual(LegacyFoam.r, got.r,
                     $"Strength 0 must be a BIT-EXACT passthrough (life {life}, seed {seed}). It is the one " +
                     "knob that reverts the whole lane, and 'close' is not a revert.");
@@ -83,28 +103,35 @@ namespace HiddenHarbours.Tests.EditMode
             ramp.ShadeJitter = 0f;
             var palette = ShippedPalette();
 
-            Color got = WakeFoamAgeing.Shade(LegacyFoam, 0f, 0.5f, in ramp, in palette);
-            Assert.AreEqual(palette.Foam.r, got.r, 1e-6f,
-                "Foam is born WHITE at the churn — and the white it is born at is the sea's, never a hex " +
-                "invented on a particle component (ADR 0015).");
-            Assert.AreEqual(palette.Foam.g, got.g, 1e-6f);
-            Assert.AreEqual(palette.Foam.b, got.b, 1e-6f);
+            foreach (Color water in Waters)
+            {
+                Color got = WakeFoamAgeing.Shade(LegacyFoam, 0f, 0.5f, in ramp, in palette, water);
+                Assert.AreEqual(palette.Foam.r, got.r, 1e-6f,
+                    "Foam is born WHITE at the churn — and the white it is born at is the sea's, never a " +
+                    "hex invented on a particle component (ADR 0015), whatever water it is churned from.");
+                Assert.AreEqual(palette.Foam.g, got.g, 1e-6f);
+                Assert.AreEqual(palette.Foam.b, got.b, 1e-6f);
+            }
         }
 
         [Test]
-        public void ItWalksAllTheWayDown_ToTheSeasMidBlue()
+        public void ItWalksAllTheWayDown_IntoItsOwnWater()
         {
             var ramp = WakeAgeRamp.Default;
             ramp.AgeScatter = 0f;
             ramp.ShadeJitter = 0f;
             var palette = ShippedPalette();
 
-            Color old = WakeFoamAgeing.Shade(LegacyFoam, 1f, 0.5f, in ramp, in palette);
-            Assert.AreEqual(palette.Mid.r, old.r, 1e-6f,
-                "The end of the ramp is the sea's MID blue. The last leg into the TRUE local sea is the " +
-                "alpha fade's job — the ambient ocean at that spot is whatever depth and light make it.");
-            Assert.AreEqual(palette.Mid.g, old.g, 1e-6f);
-            Assert.AreEqual(palette.Mid.b, old.b, 1e-6f);
+            foreach (Color water in Waters)
+            {
+                Color old = WakeFoamAgeing.Shade(LegacyFoam, 1f, 0.5f, in ramp, in palette, water);
+                Assert.AreEqual(water.r, old.r, 1e-6f,
+                    "The end of the ramp is THE WATER THE ELEMENT RIDES ON (W4-1, design 3A). It used to be " +
+                    "the sea's mid anchor, a light marine blue that sat on darker water as a pale stripe " +
+                    "(the owner's 2026-10-09 finding 3).");
+                Assert.AreEqual(water.g, old.g, 1e-6f);
+                Assert.AreEqual(water.b, old.b, 1e-6f);
+            }
         }
 
         // ==== the defect this lane retires ============================================================
@@ -117,20 +144,23 @@ namespace HiddenHarbours.Tests.EditMode
             ramp.ShadeJitter = 0f;
             var palette = ShippedPalette();
 
-            Color young = WakeFoamAgeing.Shade(LegacyFoam, 0f, 0.5f, in ramp, in palette);
-            Color old = WakeFoamAgeing.Shade(LegacyFoam, 1f, 0.5f, in ramp, in palette);
+            foreach (Color water in Waters)
+            {
+                Color young = WakeFoamAgeing.Shade(LegacyFoam, 0f, 0.5f, in ramp, in palette, water);
+                Color old = WakeFoamAgeing.Shade(LegacyFoam, 1f, 0.5f, in ramp, in palette, water);
 
-            // The whole complaint was "a solid white foam" — one RGB from birth to death, with only alpha
-            // moving. A ramp that did not actually move the colour would pass every other test here.
-            float travelled = Mathf.Abs(young.r - old.r) + Mathf.Abs(young.g - old.g)
-                              + Mathf.Abs(young.b - old.b);
-            float paletteSpan = Mathf.Abs(palette.Foam.r - palette.Mid.r)
-                                + Mathf.Abs(palette.Foam.g - palette.Mid.g)
-                                + Mathf.Abs(palette.Foam.b - palette.Mid.b);
-            Assert.AreEqual(paletteSpan, travelled, 1e-5f,
-                "Fresh churn and dead churn must be the full width of the sea's ramp apart. If this " +
-                "collapses, the wake is back to being one white that only fades — the exact defect the " +
-                "owner reported on 2026-08-27.");
+                // The whole complaint was "a solid white foam" — one RGB from birth to death, with only
+                // alpha moving. A ramp that did not actually move the colour would pass every other test.
+                float travelled = Mathf.Abs(young.r - old.r) + Mathf.Abs(young.g - old.g)
+                                  + Mathf.Abs(young.b - old.b);
+                float span = Mathf.Abs(palette.Foam.r - water.r)
+                             + Mathf.Abs(palette.Foam.g - water.g)
+                             + Mathf.Abs(palette.Foam.b - water.b);
+                Assert.AreEqual(span, travelled, 1e-5f,
+                    "Fresh churn and dead churn must be the full width from the sea's foam to the water " +
+                    "apart. If this collapses, the wake is back to being one white that only fades — the " +
+                    "exact defect the owner reported on 2026-08-27.");
+            }
         }
 
         [Test]
@@ -141,23 +171,29 @@ namespace HiddenHarbours.Tests.EditMode
             ramp.AgeScatter = 0f;           // scatter shifts the curve, it does not shape it
             var palette = ShippedPalette();
 
-            // The claim is provable, not empirical: the ramp is a convex combination walking
-            // foam -> shallow -> mid, and Rec.601 luma is linear, so luma is piecewise-linear in age and
-            // non-increasing exactly when the anchors descend in luma. Assert the premise first.
-            Assert.Greater(WakeFoamAgeing.Luminance(palette.Foam), WakeFoamAgeing.Luminance(palette.Shallow),
-                "The shipped palette's anchors must descend in luma for the monotonicity below to hold.");
-            Assert.Greater(WakeFoamAgeing.Luminance(palette.Shallow), WakeFoamAgeing.Luminance(palette.Mid));
-
-            float prev = float.MaxValue;
-            for (int i = 0; i <= 200; i++)
+            foreach (Color water in Waters)
             {
-                float life = i / 200f;
-                float luma = WakeFoamAgeing.Luminance(
-                    WakeFoamAgeing.Shade(LegacyFoam, life, 0.5f, in ramp, in palette));
-                Assert.LessOrEqual(luma, prev + 1e-6f,
-                    $"Foam brightened as it aged at life {life}. Water that has been churned does not get " +
-                    "whiter again — a non-monotone ramp reads as the wake flickering.");
-                prev = luma;
+                // The claim is provable, not empirical: the ramp is a convex combination walking
+                // foam -> lift(water) -> water, and Rec.601 luma is linear, so luma is piecewise-linear in
+                // age and non-increasing exactly when the three stops descend in luma. Assert the premise
+                // first (W4-1: the stops were foam -> shallow -> mid, three fixed anchors).
+                Color lift = WakeFoamAgeing.LiftOf(water, in palette);
+                Assert.Greater(WakeFoamAgeing.Luminance(palette.Foam), WakeFoamAgeing.Luminance(lift),
+                    "The foam, the lifted water and the water must descend in luma for the monotonicity " +
+                    "below to hold.");
+                Assert.Greater(WakeFoamAgeing.Luminance(lift), WakeFoamAgeing.Luminance(water));
+
+                float prev = float.MaxValue;
+                for (int i = 0; i <= 200; i++)
+                {
+                    float life = i / 200f;
+                    float luma = WakeFoamAgeing.Luminance(
+                        WakeFoamAgeing.Shade(LegacyFoam, life, 0.5f, in ramp, in palette, water));
+                    Assert.LessOrEqual(luma, prev + 1e-6f,
+                        $"Foam brightened as it aged at life {life}. Water that has been churned does not " +
+                        "get whiter again — a non-monotone ramp reads as the wake flickering.");
+                    prev = luma;
+                }
             }
         }
 
@@ -170,26 +206,29 @@ namespace HiddenHarbours.Tests.EditMode
             var palette = ShippedPalette();
 
             // The DERIVED bound, not a tuned tolerance: every returned colour is a convex combination of
-            // the three anchors (so per channel it lies between the smallest and largest anchor value),
-            // scaled by at most (1 +/- ShadeJitter), then lerped toward the legacy colour. Include the
-            // legacy colour in the interval because Strength < 1 blends toward it.
+            // the foam, the lifted water and the water, and the lift itself lies between the water and the
+            // foam per channel (it is the water brightened, capped at the foam, then whitened toward it).
+            // So per channel it lies between the water and the foam, scaled by at most (1 +/- ShadeJitter),
+            // then lerped toward the legacy colour. Include the legacy colour in the interval because
+            // Strength < 1 blends toward it. (W4-1: the interval was the three fixed anchors'.)
             float j = ramp.ShadeJitter;
+            foreach (Color water in Waters)
             for (int c = 0; c < 3; c++)
             {
-                float lo = Mathf.Min(Mathf.Min(Ch(palette.Foam, c), Ch(palette.Shallow, c)), Ch(palette.Mid, c));
-                float hi = Mathf.Max(Mathf.Max(Ch(palette.Foam, c), Ch(palette.Shallow, c)), Ch(palette.Mid, c));
+                float lo = Mathf.Min(Ch(palette.Foam, c), Ch(water, c));
+                float hi = Mathf.Max(Ch(palette.Foam, c), Ch(water, c));
                 lo = Mathf.Min(lo * (1f - j), Ch(LegacyFoam, c));
                 hi = Mathf.Max(hi * (1f + j), Ch(LegacyFoam, c));
 
                 for (int i = 0; i <= 40; i++)
                 for (int s = 0; s < 32; s++)
                 {
-                    Color got = WakeFoamAgeing.Shade(LegacyFoam, i / 40f, s / 32f, in ramp, in palette);
+                    Color got = WakeFoamAgeing.Shade(LegacyFoam, i / 40f, s / 32f, in ramp, in palette, water);
                     float v = Ch(got, c);
                     Assert.GreaterOrEqual(v, lo - 1e-5f,
-                        "The wake left the sea's palette. ADR 0015's whole point is that the sea's output " +
-                        "stays inside an art-directed palette — a wake that invents its own colour breaks " +
-                        "the guard-rail from outside the shader, where nothing would catch it.");
+                        "The wake left the span from its water to the sea's foam. ADR 0015's whole point is " +
+                        "that the sea's output stays inside an art-directed palette — a wake that invents its " +
+                        "own colour breaks the guard-rail from outside the shader, where nothing would catch it.");
                     Assert.LessOrEqual(v, hi + 1e-5f);
                 }
             }
@@ -252,7 +291,7 @@ namespace HiddenHarbours.Tests.EditMode
             // The A/B, and it is exact rather than close because multiplying by 1 is exact in IEEE.
             var legacy = new Color(0.83f, 0.91f, 0.97f, 0.44f);
             Color got = WakeFoamAgeing.ShadeMultiply(legacy, 0.7f, 0.31f, 0f,
-                                                     WakeAgeRamp.Default, ShippedPalette());
+                                                     WakeAgeRamp.Default, ShippedPalette(), Waters[1]);
             Assert.AreEqual(legacy.r, got.r, 0f);
             Assert.AreEqual(legacy.g, got.g, 0f);
             Assert.AreEqual(legacy.b, got.b, 0f);
@@ -275,13 +314,15 @@ namespace HiddenHarbours.Tests.EditMode
 
             float beforeRatio = dark.r / bright.r;
 
-            Color mulBright = WakeFoamAgeing.ShadeMultiply(bright, life, 0.5f, 1f, in ramp, in palette);
-            Color mulDark = WakeFoamAgeing.ShadeMultiply(dark, life, 0.5f, 1f, in ramp, in palette);
+            Color water = Waters[1];
+
+            Color mulBright = WakeFoamAgeing.ShadeMultiply(bright, life, 0.5f, 1f, in ramp, in palette, water);
+            Color mulDark = WakeFoamAgeing.ShadeMultiply(dark, life, 0.5f, 1f, in ramp, in palette, water);
             Assert.AreEqual(beforeRatio, mulDark.r / mulBright.r, 1e-5f,
                 "the multiply must preserve the sprite's internal contrast exactly");
 
-            Color lerpBright = WakeFoamAgeing.Shade(bright, life, 0.5f, in ramp, in palette);
-            Color lerpDark = WakeFoamAgeing.Shade(dark, life, 0.5f, in ramp, in palette);
+            Color lerpBright = WakeFoamAgeing.Shade(bright, life, 0.5f, in ramp, in palette, water);
+            Color lerpDark = WakeFoamAgeing.Shade(dark, life, 0.5f, in ramp, in palette, water);
             Assert.Greater(lerpDark.r / lerpBright.r, beforeRatio + 0.05f,
                 "…and the lerp must visibly NOT, or there would be no reason for two operators. If " +
                 "this ever stops being true, the crests can go back to Shade().");
@@ -294,17 +335,21 @@ namespace HiddenHarbours.Tests.EditMode
             SeaPaletteState palette = ShippedPalette();
             var tint = new Color(1f, 1f, 1f, 1f);
 
-            float previous = 2f;
-            for (float life = 0f; life <= 1.0001f; life += 0.05f)
+            foreach (Color water in Waters)
             {
-                Color c = WakeFoamAgeing.ShadeMultiply(tint, life, 0f, 1f, in ramp, in palette);
-                float lum = WakeFoamAgeing.Luminance(c);
-                Assert.LessOrEqual(lum, previous + 1e-4f, "churned water never brightens as it ages");
-                Assert.LessOrEqual(c.r, 1f + 1e-5f, "a multiply by a palette colour cannot exceed the tint");
-                previous = lum;
+                float previous = 2f;
+                for (float life = 0f; life <= 1.0001f; life += 0.05f)
+                {
+                    Color c = WakeFoamAgeing.ShadeMultiply(tint, life, 0f, 1f, in ramp, in palette, water);
+                    float lum = WakeFoamAgeing.Luminance(c);
+                    Assert.LessOrEqual(lum, previous + 1e-4f, "churned water never brightens as it ages");
+                    Assert.LessOrEqual(c.r, 1f + 1e-5f,
+                        "a multiply by a colour between the water and the foam cannot exceed the tint");
+                    previous = lum;
+                }
+                Assert.Less(previous, WakeFoamAgeing.Luminance(tint) * 0.9f,
+                    "…and it must actually END somewhere darker, or the crest still never changes colour");
             }
-            Assert.Less(previous, WakeFoamAgeing.Luminance(tint) * 0.9f,
-                "…and it must actually END somewhere darker, or the crest still never changes colour");
         }
 
         [Test]
@@ -313,7 +358,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Two dials multiply rather than fight: the wave's own AgeStrength and the ramp master.
             var off = WakeAgeRamp.Off;
             var tint = new Color(0.9f, 0.95f, 1f, 1f);
-            Color got = WakeFoamAgeing.ShadeMultiply(tint, 0.8f, 0.2f, 1f, in off, ShippedPalette());
+            Color got = WakeFoamAgeing.ShadeMultiply(tint, 0.8f, 0.2f, 1f, in off, ShippedPalette(), Waters[1]);
             Assert.AreEqual(tint.r, got.r, 0f, "the ramp master at 0 must silence this path too");
         }
 
@@ -327,7 +372,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "White must be held all the way to the WhiteHold knot — that hold IS 'white only at the " +
                 "moment of churn'.");
             Assert.AreEqual(0.5f, WakeFoamAgeing.Knots(r.BlueReach, r.WhiteHold, r.BlueReach, r.DeepReach), 1e-5f,
-                "The BlueReach knot is where the foam has become the sea's shallow blue.");
+                "The BlueReach knot is where the foam has become the lifted water (W4-1; it was the sea's " +
+                "shallow blue).");
             Assert.AreEqual(1f, WakeFoamAgeing.Knots(r.DeepReach, r.WhiteHold, r.BlueReach, r.DeepReach), 1e-5f);
             Assert.AreEqual(1f, WakeFoamAgeing.Knots(1f, r.WhiteHold, r.BlueReach, r.DeepReach), 1e-6f);
 
