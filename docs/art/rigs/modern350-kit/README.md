@@ -94,9 +94,9 @@ Use `anchorPoints(pose)` for their articulated rig-space positions.
 
 ## Gameplay intake
 
-The fleet row reserves `vehicle.modern_350` and `vehiclemesh.modern_350`, with bake outputs
-`Modern350.asset` and `Modern350VehicleMesh.asset`. The defs and meshes are created by the Unity
-baker in the next phase. No scene placement is part of this intake.
+The fleet row registers `vehicle.modern_350` and `vehiclemesh.modern_350`. The Unity baker
+wrote `Modern350.asset`, `Modern350VehicleMesh.asset` and twelve rigid fittings. The def carries
+its approved handling values. No scene placement is part of this intake.
 
 The v2 sidecar has collider ranges x [-1.047, 1.047], y [-3.389, 3.399], z [0, 2] metres, derived on Node
 from the mesh with optional hitch, steps and mirrors disabled. The x range is the body group's;
