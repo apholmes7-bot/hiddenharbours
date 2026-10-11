@@ -188,7 +188,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test] public void CommittedScenes_HaveTheRuledCounts_AndPassTheDataContract()
         {
             string[] suffixes = { "wharf", "fuel_stop", "town_bridge", "the_falls", "landing", "campground", "north_creek", "weather_face", "main_street", "south_shore", "plaza", "shore_lane" };
-            int[] source = {134,30,55,21,25,178,53,11,10,8,51,32}, owned = {134,30,55,11,25,178,53,11,2,8,51,32};
+            int[] source = {134,30,55,21,25,178,53,11,131,66,122,40}, owned = {134,30,53,11,25,178,53,11,91,66,122,40};
             var ids = new HashSet<string>();
             for (int i=0;i<suffixes.Length;i++)
             {
@@ -198,6 +198,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual("keyscene.nmc_" + suffixes[i], Field(data,"Id").Scalar);
                 Assert.AreEqual("region.nine_mile_creek",Field(data,"RegionId").Scalar);
                 Assert.AreEqual("0",Field(data,"Placed").Scalar);
+                StringAssert.Contains("HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07", Field(data,"Source").Scalar);
                 var pieces = Field(data,"Pieces").Items;
                 Assert.AreEqual(source[i].ToString(),Option(pieces[0],"nmc.scene.sourceRows"));
                 Assert.AreEqual(owned[i].ToString(),Option(pieces[0],"nmc.scene.ownedRows"));
@@ -208,10 +209,17 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.IsTrue(ids.Add(id),id);
                     StringAssert.IsMatch(@"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$",id);
                     Assert.IsNotEmpty(p.Get("Owner").Scalar,id);
+                    Assert.IsNotEmpty(p.Get("Kit").Scalar,id);
+                    Assert.IsNotEmpty(p.Get("Variants").Items,id);
                     CollectionAssert.IsEmpty(p.Get("Words").Items,id);
+                    CollectionAssert.DoesNotContain(Field(data,"RetiredIds").Items.Select(r=>r.Scalar).ToArray(),id);
                 }
+                foreach (var light in Field(data,"Lights").Items)
+                    Assert.IsTrue(pieces.Any(p=>p.Get("Id").Scalar==light.Get("PieceId").Scalar));
             }
-            Assert.AreEqual(589,ids.Count);
+            Assert.AreEqual(813,ids.Count);
+            var region = File.ReadAllText("Assets/_Project/Data/Regions/NineMileCreek.asset");
+            StringAssert.Contains("Id: region.nine_mile_creek",region);
         }
 
         [Test] public void TheManifest_MustHold_AndMissingOwnersRefuse()
@@ -227,12 +235,263 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var f = new Fixture();
             f.Files["g/plan.json"] = J("{`roads`:[{`id`:`road.nmc_lane`,`width`:4.2,`pts`:[[1,2],[3,4]]}]," +
-                "`bridges`:[{`id`:`bridge.nmc_brook`,`span`:8,`deck`:5.2}],`lots`:{`town`:[{`id`:`lot.nmc_house`,`at`:[1,2],`footprint`:[-2,4,-3,5]}]}}");
+                "`bridges`:[{`id`:`bridge.nmc_brook`,`span`:8,`deck`:5.2}],`lots`:{`town`:[{`id`:`lot.nmc_house`,`at`:[1,2],`footprint`:[-2,4,-3,5]}]}," +
+                "`areas`:[{`id`:`area.nmc_test`,`box`:[-2,4,-3,5]}],`grading`:[{`id`:`grade.nmc_test`}]}");
             var row = Rows(f.Import())[0];
             StringAssert.Contains("4.2", Option(row,"nmc.plan.roads"));
             StringAssert.Contains("5.2", Option(row,"nmc.plan.bridges"));
+            Assert.AreEqual(J("[{`id`:`area.nmc_test`,`box`:[-2,4,-3,5]}]"), Option(row,"nmc.plan.areas"));
+            Assert.IsFalse(row.Get("Options").Items.Any(o=>o.Get("Key").Scalar=="nmc.plan.grading"));
+            StringAssert.Contains(Sha(B(f.Files["g/plan.json"])), Option(row,"nmc.ground.source"));
             foreach (string kind in new[] { "road", "lot", "bridge", "household", "PathDef", "StreamDef", "PondDef", "CoastSectionDef" })
                 StringAssert.Contains(kind, Option(row,"nmc.plan.kinds"));
+        }
+
+        static Fixture TransferFixture(bool transferred)
+        {
+            var f = new Fixture(Piece, Piece.Replace("prop.nmc_one", "prop.nmc_three"));
+            f.Files["region.json"] = f.Files["region.json"].Replace(J("`file`:`wharf.json`}"),
+                J("`file`:`wharf.json`},{`id`:`" + Falls + "`,`file`:`falls.json`}"))
+                .Replace(J("`owners`:{"), J("`owners`:{`prop.nmc_two`:`" + Falls + "`,"));
+            f.Files["falls.json"] = J("{`schema`:`hidden-harbours/keyscene@2`,`id`:`" + Falls +
+                "`,`name`:`falls`,`pieces`:[" + Piece.Replace("prop.nmc_one", "prop.nmc_two") +
+                (transferred ? "," + Piece.Replace("[1,2]", "[8,9]") : "") + "]}");
+            if (transferred)
+                f.Files["region.json"] = f.Files["region.json"].Replace(J("`prop.nmc_one`:`" + Wharf + "`"), J("`prop.nmc_one`:`" + Falls + "`"))
+                    .Replace(J("`refs`:[]"), J("`refs`:[],`takenOver`:[{`id`:`prop.nmc_one`,`from`:`" + Wharf + "`,`owner`:`" + Falls + "`,`why`:`moved by call 69`}]"));
+            return f;
+        }
+
+        static Fixture HouseFixture(string kit, string id = "structure.nmc_south_shore_house_4", string scene = "keyscene.nmc_south_shore")
+        {
+            var f = new Fixture(Piece.Replace("prop.nmc_one", id).Replace("nmcSetPieces", kit).Replace("SetPieceDef", "BuildingDef"));
+            f.Files["region.json"] = f.Files["region.json"].Replace(Wharf, scene);
+            f.Files["wharf.json"] = f.Files["wharf.json"].Replace(Wharf, scene);
+            return f;
+        }
+
+        [Test] public void TheTwoRuledEstateMigrations_KeepIdKindSceneAndGuid()
+        {
+            const string scene = "keyscene.nmc_south_shore", file = "KeyScene_nmc_south_shore.asset";
+            foreach (string id in new[] { "structure.nmc_south_shore_house_4", "structure.nmc_south_shore_house_5" })
+            {
+                var before = HouseFixture("HouseIso (old/path.js)", id).Import();
+                var f = HouseFixture("NmcShoreEstates.estateHouse", id);
+                var after = f.Import(before.Assets);
+                var data = KeySceneImport.ReadAsset(after.Assets[file], file);
+                var row = Field(data,"Pieces").Items.Single();
+                Assert.AreEqual(id,row.Get("Id").Scalar);
+                Assert.AreEqual("building",row.Get("Kind").Scalar);
+                Assert.AreEqual(scene,Field(data,"Id").Scalar);
+                Assert.AreEqual(scene,Option(row,"nmc.ownerScene"));
+                Assert.AreEqual("NmcShoreEstates.estateHouse",row.Get("Kit").Scalar);
+                CollectionAssert.IsEmpty(Field(data,"RetiredIds").Items);
+                CollectionAssert.IsEmpty(after.Metas, "the existing scene GUID is never rewritten");
+                StringAssert.Contains(KeySceneImport.GuidFor(scene),before.Metas[file+".meta"]);
+                Assert.IsTrue(after.Report.Any(l=>l.Contains("kit migration "+id) && l.Contains("third issue south-shore redraw, call 65")));
+                CollectionAssert.IsEmpty(f.Import(after.Assets).Changed);
+                Assert.Throws<KeySceneImport.Refusal>(()=>HouseFixture("HouseIso",id).Import(after.Assets),"not reversible");
+                var wrongScene = HouseFixture("HouseIso",id,Wharf).Import();
+                Assert.Throws<KeySceneImport.Refusal>(()=>HouseFixture("NmcShoreEstates.estateHouse",id,Wharf).Import(wrongScene.Assets));
+                var wrongKind = HouseFixture("NmcShoreEstates.estateHouse",id);
+                wrongKind.Files["wharf.json"] = wrongKind.Files["wharf.json"].Replace("BuildingDef","SetPieceDef");
+                Assert.Throws<KeySceneImport.Refusal>(()=>wrongKind.Import(before.Assets));
+            }
+        }
+
+        [Test] public void AnUnlistedNmcIdChangingFamily_StillRefuses()
+        {
+            const string id = "structure.nmc_south_shore_house_6";
+            var before = HouseFixture("HouseIso",id).Import();
+            StringAssert.Contains("An id that changes kit is a STOP for the owner, not a move.",
+                Assert.Throws<KeySceneImport.Refusal>(()=>HouseFixture("NmcShoreEstates.estateHouse",id).Import(before.Assets)).Message);
+        }
+
+        [Test] public void SameFamilyAnnotationChanges_PassOnlyOnNmc()
+        {
+            var before = HouseFixture("HouseIso").Import();
+            foreach (string annotation in new[] { "HouseIso 1.1", "HouseIso.preset", "HouseIso,new annotation", "HouseIso(new/path.js)" })
+                Assert.DoesNotThrow(()=>HouseFixture(annotation).Import(before.Assets),annotation);
+        }
+
+        static KeySceneImport.Result StPetersKit(string kit, IReadOnlyDictionary<string,string> existing = null)
+        {
+            var files = new Dictionary<string,byte[]> {
+                ["island.json"] = B("{`schema`:`hidden-harbours/island@1`,`scenes`:[{`id`:`keyscene.stp_test`,`file`:`scene.json`}]}"),
+                ["scene.json"] = B("{`id`:`keyscene.stp_test`,`name`:`test`,`pieces`:[" +
+                    Piece.Replace("prop.nmc_one","structure.stp_test_house").Replace("nmcSetPieces",kit).Replace("SetPieceDef","BuildingDef") + "]}") };
+            files["SHA256SUMS"] = Encoding.UTF8.GetBytes(string.Join("\n",files.Select(x=>Sha(x.Value)+"  "+x.Key)));
+            var f = new Fixture();
+            return KeySceneImport.Import("synthetic",p=>files.TryGetValue(p,out var b)?b:null,existing,"region.st_peters",Guid,B(f.Map),B(f.Hosts));
+        }
+
+        [Test] public void StPeters_StillRefusesACrossFamilyChange()
+        {
+            var before = StPetersKit("HouseIso");
+            StringAssert.Contains("its kit changes",Assert.Throws<KeySceneImport.Refusal>(()=>StPetersKit("NmcShoreEstates.estateHouse",before.Assets)).Message);
+        }
+
+        [Test] public void StPeters_StillRefusesASameFamilyAnnotationChange()
+        {
+            var before = StPetersKit("HouseIso");
+            foreach (string annotation in new[] { "HouseIso 1.1", "HouseIso.preset", "HouseIso,new annotation", "HouseIso(new/path.js)" })
+                StringAssert.Contains("its kit changes",Assert.Throws<KeySceneImport.Refusal>(()=>StPetersKit(annotation,before.Assets)).Message);
+        }
+
+        [Test] public void TakenOverIds_ChangeOwner_OnlyAsRegionJsonListsThem_AndNeverRetire()
+        {
+            var old = TransferFixture(false).Import();
+            var f = TransferFixture(true);
+            var result = f.Import(old.Assets);
+            Assert.AreEqual(1, Rows(result).Count);
+            Assert.AreEqual("2", Option(Rows(result)[0], "nmc.scene.sourceRows"));
+            Assert.AreEqual("1", Option(Rows(result)[0], "nmc.scene.ownedRows"));
+            StringAssert.Contains("[1,2]", Option(Rows(result)[0], "nmc.scene.takeoverRecords"));
+            var target = Field(KeySceneImport.ReadAsset(result.Assets["KeyScene_nmc_the_falls.asset"], "falls"), "Pieces").Items;
+            var moved = target.Single(p=>p.Get("Id").Scalar=="prop.nmc_one");
+            Assert.AreEqual("{x: 8, y: 9}", moved.Get("At").Scalar);
+            string record = Option(moved, "nmc.takeover");
+            StringAssert.Contains(J("`from`:`" + Wharf + "`"), record);
+            StringAssert.Contains(J("`to`:`" + Falls + "`"), record);
+            StringAssert.Contains(J("`call`:69"), record);
+            foreach (string asset in result.Assets.Values)
+                CollectionAssert.DoesNotContain(Field(KeySceneImport.ReadAsset(asset,"asset"),"RetiredIds").Items.Select(p=>p.Scalar).ToArray(),"prop.nmc_one");
+            CollectionAssert.IsEmpty(f.Import(result.Assets).Changed);
+            CollectionAssert.IsEmpty(result.Metas);
+            // The family may keep its identity when a version/path/preset annotation changes.
+            f.Files["falls.json"] = f.Files["falls.json"].Replace("nmcSetPieces", "nmcSetPieces 1.1 (new/path.js)");
+            Assert.DoesNotThrow(()=>f.Import(old.Assets));
+            foreach (string mutation in new[] { "missing", "wrongFrom", "wrongTo", "duplicate", "missingRecord", "missingOwned", "changedKit", "changedKind" })
+            {
+                var bad = TransferFixture(true);
+                if (mutation == "missing") bad.Files["region.json"] = bad.Files["region.json"].Replace("takenOver", "unused");
+                if (mutation == "wrongFrom") bad.Files["region.json"] = bad.Files["region.json"].Replace(J("`from`:`" + Wharf + "`"), J("`from`:`keyscene.nmc_landing`"));
+                if (mutation == "wrongTo") bad.Files["region.json"] = bad.Files["region.json"].Replace(J("`owner`:`" + Falls + "`"), J("`owner`:`" + Wharf + "`"));
+                if (mutation == "duplicate") bad.Files["region.json"] = bad.Files["region.json"].Replace(J("`takenOver`:["), J("`takenOver`:[{`id`:`prop.nmc_one`,`from`:`" + Wharf + "`,`owner`:`" + Falls + "`,`why`:`call 69`},"));
+                if (mutation == "missingRecord") bad.Files["wharf.json"] = bad.Files["wharf.json"].Replace(J(Piece + ","), "");
+                if (mutation == "missingOwned") bad.Files["falls.json"] = bad.Files["falls.json"].Replace(J("," + Piece.Replace("[1,2]", "[8,9]")), "");
+                if (mutation == "changedKit") bad.Files["falls.json"] = bad.Files["falls.json"].Replace("nmcSetPieces", "NmcStores");
+                if (mutation == "changedKind") bad.Files["falls.json"] = bad.Files["falls.json"].Replace("nmcSetPieces", "NmcStores").Replace("SetPieceDef", "BuildingDef");
+                Assert.Throws<KeySceneImport.Refusal>(()=>bad.Import(old.Assets),mutation);
+            }
+            // Matching source records cannot disguise a family change relative to the committed owner.
+            var disguised = TransferFixture(true);
+            disguised.Files["wharf.json"] = disguised.Files["wharf.json"].Replace("nmcSetPieces", "NmcStores");
+            disguised.Files["falls.json"] = disguised.Files["falls.json"].Replace("nmcSetPieces", "NmcStores");
+            Assert.Throws<KeySceneImport.Refusal>(()=>disguised.Import(old.Assets));
+        }
+
+        [Test] public void TheNewKitFamilies_Import_AndEveryOtherPairStillRefuses()
+        {
+            foreach (var pair in new[] { ("NmcShoreEstates","BuildingDef"), ("NmcShoreEstates","SetPieceDef"),
+                ("NmcMainStreet","BuildingDef"), ("NmcMainStreet","SetPieceDef"), ("WalkupIso","BuildingDef"), ("RowhouseIso","BuildingDef") })
+            {
+                var f = new Fixture(Piece.Replace("nmcSetPieces",pair.Item1).Replace("SetPieceDef",pair.Item2));
+                Assert.AreEqual(pair.Item2=="BuildingDef"?"building":"setPiece",Rows(f.Import())[0].Get("Kind").Scalar);
+            }
+            foreach (string kit in new[] { "NmcShoreEstates", "NmcMainStreet", "WalkupIso", "RowhouseIso" })
+                foreach (string type in new[] { "VehicleDef", "AmbientVehicleDef", "AmbientBoatDef", "RockDef", "MysteryDef", "SetPieceDef" })
+                {
+                    if (type=="SetPieceDef" && (kit=="NmcShoreEstates"||kit=="NmcMainStreet")) continue;
+                    Assert.Throws<KeySceneImport.Refusal>(()=>new Fixture(Piece.Replace("nmcSetPieces",kit).Replace("SetPieceDef",type)).Import(),kit+" / "+type);
+                }
+        }
+
+        [Test] public void HostsNamedById_ResolveToAnOwnedRow_OrRefuse()
+        {
+            string hosted = Piece.Replace("`dir`:4", "`dir`:4,`host`:`prop.nmc_hostOld`");
+            var f = new Fixture(hosted, Piece.Replace("prop.nmc_one","prop.nmc_hostOld"));
+            f.Map = "{`schema`:`hidden-harbours/key-scene-id-map@1`,`renames`:[{`old`:`prop.nmc_hostOld`,`new`:`prop.nmc_host`}] }";
+            var row = Rows(f.Import())[0];
+            Assert.AreEqual("prop.nmc_host", row.Get("MountHost").Scalar);
+            Assert.AreEqual("mount", row.Get("StandsOn").Scalar);
+            Assert.AreEqual("", row.Get("MountAnchor").Scalar);
+            Assert.AreEqual(J("`prop.nmc_host`"), Option(row,"nmc.host"));
+            f.Files["wharf.json"] = f.Files["wharf.json"].Replace(J(","+Piece.Replace("prop.nmc_one","prop.nmc_hostOld")), "");
+            f.Files["region.json"] = f.Files["region.json"].Replace(J(",`prop.nmc_hostOld`:`"+Wharf+"`"), "");
+            f.Files["g/plan.json"] = J("{`id`:`prop.nmc_hostOld`}");
+            Assert.Throws<KeySceneImport.Refusal>(()=>f.Import(),"a plan id is not an owned scene row");
+            var otherScene = TransferFixture(false);
+            otherScene.Files["wharf.json"] = otherScene.Files["wharf.json"].Replace(J("`id`:`prop.nmc_one`"),J("`id`:`prop.nmc_one`,`host`:`prop.nmc_two`"));
+            Assert.Throws<KeySceneImport.Refusal>(()=>otherScene.Import(),"another scene's row is not a host");
+            Assert.Throws<KeySceneImport.Refusal>(()=>new Fixture(Piece.Replace("`dir`:4","`dir`:4,`host`:`prop.nmc_one`")).Import(),"self host");
+            var conflict = new Fixture(Piece.Replace("`dir`:4","`dir`:4,`host`:`prop.nmc_two`,`mount`:`on the roof`"),Piece.Replace("prop.nmc_one","prop.nmc_two"),Piece.Replace("prop.nmc_one","prop.nmc_three"));
+            conflict.Hosts = "{`schema`:`hidden-harbours/key-scene-hosts@1`,`hosts`:[{`piece`:`prop.nmc_one`,`mount`:`on the roof`,`standsOn`:`mount`,`host`:`prop.nmc_three`,`anchor`:`roof`,`answer`:`fixture`}]}";
+            Assert.Throws<KeySceneImport.Refusal>(()=>conflict.Import(),"host/mount disagreement");
+        }
+
+        [Test] public void TheThirdIssuesRecordFolders_AreNeverParsed()
+        {
+            foreach (string folder in new[] { "record-2d", "record-2e", "record-2f" })
+            {
+                string path = "old/"+folder+"/scene.json";
+                var f = new Fixture(); f.Files[path] = "invalid record JSON";
+                Assert.DoesNotThrow(()=>f.Import());
+                f.Files["region.json"] = f.Files["region.json"].Replace("wharf.json",path);
+                StringAssert.Contains("superseded",Assert.Throws<KeySceneImport.Refusal>(()=>f.Import()).Message);
+            }
+        }
+
+        [Test] public void TheFourteenRedrawnIds_AreRetired_AndNeverReused()
+        {
+            var table = KeySceneImport.Json.Parse(File.ReadAllText(KeySceneImport.NmcRetiredFile),"retired").Get("retired").Items;
+            Assert.AreEqual(206,table.Count);
+            string[] expected = { "boat.nmc_shore_dory","prop.nmc_bank_bench_4","prop.nmc_bank_bench_5","prop.nmc_shore_fire",
+                "structure.nmc_bank_steps_4","structure.nmc_bank_steps_5","prop.nmc_lot_pole_05","prop.nmc_lot_pole_04","prop.nmc_yard_fence_e",
+                "prop.nmc_yard_rack_02","prop.nmc_yard_rack_01","structure.nmc_plaza_dock_grocery","structure.nmc_plaza_dock_lumber","structure.nmc_apartments_2" };
+            CollectionAssert.AreEqual(expected,table.Skip(192).Select(r=>r.Get("id").Text).ToArray());
+            for (int i=0;i<expected.Length;i++)
+            {
+                Assert.AreEqual("keyscene.nmc_"+(i<6?"south_shore":i<13?"plaza":"main_street"),table[192+i].Get("scene").Text);
+                Assert.AreEqual("retired by the third issue's redraw",table[192+i].Get("reason").Text);
+                var f = new Fixture(Piece.Replace("prop.nmc_one",expected[i]));
+                f.Retired = File.ReadAllText(KeySceneImport.NmcRetiredFile);
+                Assert.Throws<KeySceneImport.Refusal>(()=>f.Import(),expected[i]);
+            }
+            foreach (string old in new[] { "prop.nmc_lot_pole_198_81","prop.nmc_lot_pole_255_81","prop.nmc_yard_fence_e140","prop.nmc_yard_rack_267","prop.nmc_yard_rack_277" })
+            {
+                var f = new Fixture(Piece.Replace("prop.nmc_one",old));
+                f.Map = File.ReadAllText(KeySceneImport.NmcIdMapFile); f.Retired = File.ReadAllText(KeySceneImport.NmcRetiredFile);
+                Assert.Throws<KeySceneImport.Refusal>(()=>f.Import(),old);
+            }
+            foreach (string file in Directory.GetFiles("Assets/_Project/Data/KeyScenes","KeyScene_nmc_*.asset"))
+            {
+                var data = KeySceneImport.ReadAsset(File.ReadAllText(file),file);
+                var retired = Field(data,"RetiredIds").Items.Select(r=>r.Scalar).ToArray();
+                foreach (string id in expected) Assert.Contains(id,retired,file);
+            }
+        }
+
+        [Test] public void CommittedThirdIssue_HoldsTakeoversHostsAreasAndSixHouseholdsAsData()
+        {
+            List<Node> Pieces(string suffix) => Field(KeySceneImport.ReadAsset(File.ReadAllText("Assets/_Project/Data/KeyScenes/KeyScene_nmc_"+suffix+".asset"),suffix),"Pieces").Items;
+            var plaza = Pieces("plaza"); var hosts = plaza.Where(p=>p.Get("MountHost").Scalar.Length>0).ToArray();
+            Assert.AreEqual(13,hosts.Length);
+            foreach (var row in hosts) Assert.IsTrue(plaza.Any(p=>p.Get("Id").Scalar==row.Get("MountHost").Scalar));
+            var main = Pieces("main_street"); var town = Pieces("town_bridge");
+            foreach (string id in new[] { "structure.nmc_restaurant_bar","structure.nmc_chandlery" })
+            {
+                var row = main.Single(p=>p.Get("Id").Scalar==id);
+                StringAssert.Contains("keyscene.nmc_town_bridge",Option(row,"nmc.takeover"));
+                Assert.IsFalse(town.Any(p=>p.Get("Id").Scalar==id));
+                StringAssert.Contains(id,Option(town[0],"nmc.scene.takeoverRecords"));
+            }
+            var wharf = Pieces("wharf")[0];
+            Assert.AreEqual(7,KeySceneImport.Json.Parse(Option(wharf,"nmc.plan.areas"),"areas").Items.Count);
+            StringAssert.Contains("06d0217c8c389c6b97582e2eb6b0cc44ff5bd042bde3af538ac47fd1fe89577a",Option(wharf,"nmc.ground.source"));
+            var lots = KeySceneImport.Json.Parse(Option(wharf,"nmc.plan.lots"),"lots").Get("south_shore_houses").Items
+                .Where(l=>l.Get("id").Text.StartsWith("lot.nmc_south_shore_estate_",StringComparison.Ordinal)).ToArray();
+            Assert.AreEqual(6,lots.Length);
+            var homes = Pieces("south_shore").Where(p=>p.Get("Options").Items.Any(o=>o.Get("Key").Scalar=="nmc.household")).ToArray();
+            Assert.AreEqual(6,homes.Length);
+            foreach (var home in homes)
+            {
+                var def = KeySceneImport.Json.Parse(Option(home,"nmc.def"),"def");
+                string brief = Option(home,"nmc.household");
+                Assert.AreEqual(def.Get("household").Text,brief);
+                Assert.AreEqual(brief,lots.Single(l=>l.Get("id").Text==def.Get("lot").Text).Get("household").Text);
+                CollectionAssert.IsEmpty(home.Get("Words").Items);
+            }
         }
     }
 }

@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.nmc_shore_lane
   DisplayName: 'Shore Lane: three houses in the dunes'
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_shore_lane/scene.json,
-    48570 bytes, sha256 376d94d717fbcbd6f782a28ddc80e6ffb2d45d688a4f45d07daf590b6b932dfb
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_shore_lane/scene.json,
+    58748 bytes, sha256 d08b233889c382252af5db995f7f0633169c6035657444f4a1151ca5bfc7c385
   Placed: 0
   Pieces:
   - Id: structure.nmc_shore_lane_6
@@ -86,9 +86,9 @@ MonoBehaviour:
         pickup on its west side, the skiff on its trailer on its east","7":"a gravel
         drive 3 m wide at x -165.3 to y -158.4, a shell walk to the side door","8":"a
         gravel drive 3 m wide at x -143.6 to y -155.2, a shell walk to the back stoop"},"fence":{"y":-172.2,"note":"the
-        sand fence runs along the dune\u2019s foot, open 2.8 m at each stair"}}'
+        sand fence runs along the dune\u2019s foot, open 2.8 m at each stair"},"lightPass":{"drive.nmc_shore_lane_7":"shell","drive.nmc_shore_lane_8":"shell","path.nmc_shore_lane_8_gate":[[-145,-156.6],[-150.2,-157.6],[-155,-162]]}}'
     - Key: nmc.scene.flora
-      Value: '[{"key":"RedSpruce","stage":"mature","at":[-214.5,-146.5]},{"key":"BalsamFir","stage":"young","at":[-208.5,-151.5]},{"key":"RedSpruce","stage":"young","at":[-204.2,-153.6]},{"key":"WhiteBirch","stage":"pole","at":[-181.5,-151.6]},{"key":"RedMaple","stage":"pole","at":[-161.6,-151.2]},{"key":"BalsamFir","stage":"young","at":[-136.5,-154.2]}]'
+      Value: '[{"key":"RedSpruce","stage":"mature","at":[-214.5,-146.5]},{"key":"BalsamFir","stage":"young","at":[-208.5,-151.5]},{"key":"RedSpruce","stage":"young","at":[-204.2,-153.6]},{"key":"WhiteBirch","stage":"pole","at":[-181.5,-151.6]},{"key":"RedMaple","stage":"pole","at":[-161.6,-151.2]},{"key":"BalsamFir","stage":"young","at":[-136.5,-154.2]},{"key":"WhitePine","stage":"young","at":[-178.4,-152.4],"lightPass":"10-04"},{"key":"WhiteCedar","stage":"young","at":[-139.8,-157.8],"lightPass":"10-04"},{"kind":"plant","key":"WildRose","at":[-209,-146.2],"lightPass":"10-04"},{"kind":"plant","key":"Bayberry","at":[-203.4,-147],"lightPass":"10-04"},{"kind":"plant","key":"WildRose","at":[-186.6,-149.6],"lightPass":"10-04"},{"kind":"plant","key":"Bayberry","at":[-180.4,-150.2],"lightPass":"10-04"},{"kind":"plant","key":"CommonJuniper","at":[-176,-150.6],"lightPass":"10-04"},{"kind":"plant","key":"WildRose","at":[-170.6,-151],"lightPass":"10-04"},{"kind":"plant","key":"Bayberry","at":[-160.4,-152],"lightPass":"10-04"},{"kind":"plant","key":"WildRose","at":[-156.4,-152.2],"lightPass":"10-04"},{"kind":"plant","key":"WildRose","at":[-139.4,-152.6],"lightPass":"10-04"},{"kind":"plant","key":"Bayberry","at":[-137,-154.6],"lightPass":"10-04"},{"kind":"plant","key":"Bayberry","at":[-206.8,-163.6],"lightPass":"10-04"},{"kind":"plant","key":"CommonJuniper","at":[-138.6,-163],"lightPass":"10-04"}]'
     - Key: nmc.scene.sound
       Value: '[{"id":"sound.nmc_shore_lane","kind":"surf","at":[-172,-186],"z":1,"radiusM":40,"gain":"the
         swash on the beach and the wind in the marram; a screen door on the cottage,
@@ -104,20 +104,24 @@ MonoBehaviour:
         board)","vehicles":"the pickup ambient, parked; the skiff on its trailer is
         the fisherman\u2019s"}'
     - Key: nmc.scene.budgets
-      Value: '{"tiles":{"lane_r0c0_afternoon":{"px":[1248,704],"sprites":443,"counts":{"building":4,"prop":24,"vehicle":1,"piece":1,"tree":3,"grass":214,"flower":188,"shrub":8},"ms":13796,"fnv1a":"e24fbb99"},"lane_r0c0_evening":{"px":[1248,704],"sprites":470,"counts":{"building":4,"prop":24,"vehicle":1,"piece":1,"tree":3,"grass":239,"flower":187,"shrub":11},"ms":14531,"fnv1a":"aa61c888"},"lane_r0c1_afternoon":{"px":[1248,704],"sprites":431,"counts":{"building":4,"prop":23,"vehicle":1,"piece":1,"tree":2,"grass":211,"flower":172,"shrub":17},"ms":6362,"fnv1a":"fe14b03e"},"lane_r0c1_evening":{"px":[1248,704],"sprites":444,"counts":{"building":4,"prop":23,"vehicle":1,"piece":1,"tree":2,"grass":209,"flower":185,"shrub":19},"ms":8267,"fnv1a":"4fe4d7cc"},"lane_r1c0_afternoon":{"px":[1248,704],"sprites":178,"counts":{"building":4,"prop":20,"vehicle":1,"piece":1,"grass":119,"shrub":11,"flower":22},"ms":8493,"fnv1a":"fea8b1bc"},"lane_r1c0_evening":{"px":[1248,704],"sprites":191,"counts":{"building":4,"prop":20,"vehicle":1,"piece":1,"grass":137,"shrub":3,"flower":25},"ms":9319,"fnv1a":"abaf1b75"},"lane_r1c1_afternoon":{"px":[1248,704],"sprites":150,"counts":{"building":4,"prop":20,"vehicle":1,"piece":1,"grass":102,"shrub":8,"flower":14},"ms":3012,"fnv1a":"fce0c597"},"lane_r1c1_evening":{"px":[1248,704],"sprites":161,"counts":{"building":4,"prop":20,"vehicle":1,"piece":1,"grass":114,"flower":15,"shrub":6},"ms":4374,"fnv1a":"fe31f04b"},"section_r0c0_afternoon":{"px":[1152,672],"sprites":328,"counts":{"building":4,"prop":23,"vehicle":1,"piece":1,"tree":3,"grass":229,"flower":46,"shrub":21},"ms":10992,"fnv1a":"4a619a72"},"section_r0c1_afternoon":{"px":[1152,672],"sprites":251,"counts":{"building":4,"prop":24,"vehicle":1,"piece":1,"tree":1,"grass":169,"flower":37,"shrub":14},"ms":5951,"fnv1a":"78b93e30"}},"note":"sprites
+      Value: '{"tiles":{"lane_r0c0_afternoon":{"px":[1248,704],"sprites":453,"counts":{"building":4,"prop":31,"vehicle":1,"piece":1,"tree":4,"shrub":13,"grass":212,"flower":187},"ms":21376,"fnv1a":"b246df75","file":"boards/lane_r0c0_afternoon.png"},"lane_r0c0_evening":{"px":[1248,704],"sprites":481,"counts":{"building":4,"prop":31,"vehicle":1,"piece":1,"tree":4,"shrub":17,"grass":237,"flower":186},"ms":25404,"fnv1a":"f489a68a","file":"boards/lane_r0c0_evening.png"},"lane_r0c1_afternoon":{"px":[1248,704],"sprites":444,"counts":{"building":4,"prop":30,"vehicle":1,"piece":1,"tree":3,"shrub":23,"grass":210,"flower":172},"ms":18423,"fnv1a":"d724e564","file":"boards/lane_r0c1_afternoon.png"},"lane_r0c1_evening":{"px":[1248,704],"sprites":458,"counts":{"building":4,"prop":30,"vehicle":1,"piece":1,"tree":3,"shrub":25,"grass":208,"flower":186},"ms":26457,"fnv1a":"de0bb428","file":"boards/lane_r0c1_evening.png"},"lane_r1c0_afternoon":{"px":[1248,704],"sprites":183,"counts":{"building":4,"prop":25,"vehicle":1,"piece":1,"grass":119,"shrub":11,"flower":22},"ms":10479,"fnv1a":"fea8b1bc","file":"boards/lane_r1c0_afternoon.png"},"lane_r1c0_evening":{"px":[1248,704],"sprites":196,"counts":{"building":4,"prop":25,"vehicle":1,"piece":1,"grass":137,"shrub":3,"flower":25},"ms":10915,"fnv1a":"abaf1b75","file":"boards/lane_r1c0_evening.png"},"lane_r1c1_afternoon":{"px":[1248,704],"sprites":154,"counts":{"building":4,"prop":24,"vehicle":1,"piece":1,"grass":102,"shrub":8,"flower":14},"ms":10699,"fnv1a":"fce0c597","file":"boards/lane_r1c1_afternoon.png"},"lane_r1c1_evening":{"px":[1248,704],"sprites":165,"counts":{"building":4,"prop":24,"vehicle":1,"piece":1,"grass":114,"flower":15,"shrub":6},"ms":11472,"fnv1a":"fe31f04b","file":"boards/lane_r1c1_evening.png"},"section_r0c0_afternoon":{"px":[1152,672],"sprites":338,"counts":{"building":4,"prop":29,"vehicle":1,"piece":1,"tree":4,"shrub":25,"grass":229,"flower":45},"ms":21623,"fnv1a":"690023d5","file":"boards/section_r0c0_afternoon.png"},"section_r0c1_afternoon":{"px":[1152,672],"sprites":258,"counts":{"building":4,"prop":32,"vehicle":1,"piece":1,"tree":2,"shrub":18,"grass":168,"flower":32},"ms":16731,"fnv1a":"1037b389","file":"boards/section_r0c1_afternoon.png"}},"note":"sprites
         per tile as baked (each tile reaches 26 m past its sides); every piece is
-        one sprite; the three houses are the costliest (1.6k to 2.4k faces each)"}'
+        one sprite; the three houses are the costliest (1.6k to 2.4k faces each)","lightPass":"10-04"}'
     - Key: nmc.scene.ground
-      Value: '{"package":"export/HH-nmc-ground-part-1-reissue-2026-10-01/","laid":[],"note":"stands
+      Value: '{"package":"export/HH-nmc-ground-part-1-reissue-3-2026-10-07/","laid":[],"note":"stands
         on part 1\u2019s ground as re-issued on 10-01 and lays nothing: the houses
         stand on footings and the decks and stairs on posts over the dune as it is;
-        the drives, the yard and the walks are paint on the swale."}'
+        the drives, the yard and the walks are paint on the swale.","drawnOn":"export/HH-nmc-ground-part-1-reissue-2026-10-01/
+        (pixels 00cf42cf\u2026). The 10-02 re-issue moves no texel under it; the 10-07
+        re-issue moves some under its master\u2019s west edge (x -212..-209.25: the
+        south shore\u2019s pond bank and berm, laid.nmc_south_shore), which its boards
+        show as they were drawn"}'
     - Key: nmc.scene.refs
       Value: '[]'
     - Key: nmc.scene.sourceRows
-      Value: 32
+      Value: 40
     - Key: nmc.scene.ownedRows
-      Value: 32
+      Value: 40
     - Key: nmc.deferred
       Value: placement=H8; names/households/calendar/visits/fire schedules=H13 after
         the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
@@ -1469,6 +1473,328 @@ MonoBehaviour:
       Value: keyscene.nmc_shore_lane
     - Key: nmc.type
       Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_6_lamp
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -193.6, y: -145.786}
+    Z: 4.79
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -145.786
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.def
+      Value: '{"name":"a lantern post at the drive","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_7_lamp
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -163.4, y: -150.488}
+    Z: 4.42
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -150.488
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.def
+      Value: '{"name":"a lantern post at the drive","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_8_lamp
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -141.6, y: -151.7}
+    Z: 4.36
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -151.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.def
+      Value: '{"name":"a lantern post at the drive","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_7_bikes
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), bikeRack
+    Piece: bikeRack
+    State: 
+    At: {x: -161.6, y: -157.6}
+    Z: 4.54
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -157.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: bikes
+      Value: '[["mintB",true],["red",false]]'
+    - Key: f
+      Value: E
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.def
+      Value: '{"name":"the summer family\u2019s two beach cruisers in their rack","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), bikeRack","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_8_chairs
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), lawnChairs
+    Piece: lawnChairs
+    State: 
+    At: {x: -149.4, y: -165}
+    Z: 4.89
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -165
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: n
+      Value: 2
+    - Key: m
+      Value: '["trimW","seaG"]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.def
+      Value: '{"name":"two Adirondacks on the crest, turned to the sea","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), lawnChairs","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_7_bed
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -167.2, y: -157.6}
+    Z: 4.53
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -157.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 1.8
+    - Key: d
+      Value: 1
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.def
+      Value: '{"name":"a planted bed by the door","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_8_bed
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -147.8, y: -155}
+    Z: 4.4
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -155
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 0.9
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.def
+      Value: '{"name":"a planted bed by the door","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_shore_lane_6_bed
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -199, y: -154.4}
+    Z: 4.59
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -154.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.2
+    - Key: d
+      Value: 0.9
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.def
+      Value: '{"name":"a planted bed by the door","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lightPass
+      Value: '"10-04"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_shore_lane
+    - Key: nmc.type
+      Value: SetPieceDef
   Lights:
   - PieceId: prop.nmc_shore_lane_fire
     Preset: 
@@ -1674,3 +2000,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - boat.nmc_shore_dory
+  - prop.nmc_bank_bench_4
+  - prop.nmc_bank_bench_5
+  - prop.nmc_shore_fire
+  - structure.nmc_bank_steps_4
+  - structure.nmc_bank_steps_5
+  - prop.nmc_lot_pole_05
+  - prop.nmc_lot_pole_04
+  - prop.nmc_yard_fence_e
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_rack_01
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  - structure.nmc_apartments_2
+  PlacementIds: []

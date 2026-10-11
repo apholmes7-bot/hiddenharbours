@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: keyscene.nmc_wharf
   DisplayName: 'Nine Mile Creek: the wharf'
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-wharf-return/scenes/keyscene.nmc_wharf/scene.json,
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-wharf-return/scenes/keyscene.nmc_wharf/scene.json,
     78926 bytes, sha256 81307f997035dbbec420c65326337fb439dc82afe9049c0b96de69f856fec26d
   Placed: 0
   Pieces:
@@ -160,8 +160,8 @@ MonoBehaviour:
         placement lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
         scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
     - Key: nmc.ground.source
-      Value: export/HH-nmc-ground-part-1-reissue-2-2026-10-02/ground/plan.json, sha256
-        d7a6a154b0a0ed1f6216821fdff6c885928a9fbc60e24def68ea0ebbb3faa2ad
+      Value: export/HH-nmc-ground-part-1-reissue-3-2026-10-07/ground/plan.json, sha256
+        06d0217c8c389c6b97582e2eb6b0cc44ff5bd042bde3af538ac47fd1fe89577a
     - Key: nmc.plan.coast
       Value: '{"method":"Pass 9\u2019s: a reference line along the new mean-tide line
         with the land on its left (north); each section is a cross-shore profile,
@@ -265,18 +265,29 @@ MonoBehaviour:
         town river runs through it to the mouth."},{"id":"pond.nmc_marsh_pool","name":"the
         marsh pool","kind":"tidal pond","outline":[[-56,58],[-50,68],[-36,73],[-18,72.5],[-4,70],[4,62],[1,50],[-14,43],[-32,42.5],[-48,47]],"falloff":7,"bed":-0.4,"tidal":true,"old":{"c":[-26,58],"half":[30,16],"builder":"NineMileCreekMainland.MarshPoolCarve"},"why":"Today\u2019s
         pond, bed and extent, drawn as a shape; the neck Wharf Road runs between the
-        two ponds keeps its 12 m and more."}],"falls":{"id":"falls.nmc_the_falls","on":"stream.nmc_town_river","at":[-275.5,197.3],"lip":2.55,"foot":0.3,"pool":{"at":[-268,198.2],"bed":-0.35},"drop":2.25,"length":5.5,"rock":"red
+        two ponds keeps its 12 m and more."},{"id":"pond.nmc_salt_pond","name":"the
+        salt pond","still":2.3,"lobes":[{"c":[-227.5,-163.8],"ax":11.2,"ay":7.6},{"c":[-218.2,-167.4],"ax":5.6,"ay":4.4}],"depthM":1.3,"berm":{"crest":2.9,"id":"laid.nmc_south_shore"},"by":"keyscene.nmc_south_shore","area":"area.nmc_south_shore_estates","added":"10-04,
+        in the texture 10-07"}],"falls":{"id":"falls.nmc_the_falls","on":"stream.nmc_town_river","at":[-275.5,197.3],"lip":2.55,"foot":0.3,"pool":{"at":[-268,198.2],"bed":-0.35},"drop":2.25,"length":5.5,"rock":"red
         sandstone ledges, three steps","why":"The head of tide, and the best fishing
         on the river."}}'
     - Key: nmc.plan.roads
-      Value: '[{"id":"road.nmc_route_91","builder":"ThroughRoad","name":"Route 91","cls":"route","surface":"asphalt","width":5.8,"pts":[[-186,280],[-181,242],[-177.6,222],[-176.8,205],[-176.6,197],[-177.1,147],[-177.45,92],[-177.6,57],[-181,10],[-190,-40],[-206,-82],[-232,-112],[-268,-130],[-320,-138.5],[-380,-142]],"old":[[-230,-280],[-206,-140],[-188,-20],[-178,92],[-176,180],[-186,280]],"leaves":[{"edge":"north","at":[-186,280],"to":"the
+      Value: '[{"id":"road.nmc_route_91","builder":"ThroughRoad","name":"Route 91","cls":"route","surface":"asphalt","width":5.8,"pts":[[-186,280],[-181,242],[-177.6,222],[-176.8,205],[-176.6,197],[-177.1,147],[-177.45,92],[-177.6,57],[-181,10],[-190,-40],[-206,-82],[-229.4,-109],[-240,-114.6],[-252,-117.6],[-266,-119],[-284,-119.6],[-302,-119.8],[-316,-120.4],[-328,-122],[-339,-124.8],[-349,-128.6],[-358,-133],[-366,-137.4],[-373,-140.6],[-380,-142]],"old":[[-230,-280],[-206,-140],[-188,-20],[-178,92],[-176,180],[-186,280]],"leaves":[{"edge":"north","at":[-186,280],"to":"the
         peninsula: north to its centre, then right down Rocky Point; the Cumberland
         road branches off it (09-26)"},{"edge":"west","at":[-380,-142],"to":"Rice
         Point, its own region to the south-west (09-26): the through-road carried
         on, as the owner\u2019s blueprint has it"}],"why":"Unchanged from the north
         edge to the junction but for a straighter line through the town; south of
         the junction it bends south-west behind the south shore and leaves by the
-        west edge for Rice Point."},{"id":"road.nmc_wharf_road","builder":"WharfRoad","name":"Wharf
+        west edge for Rice Point.","old_reissue2":[[-186,280],[-181,242],[-177.6,222],[-176.8,205],[-176.6,197],[-177.1,147],[-177.45,92],[-177.6,57],[-181,10],[-190,-40],[-206,-82],[-232,-112],[-268,-130],[-320,-138.5],[-380,-142]],"redrawn":["10-04
+        (keyscene.nmc_south_shore, area.nmc_south_shore_estates): west of (-206, -82)
+        on a new line behind the bluff, up to 17.45 m north of the old, meeting Rice
+        Point at (-380, -142) as before"],"sections":[{"id":"road.nmc_route_91_town","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":5.8,"pts":[[-177.6,222.6],[-181,242],[-186,281]],"bands":["gutter
+        0.3","kerb 0.16","walk 2.6 brick","verge 0.5"],"ends":"flat","of":"road.nmc_route_91","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block","what":"the
+        town section from the bridge\u2019s north end past the corner: gutters, kerbs,
+        a 2.6 m brick walk each side and its verge; it ends a metre past the region\u2019s
+        north edge (call 87)","note":"bands: each side of the carriage, inner to outer
+        (role width surface)"}]},{"id":"road.nmc_wharf_road","builder":"WharfRoad","name":"Wharf
         Road","cls":"paved","surface":"asphalt","paved":true,"width":5.8,"pts":[[-177.45,92],[-100,92],[-40,92],[14,92],[22,95],[27,101],[29,108],[30.5,114],[34,118],[50,118]],"old":[[-177.45,92],[-100,90],[-40,92],[14,92],[56,104],[100,116],[140,122]],"ends":{"at":[50,118],"in":"the
         wharf\u2019s turning pad: the wharf return\u2019s court (x 40..82, y 106..144),
         where its own stub of Wharf Road runs from (40, 118) to (50, 118) into the
@@ -295,14 +306,23 @@ MonoBehaviour:
         off the fields and down the regraded ramp into the wharf\u2019s turning pad."},{"id":"road.nmc_bar_road","builder":"BarRoad","name":"the
         bar road","cls":"street","surface":"gravel","width":5,"pts":[[58,-146],[36,-112],[20,-56],[14,0],[20,78],[-16,92]],"old_surface":"dirt,
         4 m","why":"Today\u2019s line. Gravel and 5 m now, because the campground\u2019s
-        cars and trailers use it."},{"id":"road.nmc_water_street","name":"Water Street","cls":"paved","surface":"asphalt","width":5.4,"pts":[[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-150,226],[-128,222]],"z":6,"why":"Along
+        cars and trailers use it."},{"id":"road.nmc_water_street","name":"Water Street","cls":"town","surface":null,"width":5.4,"pts":[[-271,228.81],[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-166,227.17],[-150,226],[-139,224],[-128,222]],"z":6,"why":"Along
         the top of the river wall on the north bank: the restaurant, the chandlery
-        and the stairs down to the north boardwalk."},{"id":"road.nmc_mill_road","name":"Mill
+        and the stairs down to the north boardwalk.","old_reissue2":{"cls":"paved","surface":"asphalt","width":5.4,"pts":[[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-150,226],[-128,222]]},"bands":["gutter
+        0.3","kerb 0.16","walk 1.5 slab"],"note":"bands: each side of the carriage,
+        inner to outer (role width surface)","redrawn":["10-05 (keyscene.nmc_main_street):
+        a town street on the plan\u2019s line from the Falls to Route 91, its brick
+        walk, two runs of 45 degree stalls on its north side","10-06/07: east of Route
+        91 on to Creek Lane\u2019s south mouth (-128, 222), its brick walk on the
+        north side to x -121"],"parking":["lot.nmc_water_street_stalls_a","lot.nmc_water_street_stalls_b"]},{"id":"road.nmc_mill_road","name":"Mill
         Road","cls":"street","surface":"gravel","width":5,"pts":[[-177.3,158],[-205,160],[-236,163],[-262,166],[-282,170]],"why":"West
         from Route 91 on the south bank, past the plaza\u2019s back, to the Falls\u2019
-        lookout."},{"id":"road.nmc_north_creek_lane","name":"Creek Lane (north)","cls":"street","surface":"asphalt","width":4.2,"pts":[[-179.5,256],[-150,272],[-110,274.5],[-70,274],[-30,272],[10,268],[30,264]],"why":"The
+        lookout."},{"id":"road.nmc_north_creek_lane","name":"Creek Lane (north)","cls":"street","surface":"asphalt","width":4.2,"pts":[[-184.6,273.6],[-170,274],[-150,274.3],[-130,274.4],[-110,274.5],[-70,274],[-30,272],[10,268],[30,264]],"why":"The
         north bank\u2019s waterfront lots, to a turn at the beach.","old":{"cls":"lane","surface":"lane","width":2.8},"ruled":"10-02:
-        asphalt, 4.2 m wide, on the plan\u2019s line (call 45)"},{"id":"road.nmc_creek_lane_south","name":"Creek
+        asphalt, 4.2 m wide, on the plan\u2019s line (call 45)","old_reissue2":[[-179.5,256],[-150,272],[-110,274.5],[-70,274],[-30,272],[10,268],[30,264]],"redrawn":["10-07
+        (keyscene.nmc_main_street, area.nmc_east_lane): its mouth on Route 91 moved
+        north to y 273.5, a town street with Route 91\u2019s kerbs as far as x -110
+        (road.nmc_north_creek_lane_mouth draws it there)"]},{"id":"road.nmc_creek_lane_south","name":"Creek
         Lane (south)","cls":"street","surface":"asphalt","width":4.2,"pts":[[-128,222],[-98,214],[-60,208],[-24,205],[10,203],[28,202]],"why":"The
         south bank\u2019s waterfront lots, off Water Street\u2019s east end.","old":{"cls":"lane","surface":"lane","width":2.8},"ruled":"10-02:
         asphalt, 4.2 m wide, on the plan\u2019s line (call 45)"},{"id":"road.nmc_stream_lane","name":"the
@@ -328,7 +348,26 @@ MonoBehaviour:
         the gate west to the pond."},{"id":"road.nmc_camp_loop_c","name":"Loop C (the
         pond loop)","cls":"lane","surface":"gravel","width":3.6,"pts":[[-62,30],[-80,42],[-104,40],[-120,27],[-119,8],[-106,-1],[-90,2],[-76,14],[-62,30]],"oneWay":true,"why":"The
         cabins round Camp Pond in the middle wood lot; the loop crosses the pond\u2019s
-        outlet on its culvert."}]'
+        outlet on its culvert."},{"id":"road.nmc_main_street_lane","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":6.5,"pts":[[-185.5,265.45],[-268,265.45]],"bands":["gutter
+        0.3","kerb 0.16","walk 1.5 slab"],"ends":"flat","added":"10-07, the one-scene
+        package re-issued","name":"the back lane","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block","what":"behind
+        the block from Route 91 to the public lot: the north row\u2019s fronts on
+        its north side, crosswalks at the square and the lot"},{"id":"road.nmc_main_street_east_lane","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":7,"pts":[[-182.3,251.6],[-147,251.6]],"bands":["gutter
+        0.3","kerb 0.16","walk 1.5 slab"],"ends":"flat","added":"10-07, the one-scene
+        package re-issued","name":"the east lane","by":"keyscene.nmc_main_street","area":"area.nmc_east_lane","what":"east
+        off Route 91 at y 251.6 to the east row\u2019s fronts and its stalls (lot.nmc_east_court)"},{"id":"road.nmc_plaza_flats_street","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":6,"pts":[[-285.75,12.4],[-191.25,12.4]],"bands":["gutter
+        0.3","kerb 0.16","walk 1.8 brick"],"ends":"flat","added":"10-07, the one-scene
+        package re-issued","name":"the flats\u2019 street","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats","what":"along
+        the flats\u2019 fronts, square dead ends short of Route 91 (no way onto it);
+        reached by the link from the lot"},{"id":"road.nmc_plaza_flats_link","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":6,"pts":[[-221,64],[-221,12.4]],"bands":["gutter
+        0.3","kerb 0.16","walk 1.2 brick"],"ends":"flat","added":"10-07, the one-scene
+        package re-issued","name":"the link","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats","what":"north
+        from the flats\u2019 street between the walk-up and the terrace to the lot\u2019s
+        second aisle (y 64)"}]'
     - Key: nmc.plan.bridges
       Value: '[{"id":"bridge.nmc_route91_river","name":"the Route 91 bridge","on":"road.nmc_route_91","over":"stream.nmc_town_river","centre":[-176.8,205],"span":36,"deck":6,"width":9.5,"spans":3,"piers":2,"clearance_at_spring_high":3.1,"boardwalks_under":2,"headroom_over_boardwalk":2.3,"abutments":{"south":[-176.9,187],"north":[-176.7,223]},"embankment":{"south":[[-177,160],[-176.9,187]],"north":[[-176.7,223],[-177.5,232]],"top":6,"side_slope":1.5},"ruled":"08-20:
         the bridge gets its own artwork","why":"Bench to bench over the tidal river:
@@ -379,12 +418,17 @@ MonoBehaviour:
         plaza: the grocery and the lumber store","at":[-227,120.5],"size":[58,24],"faces":"S","z":6,"kit":"NmcStores
         (hh-nmc-key-scenes/plaza-stores/nmcStores.js): grocery, lumber, dock (keyscene.nmc_plaza)","stores":[{"id":"structure.nmc_plaza_grocery","trade":"the
         grocery","at":[-213,120.5],"size":[30,24],"faces":"S","front":108.5},{"id":"structure.nmc_plaza_lumber","trade":"the
-        lumber store (lumber and hardware)","at":[-244,121],"size":[24,22],"faces":"S","front":110}],"site":{"box":[-282,-190,75,156],"what":"the
-        plaza\u2019s ground: the lot, the two stores, the lumber yard, the service
-        drive and the truck apron"},"parking":{"box":[-256,-197,75,104.5],"stalls":40,"rows":2,"from":"the
-        field\u2019s 13 m north of y 88: the lot runs south to y 75"},"yard":{"id":"yard.nmc_lumber","box":[-282,-258,78,142],"what":"the
-        lumber yard and its shed, west of the lumber store"},"service":{"id":"drive.nmc_plaza_service","width":7,"pts":[[-193.5,104],[-193.5,156]],"what":"up
-        the grocery\u2019s east side from the lot to the apron"},"entrance":{"id":"drive.nmc_plaza_entrance","from":"road.nmc_route_91","at":[-177.3,92],"width":9,"pts":[[-193.5,92],[-177.3,92]],"opposite":"road.nmc_wharf_road
+        lumber store (lumber and hardware)","at":[-244,121],"size":[24,22],"faces":"S","front":110}],"site":{"box":[-288,-186,55.5,170],"what":"the
+        plaza\u2019s ground: the lot (four rows), the two stores and their side docks,
+        the truck court, the yard and its shed, the apron and its drives (call 34\u2019s
+        site, grown 10-06)"},"parking":{"box":[-256,-197,55.5,104.5],"stalls":76,"marked":80,"rows":4,"stall":{"x0":-254,"w":2.75,"n":20,"d":5.5},"rowsN":[[90.5,96],[71,76.5]],"rowsS":[[78,83.5],[58.5,64]],"aisles":[[83.5,90.5],[64,71]],"strips":[[96,97.5],[76.5,78]],"access":{"grocery":[14,15],"lumber":[3,4],"flats":[8,9]},"cut":"four
+        stalls of the second south row (10 to 13) give way to the link","area":"area.nmc_plaza_lot_south"},"yard":{"id":"yard.nmc_lumber","box":[-288,-258,78,142],"shed":{"id":"structure.nmc_lumber_shed","at":[-279,111],"w":16,"lane":7,"d":18},"gates":{"in":{"fence":"S","x":[-282,-276]},"out":{"fence":"N","x":[-282,-276],"to":"road.nmc_mill_road
+        (drive.nmc_plaza_yard_out)"},"trucks":{"fence":"E","y":[83,91.5]}},"way":"one
+        way: in from the lot at the south gate, north through the shed, out to Mill
+        Road","area":"area.nmc_plaza_docks_yard"},"service":{"gone":"10-06: the service
+        drive\u2019s north part gave way to the grocery\u2019s dock wing and its truck
+        court; drive.nmc_plaza_east runs the lot\u2019s east aisle (x -197..-190)
+        south to y 58.5","court":"drive.nmc_plaza_court"},"entrance":{"id":"drive.nmc_plaza_entrance","from":"road.nmc_route_91","at":[-177.3,92],"width":9,"pts":[[-193.5,92],[-177.3,92]],"opposite":"road.nmc_wharf_road
         (a four-way junction at y 92)"},"apron":{"id":"yard.nmc_plaza_apron","box":[-258,-190,132,156],"wells":["well.nmc_plaza_grocery","well.nmc_plaza_lumber"],"grading":"cut.nmc_plaza_wells","drives":[{"to":"road.nmc_mill_road","id":"drive.nmc_plaza_mill_1","width":12,"pts":[[-222,150],[-222,159.4]]},{"to":"road.nmc_mill_road","id":"drive.nmc_plaza_mill_2","width":10,"pts":[[-247,150],[-247,162.1]]},{"to":"road.nmc_mill_road","id":"drive.nmc_plaza_mill_3","width":7,"pts":[[-193.5,150],[-193.5,157]]}]},"ruled":"09-29:
         a grocery store and a medium-sized hardware store; 10-02: the site as drawn
         (call 34), the stores facing south (call 31), their names open (call 35)","old":{"name":"the
@@ -393,80 +437,242 @@ MonoBehaviour:
         hardware store\u2019s lumber shed and yard"}},"why":"West of Route 91 at the
         junction with Wharf Road, across the road from the gas bar. The lot opens
         onto Route 91 opposite Wharf Road; the trucks come and go by the apron behind
-        the stores and Mill Road."},{"id":"lot.nmc_restaurant_bar","name":"the restaurant
-        and bar","at":[-204,239],"size":[16,13],"faces":"S","z":6,"kit":"Manor Iso
-        (a converted manor), with a deck on the river wall and stairs to the north
+        the stores and Mill Road.","old_reissue2":{"site":{"box":[-282,-190,75,156],"what":"the
+        plaza\u2019s ground: the lot, the two stores, the lumber yard, the service
+        drive and the truck apron"},"parking":{"box":[-256,-197,75,104.5],"stalls":40,"rows":2,"from":"the
+        field\u2019s 13 m north of y 88: the lot runs south to y 75"},"yard":{"id":"yard.nmc_lumber","box":[-282,-258,78,142],"what":"the
+        lumber yard and its shed, west of the lumber store"},"service":{"id":"drive.nmc_plaza_service","width":7,"pts":[[-193.5,104],[-193.5,156]],"what":"up
+        the grocery\u2019s east side from the lot to the apron"}},"docks":{"grocery":{"wing":[-198,-187,120,132.5],"court":[-198,-186.5,104.5,120],"bays":[-195,-190],"side":"E","w":11,"n0":-0.5,"doors":[{"e":18,"kind":"lift","taken":true},{"e":23,"kind":"lift"}],"man":25.45},"lumber":{"wing":[-267,-256,120,132],"court":[-267,-258,96,120],"bays":[-264,-258.6],"side":"W","w":11,"n0":-1,"doors":[{"e":-20,"kind":"lift"},{"e":-14.6,"kind":"drive"}]},"rule":"each
+        dock on its store\u2019s outer side, its doors to the south at the store\u2019s
+        floor: a truck backs in on the level (the 10-02 wells filled: fill.nmc_plaza_wells)","area":"area.nmc_plaza_docks_yard"},"drives":[{"id":"drive.nmc_plaza_entrance","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":9,"pts":[[-193.5,92],[-177.3,92]],"ends":"flat"},{"id":"drive.nmc_plaza_east","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":7,"pts":[[-193.5,58.5],[-193.5,105]],"ends":"flat"},{"id":"drive.nmc_plaza_court","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":11.5,"pts":[[-192.25,104],[-192.25,120.2]],"ends":"flat"},{"id":"drive.nmc_plaza_yard_in","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":6,"pts":[[-255.5,67.5],[-279,67.5],[-279,78.6]],"ends":"flat"},{"id":"yard.nmc_plaza_lumber_court","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":9,"pts":[[-262.5,96],[-262.5,120.1]],"ends":"flat"},{"id":"yard.nmc_plaza_apron","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":23.5,"pts":[[-258,144.25],[-186,144.25]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":12,"pts":[[-222,150],[-222,159.4]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_2","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":10,"pts":[[-247,150],[-247,162.1]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_3","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":7,"pts":[[-193.5,150],[-193.5,157]],"ends":"flat"},{"id":"drive.nmc_plaza_yard_out","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"gravel","width":6,"pts":[[-279,141.6],[-279,167.4]],"ends":"flat"}]},{"id":"lot.nmc_restaurant_bar","name":"the
+        restaurant and bar","at":[-226,253.26],"size":[13.25,17.5],"faces":"S","z":6,"kit":"Manor
+        Iso (a converted manor), with a deck on the river wall and stairs to the north
         boardwalk","deck":{"box":[-212,-196,228,232.5],"z":6},"ruled":"09-29: a restaurant
         and bar","why":"The best site in town: the north bank at the bridge, facing
-        south over the river, its deck on the wall."},{"id":"lot.nmc_apartments_1","name":"the
-        walk-up","at":[-236,252],"size":[22.6,18.9],"faces":"S","z":6,"kit":"WalkupIso
-        walkup12 (12 flats, 3 storeys)","ruled":"09-29: two or three apartment buildings"},{"id":"lot.nmc_apartments_2","name":"the
-        three-decker by the bridge","at":[-156,250],"size":[12.5,15.5],"faces":"S","z":6,"kit":"StackFlatsIso
-        (three storeys, porches)"},{"id":"lot.nmc_chandlery","name":"the chandlery","at":[-160,234],"size":[9,8],"faces":"S","z":6,"kit":"Shopfront
+        south over the river, its deck on the wall.","old_reissue2":{"at":[-204,239],"size":[16,13]},"moved":"10-05:
+        onto the square\u2019s west side, its front on Water Street\u2019s building
+        line (call 69); its deck on the river wall stays","area":"area.nmc_water_street_block"},{"id":"lot.nmc_chandlery","name":"the
+        chandlery","at":[-160,237.26],"size":[9,8],"faces":"S","z":6,"kit":"Shopfront
         (chandlery)","builder":"ChandleryPos","old":[-206,116],"why":"The rod vendor
-        moves onto Water Street, over the river it sells gear for."},{"id":"lot.nmc_parish_hall","name":"the
-        parish hall","at":[-152,62],"size":[12,18],"faces":"N","z":6,"builder":"ParishHallPos","old":[-152,62],"kept":true},{"id":"lot.nmc_house_north","name":"a
-        house (was the north house)","at":[-208,268],"size":[7,8.7],"faces":"S","z":6,"kit":"village
-        houses","builder":"HouseNorthPos","old":[-148,196],"why":"Its old lot is the
-        river now."},{"id":"lot.nmc_house_north_west","name":"a house (was the north-west
-        house)","at":[-258,268],"size":[7,8.7],"faces":"S","z":6,"builder":"HouseNorthWestPos","old":[-206,196],"why":"Its
-        old lot is the river now."},{"id":"lot.nmc_house_south","name":"the farmhouse","at":[-208,60],"size":[7,8.7],"faces":"E","z":6,"builder":"HouseSouthPos","old":[-208,60],"kept":true},{"id":"lot.nmc_house_mill","name":"a
-        house on Mill Road (was the tavern)","at":[-264.5,152],"size":[7,8.7],"faces":"N","z":6,"builder":"TavernPos","old":[-206,152],"why":"The
+        moves onto Water Street, over the river it sells gear for.","old_reissue2":{"at":[-160,234]},"moved":"10-06:
+        3.26 m north onto the east building line (call 80)","area":"area.nmc_east_lane"},{"id":"lot.nmc_parish_hall","name":"the
+        parish hall","at":[-152,62],"size":[12,18],"faces":"N","z":6,"builder":"ParishHallPos","old":[-152,62],"kept":true},{"id":"lot.nmc_house_south","name":"the
+        farmhouse","at":[-200,-8],"size":[7,8.7],"faces":"E","z":6,"builder":"HouseSouthPos","old":[-208,60],"kept":true,"old_reissue2":{"at":[-208,60]},"moved":"10-07:
+        south of the hedge at y 0, facing Route 91 as before (call 85); no scene draws
+        it"},{"id":"lot.nmc_house_mill","name":"a house on Mill Road (was the tavern)","at":[-264.5,152],"size":[7,8.7],"faces":"N","z":6,"builder":"TavernPos","old":[-206,152],"why":"The
         tavern becomes the restaurant and bar; its lot is the plaza\u2019s parking
         now, so a house takes a lot on Mill Road.","moved":{"from":[-262,152],"ruled":"10-02:
         2.5 m west to (-264.5, 152), 3 m off the plaza\u2019s truck apron","was_clear_of_apron_m":0.5},"clear_of_apron_m":3},{"id":"lot.nmc_boat_shed","name":"the
         boat shed","at":[-94,158],"size":[10,8],"faces":"N","z":3,"builder":"BoatShedPos","old":[-108,64],"on":"fill.nmc_boat_shed_landing","why":"On
         the river at last: a landing and a slip, reached by the gas bar\u2019s lane.
-        It still sells the Punt and the pots."}],"gone":[{"builder":"HarbourmasterPos","old":[-150,118],"to":"the
+        It still sells the Punt and the pots."},{"id":"lot.nmc_plaza_cannery","name":"the
+        cannery loft block (eight lofts, two storeys)","at":[-271.45,37.55],"size":[30.3,20.9],"faces":"S","z":6,"kit":"WalkupIso
+        (cannery8Loft)","building":{"id":"structure.nmc_plaza_cannery","rig":"WalkupIso","preset":"cannery8Loft","flats":8,"style":"walk-up,
+        luxury tier (cannery loft)","front":25.25,"back":48},"drive":"road.nmc_plaza_flats_street","added":"10-06
+        (keyscene.nmc_plaza; moved west 10-07 for the link)","area":"area.nmc_plaza_flats"},{"id":"lot.nmc_plaza_walkup","name":"the
+        walk-up (eight flats, two storeys, its steel stair tower)","at":[-240.9,38.55],"size":[22.6,18.9],"faces":"S","z":6,"kit":"WalkupIso
+        (walkup8)","building":{"id":"structure.nmc_plaza_walkup","rig":"WalkupIso","preset":"walkup8","flats":8,"style":"walk-up,
+        basic tier (concrete-banded brick)","front":27.56,"back":48},"drive":"road.nmc_plaza_flats_street","added":"10-06
+        (keyscene.nmc_plaza; moved west 10-07 for the link)","area":"area.nmc_plaza_flats"},{"id":"lot.nmc_plaza_terrace","name":"the
+        coastal terrace (four houses, three storeys, each door its own colour)","at":[-201.6,40.2],"size":[28,11.6],"faces":"S","z":6,"kit":"RowhouseIso
+        (coastalRow4)","building":{"id":"structure.nmc_plaza_terrace","rig":"RowhouseIso","preset":"coastalRow4","flats":4,"style":"terrace,
+        luxury tier (contemporary coastal block)","front":32.86,"back":46},"drive":"road.nmc_plaza_flats_street","added":"10-06
+        (keyscene.nmc_plaza; moved west 10-07 for the link)","area":"area.nmc_plaza_flats"},{"id":"lot.nmc_main_street_outfitter","name":"the
+        outfitter","at":[-262,246.61],"size":[8,11],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_outfitter","storeys":2,"clad":"clapR","trade":"kayak,
+        canoe and bike rental, guided paddles on the river and the bay","flats":1,"front":241.11,"x":[-266,-258]},"drive":"road.nmc_water_street","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_flowers","name":"the
+        flower shop","at":[-255,246.63],"size":[6,10.5],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_flowers","storeys":2,"clad":"clapB","trade":"cut
+        flowers, bedding plants and the town\u2019s hanging baskets","flats":1,"front":241.38,"x":[-258,-252]},"drive":"road.nmc_water_street","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_antiques","name":"the
+        antiques shop","at":[-249,247.11],"size":[6,11],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_antiques","storeys":2,"clad":"clapY","trade":"furniture,
+        ship\u2019s fittings, china and old maps","flats":1,"front":241.61,"x":[-252,-246]},"drive":"road.nmc_water_street","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_west_block","name":"the
+        west block","at":[-239.5,248.2],"size":[13,12.5],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_west_block","storeys":3,"clad":"brick","trade":"the
+        bookshop (new and used) and the gift and souvenir shop; four flats on the
+        two floors over them","flats":4,"front":241.95,"x":[-246,-233]},"drive":"road.nmc_water_street","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_corner_block","name":"the
+        corner block","at":[-194.3,247.63],"size":[11.4,13.5],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_corner_block","storeys":3,"clad":"brickO","trade":"the
+        bakery and caf\u00e9 at the corner (its terrace on the roof in summer), the
+        clothing boutique; round the corner on Route 91 the ice cream and fudge shop
+        and the chocolates and candy; four flats over them","flats":4,"front":240.88,"x":[-200,-188.6]},"drive":"road.nmc_water_street","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_gallery","name":"the
+        gallery and craft co-op","at":[-240,275],"size":[12,9.6],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_gallery","storeys":2,"clad":"shingleG","trade":"the
+        artists\u2019 co-op in the old livery barn: paintings, pottery, wool and woodwork,
+        and a room for classes","front":270.2,"x":[-246,-234]},"drive":"road.nmc_main_street_lane","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_pharmacy","name":"the
+        pharmacy","at":[-228,275],"size":[10,9.6],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_pharmacy","storeys":1,"clad":"brickD","trade":"the
+        town\u2019s pharmacy: prescriptions, first aid, sunscreen and the photo counter","front":270.2,"x":[-233,-223]},"drive":"road.nmc_main_street_lane","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_wine","name":"the
+        wine and spirits store","at":[-218.5,275],"size":[8,9.6],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_wine","storeys":1,"clad":"clapG","trade":"wine,
+        beer and spirits, the island\u2019s cider","front":270.2,"x":[-222.5,-214.5]},"drive":"road.nmc_main_street_lane","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_visitor","name":"the
+        visitor information centre and public washrooms","at":[-207.75,275],"size":[12,9.6],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_visitor","storeys":1,"clad":"cedarN","trade":"maps,
+        trail guides, tide tables and the ferry times; the public washrooms either
+        side, open from seven to ten","front":270.2,"x":[-213.75,-201.75]},"drive":"road.nmc_main_street_lane","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_post_office","name":"the
+        post office","at":[-196.37,275],"size":[8.75,9.6],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_post_office","storeys":1,"clad":"brick","trade":"the
+        post office: the counter, two hundred boxes, the parcels","front":270.2,"x":[-200.75,-192]},"drive":"road.nmc_main_street_lane","added":"10-05
+        (keyscene.nmc_main_street)","area":"area.nmc_water_street_block"},{"id":"lot.nmc_main_street_east_corner","name":"the
+        east corner block","at":[-168.9,240.04],"size":[8.2,12.6],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_east_corner","storeys":3,"clad":"brick","trade":"the
+        deli on the corner (sandwiches, chowder, the morning coffee) and the barber;
+        two flats over them","flats":2,"front":233.74,"x":[-173,-164.8]},"drive":"road.nmc_water_street","added":"10-06
+        (keyscene.nmc_main_street, the east side)","area":"area.nmc_east_lane"},{"id":"lot.nmc_main_street_east_block","name":"the
+        fish market block","at":[-148.9,238.36],"size":[12.6,12.4],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_east_block","storeys":3,"clad":"brickD","trade":"the
+        fish market (the boats\u2019 catch on ice, chowder to take away); five flats
+        over it and beside it","flats":5,"front":232.16,"x":[-155.2,-142.6]},"drive":"road.nmc_water_street","added":"10-06
+        (keyscene.nmc_main_street, the east side)","area":"area.nmc_east_lane"},{"id":"lot.nmc_main_street_east_decker","name":"the
+        three-decker","at":[-134.8,237.2],"size":[8.4,12],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_east_decker","storeys":3,"clad":"clapB","trade":"the
+        three-decker in the town\u2019s clapboard: a flat a floor, its porch to the
+        street and the river","flats":3,"front":231.2,"x":[-139,-130.6]},"drive":"road.nmc_water_street","added":"10-06
+        (keyscene.nmc_main_street, the east side)","area":"area.nmc_east_lane"},{"id":"lot.nmc_main_street_east_captains","name":"the
+        captain\u2019s flats","at":[-123.6,236.5],"size":[12,11],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_east_captains","storeys":2,"clad":"cedarN","trade":"the
+        captain\u2019s flats in cedar shingle under a gambrel: four flats, a porch
+        across the front","flats":4,"front":231,"x":[-129.6,-117.6]},"drive":"road.nmc_water_street","added":"10-06
+        (keyscene.nmc_main_street, the east side)","area":"area.nmc_east_lane"},{"id":"lot.nmc_main_street_east_row","name":"the
+        brick terrace on the east lane","at":[-161.2,262.75],"size":[22.4,10.5],"faces":"S","z":6,"kit":"NmcMainStreet
+        (hh-nmc-key-scenes/main-street/nmcMainStreet.js): msBlock","building":{"id":"structure.nmc_main_street_east_row","storeys":3,"clad":"brick","trade":"the
+        brick terrace: four houses of three storeys facing the east lane, two flats
+        in each","flats":8,"front":257.5,"x":[-172.4,-150]},"drive":"road.nmc_main_street_east_lane","added":"10-06
+        (keyscene.nmc_main_street, the east side)","area":"area.nmc_east_lane"}],"gone":[{"builder":"HarbourmasterPos","old":[-150,118],"to":"the
         wharf office (86.4, 112.6), as ruled 09-28"},{"builder":"GeneralStorePos","old":[-150,152],"to":"the
         gas bar\u2019s store (-155, 139), as ruled 09-28; its groceries to the plaza\u2019s
         grocery store (a call)"},{"builder":"TavernPos","old":[-206,152],"to":"lot.nmc_restaurant_bar
         (-204, 239) (a call)"},{"id":"lot.nmc_apartments_3","old":[-136,244],"to":"left
         out (call 32, 10-02): the second three-decker, the optional third of the owner\u2019s
-        \"2-3\"","was":{"size":[12.5,15.5],"faces":"SW","kit":"StackFlatsIso"}}],"working":[{"id":"lot.nmc_truck_park","name":"the
-        truck park","at":[-131,78],"size":[20.1,13.4],"z":6,"builder":"TruckParkPos
+        \"2-3\"","was":{"size":[12.5,15.5],"faces":"SW","kit":"StackFlatsIso"}},{"id":"lot.nmc_apartments_1","old":[-236,252],"to":"the
+        block (10-05): the gallery and the pharmacy stand on its ground","when":"10-07
+        re-issue"},{"id":"lot.nmc_house_north","old":[-208,268],"to":"the block (10-05):
+        the visitor centre and the post office","when":"10-07 re-issue"},{"id":"lot.nmc_house_north_west","old":[-258,268],"to":"the
+        block (10-05): the public lot","when":"10-07 re-issue"},{"id":"lot.nmc_apartments_2","old":[-156,250],"to":"the
+        east side (10-06): the east row stands on its ground (the three-decker\u2019s
+        porches now the east decker\u2019s on the building line)","when":"10-07 re-issue"},{"id":"lot.nmc_south_shore_1","old":[-362,-158],"to":"the
+        south shore redrawn (10-04): the bank\u2019s lots 1 to 5 give way to the three
+        estates on the bluff (lot.nmc_south_shore_estate_1 to _3) and the salt pond","when":"10-07
+        re-issue"},{"id":"lot.nmc_south_shore_2","old":[-334,-157.5],"to":"the south
+        shore redrawn (10-04): the bank\u2019s lots 1 to 5 give way to the three estates
+        on the bluff (lot.nmc_south_shore_estate_1 to _3) and the salt pond","when":"10-07
+        re-issue"},{"id":"lot.nmc_south_shore_3","old":[-306,-157],"to":"the south
+        shore redrawn (10-04): the bank\u2019s lots 1 to 5 give way to the three estates
+        on the bluff (lot.nmc_south_shore_estate_1 to _3) and the salt pond","when":"10-07
+        re-issue"},{"id":"lot.nmc_south_shore_4","old":[-278,-156.5],"to":"the south
+        shore redrawn (10-04): the bank\u2019s lots 1 to 5 give way to the three estates
+        on the bluff (lot.nmc_south_shore_estate_1 to _3) and the salt pond","when":"10-07
+        re-issue"},{"id":"lot.nmc_south_shore_5","old":[-250,-154],"to":"the south
+        shore redrawn (10-04): the bank\u2019s lots 1 to 5 give way to the three estates
+        on the bluff (lot.nmc_south_shore_estate_1 to _3) and the salt pond","when":"10-07
+        re-issue"}],"working":[{"id":"lot.nmc_truck_park","name":"the truck park","at":[-131,78],"size":[20.1,13.4],"z":6,"builder":"TruckParkPos
         (NineMileCreekTruckPark)","old":[-120,106],"why":"Its old ground is the gas
         bar\u2019s east lane."},{"id":"lot.nmc_laydown","name":"the laydown","at":[-95,62],"size":[44.8,35.9],"z":6,"builder":"LaydownPos
         (NineMileCreekLaydown)","old":[-100,136],"why":"Its old ground is the river
         valley\u2019s south bank; south of Wharf Road it sits by the truck park, clear
-        of the marsh pool by 11 m."}],"south_shore_houses":[{"id":"lot.nmc_south_shore_1","name":"the
-        shore manor","at":[-362,-158],"size":[15,12],"faces":"N","z":5.6,"graded":"on
-        the bank top","kit":"Manor Iso","drive":"road.nmc_route_91","ruled":"09-26:
-        houses on the south shore"},{"id":"lot.nmc_south_shore_2","name":"a south
-        shore house","at":[-334,-157.5],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
-        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
-        houses on the south shore"},{"id":"lot.nmc_south_shore_3","name":"a south
-        shore house","at":[-306,-157],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
-        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
-        houses on the south shore"},{"id":"lot.nmc_south_shore_4","name":"a south
-        shore house","at":[-278,-156.5],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
-        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
-        houses on the south shore"},{"id":"lot.nmc_south_shore_5","name":"a south
-        shore house","at":[-250,-154],"size":[7,8.7],"faces":"N","z":5.6,"graded":"on
-        the bank top","kit":"village houses","drive":"road.nmc_route_91","ruled":"09-26:
-        houses on the south shore"},{"id":"lot.nmc_south_shore_6","name":"a south
-        shore house","at":[-196,-160],"size":[10,7.2],"faces":"N","z":4.75,"graded":"in
+        of the marsh pool by 11 m."}],"south_shore_houses":[{"id":"lot.nmc_south_shore_estate_1","name":"the
+        tower house","at":[-345,-148.5],"size":[21,10.5],"faces":"N","z":6.7,"row":"the
+        bluff, south of Route 91","photo":4,"household":"a retired judge from Halifax
+        and her husband, who sails","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
+        estateHouse","buildings":["structure.nmc_south_shore_house_1","structure.nmc_south_shore_bluff_deck_1"],"drive":"road.nmc_route_91","drives":[{"id":"court.nmc_south_shore_1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":6,"pts":[[-355.2,-138.8],[-335.8,-138.8]],"ends":"flat"},{"id":"drive.nmc_south_shore_1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":4,"pts":[[-345,-136.2],[-345,-129.78]],"ends":"flat"},{"id":"path.nmc_south_shore_1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"stones","width":0.9,"pts":[[-345,-160],[-339,-161.6],[-334.6,-162.4]],"ends":"flat"}],"added":"10-04
+        (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_2","name":"the
+        roof-walk house","at":[-305,-143],"size":[29,10],"faces":"N","z":6.55,"row":"the
+        bluff, south of Route 91","photo":2,"household":"a family from Montreal who
+        summer here, three children and a Bernese; the grandparents come for July","kit":"NmcShoreEstates
+        (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js): estateHouse","buildings":["structure.nmc_south_shore_house_2","structure.nmc_south_shore_pool_2","structure.nmc_south_shore_bluff_deck_2"],"drive":"road.nmc_route_91","drives":[{"id":"loop.nmc_south_shore_2","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-305,-126.2],[-306.07,-126.32],[-307.08,-126.67],[-307.99,-127.25],[-308.75,-128.01],[-309.32,-128.92],[-309.68,-129.93],[-309.8,-131],[-309.68,-132.07],[-309.32,-133.08],[-308.75,-133.99],[-307.99,-134.75],[-307.08,-135.32],[-306.07,-135.68],[-305,-135.8],[-303.93,-135.68],[-302.92,-135.32],[-302.01,-134.75],[-301.25,-133.99],[-300.67,-133.08],[-300.32,-132.07],[-300.2,-131],[-300.32,-129.93],[-300.67,-128.92],[-301.25,-128.01],[-302.01,-127.25],[-302.92,-126.67],[-303.93,-126.32],[-305,-126.2]],"ends":"flat"},{"id":"drive.nmc_south_shore_2","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-305,-126.4],[-305,-122.63]],"ends":"flat"}],"added":"10-04
+        (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_3","name":"the
+        point estate","at":[-262,-142],"size":[34,10.5],"faces":"N","z":6.6,"row":"the
+        bluff, south of Route 91","photo":3,"household":"a Toronto family of four
+        generations; the house is open from June to Thanksgiving, a caretaker couple
+        in the carriage house","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
+        estateHouse","buildings":["structure.nmc_south_shore_house_3","structure.nmc_south_shore_bluff_deck_3"],"drive":"road.nmc_route_91","drives":[{"id":"court.nmc_south_shore_3","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"shell","width":11.9,"pts":[[-272.2,-130.55],[-247.8,-130.55]],"ends":"flat"},{"id":"drive.nmc_south_shore_3","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"shell","width":4.4,"pts":[[-255,-124.8],[-255,-120.6]],"ends":"flat"},{"id":"curb.nmc_south_shore_3","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":0.32,"pts":[[-284.58,-148.34],[-284.86,-149.04],[-284.99,-149.75],[-284.97,-150.46],[-284.8,-151.17],[-284.48,-151.87],[-284.01,-152.55],[-283.4,-153.22],[-282.65,-153.85],[-281.77,-154.46],[-280.77,-155.03],[-279.64,-155.57],[-278.42,-156.06],[-277.09,-156.5],[-275.67,-156.89],[-274.18,-157.22],[-272.62,-157.5],[-271.01,-157.72],[-269.36,-157.87],[-267.69,-157.97],[-266,-158],[-264.31,-157.97],[-262.63,-157.87],[-260.99,-157.72],[-259.38,-157.5],[-257.82,-157.22],[-256.33,-156.89],[-254.91,-156.5],[-253.58,-156.06],[-252.36,-155.57],[-251.23,-155.03],[-250.23,-154.46],[-249.35,-153.85],[-248.6,-153.22],[-247.99,-152.55],[-247.52,-151.87],[-247.2,-151.17],[-247.03,-150.46],[-247.01,-149.75],[-247.14,-149.04],[-247.41,-148.34]],"ends":"flat"},{"id":"path.nmc_south_shore_3","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"stones","width":0.9,"pts":[[-266.6,-153.8],[-270.6,-158],[-272.4,-159]],"ends":"flat"}],"added":"10-04
+        (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_4","name":"the
+        cupola Cape","at":[-356,-100],"size":[35,10],"faces":"S","z":6.45,"row":"the
+        second row, north of Route 91","photo":1,"household":"two architects from
+        Halifax who keep the house full of friends every weekend; the bikes are for
+        the guests","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
+        estateHouse","buildings":["structure.nmc_south_shore_house_4"],"drive":"road.nmc_route_91","drives":[{"id":"loop.nmc_south_shore_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-111.1],[-357.12,-111.22],[-358.2,-111.57],[-359.17,-112.13],[-360.01,-112.89],[-360.68,-113.8],[-361.14,-114.83],[-361.37,-115.94],[-361.37,-117.06],[-361.14,-118.17],[-360.68,-119.2],[-360.01,-120.11],[-359.17,-120.87],[-358.2,-121.43],[-357.12,-121.78],[-356,-121.9],[-354.88,-121.78],[-353.8,-121.43],[-352.83,-120.87],[-351.99,-120.11],[-351.32,-119.2],[-350.86,-118.17],[-350.63,-117.06],[-350.63,-115.94],[-350.86,-114.83],[-351.32,-113.8],[-351.99,-112.89],[-352.83,-112.13],[-353.8,-111.57],[-354.88,-111.22],[-356,-111.1]],"ends":"flat"},{"id":"drive.nmc_south_shore_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-121.7],[-356,-129.32]],"ends":"flat"},{"id":"walk.nmc_south_shore_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.6,"pts":[[-356,-107.6],[-356,-111.2]],"ends":"flat"}],"added":"10-04
+        (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_5","name":"the
+        shingled Colonial","at":[-316,-101],"size":[19.6,10],"faces":"S","z":6.45,"row":"the
+        second row, north of Route 91","photo":5,"household":"a surgeon at the hospital
+        in Sydney and her husband, a potter; they live here all year, his studio is
+        the east wing","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
+        estateHouse","buildings":["structure.nmc_south_shore_house_5"],"drive":"road.nmc_route_91","drives":[{"id":"walk.nmc_south_shore_5","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"stones","width":1.3,"pts":[[-316,-117.2],[-316,-108.8]],"ends":"flat"},{"id":"drive.nmc_south_shore_5","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3,"pts":[[-302,-116.7],[-302,-96.2],[-305.6,-93.6]],"ends":"flat"}],"added":"10-04
+        (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_6","name":"the
+        pool house","at":[-273,-95],"size":[20.8,9.5],"faces":"N","z":6.45,"row":"the
+        second row, north of Route 91","photo":6,"household":"a young family from
+        Fredericton: he builds boats, she teaches; two girls, a terrier and a lot
+        of friends at the pool","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
+        estateHouse","buildings":["structure.nmc_south_shore_house_6","structure.nmc_south_shore_pool_6"],"drive":"road.nmc_route_91","drives":[{"id":"drive.nmc_south_shore_6","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.2,"pts":[[-289,-116.56],[-289,-92.2],[-285.6,-88.2]],"ends":"flat"},{"id":"court.nmc_south_shore_6","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":6,"pts":[[-286.6,-87.4],[-276.2,-87.4]],"ends":"flat"},{"id":"walk.nmc_south_shore_6","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"stones","width":0.9,"pts":[[-265.4,-106.8],[-259,-106.2]],"ends":"flat"}],"added":"10-04
+        (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_6","name":"a
+        south shore house","at":[-196,-160],"size":[10,7.2],"faces":"N","z":4.75,"graded":"in
         the dunes\u2019 swale, behind the ridge","kit":"NmcShoreLane (hh-nmc-key-scenes/shore-lane/nmcShoreLane.js):
         saltbox","drive":"road.nmc_shore_lane","ruled":"09-26: houses on the south
         shore; 10-02: the houses larger than the plan\u2019s lots, at the plan\u2019s
         centres (calls 38 to 41)","old_size":[7,8.7],"house":{"kind":"saltbox","name":"the
         fisherman\u2019s place","extra":"a lean-to gear shed 3.6 x 5.2 m on its west
-        end; a deck 10 x 2.8 m on the crest","household":"a fisherman, year-round"}},{"id":"lot.nmc_south_shore_7","name":"a
-        south shore house","at":[-172,-161],"size":[8,9],"faces":"N","z":4.75,"graded":"in
+        end; a deck 10 x 2.8 m on the crest","household":"a fisherman, year-round"},"drives":[{"id":"yard.nmc_shore_lane_6","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":9,"pts":[[-189.2,-147.38],[-189.2,-155]],"ends":"flat"}],"lightPass":"10-04
+        (keyscene.nmc_shore_lane, area.nmc_shore_lane_gardens): its drive and walk,
+        a lamp, a bed"},{"id":"lot.nmc_south_shore_7","name":"a south shore house","at":[-172,-161],"size":[8,9],"faces":"N","z":4.75,"graded":"in
         the dunes\u2019 swale, behind the ridge","kit":"NmcShoreLane (hh-nmc-key-scenes/shore-lane/nmcShoreLane.js):
         summerCottage","drive":"road.nmc_shore_lane","ruled":"09-26: houses on the
         south shore; 10-02: the houses larger than the plan\u2019s lots, at the plan\u2019s
         centres (calls 38 to 41)","old_size":[7,8.7],"house":{"kind":"summerCottage","name":"the
         summer cottage","extra":"a deck 9.2 x 3.6 m over the dune\u2019s face, a pergola
-        on its west half","household":"a summer family"}},{"id":"lot.nmc_south_shore_8","name":"a
-        south shore house","at":[-150,-161],"size":[9.6,7.6],"faces":"N","z":4.75,"graded":"in
+        on its west half","household":"a summer family"},"drives":[{"id":"drive.nmc_shore_lane_7","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"shell","width":3,"pts":[[-165.3,-149.84],[-165.3,-158.4]],"ends":"flat"},{"id":"walk.nmc_shore_lane_7","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":null,"width":1,"pts":[[-165.3,-158.4],[-166.2,-160.1]]}],"lightPass":"10-04
+        (keyscene.nmc_shore_lane, area.nmc_shore_lane_gardens): its drive and walk,
+        a lamp, a bed"},{"id":"lot.nmc_south_shore_8","name":"a south shore house","at":[-150,-161],"size":[9.6,7.6],"faces":"N","z":4.75,"graded":"in
         the dunes\u2019 swale, behind the ridge","kit":"NmcShoreLane (hh-nmc-key-scenes/shore-lane/nmcShoreLane.js):
         gardenCape","drive":"road.nmc_shore_lane","ruled":"09-26: houses on the south
         shore; 10-02: the houses larger than the plan\u2019s lots, at the plan\u2019s
         centres (calls 38 to 41)","old_size":[7,8.7],"house":{"kind":"gardenCape","name":"the
         gardeners\u2019 Cape","extra":"a glass sunroom 3.2 x 4.2 m on its east end;
         a flagstone patio 7.4 x 2.6 m on the crest","household":"a retired couple
-        who garden"}}],"waterfront":[{"id":"lot.nmc_waterfront_1","name":"a waterfront
+        who garden"},"drives":[{"id":"drive.nmc_shore_lane_8","builder":"the scene\u2019s
+        road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"shell","width":3,"pts":[[-143.6,-151.19],[-143.6,-155.2]],"ends":"flat"},{"id":"walk.nmc_shore_lane_8","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":null,"width":1,"pts":[[-143.6,-155.3],[-146.6,-156.1]]},{"id":"path.nmc_shore_lane_8_gate","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"stones","width":0.8,"pts":[[-145,-156.6],[-150.2,-157.6],[-155,-162]],"ends":"flat"}],"lightPass":"10-04
+        (keyscene.nmc_shore_lane, area.nmc_shore_lane_gardens): its drive and walk,
+        a lamp, a bed"}],"waterfront":[{"id":"lot.nmc_waterfront_1","name":"a waterfront
         house on the north creek: the lodge","at":[-72,264.1],"size":[20.5,10.3],"faces":"N","z":"the
         main floor at +6.35 over a walkout basement at +3.6 (call 44); call 26\u2019s
         pads as laid on 10-01","pad_min":3.6,"pad":"fill.nmc_waterfront_pads","old_z":"graded
@@ -674,15 +880,18 @@ MonoBehaviour:
         flat +6.0, the tent pads are pieces on timber frames","roads":{"stand":["road.nmc_camp_loop_a","road.nmc_camp_loop_b_stem","road.nmc_camp_loop_b","road.nmc_camp_loop_c_stem","road.nmc_camp_loop_c","road.nmc_camp_road","road.nmc_bar_road"],"ruled":"10-01:
         the campground keeps part 1\u2019s two roads (call 23); the redraw moves none"}},"fields":[{"id":"field.nmc_west_farm_south","name":"the
         west farm, south","poly":[[-380,-130],[-268,-120],[-232,-103],[-206,-73],[-193,-40],[-188,-2],[-380,-2]],"crop":"hay
-        and potatoes"},{"id":"field.nmc_west_farm_north","name":"the west farm, north","poly":[[-380,2],[-187,2],[-183,40],[-182.27,75],[-282,75],[-282,88],[-380,88]],"crop":"grain","old_poly":[[-380,2],[-187,2],[-183,40],[-182,88],[-380,88]],"why":"10-02:
+        and potatoes"},{"id":"field.nmc_west_farm_north","name":"the west farm, north","poly":[[-380,2],[-290,2],[-290,88],[-380,88]],"crop":"grain","old_poly":[[-380,2],[-187,2],[-183,40],[-182,88],[-380,88]],"why":"10-02:
         the plaza\u2019s lot takes the field\u2019s 13 m north of y 75 along x -282..-182
-        (call 34); west of x -282 the field keeps y 88"},{"id":"field.nmc_river_farm","name":"the
-        river farm","poly":[[-380,100],[-282,100],[-282,178],[-380,196]],"crop":"pasture","note":"and
-        north of the fresh reach, (-380..-270, 238..280)"},{"id":"field.nmc_hall_field","name":"the
+        (call 34); west of x -282 the field keeps y 88","old_reissue2":[[-380,2],[-187,2],[-183,40],[-182.27,75],[-282,75],[-282,88],[-380,88]],"changed":"10-07:
+        gives way to the plaza\u2019s flats, their street and the yard (call 85)"},{"id":"field.nmc_river_farm","name":"the
+        river farm","poly":[[-380,100],[-290,100],[-290,142],[-282,142],[-282,178],[-380,196]],"crop":"pasture","note":"and
+        north of the fresh reach, (-380..-270, 238..280)","old_reissue2":[[-380,100],[-282,100],[-282,178],[-380,196]],"changed":"10-07:
+        gives way to the plaza\u2019s flats, their street and the yard (call 85)"},{"id":"field.nmc_hall_field","name":"the
         hall field","poly":[[-170,38],[-128,38],[-128,86],[-170,86]],"crop":"hay","note":"round
         the parish hall and the truck park"}],"hedges":{"rule":"NineMileCreekFields\u2019
         own: the 96 m strip lattice (y = 96k) inside the fields, plus both sides of
-        the gravel and paved roads outside the town and the campground","lines":[{"id":"hedge.nmc_y_minus96","pts":[[-380,-96],[-214,-96]]},{"id":"hedge.nmc_y0","pts":[[-380,0],[-187,0]]},{"id":"hedge.nmc_y96","pts":[[-380,96],[-282,96]]},{"id":"hedge.nmc_route91_south","along":"road.nmc_route_91","from":[-177.6,57],"to":[-380,-142]},{"id":"hedge.nmc_wharf_road","along":"road.nmc_wharf_road","from":[-130,92],"to":[-70,92],"old":{"from":[-130,90],"to":[-70,91]},"moved":"10-01:
+        the gravel and paved roads outside the town and the campground","lines":[{"id":"hedge.nmc_y_minus96","pts":[[-380,-96],[-214,-96]]},{"id":"hedge.nmc_y0","pts":[[-380,0],[-187,0]]},{"id":"hedge.nmc_y96","pts":[[-380,96],[-290,96]],"old_reissue2":[[-380,96],[-282,96]],"changed":"10-07:
+        stops at the yard\u2019s fence line, x -290 (call 85)"},{"id":"hedge.nmc_route91_south","along":"road.nmc_route_91","from":[-177.6,57],"to":[-380,-142]},{"id":"hedge.nmc_wharf_road","along":"road.nmc_wharf_road","from":[-130,92],"to":[-70,92],"old":{"from":[-130,90],"to":[-70,91]},"moved":"10-01:
         onto the road\u2019s new line (call 30)"}]},"wood_lots":[{"id":"woodlot.nmc_south","builder":"NineMileCreekWoodLots.SouthWoodLot","at":[-61.1,-96],"r":30,"kept":true,"now":"inside
         the campground: Loop B\u2019s woods","gives_way":[{"what":"the pool","box":[-47.8,-26.2,-87.8,-69.3]},{"what":"in
         front of the pool, its sight line from the south","box":[-49,-26,-101.5,-86.5]}]},{"id":"woodlot.nmc_middle","builder":"NineMileCreekWoodLots.MiddleWoodLot","at":[-77.3,0],"r":30,"kept":true,"now":"inside
@@ -704,7 +913,43 @@ MonoBehaviour:
         lots 1, 3 and 4 stand 2.67 to 2.97 m off the asphalt, inside the plan\u2019s
         3 m, and stay as drawn","open":[{"id":"lot.nmc_waterfront_2","call":57,"what":"outside
         3 m by the Art desk\u2019s measure (3.3 m), inside it at the house\u2019s
-        nearest corner (2.78 m)"}]}]}'
+        nearest corner (2.78 m)"}]}],"sites":[{"id":"park.nmc_main_street_square","name":"the
+        square","box":[-215.5,-200,241.8,262.2],"by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block","what":"between
+        the restaurant and the corner block, on the lane: the fountain, the bandstand,
+        the oak, the tot lot, the picnic tables"},{"id":"lot.nmc_main_street_row_s0","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":5.5,"pts":[[-268,259.45],[-235,259.45]],"ends":"flat","name":"the
+        public lot","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block","chargers":"structure.nmc_lot_chargers"},{"id":"lot.nmc_main_street_row_s1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":5.5,"pts":[[-200,259.45],[-189.5,259.45]],"ends":"flat","name":"the
+        public lot","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block","chargers":"structure.nmc_lot_chargers"},{"id":"lot.nmc_main_street_row_n0","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":5.5,"pts":[[-268,271.45],[-247,271.45]],"ends":"flat","name":"the
+        public lot","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block","chargers":"structure.nmc_lot_chargers"},{"id":"lot.nmc_water_street_stalls_a","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":5.6,"pts":[[-262.2,234.65],[-240,235.5],[-237.8,235.47]],"bands":["gutter
+        0.3","kerb 0.16","walk 3.2 brick"],"name":"Water Street\u2019s angle stalls","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block"},{"id":"lot.nmc_water_street_stalls_b","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":5.6,"pts":[[-229.2,235.35],[-222.8,235.25]],"bands":["gutter
+        0.3","kerb 0.16","walk 3.2 brick"],"name":"Water Street\u2019s angle stalls","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block"},{"id":"lot.nmc_east_court","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":null,"width":5.5,"pts":[[-164.7,245.6],[-155.85,245.6]],"ends":"flat","name":"the
+        east lane\u2019s stalls","by":"keyscene.nmc_main_street","area":"area.nmc_east_lane"},{"id":"lot.nmc_plaza_flats_front_w","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":5.5,"pts":[[-285.75,18.15],[-227.5,18.15]],"bands":["gutter
+        0.3","kerb 0.16","walk 1.8 brick"],"ends":"flat","name":"the flats\u2019 stalls","stalls":19,"accessible":2,"by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"lot.nmc_plaza_flats_front_e","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":5.5,"pts":[[-214.5,18.15],[-191.25,18.15]],"bands":["gutter
+        0.3","kerb 0.16","walk 1.8 brick"],"ends":"flat","name":"the flats\u2019 stalls","stalls":7,"accessible":1,"by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"walk.nmc_main_street_frontage","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"brick","width":8.4,"pts":[[-271,237.31],[-266,237.5],[-240,238.5],[-205,238],[-184.5,236.89]],"ends":"flat","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block"},{"id":"walk.nmc_main_street_corner","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"brick","width":2,"pts":[[-187.4,230.5],[-187.7,241],[-188.6,254],[-188.8,257]],"ends":"flat","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block"},{"id":"walk.nmc_main_street_square","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"brick","width":7.4,"pts":[[-215.5,245.5],[-200,245.5]],"ends":"flat","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block"},{"id":"path.nmc_main_street_square","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":2,"pts":[[-207.75,249],[-207.75,262.3]],"ends":"flat","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block"},{"id":"path.nmc_main_street_kayak_yard","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"gravel","width":3.6,"pts":[[-268,233.5],[-268,262.2]],"ends":"flat","by":"keyscene.nmc_main_street","area":"area.nmc_water_street_block"},{"id":"walk.nmc_main_street_frontage_east","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"brick","width":3.2,"pts":[[-174.6,232.56],[-166,231.93],[-150,230.76],[-142.2,229.34]],"ends":"flat","by":"keyscene.nmc_main_street","area":"area.nmc_east_lane"},{"id":"walk.nmc_main_street_creek_row","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.6,"pts":[[-137.6,227.6],[-121,227.6]],"ends":"flat","by":"keyscene.nmc_main_street","area":"area.nmc_east_lane"},{"id":"walk.nmc_plaza_flats_back","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.5,"pts":[[-284.5,54.35],[-186.2,54.35]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_flats_w","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.5,"pts":[[-254.19,54.35],[-254.19,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_flats_x","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.5,"pts":[[-185.2,54.35],[-185.2,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"walk.nmc_plaza_flats_r91","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.6,"pts":[[-190,22.26],[-183.9,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_cannery","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":2.6,"pts":[[-259.26,25.6],[-259.26,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_walkup","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.8,"pts":[[-232.31,27.91],[-232.31,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_terrace_1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.2,"pts":[[-209.67,33.26],[-209.67,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_terrace_2","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.2,"pts":[[-202.67,33.26],[-202.67,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_terrace_3","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.2,"pts":[[-195.67,33.26],[-195.67,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"},{"id":"path.nmc_plaza_terrace_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.2,"pts":[[-188.67,33.26],[-188.67,22.26]],"ends":"flat","by":"keyscene.nmc_plaza","area":"area.nmc_plaza_flats"}]}'
     - Key: nmc.plan.frozen
       Value: '{"rule":"where the plan keeps today\u2019s ground, the texture carries
         today\u2019s code x 257: the same height, to the bit","today":"uploads zip
@@ -717,6 +962,9 @@ MonoBehaviour:
         east coast from the landing north to the wharf and from the notch north to
         the region edge, as CoastPoints and CoastSectors build it (but the north creek\u2019s
         inlet)","note":"kept except where a feature below cuts it"}]}'
+    - Key: nmc.plan.areas
+      Value: '[{"id":"area.nmc_south_shore_estates","scene":"keyscene.nmc_south_shore","joins":true,"box":[-380,-201,-187,-77]},{"id":"area.nmc_shore_lane_gardens","scene":"keyscene.nmc_shore_lane","joins":true,"box":[-201,-141,-167,-142]},{"id":"area.nmc_water_street_block","scene":"keyscene.nmc_main_street","joins":true,"box":[-276,-171,216,281],"outside":{"side":"north","byM":1,"what":"Route
+        91\u2019s town section (road.nmc_route_91_town) is drawn to y 281"}},{"id":"area.nmc_east_lane","scene":"keyscene.nmc_main_street","joins":true,"box":[-188,-93,217,277]},{"id":"area.nmc_plaza_docks_yard","scene":"keyscene.nmc_plaza","joins":true,"box":[-288,-186,78,170]},{"id":"area.nmc_plaza_lot_south","scene":"keyscene.nmc_plaza","joins":true,"box":[-282,-190,55,78]},{"id":"area.nmc_plaza_flats","scene":"keyscene.nmc_plaza","joins":true,"box":[-292,-183,1,66]}]'
     - Key: nmc.plan.kinds
       Value: '{"roads":"road","lots":"lot","bridges":"bridge","households":"household","paths":"PathDef","streams":"StreamDef","ponds":"PondDef","coast":"CoastSectionDef"}'
     - Key: nmc.plan.contract
@@ -5640,3 +5888,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - boat.nmc_shore_dory
+  - prop.nmc_bank_bench_4
+  - prop.nmc_bank_bench_5
+  - prop.nmc_shore_fire
+  - structure.nmc_bank_steps_4
+  - structure.nmc_bank_steps_5
+  - prop.nmc_lot_pole_05
+  - prop.nmc_lot_pole_04
+  - prop.nmc_yard_fence_e
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_rack_01
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  - structure.nmc_apartments_2
+  PlacementIds: []
