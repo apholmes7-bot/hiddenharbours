@@ -50,7 +50,8 @@ namespace HiddenHarbours.Core
         public readonly float BodyWhiten;
 
         /// <summary>The water itself: what the sea draws at a depth before any light layer — the place an
-        /// aged wake ends (W4-1, design 3A). <c>default</c> when the surface could not read it.</summary>
+        /// aged wake SPRITE ends (W4-1, design 3A; the shader's band ends on the lit water above it, C2).
+        /// <c>default</c> when the surface could not read it.</summary>
         public readonly SeaWaterBody Water;
 
         /// <summary>The four anchors alone: no lift (×1, unwhitened) and no water body, so
@@ -80,7 +81,8 @@ namespace HiddenHarbours.Core
 
     /// <summary>
     /// THE WATER ITSELF at a depth (W4-1, design 3A, owner ruling 2026-10-10): the colour the water shader
-    /// settles a pixel to before any light layer, which is where an aged wake ends. Twin of
+    /// settles a pixel to before any light layer, which is where an aged wake SPRITE ends (the shader's band
+    /// ends on the LIT water, <c>col.rgb</c> at its own composite, since C2: the CPU cannot light it). Twin of
     /// <c>HiddenHarboursWater.shader</c>'s frag body block — the depth fraction <c>dt</c>, its posterize,
     /// the <c>_DepthRamp</c> sample (point, clamped, the row at v = 0.5) or the
     /// <c>_ShallowColor</c>/<c>_DeepColor</c> lerp when the material has no ramp, then the deep-blue pull —

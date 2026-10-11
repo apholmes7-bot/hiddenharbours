@@ -162,7 +162,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "2026-08-27 defect verbatim: the buffer already knows each texel's age (it DECAYS), and " +
                 "the compose is where that information was being thrown away.");
 
-            Assert.IsTrue(Regex.IsMatch(src, @"WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*foamBody\s*\)"),
+            Assert.IsTrue(Regex.IsMatch(src, @"WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*col\.rgb\s*\)"),
                 "The wake compose must run the buffer's FRESHNESS through the age ramp — that is what " +
                 "makes the churn walk into its water instead of sitting on white. Passing the coverage " +
                 "instead is the round-1 defect (see TheAgeProxy_IsTheBuffersFreshnessChannel).");
@@ -228,14 +228,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// W4-1 (design 3A), the owner's 2026-10-09 finding 3: the walk ends on the water, so the water it
-        /// is handed has to be the water — saved once, after the depth ramp, the deep-blue pull and the bed,
-        /// and before the first light layer — and every aged foam layer has to hand the walk that same water.
-        /// Saved later, the foam carries the light layers twice; saved earlier, it misses the bed; an anchor
-        /// in place of it is the fixed blue stripe again.
+        /// ⚠️ <b>W4-1 C2 moved this premise</b> (it was <c>FoamAgedColor_ReadsTheSavedBody_NotAnAnchor</c>).
+        /// Design 3A handed the walk the water saved BEFORE the light layers. At noon the sky reflection,
+        /// the spec and the rest lift the sea well above that, so an old wake ended darker than the water
+        /// it rode on: Cape Islander, 4 m, 10.95 s astern, ΔE 15.2 at 0.42 of the water's luma (Phase C),
+        /// and still ΔE 5.8 with the reflection off. The owner ruled it a stripe (2026-10-11).
+        ///
+        /// <para>So every aged foam layer now hands the walk <c>col.rgb</c> at its OWN composite, and the
+        /// compose lerps from that same <c>col.rgb</c>. At the end of the walk the compose is
+        /// <c>lerp(col, col, w)</c>: the layer leaves the pixel exactly as it found it, lit, at every hour
+        /// and over whatever lies under it. Checked here as the shape of each compose, after the last
+        /// light layer; the pre-light save must not come back.</para>
         /// </summary>
         [Test]
-        public void FoamAgedColor_ReadsTheSavedBody_NotAnAnchor()
+        public void FoamAgedColor_EndsOnTheLitWaterUnderEachLayer_NotAnAnchor()
         {
             string src = StripComments(Read(ShaderPath));
 
@@ -245,42 +251,38 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     $"The walk reads {anchor} again. An old wake must be the water it rides on, not an anchor " +
                     "blue that sits on darker water as a pale stripe.");
 
-            // Saved once, and never written again.
-            MatchCollection saves = Regex.Matches(src, @"float3\s+foamBody\s*=\s*col\.rgb\s*;");
-            Assert.AreEqual(1, saves.Count, "foamBody must be saved exactly once, in frag.");
-            Assert.AreEqual(1, Regex.Matches(src, @"(?<![A-Za-z0-9_])foamBody\s*[-+*/]?=(?!=)").Count,
-                "foamBody is written after it is saved; the water it holds must be the water.");
-            int save = saves[0].Index;
+            Assert.IsFalse(Regex.IsMatch(src, @"(?<![A-Za-z0-9_])foamBody(?![A-Za-z0-9_])"),
+                "foamBody is back: a body saved before the light layers is the noon stripe (C2).");
 
-            // After the depth block and the bed, and nothing between the bed and the save touches col.
-            int deepBlue = src.LastIndexOf("col.rgb = lerp(col.rgb, _DeepBlueColor.rgb", save, System.StringComparison.Ordinal);
-            int bed = src.LastIndexOf("col.rgb = lerp(col.rgb, bed.rgb", save, System.StringComparison.Ordinal);
-            Assert.Greater(deepBlue, -1, "the deep-blue pull is gone or moved after the save");
-            Assert.Greater(bed, deepBlue, "the seabed composite is gone or moved after the save");
-            string afterBed = src.Substring(src.IndexOf(';', bed) + 1, save - src.IndexOf(';', bed) - 1);
-            Assert.IsFalse(Regex.IsMatch(afterBed, @"(?<![A-Za-z0-9_.])col(\.[rgba]+)?\s*[-+*/]?=(?!=)"),
-                "Something writes col between the seabed composite and the save, so the water the foam " +
-                "walks into is no longer the water.");
-
-            // Before the first light layer, the swell tint.
-            int swell = src.IndexOf("col.rgb += swell * _SurfaceTint", System.StringComparison.Ordinal);
-            Assert.Greater(swell, save, "foamBody must be saved before the swell tint, the first light layer.");
-
-            // Every aged foam layer hands the walk that water: the surf, its lip, the caps and the wake.
-            string[] callers =
+            // Each layer's walk ends on the very col.rgb its compose lerps from.
+            string[] composes =
             {
-                @"FoamAgedColor\s*\(\s*surfAge01\s*,\s*_SurfColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*foamBody\s*\)",
-                @"FoamAgedColor\s*\(\s*0\.0\s*,\s*_SurfLipColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*foamBody\s*\)",
-                @"FoamAgedColor\s*\(\s*capAge01\s*,\s*_FoamColor\.rgb\s*,\s*_CapAgeStrength\s*,\s*foamBody\s*\)",
-                @"WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*foamBody\s*\)",
+                @"float3\s+surfFoam\s*=\s*FoamAgedColor\s*\(\s*surfAge01\s*,\s*_SurfColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*surfFoam\s*,",
+                @"float3\s+lipFoam\s*=\s*FoamAgedColor\s*\(\s*0\.0\s*,\s*_SurfLipColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*lipFoam\s*,",
+                @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*FoamAgedColor\s*\(\s*capAge01\s*,\s*_FoamColor\.rgb\s*,\s*_CapAgeStrength\s*,\s*col\.rgb\s*\)",
+                @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*col\.rgb\s*\)",
             };
-            foreach (string caller in callers)
-                Assert.AreEqual(1, Regex.Matches(src, caller).Count, $"No single call matching {caller}.");
+
+            // …after the last light layers, so the col.rgb they end on is the lit sea.
+            int sky = src.IndexOf("col.rgb += SkyReflection(", System.StringComparison.Ordinal);
+            int objects = src.IndexOf("col.rgb = col.rgb * (1.0 - objReflPre.a) + objReflPre.rgb", System.StringComparison.Ordinal);
+            Assert.Greater(sky, -1, "the sky reflection's compose is gone or renamed");
+            Assert.Greater(objects, sky, "the object reflection's compose is gone or moved before the sky");
+            foreach (string compose in composes)
+            {
+                MatchCollection found = Regex.Matches(src, compose);
+                Assert.AreEqual(1, found.Count, $"No single compose matching {compose}.");
+                Assert.Greater(found[0].Index, objects,
+                    $"{compose} runs before the reflections, so the water it ends on is not the lit sea.");
+            }
 
             // …and nothing else calls the walk: two definitions, the wake's adapter, and the four above.
-            Assert.AreEqual(2 + 1 + callers.Length,
+            Assert.AreEqual(2 + 1 + composes.Length,
                 Regex.Matches(src, @"(?<![A-Za-z0-9_])(Wake)?FoamAgedColor\s*\(").Count,
-                "A new caller of the foam walk must hand it foamBody and join the list above.");
+                "A new caller of the foam walk must end it on the col.rgb its own compose lerps from, and " +
+                "join the list above.");
         }
 
         static string StripComments(string source)

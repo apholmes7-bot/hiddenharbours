@@ -117,11 +117,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // ...and every layer that HAS an age is actually wired to it.
             StringAssert.Contains("FoamAgedColor(WakeFoamAge01(freshness, _WakeFoamFreshFloor),", code,
                 "the advected wake buffer must compose through the shared walk");
-            StringAssert.Contains("FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength, foamBody)", code,
+            StringAssert.Contains("FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength, col.rgb)", code,
                 "the whitecaps must compose through the shared walk");
-            StringAssert.Contains("FoamAgedColor(surfAge01, _SurfColor.rgb,    _SurfAgeStrength, foamBody)", code,
+            StringAssert.Contains("FoamAgedColor(surfAge01, _SurfColor.rgb, _SurfAgeStrength, col.rgb)", code,
                 "the surf's whitewater must compose through the shared walk — this is row 2");
-            StringAssert.Contains("FoamAgedColor(0.0,       _SurfLipColor.rgb, _SurfAgeStrength, foamBody)", code,
+            StringAssert.Contains("FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb)", code,
                 "the lip is the newest water in the frame: the shared walk at age 0, which is the sea's " +
                 "own foam anchor rather than a pure white of the surf's own");
         }

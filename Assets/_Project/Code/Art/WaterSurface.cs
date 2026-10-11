@@ -889,7 +889,9 @@ namespace HiddenHarbours.Art
         /// <summary>
         /// THE WATER ITSELF, as this surface draws it before any light layer (W4-1, design 3A): the depth
         /// ramp or the two-colour lerp, the depth range and the deep-blue pull, each at the value the GPU
-        /// will see. An aged wake sprite ends on this at its own depth, as the band does in the shader.
+        /// will see. An aged wake sprite ends on this at its own depth. The band in the shader ends on the
+        /// LIT water instead (<c>col.rgb</c> at its own composite; W4-1 C2): the reflection, the spec and the
+        /// sky are GPU-only, so the sprites keep this water and reach the lit sea by their alpha fade.
         ///
         /// <para>The ramp's texels are read ONCE per ramp texture (<c>DepthRamp.png</c> is imported
         /// readable for exactly this: 256×8 RGBA, 8 KB of CPU memory, no GPU readback), then shared by

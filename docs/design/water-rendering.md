@@ -3953,7 +3953,8 @@ pins it as a derived bound rather than a tolerance.
 **The walk ends ON the water.** Until W4-1 the ramp stopped at the mid anchor and left the last leg to the
 alpha fade; on any water darker than that anchor the old wake read as a fixed light marine blue stripe
 (the owner's 2026-10-09 finding 3). Now the end stop is the water itself, so the fade has nothing left to
-hide.
+hide. In the shader that water is the LIT sea under the foam, `col.rgb` at the layer's own composite
+(C2, §47.6).
 
 `_WakeFoamAgeStrength = 0` (shader) / `WakeAgeRamp.Strength = 0` (C#) is a **bit-exact** passthrough to
 the single-white look. The usual A/B contract.
@@ -6120,7 +6121,8 @@ sRGB at noon, graded, the band's core at full coverage), the base mood at 4 m: w
 **After:** foam → lift(body) → body, where the body is the water this pixel is:
 
 ```hlsl
-float3 foamBody = col.rgb;   // after the depth ramp, the deep-blue pull and the seabed; before the swell tint
+// 3A saved the body here: float3 foamBody = col.rgb; after the seabed, before the swell tint.
+// C2 (§47.6) replaced it with col.rgb at each layer's own composite, after every light layer.
 float3 WakeBodyLift(float3 body, float3 foam, float lift, float whiten)
 {
     return lerp(min(body * max(lift, 1.0), foam), foam, saturate(whiten));
@@ -6152,7 +6154,8 @@ water the whiten dominates (at 4 m, ΔE76 11.5 against 4.1 with no whiten). The 
 ### 47.3 The caps and the surf follow, each through its own strength
 
 There is one walk (§33), so the whitecaps (`_CapAgeStrength`) and the surf and its lip (`_SurfAgeStrength`)
-also die into `foamBody`. Each strength at 0 is still its layer's legacy white, bit-exact. W4-1 changes
+also die into the water under them (`col.rgb` at their own composite since C2, §47.6). Each strength at 0
+is still its layer's legacy white, bit-exact. W4-1 changes
 neither strength. `PaletteGrade` and the envelope bands still read the four ADR 0015 anchors: 3A moves the
 foam only.
 
@@ -6165,7 +6168,8 @@ imports readable for this (256×8 RGBA, 8 KB of CPU memory, read once per textur
 known gaps: the sprites' water has no seabed composite (the bed only ever darkens, so a sprite over a
 visible bed ends a little lighter than the band); and the plume and bow spray stay at `ShadeFresh`, age 0,
 which is the foam anchor in both walks. A ramp that cannot be read publishes no water, and the sprites
-fall back to the mid anchor, with one console warning.
+fall back to the mid anchor, with one console warning. Since C2 the band ends on the LIT water and the
+sprites still on this pre-light water: see §47.6.
 
 ### 47.5 What is tested
 
@@ -6175,6 +6179,43 @@ fall back to the mid anchor, with one console warning.
 - `…TheWakesMidStop_KeepsTheWatersHue`: the mid stop within 10° of its water's hue (display sRGB), half the
   20° gap the Phase A report measured as the defect; the shallow anchor fails the same bar.
 - `…WakeBodyDials_OnAllNineMaterials_AndInMoodFloatNames`.
-- `WakeFoamAgeingShaderTests.FoamAgedColor_ReadsTheSavedBody_NotAnAnchor`: `foamBody` is saved once, after
-  the bed and before the swell tint, never rewritten, and handed to all four aged foam layers.
+- `WakeFoamAgeingShaderTests.FoamAgedColor_EndsOnTheLitWaterUnderEachLayer_NotAnAnchor` (C2; it was
+  `FoamAgedColor_ReadsTheSavedBody_NotAnAnchor`): all four aged foam layers end the walk on the `col.rgb`
+  their own compose lerps from, after the sky and object reflections; `foamBody` does not come back.
 - The ramp and the lift are compared line for line with their C# twins (`Ramp3`, `BodyLift`).
+
+### 47.6 C2: the walk ends on the LIT water (owner ruling 2026-10-11)
+
+The Phase C plates found the end of the walk darker than its water at noon. Cape Islander, 4 m, 10.95 s
+astern: ΔE76 15.2 at 0.42 of the water's luma in the base mood, 16.7 at 0.41 in GlassyCalm. 3A saved the
+body before the light layers, and at noon the sky reflection and the rest lift the sea well above it
+(with `_SkyReflectionStrength` 0 the same station read ΔE 5.8 at 0.70). The owner ruled it a stripe, to
+be fixed before the arm ships.
+
+**The fix:** each aged layer hands the walk `col.rgb` at its own composite, and its compose lerps from
+that same `col.rgb`:
+
+```hlsl
+col.rgb = lerp(col.rgb, WakeFoamAgedColor(wakeFresh, col.rgb), saturate(wakeFoam) * _FoamColor.a);
+```
+
+At the end of the walk the compose is `lerp(col, col, w)`. The layer leaves the pixel exactly as it found
+it, lit, at every hour and in every mood, over whatever lies under it: an old wake over a cap ends as the
+cap, the surf's whitewater ends on the water its barrel shaded. The `foamBody` save is gone.
+
+**Why not the other way** (compositing the foam before the light layers): the fresh foam would then take
+the reflection, the spec and the caustics on top of its white. That changes the young foam's look, and
+the plates pinned on it, to fix only its end. It would also move three blocks of code across some 500
+lines of light layers.
+
+**What it moves:** the mid stop is now the LIT water ×`_WakeBodyLift` (capped at the foam), so at noon
+the wake at 3.45 s is lighter than under 3A. The twins are unchanged in both copies (`WakeFoamRamp3` and
+`Ramp3`, `WakeBodyLift` and `BodyLift`, `FoamAgedColor` and `Shade`); only the shader's argument moved.
+
+**The sprites cannot follow.** The CPU has no sky, reflection or spec to light its water with, so a
+sprite's walk still ends on `SeaPaletteState.BodyAt`, the water before the light layers. Each sprite's
+alpha reaches 0 at the end of its life (`LifeFade`), so at noon its last frames sit a shade under the lit
+sea at the bottom of that fade. Named, not fixed.
+
+**Q8, in the same change:** each sprite reads its depth once, for its ride and its body
+(`BoatWakeEmitter.DepthUnder`). 3A read it twice, at about 0.65 µs a read over some 160 live sprites.
