@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48be3e08e73c9ee561f90c5223a9dcbc, type: 3}
+  m_Name: Recipe_swale
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.BiomeRecipeDef
+  Id: biome_recipe.swale
+  YoungChance: 0.3
+  Materials:
+  - Material: 9
+    Density: 0.81033617
+    Choices:
+    - Species: 9
+      Weight: 5
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 10
+      Weight: 2
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 11
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 12
+      Weight: 6
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 13
+      Weight: 5
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 7
+      Weight: 5
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 6
+      Weight: 4
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 8
+      Weight: 2
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 47
+      Weight: 10
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 48
+      Weight: 10
+      MinElevation: -100
+      MaxElevation: 100
+  - Material: 19
+    Density: 1.56558964
+    Choices:
+    - Species: 43
+      Weight: 8
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 31
+      Weight: 7
+      MinElevation: 0.85
+      MaxElevation: 2.4
+  - Material: 0
+    Density: 0.17708859
+    Choices:
+    - Species: 38
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 45
+      Weight: 8
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 46
+      Weight: 5
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 39
+      Weight: 4
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 41
+      Weight: 4
+      MinElevation: -100
+      MaxElevation: 100
