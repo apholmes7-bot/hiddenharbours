@@ -182,15 +182,13 @@ Shader "HiddenHarbours/IsoFacet"
             // sisters mostly share a def so the id in the tag would match on all of them. Same class
             // as the deck-occupant properties beside it, and set from the same ApplyPose write.
             float  _HHLevelShown;
-            // THE LID (coordinator ruling 2026-08-27): the level whose faces are the ceiling of the
-            // one the occupant is inside, and which therefore comes off with it. 0 = none.
-            //
-            // ONE HOP IS ENFORCED BY THE SHAPE OF THIS DATA, not by a rule anybody has to remember:
-            // there is one lid uniform, so a chain simply cannot be expressed here. The bake refuses
-            // a lid that has a lid, and a level carries one lid field, so the same law holds in all
-            // three places it could be broken.
-            uint   _HHLiftLevels;
-            uint   _HHShownRoles;
+            // The lift set removes whole levels; shown roles select faces on the occupied level.
+            // The 31 role masks select further faces by level, packed in low-16/high-15 halves.
+            // ADR 0048 section 11.1 ends the one-hop limit for switched hulls with this lift set.
+            // Legacy lids still enter as one-bit masks from the bake.
+            uint _HHLiftLevels;
+            uint _HHShownRoles;
+            float4 _HHRoleLiftMasks[31];
 
             // ⭐ THE INTERIOR'S OWN PALETTE, AND WHY IT IS A SECOND TABLE RATHER THAN A WIDER ONE.
             //

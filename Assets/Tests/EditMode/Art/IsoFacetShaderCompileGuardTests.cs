@@ -49,6 +49,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string source = System.IO.File.ReadAllText(Shaders[0].path);
             StringAssert.Contains("uint _HHLiftLevels", source);
             StringAssert.Contains("uint _HHShownRoles", source);
+            StringAssert.Contains("float4 _HHRoleLiftMasks[31]", source);
             StringAssert.DoesNotContain("_HHLevelLid", source);
             StringAssert.Contains("float3 levelTag", source);
             string guard = source.Substring(source.IndexOf("fragGuard (", System.StringComparison.Ordinal));
