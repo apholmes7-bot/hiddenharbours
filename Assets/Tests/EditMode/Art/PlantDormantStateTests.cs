@@ -9,7 +9,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 {
     public class PlantDormantStateTests
     {
-        [Test] public void DormantListIsPinnedAndTheRigStillOmitsEveryCell()
+        [Test] public void DormantListIsPinnedAndAllFourCallPathsSkipEveryCell()
         {
             const string dir = "docs/art/rigs/plants/";
             using (var sha = SHA256.Create())

@@ -1,5 +1,17 @@
 {
-  "plantDependencies": [],
+  "plantDependencies": [
+    {
+      "path": "afPieces.js",
+      "sha256": "9f46015cd644965c6c358d5c61715746379bc69aa55edb0696ff80a1aeae5fe8",
+      "source": "st-peters-key-scenes-return/pass6/afPieces.js",
+      "needsAtLoad": [
+        "PlantRig5.byKey.SweetFern.wind",
+        "PlantRig5.byKey.Buttercup.wind",
+        "PlantRig5.SPECIES"
+      ],
+      "deferredOnly": "StationLight2 is only used by the piece drawing functions, which the plant bake never calls."
+    }
+  ],
   "recipeTools": [
     {
       "path": "../terrain/pass9/lib/pixelLanguage.js",

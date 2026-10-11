@@ -1,17 +1,21 @@
-/* Plant rig 5 bake contract. Load after plantIsoRig5.js in Node or V8. */
+/* Plant rig 5 bake contract. Load after plantIsoRig5.js and afPieces.js in Node or V8. */
 (function(root) {
     'use strict';
     const R = root.PlantRig5;
-    if (!R || R.SPECIES.length !== 48) throw Error('PlantRig5: expected 48 keys');
+    if (!R || R.SPECIES.length !== 50) throw Error('PlantRig5: expected 50 keys');
     const dormantStates = root.PlantDormant5.states;
     const dormant = (key, o) => dormantStates.some(s => s.species === key && s.stage === o.stage && s.season === o.season && s.variants.includes(o.variant));
     const channels = ['unlit', 'normal', 'light', 'detail'];
     const tide = [-0.85, 0, 0.5, 1, 2];
-    function frame(key, o) {
+    function call(method, key, o, ...args) {
         if (!R.byKey[key]) throw Error('PlantRig5: unknown key ' + key);
         if (dormant(key, o)) return null;
-        return R.frame(key, Object.assign({ frame: 0, wind: { w: 0, gust: 0, dir: 1 } }, o));
+        return R[method](key, Object.assign({ frame: 0, wind: { w: 0, gust: 0, dir: 1 } }, o), ...args);
     }
+    const frame = (key, o) => call('frame', key, o);
+    const model = (key, o) => call('model', key, o);
+    const cellOf = (key, o) => call('cellOf', key, o);
+    const sheet = (key, o, channel, sky) => call('sheet', key, o, channel, sky);
     function catalog() {
         const species = [];
         for (const sp of R.SPECIES) {
@@ -69,5 +73,5 @@
         }
         return out;
     }
-    root.PlantBake5 = { catalog, page, frame };
+    root.PlantBake5 = { catalog, page, frame, model, cellOf, sheet };
 })(globalThis);

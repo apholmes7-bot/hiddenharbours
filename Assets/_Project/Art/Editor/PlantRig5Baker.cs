@@ -50,7 +50,7 @@ namespace HiddenHarbours.Art.Editor
         public static void Import()
         {
             var cat = JsonUtility.FromJson<Catalog>(File.ReadAllText(Source + "/catalog.json"));
-            if (cat.ppu != 32 || cat.species.Length != 48) throw new InvalidOperationException("Plant catalog changed");
+            if (cat.ppu != 32 || cat.species.Length != 50) throw new InvalidOperationException("Plant catalog changed");
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             int gaps = 0;
             foreach (var sp in cat.species)
@@ -94,7 +94,7 @@ namespace HiddenHarbours.Art.Editor
             if (AssetDatabase.LoadAssetAtPath<Material>(matPath) == null)
                 AssetDatabase.CreateAsset(new Material(shader), matPath);
             AssetDatabase.SaveAssets();
-            Debug.Log("Plant rig 5: imported 48 species. Dormant cells: " + gaps + ".");
+            Debug.Log("Plant rig 5: imported 50 species. Dormant cells: " + gaps + ".");
         }
         static Texture2D Load(string key, int page, string channel, Page spec)
         {
@@ -102,6 +102,11 @@ namespace HiddenHarbours.Art.Editor
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (importer == null) throw new InvalidOperationException("Missing plant map " + path);
             importer.textureType = TextureImporterType.Default;
+            importer.spriteImportMode = SpriteImportMode.None;
+            // Clear the old Sprite table even though this map now imports as a texture.
+#pragma warning disable 0618
+            importer.spritesheet = Array.Empty<SpriteMetaData>();
+#pragma warning restore 0618
             importer.sRGBTexture = channel == "unlit"; importer.mipmapEnabled = false;
             importer.filterMode = FilterMode.Point; importer.wrapMode = TextureWrapMode.Clamp;
             importer.textureCompression = TextureImporterCompression.Uncompressed;

@@ -382,5 +382,21 @@
       -100,
       100
     ]
+  },
+  "OstrichFern": {
+    "code": 49,
+    "id": "plant.ostrich_fern",
+    "band": [
+      -100,
+      100
+    ]
+  },
+  "MarshMarigold": {
+    "code": 50,
+    "id": "plant.marsh_marigold",
+    "band": [
+      -100,
+      100
+    ]
   }
 }

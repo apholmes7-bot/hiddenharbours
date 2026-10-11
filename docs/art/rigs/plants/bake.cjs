@@ -1,10 +1,6 @@
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), zlib = require('zlib'), crypto = require('crypto');
-const source = fs.readFileSync(path.join(__dirname, 'plantIsoRig5.js'));
-if (crypto.createHash('sha256').update(source).digest('hex') !== 'a80c485993a1a05930849298d688572864deaa873d6aa62435135bfc3ff0059b') throw Error('Rig hash mismatch');
-vm.runInThisContext(source.toString('utf8'));
-globalThis.PlantDormant5 = JSON.parse(fs.readFileSync(path.join(__dirname, 'dormant-states.json'), 'utf8'));
-vm.runInThisContext(fs.readFileSync(path.join(__dirname, 'bakePlants.js'), 'utf8'));
+require('./loadRig.cjs');
 const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, 'catalog.json'), 'utf8'));
 const destination = process.argv[2];
 if (!destination) throw Error('Output folder required');

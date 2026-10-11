@@ -86336,6 +86336,1574 @@
         }
       ],
       "dormant": []
+    },
+    {
+      "key": "OstrichFern",
+      "family": "shrub",
+      "habitat": "swale",
+      "standingHeightM": 1.125,
+      "tide": [],
+      "cells": [
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 0,
+          "tide": 0,
+          "w": 40,
+          "h": 24,
+          "pivot": [
+            20,
+            17
+          ],
+          "heightM": 0.33357359419659127,
+          "page": 0,
+          "x": 46,
+          "y": 347
+        },
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 1,
+          "tide": 0,
+          "w": 43,
+          "h": 26,
+          "pivot": [
+            21,
+            19
+          ],
+          "heightM": 0.3333351679099524,
+          "page": 0,
+          "x": 47,
+          "y": 319
+        },
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 2,
+          "tide": 0,
+          "w": 46,
+          "h": 25,
+          "pivot": [
+            21,
+            18
+          ],
+          "heightM": 0.3215687758418886,
+          "page": 0,
+          "x": 92,
+          "y": 319
+        },
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 3,
+          "tide": 0,
+          "w": 44,
+          "h": 25,
+          "pivot": [
+            20,
+            18
+          ],
+          "heightM": 0.3448892321012421,
+          "page": 0,
+          "x": 140,
+          "y": 319
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 0,
+          "tide": 0,
+          "w": 40,
+          "h": 24,
+          "pivot": [
+            20,
+            17
+          ],
+          "heightM": 0.33357359419659127,
+          "page": 0,
+          "x": 88,
+          "y": 347
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 1,
+          "tide": 0,
+          "w": 42,
+          "h": 27,
+          "pivot": [
+            21,
+            19
+          ],
+          "heightM": 0.3333351679099524,
+          "page": 0,
+          "x": 168,
+          "y": 286
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 2,
+          "tide": 0,
+          "w": 47,
+          "h": 27,
+          "pivot": [
+            21,
+            19
+          ],
+          "heightM": 0.3215687758418886,
+          "page": 0,
+          "x": 119,
+          "y": 286
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 3,
+          "tide": 0,
+          "w": 44,
+          "h": 25,
+          "pivot": [
+            21,
+            19
+          ],
+          "heightM": 0.3448892321012421,
+          "page": 0,
+          "x": 186,
+          "y": 319
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 0,
+          "tide": 0,
+          "w": 40,
+          "h": 24,
+          "pivot": [
+            20,
+            17
+          ],
+          "heightM": 0.33357359419659127,
+          "page": 0,
+          "x": 130,
+          "y": 347
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 1,
+          "tide": 0,
+          "w": 42,
+          "h": 27,
+          "pivot": [
+            21,
+            19
+          ],
+          "heightM": 0.3333351679099524,
+          "page": 0,
+          "x": 212,
+          "y": 286
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 2,
+          "tide": 0,
+          "w": 46,
+          "h": 26,
+          "pivot": [
+            22,
+            19
+          ],
+          "heightM": 0.3215687758418886,
+          "page": 0,
+          "x": 256,
+          "y": 286
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 3,
+          "tide": 0,
+          "w": 44,
+          "h": 26,
+          "pivot": [
+            21,
+            19
+          ],
+          "heightM": 0.3448892321012421,
+          "page": 0,
+          "x": 1,
+          "y": 319
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 0,
+          "tide": 0,
+          "w": 38,
+          "h": 23,
+          "pivot": [
+            19,
+            18
+          ],
+          "heightM": 0.3799693424426463,
+          "page": 0,
+          "x": 218,
+          "y": 347
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 1,
+          "tide": 0,
+          "w": 44,
+          "h": 23,
+          "pivot": [
+            21,
+            17
+          ],
+          "heightM": 0.3601270343682822,
+          "page": 0,
+          "x": 172,
+          "y": 347
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 2,
+          "tide": 0,
+          "w": 43,
+          "h": 24,
+          "pivot": [
+            23,
+            18
+          ],
+          "heightM": 0.3836987102456197,
+          "page": 0,
+          "x": 1,
+          "y": 347
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 3,
+          "tide": 0,
+          "w": 45,
+          "h": 24,
+          "pivot": [
+            21,
+            19
+          ],
+          "heightM": 0.4016825681430045,
+          "page": 0,
+          "x": 232,
+          "y": 319
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 0,
+          "tide": 0,
+          "w": 56,
+          "h": 32,
+          "pivot": [
+            28,
+            24
+          ],
+          "heightM": 0.5509531236219921,
+          "page": 0,
+          "x": 63,
+          "y": 251
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 1,
+          "tide": 0,
+          "w": 57,
+          "h": 37,
+          "pivot": [
+            28,
+            29
+          ],
+          "heightM": 0.5286629497233629,
+          "page": 0,
+          "x": 1,
+          "y": 175
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 2,
+          "tide": 0,
+          "w": 63,
+          "h": 35,
+          "pivot": [
+            29,
+            27
+          ],
+          "heightM": 0.5108181677458983,
+          "page": 0,
+          "x": 199,
+          "y": 214
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 3,
+          "tide": 0,
+          "w": 64,
+          "h": 35,
+          "pivot": [
+            29,
+            27
+          ],
+          "heightM": 0.563866112558682,
+          "page": 0,
+          "x": 1,
+          "y": 214
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 0,
+          "tide": 0,
+          "w": 58,
+          "h": 31,
+          "pivot": [
+            28,
+            23
+          ],
+          "heightM": 0.5509531236219921,
+          "page": 0,
+          "x": 177,
+          "y": 251
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 1,
+          "tide": 0,
+          "w": 56,
+          "h": 36,
+          "pivot": [
+            27,
+            28
+          ],
+          "heightM": 0.5286629497233629,
+          "page": 0,
+          "x": 254,
+          "y": 175
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 2,
+          "tide": 0,
+          "w": 64,
+          "h": 35,
+          "pivot": [
+            28,
+            28
+          ],
+          "heightM": 0.5108181677458983,
+          "page": 0,
+          "x": 67,
+          "y": 214
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 3,
+          "tide": 0,
+          "w": 66,
+          "h": 36,
+          "pivot": [
+            30,
+            27
+          ],
+          "heightM": 0.563866112558682,
+          "page": 0,
+          "x": 119,
+          "y": 175
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 0,
+          "tide": 0,
+          "w": 57,
+          "h": 31,
+          "pivot": [
+            28,
+            23
+          ],
+          "heightM": 0.5509531236219921,
+          "page": 0,
+          "x": 237,
+          "y": 251
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 1,
+          "tide": 0,
+          "w": 57,
+          "h": 37,
+          "pivot": [
+            28,
+            29
+          ],
+          "heightM": 0.5286629497233629,
+          "page": 0,
+          "x": 60,
+          "y": 175
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 2,
+          "tide": 0,
+          "w": 64,
+          "h": 35,
+          "pivot": [
+            28,
+            28
+          ],
+          "heightM": 0.5108181677458983,
+          "page": 0,
+          "x": 133,
+          "y": 214
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 3,
+          "tide": 0,
+          "w": 65,
+          "h": 36,
+          "pivot": [
+            30,
+            27
+          ],
+          "heightM": 0.563866112558682,
+          "page": 0,
+          "x": 187,
+          "y": 175
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 0,
+          "tide": 0,
+          "w": 54,
+          "h": 32,
+          "pivot": [
+            29,
+            26
+          ],
+          "heightM": 0.5886720028985751,
+          "page": 0,
+          "x": 121,
+          "y": 251
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 1,
+          "tide": 0,
+          "w": 54,
+          "h": 31,
+          "pivot": [
+            27,
+            25
+          ],
+          "heightM": 0.5798704002593974,
+          "page": 0,
+          "x": 1,
+          "y": 286
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 2,
+          "tide": 0,
+          "w": 60,
+          "h": 33,
+          "pivot": [
+            32,
+            27
+          ],
+          "heightM": 0.5967102924114223,
+          "page": 0,
+          "x": 1,
+          "y": 251
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 3,
+          "tide": 0,
+          "w": 60,
+          "h": 30,
+          "pivot": [
+            27,
+            24
+          ],
+          "heightM": 0.625934371448648,
+          "page": 0,
+          "x": 57,
+          "y": 286
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 0,
+          "tide": 0,
+          "w": 73,
+          "h": 40,
+          "pivot": [
+            35,
+            32
+          ],
+          "heightM": 0.7665063690673325,
+          "page": 0,
+          "x": 244,
+          "y": 90
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 1,
+          "tide": 0,
+          "w": 72,
+          "h": 42,
+          "pivot": [
+            34,
+            34
+          ],
+          "heightM": 0.732469828844019,
+          "page": 0,
+          "x": 151,
+          "y": 46
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 2,
+          "tide": 0,
+          "w": 81,
+          "h": 41,
+          "pivot": [
+            36,
+            33
+          ],
+          "heightM": 0.7162107971460562,
+          "page": 0,
+          "x": 225,
+          "y": 46
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 3,
+          "tide": 0,
+          "w": 78,
+          "h": 42,
+          "pivot": [
+            38,
+            36
+          ],
+          "heightM": 0.7841913516543176,
+          "page": 0,
+          "x": 81,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 0,
+          "tide": 0,
+          "w": 72,
+          "h": 40,
+          "pivot": [
+            35,
+            33
+          ],
+          "heightM": 0.7665063690673325,
+          "page": 0,
+          "x": 1,
+          "y": 133
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 1,
+          "tide": 0,
+          "w": 73,
+          "h": 42,
+          "pivot": [
+            35,
+            34
+          ],
+          "heightM": 0.732469828844019,
+          "page": 0,
+          "x": 1,
+          "y": 46
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 2,
+          "tide": 0,
+          "w": 80,
+          "h": 41,
+          "pivot": [
+            36,
+            34
+          ],
+          "heightM": 0.7162107971460562,
+          "page": 0,
+          "x": 1,
+          "y": 90
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 3,
+          "tide": 0,
+          "w": 78,
+          "h": 43,
+          "pivot": [
+            38,
+            36
+          ],
+          "heightM": 0.7841913516543176,
+          "page": 0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 0,
+          "tide": 0,
+          "w": 72,
+          "h": 40,
+          "pivot": [
+            35,
+            33
+          ],
+          "heightM": 0.7665063690673325,
+          "page": 0,
+          "x": 75,
+          "y": 133
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 1,
+          "tide": 0,
+          "w": 73,
+          "h": 42,
+          "pivot": [
+            36,
+            34
+          ],
+          "heightM": 0.732469828844019,
+          "page": 0,
+          "x": 76,
+          "y": 46
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 2,
+          "tide": 0,
+          "w": 81,
+          "h": 40,
+          "pivot": [
+            37,
+            33
+          ],
+          "heightM": 0.7162107971460562,
+          "page": 0,
+          "x": 83,
+          "y": 90
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 3,
+          "tide": 0,
+          "w": 78,
+          "h": 42,
+          "pivot": [
+            38,
+            36
+          ],
+          "heightM": 0.7841913516543176,
+          "page": 0,
+          "x": 161,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 0,
+          "tide": 0,
+          "w": 82,
+          "h": 39,
+          "pivot": [
+            38,
+            33
+          ],
+          "heightM": 0.8195233962474504,
+          "page": 0,
+          "x": 149,
+          "y": 133
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 1,
+          "tide": 0,
+          "w": 74,
+          "h": 42,
+          "pivot": [
+            38,
+            36
+          ],
+          "heightM": 0.7475304044689703,
+          "page": 0,
+          "x": 241,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 2,
+          "tide": 0,
+          "w": 76,
+          "h": 40,
+          "pivot": [
+            38,
+            34
+          ],
+          "heightM": 0.7836257910436898,
+          "page": 0,
+          "x": 166,
+          "y": 90
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 3,
+          "tide": 0,
+          "w": 81,
+          "h": 38,
+          "pivot": [
+            37,
+            32
+          ],
+          "heightM": 0.8472137759719818,
+          "page": 0,
+          "x": 233,
+          "y": 133
+        }
+      ],
+      "pages": [
+        {
+          "w": 318,
+          "h": 372
+        }
+      ],
+      "dormant": []
+    },
+    {
+      "key": "MarshMarigold",
+      "family": "flower",
+      "habitat": "wet",
+      "standingHeightM": 0.46875,
+      "tide": [],
+      "cells": [
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 0,
+          "tide": 0,
+          "w": 31,
+          "h": 17,
+          "pivot": [
+            15,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 103,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 1,
+          "tide": 0,
+          "w": 29,
+          "h": 17,
+          "pivot": [
+            13,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 202,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 2,
+          "tide": 0,
+          "w": 32,
+          "h": 17,
+          "pivot": [
+            16,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 1,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "spring",
+          "variant": 3,
+          "tide": 0,
+          "w": 27,
+          "h": 17,
+          "pivot": [
+            15,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 32,
+          "y": 146
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 0,
+          "tide": 0,
+          "w": 31,
+          "h": 17,
+          "pivot": [
+            15,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 136,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 1,
+          "tide": 0,
+          "w": 29,
+          "h": 17,
+          "pivot": [
+            13,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 233,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 2,
+          "tide": 0,
+          "w": 32,
+          "h": 17,
+          "pivot": [
+            16,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 35,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "summer",
+          "variant": 3,
+          "tide": 0,
+          "w": 27,
+          "h": 17,
+          "pivot": [
+            15,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 61,
+          "y": 146
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 0,
+          "tide": 0,
+          "w": 31,
+          "h": 17,
+          "pivot": [
+            15,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 169,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 1,
+          "tide": 0,
+          "w": 29,
+          "h": 17,
+          "pivot": [
+            13,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 1,
+          "y": 146
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 2,
+          "tide": 0,
+          "w": 32,
+          "h": 17,
+          "pivot": [
+            16,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 69,
+          "y": 127
+        },
+        {
+          "stage": "seedling",
+          "season": "autumn",
+          "variant": 3,
+          "tide": 0,
+          "w": 27,
+          "h": 17,
+          "pivot": [
+            15,
+            10
+          ],
+          "heightM": 0.096875,
+          "page": 0,
+          "x": 90,
+          "y": 146
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 0,
+          "tide": 0,
+          "w": 24,
+          "h": 12,
+          "pivot": [
+            12,
+            7
+          ],
+          "heightM": 0.053512722563617075,
+          "page": 0,
+          "x": 174,
+          "y": 146
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 1,
+          "tide": 0,
+          "w": 24,
+          "h": 11,
+          "pivot": [
+            12,
+            6
+          ],
+          "heightM": 0.04646819182341041,
+          "page": 0,
+          "x": 222,
+          "y": 146
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 2,
+          "tide": 0,
+          "w": 22,
+          "h": 11,
+          "pivot": [
+            10,
+            6
+          ],
+          "heightM": 0.05149284671726717,
+          "page": 0,
+          "x": 248,
+          "y": 146
+        },
+        {
+          "stage": "seedling",
+          "season": "winter",
+          "variant": 3,
+          "tide": 0,
+          "w": 20,
+          "h": 12,
+          "pivot": [
+            12,
+            7
+          ],
+          "heightM": 0.053871760101475215,
+          "page": 0,
+          "x": 200,
+          "y": 146
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 0,
+          "tide": 0,
+          "w": 48,
+          "h": 20,
+          "pivot": [
+            22,
+            13
+          ],
+          "heightM": 0.2594569386445431,
+          "page": 0,
+          "x": 194,
+          "y": 82
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 1,
+          "tide": 0,
+          "w": 40,
+          "h": 21,
+          "pivot": [
+            19,
+            12
+          ],
+          "heightM": 0.2478392006649504,
+          "page": 0,
+          "x": 1,
+          "y": 82
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 2,
+          "tide": 0,
+          "w": 49,
+          "h": 24,
+          "pivot": [
+            25,
+            15
+          ],
+          "heightM": 0.34345015183194355,
+          "page": 0,
+          "x": 203,
+          "y": 30
+        },
+        {
+          "stage": "young",
+          "season": "spring",
+          "variant": 3,
+          "tide": 0,
+          "w": 35,
+          "h": 21,
+          "pivot": [
+            15,
+            12
+          ],
+          "heightM": 0.24015588629560355,
+          "page": 0,
+          "x": 157,
+          "y": 82
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 0,
+          "tide": 0,
+          "w": 42,
+          "h": 20,
+          "pivot": [
+            19,
+            12
+          ],
+          "heightM": 0.2712146339081971,
+          "page": 0,
+          "x": 244,
+          "y": 82
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 1,
+          "tide": 0,
+          "w": 46,
+          "h": 21,
+          "pivot": [
+            25,
+            13
+          ],
+          "heightM": 0.316315554123786,
+          "page": 0,
+          "x": 185,
+          "y": 57
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 2,
+          "tide": 0,
+          "w": 36,
+          "h": 21,
+          "pivot": [
+            22,
+            14
+          ],
+          "heightM": 0.32782515183194355,
+          "page": 0,
+          "x": 43,
+          "y": 82
+        },
+        {
+          "stage": "young",
+          "season": "summer",
+          "variant": 3,
+          "tide": 0,
+          "w": 38,
+          "h": 20,
+          "pivot": [
+            17,
+            11
+          ],
+          "heightM": 0.2486254968139037,
+          "page": 0,
+          "x": 45,
+          "y": 105
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 0,
+          "tide": 0,
+          "w": 42,
+          "h": 20,
+          "pivot": [
+            19,
+            12
+          ],
+          "heightM": 0.2712146339081971,
+          "page": 0,
+          "x": 1,
+          "y": 105
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 1,
+          "tide": 0,
+          "w": 46,
+          "h": 21,
+          "pivot": [
+            25,
+            13
+          ],
+          "heightM": 0.316315554123786,
+          "page": 0,
+          "x": 233,
+          "y": 57
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 2,
+          "tide": 0,
+          "w": 36,
+          "h": 21,
+          "pivot": [
+            22,
+            14
+          ],
+          "heightM": 0.32782515183194355,
+          "page": 0,
+          "x": 81,
+          "y": 82
+        },
+        {
+          "stage": "young",
+          "season": "autumn",
+          "variant": 3,
+          "tide": 0,
+          "w": 38,
+          "h": 20,
+          "pivot": [
+            17,
+            11
+          ],
+          "heightM": 0.2486254968139037,
+          "page": 0,
+          "x": 85,
+          "y": 105
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 0,
+          "tide": 0,
+          "w": 33,
+          "h": 17,
+          "pivot": [
+            14,
+            11
+          ],
+          "heightM": 0.24495006182161017,
+          "page": 0,
+          "x": 237,
+          "y": 105
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 1,
+          "tide": 0,
+          "w": 27,
+          "h": 17,
+          "pivot": [
+            21,
+            13
+          ],
+          "heightM": 0.25654751461031394,
+          "page": 0,
+          "x": 119,
+          "y": 146
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 2,
+          "tide": 0,
+          "w": 27,
+          "h": 19,
+          "pivot": [
+            10,
+            13
+          ],
+          "heightM": 0.2804176121047044,
+          "page": 0,
+          "x": 164,
+          "y": 105
+        },
+        {
+          "stage": "young",
+          "season": "winter",
+          "variant": 3,
+          "tide": 0,
+          "w": 24,
+          "h": 16,
+          "pivot": [
+            10,
+            10
+          ],
+          "heightM": 0.20346438372927528,
+          "page": 0,
+          "x": 148,
+          "y": 146
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 0,
+          "tide": 0,
+          "w": 47,
+          "h": 25,
+          "pivot": [
+            18,
+            18
+          ],
+          "heightM": 0.47307129572327233,
+          "page": 0,
+          "x": 154,
+          "y": 30
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 1,
+          "tide": 0,
+          "w": 51,
+          "h": 25,
+          "pivot": [
+            22,
+            15
+          ],
+          "heightM": 0.4330554393857232,
+          "page": 0,
+          "x": 1,
+          "y": 30
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 2,
+          "tide": 0,
+          "w": 53,
+          "h": 23,
+          "pivot": [
+            28,
+            14
+          ],
+          "heightM": 0.37451679359694723,
+          "page": 0,
+          "x": 1,
+          "y": 57
+        },
+        {
+          "stage": "mature",
+          "season": "spring",
+          "variant": 3,
+          "tide": 0,
+          "w": 48,
+          "h": 27,
+          "pivot": [
+            23,
+            18
+          ],
+          "heightM": 0.4366403384978818,
+          "page": 0,
+          "x": 103,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 0,
+          "tide": 0,
+          "w": 49,
+          "h": 27,
+          "pivot": [
+            22,
+            18
+          ],
+          "heightM": 0.45744629572327233,
+          "page": 0,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 1,
+          "tide": 0,
+          "w": 52,
+          "h": 25,
+          "pivot": [
+            28,
+            16
+          ],
+          "heightM": 0.45187936303397996,
+          "page": 0,
+          "x": 153,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 2,
+          "tide": 0,
+          "w": 48,
+          "h": 25,
+          "pivot": [
+            26,
+            16
+          ],
+          "heightM": 0.4132930451698516,
+          "page": 0,
+          "x": 54,
+          "y": 30
+        },
+        {
+          "stage": "mature",
+          "season": "summer",
+          "variant": 3,
+          "tide": 0,
+          "w": 41,
+          "h": 22,
+          "pivot": [
+            15,
+            16
+          ],
+          "heightM": 0.3796296494295324,
+          "page": 0,
+          "x": 56,
+          "y": 57
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 0,
+          "tide": 0,
+          "w": 49,
+          "h": 27,
+          "pivot": [
+            22,
+            18
+          ],
+          "heightM": 0.45744629572327233,
+          "page": 0,
+          "x": 52,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 1,
+          "tide": 0,
+          "w": 52,
+          "h": 25,
+          "pivot": [
+            28,
+            16
+          ],
+          "heightM": 0.45187936303397996,
+          "page": 0,
+          "x": 207,
+          "y": 1
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 2,
+          "tide": 0,
+          "w": 48,
+          "h": 25,
+          "pivot": [
+            26,
+            16
+          ],
+          "heightM": 0.4132930451698516,
+          "page": 0,
+          "x": 104,
+          "y": 30
+        },
+        {
+          "stage": "mature",
+          "season": "autumn",
+          "variant": 3,
+          "tide": 0,
+          "w": 41,
+          "h": 22,
+          "pivot": [
+            15,
+            16
+          ],
+          "heightM": 0.3796296494295324,
+          "page": 0,
+          "x": 99,
+          "y": 57
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 0,
+          "tide": 0,
+          "w": 36,
+          "h": 21,
+          "pivot": [
+            21,
+            15
+          ],
+          "heightM": 0.32376837491023414,
+          "page": 0,
+          "x": 119,
+          "y": 82
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 1,
+          "tide": 0,
+          "w": 37,
+          "h": 20,
+          "pivot": [
+            18,
+            14
+          ],
+          "heightM": 0.38089648363898887,
+          "page": 0,
+          "x": 125,
+          "y": 105
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 2,
+          "tide": 0,
+          "w": 42,
+          "h": 18,
+          "pivot": [
+            19,
+            11
+          ],
+          "heightM": 0.3697037875329772,
+          "page": 0,
+          "x": 193,
+          "y": 105
+        },
+        {
+          "stage": "mature",
+          "season": "winter",
+          "variant": 3,
+          "tide": 0,
+          "w": 41,
+          "h": 22,
+          "pivot": [
+            20,
+            17
+          ],
+          "heightM": 0.38712270909823626,
+          "page": 0,
+          "x": 142,
+          "y": 57
+        }
+      ],
+      "pages": [
+        {
+          "w": 287,
+          "h": 164
+        }
+      ],
+      "dormant": []
     }
   ]
 }

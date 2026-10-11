@@ -63,9 +63,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var defs = AssetDatabase.FindAssets("t:PlantSpeciesDef", new[] { DefPath })
                 .Select(g => AssetDatabase.LoadAssetAtPath<PlantSpeciesDef>(AssetDatabase.GUIDToAssetPath(g)))
                 .OrderBy(d => d.Code).ToArray();
-            Assert.That(defs.Length, Is.EqualTo(48));
+            Assert.That(defs.Length, Is.EqualTo(50));
             var maps = defs.SelectMany(d => d.Pages).SelectMany(p => new[] { p.Albedo, p.Normal, p.Light, p.Detail }).Distinct().ToArray();
-            Assert.That(maps.Length, Is.EqualTo(192));
+            Assert.That(maps.Length, Is.EqualTo(200));
             Assert.That(maps.All(t => t != null), Is.True);
             yield return null;
             var rows = new List<MapRow>();
@@ -163,7 +163,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     }
                 }
                 File.WriteAllText(OutPath + "/unity-cells.json", JsonUtility.ToJson(new PlateReport { cells = cells.ToArray() }, true));
-                Assert.That(cells.Count, Is.EqualTo(240));
+                Assert.That(cells.Count, Is.EqualTo(250));
                 for (int i = 0; i < maps.Length; i++) memory.maps[i].bytes = Profiler.GetRuntimeMemorySizeLong(maps[i]);
                 memory.bytes = memory.maps.Sum(r => r.bytes);
                 File.WriteAllText(OutPath + "/runtime-memory.json", JsonUtility.ToJson(memory, true));
