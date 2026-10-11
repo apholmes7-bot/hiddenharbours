@@ -209,13 +209,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
             using var field=new FoamTransportField(32,4);
             var contacts=new[]{Pile(.5f,.5f)};
             for(int i=0;i<16;i++) Prepare(field,phase:i,contacts:contacts);
-            long before=GC.GetAllocatedBytesForCurrentThread();
+            using var probe=new FoamTransportAllocationProbe();probe.RequirePositiveControl();
+            probe.Begin();
             for(int i=0;i<64;i++)
             {
                 contacts[0]=Pile(.5f+i*.001f,.5f);
                 Prepare(field,new Vector2((i%3)*.125f,0),phase:i,sea:1+i*.001f,contacts:contacts);
             }
-            long allocated=GC.GetAllocatedBytesForCurrentThread()-before;
+            long allocated=probe.End();
             Assert.AreEqual(0,allocated);
         }
 

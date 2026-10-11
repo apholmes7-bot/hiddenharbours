@@ -10,14 +10,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         [Test] public void CpuRepair_AllocationCounterDetectsKnownAllocation()
         {
-            long before=GC.GetAllocatedBytesForCurrentThread();
-            var probe=new byte[256];
-            long allocated=GC.GetAllocatedBytesForCurrentThread()-before;
-            GC.KeepAlive(probe);
-            Assert.Greater(allocated,0,"Zero-byte measurements are not evidence if this runtime's counter cannot see an allocation.");
+            using var probe=new FoamTransportAllocationProbe();
+            probe.RequirePositiveControl();
         }
 
         static readonly FoamTransportContacts.Shape[] Empty=Array.Empty<FoamTransportContacts.Shape>();
+        static void Exact(float expected,float actual,int x,int y,string component)
+        {
+            int eb=BitConverter.SingleToInt32Bits(expected),ab=BitConverter.SingleToInt32Bits(actual);
+            if(eb!=ab)Assert.AreEqual(eb,ab,$"node ({x},{y}) {component}: expected {expected:R} [0x{eb:X8}], actual {actual:R} [0x{ab:X8}]");
+        }
         static PackedWaveField Waves(float phase,int count=8,float waveNumber=1.3f) => new PackedWaveField(
             new Vector4(.6f,.8f,waveNumber,.7f),new Vector4(-.8f,.6f,.3f,.2f),
             new Vector4(1,0,2,.1f),new Vector4(0,1,.5f,.2f),new Vector4(.8f,-.6f,.8f,.1f),
@@ -61,8 +63,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 {
                     var expected=PhaseANode(origin,x,y,waves,.85f,drift,strengths);
                     var actual=output[y*n+x];
-                    Assert.AreEqual(BitConverter.SingleToInt32Bits(expected.x),BitConverter.SingleToInt32Bits(actual.x));
-                    Assert.AreEqual(BitConverter.SingleToInt32Bits(expected.y),BitConverter.SingleToInt32Bits(actual.y));
+                    Exact(expected.x,actual.x,x,y,"x");
+                    Exact(expected.y,actual.y,x,y,"y");
                     if(!expected.Equals(first))expectedUniform=false;
                     expectedMax=Math.Max(expectedMax,Math.Max(Math.Abs(expected.x),Math.Abs(expected.y)));
                 }
@@ -82,7 +84,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 var strengths=new Vector3(step%3*.2f,step%5*.3f,0);
                 Assert.AreEqual(true,velocity.Build(output,origin,Vector2.right,waves,scale,strengths,Empty,0,false,out _,out _,out _));
                 for(int y=0;y<n;y++)for(int x=0;x<n;x++)
-                    Assert.AreEqual(PhaseANode(origin,x,y,waves,scale,Vector2.right,strengths),output[y*n+x]);
+                {
+                    var expected=PhaseANode(origin,x,y,waves,scale,Vector2.right,strengths);var actual=output[y*n+x];
+                    Exact(expected.x,actual.x,x,y,"x");Exact(expected.y,actual.y,x,y,"y");
+                }
             }
         }
 
@@ -128,11 +133,59 @@ namespace HiddenHarbours.Tests.Art.EditMode
             field.StageCompleted=stage=>stages[(int)stage]++;
             for(int i=0;i<16;i++)field.Prepare(Vector2.zero,1,Vector2.right,Waves(i),1,Vector3.one,default,default,Empty);
             Array.Clear(stages,0,stages.Length);
-            long before=GC.GetAllocatedBytesForCurrentThread();
+            using var probe=new FoamTransportAllocationProbe();probe.RequirePositiveControl();
+            probe.Begin();
             for(int i=0;i<32;i++)field.Prepare(new Vector2(i*.125f,0),1,Vector2.right,Waves(i*.1f),1,Vector3.one,default,default,Empty);
-            long allocated=GC.GetAllocatedBytesForCurrentThread()-before;
+            long allocated=probe.End();
             Assert.AreEqual(0,allocated);
             foreach(int count in stages)Assert.AreEqual(32,count);
+        }
+
+        [TestCase(1,1,0)] [TestCase(4,1,0)] [TestCase(8,1,0)]
+        [TestCase(1,0,1)] [TestCase(4,0,1)] [TestCase(8,0,1)]
+        [TestCase(1,1,-1)] [TestCase(4,1,-1)] [TestCase(8,1,-1)]
+        [TestCase(1,-1,-1)] [TestCase(4,-1,-1)] [TestCase(8,-1,-1)]
+        public void CpuRepair_RingPansMatchFreshTerrainMaskAndVelocityExactly(int pans,int dx,int dy)
+        {
+            var bedTexture=new Texture2D(17,23,TextureFormat.R16,false,true) {wrapMode=TextureWrapMode.Clamp};
+            var stillTexture=new Texture2D(13,19,TextureFormat.R8,false,true) {wrapMode=TextureWrapMode.Clamp};
+            try
+            {
+                var raw=bedTexture.GetRawTextureData<ushort>();for(int i=0;i<raw.Length;i++)raw[i]=(ushort)((i*1049)%65536);
+                var water=stillTexture.GetRawTextureData<byte>();for(int i=0;i<water.Length;i++)water[i]=(byte)(i%7==0?0:112);
+                bedTexture.Apply(false,false);stillTexture.Apply(false,false);
+                foreach(var filter in new[]{FilterMode.Point,FilterMode.Bilinear})
+                {
+                    bedTexture.filterMode=filter;stillTexture.filterMode=filter;
+                    var bed=new FoamTransportMap(bedTexture,new Vector2(-8,-8),new Vector2(16,16),-2,2);
+                    var still=new FoamTransportMap(stillTexture,new Vector2(-7.25f,-8.5f),new Vector2(16.5f,18.25f),-2,2);
+                    var contacts=new[]{new FoamTransportContacts.Shape(new Vector2(2,1),Vector2.right,new Vector2(.2f,.7f),-2,2,false,1)};
+                    using var ring=new FoamTransportField(32,4);
+                    var origin=new Vector2(dx>0?31:0,dy>0?31:0)*FoamBuffer.CellSize;
+                    ring.Prepare(Vector2.zero,0,Vector2.right,Waves(0),1,Vector3.one,bed,still,contacts,1);
+                    ring.Prepare(origin,0,Vector2.right,Waves(0),1,Vector3.one,bed,still,contacts,1);
+                    for(int step=1;step<=pans;step++)
+                    {
+                        origin+=new Vector2(dx,dy)*FoamBuffer.CellSize;
+                        ring.Prepare(origin,0,Vector2.right,Waves(step*.03f),1,Vector3.one,bed,still,contacts,1);
+                        int entering=1024-(32-Math.Abs(dx))*(32-Math.Abs(dy));
+                        Assert.AreEqual(entering,ring.RebuiltCells);
+                        Assert.AreEqual(entering,ring.RebuiltMaskCells,"The mask must compose only entering cells, including a physical ring seam.");
+                    }
+                    using var fresh=new FoamTransportField(32,4);
+                    fresh.Prepare(origin,0,Vector2.right,Waves(pans*.03f),1,Vector3.one,bed,still,contacts,1);
+                    CollectionAssert.AreEqual(fresh.Mask.GetRawTextureData<byte>().ToArray(),ring.Mask.GetRawTextureData<byte>().ToArray());
+                    CollectionAssert.AreEqual(fresh.Velocity.GetRawTextureData<Vector2>().ToArray(),ring.Velocity.GetRawTextureData<Vector2>().ToArray());
+                    Assert.AreEqual(fresh.Occupied,ring.Occupied);Assert.AreEqual(fresh.Route,ring.Route);
+                    const System.Reflection.BindingFlags flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+                    var type=typeof(FoamTransportField);
+                    var expected=(float[])type.GetField("_dryAt",flags).GetValue(fresh);
+                    var actual=(float[])type.GetField("_dryAt",flags).GetValue(ring);
+                    int rx=(int)type.GetField("_ringX",flags).GetValue(ring),ry=(int)type.GetField("_ringY",flags).GetValue(ring);
+                    for(int y=0;y<32;y++)for(int x=0;x<32;x++)Exact(expected[y*32+x],actual[((y+ry)%32)*32+(x+rx)%32],x,y,"terrain");
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(bedTexture);UnityEngine.Object.DestroyImmediate(stillTexture); }
         }
 
         [Test] public void CpuRepair_ObserverDoesNotAffectFieldOrSteadyCache()
@@ -147,6 +200,68 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0,field.RebuiltCells);Assert.AreEqual(0,field.RebuiltMaskCells);
             Assert.AreEqual(0,field.RebuiltVelocityNodes);Assert.AreEqual(0,field.UploadedTextures);
             Assert.Greater(calls,0);
+        }
+
+        [Test] public void CpuRepair_RetainedPayloadStaysWithinExistingBudget()
+        {
+            using var field=new FoamTransportField(768,96);
+            // Managed array payload plus the readable texture backing; excludes object headers,
+            // driver storage and borrowed map textures, as does the existing declared budget.
+            long bytes=768L*768+8L*99*99;
+            const System.Reflection.BindingFlags flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+            foreach(var f in typeof(FoamTransportField).GetFields(flags))
+            {
+                object value=f.GetValue(field);
+                if(value is Array array)bytes+=ArrayBytes(array);
+                if(value is FoamTransportVelocity velocity)
+                    foreach(var v in typeof(FoamTransportVelocity).GetFields(flags))
+                        if(v.GetValue(velocity) is Array data)bytes+=ArrayBytes(data);
+            }
+            Assert.LessOrEqual(bytes,FoamTransport.CpuBytes(768,99));
+        }
+
+        static long ArrayBytes(Array array)
+        {
+            Type element=array.GetType().GetElementType();
+            return (long)array.Length*(element==typeof(bool)?1:System.Runtime.InteropServices.Marshal.SizeOf(element));
+        }
+
+        [Test] public void CpuRepair_ComposeKeepsFiniteEndpointsAndRejectsNonFinite()
+        {
+            var velocity=new FoamTransportVelocity(7);
+            using var output=new NativeArray<Vector2>(49,Allocator.Persistent);
+            Assert.AreEqual(true,velocity.Build(output,Vector2.zero,new Vector2(float.MaxValue,-float.MaxValue),
+                PackedWaveField.Empty,1,Vector3.zero,Empty,0,false,out var first,out var maximum,out var uniform));
+            Assert.AreEqual(float.MaxValue,maximum);Assert.AreEqual(true,uniform);
+            Exact(float.MaxValue,first.x,0,0,"max");Exact(-float.MaxValue,first.y,0,0,"min");
+            foreach(float bad in new[]{float.NaN,float.PositiveInfinity,float.NegativeInfinity})
+                Assert.AreEqual(false,velocity.Build(output,Vector2.zero,new Vector2(bad,0),
+                    PackedWaveField.Empty,1,Vector3.zero,Empty,0,false,out _,out _,out _));
+        }
+
+        [TestCase(false)] [TestCase(true)]
+        public void CpuRepair_FullInvalidationResetsWrappedLogicalView(bool invalidFrame)
+        {
+            var texture=new Texture2D(32,32,TextureFormat.R8,false,true) {filterMode=FilterMode.Point,wrapMode=TextureWrapMode.Clamp};
+            try
+            {
+                var bytes=texture.GetRawTextureData<byte>();for(int i=0;i<bytes.Length;i++)bytes[i]=0;
+                for(int y=0;y<32;y++)bytes[y*32+2]=255;
+                texture.Apply(false,false);
+                var bed=new FoamTransportMap(texture,Vector2.zero,Vector2.one*4,0,2);
+                using var ring=new FoamTransportField(32,4);using var fresh=new FoamTransportField(32,4);
+                ring.Prepare(Vector2.zero,1,Vector2.right,Waves(0),1,Vector3.one,bed,default,Empty);ring.Upload();
+                ring.Prepare(new Vector2(.125f,0),1,Vector2.right,Waves(0),1,Vector3.one,bed,default,Empty);ring.Upload();
+                // Departing/entering columns are both wet: physical ring bytes did not change,
+                // but resetting the offset changes their logical positions and requires upload.
+                if(invalidFrame)ring.Prepare(Vector2.zero,float.NaN,Vector2.right,Waves(0),1,Vector3.one,bed,default,Empty);
+                else texture.IncrementUpdateCount();
+                ring.Prepare(Vector2.zero,1,Vector2.right,Waves(0),1,Vector3.one,bed,default,Empty);ring.Upload();
+                fresh.Prepare(Vector2.zero,1,Vector2.right,Waves(0),1,Vector3.one,bed,default,Empty);
+                CollectionAssert.AreEqual(fresh.Mask.GetRawTextureData<byte>().ToArray(),ring.Mask.GetRawTextureData<byte>().ToArray());
+                Assert.Greater(ring.UploadedTextures,0);Assert.AreEqual(fresh.Occupied,ring.Occupied);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(texture); }
         }
     }
 }

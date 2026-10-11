@@ -59,18 +59,24 @@ namespace HiddenHarbours.Art
             uniformVelocity=default; maximum=0; uniform=true;
             for(int i=0;i<_output.Length;i++)
             {
-                // Same float operations and parentheses as the Vector2 expression. Normalization
-                // is fused into the consumer, avoiding a separate full-grid read/write pass and
-                // Vector2 operators in the per-node loop (notably expensive in the editor Mono VM).
-                float sx=_slopeX[i]/_normalizer, sy=_slopeY[i]/_normalizer;
+                // Mono can retain extra precision in float locals/expressions. Phase A rounded
+                // normalization into a Vector2 field, and every operator returned another Vector2.
+                // Explicit single conversions preserve each of those storage boundaries without
+                // restoring a separate normalization pass or per-node NativeArray writes.
+                float sx=(float)(_slopeX[i]/_normalizer), sy=(float)(_slopeY[i]/_normalizer);
                 Vector2 collection=_collection[i];
-                float vx=(drift.x+(strain*sx+curl*(-sy)))+collection.x;
-                float vy=(drift.y+(strain*sy+curl*sx))+collection.y;
-                if(!FoamTransport.Finite(vx) || !FoamTransport.Finite(vy)) { _valid=false; return false; }
+                float vx=(float)((float)(drift.x+(float)((float)(strain*sx)+(float)(curl*(-sy))))+collection.x);
+                float vy=(float)((float)(drift.y+(float)((float)(strain*sy)+(float)(curl*sx)))+collection.y);
+                float ax=vx<0?-vx:vx,ay=vy<0?-vy:vy;
+                // Ordered comparisons of magnitudes reject NaN and either infinity without
+                // four runtime IsNaN/IsInfinity calls per node on Mono. Endpoints are inclusive.
+                if(!(ax<=float.MaxValue && ay<=float.MaxValue))
+                { _valid=false; return false; }
                 _output[i]=new Vector2(vx,vy);
                 if(i==0) uniformVelocity=new Vector2(vx,vy);
-                else if(vx!=uniformVelocity.x || vy!=uniformVelocity.y) uniform=false;
-                maximum=Math.Max(maximum,Math.Max(Math.Abs(vx),Math.Abs(vy)));
+                else if(uniform && (vx!=uniformVelocity.x || vy!=uniformVelocity.y)) uniform=false;
+                if(ax>maximum)maximum=ax;
+                if(ay>maximum)maximum=ay;
             }
             stageCompleted?.Invoke(FoamTransportPreparationStage.VelocityCompose);
             // Validate/copy once, instead of 9,801 NativeArray indexer safety checks in the editor.
@@ -122,9 +128,11 @@ namespace HiddenHarbours.Art
             Array.Clear(_slopeX,0,_slopeX.Length); Array.Clear(_slopeY,0,_slopeY.Length);
             // Train order and every multiply/add/cast remain identical to the Phase A evaluator.
             float[] slopeX=_slopeX, slopeY=_slopeY;
+            double[] cosX=_cosX,sinX=_sinX;
             for(int trainIndex=0;trainIndex<waves.Count;trainIndex++)
             {
                 Vector4 train=waves.Train(trainIndex); float weight=_weights[trainIndex];
+                float tx=train.x,ty=train.y;
                 int offset=trainIndex*_size;
                 for(int y=0;y<_size;y++)
                 {
@@ -132,9 +140,10 @@ namespace HiddenHarbours.Art
                     int row=y*_size;
                     for(int x=0;x<_size;x++)
                     {
-                        float value=weight*(float)(_cosX[offset+x]*cy-_sinX[offset+x]*sy);
+                        int axis=offset+x;
+                        float value=weight*(float)(cosX[axis]*cy-sinX[axis]*sy);
                         int i=row+x;
-                        slopeX[i]+=train.x*value; slopeY[i]+=train.y*value;
+                        slopeX[i]+=tx*value; slopeY[i]+=ty*value;
                     }
                 }
             }

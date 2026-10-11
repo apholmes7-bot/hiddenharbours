@@ -210,3 +210,139 @@ The eight unchanged SurfSequence reds are confirmed by the seat on plain main. H
 GPU cases require D3D12 and skip under the keeper's D3D11 policy. Neither is silently
 changed. The six local harness files remain behind `F2_REPAIR_PHASE_B_MANUAL`, with no
 lease granted and the B2 arm file disarmed. No Unity or push in A2.
+## Phase A3: sailing, exact Mono rounding and a calibrated allocation counter
+
+Owner ruling, 2026-10-11: both advancing-wave normal and sailing at 3 m/s must
+remain at or below 1 ms p95 CPU preparation plus upload. No Unity was run in A3.
+
+The terrain already used toroidal storage. A3 also retains the composed mask in
+that ring: a pan advances the two origins, samples only entering terrain and
+composes only entering mask cells. Contact/tide changes retain their existing
+dirty-tile rules. Filter-support ranges are cached separately on each ring axis;
+an entering column computes one X range instead of repeating divisions/floors
+for every cell. Contiguous cells with identical filter support share its decoded
+bound, without changing any sample or max/min operation.
+
+The shader still receives its original linear R8 mask. Two retained staging
+arrays provide one non-overlapping bulk copy of the retained linear view, followed
+by entering-strip writes and one checked copy into texture backing. The ring
+itself never moves. This deliberately retains a shader-facing bulk copy: removing
+that last linear-view copy would require changing the texture/shader contract.
+No shader, material, asset, resolution, strength, cell law or scheduling change is
+part of A3. The normal unchanged frame still rebuilds and uploads nothing.
+
+Mono's overlapping `Buffer.BlockCopy` was slower in the headless experiment, so
+the two linear buffers exchange roles after a non-overlapping copy. Retained CPU
+array/texture payload is **5,269,128 B**, checked against the unchanged **5,395,016 B**
+budget. Object headers, borrowed maps and driver storage are excluded consistently
+with the existing payload accounting. GPU storage and upload sizes are unchanged.
+
+The velocity loop retains Phase A's single-precision storage boundaries explicitly.
+It combines finite checking with its existing magnitude/max calculation and stops
+rechecking uniformity once disproved. Ordered magnitude comparisons reject NaN and
+infinity and preserve both finite endpoints; exact-output and endpoint tests cover
+this change. No approximation or ULP tolerance was introduced.
+
+### Arithmetic estimate, not an acceptance measurement
+
+Milliseconds per frame, including the expensive sailing crossing. These are
+planning allowances anchored to B2 stage timings and comparative Mono experiments;
+the headless texture/NativeArray shims do not model Unity safety checks or uploads.
+Neither headless time nor an estimate certifies the 1 ms p95 bar. B3 must measure it.
+
+| Stage | Normal | Sailing, 3 m/s at 60 Hz |
+|---|---:|---:|
+| Inputs/contact capture | .002 | .002 |
+| Map checks | .004 | .004 |
+| Terrain/support ranges/linear staging | .006 | .120 |
+| Mask composition/native snapshot | .006 | .040 |
+| Wave factors | .025 | .025 |
+| Wave accumulation | .380 | .380 |
+| Collection (including a flow-lattice crossing) | .001 | .030 |
+| Velocity compose/finite/max | .295 | .295 |
+| Velocity copy | .004 | .004 |
+| Finish | .002 | .002 |
+| **Prepare** | **.725** | **.902** |
+| Upload allowance | .035 | .055 |
+| Timing/load allowance | .040 | .030 |
+| **Total estimate** | **.800** | **.987** |
+
+The sailing estimate has little headroom. Its uncertain terms are the map reads,
+native snapshot/upload and Mono compose cost; the ceiling remains 1 ms if B3 exceeds
+these allowances. Frozen frames retain the zero-work fast path. Advancing waves
+alone still rebuild wave factors, accumulation, compose and velocity copy; they do
+not dirty terrain or mask. No slower tick or temporal approximation is used.
+
+### Exact-value failure evidence
+
+The standalone bundled Mono runtime reproduced all four B2 exact-value failures,
+including their identical signed integer bit patterns. A minimal diagnostic shows
+the A2 scalar result equals a double-intermediate compose; Phase A's Vector2 stores
+round each intermediate to single precision. Explicit float conversions at those
+same boundaries remove the discrepancy. This is not a cache invalidation defect or
+an unavoidable runtime difference, and no test tolerance was loosened.
+
+| B2 failing case | Expected bits | Actual B2 bits |
+|---|---|---|
+| Advancing phases, 1 train, node (2,0) Y | BECC5456 | BECC5457 |
+| Advancing phases, 4 trains, node (0,0) Y | BF1262C5 | BF1262C6 |
+| Advancing phases, 8 trains, node (5,0) Y | 3D80D0AA | 3D80D0A9 |
+| Spatial/spectrum change, node (3,0) Y | 3DF44136 | 3DF44135 |
+
+Assertions now print round-trip floats and hex bits on a mismatch. The existing
+31 repair cases plus 26 CPU repair cases pass in both .NET and standalone Mono with
+headless engine/storage shims. This does not claim a Unity test run. Twelve new pan
+cases cover 1/4/8 pans, positive X, positive Y and both diagonal directions, each in
+Point and Bilinear filtering over R16 seabed and R8 still-water maps. Each starts at
+a physical ring seam and checks every terrain bit, mask byte and velocity component
+against a fresh field, plus occupancy, route and entering-cell work counts. The two
+additional cases pin the retained-memory ceiling and finite/NaN/infinity behavior.
+Two further cases pin logical mask upload after a ring reset caused by a map revision
+or invalid-frame recovery, even when the physical ring bytes remain unchanged.
+
+### Managed allocation and thread coverage
+
+The fifth B2 red exposed Unity's zero-returning `GC.GetAllocatedBytesForCurrentThread`.
+The committed tests now use `ProfilerRecorder` on `GC.Alloc` with
+`CollectOnlyOnCurrentThread`, without per-frame aggregation. **Count measures
+allocation events; Value is nanoseconds, not bytes.** Each zero-allocation test
+requires a known `new byte[256]` to register, then verifies an empty scope. The
+standalone headless build uses the host byte counter with the same controls. Existing
+steady/changing-Prepare guards retain their zero-allocation assertion.
+
+The managed production call chain is synchronous:
+
+- Unity's main thread calls `IsoFacetHullFeature.HullPass.RecordRenderGraph`, which
+  calls `PrepareTransport`, live contact capture, `Prepare` and `Upload`.
+- The installed core pipeline's `RenderGraph.ExecuteNativeRenderGraph` calls
+  `NativePassCompiler.ExecuteGraph`. Its ordinary pass loop calls
+  `ExecuteRenderGraphPass`, then `pass.Execute`, then the registered `renderFunc`.
+  This covers the advect and transport property-block recording/draw callbacks.
+- F2 creates no managed job, task, worker thread, async continuation or deferred
+  managed callback. A graphics/render thread, native graphics workers and the GPU
+  execute native commands/shaders, not F2 C#; their native/VRAM allocations are not
+  allocations in the managed GC heap. B2's device log specifically reported
+  `GfxThreadingModeNonThreaded`. B3 records the actual graphics-threading mode too.
+
+Thus the calibrated current-main-thread scope covers this graph's managed allocation
+work. B3 must validate that premise: assert UnitySynchronizationContext, capture the
+main thread ID, verify submission and every measured field's preparation callbacks
+stay on it, and record zero allocation events over the entire production submission.
+Controls run before and after capture. A failed control/thread assertion invalidates
+the proof; it is never converted to a zero-byte pass.
+
+The unsupported B2 all-thread recorder configuration is removed. B3 uses the working
+current-thread option plus the call-chain audit and runtime thread checks; no claim
+is made that the invalid all-thread attempt produced data. The disabled temporary
+harness is preserved under `Evidence~/f2-repair/phase-a3/b3-harness/` for review.
+
+### B3 request: 30 minutes, cold import included
+
+Run the normal/sailing/worst stage profile, isolated GPU events, actual production
+GPU/upload/GC profile, the four binding combinations, FoamTransportGpuTests, every
+F2 EditMode class, main's foam regression set, FoamHistoryInitializationGpuTests,
+WakeFoamWindowPlayTests, WaterShaderCompileGuardTests and every F2B control. The known
+main surf reds and unchanged D3D12-only skips must remain visible. Budget 10 minutes
+for import/compile, 8 for regressions, 6 for profiles/GPU/controls and 6 for evidence,
+restoration, disarm and return. No slot is taken, no Unity launched and nothing is
+armed during A3. Main 640e3cc7 is not incorporated.
