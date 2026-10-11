@@ -1249,6 +1249,40 @@ namespace HiddenHarbours.Tools.RigBaking
             Hinged("Gate", "{gate:1}", VehicleFitmentSide.Centre,
                    VehicleHingeAxis.Lateral, new Vector3(0f, -3.285f, 1.055f), +92f));
 
+        // Modern 350: every axis is the rig's own literal; the rear axle has single wheels.
+        // The hood turns positively about (G.cowlY, G.hoodZc).
+        static readonly Axis[] Modern350Axes = WithDoors(
+            BuildRoadAxes(0.87f, 2.52f, 0.87f, 0.435f, -2f),
+            Hinged("DoorFL", "{dFL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1f, 1.72f, 0f), -68f),
+            Hinged("DoorFR", "{dFR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1f, 1.72f, 0f), 68f),
+            Hinged("DoorRL", "{dRL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1f, 0.36f, 0f), -68f),
+            Hinged("DoorRR", "{dRR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1f, 0.36f, 0f), 68f),
+            Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 1.72f, 1.585f), 48f),
+            Hinged("Gate", "{gate:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, -3.16f, 0.97f), 92f));
+
+        // Modern 2500: every axis is the rig's own literal; the rear axle has single wheels.
+        // The hood turns positively about (G.cowlY, G.hoodZc).
+        static readonly Axis[] Modern2500Axes = WithDoors(
+            BuildRoadAxes(0.875f, 2.25f, 0.875f, 0.425f, -1.79f),
+            Hinged("DoorFL", "{dFL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1.01f, 1.44f, 0f), -68f),
+            Hinged("DoorFR", "{dFR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1.01f, 1.44f, 0f), 68f),
+            Hinged("DoorRL", "{dRL:1}", VehicleFitmentSide.Left,
+                   VehicleHingeAxis.Vertical, new Vector3(-1.01f, 0.16f, 0f), -68f),
+            Hinged("DoorRR", "{dRR:1}", VehicleFitmentSide.Right,
+                   VehicleHingeAxis.Vertical, new Vector3(1.01f, 0.16f, 0f), 68f),
+            Hinged("Hood", "{hood:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, 1.44f, 1.665f), 50f),
+            Hinged("Gate", "{gate:1}", VehicleFitmentSide.Centre,
+                   VehicleHingeAxis.Lateral, new Vector3(0f, -2.98f, 1.03f), 92f));
+
         /// <summary>
         /// One saddle body's chassis, in the ATV rig's own words — one expression set with the body
         /// substituted, because all three really do share a vocabulary.
@@ -1933,6 +1967,70 @@ namespace HiddenHarbours.Tools.RigBaking
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/Modern3500.asset",
                 vehicleId: "vehicle.modern_3500",
                 label: "Modern 3500"),
+
+            new Vehicle(
+                "modern350",
+                "docs/art/rigs/modern350-kit/modern350.rig.js",
+                SidecarFolder + "/modern350.rig.gameplay.json",
+                "ModernTruck350",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/Modern350VehicleMesh.asset",
+                meshId: "vehiclemesh.modern_350",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    FaceExpression = "build(ModernTruck350.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                axes: Modern350Axes,
+                chassisSource: new VehicleChassisSource
+                {
+                    Wheelbase   = "ModernTruck350.G.axF - ModernTruck350.G.axR",
+                    FrontTrack  = "ModernTruck350.G.frontWX * 2",
+                    WheelRadius = "ModernTruck350.G.wheelR",
+                    FrontAxleY  = "ModernTruck350.G.axF",
+                    RearAxleY   = "ModernTruck350.G.axR",
+                    MaxInnerDeg = "30",
+                    MaxOuterDeg = "30",
+                    TravelFront = "ModernTruck350.travel.F",
+                    TravelRear  = "ModernTruck350.travel.R",
+                },
+                azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/Modern350.asset",
+                vehicleId: "vehicle.modern_350",
+                label: "Modern 350"),
+
+            new Vehicle(
+                "modern2500",
+                "docs/art/rigs/modern2500-kit/modern2500.rig.js",
+                SidecarFolder + "/modern2500.rig.gameplay.json",
+                "ModernTruck2500",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/Modern2500VehicleMesh.asset",
+                meshId: "vehiclemesh.modern_2500",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    FaceExpression = "build(ModernTruck2500.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                axes: Modern2500Axes,
+                chassisSource: new VehicleChassisSource
+                {
+                    Wheelbase   = "ModernTruck2500.G.axF - ModernTruck2500.G.axR",
+                    FrontTrack  = "ModernTruck2500.G.frontWX * 2",
+                    WheelRadius = "ModernTruck2500.G.wheelR",
+                    FrontAxleY  = "ModernTruck2500.G.axF",
+                    RearAxleY   = "ModernTruck2500.G.axR",
+                    MaxInnerDeg = "30",
+                    MaxOuterDeg = "30",
+                    TravelFront = "ModernTruck2500.travel.F",
+                    TravelRear  = "ModernTruck2500.travel.R",
+                },
+                azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/Modern2500.asset",
+                vehicleId: "vehicle.modern_2500",
+                label: "Modern 2500"),
         };
 
         /// <summary>
@@ -1987,7 +2085,7 @@ namespace HiddenHarbours.Tools.RigBaking
             // oracles agreeing counter-clockwise on every body.
             "enduro250", "trike200", "utilityQuad",
             // The Modern 3500 — baked once her re-issued rig folded 27 ramps to 16 (2026-09-16); her def and id since 2026-09-18.
-            "modern3500",
+            "modern3500", "modern350", "modern2500",
         };
 
         /// <summary>

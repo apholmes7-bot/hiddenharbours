@@ -322,3 +322,17 @@ docs/art/rigs/wharf-building-kit-v2/**/*.json         text eol=lf
 docs/art/rigs/wharf-building-kit-v2/**/*.txt          text eol=lf
 docs/art/rigs/wharf-building-kit-v2/**/*.md           text eol=lf
 docs/art/rigs/wharf-building-kit-v2/**/*.html         text eol=lf
+
+# Modern 350 and Modern 2500: preserve the kit text bytes; PNGs retain LFS.
+docs/art/rigs/modern350-kit/modern350.rig.js text eol=lf
+docs/art/rigs/modern350-kit/modern350.contract.json text eol=lf
+docs/art/rigs/modern350-kit/preview.html text eol=lf
+docs/art/rigs/modern350-kit/README.md text eol=lf
+docs/art/rigs/gameplay/vehicles/modern350.rig.gameplay.json text eol=lf
+docs/art/rigs/modern350-kit/reference/SHA256SUMS.txt text eol=lf
+docs/art/rigs/modern2500-kit/modern2500.rig.js text eol=lf
+docs/art/rigs/modern2500-kit/modern2500.contract.json text eol=lf
+docs/art/rigs/modern2500-kit/preview.html text eol=lf
+docs/art/rigs/modern2500-kit/README.md text eol=lf
+docs/art/rigs/gameplay/vehicles/modern2500.rig.gameplay.json text eol=lf
+docs/art/rigs/modern2500-kit/reference/SHA256SUMS.txt text eol=lf

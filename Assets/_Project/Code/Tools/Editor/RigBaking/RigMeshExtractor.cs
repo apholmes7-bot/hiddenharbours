@@ -980,6 +980,26 @@ namespace HiddenHarbours.Tools.RigBaking
                         "return out;})()",
                 },
 
+                ["modern350.rig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
+                ["modern2500.rig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
                 // ---- the OTTER 8x8 — the second road vehicle, and the first amphibian ----------
                 // Same gap and the same fix as the Dually's above: no `MATS` const, because her table
                 // is built per-pose by `makeMats(s)` off her paint and weather axes. The expression is
