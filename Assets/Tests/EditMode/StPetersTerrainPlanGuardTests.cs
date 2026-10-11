@@ -20,8 +20,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// crest band holds outside layout B's pools; the ground west of x −356 holds.</item>
     /// <item><b>The key scenes':</b> the Landing, and the cannery's 12 m, at 0.0 m; the Head clear of the arrival
     /// route's 30 m capsule and 21.06 m clear of the cannery's corner (170, 16), its stack and bar where
-    /// <c>terrain.json</c> puts them; the cut inside x 99..114, y 55..69.4, the Fen Pool holding +5.25 and the plunge
-    /// pool +2.05 (spilling only down its outflow); Ginny's plot and track at part 1's; the shore path never cut; the
+    /// <c>terrain.json</c> puts them; the cut inside its imported ask's box, the Fen Pool holding +5.25 and the plunge
+    /// pool +2.062 at base flow (spilling only down its outflow); Ginny's plot and track at part 1's; the shore path never cut; the
     /// east cardinal deep; no shore rock on the Head's brow or the stack's plinth; no rock or clam hole on a key scene's
     /// path or lot; and the sea's range the map's.</item>
     /// <item><b>The ground file's</b> (PR 5 B, amendments 1 and 2): the cannery's circle pass 9's ground; the kept walls'

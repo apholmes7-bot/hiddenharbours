@@ -17,11 +17,13 @@ MonoBehaviour:
   Source: 0
   Kind: 1
   Retired: 0
+  IssueBoxes: []
+  RetirementWhy: 
   Rule: "pass 9 as it stands (its frozen mask holds today\u2019s ground there): no
     ask lays anything within 21.06 of (170, 16), the cannery\u2019s 9.06 plus 12;
-    the Head\u2019s neck fades out over the 3 beyond it"
-  Package: HH-st-peters-one-scene-package-2026-10-01
-  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+    the Head\u2019s neck fades out over the 6 beyond it"
+  Package: HH-st-peters-one-scene-package-2026-10-07
+  GroundFileSha256: 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad
   Scene: keyscene.stp_cannery
   FileKind: hold
   Ruled: 

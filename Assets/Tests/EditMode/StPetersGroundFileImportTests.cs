@@ -20,7 +20,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// <item><b>The rule, on made-up maps</b> (pure, no asset): the u16 decode in the file's order of operations, the
     /// big-endian pixel hash and the STOP on a mismatch, the last covering ask winning bilinearly between its samples in
     /// either order, and a package's ask after the game's refused.</item>
-    /// <item><b>The file:</b> the package's eight asks in the file's order, then the game's three, fix 4 among them;
+    /// <item><b>The file:</b> the package's seven live asks in the file's order, with the dry fill retained as retired, then the game's three, fix 4 among them;
     /// the base's pixels hashing as the file says, and each patch's as its ask says.</item>
     /// <item><b>The import:</b> every cell the base's decode or the last covering patch's bilinear, over the whole
     /// map; two imports identical; the committed height map a fresh import's codes, at the plan's range, and the
@@ -38,7 +38,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The package's asks, in the file's order (amendment 1 §4.1 item 3); the cannery hold is a rule.</summary>
         static readonly string[] PackageAsks =
         {
-            "ground.stp_fen_pool_dry", "ground.stp_alder_fall_cut", "ground.stp_ne_head", "ground.stp_gap_bridge",
+            "ground.stp_alder_fall_cut", "ground.stp_ne_head", "ground.stp_gap_bridge",
             "ground.stp_west_ledges_broken", "ground.stp_east_ledges_broken", "ground.stp_main_beach", "ground.stp_cannery_hold",
         };
 
@@ -208,11 +208,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheFile_ListsThePackagesAsksInItsOrder_ThenTheGamesOwn_Fix4AmongThem()
         {
             Assert.AreEqual(FileId, _file.Id);
-            var ids = _file.Asks.Select(d => d == null ? "(empty)" : d.Id).ToArray();
+            var ids = _file.Asks.Where(d => d != null && !d.Retired).Select(d => d.Id).ToArray();
             CollectionAssert.AreEqual(PackageAsks.Concat(GameAsks).ToArray(), ids, "the file's asks, in order");
-            for (int k = 0; k < _file.Asks.Length; k++)
+            var dropped = _file.Asks.Single(d => d.Id == "ground.stp_fen_pool_dry");
+            Assert.IsTrue(dropped.Retired, "the dropped fill's id stays taken");
+            var live = _file.Asks.Where(d => !d.Retired).ToArray();
+            for (int k = 0; k < live.Length; k++)
             {
-                var d = _file.Asks[k];
+                var d = live[k];
                 Assert.IsFalse(d.Retired, d.Id + " is retired");
                 Assert.AreEqual(k < PackageAsks.Length ? GroundAskSource.Package : GroundAskSource.Game, d.Source, d.Id + "'s source");
             }
@@ -240,7 +243,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(_file.BasePixelsSha256.ToLowerInvariant(), _first.BasePixelsSha256.ToLowerInvariant(), "the import read another base");
 
             int patches = 0;
-            foreach (var d in _file.Asks.Where(d => !d.Retired && d.Kind == GroundAskKind.Patch))
+            // A retired patch remains evidence: verify its retained PNG as well as every live patch.
+            foreach (var d in _file.Asks.Where(d => d.Kind == GroundAskKind.Patch))
             {
                 var codes = GroundFileIntake.PatchOf(d);
                 Assert.AreEqual(d.Width * d.Height, codes.Length, d.Id + "'s samples");
@@ -249,7 +253,7 @@ namespace HiddenHarbours.Tests.EditMode
                                 d.Id + "'s samples (row 0 at the box's south edge) are not its ask's hash");
                 patches++;
             }
-            Assert.AreEqual(7, patches, "the package's seven patches");
+            Assert.AreEqual(7, patches, "six live patches and the retained retired fill patch");
         }
 
         // ---- the import --------------------------------------------------------------------------------------------------

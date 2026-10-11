@@ -17,6 +17,22 @@ MonoBehaviour:
   Source: 0
   Kind: 0
   Retired: 0
+  IssueBoxes:
+  - {x: 188.14, y: 37.43, z: 195.14, w: 43.43}
+  - {x: 192.69, y: 40.84, z: 199.69, w: 46.84}
+  - {x: 196.86, y: 39.65, z: 203.86, w: 45.65}
+  - {x: 202.07, y: 42.66, z: 209.07, w: 48.66}
+  - {x: 206.97, y: 45.89, z: 213.97, w: 51.89}
+  - {x: 214.27, y: 50.56, z: 221.27, w: 56.56}
+  - {x: 218.46, y: 59.91, z: 225.46, w: 65.91}
+  - {x: 214.86, y: 62.68, z: 221.86, w: 68.68}
+  - {x: 205.55, y: 65.53, z: 212.55, w: 71.53}
+  - {x: 197.61, y: 66.13, z: 204.61, w: 72.13}
+  - {x: 191.28, y: 66.09, z: 198.28, w: 72.09}
+  - {x: 186.48, y: 66.28, z: 193.48, w: 72.28}
+  - {x: 180.65, y: 63.58, z: 187.65, w: 69.58}
+  - {x: 174.12, y: 59.43, z: 181.12, w: 65.43}
+  RetirementWhy: 
   Rule: "max(pass 9, the Head): the headland at +11.0 inside its brow, the wave-cut
     platform round the foot, the Lantern Stack\u2019s plinth and the NE bar, as terrain.json
     has them; the neck (10-01): along its spine pass 3\u2019s ramp from +6 up to
@@ -24,20 +40,28 @@ MonoBehaviour:
     the spine the ground eased from the spine\u2019s height back to pass 9\u2019s
     over shoulders about 12 m wide, on the plateau and down the shore\u2019s bank,
     wrapping 5 m round the root\u2019s corners; within the cannery\u2019s 21.06 m
-    nothing is raised, and the neck fades out over the 6 beyond it"
-  Package: HH-st-peters-one-scene-package-2026-10-01
-  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+    nothing is raised, and the neck fades out over the 6 beyond it. Its fourteen
+    rock pools (pool.stp_ne_platform_01 to _14, the game\u2019s sites) are cut into
+    the wave-cut platform by the game\u2019s platform Def (Ground_NePlatform: radius
+    0.8 to 1.5 m, an outline 1.25 x 0.85 of it wobbling by 0.14, 0.2 to 0.3 m deep
+    below the spill, the floor irishmoss), on the game\u2019s pixels: the spill is
+    the lowest ground on the rim raised by 0.3 of the rim\u2019s fall (at most 0.25
+    m), a lip laid up to it where the rim stands lower, the floor cut to the spill
+    less the depth (1 - q2), the rim\u2019s higher side the platform\u2019s back
+    wall; stillWater.pools lists each"
+  Package: HH-st-peters-one-scene-package-2026-10-07
+  GroundFileSha256: 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad
   Scene: keyscene.stp_ne_light
-  FileKind: raise
+  FileKind: raise, and the rock pools cut
   Ruled: "2026-09-28 (site A, the Head); the neck refined at the owner\u2019s ask,
-    2026-10-01"
+    2026-10-01; its fourteen rock pools cut, 2026-10-07 (the second issue s2.2)"
   BoxMin: {x: 152.5, y: 28.25}
   BoxMax: {x: 261.25, y: 106}
   Step: 0.25
   Width: 436
   Height: 312
   Patch: {fileID: 2800000, guid: ed508fda964eb764db6fbd43d329aaee, type: 3}
-  PatchSha256: 3083c01bad42ef75f563cb85b49315e05ab3be600535cbfb29db6d7e7a9131ea
+  PatchSha256: f21214e27542ed37fa8f0eb058a8a3aaa8e2858ce017ca3af0a2f4da4820d1e3
   PatchRange: {x: -4, y: 12}
   Line: []
   LineOf: 

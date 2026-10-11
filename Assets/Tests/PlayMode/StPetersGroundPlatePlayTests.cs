@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -78,7 +78,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const int BoardPxPerMetre = 32;
         static readonly Rect BoardRect = Rect.MinMaxRect(-6f, -96f, 70f, -46f);
 
-        enum TideAt { SpringLow, Mean, SpringHigh }
+        enum TideAt { SpringLow, Mean, SpringHigh, BoardNoon }
 
         sealed class Plate
         {
@@ -209,6 +209,8 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             RequireAGraphicsDevice();
             yield return LoadStPeters();
+            // Issue 3 compares the complete derived ground-and-water maps with the boards.
+            yield return RegisterTheStillWater();
             var plate = new Plate
             {
                 Name = "a-main-beach",
@@ -225,7 +227,7 @@ namespace HiddenHarbours.Tests.PlayMode
             TideAt[] tides = { TideAt.SpringLow, TideAt.Mean, TideAt.SpringHigh };
             for (int i = 0; i < tides.Length; i++)
             {
-                yield return PinTheTide(tides[i]);
+                yield return PinTheTide(tides[i], 15.5f);
                 yield return HoldStill(plate);
                 yield return Shoot(plate, tags[i], null);
             }
@@ -416,8 +418,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary><b>K1-K4 (09-29 §4.3).</b> The still water on the painted path, beside #890's plate: the
-        /// Alder Run, the fall's pool and the Bog Pond drawn in full, and where the Fen Pool was (retired,
-        /// dry). The still water is registered by the plate.</summary>
+        /// Alder Run, the fall's pool and the Bog Pond drawn in full, and the restored Fen Pool. The still water is registered by the plate.</summary>
         [UnityTest]
         public IEnumerator StillWater_OnThePaintedPath_Registered()
         {
@@ -433,8 +434,8 @@ namespace HiddenHarbours.Tests.PlayMode
                             Subject = "St Peters: the fall's pool", Ids = $"{plunge.Id} (surface {plunge.Surface:0.000}, bed {plunge.Bed:0.000}); fall.stp_alder_fall" },
                 new Plate { Name = "k3-bog-pond", Centre = bog.Centre, Ortho = 7f,
                             Subject = "St Peters: the Bog Pond", Ids = $"{bog.Id} (surface {bog.Surface:0.000}, bed {bog.Bed:0.000})" },
-                new Plate { Name = "k4-fen-pool-retired", Centre = new Vector2(108f, 51f), Ortho = 7f,
-                            Subject = "St Peters: where the Fen Pool was (retired, held: the ground is dry)", Ids = "ground.stp_fen_pool_dry (the fen's Def is held, not shipped)" },
+                new Plate { Name = "k4-fen-pool-restored", Centre = new Vector2(108f, 51f), Ortho = 7f,
+                            Subject = "St Peters: the restored Fen Pool at +5.25", Ids = "pond.stp_fen_pool; ground.stp_fen_pool_dry (retired by id)" },
             };
             yield return PinTheTide(TideAt.Mean);
             yield return RegisterTheStillWater();
@@ -445,6 +446,61 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return FrameFree(plates[i]);
                 yield return Shoot(plates[i], "mean-still-water-registered", notes[i]);
             }
+        }
+
+        // Issue 3 frames reproduce tools/boards.json's x/v rectangles at 32 px per world unit.
+        static Plate BoardPlate(string name, float x0, float x1, float v0, float v1, string ids) => new Plate
+        {
+            Name = name, Subject = "St Peters second issue: " + name, Ids = ids,
+            Centre = new Vector2((x0 + x1) * 0.5f, (v0 + v1) * 0.5f), Ortho = (v1 - v0) * 0.5f,
+            Width = Mathf.RoundToInt((x1 - x0) * BoardPxPerMetre), Height = Mathf.RoundToInt((v1 - v0) * BoardPxPerMetre),
+        };
+
+        [UnityTest]
+        public IEnumerator SecondIssue_FenAndAlderHead_AtTheBoardsNoon()
+        {
+            RequireAGraphicsDevice(); yield return LoadStPeters();
+            yield return RegisterTheStillWater(); yield return PinTheTide(TideAt.BoardNoon, 12f);
+            var p = BoardPlate("issue3-fen-alder-noon", 91f, 121f, 50.053f, 70.053f,
+                "pond.stp_fen_pool; stream.stp_alder_run; fall.stp_alder_fall");
+            yield return FrameFree(p); yield return Shoot(p, "noon", "CD: parity/alder-fall-noon.png; exact board frame and noon clock; live tide recorded above.");
+            Assert.AreEqual(5.25f, GameServices.StillWater.StillLevelAt(new Vector2(108f, 51f)), 0.001f, "the restored fen's centre holds its surface");
+        }
+
+        [UnityTest]
+        public IEnumerator SecondIssue_HeadPools_AtLowAndHighWater()
+        {
+            RequireAGraphicsDevice(); yield return LoadStPeters(); yield return RegisterTheStillWater();
+            var frames = new[] {
+                BoardPlate("issue3-head-neck",158f,206f,40f,72f,"pool.stp_ne_platform_01..14"),
+                BoardPlate("issue3-head-all-pools",168f,230f,34f,76f,"pool.stp_ne_platform_01..14") };
+            foreach (var tide in new[] { TideAt.SpringLow, TideAt.SpringHigh })
+            {
+                yield return PinTheTide(tide,15.5f);
+                foreach(var p in frames) { yield return FrameFree(p); yield return Shoot(p,tide.ToString(),"CD: places/head-neck.png; board frame plus overview covering all 14 pools."); }
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator SecondIssue_LedgesPools_AtLowWater()
+        {
+            RequireAGraphicsDevice(); yield return LoadStPeters(); yield return RegisterTheStillWater();
+            yield return PinTheTide(TideAt.SpringLow,15.5f);
+            var frames = new[] {
+                BoardPlate("issue3-west-ledges",-41f,-8f,-72f,-26f,"pool.stp_west_ledges_01..05"),
+                BoardPlate("issue3-east-ledges",92f,148f,-84f,-46f,"pool.stp_east_ledges_01..05") };
+            foreach(var p in frames) { yield return FrameFree(p); yield return Shoot(p,"spring-low","CD: places/west-ledges.png or places/east-ledges.png; same board frame and 15:30 light; board is mean tide, this plate exposes the pools at low tide."); }
+        }
+
+        [UnityTest]
+        public IEnumerator SecondIssue_HeathMouth_AndLoftSpur()
+        {
+            RequireAGraphicsDevice(); yield return LoadStPeters(); yield return RegisterTheStillWater();
+            yield return PinTheTide(TideAt.Mean,15.5f);
+            var frames = new[] {
+                BoardPlate("issue3-heath-mouth",4f,23f,-85f,-64f,"stream.stp_heath_brook"),
+                BoardPlate("issue3-loft-spur",177f,194f,11f,30f,"path.stp_loft_spur") };
+            foreach(var p in frames) { yield return FrameFree(p); yield return Shoot(p,"mean","Heath's 19 authored stations meet mean tide; loft spur is paint only."); }
         }
 
         /// <summary><b>L (the v49 update's item 6).</b> The two beach trees, re-seated on the new ground:
@@ -617,7 +673,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// the drawn sea stands at that level and the day/night tint has settled. The clock reads wall time
         /// and stops on its own TimeScale; the sea eases its level on scaled time, so the world keeps running.
         /// </summary>
-        IEnumerator PinTheTide(TideAt which)
+        IEnumerator PinTheTide(TideAt which, float? exactHour = null)
         {
             IGameClock clock = GameServices.Clock;
             IEnvironmentService env = GameServices.Environment;
@@ -635,12 +691,17 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int day = FirstDay; day <= LastDay; day++)
                 for (int m = FirstMinute; m <= LastMinute; m++)
                 {
+                    if (exactHour.HasValue && m != Mathf.RoundToInt(exactHour.Value * 60f)) continue;
                     double t = (day + m / 1440.0) * spd;
                     float level = env.WaterLevelAt(t);
                     low = Mathf.Min(low, level);
                     high = Mathf.Max(high, level);
                     switch (which)
                     {
+                        case TideAt.BoardNoon:
+                            float boardGap = Mathf.Abs(level - 0.63f); // boards.json: alder-fall-noon, t=12, tide=0.63
+                            if (best < 0.0 || boardGap < bestHourGap) { best = t; bestLevel = level; bestHourGap = boardGap; }
+                            break;
                         case TideAt.SpringLow:
                             if (best < 0.0 || level < bestLevel) { best = t; bestLevel = level; }
                             break;
@@ -689,11 +750,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             float hour = clock.HourOfDay;
             int hh = Mathf.FloorToInt(hour), mm = Mathf.FloorToInt((hour - hh) * 60f);
-            string how = which == TideAt.SpringLow ? "the lowest" : which == TideAt.SpringHigh ? "the highest" :
+            string how = which == TideAt.BoardNoon ? "the noon nearest CD board tide +0.63 m" : which == TideAt.SpringLow ? "the lowest" : which == TideAt.SpringHigh ? "the highest" :
                          $"the minute within {MeanBandMetres * 100f:0} cm of the datum nearest {MeanHourWanted:0.0} h";
             _pinned = $"{which}: day {clock.DayIndex} {hh:00}:{mm:00} ({hour:0.000} h, TotalSeconds {clock.TotalSeconds:0.0}, " +
                       $"SecondsPerDay {spd:0}); water {target:+0.000;-0.000} m, {how} of days {FirstDay}-{LastDay}, " +
-                      $"{FirstMinute / 60:00}:00-{LastMinute / 60:00}:00 (that window runs {low:+0.000;-0.000} to {high:+0.000;-0.000} m); " +
+                      $"{(exactHour.HasValue ? exactHour.Value.ToString("0.00") + " h fixed" : (FirstMinute / 60).ToString("00") + ":00-" + (LastMinute / 60).ToString("00") + ":00")} (that window runs {low:+0.000;-0.000} to {high:+0.000;-0.000} m); " +
                       $"drawn sea {sea.x:+0.0000;-0.0000} m after {frames} frames / {waited:0.00} s; " +
                       $"_DayNightTint ({tint.r:0.000}, {tint.g:0.000}, {tint.b:0.000})";
             Debug.Log($"[{PlateDir}] pinned: {_pinned}");
