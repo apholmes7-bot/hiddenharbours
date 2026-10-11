@@ -44,6 +44,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
         };
 
         [Test]
+        public void LiftUniforms_AreSharedByColourAndGuard()
+        {
+            string source = System.IO.File.ReadAllText(Shaders[0].path);
+            StringAssert.Contains("uint _HHLiftLevels", source);
+            StringAssert.Contains("uint _HHShownRoles", source);
+            StringAssert.DoesNotContain("_HHLevelLid", source);
+            StringAssert.Contains("float3 levelTag", source);
+            string guard = source.Substring(source.IndexOf("fragGuard (", System.StringComparison.Ordinal));
+            StringAssert.Contains("HHLevelDiscards(i.lvl)", guard);
+        }
+
+        [Test]
         public void IsoFacetShaders_CompileTheirVariants_NoShaderErrors()
         {
             // The importer logs shader errors to the console; without this the runner would fail

@@ -83,6 +83,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// without widening the fleet's guarded 16.</para>
         /// </summary>
         public bool Interior;
+        public int Role = -1;
 
         /// <summary>The rig's procedural surface generator for this face, as
         /// <see cref="BoatInteriorGeometryExtractor.TexKind"/>. 0 on every hull face and on any
@@ -205,6 +206,11 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public string RigKey;
         public string GlobalName;
+        public HullWalkRead Walk;
+        public Dictionary<string, object> WalkGeometry;
+        public HiddenHarbours.Core.HullMeshDef.LiftSet[] LiftSets;
+        public List<RigFace> WalkInteriorFaces;
+        public bool CarriesRoles => Faces.Any(f => f.Role >= 0);
         public List<RigFace> Faces = new List<RigFace>();
         public List<RigMaterial> Materials = new List<RigMaterial>();
 
@@ -351,6 +357,8 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             RigKey = RigKey,
             GlobalName = GlobalName,
+            Walk = Walk, WalkGeometry = WalkGeometry, LiftSets = LiftSets,
+            WalkInteriorFaces = WalkInteriorFaces,
             Faces = faces,
             Materials = Materials,
             LightN = LightN,
@@ -1668,6 +1676,13 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"Rig '{scriptPath}' ran but did not install globalThis.{g}. Either the global " +
                     "name is wrong or the rig changed shape.");
 
+            if (prop == null)
+            {
+                string scope = hull != null ? hull.ScopeOr(g) : g;
+                string walkPath = HullWalkRigExtractor.FindWalk(scriptPath, host, scope);
+                if (walkPath != null) return HullWalkRigExtractor.Extract(host, scriptPath, g, scope, walkPath);
+            }
+
             // A fitting needs the shading half of the usual five but NOT `F` — its geometry comes
             // from a builder, and demanding a static face array of a rig that has none would shim in
             // a symbol nothing reads. It needs that builder (and its pivot) instead.
@@ -1869,6 +1884,9 @@ namespace HiddenHarbours.Tools.RigBaking
 
             string scope = extraction != null ? extraction.ScopeOr(globalName) : globalName;
             if (!host.EvaluateBool($"typeof {scope}.doorFaces === 'function'")) return null;
+
+            if (hull.Walk != null)
+                return HullWalkRigExtractor.Door(host, scope, hull, doorOpen);
 
             string view = extraction != null && !string.IsNullOrEmpty(extraction.ViewOptions)
                 ? extraction.ViewOptions

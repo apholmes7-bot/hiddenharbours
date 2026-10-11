@@ -201,6 +201,79 @@ namespace HiddenHarbours.Boats
         public static bool Contains(Vector2[] polygon, Vector2 point)
             => Contains(polygon, Vector4.zero, point);
 
+        public static bool Contains(DeckArea area, Vector2 point)
+        {
+            if (area == null || !Contains(area.Outline, area.Bounds, point)) return false;
+            return !InsideHole(area, point);
+        }
+
+        public static bool InsideHole(DeckArea area, Vector2 point)
+        {
+            if (area?.Holes == null) return false;
+            foreach (DeckAreaHole hole in area.Holes)
+                if (hole != null && Contains(hole.Outline, point)) return true;
+            return false;
+        }
+
+        public static Vector2 ClosestPointOnOutline(DeckArea area, Vector2 point, out float sqrDistance)
+        {
+            Vector2 best = ClosestPointOnOutline(area.Outline, point, out sqrDistance);
+            if (area.Holes == null || area.Holes.Length == 0) return best;
+            // Split each edge at all crossings, so holes extending outside the deck do not
+            // create a boundary on which the walker can stand off the hull.
+            sqrDistance = float.PositiveInfinity;
+            ConsiderRing(area.Outline, area, point, true, ref best, ref sqrDistance);
+            foreach (DeckAreaHole hole in area.Holes)
+                if (hole != null) ConsiderRing(hole.Outline, area, point, false, ref best, ref sqrDistance);
+            return best;
+        }
+
+        static void ConsiderRing(Vector2[] ring, DeckArea area, Vector2 point, bool outer,
+                                 ref Vector2 best, ref float distance)
+        {
+            if (ring == null) return;
+            for (int i = 0; i < ring.Length; i++)
+            {
+                Vector2 a = ring[i], b = ring[(i + 1) % ring.Length];
+                float start = 0;
+                while (start < 1)
+                {
+                    float end = 1;
+                    NextCrossing(a, b, area.Outline, start, ref end);
+                    foreach (DeckAreaHole hole in area.Holes)
+                        if (hole != null) NextCrossing(a, b, hole.Outline, start, ref end);
+                    Vector2 mid = Vector2.Lerp(a, b, (start + end) * 0.5f);
+                    bool legal = outer || Contains(area.Outline, mid);
+                    if (legal)
+                        foreach (DeckAreaHole hole in area.Holes)
+                            if (hole != null && hole.Outline != ring && Contains(hole.Outline, mid)) { legal = false; break; }
+                    if (legal)
+                    {
+                        Vector2 p = ClosestPointOnSegment(Vector2.Lerp(a, b, start), Vector2.Lerp(a, b, end), point);
+                        float d = (point - p).sqrMagnitude;
+                        if (d < distance) { best = p; distance = d; }
+                    }
+                    start = end;
+                }
+            }
+        }
+
+        static void NextCrossing(Vector2 a, Vector2 b, Vector2[] ring, float start, ref float end)
+        {
+            if (ring == null) return;
+            Vector2 ab = b - a;
+            for (int i = 0; i < ring.Length; i++)
+            {
+                Vector2 c = ring[i], cd = ring[(i + 1) % ring.Length] - c;
+                float den = ab.x * cd.y - ab.y * cd.x;
+                if (Mathf.Abs(den) < 1e-8f) continue;
+                Vector2 ac = c - a;
+                float t = (ac.x * cd.y - ac.y * cd.x) / den;
+                float u = (ac.x * ab.y - ac.y * ab.x) / den;
+                if (t > start + 1e-6f && t < end && u >= 0 && u <= 1) end = t;
+            }
+        }
+
         /// <summary>
         /// The closest point ON the polygon's outline to <paramref name="point"/> (deck frame), with the
         /// squared distance out. Walks every edge — allocation-free, and only ever reached when the

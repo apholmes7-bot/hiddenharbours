@@ -173,12 +173,14 @@ namespace HiddenHarbours.Tools.RigBaking
             var norms = new Vector3[vcount];
             var attrs = new Vector4[vcount];
             bool tagged = data.CarriesLevelTags;
-            var levels = tagged ? new Vector2[vcount] : null;
+            bool roles = data.CarriesRoles;
+            var levels = tagged && !roles ? new Vector2[vcount] : null;
+            var roleLevels = tagged && roles ? new Vector3[vcount] : null;
             // THE ROOM'S PROCEDURAL SURFACE, in its own channel so TexCoord1 does not have to widen
             // and no existing hull's vertex layout moves. xy are flat per face (generator + period),
             // zw are the rig's own per-VERTEX uv, which paint() interpolates before calling the
             // generator — so they must interpolate here too.
-            bool textured = data.CarriesInteriorGeometry;
+            bool textured = data.CarriesInteriorGeometry && (data.Walk == null || data.Faces.Exists(f => f.TexKind != 0));
             var texAttrs = textured ? new Vector4[vcount] : null;
             bool faced = data.CarriesFaceAttributes;
             if (faced && tagged)
@@ -245,7 +247,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     verts[v] = f.V[k].ToVector3();
                     norms[v] = n;
                     attrs[v] = attr;
-                    if (tagged) levels[v] = levelTag;
+                    if (tagged && !roles) levels[v] = levelTag;
+                    if (tagged && roles) roleLevels[v] = new Vector3(levelTag.x, levelTag.y, f.Role + 1);
                     if (faced) faceAttrs[v] = faceAttr;
                     if (marked) markAttrs[v] = markAttr;
                     if (textured)
@@ -273,7 +276,8 @@ namespace HiddenHarbours.Tools.RigBaking
             mesh.vertices = verts;
             mesh.normals = norms;
             mesh.SetUVs(AttrUvChannel, attrs);
-            if (tagged) mesh.SetUVs(LevelUvChannel, levels);
+            if (tagged && !roles) mesh.SetUVs(LevelUvChannel, levels);
+            if (tagged && roles) mesh.SetUVs(LevelUvChannel, roleLevels);
             if (textured) mesh.SetUVs(TexUvChannel, texAttrs);
             if (faced) mesh.SetUVs(FaceUvChannel, faceAttrs);
             if (marked) mesh.SetUVs(MarkUvChannel, markAttrs);
@@ -288,7 +292,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 Materials = data.Materials.Count,
                 TaggedFaces = taggedFaces,
                 GroupedFaces = groupedFaces,
-                BufferBytes = (long)vcount * (12 + 12 + 16 + (tagged ? 8 : 0) + (faced ? 16 : 0) +
+                BufferBytes = (long)vcount * (12 + 12 + 16 + (tagged ? (roles ? 12 : 8) : 0) + (faced ? 16 : 0) +
                                               (marked ? 16 : 0)) +
                               (long)tris.Count * 4,
             };
