@@ -766,5 +766,37 @@
   {
     "file": "TussockSedge_0_detail.png",
     "rgbaSha256": "ad07d9d18d04d5684ea536653fd92c044d8ee1fb0d8d35e3928b5bb293f9012f"
+  },
+  {
+    "file": "OstrichFern_0_unlit.png",
+    "rgbaSha256": "42a53090c38ea421ad37ccb5b6840232433c0c35a8c92954eeabac9777d2151e"
+  },
+  {
+    "file": "OstrichFern_0_normal.png",
+    "rgbaSha256": "9b2be5f348972c459eb121fdf2875c471ebebc6c7d8105e71966369eb859e4c1"
+  },
+  {
+    "file": "OstrichFern_0_light.png",
+    "rgbaSha256": "4c78054bb04db1aa4259a0c44e8912f3a96a04a71eb01b0c185f4b980429585e"
+  },
+  {
+    "file": "OstrichFern_0_detail.png",
+    "rgbaSha256": "dce036b25bde63f5ac178b3228bd9e63dbdc99e6b3b4042a486f1638ab1fb960"
+  },
+  {
+    "file": "MarshMarigold_0_unlit.png",
+    "rgbaSha256": "4a89c9f614d2678e9982475d832ebfef9d8d81cd651b97f86b2b92142af89a57"
+  },
+  {
+    "file": "MarshMarigold_0_normal.png",
+    "rgbaSha256": "3fabbd79c81d1c337a47d8ae5190419ac26bd478b83ae3853305a6460e76acaf"
+  },
+  {
+    "file": "MarshMarigold_0_light.png",
+    "rgbaSha256": "681a81f732876153a2eded5d5da630fc8cbaaeec09d4f83045c45d687f12e9ad"
+  },
+  {
+    "file": "MarshMarigold_0_detail.png",
+    "rgbaSha256": "c34b154cc6e1573563ac2731609b24ca6f0e5c67053c1c384ce6edb4f5702206"
   }
 ]
