@@ -588,6 +588,7 @@ namespace HiddenHarbours.Art
                 internal Vector4 Grid, World, FlowWorld;
                 internal int Matching;
             }
+            private static readonly int BlitScaleBias = Shader.PropertyToID("_BlitScaleBias");
             private static readonly int F2Prev = Shader.PropertyToID("_F2Prev");
             private static readonly int F2Velocity = Shader.PropertyToID("_F2Velocity");
             private static readonly int F2Mask = Shader.PropertyToID("_F2Mask");
@@ -613,13 +614,18 @@ namespace HiddenHarbours.Art
                 builder.SetGlobalTextureAfterPass(next, FoamShaderIds.BufferTex);
                 builder.SetRenderFunc((TransportPassData pass, RasterGraphContext context) =>
                 {
-                    pass.Material.SetTexture(F2Prev, (RTHandle)pass.Previous);
-                    pass.Material.SetTexture(F2Velocity, (RTHandle)pass.Flow);
-                    pass.Material.SetTexture(F2Mask, (RTHandle)pass.Mask);
-                    pass.Material.SetVector(F2Grid, pass.Grid);
-                    pass.Material.SetVector(F2World, pass.World);
-                    pass.Material.SetVector(F2FlowWorld, pass.FlowWorld);
-                    Blitter.BlitTexture(context.cmd, new Vector4(1, 1, 0, 0), pass.Material, pass.Matching);
+                    // DrawProcedural copies the block into the command buffer. The graph returns
+                    // this scratch block to its pool after the pass, even for another camera/step.
+                    var properties = context.renderGraphPool.GetTempMaterialPropertyBlock();
+                    properties.SetTexture(F2Prev, (Texture)(RTHandle)pass.Previous);
+                    properties.SetTexture(F2Velocity, (Texture)(RTHandle)pass.Flow);
+                    properties.SetTexture(F2Mask, (Texture)(RTHandle)pass.Mask);
+                    properties.SetVector(F2Grid, pass.Grid);
+                    properties.SetVector(F2World, pass.World);
+                    properties.SetVector(F2FlowWorld, pass.FlowWorld);
+                    properties.SetVector(BlitScaleBias, new Vector4(1, 1, 0, 0));
+                    context.cmd.DrawProcedural(Matrix4x4.identity, pass.Material, pass.Matching,
+                        MeshTopology.Triangles, 3, 1, properties);
                 });
             }
 
@@ -895,20 +901,23 @@ namespace HiddenHarbours.Art
                         builder.SetGlobalTextureAfterPass(nextTex, FoamShaderIds.BufferTex);
                         builder.SetRenderFunc((FoamPassData data, RasterGraphContext ctx) =>
                         {
-                            data.Material.SetTexture(FoamShaderIds.Prev, (RTHandle)data.Prev);
-                            data.Material.SetVector(FoamShaderIds.BufferWorld, data.World);
-                            data.Material.SetVector(FoamShaderIds.Resolution, data.Resolution);
-                            data.Material.SetVector(FoamShaderIds.Shift, data.Shift);
-                            data.Material.SetFloat(FoamShaderIds.Decay, data.DecayFactor);
-                            data.Material.SetFloat(FoamShaderIds.AgeDecay, data.AgeDecayFactor);
-                            data.Material.SetVectorArray(FoamShaderIds.InjectSeg, data.Segments);
-                            data.Material.SetVectorArray(FoamShaderIds.InjectShape, data.Shapes);
-                            data.Material.SetVectorArray(FoamShaderIds.DispersalTrackA, data.DispTrackA);
-                            data.Material.SetVectorArray(FoamShaderIds.DispersalTrackB, data.DispTrackB);
-                            data.Material.SetVectorArray(FoamShaderIds.DispersalTrackC, data.DispTrackC);
-                            data.Material.SetVectorArray(FoamShaderIds.DispersalShape, data.DispShape);
-                            data.Material.SetVector(FoamShaderIds.SurfDeposit, data.SurfDeposit);
-                            Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
+                            var properties = ctx.renderGraphPool.GetTempMaterialPropertyBlock();
+                            properties.SetTexture(FoamShaderIds.Prev, (Texture)(RTHandle)data.Prev);
+                            properties.SetVector(FoamShaderIds.BufferWorld, data.World);
+                            properties.SetVector(FoamShaderIds.Resolution, data.Resolution);
+                            properties.SetVector(FoamShaderIds.Shift, data.Shift);
+                            properties.SetFloat(FoamShaderIds.Decay, data.DecayFactor);
+                            properties.SetFloat(FoamShaderIds.AgeDecay, data.AgeDecayFactor);
+                            properties.SetVectorArray(FoamShaderIds.InjectSeg, data.Segments);
+                            properties.SetVectorArray(FoamShaderIds.InjectShape, data.Shapes);
+                            properties.SetVectorArray(FoamShaderIds.DispersalTrackA, data.DispTrackA);
+                            properties.SetVectorArray(FoamShaderIds.DispersalTrackB, data.DispTrackB);
+                            properties.SetVectorArray(FoamShaderIds.DispersalTrackC, data.DispTrackC);
+                            properties.SetVectorArray(FoamShaderIds.DispersalShape, data.DispShape);
+                            properties.SetVector(FoamShaderIds.SurfDeposit, data.SurfDeposit);
+                            properties.SetVector(BlitScaleBias, new Vector4(1, 1, 0, 0));
+                            ctx.cmd.DrawProcedural(Matrix4x4.identity, data.Material, 0,
+                                MeshTopology.Triangles, 3, 1, properties);
                         });
                     }
 
