@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: keyscene.nmc_town_bridge
   DisplayName: 'The town on its river: the Route 91 bridge'
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_town_bridge/scene.json,
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_town_bridge/scene.json,
     54359 bytes, sha256 2d81e0686d420c3cc53f71015e49a9d6dcddbd18ab0b9fdb40777f29d399499b
   Placed: 0
   Pieces:
@@ -113,10 +113,20 @@ MonoBehaviour:
         puts them over the bank"}]}'
     - Key: nmc.scene.refs
       Value: '[]'
+    - Key: nmc.scene.takeoverRecords
+      Value: '[{"id":"structure.nmc_restaurant_bar","name":"the restaurant and bar
+        (a converted Second Empire manor)","defType":"BuildingDef","kit":"ManorIso
+        (Art/manorIsoRig.js)","rig":"ManorIso","opts":{"preset":"harbourmaster"},"nightOpts":{"night":true,"lit":0.9},"at":[-204,232.5],"centre":[-204,244.5],"frontM":12,"z":6,"dir":4,"faces":"S
+        (dir 4): its entrance to Water Street","footprintM":[14.25,18.5],"note":"ManorIso.dims({preset:\u2019harbourmaster\u2019}):
+        14.25 x 18.5 m, eaves +8.15, top +13.43 over its pad; at stands on its front
+        line (the steps), centre is the footprint\u2019s","lights":[{"at":[0,0.4,2.6],"reachM":3.5,"intensity":0.6,"colour":"#ffc774","when":"dusk"}]},{"id":"structure.nmc_chandlery","name":"the
+        chandlery","defType":"SetPieceDef","kit":"NmcSetPieces 1.2.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)","piece":"chandlery","opts":{},"at":[-160,234],"z":6,"dir":4,"faces":"S
+        (dir 4): its shop front to Water Street","layer":"raised","walk":"solid","gameplay":"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/chandlery.gameplay.json","new":true,"emits":"o.lit
+        from the lamp rule (dusk to dawn)","lights":[{"at":[0,-3.7,2.5],"reachM":3.2,"intensity":0.6,"colour":"#ffc774","when":"dusk"}]}]'
     - Key: nmc.scene.sourceRows
       Value: 55
     - Key: nmc.scene.ownedRows
-      Value: 55
+      Value: 53
     - Key: nmc.deferred
       Value: placement=H7; names/households/calendar/visits/fire schedules=H13 after
         the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
@@ -2276,94 +2286,6 @@ MonoBehaviour:
       Value: keyscene.nmc_town_bridge
     - Key: nmc.type
       Value: SetPieceDef
-  - Id: structure.nmc_restaurant_bar
-    Kind: building
-    Owner: H7
-    Kit: ManorIso (Art/manorIsoRig.js)
-    Piece: ManorIso
-    State: 
-    At: {x: -204, y: 232.5}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 0
-    SortY: 0
-    Layer: 
-    Walk: 
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: preset
-      Value: harbourmaster
-    - Key: nmc.name
-      Value: '"the restaurant and bar (a converted Second Empire manor)"'
-    - Key: nmc.rig
-      Value: '"ManorIso"'
-    - Key: nmc.nightOpts
-      Value: '{"night":true,"lit":0.9}'
-    - Key: nmc.centre
-      Value: '[-204,244.5]'
-    - Key: nmc.frontM
-      Value: 12
-    - Key: nmc.faces
-      Value: '"S (dir 4): its entrance to Water Street"'
-    - Key: nmc.footprintM
-      Value: '[14.25,18.5]'
-    - Key: nmc.note
-      Value: '"ManorIso.dims({preset:\u2019harbourmaster\u2019}): 14.25 x 18.5 m,
-        eaves +8.15, top +13.43 over its pad; at stands on its front line (the steps),
-        centre is the footprint\u2019s"'
-    - Key: nmc.lights
-      Value: '[{"at":[0,0.4,2.6],"reachM":3.5,"intensity":0.6,"colour":"#ffc774","when":"dusk"}]'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_town_bridge
-    - Key: nmc.type
-      Value: BuildingDef
-  - Id: structure.nmc_chandlery
-    Kind: setPiece
-    Owner: H7
-    Kit: NmcSetPieces 1.2.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
-    Piece: chandlery
-    State: 
-    At: {x: -160, y: 234}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 0
-    SortY: 0
-    Layer: raised
-    Walk: solid
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: nmc.name
-      Value: '"the chandlery"'
-    - Key: nmc.faces
-      Value: '"S (dir 4): its shop front to Water Street"'
-    - Key: nmc.gameplay
-      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/chandlery.gameplay.json"'
-    - Key: nmc.emits
-      Value: '"o.lit from the lamp rule (dusk to dawn)"'
-    - Key: nmc.lights
-      Value: '[{"at":[0,-3.7,2.5],"reachM":3.2,"intensity":0.6,"colour":"#ffc774","when":"dusk"}]'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_town_bridge
-    - Key: nmc.type
-      Value: SetPieceDef
   - Id: boat.nmc_town_dory
     Kind: boat
     Owner: H7
@@ -2791,28 +2713,6 @@ MonoBehaviour:
     WhoLights: 
     Budget: 0
     Note: 
-  - PieceId: structure.nmc_restaurant_bar
-    Preset: 
-    Pool: 0
-    ReachMetres: 3.5
-    At: {x: 0, y: 0.4, z: 2.6}
-    Colour: '#ffc774'
-    Intensity: 0.6
-    When: dusk
-    WhoLights: 
-    Budget: 0
-    Note: 
-  - PieceId: structure.nmc_chandlery
-    Preset: 
-    Pool: 0
-    ReachMetres: 3.2
-    At: {x: 0, y: -3.7, z: 2.5}
-    Colour: '#ffc774'
-    Intensity: 0.6
-    When: dusk
-    WhoLights: 
-    Budget: 0
-    Note: 
   RetiredIds:
   - structure.nmc_river_wall.00
   - structure.nmc_river_wall.01
@@ -3006,3 +2906,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - boat.nmc_shore_dory
+  - prop.nmc_bank_bench_4
+  - prop.nmc_bank_bench_5
+  - prop.nmc_shore_fire
+  - structure.nmc_bank_steps_4
+  - structure.nmc_bank_steps_5
+  - prop.nmc_lot_pole_05
+  - prop.nmc_lot_pole_04
+  - prop.nmc_yard_fence_e
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_rack_01
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  - structure.nmc_apartments_2
+  PlacementIds: []

@@ -768,6 +768,76 @@
     {
       "id": "vehicle.nmc_plaza_van_3",
       "reason": "superseded main_street.plaza"
+    },
+    {
+      "id": "boat.nmc_shore_dory",
+      "scene": "keyscene.nmc_south_shore",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_bank_bench_4",
+      "scene": "keyscene.nmc_south_shore",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_bank_bench_5",
+      "scene": "keyscene.nmc_south_shore",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_shore_fire",
+      "scene": "keyscene.nmc_south_shore",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "structure.nmc_bank_steps_4",
+      "scene": "keyscene.nmc_south_shore",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "structure.nmc_bank_steps_5",
+      "scene": "keyscene.nmc_south_shore",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_lot_pole_05",
+      "scene": "keyscene.nmc_plaza",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_lot_pole_04",
+      "scene": "keyscene.nmc_plaza",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_yard_fence_e",
+      "scene": "keyscene.nmc_plaza",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_yard_rack_02",
+      "scene": "keyscene.nmc_plaza",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "prop.nmc_yard_rack_01",
+      "scene": "keyscene.nmc_plaza",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "structure.nmc_plaza_dock_grocery",
+      "scene": "keyscene.nmc_plaza",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "structure.nmc_plaza_dock_lumber",
+      "scene": "keyscene.nmc_plaza",
+      "reason": "retired by the third issue's redraw"
+    },
+    {
+      "id": "structure.nmc_apartments_2",
+      "scene": "keyscene.nmc_main_street",
+      "reason": "retired by the third issue's redraw"
     }
   ]
 }

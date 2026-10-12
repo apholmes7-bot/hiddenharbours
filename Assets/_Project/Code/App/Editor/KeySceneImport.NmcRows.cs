@@ -36,7 +36,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The NMC type/kit contract, distinct from St Peters' kit naming.</summary>
         public static string NmcKindOf(string kit, string type, string id)
         {
-            string family = kit.Split(' ', '.', '(')[0];
+            string family = NmcKitFamily(kit);
             bool Is(params string[] names) => names.Contains(family, StringComparer.Ordinal);
             switch (type)
             {
@@ -49,11 +49,11 @@ namespace HiddenHarbours.App.Editor
                     if (Is("wharfDecor")) return KeySceneDef.KindSetPiece;
                     break;
                 case "SetPieceDef":
-                    if (Is("nmcSetPieces", "NmcSetPieces", "fuelStopRig", "NmcCampKit", "NmcCreekHouses", "NmcShoreLane", "NmcStores"))
+                    if (Is("nmcSetPieces", "NmcSetPieces", "fuelStopRig", "NmcCampKit", "NmcCreekHouses", "NmcShoreLane", "NmcStores", "NmcShoreEstates", "NmcMainStreet"))
                         return KeySceneDef.KindSetPiece;
                     break;
                 case "BuildingDef":
-                    if (Is("wharfBuilding2", "ManorIso", "NmcCampKit", "NmcCreekHouses", "StackFlatsIso", "HouseIso", "NmcStores", "NmcShoreLane"))
+                    if (Is("wharfBuilding2", "ManorIso", "NmcCampKit", "NmcCreekHouses", "StackFlatsIso", "HouseIso", "NmcStores", "NmcShoreLane", "NmcShoreEstates", "NmcMainStreet", "WalkupIso", "RowhouseIso"))
                         return KeySceneDef.KindBuilding;
                     break;
                 case "BoatDef (the register’s)": case "AmbientBoatDef":
@@ -69,7 +69,37 @@ namespace HiddenHarbours.App.Editor
             throw new Refusal($"{id}: incompatible or unnamed NMC kind/kit: {type} / {kit}.");
         }
 
-        static Row NmcRow(Scene scene, string id, Json p, Dictionary<string, string> held, Beside beside)
+        // NMC only: a family is the token before the first space, dot, comma or parenthesis.
+        // Versions, paths and preset annotations may change within it; St Peters keeps exact matching.
+        static string NmcKitFamily(string kit) => kit.Split(' ', '.', ',', '(')[0];
+
+        // Owner authorization via the seat, 2026-10-11 22:27Z: call 65's six estates include these
+        // two existing houses. This is a one-way migration, not permission to change other identities.
+        static readonly IReadOnlyDictionary<string, (string OldFamily, string NewKit)> NmcKitMigrations =
+            new Dictionary<string, (string OldFamily, string NewKit)>(StringComparer.Ordinal)
+            {
+                { "structure.nmc_south_shore_house_4", ("HouseIso", "NmcShoreEstates.estateHouse") },
+                { "structure.nmc_south_shore_house_5", ("HouseIso", "NmcShoreEstates.estateHouse") },
+            };
+
+        static bool NmcSameKit(Scene scene, Row incoming, string previous, Result result)
+        {
+            if (NmcKitFamily(previous) == NmcKitFamily(incoming.Kit))
+            {
+                if (previous != incoming.Kit)
+                    result.Report.Add("kit annotation " + incoming.Id + ": " + previous + " -> " + incoming.Kit);
+                return true;
+            }
+            if (scene.Id != "keyscene.nmc_south_shore" || incoming.Kind != KeySceneDef.KindBuilding ||
+                !NmcKitMigrations.TryGetValue(incoming.Id, out var migration) ||
+                NmcKitFamily(previous) != migration.OldFamily || incoming.Kit != migration.NewKit) return false;
+            result.Report.Add("kit migration " + incoming.Id + ": " + previous + " -> " + incoming.Kit +
+                "; third issue south-shore redraw, call 65");
+            return true;
+        }
+
+        static Row NmcRow(Scene scene, string id, Json p, Dictionary<string, string> held,
+            Dictionary<string, string> owned, Beside beside)
         {
             Json def = p.Get("def");
             string kit = (p.Get("kit") ?? def?.Get("kit") ?? throw new Refusal(id + ": no kit")).Str(id + " kit");
@@ -102,6 +132,17 @@ namespace HiddenHarbours.App.Editor
                 beside.Answered.Add(id);
                 row.StandsOn = answer.Rule.StandsOn; row.MountHost = answer.Rule.Host; row.MountAnchor = answer.Rule.Anchor;
                 if (row.MountHost.Length > 0 && !held.ContainsKey(row.MountHost)) throw new Refusal(id + ": missing host " + row.MountHost);
+            }
+            if (p.Get("host") is Json host)
+            {
+                string hostId = NmcId(host.Str(id + " host"), beside);
+                if (hostId == id || !owned.TryGetValue(hostId, out string owner) || owner != scene.Id)
+                    throw new Refusal(id + ": host is not another owned row of this scene: " + hostId);
+                if (p.Has("mount") && row.MountHost != hostId)
+                    throw new Refusal(id + ": host and mount answer disagree");
+                row.StandsOn = KeySceneDef.StandsOnMount;
+                row.MountHost = hostId;
+                // No anchor is invented: K3 gives an absolute height and a host id only.
             }
             if (p.Get("opts") is Json opts)
             {
