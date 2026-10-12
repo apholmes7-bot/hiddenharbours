@@ -1,4 +1,4 @@
-# F2 transport repair — Phases A and A2, 2026-10-10
+# F2 transport repair — verified results, 2026-10-12
 
 P1 / rule 7. Repairs the shared-material transport recording and CPU field preparation
 from #930. All material dials remain zero. No gameplay, surf, source/decay shader,
@@ -334,7 +334,7 @@ the proof; it is never converted to a zero-byte pass.
 The unsupported B2 all-thread recorder configuration is removed. B3 uses the working
 current-thread option plus the call-chain audit and runtime thread checks; no claim
 is made that the invalid all-thread attempt produced data. The disabled temporary
-harness is preserved under `Evidence~/f2-repair/phase-a3/b3-harness/` for review.
+harness is preserved in the local evidence archive, outside this change, for review.
 
 ### B3 request: 30 minutes, cold import included
 
@@ -346,3 +346,59 @@ main surf reds and unchanged D3D12-only skips must remain visible. Budget 10 min
 for import/compile, 8 for regressions, 6 for profiles/GPU/controls and 6 for evidence,
 restoration, disarm and return. No slot is taken, no Unity launched and nothing is
 armed during A3. Main 640e3cc7 is not incorporated.
+
+## Verified Phase B results
+
+The preceding phase estimates and proposed measurements are historical. Acceptance
+uses the following measured results on an RTX 4060, Direct3D11, Unity 6000.5.0f1.
+The owner ruled that both normal and sailing at 3 m/s must meet 1 ms p95 for CPU
+preparation plus upload, and 1 ms p95 for full added GPU cost including upload.
+
+| Measurement | Normal | Sailing at 3 m/s |
+|---|---:|---:|
+| B4 CPU Prepare + Upload p95, ms | 0.6920 | 0.9726 |
+| B7 full added GPU p50, ms | 0.0866645 | 0.1487189 |
+| B7 full added GPU p95, ms | 0.1644544 | 0.2396160 |
+| B7 full added GPU p99, ms | 0.2720768 | 0.8770219 |
+
+Both ruled cases pass. Sailing CPU has 2 of 60 measured frames above 1 ms;
+p99 is 1.2076 ms and maximum 1.3786 ms. The gate is p95, not a frame maximum.
+
+B7 renders the production camera once per frame. An uncommitted harness preserves
+the same field and material across disabled/enabled arms without changing production
+code; object identity and one-render assertions pass. It alternates ten-frame blocks
+in ABBA order, with positive GPU controls inside the rotation. Each enabled block's
+whole-frame `FrameTimingManager` mean is compared with its neighbouring disabled
+blocks, interpolated in time. The table gives nearest-rank percentiles over 40 paired
+block deltas per case. All 3,200 measured frames are retained. The identical background
+work is submitted in the camera graph, and a readback bounds submission backlog.
+Background stability is required before measurement; event retention is 60 frames.
+
+In-graph markers enclose the camera draw work and the four actual exchange callbacks.
+Upload occurs during graph recording and need not lie inside that marker bracket;
+the whole-frame measurement, including upload, is the acceptance measure. All 3,582
+event sets resolve, with zero nesting inversions. Control growth agrees with its
+directly timed cost. The acceptance harness and raw evidence are not part of this PR.
+
+Earlier isolated events and repeated/manual-camera timings are superseded for GPU
+acceptance: they included field teardown/rebuild, a second zero-dt source render,
+or a submission gap between the diagnostic background and production recording.
+These effects must not be called transport shader execution cost.
+
+B3 passes all three `FoamTransportGpuTests` and all four binding matrix cases,
+preserving all 256 coverage and freshness codes at one/two cameras and one/four
+steps. B4 passes the four `F2B_*` tracer controls. B3 observes zero managed allocation
+events across the production graph, with positive controls before and after, main
+thread assertions, and nonthreaded graphics mode. Thus steady managed GC is 0 B;
+the recorder's event values themselves are nanoseconds, not byte counts.
+
+The B3 worst configuration (two cameras, 128 contacts per camera, four steps per
+camera) records GPU p95 1.338368 ms. It is reported, not an acceptance bar under the
+owner's ruling. Turning F2 on also causes a cold rebuild: one separately measured
+B7 frame takes 37.2877 ms of CPU submission wall time, including its readback wait,
+and 3.953664 ms of whole-frame GPU time. This is a single observation, not a p95;
+no rebuild bar has been assigned. It remains explicit for Phase D's dial decision.
+
+All `_FoamTransport*` dials remain zero and no material asset changes. The keyline
+resolve and arrivals remain outside this repair. Null-device CI skips the GPU
+transport/binding fixtures; it does not replace the device measurements above.
