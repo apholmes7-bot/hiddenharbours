@@ -101,9 +101,13 @@ pivot, drawn by the facet path in its parent's frame. A hand is a socket, as an 
   that the fittings' mesh layout has no channel for. The fish bakes the hull rule instead (a
   back-lit face is re-lit only when its bias is −1 or less): its body is right, and a back-lit fin
   may read darker than the sprite. The proof sheet judges it; carrying the flag is a later choice.
-- **The turn direction is declared, not measured.** Each def records the convention the rig
-  catalogue declares, because the boats' bow-taper probe cannot read a pail or a rod. The proof
-  sheet (each mesh beside today's sprite at 8 facings) is the pixel check.
+- **Every held mesh turns counter-clockwise.** The flag is a fact about the mesh's frame and is
+  not copied from the rig catalogue. The mesh is the rig's own faces in its model frame; the facet
+  path turns it counter-clockwise as dir grows, while headings and every shipped sheet run
+  clockwise. The catalogue's convention describes each rig's sprite cell order, which the sprite
+  bakes need, and it stays as it is. A bake test measures the turn in pixels: each lopsided state
+  (the coast rod, the flounder, the empty tray and the spade) must sit nearer today's sprite at
+  facing d than at its mirror, 8 − d.
 - **A rig edit means a re-bake.** A held rig that changes its faces, palette or pose reds the bake
   guards until its states are re-baked. A rig that renames a state keeps or retires the old id
   (content validation holds the ledger).

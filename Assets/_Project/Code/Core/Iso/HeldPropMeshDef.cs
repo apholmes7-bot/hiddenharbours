@@ -118,9 +118,11 @@ namespace HiddenHarbours.Core
                  "(KEYLINE_DEFAULT false); the rod, shovel and bucket always draw it.")]
         public bool KeylineOutline = true;
 
-        [Tooltip("The turn direction the rig's facings were baked with, as RigCatalog DECLARES it — not " +
-                 "measured: the boat probe's bow-taper test cannot read a pail or a rod. The proof sheet " +
-                 "(mesh beside sprite at 8 facings) is the pixel check.")]
+        [Tooltip("True when the mapping from compass heading to dir units must NEGATE: the mesh is the " +
+                 "rig's model-frame faces, the facet path turns it counter-clockwise as dir grows, and " +
+                 "headings run clockwise. True for every held prop, whichever way its rig's own " +
+                 "turntable runs (HeldPropFleet.HeldMeshTurnsCounterClockwise); the bake tests measure " +
+                 "it in pixels against today's sprites. ⚠️ Flipping it mirrors the prop.")]
         public bool AzimuthCounterClockwise;
 
         [Header("Cell (the prop's own screen geometry)")]

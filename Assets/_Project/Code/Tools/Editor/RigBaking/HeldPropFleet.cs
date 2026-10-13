@@ -19,8 +19,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// It is also the first word of every id in the family.</summary>
         public readonly string Family;
 
-        /// <summary>The rig's key in <see cref="RigCatalog"/>, which owns its script path, its global
-        /// and the turn convention it DECLARES. Nothing about the rig is restated here.</summary>
+        /// <summary>The rig's key in <see cref="RigCatalog"/>, which owns its script path and its
+        /// global. Nothing about the rig is restated here.</summary>
         public readonly string CatalogKey;
 
         /// <summary>Where the rig's cell lives, relative to its global (see
@@ -41,11 +41,6 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public string ScriptPath => RigCatalog.Get(CatalogKey).ScriptPath;
         public string GlobalName => RigCatalog.Get(CatalogKey).GlobalName;
-
-        /// <summary>As the catalog DECLARES it — not measured (<see cref="RigAzimuthProbe"/> reads a
-        /// boat's bow taper, which a pail or a rod does not have).</summary>
-        public bool AzimuthCounterClockwise =>
-            RigCatalog.Get(CatalogKey).DeclaredConvention == AzimuthConvention.CounterClockwise;
     }
 
     /// <summary>One held STATE — a rod tier, a species, a bucket at one fill — and so one asset.</summary>
@@ -112,6 +107,28 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>The ONE symbol each held rig has reconstructed — see the "held props" block of
         /// <see cref="RigMeshSymbols.Reconstructions"/> for its members.</summary>
         public const string HeldSymbol = "held";
+
+        /// <summary>
+        /// <b>Every held mesh turns counter-clockwise</b>, whichever way its rig's turntable runs. It
+        /// is what each def's <see cref="HeldPropMeshDef.AzimuthCounterClockwise"/> says, and it is a
+        /// fact about the frame the mesh is in, so it is never copied from <see cref="RigCatalog"/>:
+        /// <list type="bullet">
+        /// <item>The <c>held</c> reconstructions return the rig's own builders' faces, in the rig's
+        /// MODEL frame. The rig's turntable lives in its <c>camBasis</c>, which the mesh never
+        /// passes through.</item>
+        /// <item>The facet path turns a mesh by <c>th = dir·π/4</c> (<see cref="HiddenHarbours.Art.IsoFacetMath.RigToWorld"/>,
+        /// <see cref="RigTrigBasis.FromDotNet"/>): counter-clockwise on screen as dir grows.</item>
+        /// <item>Compass headings, and every sheet shipped, run clockwise. The rod and fish rigs turn
+        /// clockwise (<c>th = −dir·π/4</c>); the spade and bucket rigs turn counter-clockwise, and
+        /// their sprite bakes reorder the cells (<see cref="ShovelRigAzimuthProbe"/>,
+        /// <see cref="StorageRigAzimuthProbe"/>).</item>
+        /// </list>
+        /// So heading h is drawn at dir −h/45 (<see cref="HullMeshMath.HeadingToDirUnits"/> with this
+        /// set), as the character skins measure for their own meshes. The catalogue's convention is
+        /// right for what it describes, a rig's sprite cell order. <c>HeldPropBakeTests</c> measures
+        /// the turn in pixels against today's sprites.
+        /// </summary>
+        public const bool HeldMeshTurnsCounterClockwise = true;
 
         /// <summary>
         /// The four rigs. Cells, palettes and poses come from the rigs; the only facts here are which

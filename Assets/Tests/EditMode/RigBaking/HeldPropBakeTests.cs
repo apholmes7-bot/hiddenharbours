@@ -26,9 +26,10 @@ namespace HiddenHarbours.Tests.RigBaking
     /// fix is always the same: Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake ALL held props (or
     /// <c>HeldPropBakeCli.BakeAndWireCli</c>), in the commit that changes the rig.</para>
     ///
-    /// <para><b>Everything here is CPU</b> — V8 and the asset database, no graphics device — so CI runs
-    /// it. Nothing draws these meshes yet (PR 4 presents them), so the checks are on the data; the proof
-    /// sheet, each mesh beside today's sprite, is the picture's check.</para>
+    /// <para><b>Everything here is CPU</b> — V8, the asset database and the CPU rasteriser, no graphics
+    /// device — so CI runs it. Nothing draws these meshes yet (PR 4 presents them), so the checks are on
+    /// the data, and on the rasteriser's outline for the turn; the proof sheet, each mesh beside today's
+    /// sprite, is the eye's check.</para>
     /// </summary>
     public class HeldPropBakeTests
     {
@@ -66,6 +67,42 @@ namespace HiddenHarbours.Tests.RigBaking
 
         const string BailLine = "bail";
         const string TrayTier = "tray";
+
+        enum TurnMeasure
+        {
+            /// <summary>The pixels on which two outlines disagree, centroids together, then the best
+            /// slide within <see cref="OutlineSlackPx"/>.</summary>
+            Outline,
+
+            /// <summary>The side of the grip the weight falls on: the outline's mass centre, in screen
+            /// pixels across from the pivot.</summary>
+            Side,
+        }
+
+        /// <summary>
+        /// The lopsided states, each beside the sheet that shows it turning (frame 0). The coast rod,
+        /// the flounder and the empty tray have sprites of the pose they are held in, and are matched
+        /// by outline. The spade's only held sprites are posed by the character rig (the dig sheet), so
+        /// it is matched against its ground rest, the same spade on its own turntable with the pivot
+        /// under the grip, by the side its weight falls on.
+        /// </summary>
+        static readonly (string Id, string Sheet, TurnMeasure By)[] TurnCases =
+        {
+            ("heldprop.rod_coast", "Assets/_Project/Art/Fishing/Iso/Rod_coast_hold.png", TurnMeasure.Outline),
+            ("heldprop.fish_flounder", "Assets/_Project/Art/Fishing/Iso/Fish_flounder_tail.png", TurnMeasure.Outline),
+            ("heldprop.bucket_tray_empty", "Assets/_Project/Art/Fishing/Storage/Bucket_tray_empty.png", TurnMeasure.Outline),
+            ("heldprop.shovel", "Assets/_Project/Art/Fishing/Iso/Shovel_ground.png", TurnMeasure.Side),
+        };
+
+        /// <summary>How far an outline may slide, in pixels, once the centroids are together.</summary>
+        const int OutlineSlackPx = 6;
+
+        /// <summary>Two sprites whose weight falls closer together than this, in pixels, cannot tell a
+        /// facing from its mirror.</summary>
+        const double SideEvidencePx = 1;
+
+        /// <summary>Fewer facings than this that tell d from 8 − d, and a case proves nothing.</summary>
+        const int MinTurnEvidence = 4;
 
         // ---- the rigs, read the way the bake reads them -------------------------------------------
 
@@ -349,6 +386,68 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsFalse(bad, "A held prop's plotted lines (D2) are not the rig's.\n" + Rebake + "\n\n" + report);
         }
 
+        // ---- the turn -----------------------------------------------------------------------------
+
+        /// <summary>
+        /// <b>Each held mesh turns the way today's sprites do.</b> A lopsided state, drawn at compass
+        /// heading 45°·d with its def's flag applied as the runtime applies it
+        /// (<see cref="HullMeshMath.HeadingToDirUnits"/>), must sit nearer the sprite at d than the one
+        /// at its mirror, 8 − d. A facing whose two sprites are the same (the flounder edge-on, the tray
+        /// end-on) cannot tell them apart and is skipped. Flipping the flag draws facing d as 8 − d, so
+        /// every facing that counts then fails.
+        /// </summary>
+        [Test]
+        public void HeldPropBake_TurnsTheWay_TheSpritesDo()
+        {
+            var report = new StringBuilder();
+            bool bad = false;
+            foreach ((string id, string sheet, TurnMeasure by) in TurnCases)
+            {
+                RigState s = States.FirstOrDefault(x => x.Prop.PropId == id);
+                if (s == null || s.Error != null || s.Def == null || s.Def.Mesh == null)
+                {
+                    bad = true;
+                    report.AppendLine($"  ✗ {id}: {(s == null ? "not in the fleet" : s.Error ?? "nothing baked")}.");
+                    continue;
+                }
+
+                HeldPropMeshDef def = s.Def;
+                Mask[] sprites = SpriteMasks(sheet);
+                var rows = new List<string>();
+                int evidence = 0, wrong = 0;
+                for (int d = 1; d < 8; d++)
+                {
+                    if (d == 4) continue; // south is its own mirror
+                    double pair = Distance(by, sprites[d], sprites[8 - d]);
+                    if (by == TurnMeasure.Outline ? pair == 0 : pair < SideEvidencePx)
+                    {
+                        rows.Add($"d{d} -");
+                        continue;
+                    }
+
+                    float units = HullMeshMath.HeadingToDirUnits(HullMeshMath.DegreesPerDirUnit * d, 0f,
+                                                                 def.AzimuthCounterClockwise);
+                    Mask mesh = MeshMask(s, units);
+                    double near = Distance(by, mesh, sprites[d]), far = Distance(by, mesh, sprites[8 - d]);
+                    evidence++;
+                    if (!(near < far)) wrong++;
+                    rows.Add($"d{d} {Measured(by, near)}/{Measured(by, far)}{(near < far ? "" : " ✗")}");
+                }
+
+                bool ok = wrong == 0 && evidence >= MinTurnEvidence;
+                bad |= !ok;
+                report.AppendLine($"  {(ok ? "✓" : "✗")} {id,-28} flag {(def.AzimuthCounterClockwise ? 1 : 0)}, " +
+                                  $"{by} near/far: {string.Join(", ", rows)}" +
+                                  (evidence < MinTurnEvidence ? $"; only {evidence} facings tell d from 8 − d" : ""));
+            }
+
+            Assert.IsFalse(bad,
+                "A held mesh turns the wrong way: at facing d it is more like today's sprite at 8 − d than " +
+                "at d. Every held mesh turns counter-clockwise, so its def must carry " +
+                "AzimuthCounterClockwise = true (HeldPropFleet.HeldMeshTurnsCounterClockwise), never the " +
+                "rig catalogue's convention.\n" + Rebake + "\n\n" + report);
+        }
+
         // ---- what points at the meshes ------------------------------------------------------------
 
         [Test]
@@ -552,5 +651,151 @@ namespace HiddenHarbours.Tests.RigBaking
             $"({v.x.ToString("0.######", CultureInfo.InvariantCulture)}, " +
             $"{v.y.ToString("0.######", CultureInfo.InvariantCulture)}, " +
             $"{v.z.ToString("0.######", CultureInfo.InvariantCulture)}) m";
+
+        // ---- the turn's pictures ------------------------------------------------------------------
+
+        /// <summary>An outline in its cell, from the top-left, with the grip's point.</summary>
+        sealed class Mask
+        {
+            public int W, H;
+            public bool[] On;
+            public double PivotX;
+
+            public void Set(int x, int y)
+            {
+                if (x >= 0 && x < W && y >= 0 && y < H) On[y * W + x] = true;
+            }
+        }
+
+        /// <summary>
+        /// The def's mesh at <paramref name="units"/>, drawn by the CPU rasteriser in the rig's cell as
+        /// the proof sheet draws it: the faces, the keyline when the def keeps one, and the plotted lines
+        /// (floor of each sample, and a second pixel where the sample moved and the rig draws one). A
+        /// dotted line only paints over inked pixels, so it never changes the outline.
+        /// </summary>
+        static Mask MeshMask(RigState s, float units)
+        {
+            HeldPropMeshDef def = s.Def;
+            RigMeshData data = s.Data;
+            var view = new RigViewOptions(units, def.ElevationDeg);
+            var trace = new RigPaintTrace();
+            byte[] rgba = RigMeshReferenceRasterizer.RenderFromMesh(data, def.Mesh, view, null, trace);
+            var m = new Mask { W = data.W, H = data.H, On = new bool[data.W * data.H], PivotX = data.PivotX };
+            for (int i = 0; i < m.On.Length; i++)
+                m.On[i] = rgba[i * 4 + 3] != 0 && (def.KeylineOutline || trace.Winner[i] >= 0);
+
+            RigTrigBasis b = RigTrigBasis.FromDotNet(view);
+            foreach (HeldPropMeshDef.Line line in def.Lines ?? Array.Empty<HeldPropMeshDef.Line>())
+            {
+                if (line.Dots) continue;
+                int x0 = int.MinValue, y0 = int.MinValue;
+                foreach (HeldPropMeshDef.LinePoint q in line.Points ?? Array.Empty<HeldPropMeshDef.LinePoint>())
+                {
+                    Vector3 p = q.Position;
+                    double sx = data.PivotX + (p.x * b.Ct - p.y * b.St) * data.PxPerMetre;
+                    double sy = data.PivotY - ((p.x * b.St + p.y * b.Ct) * b.Se + p.z * b.Ce) * data.PxPerMetre;
+                    int x = (int)Math.Floor(sx), y = (int)Math.Floor(sy);
+                    m.Set(x, y);
+                    if (q.SecondIndex >= 0 && x0 != int.MinValue && (x != x0 || y != y0))
+                    {
+                        if (Math.Abs(x - x0) >= Math.Abs(y - y0)) m.Set(x, y + 1);
+                        else m.Set(x + 1, y);
+                    }
+                    x0 = x;
+                    y0 = y;
+                }
+            }
+            return m;
+        }
+
+        /// <summary>Frame 0 of a sheet's eight facings, off the PNG on disk (the imported texture is not
+        /// readable), cut by the importer's own sprite rects and pivots.</summary>
+        static Mask[] SpriteMasks(string sheet)
+        {
+            Assert.IsTrue(File.Exists(sheet), $"art missing: {sheet}");
+            string stem = Path.GetFileNameWithoutExtension(sheet);
+            Sprite[] cut = AssetDatabase.LoadAllAssetsAtPath(sheet).OfType<Sprite>().ToArray();
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, mipChain: false);
+            try
+            {
+                Assert.IsTrue(tex.LoadImage(File.ReadAllBytes(sheet)), $"not a decodable PNG: {sheet}");
+                Color32[] px = tex.GetPixels32();
+                var masks = new Mask[8];
+                for (int d = 0; d < 8; d++)
+                {
+                    string name = $"{stem}_d{d}_f0";
+                    Sprite sprite = cut.FirstOrDefault(c => c.name == name);
+                    Assert.IsNotNull(sprite, $"{sheet} has no sprite {name}.");
+                    int x0 = (int)sprite.rect.x, y0 = (int)sprite.rect.y;
+                    int w = (int)sprite.rect.width, h = (int)sprite.rect.height;
+                    var m = new Mask { W = w, H = h, On = new bool[w * h], PivotX = sprite.pivot.x };
+                    for (int j = 0; j < h; j++) // from the top; the texture's rows run up
+                        for (int i = 0; i < w; i++)
+                            m.On[j * w + i] = px[(y0 + h - 1 - j) * tex.width + x0 + i].a > 0;
+                    masks[d] = m;
+                }
+                return masks;
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(tex);
+            }
+        }
+
+        static double Distance(TurnMeasure by, Mask a, Mask b) =>
+            by == TurnMeasure.Outline ? OutlineDistance(a, b) : Math.Abs(Side(a) - Side(b));
+
+        /// <summary><paramref name="b"/> laid on <paramref name="a"/>, centroids together, then slid
+        /// to its best fit within <see cref="OutlineSlackPx"/>: the pixels inked in one and not the
+        /// other.</summary>
+        static int OutlineDistance(Mask a, Mask b)
+        {
+            List<(int X, int Y)> inkA = Inked(a), inkB = Inked(b);
+            (double ax, double ay) = Centre(inkA);
+            (double bx, double by) = Centre(inkB);
+            int tx = (int)Math.Floor(ax - bx + 0.5), ty = (int)Math.Floor(ay - by + 0.5);
+            int best = int.MaxValue;
+            for (int dy = -OutlineSlackPx; dy <= OutlineSlackPx; dy++)
+                for (int dx = -OutlineSlackPx; dx <= OutlineSlackPx; dx++)
+                {
+                    int both = 0;
+                    foreach ((int x, int y) in inkB)
+                    {
+                        int u = x + tx + dx, v = y + ty + dy;
+                        if (u >= 0 && u < a.W && v >= 0 && v < a.H && a.On[v * a.W + u]) both++;
+                    }
+                    best = Math.Min(best, inkA.Count + inkB.Count - 2 * both);
+                }
+            return best;
+        }
+
+        static double Side(Mask m) => Centre(Inked(m)).X - m.PivotX;
+
+        static List<(int X, int Y)> Inked(Mask m)
+        {
+            var ink = new List<(int X, int Y)>();
+            for (int y = 0; y < m.H; y++)
+                for (int x = 0; x < m.W; x++)
+                    if (m.On[y * m.W + x]) ink.Add((x, y));
+            if (ink.Count == 0) throw new InvalidOperationException("an empty outline: nothing was drawn");
+            return ink;
+        }
+
+        /// <summary>The mean of the pixels' centres, the frame the pivot is in.</summary>
+        static (double X, double Y) Centre(List<(int X, int Y)> ink)
+        {
+            double sx = 0, sy = 0;
+            foreach ((int x, int y) in ink)
+            {
+                sx += x + 0.5;
+                sy += y + 0.5;
+            }
+            return (sx / ink.Count, sy / ink.Count);
+        }
+
+        static string Measured(TurnMeasure by, double v) =>
+            by == TurnMeasure.Outline
+                ? v.ToString("0", CultureInfo.InvariantCulture)
+                : v.ToString("0.00", CultureInfo.InvariantCulture) + " px";
     }
 }

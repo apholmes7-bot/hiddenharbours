@@ -367,6 +367,8 @@ namespace HiddenHarbours.Tools.RigBaking
             bool created = def == null;
             if (created) def = ScriptableObject.CreateInstance<HeldPropMeshDef>();
 
+            string beforeBake = created ? null : EditorJsonUtility.ToJson(def);
+
             def.Id = p.PropId;
             def.Family = p.Family;
             def.Variant = p.Variant;
@@ -384,7 +386,7 @@ namespace HiddenHarbours.Tools.RigBaking
             def.DepthEdgeDarkening = p.Extraction.DepthEdgeDarkening;
             def.EdgeDepthMeters = edge;
             def.KeylineOutline = keyline;
-            def.AzimuthCounterClockwise = p.Owner.AzimuthCounterClockwise;
+            def.AzimuthCounterClockwise = HeldPropFleet.HeldMeshTurnsCounterClockwise;
             def.PivotPx = new Vector2((float)data.PivotX, (float)data.PivotY);
             def.PxPerMetre = data.PxPerMetre;
             def.CellW = data.W;
@@ -414,17 +416,36 @@ namespace HiddenHarbours.Tools.RigBaking
                 for (int y = 0; y < 4; y++)
                     def.Bayer16[x * 4 + y] = (float)data.Bayer[x, y];
 
+            // A mesh whose bytes did not move stays in the asset as it is. A new sub-asset takes a new
+            // local fileID and reorders the file (see RigMeshAssetBaker), so replacing an unchanged
+            // mesh would rewrite every held prop on every re-bake. A def that did not move either is
+            // not written at all, the hulls' rule.
             Mesh oldMesh = def.Mesh;
-            def.Mesh = build.Mesh;
-            if (created) AssetDatabase.CreateAsset(def, p.AssetPath);
-            else DropSubAsset(oldMesh);
-            AssetDatabase.AddObjectToAsset(build.Mesh, def);
-            EditorUtility.SetDirty(def);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.ImportAsset(p.AssetPath);
+            bool sameMesh = !created && oldMesh != null && oldMesh.name == build.Mesh.name &&
+                            RigMeshAssetBaker.MeshBytesEqual(oldMesh, build.Mesh);
+            bool unchanged = sameMesh && beforeBake == EditorJsonUtility.ToJson(def);
+            if (sameMesh)
+            {
+                UnityEngine.Object.DestroyImmediate(build.Mesh);
+            }
+            else
+            {
+                def.Mesh = build.Mesh;
+                if (created) AssetDatabase.CreateAsset(def, p.AssetPath);
+                else DropSubAsset(oldMesh);
+                AssetDatabase.AddObjectToAsset(build.Mesh, def);
+            }
+            if (!unchanged)
+            {
+                EditorUtility.SetDirty(def);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.ImportAsset(p.AssetPath);
+            }
 
-            Debug.Log($"[held-prop] {(created ? "Created" : "Refreshed")} {p.AssetPath}: {build}, " +
-                      $"grip {grip} m, {pose}.");
+            string outcome = created ? "Created"
+                           : unchanged ? "Unchanged"
+                           : sameMesh ? "Refreshed (mesh kept)" : "Refreshed";
+            Debug.Log($"[held-prop] {outcome} {p.AssetPath}: {build}, grip {grip} m, {pose}.");
             if (!def.IsUsable())
                 throw new InvalidOperationException($"Baked held prop at {p.AssetPath} is not usable — see fields.");
             return def;
