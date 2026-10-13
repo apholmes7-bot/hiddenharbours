@@ -140,7 +140,9 @@ namespace HiddenHarbours.Tests.PlayMode
             _camera.orthographic = true;
             _camera.orthographicSize = Width / 2;
             _camera.nearClipPlane = 1;
-            _camera.farClipPlane = 400;
+            // Hull bounds include the depth shear until the vertex shader runs.
+            // NMC's bounds reach 428 m from this camera before that shear is removed.
+            _camera.farClipPlane = 600;
             _camera.clearFlags = CameraClearFlags.SolidColor;
             _camera.backgroundColor = new Color(.08f, .12f, .16f, 1);
             _camera.allowHDR = false;
