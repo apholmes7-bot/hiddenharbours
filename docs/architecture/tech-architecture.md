@@ -279,6 +279,20 @@ by the framing on screen, added with the look-ahead ahead of the feel, the snap 
 never for a card. Change-detected, so a quiet frame is a struct compare. Presentation state: unsaved
 (rule 5), nothing published headless, so every reader stands where it did.
 
+
+### Wave wind history (ADR 0018, Stage A, 2026-10-13)
+
+Core's additive `IWaveWindSource.WaveWindAt(double gameTimeSeconds)` returns a
+`WaveWindSample` with wind vector and continuous sea state for any past world time,
+including negative times at startup. `EnvironmentService` evaluates the active region's
+wind law and dev override through this seam. `WaveMemory` averages fixed world-grid taps
+in wavelength bands; `WaveFieldAnimator` bakes travel at the clock without frame history.
+The bridge publishes one payload through `SharedWaveField` to both riders and seakeeping;
+published trains are sampled at time zero. Before publication consumers evaluate the
+same wind memory at the clock. `WaterSurface` uses the short band's wind for decorative
+wind and chop. Settings live solely in `GameConfig.WaveField`; nothing is saved. See
+ADR 0018's dated amendment for windows, causality, fallback and future-stage boundaries.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
