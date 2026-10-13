@@ -1040,10 +1040,10 @@ Shader "HiddenHarbours/Water"
         // with, this should churn through different shades of blue, distort and fade into the
         // ambient ocean over time."
         //
-        // The age indexes the sea's OWN palette ramp (_PaletteFoam -> _PaletteShallow ->
-        // _PaletteMid, ADR 0015) exactly as the particle wake does, so both halves of the wake age
-        // through the same blues. The dissolve into the ambient sea is free: the lerp WEIGHT is the
-        // COVERAGE, so the oldest foam barely tints the water it is lying on.
+        // The age walks from the sea's foam anchor (_PaletteFoam, ADR 0015) into THE WATER THIS PIXEL
+        // IS (W4-1, design 3A: foam -> lift(body) -> body, the _WakeBody* dials below) exactly as the
+        // particle wake does, so both halves of the wake age into the same water. The lerp WEIGHT is
+        // the COVERAGE, so the oldest foam barely tints the water it is lying on.
         //
         // 🔴 ROUND 2 (owner eyeball, 2026-08-27): the age is read from the buffer's FRESHNESS
         // channel, not from its coverage. Coverage cannot carry age - it saturates within ~0.4 s of
@@ -1062,8 +1062,19 @@ Shader "HiddenHarbours/Water"
         _WakeFoamFreshFloor  ("Wake foam freshness that still reads as fresh churn", Range(0.05,1)) = 1
         // The same three knots the particle ramp uses, in AGE (0 = just churned, 1 = old).
         _WakeFoamWhiteHold   ("Wake foam: age it stays white until", Range(0,1)) = 0.12
-        _WakeFoamBlueReach   ("Wake foam: age it reaches the shallow blue", Range(0,1)) = 0.45
-        _WakeFoamDeepReach   ("Wake foam: age it reaches the mid blue", Range(0,1)) = 0.85
+        _WakeFoamBlueReach   ("Wake foam: age it reaches the lifted water", Range(0,1)) = 0.45
+        _WakeFoamDeepReach   ("Wake foam: age it becomes its water", Range(0,1)) = 0.85
+        // ---- THE WAKE ENDS AS ITS WATER (W4-1, design 3A, owner ruling 2026-10-10) ---------------
+        // The owner, 2026-10-09 (finding 3): the wake faded into one fixed light marine blue, not into
+        // the water it rides on. The walk's stops are now PER PIXEL: foam -> lift(body) -> body, where
+        // body is this pixel's own water as it is drawn under the foam: col.rgb at the layer's own
+        // composite, after every light layer (C2, 2026-10-11: the water saved BEFORE the light read
+        // darker than the lit sea at noon, a stripe). lift(body) = body x _WakeBodyLift, whitened
+        // toward the foam by
+        // _WakeBodyWhiten: churned water is brighter than the water it sits in and keeps its hue.
+        // Mood-eased (WaterSurface.MoodFloatNames). C# twin: WakeFoamAgeing.BodyLift.
+        _WakeBodyLift        ("Wake foam: mid stop, x its water's brightness", Range(1,4)) = 2
+        _WakeBodyWhiten      ("Wake foam: mid stop, whitened toward the foam", Range(0,1)) = 0.05
 
         // ---- THE WAKE LIFT (water PR F, register row 27) -----------------------------------------
         // The owner, 2026-09-11: "i do want the wake to lift the water and create visual waves."
@@ -1677,6 +1688,8 @@ Shader "HiddenHarbours/Water"
                 float  _WakeFoamWhiteHold;
                 float  _WakeFoamBlueReach;
                 float  _WakeFoamDeepReach;
+                float  _WakeBodyLift;
+                float  _WakeBodyWhiten;
                 // Water PR F (register row 27) — the WAKE LIFT's two dials. Either at 0 is the exact
                 // passthrough. Read by vertDisplaced only; the flat Universal2D pass carries no
                 // displacement of any kind, so it reads them not at all.
@@ -3474,7 +3487,7 @@ Shader "HiddenHarbours/Water"
             // so a silent drift here goes red on CPU-only CI.
             //
             // The three-knot piecewise-linear age curve: 0 = the foam anchor (the white of the churn),
-            // 0.5 = the shallow anchor, 1 = the mid anchor. The knots are re-ordered defensively so a
+            // 0.5 = the lifted water, 1 = the water itself (W4-1, 3A). The knots are re-ordered defensively so a
             // mis-tuned material can never invert the ramp or divide by zero.
             float WakeFoamKnots(float t01, float whiteHold, float blueReach, float deepReach)
             {
@@ -3489,14 +3502,25 @@ Shader "HiddenHarbours/Water"
                 return 1.0;
             }
 
-            // TWIN of WakeFoamAgeing.Ramp3. The three-stop lookup across the sea's OWN palette anchors, so
-            // every value the wake can take is a convex combination of colours the art direction already
-            // owns (ADR 0015) - the wake cannot leave the palette even at a mis-tuned age.
-            float3 WakeFoamRamp3(float age01, float3 foam, float3 shallow, float3 mid)
+            // TWIN of WakeFoamAgeing.Ramp3. The three-stop lookup: the sea's foam anchor, then the lifted
+            // water, then THE WATER ITSELF (W4-1, 3A). Every value the wake can take is a convex combination
+            // of the foam and this pixel's own water, so it ends as that water exactly and never leaves the
+            // span between the two; the palette guard-rail (ADR 0015) still bounds the result after.
+            float3 WakeFoamRamp3(float age01, float3 foam, float3 lift, float3 body)
             {
                 float t = saturate(age01);
-                return t <= 0.5 ? lerp(foam, shallow, t * 2.0)
-                                : lerp(shallow, mid, (t - 0.5) * 2.0);
+                return t <= 0.5 ? lerp(foam, lift, t * 2.0)
+                                : lerp(lift, body, (t - 0.5) * 2.0);
+            }
+
+            // TWIN of WakeFoamAgeing.BodyLift (W4-1, 3A). The walk's MID stop: the water the foam rides on,
+            // brightened x lift and whitened toward the foam - churned water is lighter than the water it
+            // sits in and keeps its hue. The lift is floored at 1 (it never darkens the water) and capped
+            // at the foam per channel (the mid stop is never brighter than the churn), so the walk's luma
+            // cannot rise as it ages over any water darker than the foam. Linear colour, like the shader.
+            float3 WakeBodyLift(float3 body, float3 foam, float lift, float whiten)
+            {
+                return lerp(min(body * max(lift, 1.0), foam), foam, saturate(whiten));
             }
 
             // TWIN of WakeFoamAgeing.Age01FromFreshness. How OLD this patch of churn is, from the
@@ -3513,19 +3537,30 @@ Shader "HiddenHarbours/Water"
             // the whitecaps and the surf's own whitewater. Owner, 2026-08-27: foam should churn
             // *"through different shades of blue, distort and fade into the ambient ocean over time"*.
             // Three layers each transcribing that walk is three languages waiting to drift apart, so
-            // there is one walk: WakeFoamKnots over the sea's OWN anchors, at the SAME _WakeFoam*
-            // knots. Two layers at the same age are therefore the same colour, by construction rather
-            // than by tuning — which is the whole of what "one foam language" can mean.
+            // there is one walk: WakeFoamKnots from the sea's foam anchor into THE WATER UNDER IT, at
+            // the SAME _WakeFoam* knots and _WakeBody* dials. Two layers at the same age over the same
+            // water are therefore the same colour, by construction rather than by tuning — which is
+            // the whole of what "one foam language" can mean.
+            //
+            // `body` is that water: col.rgb at the caller's own composite, the sea as it is drawn under
+            // this layer, lit (W4-1, design 3A and C2). The walk ends ON it, so old foam is the water it
+            // rides on in every mood, at every depth and at every hour, not a fixed anchor blue (the
+            // owner's 2026-10-09 finding 3). At the end of the walk the caller's compose is
+            // lerp(col, col, w): the layer leaves the pixel exactly as it found it, whatever is under it.
+            // C2 (owner ruling 2026-10-11): 3A first saved the body BEFORE the light layers, and at noon
+            // the sky reflection and the rest lift the sea well above that, so an old wake ended darker
+            // than its water and read as a stripe. Each layer keeps its own strength.
             //
             // `legacy` is what that layer drew before the walk existed and `strength` 0 returns it
             // BIT-EXACTLY (the A/B every knob in this shader ships under). col.rgb ONLY (P1, rule 5).
-            float3 FoamAgedColor(float age01, float3 legacy, float strength)
+            float3 FoamAgedColor(float age01, float3 legacy, float strength, float3 body)
             {
                 float s = saturate(strength);
                 if (s <= 0.001) return legacy;
 
                 float t     = WakeFoamKnots(age01, _WakeFoamWhiteHold, _WakeFoamBlueReach, _WakeFoamDeepReach);
-                float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb);
+                float3 lift = WakeBodyLift(body, _PaletteFoam.rgb, _WakeBodyLift, _WakeBodyWhiten);
+                float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, lift, body);
                 return lerp(legacy, ramp, s);
             }
 
@@ -3544,11 +3579,12 @@ Shader "HiddenHarbours/Water"
             // (FoamBuffer.Freshness). WakeFoamAgeingMeasurementTests keeps the old compression red.
             //
             // _WakeFoamAgeStrength = 0 returns _FoamColor.rgb unchanged: the shipped single-white compose,
-            // bit-exact.
-            float3 WakeFoamAgedColor(float freshness)
+            // bit-exact. `body` is the water this texel rides on (col.rgb at the wake's composite), where
+            // the walk ends.
+            float3 WakeFoamAgedColor(float freshness, float3 body)
             {
                 return FoamAgedColor(WakeFoamAge01(freshness, _WakeFoamFreshFloor),
-                                     _FoamColor.rgb, _WakeFoamAgeStrength);
+                                     _FoamColor.rgb, _WakeFoamAgeStrength, body);
             }
 
             // ---- the FAKED sky reflection (single-pass, in-shader; col.rgb dressing ONLY) --------------------
@@ -5577,9 +5613,10 @@ Shader "HiddenHarbours/Water"
                     // and becomes the sea's own foam anchor — the brightest thing in the surf still, but
                     // the brightest thing in THIS sea. The BARREL is untouched: it is a hollow, a shadow
                     // in the water, not foam, and it has no age to walk.
+                    //
+                    // Each walk is chosen AT its own composite, on col.rgb there (W4-1 C2): the whitewater
+                    // ends on the water the barrel has shaded, the lip on the whitewater it is thrown over.
                     float surfAge01 = saturate(1.0 - surfAlive);
-                    float3 surfFoam = FoamAgedColor(surfAge01, _SurfColor.rgb,    _SurfAgeStrength);
-                    float3 lipFoam  = FoamAgedColor(0.0,       _SurfLipColor.rgb, _SurfAgeStrength);
 
                     // THE BARREL FIRST, under everything: it is a hollow in the water, so it shades the
                     // sea itself before any foam is laid on top. Drawn as a colour rather than a
@@ -5590,12 +5627,14 @@ Shader "HiddenHarbours/Water"
 
                     // THE WHITEWATER: the sheet, pocket-boosted where it is young and violent.
                     float cover = SurfBandValue(surfCover, bay) * strength;
+                    float3 surfFoam = FoamAgedColor(surfAge01, _SurfColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, surfFoam, cover * _SurfColor.a);
                     col.a   = max(col.a, cover * _SurfColor.a);
 
                     // THE LIP LAST, over the hollow it is throwing across — the brightest thing in the
                     // surf, and the thing that reads as the wave pitching forward.
                     float lip = SurfBandValue(saturate(surfLip), bay) * strength;
+                    float3 lipFoam = FoamAgedColor(0.0, _SurfLipColor.rgb, _SurfAgeStrength, col.rgb);
                     col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);
                     col.a   = max(col.a, lip * _SurfLipColor.a);
                 }
@@ -5820,8 +5859,9 @@ Shader "HiddenHarbours/Water"
                     // same colour because there is one walk, not because two copies of it currently
                     // agree. capAge01 comes from the cap's own lifecycle (the breaking core against the
                     // milky residual behind it), which is geometry, not an accumulated clock.
-                    // _CapAgeStrength 0 restores the single flat _FoamColor, bit for bit.
-                    col.rgb = lerp(col.rgb, FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength),
+                    // _CapAgeStrength 0 restores the single flat _FoamColor, bit for bit. The walk ends on
+                    // col.rgb, the lit water under the cap (W4-1 C2).
+                    col.rgb = lerp(col.rgb, FoamAgedColor(capAge01, _FoamColor.rgb, _CapAgeStrength, col.rgb),
                                    capOpacity);
                 }
 
@@ -5843,11 +5883,11 @@ Shader "HiddenHarbours/Water"
                 if (wakeFoam > 0.001)
                 {
                     // AGED (owner ask 2026-08-27): white only where the hull is working the water right
-                    // now, then down the sea's own ramp as the freshness clock runs down. The two
-                    // channels do different jobs and must not be confused: FRESHNESS picks the colour,
-                    // COVERAGE is the weight - so the oldest foam is both the bluest and the faintest,
-                    // which is what "fades into the ambient ocean over time" is.
-                    col.rgb = lerp(col.rgb, WakeFoamAgedColor(wakeFresh), saturate(wakeFoam) * _FoamColor.a);
+                    // now, then into the lit water under it (col.rgb here; W4-1 3A, C2) as the freshness clock runs
+                    // down. The two channels do different jobs and must not be confused: FRESHNESS picks
+                    // the colour, COVERAGE is the weight - so the oldest foam is both the most like its
+                    // water and the faintest, which is what "fades into the ambient ocean over time" is.
+                    col.rgb = lerp(col.rgb, WakeFoamAgedColor(wakeFresh, col.rgb), saturate(wakeFoam) * _FoamColor.a);
                 }
 
                 // ---- STORM FOAM LANES: long downwind foam streaks in a blow (col.rgb ONLY; Arc C, default OFF)
