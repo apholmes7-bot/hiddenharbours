@@ -36,7 +36,7 @@ namespace HiddenHarbours.App.Editor
             if (string.IsNullOrEmpty(packageName) || scriptGuid == null || !GuidRx.IsMatch(scriptGuid))
                 throw new Refusal("NMC needs a package name and KeySceneDef's script guid.");
             var result = new Result();
-            result.Report.Add("profile: NMC H1; " + NmcPackageRegionId + " -> " + NmcRegionId);
+            result.Report.Add("profile: NMC H1b; " + NmcPackageRegionId + " -> " + NmcRegionId);
             Beside beside = ReadBeside(idMap, hosts, result, NmcIdMapFile, NmcHostsFile);
             Json retirement = Json.Parse(Text(retiredIds ?? throw new Refusal("no NMC retirement table"), NmcRetiredFile), NmcRetiredFile);
             if (Need(retirement, "schema", NmcRetiredFile).Str("retirement schema") != "hidden-harbours/nmc-retired-ids@1")
@@ -79,6 +79,22 @@ namespace HiddenHarbours.App.Editor
                 if (owners.ContainsKey(id)) throw new Refusal("two owner keys map to " + id);
                 owners.Add(id, o.Value.Str("owner"));
             }
+            var takeovers = new Dictionary<string, (string From, string To, int Call, string Why)>(StringComparer.Ordinal);
+            if (region.Get("takenOver") is Json takenOver)
+                foreach (Json entry in Items(takenOver, "takenOver"))
+                {
+                    string id = NmcId(Need(entry, "id", "takeover").Str("takeover id"), beside);
+                    string from = Need(entry, "from", id).Str("takeover from");
+                    string to = Need(entry, "owner", id).Str("takeover owner");
+                    string why = Need(entry, "why", id).Str("takeover why");
+                    Match call = Regex.Match(why, @"\bcall (\d+)\b");
+                    if (takeovers.ContainsKey(id) || from == to || !scenes.ContainsKey(from) || !scenes.ContainsKey(to) ||
+                        !owners.TryGetValue(id, out string owner) || owner != to || !call.Success ||
+                        !int.TryParse(call.Groups[1].Value, out int callNumber))
+                        throw new Refusal("invalid or duplicate takeover: " + id);
+                    takeovers.Add(id, (from, to, callNumber, why));
+                }
+            var records = new Dictionary<string, Json>(StringComparer.Ordinal);
             var actual = new Dictionary<string, string>(StringComparer.Ordinal);
             var poses = new Dictionary<string, List<Json>>(StringComparer.Ordinal);
             var refs = new List<(string Scene, string Id, string Owner)>();
@@ -94,6 +110,12 @@ namespace HiddenHarbours.App.Editor
                         string target = p.Get("ref").Str("ref").Split(' ')[0];
                         if (target != owner || target == s.Key) throw new Refusal("ref/owner mismatch: " + id);
                         refs.Add((s.Key, id, owner));
+                        continue;
+                    }
+                    if (takeovers.TryGetValue(id, out var takeover) && takeover.From == s.Key)
+                    {
+                        if (records.ContainsKey(id)) throw new Refusal("duplicate takeover record: " + id);
+                        records.Add(id, p);
                         continue;
                     }
                     owned++;
@@ -120,13 +142,13 @@ namespace HiddenHarbours.App.Editor
             foreach (var family in poses)
             {
                 var s = scenes[actual[family.Key]];
-                Row row = NmcRow(s, family.Key, family.Value[0], held, beside);
+                Row row = NmcRow(s, family.Key, family.Value[0], held, actual, beside);
                 if (family.Value.Count > 1)
                 {
                     var variants = new HashSet<string>(StringComparer.Ordinal);
                     foreach (Json p in family.Value)
                     {
-                        Row pose = NmcRow(s, family.Key, p, held, beside);
+                        Row pose = NmcRow(s, family.Key, p, held, actual, beside);
                         if (pose.Kind != row.Kind || pose.Kit != row.Kit || pose.Piece != row.Piece)
                             throw new Refusal("incompatible kind/kit in variant family " + row.Id);
                         foreach (string v in pose.Variants)
@@ -141,6 +163,21 @@ namespace HiddenHarbours.App.Editor
                     foreach (Json light in Items(lights, "lights")) s.Lights.Add(NmcLight(row.Id, light));
                 Json one = family.Value[0].Get("light");
                 if (one != null) s.Lights.Add(NmcLight(row.Id, one));
+            }
+            foreach (var entry in takeovers)
+            {
+                string id = entry.Key;
+                var t = entry.Value;
+                if (!records.TryGetValue(id, out Json record) || !actual.TryGetValue(id, out string owner) || owner != t.To)
+                    throw new Refusal("takeover needs its old record and new owned row: " + id);
+                Row before = NmcRow(scenes[t.From], id, record, held, actual, beside);
+                Row after = scenes[t.To].Rows.Single(r => r.Id == id);
+                if (before.Kind != after.Kind || NmcKitFamily(before.Kit) != NmcKitFamily(after.Kit))
+                    throw new Refusal("takeover changes kind or kit family: " + id);
+                string provenance = "{\"id\":" + SystemQuote(id) + ",\"from\":" + SystemQuote(t.From) +
+                    ",\"to\":" + SystemQuote(t.To) + ",\"call\":" + t.Call + ",\"why\":" + SystemQuote(t.Why) + "}";
+                AddNmc(after, "takeover", provenance);
+                result.Report.Add("takeover " + id + ": " + t.From + " -> " + t.To + "; call " + t.Call + "; old row is a record, never retired");
             }
             foreach (string id in beside.Hosts.Keys)
                 if (!beside.Answered.Contains(id)) throw new Refusal("stale NMC host answer: " + id);
@@ -157,7 +194,10 @@ namespace HiddenHarbours.App.Editor
                     if (source.Has(key)) AddNmc(carrier, "scene." + key, NmcMapped(source.Get(key), beside));
                 AddNmc(carrier, "scene.refs", "[" + string.Join(",", indexRefs.Where(r => r.Scene == s.Id)
                     .Select(r => "{\"id\":\"" + r.Id + "\",\"owner\":\"" + r.Owner + "\"}")) + "]");
-                AddNmc(carrier, "scene.sourceRows", (s.Tally.Pieces + refs.Count(r => r.Scene == s.Id)).ToString());
+                var sceneRecords = records.Where(r => takeovers[r.Key].From == s.Id).ToList();
+                if (sceneRecords.Count > 0)
+                    AddNmc(carrier, "scene.takeoverRecords", "[" + string.Join(",", sceneRecords.Select(r => NmcMapped(r.Value, beside))) + "]");
+                AddNmc(carrier, "scene.sourceRows", (s.Tally.Pieces + refs.Count(r => r.Scene == s.Id) + sceneRecords.Count).ToString());
                 AddNmc(carrier, "scene.ownedRows", s.Tally.Owned.ToString());
                 AddNmc(carrier, "deferred", NmcDeferred(s.Id));
                 NmcHouseholds(s, source, beside);
@@ -167,7 +207,7 @@ namespace HiddenHarbours.App.Editor
             {
                 Row carrier = wharf.Rows[0];
                 AddNmc(carrier, "ground.source", groundFile + ", sha256 " + Sha256(files[groundFile]));
-                foreach (string key in new[] { "coast", "water", "roads", "bridges", "boardwalks", "paths", "lots", "frozen" })
+                foreach (string key in new[] { "coast", "water", "roads", "bridges", "boardwalks", "paths", "lots", "frozen", "areas" })
                     if (plan.Has(key)) AddNmc(carrier, "plan." + key, NmcMapped(plan.Get(key), beside));
                 AddNmc(carrier, "plan.kinds", "{\"roads\":\"" + NmcPlanKindOf("RoadPlan") + "\",\"lots\":\"" +
                     NmcPlanKindOf("LotPlan") + "\",\"bridges\":\"" + NmcPlanKindOf("BridgePlan") + "\",\"households\":\"" +
@@ -185,8 +225,16 @@ namespace HiddenHarbours.App.Editor
                 if (Get(e.Value.Top, "RegionId")?.Scalar != NmcRegionId) throw new Refusal("NMC asset has another region: " + e.Value.File);
                 if (e.Value.Placed) throw new Refusal("H1 cannot rewrite a placed scene: " + e.Key);
                 foreach (var row in e.Value.Rows)
-                    if (actual.TryGetValue(row.Get("Id").Scalar, out string owner) && owner != e.Key)
-                        throw new Refusal("an existing id changes scene owner: " + row.Get("Id").Scalar);
+                {
+                    string id = row.Get("Id").Scalar;
+                    if (!actual.TryGetValue(id, out string owner) || owner == e.Key) continue;
+                    if (!takeovers.TryGetValue(id, out var t) || t.From != e.Key || t.To != owner)
+                        throw new Refusal("an existing id changes scene owner without its takeover: " + id);
+                    Row incoming = scenes[owner].Rows.Single(r => r.Id == id);
+                    if (row.Get("Kind")?.Scalar != incoming.Kind || NmcKitFamily(row.Get("Kit")?.Scalar ?? "") != NmcKitFamily(incoming.Kit))
+                        throw new Refusal("takeover changes existing kind or kit family: " + id);
+                    NmcSameKit(scenes[owner], incoming, row.Get("Kit").Scalar, result);
+                }
             }
             foreach (string id in actual.Keys)
                 if (reserved.Contains(id) || reservations.Contains(id)) throw new Refusal("a retired id is never reused: " + id);
@@ -194,13 +242,16 @@ namespace HiddenHarbours.App.Editor
             foreach (Scene scene in scenes.Values)
                 foreach (string id in reservations)
                     if (!scene.ReservedIds.Contains(id)) scene.ReservedIds.Add(id);
-            foreach (Scene scene in scenes.Values) Write(scene, old, ours, NmcRegionId, scriptGuid, result);
-            result.Report.Add($"NMC source rows {count}; refs {refs.Count} (spawn zero); owned rows {owned}; unique owned ids {actual.Count}");
+            var transferred = new HashSet<string>(takeovers.Keys, StringComparer.Ordinal);
+            foreach (Scene scene in scenes.Values) Write(scene, old, ours, NmcRegionId, scriptGuid, result,
+                (incoming, previous) => NmcSameKit(scene, incoming, previous, result), transferred);
+            result.Report.Add($"NMC source rows {count}; refs {refs.Count} (spawn zero); takeover records {records.Count} (spawn zero); owned rows {owned}; unique owned ids {actual.Count}");
             result.Report.Add($"changed: {result.Changed.Count} of {result.Assets.Count} assets; new metas {result.Metas.Count}");
             return result;
         }
 
         static bool NmcSupersededFile(string file) => file.Contains("/record-2b/") || file.Contains("/record-2c/") ||
+            file.Contains("/record-2d/") || file.Contains("/record-2e/") || file.Contains("/record-2f/") ||
             file == "hh-nmc-wharf-return/scenes/keyscene.nmc_fuel_stop/scene.json" || file.Contains("main_street.plaza");
 
         static string NmcId(string id, Beside beside)

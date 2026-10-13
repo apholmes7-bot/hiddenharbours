@@ -13,19 +13,19 @@ MonoBehaviour:
   m_Name: KeyScene_nmc_main_street
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
   Id: keyscene.nmc_main_street
-  DisplayName: 'Main street: the plaza and Water Street'
+  DisplayName: "Main street: Water Street\u2019s block, the square and the back lane"
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_main_street/scene.json,
-    19767 bytes, sha256 74356c60553518660d26f728cc1adc9af5d8ea893ea4dfc97be8eee25c3b80d9
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_main_street/scene.json,
+    174312 bytes, sha256 a55e91c363758e5e475a6793c168ed7e5b26037dd67f130ae79ce41d1096fe18
   Placed: 0
   Pieces:
-  - Id: structure.nmc_apartments_2
+  - Id: structure.nmc_main_street_outfitter
     Kind: building
     Owner: H7
-    Kit: "StackFlatsIso (Art/stackFlatsIsoRig.js), its decker3 preset\u2019s fields"
-    Piece: StackFlatsIso
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
     State: 
-    At: {x: -156, y: 241.8}
+    At: {x: -262, y: 241.11}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -34,7 +34,1214 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 241.8
+    SortY: 238.71
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: outfitter
+    - Key: w
+      Value: 8
+    - Key: d
+      Value: 11
+    - Key: fl
+      Value: '[4.2,3]'
+    - Key: clad
+      Value: clapR
+    - Key: top
+      Value: '{"t":"gable","rise":3.3,"ov":0.35,"roof":"seam","rtex":"seam"}'
+    - Key: up
+      Value: cap
+    - Key: bays
+      Value: '[{"w":8,"n":2,"s":{"id":"outfitter","word":"OUTFITTERS","sign":"trimW","ink":"awnK","frame":"trimW","door":"C","dw":1.2,"disp":"outfit","aw":{"t":"solid","m":["awnK"],"word":"KAYAKS
+        & BIKES","ink":"trimW","pj":1.3},"open":1}}]'
+    - Key: walk
+      Value: '[{"k":"bikes","e":-2.7,"n":-1.7,"nb":3,"ms":["teal","red","yel"]},{"k":"sandwich","e":2.9,"n":-1.2}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-262,246.61]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 6.5
+    - Key: nmc.def
+      Value: '{"name":"the outfitter (8 x 11 m, 2 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to Water Street","lot":"lot.nmc_main_street_outfitter","trade":"kayak,
+        canoe and bike rental, guided paddles on the river and the bay","keepers":"two
+        sisters who grew up on the creek; one guides, one fixes the bikes","flats":1,"shops":["outfitter"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_outfitter"'
+    - Key: nmc.reachBox
+      Value: '[-266.5,-257.5,238.81,252.61,5.7,19.7]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+    - Key: nmc.scene.layout
+      Value: '{"units":"region metres (x east, y north), z about mean sea level","waterStreet":{"pts":[[-271,228.81],[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-166,227.17]],"carriage":5.4,"stallRuns":[{"id":"a","x0":-265,"x1":-235},{"id":"b","x0":-232,"x1":-220}],"stall":{"angle":45,"alongKerb":3.68,"depth":5.6,"nose":"in,
+        north-west"},"walk":"3.2 m brick from the stalls\u2019 kerb; 1.5 m slab on
+        the river wall\u2019s side","buildingLine":"Water Street\u2019s centre + 11.96
+        m","planEast":[[-168,227.39],[-150,226],[-128,222]]},"route91":{"town":[[-177.6,222.6],[-181,242],[-186,281]],"walks":"2.6
+        m brick both sides, a 0.5 m verge","westBuildingLine":"its centre \u2212 5.96
+        m"},"lane":{"y":265.45,"w":6.5,"x0":-268,"x1":-185.5},"lot":{"south":{"y":259.45,"runs":[[-268,-235],[-200,-189.5]],"w":2.75},"north":{"y":271.45,"runs":[[-268,-247]],"w":3},"accessible":[[0,10],[0,11]],"ev":[[0,5],[0,6]],"stalls":23},"square":{"box":[-215.5,-200,241.8,262.2],"axis":-207.75},"nets":[{"id":"main_street_00","box":[-276,-238,216,250]},{"id":"main_street_01","box":[-276,-238,250,284]},{"id":"main_street_10","box":[-238,-200,216,250]},{"id":"main_street_11","box":[-238,-200,250,284]},{"id":"main_street_20","box":[-200,-160,216,250]},{"id":"main_street_21","box":[-200,-160,250,284]}],"routes":[{"id":"road.nmc_water_street","cls":"town","w":5.4,"pts":[[-271,228.81],[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-166,227.17]],"bands":[{"role":"gutter","w":0.3,"z":-0.015},{"role":"kerb","w":0.16,"z":0.14},{"role":"walk","w":1.5,"z":0.125,"surf":"slab"}],"crossings":[62.08],"crosswalk":true},{"id":"road.nmc.water_street.stalls_a","cls":"town","w":5.6,"pts":[[-262.2,234.646],[-240,235.5],[-237.8,235.469]],"bands":[{"role":"gutter","w":0.3,"z":-0.015},{"role":"kerb","w":0.16,"z":0.14},{"role":"walk","w":3.2,"z":0.125,"surf":"brick"}]},{"id":"road.nmc.water_street.stalls_b","cls":"town","w":5.6,"pts":[[-229.2,235.346],[-222.8,235.254]],"bands":[{"role":"gutter","w":0.3,"z":-0.015},{"role":"kerb","w":0.16,"z":0.14},{"role":"walk","w":3.2,"z":0.125,"surf":"brick"}]},{"id":"walk.nmc_main_street.frontage","cls":"walk","w":8.4,"pts":[[-271,237.31],[-266,237.5],[-240,238.5],[-205,238],[-184.5,236.886]],"surf":"brick"},{"id":"walk.nmc_main_street.corner","cls":"walk","w":2,"pts":[[-187.4,230.5],[-187.7,241],[-188.6,254],[-188.8,257]],"surf":"brick"},{"id":"road.nmc.route_91.town","cls":"town","w":5.8,"pts":[[-177.6,222.6],[-181,242],[-186,281]],"bands":[{"role":"gutter","w":0.3,"z":-0.015},{"role":"kerb","w":0.16,"z":0.14},{"role":"walk","w":2.6,"z":0.125,"surf":"brick"},{"role":"verge","w":0.5,"z":0.125,"z1":0}],"crosswalk":true},{"id":"road.nmc.north_creek_lane.mouth","cls":"street","w":4.2,"pts":[[-180.6,255.4],[-165,264]],"surf":"asphalt"},{"id":"road.nmc.main_street_lane","cls":"town","w":6.5,"pts":[[-185.5,265.45],[-268,265.45]],"bands":[{"role":"gutter","w":0.3,"z":-0.015},{"role":"kerb","w":0.16,"z":0.14},{"role":"walk","w":1.5,"z":0.125,"surf":"slab"}],"crossings":[21.05],"crosswalk":true},{"id":"lot.nmc_main_street.row_s0","cls":"town","w":5.5,"pts":[[-268,259.45],[-235,259.45]],"bands":[]},{"id":"lot.nmc_main_street.row_s1","cls":"town","w":5.5,"pts":[[-200,259.45],[-189.5,259.45]],"bands":[]},{"id":"lot.nmc_main_street.row_n0","cls":"town","w":5.5,"pts":[[-268,271.45],[-247,271.45]],"bands":[]},{"id":"walk.nmc_main_street.square","cls":"walk","w":7.4,"pts":[[-215.5,245.5],[-200,245.5]],"surf":"brick"},{"id":"path.nmc_main_street.square","cls":"walk","w":2,"pts":[[-207.75,249],[-207.75,262.3]],"surf":"slab"},{"id":"path.nmc_main_street.kayak_yard","cls":"walk","w":3.6,"pts":[[-268,233.5],[-268,262.2]],"surf":"gravel"}],"east":{"lots":[{"id":"lot.nmc_main_street_east_corner","key":"east_corner","name":"the
+        east corner block","trade":"the deli on the corner (sandwiches, chowder, the
+        morning coffee) and the barber; two flats over them","who":"the deli: a couple
+        who ran a food truck on the wharf for ten years; the barber: the third generation
+        in the chair","flats":2,"x":[-173,-164.8],"front":[-168.9,233.74],"row":"east"},{"id":"lot.nmc_main_street_east_block","key":"east_block","name":"the
+        fish market block","trade":"the fish market (the boats\u2019 catch on ice,
+        chowder to take away); five flats over it and beside it","who":"a fishing
+        family off the wharf; the flats let to people who work the town\u2019s shops","flats":5,"x":[-155.2,-142.6],"front":[-148.9,232.16],"row":"east"},{"id":"lot.nmc_main_street_east_decker","key":"east_decker","name":"the
+        three-decker","trade":"the three-decker in the town\u2019s clapboard: a flat
+        a floor, its porch to the street and the river","who":"three households, one
+        a floor; the top flat\u2019s a lobsterman who likes the view","flats":3,"x":[-139,-130.6],"front":[-134.8,231.2],"row":"creek"},{"id":"lot.nmc_main_street_east_captains","key":"east_captains","name":"the
+        captain\u2019s flats","trade":"the captain\u2019s flats in cedar shingle under
+        a gambrel: four flats, a porch across the front","who":"four households; the
+        porch is everyone\u2019s","flats":4,"x":[-129.6,-117.6],"front":[-123.6,231],"row":"creek"},{"id":"lot.nmc_main_street_east_row","key":"east_row","name":"the
+        brick terrace on the east lane","trade":"the brick terrace: four houses of
+        three storeys facing the east lane, two flats in each","who":"eight households,
+        some from the walk-up and the three-decker the redraws replaced","flats":8,"x":[-172.4,-150],"front":[-161.2,257.5],"row":"lane"}],"lane":{"id":"road.nmc_main_street_east_lane","y":251.6},"court":{"x0":-164.4,"x1":-156.15,"y":245.6,"w":2.75},"creekLaneMouth":{"route":"road.nmc_north_creek_lane_mouth","pts":[[-184.6,273.6],[-170,274],[-150,274.3],[-130,274.4],[-110,274.5],[-96,274.4]]},"chandleryDy":3.26,"waterStreetEast":[[-177.4,228],[-166,227.17],[-150,226],[-139,224],[-128,222]]}}'
+    - Key: nmc.scene.flora
+      Value: '[{"key":"RedOak","stage":"mature","at":[-212.2,259.8]},{"key":"RedMaple","stage":"pole","at":[-233.4,238.81],"host":"prop.nmc_water_street_tree_1"},{"key":"RedMaple","stage":"young","at":[-217.2,233.97],"host":"prop.nmc_water_street_tree_2"},{"key":"RedMaple","stage":"young","at":[-197.8,233.41],"host":"prop.nmc_water_street_tree_3"},{"key":"RedMaple","stage":"young","at":[-187.43,261.6],"host":"prop.nmc_route_91_town_tree"},{"key":"WhitePine","stage":"mature","at":[-266.2,277.4]},{"key":"RedMaple","stage":"mature","at":[-259.6,278.2]},{"key":"WhiteBirch","stage":"pole","at":[-253,277.6]},{"key":"BalsamFir","stage":"pole","at":[-247.8,278.6]},{"key":"RedMaple","stage":"young","at":[-140.8,233.6]},{"key":"RedMaple","stage":"young","at":[-147.6,262.6]},{"key":"WhiteBirch","stage":"mature","at":[-130.5,245.6]},{"key":"BalsamFir","stage":"pole","at":[-119,245]},{"key":"WhiteBirch","stage":"pole","at":[-147.5,259]}]'
+    - Key: nmc.scene.sound
+      Value: '[{"id":"sound.nmc_main_street","kind":"town","at":[-226,250],"z":6.5,"radiusM":45,"gain":"the
+        fountain, a screen door, the caf\u00e9\u2019s cups, a car door, gulls over
+        the river; the band in the bandstand on a Saturday night"}]'
+    - Key: nmc.scene.game
+      Value: '{"buildings":"BuildingDefs, their doors on the walk (the stations in
+        each msBlock model, verb enter); the flats\u2019 doors on Water Street; the
+        restaurant\u2019s as before","street":"Water Street and Route 91 two-way;
+        the angle stalls and the lot\u2019s stalls parking places (two accessible,
+        two EV); the lane two-way","square":"walkable; the bandstand climbable by
+        its steps; the tot lot and the picnic tables usable","cars":"ambient and parked","lights":"shop
+        windows, the flats (some dark), lamps, the bandstand and the terraces\u2019
+        string lights on the lamp rule"}'
+    - Key: nmc.scene.budgets
+      Value: '{"tiles":{"main_r0c0_afternoon":{"px":[602,416],"sprites":131,"counts":{"piece":1,"prop":1,"vehicle":4,"tree":4,"flower":72,"grass":46,"shrub":3},"ms":9745,"fnv1a":"fe102495","file":"boards/main_r0c0_afternoon.png"},"main_r0c1_afternoon":{"px":[602,416],"sprites":139,"counts":{"building":4,"piece":1,"prop":1,"vehicle":1,"tree":2,"flower":70,"grass":51,"shrub":9},"ms":13786,"fnv1a":"342797f8","file":"boards/main_r0c1_afternoon.png"},"main_r0c2_afternoon":{"px":[602,416],"sprites":125,"counts":{"building":5,"tree":1,"flower":72,"grass":42,"shrub":5},"ms":11437,"fnv1a":"2e3c0487","file":"boards/main_r0c2_afternoon.png"},"main_r0c3_afternoon":{"px":[602,416],"sprites":124,"counts":{"building":4,"tree":1,"flower":73,"grass":41,"shrub":5},"ms":12917,"fnv1a":"a0d92d71","file":"boards/main_r0c3_afternoon.png"},"main_r0c4_afternoon":{"px":[602,416],"sprites":104,"counts":{"building":2,"piece":1,"prop":1,"tree":1,"flower":64,"shrub":3,"grass":32},"ms":10609,"fnv1a":"10239710","file":"boards/main_r0c4_afternoon.png"},"main_r1c0_afternoon":{"px":[602,416],"sprites":19,"counts":{"building":3,"prop":4,"vehicle":9,"tree":3},"ms":12930,"fnv1a":"3bcf626a","file":"boards/main_r1c0_afternoon.png"},"main_r1c1_afternoon":{"px":[602,416],"sprites":17,"counts":{"building":6,"prop":3,"vehicle":6,"tree":2},"ms":17633,"fnv1a":"59e60630","file":"boards/main_r1c1_afternoon.png"},"main_r1c2_afternoon":{"px":[602,416],"sprites":15,"counts":{"building":5,"piece":4,"prop":2,"vehicle":1,"tree":3},"ms":15958,"fnv1a":"0f0f359a","file":"boards/main_r1c2_afternoon.png"},"main_r1c3_afternoon":{"px":[602,416],"sprites":25,"counts":{"building":4,"piece":10,"prop":7,"vehicle":1,"tree":3},"ms":16845,"fnv1a":"de404676","file":"boards/main_r1c3_afternoon.png"},"main_r1c4_afternoon":{"px":[602,416],"sprites":9,"counts":{"building":2,"piece":1,"prop":3,"vehicle":1,"tree":2},"ms":16871,"fnv1a":"6b7170aa","file":"boards/main_r1c4_afternoon.png"},"main_r2c0_afternoon":{"px":[602,416],"sprites":10,"counts":{"building":3,"piece":1,"prop":3,"vehicle":3},"ms":10482,"fnv1a":"76212f13","file":"boards/main_r2c0_afternoon.png"},"main_r2c1_afternoon":{"px":[602,416],"sprites":12,"counts":{"building":4,"piece":2,"prop":1,"vehicle":4,"tree":1},"ms":15102,"fnv1a":"0990bb65","file":"boards/main_r2c1_afternoon.png"},"main_r2c2_afternoon":{"px":[602,416],"sprites":18,"counts":{"building":2,"piece":6,"prop":7,"vehicle":1,"tree":2},"ms":17640,"fnv1a":"2ac73d47","file":"boards/main_r2c2_afternoon.png"},"main_r2c3_afternoon":{"px":[602,416],"sprites":25,"counts":{"building":1,"piece":12,"prop":10,"tree":2},"ms":15918,"fnv1a":"6d92c585","file":"boards/main_r2c3_afternoon.png"},"main_r2c4_afternoon":{"px":[602,416],"sprites":7,"counts":{"building":1,"piece":3,"prop":2,"tree":1},"ms":17884,"fnv1a":"e75bb7f4","file":"boards/main_r2c4_afternoon.png"},"main_r3c0_afternoon":{"px":[602,416],"sprites":91,"counts":{"piece":2,"grass":33,"flower":48,"shrub":8},"ms":8973,"fnv1a":"5363ec9f","file":"boards/main_r3c0_afternoon.png"},"main_r3c1_afternoon":{"px":[602,416],"sprites":115,"counts":{"piece":9,"grass":71,"flower":29,"shrub":6},"ms":14811,"fnv1a":"3e46c7e8","file":"boards/main_r3c1_afternoon.png"},"main_r3c2_afternoon":{"px":[602,416],"sprites":109,"counts":{"prop":1,"piece":5,"tree":1,"rock":1,"grass":64,"flower":34,"shrub":3},"ms":12927,"fnv1a":"c04e490c","file":"boards/main_r3c2_afternoon.png"},"main_r3c3_afternoon":{"px":[602,416],"sprites":108,"counts":{"piece":10,"prop":1,"tree":2,"rock":1,"grass":83,"flower":10,"shrub":1},"ms":12985,"fnv1a":"e3c9f2cd","file":"boards/main_r3c3_afternoon.png"},"main_r3c4_afternoon":{"px":[602,416],"sprites":90,"counts":{"prop":1,"piece":6,"tree":1,"grass":67,"flower":14,"shrub":1},"ms":14862,"fnv1a":"2d475186","file":"boards/main_r3c4_afternoon.png"},"main_r0c0_evening":{"px":[602,416],"sprites":145,"counts":{"piece":1,"prop":1,"vehicle":4,"tree":4,"grass":38,"flower":96,"shrub":1},"ms":12554,"fnv1a":"ebf3426e","file":"boards/main_r0c0_evening.png"},"main_r0c1_evening":{"px":[602,416],"sprites":120,"counts":{"building":4,"piece":1,"prop":1,"vehicle":1,"tree":2,"flower":59,"grass":51,"shrub":1},"ms":13822,"fnv1a":"96d9778e","file":"boards/main_r0c1_evening.png"},"main_r0c2_evening":{"px":[602,416],"sprites":128,"counts":{"building":5,"tree":1,"flower":74,"grass":47,"shrub":1},"ms":14018,"fnv1a":"0934b0f0","file":"boards/main_r0c2_evening.png"},"main_r0c3_evening":{"px":[602,416],"sprites":126,"counts":{"building":4,"tree":1,"flower":73,"grass":46,"shrub":2},"ms":15722,"fnv1a":"52113513","file":"boards/main_r0c3_evening.png"},"main_r0c4_evening":{"px":[602,416],"sprites":90,"counts":{"building":2,"piece":1,"prop":1,"tree":1,"grass":31,"flower":53,"shrub":1},"ms":12034,"fnv1a":"f63f29b9","file":"boards/main_r0c4_evening.png"},"main_r1c0_evening":{"px":[602,416],"sprites":19,"counts":{"building":3,"prop":4,"vehicle":9,"tree":3},"ms":14922,"fnv1a":"86999158","file":"boards/main_r1c0_evening.png"},"main_r1c1_evening":{"px":[602,416],"sprites":17,"counts":{"building":6,"prop":3,"vehicle":6,"tree":2},"ms":16462,"fnv1a":"f29d75ff","file":"boards/main_r1c1_evening.png"},"main_r1c2_evening":{"px":[602,416],"sprites":15,"counts":{"building":5,"piece":4,"prop":2,"vehicle":1,"tree":3},"ms":19164,"fnv1a":"1cc397e6","file":"boards/main_r1c2_evening.png"},"main_r1c3_evening":{"px":[602,416],"sprites":25,"counts":{"building":4,"piece":10,"prop":7,"vehicle":1,"tree":3},"ms":19975,"fnv1a":"9011c271","file":"boards/main_r1c3_evening.png"},"main_r1c4_evening":{"px":[602,416],"sprites":9,"counts":{"building":2,"piece":1,"prop":3,"vehicle":1,"tree":2},"ms":16683,"fnv1a":"be505f95","file":"boards/main_r1c4_evening.png"},"main_r2c0_evening":{"px":[602,416],"sprites":10,"counts":{"building":3,"piece":1,"prop":3,"vehicle":3},"ms":10348,"fnv1a":"75dce3e1","file":"boards/main_r2c0_evening.png"},"main_r2c1_evening":{"px":[602,416],"sprites":12,"counts":{"building":4,"piece":2,"prop":1,"vehicle":4,"tree":1},"ms":14903,"fnv1a":"815a9879","file":"boards/main_r2c1_evening.png"},"main_r2c2_evening":{"px":[602,416],"sprites":18,"counts":{"building":2,"piece":6,"prop":7,"vehicle":1,"tree":2},"ms":15423,"fnv1a":"fca0d76a","file":"boards/main_r2c2_evening.png"},"main_r2c3_evening":{"px":[602,416],"sprites":25,"counts":{"building":1,"piece":12,"prop":10,"tree":2},"ms":15930,"fnv1a":"11c43e9e","file":"boards/main_r2c3_evening.png"},"main_r2c4_evening":{"px":[602,416],"sprites":7,"counts":{"building":1,"piece":3,"prop":2,"tree":1},"ms":17348,"fnv1a":"03c41796","file":"boards/main_r2c4_evening.png"},"main_r3c0_evening":{"px":[602,416],"sprites":97,"counts":{"piece":2,"grass":40,"flower":50,"shrub":5},"ms":11413,"fnv1a":"e6a285bf","file":"boards/main_r3c0_evening.png"},"main_r3c1_evening":{"px":[602,416],"sprites":114,"counts":{"piece":9,"grass":64,"flower":40,"shrub":1},"ms":14234,"fnv1a":"2d65d6bb","file":"boards/main_r3c1_evening.png"},"main_r3c2_evening":{"px":[602,416],"sprites":114,"counts":{"prop":1,"piece":5,"tree":1,"grass":78,"flower":27,"shrub":2},"ms":18964,"fnv1a":"fc566514","file":"boards/main_r3c2_evening.png"},"main_r3c3_evening":{"px":[602,416],"sprites":120,"counts":{"piece":10,"prop":1,"tree":2,"grass":89,"flower":17,"shrub":1},"ms":15110,"fnv1a":"9c740bb4","file":"boards/main_r3c3_evening.png"},"main_r3c4_evening":{"px":[602,416],"sprites":94,"counts":{"prop":1,"piece":6,"tree":1,"rock":1,"grass":71,"flower":13,"shrub":1},"ms":16519,"fnv1a":"0bcad522","file":"boards/main_r3c4_evening.png"},"east_r0c0_afternoon":{"px":[592,384],"sprites":76,"counts":{"building":2,"tree":1,"flower":54,"grass":17,"shrub":2},"ms":14088,"fnv1a":"698dcbe6","file":"boards/east_r0c0_afternoon.png"},"east_r0c1_afternoon":{"px":[592,384],"sprites":86,"counts":{"building":1,"tree":2,"flower":56,"grass":27},"ms":12822,"fnv1a":"7e5bb2e2","file":"boards/east_r0c1_afternoon.png"},"east_r0c2_afternoon":{"px":[592,384],"sprites":94,"counts":{"building":1,"tree":2,"grass":24,"flower":66,"shrub":1},"ms":10123,"fnv1a":"fd38572b","file":"boards/east_r0c2_afternoon.png"},"east_r0c3_afternoon":{"px":[592,384],"sprites":85,"counts":{"flower":41,"grass":42,"shrub":2},"ms":7806,"fnv1a":"5e7926c1","file":"boards/east_r0c3_afternoon.png"},"east_r1c0_afternoon":{"px":[592,384],"sprites":7,"counts":{"building":3,"piece":1,"prop":2,"tree":1},"ms":18402,"fnv1a":"96b6d650","file":"boards/east_r1c0_afternoon.png"},"east_r1c1_afternoon":{"px":[592,384],"sprites":6,"counts":{"building":3,"prop":1,"tree":2},"ms":15931,"fnv1a":"919d4681","file":"boards/east_r1c1_afternoon.png"},"east_r1c2_afternoon":{"px":[592,384],"sprites":8,"counts":{"building":4,"tree":4},"ms":10791,"fnv1a":"2e29bdb7","file":"boards/east_r1c2_afternoon.png"},"east_r1c3_afternoon":{"px":[592,384],"sprites":5,"counts":{"building":2,"tree":2,"flower":1},"ms":10776,"fnv1a":"0e770410","file":"boards/east_r1c3_afternoon.png"},"east_r2c0_afternoon":{"px":[592,384],"sprites":6,"counts":{"building":2,"piece":3,"vehicle":1},"ms":17730,"fnv1a":"14a57716","file":"boards/east_r2c0_afternoon.png"},"east_r2c1_afternoon":{"px":[592,384],"sprites":7,"counts":{"building":2,"piece":2,"prop":2,"vehicle":1},"ms":15899,"fnv1a":"a09eb80a","file":"boards/east_r2c1_afternoon.png"},"east_r2c2_afternoon":{"px":[592,384],"sprites":6,"counts":{"building":3,"piece":1,"tree":2},"ms":10543,"fnv1a":"904587d3","file":"boards/east_r2c2_afternoon.png"},"east_r2c3_afternoon":{"px":[592,384],"sprites":4,"counts":{"building":2,"tree":2},"ms":9816,"fnv1a":"7a481233","file":"boards/east_r2c3_afternoon.png"},"east_r3c0_afternoon":{"px":[592,384],"sprites":49,"counts":{"building":1,"piece":4,"vehicle":1,"grass":27,"flower":15,"shrub":1},"ms":16002,"fnv1a":"c6d89442","file":"boards/east_r3c0_afternoon.png"},"east_r3c1_afternoon":{"px":[592,384],"sprites":40,"counts":{"building":2,"piece":10,"prop":1,"vehicle":1,"grass":19,"flower":7},"ms":12455,"fnv1a":"dcf4f028","file":"boards/east_r3c1_afternoon.png"},"east_r3c2_afternoon":{"px":[592,384],"sprites":63,"counts":{"building":3,"piece":3,"tree":1,"shrub":6,"grass":20,"flower":30},"ms":11228,"fnv1a":"8b3b8284","file":"boards/east_r3c2_afternoon.png"},"east_r3c3_afternoon":{"px":[592,384],"sprites":85,"counts":{"building":2,"grass":30,"flower":47,"shrub":6},"ms":9569,"fnv1a":"97978e44","file":"boards/east_r3c3_afternoon.png"},"east_r0c0_evening":{"px":[592,384],"sprites":70,"counts":{"building":2,"tree":1,"flower":38,"grass":28,"shrub":1},"ms":11927,"fnv1a":"4caad4c8","file":"boards/east_r0c0_evening.png"},"east_r0c1_evening":{"px":[592,384],"sprites":80,"counts":{"building":1,"tree":2,"flower":51,"grass":23,"shrub":3},"ms":11493,"fnv1a":"a9b27a86","file":"boards/east_r0c1_evening.png"},"east_r0c2_evening":{"px":[592,384],"sprites":82,"counts":{"building":1,"tree":2,"grass":27,"flower":52},"ms":8907,"fnv1a":"c15e277b","file":"boards/east_r0c2_evening.png"},"east_r0c3_evening":{"px":[592,384],"sprites":79,"counts":{"grass":43,"flower":36},"ms":9332,"fnv1a":"273c5427","file":"boards/east_r0c3_evening.png"},"east_r1c0_evening":{"px":[592,384],"sprites":8,"counts":{"building":3,"piece":1,"prop":2,"tree":1,"flower":1},"ms":16454,"fnv1a":"73c62d90","file":"boards/east_r1c0_evening.png"},"east_r1c1_evening":{"px":[592,384],"sprites":7,"counts":{"building":3,"prop":1,"tree":2,"flower":1},"ms":15939,"fnv1a":"a25df7bf","file":"boards/east_r1c1_evening.png"},"east_r1c2_evening":{"px":[592,384],"sprites":10,"counts":{"building":4,"tree":4,"flower":2},"ms":10917,"fnv1a":"c786f1eb","file":"boards/east_r1c2_evening.png"},"east_r1c3_evening":{"px":[592,384],"sprites":6,"counts":{"building":2,"tree":2,"flower":2},"ms":10115,"fnv1a":"5ea21158","file":"boards/east_r1c3_evening.png"},"east_r2c0_evening":{"px":[592,384],"sprites":6,"counts":{"building":2,"piece":3,"vehicle":1},"ms":17389,"fnv1a":"ee20e4f9","file":"boards/east_r2c0_evening.png"},"east_r2c1_evening":{"px":[592,384],"sprites":7,"counts":{"building":2,"piece":2,"prop":2,"vehicle":1},"ms":15015,"fnv1a":"267d8c6b","file":"boards/east_r2c1_evening.png"},"east_r2c2_evening":{"px":[592,384],"sprites":6,"counts":{"building":3,"piece":1,"tree":2},"ms":10350,"fnv1a":"2e91c07b","file":"boards/east_r2c2_evening.png"},"east_r2c3_evening":{"px":[592,384],"sprites":5,"counts":{"building":2,"tree":2,"grass":1},"ms":10395,"fnv1a":"4da47062","file":"boards/east_r2c3_evening.png"},"east_r3c0_evening":{"px":[592,384],"sprites":50,"counts":{"building":1,"piece":4,"vehicle":1,"grass":28,"flower":14,"shrub":2},"ms":16108,"fnv1a":"192bd62a","file":"boards/east_r3c0_evening.png"},"east_r3c1_evening":{"px":[592,384],"sprites":49,"counts":{"building":2,"piece":10,"prop":1,"vehicle":1,"flower":7,"grass":26,"shrub":2},"ms":14216,"fnv1a":"9cabf67c","file":"boards/east_r3c1_evening.png"},"east_r3c2_evening":{"px":[592,384],"sprites":63,"counts":{"building":3,"piece":3,"tree":1,"grass":23,"shrub":4,"flower":29},"ms":10451,"fnv1a":"1fd10a30","file":"boards/east_r3c2_evening.png"},"east_r3c3_evening":{"px":[592,384],"sprites":76,"counts":{"building":2,"shrub":7,"flower":45,"grass":22},"ms":10602,"fnv1a":"96127122","file":"boards/east_r3c3_evening.png"}}}'
+    - Key: nmc.scene.ground
+      Value: '{"package":"export/HH-nmc-ground-part-1-reissue-3-2026-10-07/","drawnOn":"export/HH-nmc-ground-part-1-reissue-2-2026-10-02/
+        (pixels b997bdce\u2026); the 10-07 re-issue moves no texel here","laid":[],"note":"Main
+        street lays nothing: the north bank is level at +6.0 (the texture\u2019s ceiling)
+        from the Falls to the bridge, to the region\u2019s edge at y 280. The kerbs,
+        walks and the lot are the road kit\u2019s heights on it."}'
+    - Key: nmc.scene.refs
+      Value: '[{"id":"structure.nmc_route91_bridge","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_00","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_01","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_02","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_03","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_04","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_05","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_06","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_07","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_08","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_09","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_10","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_11","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_12","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_00","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_01","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_02","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_03","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_04","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_05","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_spur_01","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_wall_stairs_01","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_spur_02","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_town_north_spur_03","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_wall_stairs_02","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_deck","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_01","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_02","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_03","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_04","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_05","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_06","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_07","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_boardwalk_lamp_n_08","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_01","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_02","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_03","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_04","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_05","owner":"keyscene.nmc_town_bridge"},{"id":"boat.nmc_town_dory","owner":"keyscene.nmc_town_bridge"}]'
+    - Key: nmc.scene.sourceRows
+      Value: 131
+    - Key: nmc.scene.ownedRows
+      Value: 91
+    - Key: nmc.deferred
+      Value: placement=H7; names/households/calendar/visits/fire schedules=H13 after
+        the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
+        lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
+        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
+  - Id: structure.nmc_main_street_flowers
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -255, y: 241.38}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 239.38
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: flowers
+    - Key: w
+      Value: 6
+    - Key: d
+      Value: 10.5
+    - Key: fl
+      Value: '[4.2,2.9]'
+    - Key: clad
+      Value: clapB
+    - Key: top
+      Value: '{"t":"gable","rise":2.7,"ov":0.3,"roof":"roofA"}'
+    - Key: up
+      Value: cap
+    - Key: bays
+      Value: '[{"w":6,"n":2,"box":"trimW","s":{"id":"flowers","word":"FLOWERS","sign":"trimW","ink":"rose","frame":"trimW","door":"L","disp":"flowers","aw":{"t":"stripe","m":["pink","trimW"],"pj":1.1}}}]'
+    - Key: walk
+      Value: '[{"k":"buckets","e":1,"n":-1.3},{"k":"planter","e":-2.4,"n":-0.5,"bloom":"pink"}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-255,246.63]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 6.25
+    - Key: nmc.def
+      Value: '{"name":"the flower shop (6 x 10.5 m, 2 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to Water Street","lot":"lot.nmc_main_street_flowers","trade":"cut
+        flowers, bedding plants and the town\u2019s hanging baskets","keepers":"a
+        florist who also grows on a farm up the river road","flats":1,"shops":["flowers"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_flowers"'
+    - Key: nmc.reachBox
+      Value: '[-258.5,-251.5,239.48,252.38,5.7,19.6]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_antiques
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -249, y: 241.61}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 240.11
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: antiques
+    - Key: w
+      Value: 6
+    - Key: d
+      Value: 11
+    - Key: fl
+      Value: '[4.2,3]'
+    - Key: clad
+      Value: clapY
+    - Key: top
+      Value: '{"t":"false","par":1.7,"cor":"bracket","rise":2.2}'
+    - Key: up
+      Value: hood
+    - Key: bays
+      Value: '[{"w":6,"n":2,"shut":"awnK","s":{"id":"antiques","word":"ANTIQUES","sign":"awnK","ink":"gilt","frame":"awnK","door":"R","disp":"antiques","aw":{"t":"solid","m":["plum"],"pj":1.1}}}]'
+    - Key: walk
+      Value: '[{"k":"bench","e":-1.4,"n":-0.8,"f":"S","m":"wood"}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-249,247.11]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 6.5
+    - Key: nmc.def
+      Value: '{"name":"the antiques shop (6 x 11 m, 2 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to Water Street","lot":"lot.nmc_main_street_antiques","trade":"furniture,
+        ship\u2019s fittings, china and old maps","keepers":"a retired schoolteacher
+        who buys at the estate sales up and down the coast","flats":1,"shops":["antiques"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_antiques"'
+    - Key: nmc.reachBox
+      Value: '[-252.5,-245.5,240.21,253.11,5.7,19.7]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_west_block
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -239.5, y: 241.95}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 239.95
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: west_block
+    - Key: w
+      Value: 13
+    - Key: d
+      Value: 12.5
+    - Key: fl
+      Value: '[4.3,3.35,3.4]'
+    - Key: clad
+      Value: brick
+    - Key: top
+      Value: '{"t":"flat","par":1.4,"plaque":1,"raise":0.55,"cor":"corbel"}'
+    - Key: up
+      Value: seg
+    - Key: bays
+      Value: '[{"w":6.5,"n":3,"upTop":"round","s":{"id":"books","word":"BOOKS","sign":"awnG","frame":"awnG","ink":"gilt","door":"R","disp":"books","aw":{"t":"solid","m":["awnG"],"word":"NEW
+        & USED","ink":"gilt"},"goose":1,"open":1}},{"w":6.5,"n":3,"upTop":"round","s":{"id":"gifts","word":"GIFTS","sign":"navy","frame":"navy","ink":"trimW","door":"L","disp":"gifts","aw":{"t":"stripe","m":["navy","trimW"],"word":"SOUVENIRS","ink":"trimW","val":"navy"},"goose":1}}]'
+    - Key: roof
+      Value: '{"hvac":[[-3.2,7.5,1.4,1,0.9],[3.4,9.2,1.2,1,0.8]],"chim":[[-6.1,12],[0,12],[6.1,12]],"hatch":[[1.5,5]],"vent":[[-1,10],[4.5,4]]}'
+    - Key: walk
+      Value: '[{"k":"sandwich","e":1.8,"n":-1.3},{"k":"planter","e":-5.9,"n":-0.5},{"k":"planter","e":5.9,"n":-0.5}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-239.5,248.2]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7.5
+    - Key: nmc.def
+      Value: '{"name":"the west block (13 x 12.5 m, 3 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to Water Street","lot":"lot.nmc_main_street_west_block","trade":"the
+        bookshop (new and used) and the gift and souvenir shop; four flats on the
+        two floors over them","keepers":"the bookshop: a couple who came for a summer
+        twenty years ago; the gift shop: the family that has had it since the 1960s","flats":4,"shops":["books","gifts"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_west_block"'
+    - Key: nmc.reachBox
+      Value: '[-246.5,-232.3,240.05,254.95,5.7,23.55]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_corner_block
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -194.3, y: 240.88}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 238.58
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: corner_block
+    - Key: w
+      Value: 11.4
+    - Key: d
+      Value: 13.5
+    - Key: fl
+      Value: '[4.3,3.35,3.5]'
+    - Key: clad
+      Value: brickO
+    - Key: cham
+      Value: 2.4
+    - Key: top
+      Value: '{"t":"flat","par":1.2,"cor":"corbel"}'
+    - Key: up
+      Value: seg
+    - Key: bays
+      Value: '[{"w":4.4,"n":2,"upTop":"round","s":{"id":"clothing","word":"CLOTHING","sign":"awnK","ink":"trimW","frame":"awnK","door":"L","disp":"clothes","aw":{"t":"stripe","m":["awnK","cream"]}}},{"w":4.6,"n":2,"upTop":"round","s":{"id":"bakery","word":"BAKERY","sign":"cream","ink":"awnG","frame":"awnG","door":"L","disp":"cakes","aw":{"t":"solid","m":["awnG"],"val":"cream","word":"BREAD
+        & CAKES","ink":"awnG"},"goose":1,"open":1}}]'
+    - Key: chamBays
+      Value: '[{"w":3.39,"n":1,"upTop":"round","s":{"id":"cafe","word":"CAFE","sign":"cream","frame":"awnG","door":"C","dw":1.3,"disp":"cafe"}}]'
+    - Key: east
+      Value: '[{"w":5.3,"n":2,"upTop":"round","s":{"id":"icecream","word":"ICE CREAM","blade":"FUDGE","sign":"pink","ink":"trimW","frame":"trimW","door":"L","aw":{"t":"stripe","m":["pink","trimW"]}}},{"w":4.9,"n":2,"upTop":"round","s":{"id":"chocolates","word":"CHOCOLATES","blade":"CANDY","sign":"prodBr","ink":"gilt","frame":"prodBr","door":"R","aw":{"t":"solid","m":["prodBr"]}}},{"w":0.9,"n":0}]'
+    - Key: roof
+      Value: '{"terrace":{"e0":-5.2,"e1":2.6,"n0":4.2,"n1":12.6,"um":[[-3.8,6,"red"],[-1.2,6,"red"],[1.3,6,"red"],[-2.5,9.8,"red"],[0.1,9.8,"red"]]},"hvac":[[4,11.2,1.3,1.1,0.9]],"hatch":[[4,6]],"chim":[[-5.5,13.1]]}'
+    - Key: walk
+      Value: '[{"k":"cafe","e":4.6,"n":-1.6,"um":"awnG","um2":"cream"},{"k":"cafe","e":6.6,"n":0.9,"um":"awnG","um2":"cream"},{"k":"cafe","e":6.6,"n":3.4,"two":false},{"k":"sandwich","e":1.2,"n":-1.3},{"k":"cone","e":6.9,"n":7.8}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-194.3,247.63]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7.75
+    - Key: nmc.def
+      Value: '{"name":"the corner block (11.4 x 13.5 m, 3 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to Water Street; its east face to Route 91","lot":"lot.nmc_main_street_corner_block","trade":"the
+        bakery and caf\u00e9 at the corner (its terrace on the roof in summer), the
+        clothing boutique; round the corner on Route 91 the ice cream and fudge shop
+        and the chocolates and candy; four flats over them","keepers":"the bakery:
+        a baker from Lyon and her partner, up at four; the boutique: a designer who
+        sews in the back; the ice cream: the high-school students\u2019 summer job;
+        the chocolates: a chocolatier who moved from Halifax","flats":4,"shops":["clothing","bakery","cafe","icecream","chocolates"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_corner_block"'
+    - Key: nmc.reachBox
+      Value: '[-200.5,-186.1,238.68,254.88,5.7,23.65]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_gallery
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -240, y: 270.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 268.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: gallery
+    - Key: w
+      Value: 12
+    - Key: d
+      Value: 9.6
+    - Key: fl
+      Value: '[4.2,1.8]'
+    - Key: clad
+      Value: shingleG
+    - Key: tex
+      Value: shingle
+    - Key: top
+      Value: '{"t":"gambrel","bk":1.6,"p":1.6,"pu":0.5,"ov":0.3,"roof":"roofA"}'
+    - Key: up
+      Value: cap
+    - Key: bays
+      Value: '[{"w":3,"gw":1,"n":0,"box":"trimW"},{"w":6,"n":0,"s":{"id":"gallery","word":"GALLERY","sign":"barn","ink":"trimW","frame":"trimW","door":"C","dw":1.6,"disp":"gallery","aw":{"t":"solid","m":["barn"],"word":"CRAFT
+        CO-OP","ink":"trimW","pj":1.2}}},{"w":3,"gw":1,"n":0,"box":"trimW"}]'
+    - Key: walk
+      Value: '[{"k":"sandwich","e":-1.8,"n":-1},{"k":"planter","e":3.4,"n":-0.5,"sq":1}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-240,275]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7
+    - Key: nmc.def
+      Value: '{"name":"the gallery and craft co-op (12 x 9.6 m, 2 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to the back lane","lot":"lot.nmc_main_street_gallery","trade":"the
+        artists\u2019 co-op in the old livery barn: paintings, pottery, wool and woodwork,
+        and a room for classes","keepers":"eleven members from round the bay, who
+        take turns at the counter","flats":0,"shops":["gallery"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_gallery"'
+    - Key: nmc.reachBox
+      Value: '[-246.5,-233.5,268.6,280.3,5.7,18.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_pharmacy
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -228, y: 270.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 268.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: pharmacy
+    - Key: w
+      Value: 10
+    - Key: d
+      Value: 9.6
+    - Key: fl
+      Value: '[4.7]'
+    - Key: clad
+      Value: brickD
+    - Key: top
+      Value: '{"t":"flat","par":1,"cor":"corbel"}'
+    - Key: bays
+      Value: '[{"w":10,"n":0,"s":{"id":"pharmacy","word":"PHARMACY","sign":"white","ink":"awnG","frame":"white","door":"C","dw":1.8,"disp":"shelves","lit":1}}]'
+    - Key: cross
+      Value: '[4.2,3.95]'
+    - Key: roof
+      Value: '{"hvac":[[-2.5,5.5,1.6,1.2,1],[2.8,6.8,1.2,1,0.8]],"hatch":[[0,7.5]]}'
+    - Key: walk
+      Value: '[{"k":"bench","e":-3.8,"n":-0.8}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-228,275]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 6
+    - Key: nmc.def
+      Value: '{"name":"the pharmacy (10 x 9.6 m, 1 storey)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to the back lane","lot":"lot.nmc_main_street_pharmacy","trade":"the
+        town\u2019s pharmacy: prescriptions, first aid, sunscreen and the photo counter","keepers":"the
+        pharmacist and her two technicians; she grew up over the shop","flats":0,"shops":["pharmacy"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_pharmacy"'
+    - Key: nmc.reachBox
+      Value: '[-233.5,-222.5,268.8,280.3,5.7,17.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_wine
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -218.5, y: 270.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 269
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: wine
+    - Key: w
+      Value: 8
+    - Key: d
+      Value: 9.6
+    - Key: fl
+      Value: '[4.4]'
+    - Key: clad
+      Value: clapG
+    - Key: top
+      Value: '{"t":"false","par":1.4,"cor":"bracket","rise":2}'
+    - Key: bays
+      Value: '[{"w":8,"n":0,"s":{"id":"wine","word":"WINE & SPIRITS","sign":"plum","ink":"gilt","frame":"plum","door":"R","disp":"wine","aw":{"t":"solid","m":["plum"],"pj":1.2},"lit":1}}]'
+    - Key: walk
+      Value: '[{"k":"planter","e":-3.3,"n":-0.5,"m":"wood"}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-218.5,275]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 5.8
+    - Key: nmc.def
+      Value: '{"name":"the wine and spirits store (8 x 9.6 m, 1 storey)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to the back lane","lot":"lot.nmc_main_street_wine","trade":"wine,
+        beer and spirits, the island\u2019s cider","keepers":"the store\u2019s manager
+        and a part-time clerk","flats":0,"shops":["wine"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_wine"'
+    - Key: nmc.reachBox
+      Value: '[-223,-214,269.1,280.3,5.7,16.9]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_visitor
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -207.75, y: 270.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 266.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: visitor
+    - Key: w
+      Value: 12
+    - Key: d
+      Value: 9.6
+    - Key: fl
+      Value: '[4]'
+    - Key: base
+      Value: 0.45
+    - Key: clad
+      Value: cedarN
+    - Key: tex
+      Value: shingle
+    - Key: top
+      Value: '{"t":"gable","rise":4.4,"ov":0.45,"roof":"roofA"}'
+    - Key: up
+      Value: cap
+    - Key: bays
+      Value: '[{"w":3,"door":1,"dw":0.95,"dh":2.25,"word":"WASHROOMS","wm":"awnG","n":0},{"w":6,"door":1,"dw":1.8,"dh":2.45,"gw":3,"gww":1,"gwh":1.9,"n":0,"box":"trimW"},{"w":3,"door":1,"dw":0.95,"dh":2.25,"word":"WASHROOMS","wm":"awnG","n":0}]'
+    - Key: porch
+      Value: '{"d":2.4,"e0":-3.2,"e1":3.2,"z":0.45,"h":2.75,"word":"VISITOR INFORMATION","sign":"awnG","ink":"trimW","steps":2.2,"sc":0}'
+    - Key: walk
+      Value: '[{"k":"bin","e":5.2,"n":-1}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-207.75,275]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7
+    - Key: nmc.def
+      Value: '{"name":"the visitor information centre and public washrooms (12 x 9.6
+        m, 1 storey)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to the back lane","lot":"lot.nmc_main_street_visitor","trade":"maps,
+        trail guides, tide tables and the ferry times; the public washrooms either
+        side, open from seven to ten","keepers":"the town\u2019s summer staff of three","flats":0,"shops":[]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_visitor"'
+    - Key: nmc.reachBox
+      Value: '[-214.25,-201.25,266.8,280.3,5.7,16.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_post_office
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -196.37, y: 270.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 268.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: post_office
+    - Key: w
+      Value: 8.75
+    - Key: d
+      Value: 9.6
+    - Key: fl
+      Value: '[4.6]'
+    - Key: clad
+      Value: brick
+    - Key: top
+      Value: '{"t":"flat","par":1.3,"cor":"corbel","plaque":1,"raise":0.5,"rw":1.6}'
+    - Key: bays
+      Value: '[{"w":2.7,"gw":1,"gww":1.1,"gwh":1.9,"gup":"round","n":0},{"w":3.35,"door":1,"dw":1.7,"dh":2.7,"n":0},{"w":2.7,"gw":1,"gww":1.1,"gwh":1.9,"gup":"round","n":0}]'
+    - Key: frieze
+      Value: '{"word":"POST OFFICE","mat":"stoneL","ink":"navy"}'
+    - Key: flatDoor
+      Value: awnG
+    - Key: walk
+      Value: '[{"k":"mailbox","e":2.6,"n":-1.2}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-196.37,275]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 5.8
+    - Key: nmc.def
+      Value: '{"name":"the post office (8.75 x 9.6 m, 1 storey)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to the back lane","lot":"lot.nmc_main_street_post_office","trade":"the
+        post office: the counter, two hundred boxes, the parcels","keepers":"the postmaster,
+        who knows every box holder by name","flats":0,"shops":[]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_post_office"'
+    - Key: nmc.reachBox
+      Value: '[-201.24,-191.49,268.4,280.3,5.7,17.1]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_east_corner
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -168.9, y: 233.74}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 231.34
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: east_corner
+    - Key: w
+      Value: 8.2
+    - Key: d
+      Value: 12.6
+    - Key: fl
+      Value: '[4.3,3.35,3.4]'
+    - Key: clad
+      Value: brick
+    - Key: chamW
+      Value: 2.4
+    - Key: top
+      Value: '{"t":"flat","par":1.2,"cor":"corbel"}'
+    - Key: up
+      Value: seg
+    - Key: bays
+      Value: '[{"w":5.8,"n":2,"upTop":"round","s":{"id":"barber","word":"BARBER","sign":"navy","ink":"trimW","frame":"navy","door":"R","disp":"shelves","aw":{"t":"stripe","m":["red","trimW"]}}}]'
+    - Key: chamWBays
+      Value: '[{"w":3.39,"n":1,"upTop":"round","s":{"id":"deli","word":"DELI","sign":"cream","ink":"awnG","frame":"awnG","door":"C","dw":1.3,"disp":"cafe","open":1}}]'
+    - Key: roof
+      Value: '{"hvac":[[1.6,8.6,1.2,1,0.8]],"chim":[[-3.3,12.1]],"hatch":[[2.4,4.6]]}'
+    - Key: walk
+      Value: '[{"k":"cafe","e":-4.6,"n":-1.7,"um":"awnG","um2":"cream"},{"k":"sandwich","e":2.4,"n":-1.2}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-168.9,240.04]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7.3
+    - Key: nmc.def
+      Value: '{"name":"the east corner block (8.2 x 12.6 m, 3 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to Water Street; its corner to Route 91","lot":"lot.nmc_main_street_east_corner","trade":"the
+        deli on the corner (sandwiches, chowder, the morning coffee) and the barber;
+        two flats over them","keepers":"the deli: a couple who ran a food truck on
+        the wharf for ten years; the barber: the third generation in the chair","flats":2,"shops":["deli","barber"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_east_corner"'
+    - Key: nmc.reachBox
+      Value: '[-173.5,-164.3,231.44,246.84,5.7,23.55]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_east_block
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -148.9, y: 232.16}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 230.16
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: east_block
+    - Key: w
+      Value: 12.6
+    - Key: d
+      Value: 12.4
+    - Key: fl
+      Value: '[4.3,3.35,3.35]'
+    - Key: clad
+      Value: brickD
+    - Key: top
+      Value: '{"t":"flat","par":1.3,"cor":"corbel","plaque":1,"raise":0.5}'
+    - Key: up
+      Value: seg
+    - Key: bays
+      Value: '[{"w":6.4,"n":3,"s":{"id":"seafood","word":"SEAFOOD","sign":"navy","ink":"trimW","frame":"navy","door":"L","disp":"shelves","aw":{"t":"stripe","m":["navy","trimW"],"word":"FRESH
+        FISH","ink":"trimW","val":"navy"},"goose":1,"open":1}},{"w":2.2,"door":1,"dw":1.05,"dh":2.45,"n":1},{"w":4,"gw":2,"gww":1.05,"gwh":2,"n":2}]'
+    - Key: roof
+      Value: '{"hvac":[[-3,8,1.3,1,0.9]],"chim":[[-5.9,12],[0.4,12],[5.9,12]],"hatch":[[3,5]]}'
+    - Key: walk
+      Value: '[{"k":"sandwich","e":-2.2,"n":-1.3},{"k":"planter","e":5.7,"n":-0.5}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-148.9,238.36]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7.3
+    - Key: nmc.def
+      Value: '{"name":"the fish market block (12.6 x 12.4 m, 3 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to Water Street","lot":"lot.nmc_main_street_east_block","trade":"the
+        fish market (the boats\u2019 catch on ice, chowder to take away); five flats
+        over it and beside it","keepers":"a fishing family off the wharf; the flats
+        let to people who work the town\u2019s shops","flats":5,"shops":["seafood"]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_east_block"'
+    - Key: nmc.reachBox
+      Value: '[-155.7,-141.9,230.26,245.06,5.7,23.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_east_decker
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -134.8, y: 231.2}
+    Z: 5.66
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 227.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: east_decker
+    - Key: w
+      Value: 8.4
+    - Key: d
+      Value: 12
+    - Key: fl
+      Value: '[3.4,3,3]'
+    - Key: base
+      Value: 0.45
+    - Key: clad
+      Value: clapB
+    - Key: top
+      Value: '{"t":"gable","rise":3.2,"ov":0.35,"roof":"roofA"}'
+    - Key: up
+      Value: cap
+    - Key: bays
+      Value: '[{"w":8.4,"door":1,"dw":1,"dc":2.2,"dh":2.3,"gw":2,"gww":0.95,"gwh":1.9,"n":2}]'
+    - Key: porch
+      Value: '{"d":2.2,"e0":-4.2,"e1":4.2,"z":0.45,"h":2.6,"steps":1.6,"sc":-2}'
+    - Key: walk
+      Value: '[{"k":"planter","e":4.7,"n":-1.6,"bloom":"pink"}]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-134.8,237.2]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7
+    - Key: nmc.def
+      Value: '{"name":"the three-decker (8.4 x 12 m, 3 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to its walk over Water Street and the river","lot":"lot.nmc_main_street_east_decker","trade":"the
+        three-decker in the town\u2019s clapboard: a flat a floor, its porch to the
+        street and the river","keepers":"three households, one a floor; the top flat\u2019s
+        a lobsterman who likes the view","flats":3,"shops":[]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_east_decker"'
+    - Key: nmc.reachBox
+      Value: '[-139.5,-128.8,228,243.7,5.36,21.56]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_east_captains
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -123.6, y: 231}
+    Z: 5.84
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 227.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: east_captains
+    - Key: w
+      Value: 12
+    - Key: d
+      Value: 11
+    - Key: fl
+      Value: '[3.4,3]'
+    - Key: base
+      Value: 0.45
+    - Key: clad
+      Value: cedarN
+    - Key: tex
+      Value: shingle
+    - Key: top
+      Value: '{"t":"gambrel","bk":1.6,"p":1.6,"pu":0.5,"ov":0.3,"roof":"roofA"}'
+    - Key: up
+      Value: cap
+    - Key: bays
+      Value: '[{"w":4,"door":1,"dw":1,"dh":2.3,"gw":1,"n":1},{"w":4,"gw":2,"gww":1,"gwh":1.9,"n":2},{"w":4,"door":1,"dw":1,"dh":2.3,"gw":1,"n":1}]'
+    - Key: porch
+      Value: '{"d":2,"e0":-6,"e1":6,"z":0.45,"h":2.6,"steps":1.8,"sc":0}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-123.6,236.5]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 7
+    - Key: nmc.def
+      Value: '{"name":"the captain\u2019s flats (12 x 11 m, 2 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to its walk over Water Street and the river","lot":"lot.nmc_main_street_east_captains","trade":"the
+        captain\u2019s flats in cedar shingle under a gambrel: four flats, a porch
+        across the front","keepers":"four households; the porch is everyone\u2019s","flats":4,"shops":[]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_east_captains"'
+    - Key: nmc.reachBox
+      Value: '[-130.1,-117.1,228,242.5,5.54,18.74]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_main_street_east_row
+    Kind: building
+    Owner: H7
+    Kit: NmcMainStreet.msBlock
+    Piece: msBlock
+    State: 
+    At: {x: -161.2, y: 257.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: id
+      Value: east_row
+    - Key: w
+      Value: 22.4
+    - Key: d
+      Value: 10.5
+    - Key: fl
+      Value: '[3.4,3,3]'
+    - Key: base
+      Value: 0.45
+    - Key: clad
+      Value: brick
+    - Key: top
+      Value: '{"t":"flat","par":1.1,"cor":"corbel"}'
+    - Key: up
+      Value: seg
+    - Key: bays
+      Value: '[{"w":5.6,"door":1,"dw":1,"dc":1.2,"dh":2.35,"gw":2,"gww":1,"gwh":1.9,"n":2},{"w":5.6,"door":1,"dw":1,"dc":1.2,"dh":2.35,"gw":2,"gww":1,"gwh":1.9,"n":2},{"w":5.6,"door":1,"dw":1,"dc":1.2,"dh":2.35,"gw":2,"gww":1,"gwh":1.9,"n":2},{"w":5.6,"door":1,"dw":1,"dc":1.2,"dh":2.35,"gw":2,"gww":1,"gwh":1.9,"n":2}]'
+    - Key: roof
+      Value: '{"chim":[[-8.4,5],[-2.8,5],[2.8,5],[8.4,5]],"hatch":[[0,7.5]]}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-161.2,262.75]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 12.2
+    - Key: nmc.def
+      Value: '{"name":"the brick terrace on the east lane (22.4 x 10.5 m, 3 storeys)","defType":"BuildingDef","kit":"NmcMainStreet.msBlock","faces":"S
+        (dir 4): its front to the east lane","lot":"lot.nmc_main_street_east_row","trade":"the
+        brick terrace: four houses of three storeys facing the east lane, two flats
+        in each","keepers":"eight households, some from the walk-up and the three-decker
+        the redraws replaced","flats":8,"shops":[]}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_east_row"'
+    - Key: nmc.reachBox
+      Value: '[-172.9,-149.5,257.5,268.5,5.7,21.9]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_restaurant_bar
+    Kind: building
+    Owner: H7
+    Kit: ManorIso (docs/art/rigs/village-return/houses-kit/Art/manorIsoRig.js), its
+      harbourmaster preset
+    Piece: ManorIso
+    State: 
+    At: {x: -226, y: 241.26}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
     Layer: 
     Walk: 
     Collider: 
@@ -44,107 +1251,514 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: preset
-      Value: decker3
-    - Key: nmc.name
-      Value: '"the three-decker by the bridge (three flats, one a floor, porches to
-        the street)"'
-    - Key: nmc.faces
-      Value: '"S (dir 4): its porches to Water Street"'
-    - Key: nmc.footprintM
-      Value: '[11.4,16.15]'
+      Value: harbourmaster
+    - Key: nmc.kind
+      Value: '"flat"'
     - Key: nmc.rig
-      Value: '"StackFlatsIso"'
+      Value: '"ManorIso"'
     - Key: nmc.nightOpts
-      Value: '{"night":true}'
+      Value: '{"night":true,"lit":0.9}'
     - Key: nmc.centre
-      Value: '[-156,250]'
+      Value: '[-226,253.26]'
     - Key: nmc.frontM
-      Value: 8.2
+      Value: 12
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 8
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lights
+      Value: '[{"at":[0,0.4,2.6],"reachM":3.5,"intensity":0.6,"colour":"#ffc774","when":"dusk","pool":true,"dot":true}]'
     - Key: nmc.lot
-      Value: '"lot.nmc_apartments_2"'
+      Value: '"lot.nmc_restaurant_bar"'
+    - Key: nmc.reachBox
+      Value: '[-233.6,-218.4,240.5,262.5,5.8,19.6]'
+    - Key: nmc.def
+      Value: '{"name":"the restaurant and bar (a converted Second Empire manor), moved
+        18 m west onto the square\u2019s west side; its deck on the river wall across
+        Water Street","defType":"BuildingDef","kit":"ManorIso (docs/art/rigs/village-return/houses-kit/Art/manorIsoRig.js),
+        its harbourmaster preset","faces":"S (dir 4): its door to Water Street","lot":"lot.nmc_restaurant_bar","was":[-204,232.5],"footprintM":[13.25,17.5]}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_main_street
     - Key: nmc.type
       Value: BuildingDef
-    - Key: nmc.scene.sound
-      Value: '[{"id":"sound.nmc_plaza","kind":"town","at":[-224,130],"z":6.5,"radiusM":30,"gain":"carts,
-        car doors, the grocery\u2019s doors sliding; Route 91 beyond","lane":"audio"},{"id":"sound.nmc_water_street","kind":"town","at":[-162,228],"z":6.5,"radiusM":20,"gain":"the
-        chandlery\u2019s bell, a radio on a porch, the river under the wall","lane":"audio"}]'
-    - Key: nmc.scene.game
-      Value: '["the storefronts as BuildingDefs facing south, their doors on the walk;
-        the interiors are the plaza kit\u2019s own (plazaInteriorRig.js reads the
-        same lease table)","the lot as a car park: its stalls, its cart corral, its
-        poles lit on the lamp rule","the cars ambient and parked, the pickup on Water
-        Street too","the bands and the pylon carry the trade words the kit draws (GROCERY,
-        HARDWARE); the plaza\u2019s own name stays open","the three-decker\u2019s
-        three flats, each a home"]'
-    - Key: nmc.scene.budgets
-      Value: '{"masters":[{"board":"plaza_morning","sprites":78,"byFamily":{"building":2,"piece":11,"vehicle":7,"flower":52,"grass":6}},{"board":"water_street_morning","sprites":177,"byFamily":{"piece":8,"building":1,"vehicle":1,"tree":3,"grass":54,"flower":108,"shrub":2}}],"frames":[{"frame":"wide_plaza","pieces":13,"lights":0,"note":"plants
-        and grass as the masters count them, by area"},{"frame":"of_grocery","pieces":10,"lights":2,"note":"plants
-        and grass as the masters count them, by area"},{"frame":"wide_water_street","pieces":7,"lights":2,"note":"plants
-        and grass as the masters count them, by area"},{"frame":"of_chandlery","pieces":7,"lights":2,"note":"plants
-        and grass as the masters count them, by area"}],"note":"Every piece is one
-        sprite. The plaza\u2019s two bays are the costliest; its rows, island and
-        corral lie flat under the cars. The bridge is the town bridge scene\u2019s,
-        drawn at its numbers."}'
-    - Key: nmc.scene.ground
-      Value: '{"source":"export/HH-nmc-ground-part-1-reissue-2026-10-01/ground/NineMileCreekSeabed_HeightTex_plan.png
-        (16-bit, -6 to +6 m; file sha256 e840457db37afd925afb585cab322e2908c9ec9643d758c58244a34ae32ad90f,
-        pixels sha256 00cf42cf3ee43620f226bc916471f7d630bb3c9da58ec8324a840c8ca27b7848),
-        with its still water, through NmcHeightTex","ruled":"10-01, the owner on part
-        2 and part 1\u2019s record (\u201cI go with leans\u201d, STATE.md s4); the
-        re-issue carries the groove\u2019s fill, lean A\u2019s ramp, the river wall\u2019s
-        fill and the waterfront pads (STATE.md s6)","laid":[],"note":"Main street
-        lays nothing. It stands on part 1\u2019s ground as re-issued on 10-01, where
-        Water Street is level at +6.0 on the river wall\u2019s fill. The plaza\u2019s
-        lot, its service yard and its entrance are road kit v4\u2019s town asphalt
-        on the texture\u2019s +5.8 to +6.0."}'
-    - Key: nmc.scene.context
-      Value: '{"plaza":"lot.nmc_town_plaza: west of Route 91, south of Mill Road,
-        across the road from the gas bar","roads":["road.nmc_route_91","road.nmc_mill_road
-        (behind the plaza)","road.nmc_water_street (paved, on the wall\u2019s top)","road.nmc_north_creek_lane
-        (behind the three-decker)"],"river":"stream.nmc_town_river, under the wall,
-        below the frame","fromTownBridge":["structure.nmc_route91_bridge","structure.nmc_chandlery","structure.nmc_river_wall_09
-        to .12","prop.nmc_street_lamp_w_04 and .w148: at the numbers in keyscene.nmc_town_bridge\u2019s
-        scene.json"],"changedFromPlan":[{"what":"the plaza\u2019s facing (call 31)","plan":{"faces":"E","at":[-240.5,125],"size":[11,40.4],"parking":[-235,-205,104,146]},"scene":{"faces":"S","storefronts":"on
-        y 138, x -242.4 to -205.6","walk":"y 135.65 to 138","lot":[-247,-201,117,135.65],"serviceYard":[-246,-202,148.5,155.5],"entrance":"from
-        Route 91 along y 126.3"},"why":"in the game\u2019s camera a storefront that
-        faces east is edge-on (PlazaIso dir 2), so the plaza would show only its roof
-        and its south end wall. Faced south, both storefronts face the camera across
-        their lot. The plaza keeps its site, its tenants and its neighbours: the gas
-        bar across Route 91, Mill Road behind it, the lumber yard to the west."},{"what":"the
-        hardware store","plan":"two doubles, 22 m of frontage","scene":"one anchor-size
-        bay, 18.4 m: the plaza\u2019s older brick block, at its west end by the lumber
-        yard","why":"the plaza kit draws a sign and a demising wall for each bay,
-        so two doubles read as two hardware stores"},{"what":"the lot","plan":"40
-        stalls in [-235, -205, 104, 146]","scene":"PlazaIso.plan\u2019s two rows of
-        12 stalls (24), a planted island, a cart corral and four light poles, in front
-        of the storefronts","why":"turned with the plaza; the kit lays its own lot"},{"what":"the
-        three-decker by the bridge","plan":{"at":[-156,250],"size":[12.5,15.5]},"scene":{"centre":[-156,250],"bodyM":[11.4,12.2],"porchesM":2.1,"rearDeckM":1.85},"why":"StackFlatsIso
-        decker3\u2019s own size: its porches reach 0.45 m past the lot\u2019s front
-        line and its rear deck 0.2 m past the back"},{"what":"the second three-decker
-        (lot.nmc_apartments_3, the optional third)","plan":{"at":[-136,244],"faces":"SW"},"scene":"not
-        drawn (call 32)","why":"its lot runs down into the north creek\u2019s head:
-        the ground falls from +6.0 along its south side to +3.2 at its north-east
-        corner, where about 20 m\u00b2 of it lies under the creek\u2019s still water"}]}'
-    - Key: nmc.scene.refs
-      Value: '[{"id":"structure.nmc_route91_bridge","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_09","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_10","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_11","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_river_wall_12","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_04","owner":"keyscene.nmc_town_bridge"},{"id":"prop.nmc_street_lamp_w_05","owner":"keyscene.nmc_town_bridge"},{"id":"structure.nmc_chandlery","owner":"keyscene.nmc_town_bridge"}]'
-    - Key: nmc.scene.sourceRows
-      Value: 10
-    - Key: nmc.scene.ownedRows
-      Value: 2
-    - Key: nmc.deferred
-      Value: placement=H7; names/households/calendar/visits/fire schedules=H13 after
-        the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
-        lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
-        scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
-  - Id: vehicle.nmc_water_street_truck
-    Kind: vehicle
+    - Key: nmc.takeover
+      Value: "{\"id\":\"structure.nmc_restaurant_bar\",\"from\":\"keyscene.nmc_town_bridge\",\"to\":\"keyscene.nmc_main_street\",\"call\":69,\"why\":\"main
+        street\u2019s redraw moved the restaurant onto the square (call 69); the town
+        bridge\u2019s deck master keeps it at its old place as the record (call 76)\"}"
+  - Id: structure.nmc_restaurant_terrace
+    Kind: setPiece
     Owner: H7
-    Kit: VehicleIso (Art/vehicleIsoRig.js), its dually3500
-    Piece: VehicleIso
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msPatio
+    Piece: msPatio
     State: 
-    At: {x: -169, y: 228.95}
+    At: {x: -217.4, y: 250.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 245
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 3.4
+    - Key: d
+      Value: 10
+    - Key: tables
+      Value: '[[0,-3.2,"red"],[0,0,"awnG"],[0,3.2,"red"]]'
+    - Key: lights
+      Value: 1
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-217.4,250.5]'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 5
+    - Key: nmc.def
+      Value: '{"name":"the restaurant\u2019s terrace on the square: three tables under
+        umbrellas, string lights, a low iron fence and its planters","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msPatio","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_restaurant_bar"'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
+    - Key: nmc.reachBox
+      Value: '[-222.4,-212.4,245.5,255.5,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_square_fountain
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msFountain
+    Piece: msFountain
+    State: 
+    At: {x: -207.75, y: 246.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 244.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-207.75,246.2]'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.52
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.9
+    - Key: nmc.def
+      Value: '{"name":"the square\u2019s fountain: a stone basin, a pedestal and two
+        bowls","defType":"SetPieceDef","kit":"NmcMainStreet (main-street/nmcMainStreet.js),
+        msFountain","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-209.65,-205.85,244.3,248.1,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_town_sign
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msTownSign
+    Piece: msTownSign
+    State: 
+    At: {x: -212.6, y: 243.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 242.1
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 3
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-212.6,243.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.7600000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.2
+    - Key: nmc.def
+      Value: '{"name":"the town\u2019s sign at the square\u2019s corner: NINE MILE
+        CREEK in gilt between fieldstone piers, its bed of flowers","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msTownSign","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-214.8,-210.4,241,245.4,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_square_kiosk
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msKiosk
+    Piece: msKiosk
+    State: 
+    At: {x: -202.6, y: 243.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 243.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.4
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-202.6,243.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.1199999999999999
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.4
+    - Key: nmc.def
+      Value: '{"name":"the map and notice board: the town\u2019s map, the trails,
+        the week\u2019s notices","defType":"SetPieceDef","kit":"NmcMainStreet (main-street/nmcMainStreet.js),
+        msKiosk","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-204,-201.2,242.2,245,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_bandstand
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msBandstand
+    Piece: msBandstand
+    State: 
+    At: {x: -204.6, y: 256.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 251.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-204.6,256.2]'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.5
+    - Key: nmc.def
+      Value: '{"name":"the bandstand: an octagon on a fieldstone plinth, its bunting,
+        a copper roof gone green","defType":"SetPieceDef","kit":"NmcMainStreet (main-street/nmcMainStreet.js),
+        msBandstand","faces":"S (dir 4)"}'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
+    - Key: nmc.reachBox
+      Value: '[-208.1,-201.1,252.7,259.7,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_tot_lot
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msPlay
+    Piece: msPlay
+    State: 
+    At: {x: -212.3, y: 253}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 250.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 5
+    - Key: d
+      Value: 4
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-212.3,253]'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.def
+      Value: '{"name":"the tot lot: a play deck under its roof, a slide, a climbing
+        wall, two swings, wood chips","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msPlay","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-215.3,-209.3,250,256,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bench_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, bench
+    Piece: bench
+    State: 
+    At: {x: -207.75, y: 249.7}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 249.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a bench in the square","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, bench","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-208.35,-207.15,249.1,250.3,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bench_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, bench
+    Piece: bench
+    State: 
+    At: {x: -211.6, y: 248.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 248.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a bench in the square","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, bench","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-212.2,-211,247.6,248.8,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bench_3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, bench
+    Piece: bench
+    State: 
+    At: {x: -203.9, y: 248.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 248.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a bench in the square","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, bench","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-204.5,-203.3,247.6,248.8,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bench_4
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, bench
+    Piece: bench
+    State: 
+    At: {x: -202, y: 258.6}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -153,7 +1767,3450 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 2
     HasSortY: 1
-    SortY: 227.8
+    SortY: 258.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a bench in the square","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, bench","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-202.6,-201.4,258,259.2,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_picnic_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, picnicTable
+    Piece: picnicTable
+    State: 
+    At: {x: -213.6, y: 257.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a picnic table under the oak","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, picnicTable","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-214.6,-212.6,256.6,258.6,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_picnic_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, picnicTable
+    Piece: picnicTable
+    State: 
+    At: {x: -210.4, y: 258.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 258.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a picnic table under the oak","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, picnicTable","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-211.4,-209.4,257.4,259.4,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_drink
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp drink
+    Piece: msProp
+    State: 
+    At: {x: -209.6, y: 249.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 249.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: drink
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-209.6,249.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
+    - Key: nmc.def
+      Value: '{"name":"a drinking fountain","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp drink","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-210.1,-209.1,249.4,250.4,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bins
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp bin
+    Piece: msProp
+    State: 
+    At: {x: -201.2, y: 250.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 250.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: bin
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-201.2,250.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.def
+      Value: '{"name":"waste and recycling bins","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp bin","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-201.8,-200.6,250,251.2,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_hoops
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp hoops
+    Piece: msProp
+    State: 
+    At: {x: -201.6, y: 261}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 261
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: hoops
+    - Key: nh
+      Value: 3
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-201.6,261]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.1199999999999999
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.4
+    - Key: nmc.def
+      Value: '{"name":"bike hoops","defType":"SetPieceDef","kit":"NmcMainStreet (main-street/nmcMainStreet.js),
+        msProp hoops","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-203,-200.2,259.6,262.4,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bed_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -214.2, y: 247}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 247
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.2
+    - Key: d
+      Value: 1
+    - Key: mix
+      Value: rose
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-214.2,247]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.8800000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.1
+    - Key: nmc.def
+      Value: '{"name":"a flower bed in the square","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-215.3,-213.1,245.9,248.1,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bed_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -201.3, y: 247}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 247
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.2
+    - Key: d
+      Value: 1
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-201.3,247]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.8800000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.1
+    - Key: nmc.def
+      Value: '{"name":"a flower bed in the square","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-202.4,-200.2,245.9,248.1,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bed_3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -205.2, y: 251.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 251.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 0.9
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-205.2,251.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.04
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.3
+    - Key: nmc.def
+      Value: '{"name":"a flower bed in the square","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-206.5,-203.9,250.1,252.7,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_square_bed_4
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -214, y: 250}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 250
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 1.6
+    - Key: d
+      Value: 0.8
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-214,250]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6400000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.8
+    - Key: nmc.def
+      Value: '{"name":"a flower bed in the square","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-214.8,-213.2,249.2,250.8,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_lamp_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -264.4, y: 238.012}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 237.812
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-264.8,-264,237.61,238.41,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_lamp_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -249.6, y: 238.581}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 238.381
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-250,-249.2,238.18,238.98,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_lamp_3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -236, y: 238.893}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 238.693
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-236.4,-235.6,238.49,239.29,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_lamp_4
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -231.2, y: 238.824}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 238.624
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-231.6,-230.8,238.42,239.22,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_lamp_5
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -219, y: 238.65}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 238.45
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-219.4,-218.6,238.25,239.05,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_lamp_6
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -214.6, y: 233.387}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 233.187
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-215,-214.2,232.99,233.79,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_lamp_7
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -200.8, y: 233.022}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 232.822
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-201.2,-200.4,232.62,233.42,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_route_91_town_lamp_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -185.737, y: 249.5}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 249.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-186.14,-185.34,249.1,249.9,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_route_91_town_lamp_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -189.355, y: 277}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 276.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-189.75,-188.95,276.6,277.4,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_lot_lamp_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -262.6, y: 274.9}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 274.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-263,-262.2,274.5,275.3,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_lot_lamp_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -249.2, y: 274.9}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 274.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-249.6,-248.8,274.5,275.3,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_lot_lamp_3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -226, y: 261.5}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 261.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-226.4,-225.6,261.1,261.9,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_tree_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp grate
+    Piece: msProp
+    State: 
+    At: {x: -233.4, y: 238.81}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 238.01
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: grate
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-233.4,238.81]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6400000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.8
+    - Key: nmc.def
+      Value: '{"name":"a street tree\u2019s grate and its guard","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp grate","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-234.2,-232.6,238.01,239.61,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_tree_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp grate
+    Piece: msProp
+    State: 
+    At: {x: -217.2, y: 233.97}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 233.17
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: grate
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-217.2,233.97]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6400000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.8
+    - Key: nmc.def
+      Value: '{"name":"a street tree\u2019s grate and its guard","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp grate","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-218,-216.4,233.17,234.77,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_tree_3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp grate
+    Piece: msProp
+    State: 
+    At: {x: -197.8, y: 233.41}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 232.61
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: grate
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-197.8,233.41]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6400000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.8
+    - Key: nmc.def
+      Value: '{"name":"a street tree\u2019s grate and its guard","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp grate","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-198.6,-197,232.61,234.21,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_route_91_town_tree
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp grate
+    Piece: msProp
+    State: 
+    At: {x: -187.43, y: 261.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 260.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: grate
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-187.43,261.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6400000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.8
+    - Key: nmc.def
+      Value: '{"name":"a street tree\u2019s grate and its guard","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp grate","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-188.23,-186.63,260.8,262.4,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_bench_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, bench
+    Piece: bench
+    State: 
+    At: {x: -215.2, y: 233.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 233.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a bench on the walk at the square","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, bench","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-215.8,-214.6,233.3,234.5,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_bench_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, bench
+    Piece: bench
+    State: 
+    At: {x: -199.4, y: 233.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 233.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a bench on the walk at the square","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, bench","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-200,-198.8,232.8,234,5.5,10.5]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_bins_w
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp bin
+    Piece: msProp
+    State: 
+    At: {x: -218, y: 233.59}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 233.59
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: bin
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-218,233.59]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.def
+      Value: '{"name":"waste and recycling bins","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp bin","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-218.6,-217.4,232.99,234.19,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_bins_e
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp bin
+    Piece: msProp
+    State: 
+    At: {x: -189.9, y: 238.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 238.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: bin
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-189.9,238.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.def
+      Value: '{"name":"waste and recycling bins","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp bin","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-190.5,-189.3,238,239.2,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_hoops_w
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp hoops
+    Piece: msProp
+    State: 
+    At: {x: -229.6, y: 239.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 239.25
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: hoops
+    - Key: nh
+      Value: 2
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-229.6,239.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.8
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"bike hoops","defType":"SetPieceDef","kit":"NmcMainStreet (main-street/nmcMainStreet.js),
+        msProp hoops","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-230.6,-228.6,238.25,240.25,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_bus_shelter
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msShelter
+    Piece: msShelter
+    State: 
+    At: {x: -186.93, y: 258.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 6
+    HasSortY: 1
+    SortY: 256.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-186.93,258.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.def
+      Value: '{"name":"the bus shelter on Route 91 by the corner, its stop sign","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msShelter","faces":"E (dir 6): open to Route
+        91"}'
+    - Key: nmc.reachBox
+      Value: '[-188.93,-184.93,256.2,260.2,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_outfitter_kayaks_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp kayaks
+    Piece: msProp
+    State: 
+    At: {x: -268, y: 247.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 247.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: kayaks
+    - Key: ms
+      Value: '["red","yel","teal"]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-268,247.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.def
+      Value: '{"name":"a rack of rental kayaks","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp kayaks","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_outfitter"'
+    - Key: nmc.reachBox
+      Value: '[-270,-266,245.6,249.6,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_outfitter_kayaks_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp kayaks
+    Piece: msProp
+    State: 
+    At: {x: -268, y: 251.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 251.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: kayaks
+    - Key: ms
+      Value: '["prodO","teal","red"]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-268,251.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.def
+      Value: '{"name":"a rack of rental kayaks","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp kayaks","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_outfitter"'
+    - Key: nmc.reachBox
+      Value: '[-270,-266,249.4,253.4,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_outfitter_canoe
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), canoe
+    Piece: canoe
+    State: 
+    At: {x: -268, y: 244}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 244
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: m
+      Value: awnG
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-268,244]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.5
+    - Key: nmc.def
+      Value: '{"name":"a canoe upturned in the outfitter\u2019s yard","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), canoe","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_outfitter"'
+    - Key: nmc.reachBox
+      Value: '[-270.5,-265.5,241.5,246.5,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_post_office_flag
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), flagpole
+    Piece: flagpole
+    State: 
+    At: {x: -191.5, y: 269.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 269.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 7.2
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-191.5,269.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.def
+      Value: '{"name":"the post office\u2019s flagpole","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), flagpole","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-192.1,-190.9,269,270.2,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_lot_chargers
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCharger
+    Piece: msCharger
+    State: 
+    At: {x: -251.6, y: 274.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 274.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: n
+      Value: 2
+    - Key: gap
+      Value: 3
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-251.6,274.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.2
+    - Key: nmc.def
+      Value: '{"name":"Two EV chargers","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCharger","faces":"S (dir 4)"}'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
+    - Key: nmc.reachBox
+      Value: '[-254.8,-248.4,271.55,277.95,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_access_10
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcStores (plaza-stores/nmcStoresProps.js), stallSign
+    Piece: stallSign
+    State: 
+    At: {x: -239.12, y: 256.55}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 256.55
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-239.12,256.55]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"an accessible stall\u2019s sign","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStoresProps.js), stallSign","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-239.42,-238.82,256.25,256.85,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_access_11
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcStores (plaza-stores/nmcStoresProps.js), stallSign
+    Piece: stallSign
+    State: 
+    At: {x: -236.37, y: 256.55}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 256.55
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-236.37,256.55]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"an accessible stall\u2019s sign","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStoresProps.js), stallSign","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-236.67,-236.07,256.25,256.85,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_water_street_car_a1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -256.68, y: 234.86}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 1
+    SortY: 232.66
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: hatch
+    - Key: paint
+      Value: carR
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-256.68,234.86]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a hatch, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-258.28,-255.08,233.26,236.46,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_water_street_car_a2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -253, y: 235}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 1
+    SortY: 232.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: suv
+    - Key: paint
+      Value: carB
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-253,235]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a small SUV, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-254.6,-251.4,233.4,236.6,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_water_street_car_a4
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -245.64, y: 235.28}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 1
+    SortY: 233.08
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: sedan
+    - Key: paint
+      Value: carS
+    - Key: rack
+      Value: kayak
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-245.64,235.28]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a sedan, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-247.24,-244.04,233.68,236.88,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_water_street_car_a5
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -241.96, y: 235.42}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 1
+    SortY: 233.22
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: hatch
+    - Key: paint
+      Value: carW
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-241.96,235.42]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a hatch, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-243.56,-240.36,233.82,237.02,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_water_street_car_a6
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -238.28, y: 235.48}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 1
+    SortY: 233.28
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: suv
+    - Key: paint
+      Value: carG
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-238.28,235.48]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a small SUV, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-239.88,-236.68,233.88,237.08,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_water_street_car_b1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -223.68, y: 235.27}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 1
+    HasSortY: 1
+    SortY: 233.07
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: hatch
+    - Key: paint
+      Value: carW
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-223.68,235.27]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a hatch, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-225.28,-222.08,233.67,236.87,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_s0
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -266.62, y: 259.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.05
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: sedan
+    - Key: paint
+      Value: carS
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-266.62,259.25]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a sedan, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-268.22,-265.02,257.65,260.85,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_s1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -263.87, y: 259.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.05
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: hatch
+    - Key: paint
+      Value: carW
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-263.87,259.25]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a hatch, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-265.47,-262.27,257.65,260.85,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_s3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -258.37, y: 259.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.05
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: suv
+    - Key: paint
+      Value: carG
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-258.37,259.25]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a small SUV, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-259.97,-256.77,257.65,260.85,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_s4
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -255.62, y: 259.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.05
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: sedan
+    - Key: paint
+      Value: carK
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-255.62,259.25]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a sedan, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-257.22,-254.02,257.65,260.85,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_s6
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -250.12, y: 259.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.05
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: hatch
+    - Key: paint
+      Value: carR
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-250.12,259.25]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a hatch, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-251.72,-248.52,257.65,260.85,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_s8
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -244.62, y: 259.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.05
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: suv
+    - Key: paint
+      Value: carB
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-244.62,259.25]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a small SUV, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-246.22,-243.02,257.65,260.85,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_s11
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -236.37, y: 259.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 257.05
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: sedan
+    - Key: paint
+      Value: carS
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-236.37,259.25]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a sedan, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-237.97,-234.77,257.65,260.85,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_n0
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -266.5, y: 271.65}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 269.45
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: suv
+    - Key: paint
+      Value: carG
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-266.5,271.65]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a small SUV, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-268.1,-264.9,270.05,273.25,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_n2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -260.5, y: 271.65}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 269.45
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: sedan
+    - Key: paint
+      Value: carK
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-260.5,271.65]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a sedan, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-262.1,-258.9,270.05,273.25,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_n3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -257.5, y: 271.65}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 269.45
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: hatch
+    - Key: paint
+      Value: carR
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-257.5,271.65]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a hatch, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-259.1,-255.9,270.05,273.25,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_lot_car_n5
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msCar
+    Piece: msCar
+    State: 
+    At: {x: -251.5, y: 271.65}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 1
+    SortY: 269.45
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: body
+      Value: suv
+    - Key: paint
+      Value: carB
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-251.5,271.65]'
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 8
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a small SUV, parked","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msCar","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-253.1,-249.9,270.05,273.25,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_bakery_van
+    Kind: vehicle
+    Owner: H7
+    Kit: VanIso (Art/vanIsoRig.js), courier
+    Piece: VanIso
+    State: 
+    At: {x: -195.6, y: 256.95}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 256.95
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: courier
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"VanIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.centre
+      Value: '[-195.6,259.65]'
+    - Key: nmc.frontM
+      Value: 2.7
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_corner_block"'
+    - Key: nmc.def
+      Value: '{"name":"the bakery\u2019s van behind the corner block","defType":"AmbientVehicleDef","kit":"VanIso
+        (Art/vanIsoRig.js), courier","faces":"nose south (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-197.2,-194,255.35,258.55,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: AmbientVehicleDef
+  - Id: vehicle.nmc_outfitter_van
+    Kind: vehicle
+    Owner: H7
+    Kit: VanIso (Art/vanIsoRig.js), beachBus
+    Piece: VanIso
+    State: 
+    At: {x: -268, y: 254.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 254.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: beachBus
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"VanIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.centre
+      Value: '[-268,257]'
+    - Key: nmc.frontM
+      Value: 2.7
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_main_street_outfitter"'
+    - Key: nmc.def
+      Value: '{"name":"the outfitter\u2019s van in its yard","defType":"AmbientVehicleDef","kit":"VanIso
+        (Art/vanIsoRig.js), beachBus","faces":"nose south (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-269.6,-266.4,252.7,255.9,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: AmbientVehicleDef
+  - Id: vehicle.nmc_lot_pickup
+    Kind: vehicle
+    Owner: H7
+    Kit: VehicleIso (Art/vehicleIsoRig.js), its dually3500
+    Piece: VehicleIso
+    State: 
+    At: {x: -246.3, y: 256.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 256.15
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: serviceBay
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"VehicleIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.centre
+      Value: '[-246.3,259.45]'
+    - Key: nmc.frontM
+      Value: 3.3
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a pickup in the lot","defType":"AmbientVehicleDef","kit":"VehicleIso
+        (Art/vehicleIsoRig.js), its dually3500","faces":"nose south (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-247.9,-244.7,254.55,257.75,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: AmbientVehicleDef
+  - Id: prop.nmc_water_street_east_lamp_1
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -170, y: 231.21}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 231.01
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-170.4,-169.6,230.81,231.61,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_east_lamp_2
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -157, y: 230.261}
+    Z: 6.13
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 230.061
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-157.4,-156.6,229.86,230.66,5.63,10.63]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_water_street_east_lamp_3
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.4.0, boardwalkLamp
+    Piece: boardwalkLamp
+    State: 
+    At: {x: -144.4, y: 228.732}
+    Z: 6.01
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 228.532
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 4.2
+    - Key: basket
+      Value: true
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,4.1],"reachM":5.5,"intensity":0.8,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"a street lamp, its basket of petunias","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, boardwalkLamp","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-144.8,-144,228.33,229.13,5.51,10.51]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_east_court_bins
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp bin
+    Piece: msProp
+    State: 
+    At: {x: -155.2, y: 246}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 246
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: bin
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-155.2,246]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.def
+      Value: '{"name":"the bins at the east lane\u2019s stalls","defType":"SetPieceDef","kit":"NmcMainStreet
+        (main-street/nmcMainStreet.js), msProp bin","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-155.8,-154.6,245.4,246.6,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_main_street_hoops_e
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcMainStreet (main-street/nmcMainStreet.js), msProp hoops
+    Piece: msProp
+    State: 
+    At: {x: -153.6, y: 230.66}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 230.66
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: k
+      Value: hoops
+    - Key: nh
+      Value: 2
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcMainStreet"'
+    - Key: nmc.centre
+      Value: '[-153.6,230.66]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.8
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"bike hoops","defType":"SetPieceDef","kit":"NmcMainStreet (main-street/nmcMainStreet.js),
+        msProp hoops","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-154.6,-152.6,229.66,231.66,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_chandlery
+    Kind: setPiece
+    Owner: H7
+    Kit: NmcSetPieces 1.2.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Piece: chandlery
+    State: 
+    At: {x: -160, y: 237.26}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: solid
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 5
+    - Key: nmc.emits
+      Value: true
+    - Key: nmc.lights
+      Value: '[{"at":[0,-3.7,2.5],"reachM":3.2,"intensity":0.6,"colour":"#ffc774","when":"dusk","pool":true,"dot":false}]'
+    - Key: nmc.moved
+      Value: '"10-06: 3.26 m north onto the east building line"'
+    - Key: nmc.lot
+      Value: '"lot.nmc_chandlery"'
+    - Key: nmc.reachBox
+      Value: '[-165,-155,232.26,242.26,5.5,10.5]'
+    - Key: nmc.name
+      Value: '"the chandlery"'
+    - Key: nmc.faces
+      Value: '"S (dir 4): its shop front to Water Street"'
+    - Key: nmc.gameplay
+      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/chandlery.gameplay.json"'
+    - Key: nmc.takenOver
+      Value: '"from keyscene.nmc_town_bridge (10-06, call 80): drawn and owned here,
+        3.26 m north of the town bridge\u2019s piece"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_main_street
+    - Key: nmc.type
+      Value: SetPieceDef
+    - Key: nmc.takeover
+      Value: "{\"id\":\"structure.nmc_chandlery\",\"from\":\"keyscene.nmc_town_bridge\",\"to\":\"keyscene.nmc_main_street\",\"call\":80,\"why\":\"call
+        80: the chandlery stands 3.26 m north, on the east building line; main street
+        draws and owns it, and the town bridge\u2019s boards (2a) keep it at its old
+        place as the record\"}"
+  - Id: vehicle.nmc_water_street_truck
+    Kind: vehicle
+    Owner: H7
+    Kit: VehicleIso (Art/vehicleIsoRig.js), its dually3500
+    Piece: VehicleIso
+    State: 
+    At: {x: -166.6, y: 228.77}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 1
+    SortY: 227.62
     Layer: 
     Walk: 
     Collider: 
@@ -164,21 +5221,227 @@ MonoBehaviour:
     Options:
     - Key: preset
       Value: workhorse
-    - Key: nmc.name
-      Value: '"a pickup at the kerb outside the chandlery"'
-    - Key: nmc.faces
-      Value: '"side on, parked along the north kerb"'
+    - Key: nmc.kind
+      Value: '"flat"'
     - Key: nmc.rig
       Value: '"VehicleIso"'
+    - Key: nmc.presetMerge
+      Value: true
     - Key: nmc.centre
-      Value: '[-169,228.95]'
+      Value: '[-166.6,228.77]'
     - Key: nmc.frontM
       Value: 1.2
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.def
+      Value: '{"name":"a pickup at the kerb outside the chandlery","defType":"AmbientVehicleDef","kit":"VehicleIso
+        (Art/vehicleIsoRig.js), its dually3500","faces":"side on, parked along the
+        north kerb"}'
+    - Key: nmc.kept
+      Value: '"main street 2d"'
+    - Key: nmc.moved
+      Value: '"10-07: 2.4 m east, its tail off the crosswalk on Water Street\u2019s
+        east arm"'
+    - Key: nmc.reachBox
+      Value: '[-168.2,-165,227.17,230.37,5.5,8.4]'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_main_street
     - Key: nmc.type
       Value: AmbientVehicleDef
-  Lights: []
+  Lights:
+  - PieceId: structure.nmc_restaurant_bar
+    Preset: 
+    Pool: 1
+    ReachMetres: 3.5
+    At: {x: 0, y: 0.4, z: 2.6}
+    Colour: '#ffc774'
+    Intensity: 0.6
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_lamp_1
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_lamp_2
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_lamp_3
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_lamp_4
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_lamp_5
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_lamp_6
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_lamp_7
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_route_91_town_lamp_1
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_route_91_town_lamp_2
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_main_street_lot_lamp_1
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_main_street_lot_lamp_2
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_main_street_lot_lamp_3
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_east_lamp_1
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_east_lamp_2
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_water_street_east_lamp_3
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 4.1}
+    Colour: '#ffcb7e'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: structure.nmc_chandlery
+    Preset: 
+    Pool: 1
+    ReachMetres: 3.2
+    At: {x: 0, y: -3.7, z: 2.5}
+    Colour: '#ffc774'
+    Intensity: 0.6
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
   RetiredIds:
   - prop.nmc_waterfront_6_bed_35
   - prop.nmc_waterfront_6_bed_29
@@ -372,3 +5635,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - structure.nmc_apartments_2
+  - boat.nmc_shore_dory
+  - prop.nmc_bank_bench_4
+  - prop.nmc_bank_bench_5
+  - prop.nmc_shore_fire
+  - structure.nmc_bank_steps_4
+  - structure.nmc_bank_steps_5
+  - prop.nmc_lot_pole_05
+  - prop.nmc_lot_pole_04
+  - prop.nmc_yard_fence_e
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_rack_01
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  PlacementIds: []

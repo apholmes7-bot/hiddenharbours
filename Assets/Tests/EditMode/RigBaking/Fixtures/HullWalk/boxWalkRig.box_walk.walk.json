@@ -1,0 +1,319 @@
+{
+  "schema": "hidden-harbours/hull-walk@1",
+  "rig": "boxWalkRig.js",
+  "exportSymbol": "BoxWalk",
+  "hull": "box_walk",
+  "label": "Box walk",
+  "kind": "cabin",
+  "authoring": "fixture",
+  "frame": "+x starboard, +y bow, +z up",
+  "units": "metres",
+  "derivedFromRigSha256": "d7dd0e08ba9ab70e99c2c6b4b88edfdd5cf80b1ee302ae584dcf054cf47d18bb",
+  "loa_m": 6,
+  "DWL": 0,
+  "cockpitZ": 0,
+  "cell": {
+    "W": 64,
+    "H": 64,
+    "pxPerM": 8,
+    "defaultElev": 30,
+    "pivot": {
+      "x": 32,
+      "y": 48
+    },
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ]
+  },
+  "tags": {
+    "lv": {
+      "hull": 0,
+      "deck": 1,
+      "room": 2,
+      "top": 3
+    },
+    "ro": {
+      "wall": 0,
+      "roof": 1,
+      "sole": 2
+    },
+    "ghostRoles": [
+      "wall"
+    ]
+  },
+  "walk": {
+    "radius": 0.25,
+    "stepTol": 0.1,
+    "rule": "player-centre polygons, no second inset",
+    "spawn": {
+      "area": "deck",
+      "x": 0,
+      "y": -2.5
+    },
+    "areas": [
+      {
+        "id": "deck",
+        "cut": "deck",
+        "z": 0,
+        "poly": [
+          [
+            -2,
+            -3
+          ],
+          [
+            2,
+            -3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            -2,
+            3
+          ]
+        ],
+        "holes": [
+          [
+            [
+              -0.3,
+              -0.3
+            ],
+            [
+              0.3,
+              -0.3
+            ],
+            [
+              0.3,
+              0.3
+            ],
+            [
+              -0.3,
+              0.3
+            ]
+          ]
+        ]
+      },
+      {
+        "id": "room_a",
+        "cut": "room",
+        "z": 1,
+        "poly": [
+          [
+            -1,
+            -2
+          ],
+          [
+            0,
+            -2
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            -1,
+            2
+          ]
+        ],
+        "holes": []
+      },
+      {
+        "id": "room_b",
+        "cut": "room",
+        "z": 1,
+        "poly": [
+          [
+            0,
+            -2
+          ],
+          [
+            1,
+            -2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "holes": []
+      },
+      {
+        "id": "top",
+        "cut": "top",
+        "z": 2,
+        "poly": [
+          [
+            -1,
+            -2
+          ],
+          [
+            1,
+            -2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            -1,
+            2
+          ]
+        ],
+        "holes": []
+      },
+      {
+        "id": "stairs",
+        "cut": "deck",
+        "cutHi": "room",
+        "cutLo": "deck",
+        "zMid": 0.5,
+        "kind": "stair",
+        "poly": [
+          [
+            -0.4,
+            -3
+          ],
+          [
+            0.4,
+            -3
+          ],
+          [
+            0.4,
+            -2
+          ],
+          [
+            -0.4,
+            -2
+          ]
+        ],
+        "holes": [],
+        "ramp": {
+          "axis": "y",
+          "a0": -3,
+          "a1": -2,
+          "z0": 0,
+          "z1": 1
+        }
+      }
+    ]
+  },
+  "house": {
+    "door": {
+      "id": "entry",
+      "kind": "slide",
+      "face": "aft",
+      "y": -2,
+      "x0": -0.5,
+      "x1": 0.5,
+      "z0": 1,
+      "z1": 2,
+      "sillZ": 1,
+      "leaf": "doorFaces(t)",
+      "lv": "room",
+      "ro": "wall",
+      "clearAt": 1,
+      "travel": 1,
+      "clear": {
+        "width": 1,
+        "height": 1
+      },
+      "opensTo": "starboard"
+    },
+    "levels": [
+      "room",
+      "top"
+    ],
+    "decks": {
+      "room": {
+        "deck": "room",
+        "kind": "hard",
+        "soleZ": 1,
+        "ceilZ": 2
+      },
+      "top": {
+        "deck": "top",
+        "kind": "hard",
+        "soleZ": 2,
+        "ceilZ": 3
+      }
+    }
+  },
+  "anchors": {
+    "helm": {
+      "x": 0.5,
+      "y": 1,
+      "z": 2
+    },
+    "berths": []
+  },
+  "interact": [
+    {
+      "id": "helm",
+      "action": "enter_helm",
+      "reach": {
+        "x": 0.5,
+        "y": 1,
+        "z": 2
+      },
+      "area": "top",
+      "label": "Helm",
+      "prompt": "Take the wheel",
+      "at": {
+        "x": 0.5,
+        "y": 1,
+        "z": 2
+      }
+    }
+  ],
+  "cleats": [
+    {
+      "id": "aft",
+      "type": "cleat",
+      "pos": [
+        0,
+        -3,
+        0
+      ]
+    }
+  ],
+  "washboards": [],
+  "_excluded": [
+    {
+      "id": "washboards",
+      "of": "washboards",
+      "reason": "No strips on the box"
+    }
+  ],
+  "rock": {
+    "frames": 1,
+    "rollA": 0,
+    "pitchA": 0,
+    "heaveA": 0,
+    "period": 1
+  },
+  "qa": {
+    "fitCheck": {
+      "tol": 0.01,
+      "faces": 2,
+      "vertices": 8,
+      "outside": 0,
+      "worst": 0,
+      "worstAt": null
+    },
+    "character": {
+      "waitsOn": []
+    }
+  }
+}
