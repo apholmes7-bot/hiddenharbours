@@ -67,6 +67,15 @@ namespace HiddenHarbours.Tests.PlayMode
     /// so its cone differed by exactly 1 LSB over 8.5k px between two arms enabled a few frames apart.
     /// A self-animating beam is not hull compositing; it is measured on its own in column (6).</para>
     ///
+    /// <para>The self-installed GullFlock runs on UNSCALED seconds, so timeScale 0 does not
+    /// freeze its birds between shots. Its sky sprites and their shadows crossed the closed hull's
+    /// full/control pair (714 dark pixels on main), after this fixture had already closed its other
+    /// noise sources. SetUp saves and disables the installed flock, its shadow components and every
+    /// child renderer, including inactive pooled shadows. Disabled bird renderers also refuse the
+    /// shared lamp-shadow pool's caster read, wherever that pool draws. Each capture checks that the
+    /// birds cannot draw or cast; TearDown restores the saved enabled flags so the gulls' own fixture
+    /// still finds the same installed flock. The lamps and every pixel bar stay as before.</para>
+    ///
     /// <para>⚠️ GPU-only, by nature. The report and the plates go to the temporary cache, never the
     /// repo; the PR body quotes them.</para>
     /// </summary>
@@ -86,6 +95,10 @@ namespace HiddenHarbours.Tests.PlayMode
         readonly List<Object> _spawned = new();
         Color _tintBefore;
         float _timeScaleBefore;
+        GullFlock _installedFlock;
+        bool _flockWasEnabled;
+        readonly List<(Renderer Renderer, bool Enabled)> _gullRenderers = new();
+        readonly List<(SpriteShadow Shadow, bool Enabled)> _gullShadows = new();
         Camera _cam;
         RenderTexture _rt;
 
@@ -109,6 +122,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Shader.SetGlobalColor(IdDayNightTint, NightTint);
             _timeScaleBefore = Time.timeScale;
             Time.timeScale = 0f;
+            StandDownGulls();
 
             // What a prior fixture can leave behind in SHADER GLOBALS, reset by name: a searchlight's
             // water-light publication (BoatSpotlight), a published sun. Anything that survives a
@@ -128,6 +142,17 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = 0; i < _spawned.Count; i++)
                 if (_spawned[i] != null) Object.Destroy(_spawned[i]);
             _spawned.Clear();
+
+            // OnEnable can re-stamp a shadow renderer: restore its component first, then the exact
+            // renderer flags saved before stand-down. Do not destroy or replace the installed host.
+            foreach (var saved in _gullShadows)
+                if (saved.Shadow != null) saved.Shadow.enabled = saved.Enabled;
+            foreach (var saved in _gullRenderers)
+                if (saved.Renderer != null) saved.Renderer.enabled = saved.Enabled;
+            if (_installedFlock != null) _installedFlock.enabled = _flockWasEnabled;
+            _gullShadows.Clear();
+            _gullRenderers.Clear();
+            _installedFlock = null;
         }
 
         [UnityTest]
@@ -298,6 +323,44 @@ namespace HiddenHarbours.Tests.PlayMode
 
         // ------------------------------------------------------------------------------ machinery
 
+        void StandDownGulls()
+        {
+            // Match SeagullLandingPlayTests: the hidden DontDestroyOnLoad host is not a scene find.
+            foreach (GullFlock flock in Resources.FindObjectsOfTypeAll<GullFlock>())
+            {
+                if (flock == null || flock.gameObject.name != "GullFlock" ||
+                    (flock.gameObject.hideFlags & HideFlags.HideAndDontSave) != HideFlags.HideAndDontSave)
+                    continue;
+                _installedFlock = flock;
+                break;
+            }
+            if (_installedFlock == null) return; // The gulls' fixture owns the installation assertion.
+
+            _flockWasEnabled = _installedFlock.enabled;
+            // Save all flags BEFORE any OnDisable can change a pooled renderer's flag.
+            foreach (Renderer renderer in _installedFlock.GetComponentsInChildren<Renderer>(true))
+                _gullRenderers.Add((renderer, renderer.enabled));
+            foreach (SpriteShadow shadow in _installedFlock.GetComponentsInChildren<SpriteShadow>(true))
+                _gullShadows.Add((shadow, shadow.enabled));
+
+            _installedFlock.enabled = false;
+            foreach (var saved in _gullShadows) saved.Shadow.enabled = false;
+            foreach (var saved in _gullRenderers) saved.Renderer.enabled = false;
+        }
+
+        void AssertGullsCannotDraw()
+        {
+            foreach (GullFlock flock in Resources.FindObjectsOfTypeAll<GullFlock>())
+            {
+                Assert.IsFalse(flock.enabled, "a flock can advance on unscaled time between the two shots");
+                foreach (Renderer renderer in flock.GetComponentsInChildren<Renderer>(true))
+                    Assert.IsFalse(renderer.enabled, "a gull or its pooled shadow can reach the lamps plate");
+                foreach (SpriteShadow shadow in flock.GetComponentsInChildren<SpriteShadow>(true))
+                    Assert.IsFalse(shadow.TryGetLampShadowCaster(out _),
+                        "a gull can still cast into the shared lamp-shadow pool outside its host");
+            }
+        }
+
         Arm BuildArm(HullMeshDef def, string name)
         {
             var root = new GameObject(name);
@@ -381,6 +444,7 @@ namespace HiddenHarbours.Tests.PlayMode
             float ox = (arm.Def.PivotPx.x - arm.Def.CellW / 2f) / ppu;
             float oy = (arm.Def.CellH / 2f - arm.Def.PivotPx.y) / ppu;
             _cam.transform.position = new Vector3(-ox, -oy, -100f);
+            AssertGullsCannotDraw();
             _cam.Render();
 
             int w = arm.Def.CellW, h = arm.Def.CellH;
