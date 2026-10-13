@@ -592,6 +592,82 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(RetiredContentIds.IsRetired("   "), "a blank id is not a retired id");
         }
 
+        // ---- held props (ADR 0053) ----------------------------------------------------------
+
+        /// <summary>
+        /// Every id a <see cref="HeldPropMeshDef"/> has shipped with, in the bake's order: the rod's
+        /// three tiers, the spade, the seven fish held by the tail, then each bucket tier's thirteen
+        /// fill states. <b>Append-only</b>, like every content id. A held state the rigs stop making
+        /// keeps its line here and its id goes to <see cref="RetiredContentIds"/>; a new state is
+        /// appended. The bake mints these ids from the rigs' own variant names, so this ledger is what
+        /// stops a rig edit that renames a variant from quietly re-minting an old prop under a new id.
+        /// </summary>
+        private static readonly string[] ShippedHeldPropIds =
+        {
+            "heldprop.rod_cane", "heldprop.rod_coast", "heldprop.rod_deep",
+            "heldprop.shovel",
+            "heldprop.fish_cod", "heldprop.fish_haddock", "heldprop.fish_pollock", "heldprop.fish_mackerel",
+            "heldprop.fish_bass", "heldprop.fish_flounder", "heldprop.fish_herring",
+            "heldprop.bucket_pail_empty",
+            "heldprop.bucket_pail_few_fish", "heldprop.bucket_pail_few_shell", "heldprop.bucket_pail_few_crust",
+            "heldprop.bucket_pail_half_fish", "heldprop.bucket_pail_half_shell", "heldprop.bucket_pail_half_crust",
+            "heldprop.bucket_pail_full_fish", "heldprop.bucket_pail_full_shell", "heldprop.bucket_pail_full_crust",
+            "heldprop.bucket_pail_brim_fish", "heldprop.bucket_pail_brim_shell", "heldprop.bucket_pail_brim_crust",
+            "heldprop.bucket_tote_empty",
+            "heldprop.bucket_tote_few_fish", "heldprop.bucket_tote_few_shell", "heldprop.bucket_tote_few_crust",
+            "heldprop.bucket_tote_half_fish", "heldprop.bucket_tote_half_shell", "heldprop.bucket_tote_half_crust",
+            "heldprop.bucket_tote_full_fish", "heldprop.bucket_tote_full_shell", "heldprop.bucket_tote_full_crust",
+            "heldprop.bucket_tote_brim_fish", "heldprop.bucket_tote_brim_shell", "heldprop.bucket_tote_brim_crust",
+            "heldprop.bucket_tray_empty",
+            "heldprop.bucket_tray_few_fish", "heldprop.bucket_tray_few_shell", "heldprop.bucket_tray_few_crust",
+            "heldprop.bucket_tray_half_fish", "heldprop.bucket_tray_half_shell", "heldprop.bucket_tray_half_crust",
+            "heldprop.bucket_tray_full_fish", "heldprop.bucket_tray_full_shell", "heldprop.bucket_tray_full_crust",
+            "heldprop.bucket_tray_brim_fish", "heldprop.bucket_tray_brim_shell", "heldprop.bucket_tray_brim_crust",
+        };
+
+        /// <summary>
+        /// The held props' ids (ADR 0053) are well-formed (<c>heldprop.&lt;snake_case&gt;</c>), unique,
+        /// minted from the def's own family and variant, never a retired id, and STABLE: every id in
+        /// <see cref="ShippedHeldPropIds"/> is still carried by a def unless it was retired, and no def
+        /// carries an id the ledger has not been told about.
+        /// </summary>
+        [Test]
+        public void HeldPropIds_StableAndUnique()
+        {
+            var ledger = new HashSet<string>();
+            foreach (string id in ShippedHeldPropIds)
+            {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(id), "a blank entry in the held-prop id ledger");
+                Assert.IsTrue(ledger.Add(id), $"'{id}' is listed twice in the held-prop id ledger");
+            }
+
+            var seen = new Dictionary<string, string>();
+            foreach (var def in LoadAll<HeldPropMeshDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(def);
+                RegisterUniqueId(seen, def.Id, path, nameof(HeldPropMeshDef));
+                Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(def.Id, @"^heldprop\.[a-z0-9]+(_[a-z0-9]+)*$"),
+                    $"{path}: '{def.Id}' is not {HeldPropMeshDef.IdPrefix}<snake_case>");
+
+                // The bake's mint (HeldPropFleet.IdFor, in an editor assembly this one does not see).
+                string minted = HeldPropMeshDef.IdPrefix + def.Family +
+                                (string.IsNullOrEmpty(def.Variant) ? "" : "_" + def.Variant);
+                Assert.AreEqual(minted, def.Id,
+                    $"{path}: a held prop's id is minted from its family '{def.Family}' and variant '{def.Variant}'");
+                Assert.IsFalse(RetiredContentIds.IsRetired(def.Id),
+                    $"{path} authors '{def.Id}', a RETIRED content id. Mint a new one.");
+                Assert.IsTrue(ledger.Contains(def.Id),
+                    $"{path}: '{def.Id}' is a held-prop id the ledger does not know. Append it to " +
+                    $"{nameof(ShippedHeldPropIds)}; ids are append-only.");
+            }
+
+            foreach (string id in ShippedHeldPropIds)
+                if (!RetiredContentIds.IsRetired(id))
+                    Assert.IsTrue(seen.ContainsKey(id),
+                        $"'{id}' shipped and no {nameof(HeldPropMeshDef)} under {DataRoot} carries it any more. " +
+                        "An id is never dropped: re-bake the state, or retire the id in RetiredContentIds.");
+        }
+
         // ---- the ASSET FILES themselves, not the objects they load into ----------------------
 
         /// <summary>

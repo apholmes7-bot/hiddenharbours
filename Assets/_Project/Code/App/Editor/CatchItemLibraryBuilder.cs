@@ -6,6 +6,7 @@ using UnityEngine;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;      // FishCategory — the fallback when a species name matches no baked kind
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Tools.RigBaking;   // RigPropMeshBaker.HeldPropFolder — where the held meshes live
 
 namespace HiddenHarbours.App.Editor
 {
@@ -134,6 +135,10 @@ namespace HiddenHarbours.App.Editor
             }
 
             int held = 0;
+            // The held MESHES (ADR 0053), read off the held-prop bake's own folder and matched by the
+            // state names the defs carry — the rig's own species and fills, never typed here.
+            HeldPropMeshDef[] heldMeshes = HeldMeshes();
+            int meshed = 0;
             foreach (string kind in finfish)
             {
                 Sprite[] variants = DeckLayVariants($"{FishIso}/Fish_{kind}_deck.png", kind, ref missing);
@@ -143,9 +148,17 @@ namespace HiddenHarbours.App.Editor
                 // a size rung, and the rung's own hand count decides gill vs tail). A container's
                 // catch has no weight to ask about.
                 if (WireHeld(entry, $"{FishIso}/Fish_{kind}_tail.png", Directions)) held++;
+                // The same fish by the same tail, as a mesh. Nothing draws it yet (PR 4).
+                entry.HeldMesh = heldMeshes.FirstOrDefault(
+                    d => d.Family == HeldPropMeshDef.FishFamily && d.Variant == kind);
+                if (entry.HeldMesh != null) meshed++;
                 kinds.Add(entry);
                 if (variants.Length > 0) wired++;
             }
+            foreach (HeldPropMeshDef d in heldMeshes)
+                if (d.Family == HeldPropMeshDef.FishFamily && !finfish.Contains(d.Variant))
+                    Debug.LogWarning($"[CatchItemLibraryBuilder] {d.Id} is baked but '{d.Variant}' has no " +
+                                     "deck sheet, so it is no kind here and nothing points at the mesh.");
 
             foreach (string kind in strips)
             {
@@ -164,7 +177,10 @@ namespace HiddenHarbours.App.Editor
 
             var species = SpeciesRows(finfish, strips, out int unmapped);
 
-            library.Configure(kinds.ToArray(), species.ToArray(), fallbackKind: "cod");
+            CatchItemLibrary.BucketMeshEntry[] bucketMeshes = BucketMeshes(heldMeshes);
+
+            library.Configure(kinds.ToArray(), species.ToArray(), fallbackKind: "cod",
+                              bucketMeshes: bucketMeshes);
 
             if (created) AssetDatabase.CreateAsset(library, LibraryPath);
             else EditorUtility.SetDirty(library);
@@ -173,11 +189,56 @@ namespace HiddenHarbours.App.Editor
 
             summary = $"{(created ? "Created" : "Refreshed")} '{LibraryPath}': " +
                       $"{wired}/{kinds.Count} kinds with art, {held} with HELD art, " +
+                      $"{meshed} with a HELD MESH, {bucketMeshes.Length} bucket states as meshes, " +
                       $"{species.Count} species mapped" +
                       (missing > 0 ? $", {missing} sheet(s) MISSING (see the warnings above)" : "") +
                       (unmapped > 0 ? $", {unmapped} species left on the fallback kind" : "") +
                       ". Commit it; re-run after a fishing/storage re-bake.";
             return true;
+        }
+
+        // ---- the held meshes (ADR 0053) -----------------------------------------------------------------
+
+        /// <summary>Every baked held-prop def, by id. None when the held-prop bake has not run, which
+        /// leaves every mesh reference empty, the way a missing sheet leaves a sprite one.</summary>
+        static HeldPropMeshDef[] HeldMeshes()
+        {
+            string folder = RigPropMeshBaker.HeldPropFolder;
+            if (!AssetDatabase.IsValidFolder(folder)) return System.Array.Empty<HeldPropMeshDef>();
+            return AssetDatabase.FindAssets($"t:{nameof(HeldPropMeshDef)}", new[] { folder })
+                .Select(g => AssetDatabase.LoadAssetAtPath<HeldPropMeshDef>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(d => d != null)
+                .OrderBy(d => d.Id, System.StringComparer.Ordinal)
+                .ToArray();
+        }
+
+        /// <summary>
+        /// The bucket states, named as the bucket rig names them. A fill the band enum does not know is
+        /// left out with an error naming it: the rig and the enum disagree, and mapping one onto the
+        /// other here would hide that.
+        /// </summary>
+        static CatchItemLibrary.BucketMeshEntry[] BucketMeshes(HeldPropMeshDef[] meshes)
+        {
+            var rows = new List<CatchItemLibrary.BucketMeshEntry>();
+            foreach (HeldPropMeshDef d in meshes)
+            {
+                if (d.Family != HeldPropMeshDef.BucketFamily) continue;
+                if (!System.Enum.TryParse(d.BucketFill, true, out CatchFillBand band) ||
+                    !string.Equals(band.ToString(), d.BucketFill, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    Debug.LogError($"[CatchItemLibraryBuilder] {d.Id}: the bucket rig's fill '{d.BucketFill}' " +
+                                   $"is no {nameof(CatchFillBand)}, so the state is left out of the table.");
+                    continue;
+                }
+                rows.Add(new CatchItemLibrary.BucketMeshEntry
+                {
+                    TierId = d.BucketTierId,
+                    Band = band,
+                    Group = band == CatchFillBand.Empty ? "" : d.BucketCatch,
+                    Mesh = d,
+                });
+            }
+            return rows.ToArray();
         }
 
         // ---- the art ------------------------------------------------------------------------------------
