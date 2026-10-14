@@ -291,10 +291,7 @@ namespace HiddenHarbours.Core
                  "prevent.")]
         public WaveFieldSettings WaveField = WaveFieldSettings.Default;
 
-        [Tooltip("The presentation smoother shared by every LOOK consumer (ADR 0018 addendum): how " +
-                 "languidly the train parameters chase the drifting weather, and the glass snap floor " +
-                 "(glass is sacred). The SIM path — seakeeping forces — deliberately does NOT ease; it " +
-                 "reads the pure WaveMath at game time, so gameplay never depends on frame rate.")]
+        [Tooltip("Legacy asset compatibility. The shared sea now uses WaveField's deterministic wind windows; these easing values are inactive.")]
         public WaveFieldAnimatorSettings WaveFieldAnimator = WaveFieldAnimatorSettings.Default;
 
         [Tooltip("WIND FETCH (ADR 0027 #1): how far the wind has blown over open water before it " +

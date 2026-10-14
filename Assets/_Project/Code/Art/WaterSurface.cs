@@ -114,27 +114,11 @@ namespace HiddenHarbours.Art
                  "moving value is a visible staircase.")]
         [Min(0.5f)] [SerializeField] private float _refreshHz = 8f;
 
-        [Header("Flow momentum (the water has MASS — rule 6)")]
-        [Tooltip("Response time (seconds) for the VISUAL surface motion to ease toward the live sim flow. The " +
-                 "sim's wind/current directions WANDER over time; rather than the surface SNAPPING to a new " +
-                 "heading the instant the force shifts, the pushed flow/wind vectors are exponentially smoothed " +
-                 "toward the live sim with this time constant — so the surface decelerates through a heading " +
-                 "change and accelerates out of it (momentum). Heavier (larger) = more sluggish inertia; lighter " +
-                 "(smaller) = livelier, snappier. Frame-rate independent. PRESENTATION ONLY — the boat physics " +
-                 "still read the real EnvironmentSample directly; this lags only what the player SEES, and saves " +
-                 "nothing (rule 5). 0 = no smoothing (instant snap, the old behaviour).")]
+        [Header("Current momentum")]
+        [Tooltip("Response time in seconds for decorative current motion. Wind uses WaveField's short memory window.")]
         [Min(0f)] [SerializeField] private float _flowResponseTime = 3f;
 
-        [Header("Transition continuity (the sim SAMPLE steps; the SURFACE must not — rule 6)")]
-        [Tooltip("Response time (seconds) for the drawn CHOPPINESS (_Chop) to ease toward the sampled " +
-                 "sea-state. _Chop is not just a look dial: it scales every band's spatial FREQUENCY " +
-                 "(_BandScaleResponse) and, through the dispersion relation, every band's scroll SPEED, so " +
-                 "a stepped _Chop translates the whole pattern by an amount proportional to distance from " +
-                 "the world origin — the 'stuttery on transitions' defect. Keep it near the wave field's " +
-                 "own parameter smoothing (WaveFieldAnimatorSettings, 1.5 s) so the drawn bands and the " +
-                 "field the hull rides change character together. Frame-rate independent; presentation " +
-                 "only (rule 5). 0 = no easing (the old, stepping behaviour).")]
-        [Min(0f)] [SerializeField] private float _chopResponseTime = 2f;
+        [Header("Transition continuity")]
         [Tooltip("Response time (seconds) for the drawn WATER LEVEL (_WaterLevel) to ease toward the " +
                  "sampled tide. The tide moves at most ~3.5 cm/s at peak spring, so a sample-and-hold push " +
                  "marched the waterline in visible jerks across near-flat sand (millimetres of level become " +
@@ -1029,6 +1013,14 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void EaseTowardTargets(float dt)
         {
+            // Use the short trains' window at the same clock, including between slow weather ticks.
+            if (GameServices.Environment is IWaveWindSource history)
+            {
+                var field = GameServices.WaveField;
+                var wind = WaveMemory.ShortWind(history, WaveFieldAnimator.GameTimeSeconds, in field);
+                _targetWind = wind.Wind;
+                _targetChop = Choppiness(wind.SeaState01);
+            }
             bool snap = dt <= 0f || !_flowInitialized;
             if (snap)
             {
@@ -1041,8 +1033,8 @@ namespace HiddenHarbours.Art
             else
             {
                 _smoothedCurrent = SmoothVectorToward(_smoothedCurrent, _targetCurrent, _flowResponseTime, dt);
-                _smoothedWind    = SmoothVectorToward(_smoothedWind,    _targetWind,    _flowResponseTime, dt);
-                _easedChop       = SmoothScalarToward(_easedChop,       _targetChop,    _chopResponseTime, dt);
+                _smoothedWind = _targetWind;
+                _easedChop = _targetChop;
                 _easedWaterLevel = SmoothScalarToward(_easedWaterLevel, _targetWaterLevel,
                                                       _waterLevelResponseTime, dt);
             }

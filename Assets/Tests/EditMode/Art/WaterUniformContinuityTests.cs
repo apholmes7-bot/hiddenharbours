@@ -225,10 +225,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The math above is only worth anything at the values that actually ship. A future edit
             // that zeroes the response times (re-introducing the staircase) or inflates the water-level
             // one (letting the drawn waterline drift off the gameplay one) breaks here.
-            float chopTau = ShippedFloatField("_chopResponseTime");
+            var field = WaveFieldSettings.Default;
             float levelTau = ShippedFloatField("_waterLevelResponseTime");
 
-            Assert.Greater(chopTau, 0f,
+            Assert.Greater(field.MemoryShortSeconds, 0f,
                 "_Chop must ship EASED — it scales every band's spatial frequency, so a stepped _Chop " +
                 "slides the whole pattern by a distance proportional to |worldPos|");
             Assert.Greater(levelTau, 0f, "_WaterLevel must ship EASED — the flats turn mm of level " +
@@ -239,7 +239,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "beyond ~0.57 s breaks the SEE==FEEL argument this smoothing rests on");
 
             // A single 60 fps frame must not be able to move either value by a visible fraction.
-            Assert.Less(1f - Mathf.Exp(-Dt60 / chopTau), 0.05f, "_Chop steps must stay small per frame");
+            Assert.Less(Dt60 / field.MemoryShortSeconds, 0.05f, "Short wind enters over its window");
+            string source = System.IO.File.ReadAllText("Assets/_Project/Code/Art/WaterSurface.cs");
+            StringAssert.Contains("WaveMemory.ShortWind(history, WaveFieldAnimator.GameTimeSeconds, in field)", source);
+            StringAssert.Contains("_targetChop = Choppiness(wind.SeaState01)", source);
             Assert.Less(1f - Mathf.Exp(-Dt60 / levelTau), 0.05f, "_WaterLevel steps must stay small per frame");
         }
 
