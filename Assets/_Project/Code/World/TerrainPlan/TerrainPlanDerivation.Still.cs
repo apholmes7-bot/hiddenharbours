@@ -30,6 +30,41 @@ namespace HiddenHarbours.World
     {
         static void Lay(double[] still, int i, double lvl) => still[i] = double.IsNaN(still[i]) ? lvl : Math.Max(still[i], lvl);
 
+        /// <summary>
+        /// One dry support texel around the physical still water (ADR 0046). Read only the original
+        /// array: new supports never grow another ring or replace a body's own water. At a shared
+        /// dry rim the highest eligible level wins. A head-of-tide wet extension is a separate rule.
+        /// Call only after physical-water consumers have finished, for the final published map.
+        /// </summary>
+        public static double[] PadStillForPublication(TerrainPlanGrid grid, double[] ground, double[] physical,
+                                                      float minLevel, float maxLevel)
+        {
+            if (ground == null || physical == null || ground.Length != grid.Count || physical.Length != grid.Count)
+                throw new ArgumentException("The ground and physical still water must fill the publication grid.");
+            var published = (double[])physical.Clone();
+            for (int row = 0; row < grid.H; row++)
+            for (int col = 0; col < grid.W; col++)
+            {
+                int i = row * grid.W + col;
+                if (!double.IsNaN(physical[i])) continue;
+                double highest = double.NaN;
+                for (int dy = -1; dy <= 1; dy++)
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    if (dx == 0 && dy == 0) continue;
+                    int r = row + dy, c = col + dx;
+                    if (r < 0 || r >= grid.H || c < 0 || c >= grid.W) continue;
+                    double level = physical[r * grid.W + c];
+                    if (double.IsNaN(level) || double.IsInfinity(level) || !(ground[i] >= level)) continue;
+                    ushort code = StillWaterLevels.EncodeCode((float)level, minLevel, maxLevel);
+                    if (!(ground[i] >= TerrainPlanMaps.Decode(code, minLevel, maxLevel))) continue;
+                    if (double.IsNaN(highest) || level > highest) highest = level;
+                }
+                published[i] = highest;
+            }
+            return published;
+        }
+
         void StillOnGround()
         {
             var G = _E;

@@ -675,7 +675,10 @@ namespace HiddenHarbours.World
                 if (_held1[i]) { frozen[i] = 1; t1++; }
                 else if (_f2[i] >= frozenAt) { frozen[i] = 2; t2++; }
             }
-            _r.E = _E; _r.Zone = _zone; _r.Still = _still; _r.Biome = _biome;
+            // Physical paint, routes and placement have finished. Only the published map gets dry supports.
+            _r.E = _E; _r.Zone = _zone;
+            _r.Still = PadStillForPublication(_g, _E, _still, _plan.HeightRange.x, _plan.HeightRange.y);
+            _r.Biome = _biome;
             _r.Chan = _chan; _r.Tidal = _tidal; _r.Bank = _bank;
             _r.PathD = _pd; _r.PathH = _ph; _r.PathW = ToInt(_pw);
             _r.PathWeight = _pathWeight; _r.KeyPaint = _keyPaint; _r.KeyOwner = _owner;

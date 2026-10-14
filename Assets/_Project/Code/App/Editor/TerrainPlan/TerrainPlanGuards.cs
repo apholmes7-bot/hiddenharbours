@@ -1171,7 +1171,7 @@ namespace HiddenHarbours.App.Editor
                 double s = x.Slope(i);
                 if (isNear)
                 {
-                    if (!double.IsNaN(x.R.Still[i])) wet++;
+                    if (x.R.Still[i] > x.R.E[i]) wet++;
                     if (s > steepNear) { steepNear = s; steepNearAt = i; }
                 }
                 else
@@ -1276,7 +1276,7 @@ namespace HiddenHarbours.App.Editor
             int blob = Blob4(rec.Changed, x.W);
             var near = x.Beside(rec.Changed);
             int wet = 0;
-            for (int i = 0; i < x.N; i++) if (near[i] && !double.IsNaN(x.R.Still[i])) wet++;
+            for (int i = 0; i < x.N; i++) if (near[i] && x.R.Still[i] > x.R.E[i]) wet++;
             var seed = Num(def.Centre);
             double reach = 0;
             foreach (int i in rec.Changed) reach = Math.Max(reach, Hypot(x.Xs[i % x.W] - seed.X, x.Ys[i / x.W] - seed.Y));
@@ -1353,7 +1353,7 @@ namespace HiddenHarbours.App.Editor
             for (int j = 0; j < line.R.Length; j++)
             {
                 int c = x.G.ColOf(line.R[j].X), r = x.G.RowOf(line.R[j].Y);
-                if (c < 0 || c >= x.W || r < 0 || r >= x.H || double.IsNaN(x.R.Still[r * x.W + c])) continue;
+                if (c < 0 || c >= x.W || r < 0 || r >= x.H || !(x.R.Still[r * x.W + c] > x.R.E[r * x.W + c])) continue;
                 onWater++;
                 if (wetAt < 0) wetAt = j;
             }
@@ -1373,7 +1373,7 @@ namespace HiddenHarbours.App.Editor
                 for (int c = c0; c < c1; c++)
                 {
                     int i = r * x.W + c;
-                    if (double.IsNaN(x.R.Still[i]) || !(EllipseRadius(x.Xs[c], x.Ys[r], cc, ra, rb, cr, sr, 0, 0.0, 0.0) < PoolMaskRadius)) continue;
+                    if (!(x.R.Still[i] > x.R.E[i]) || !(EllipseRadius(x.Xs[c], x.Ys[r], cc, ra, rb, cr, sr, 0, 0.0, 0.0) < PoolMaskRadius)) continue;
                     water++;
                     line.Query(x.Xs[c], x.Ys[r], ref hint, out double d, out _, out _);
                     if (d < least) { least = d; leastPool = p.Id + x.At(i); }

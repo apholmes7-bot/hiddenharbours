@@ -1,0 +1,17 @@
+# St Peters: published still-water dry support
+
+ADR 0046 requires one texel beyond a dry shoreline so bilinear filtering does not blend a body's edge toward empty code zero. The final deriver had dropped dry values without adding that support. At the Alder head (107, 55), two wet codes and two empty codes produced 0.6249485 m instead of the source's 5.25 m.
+
+After ground, paint, routes and biome work, the final deriver clones the physical still array. Each originally empty texel examines its eight original neighbours and takes the highest finite level at or below its ground, also requiring the R16 decode to stay at or below ground. It never replaces existing water or grows from new support. Intermediate Part1 and Crossing arrays remain physical; C# and HLSL samplers are unchanged.
+
+A published nonempty code is not proof of physical water. BeachWestEndBlends, NeckHollowFilled and CrossingWalkOffStillWater now use Still > E in four predicates. Their thresholds and physical premises are unchanged. SouthStillPaint already uses that comparison; routes and placement receive the physical array before publication. No source, ground, fall, foot, plunge, Def or scene changes are involved.
+
+The map adds 5,109 dry supports (3,550 cardinal-eligible and 1,559 diagonal-only), changes zero original wet codes, and preserves height and all six splats byte for byte. The 714 residual wet/empty pairs need a separate wet-extension decision and remain empty. At shared dry rims the highest eligible level wins; original wet levels retain their existing steps.
+
+Two Unity derivations agree at f85700a9fcfd0fb55b1a0b8ade170fc05e312d4c1d38a411f0794d74c0dd69b4. Map readback has zero differences. Pixel 988777 is 25790 before, in the Unity derivation, and after writing; the managed prototype's 25791 is a runtime encoding discrepancy, not a special-case patch. The PNG SHA-256 is 0441b1e95f8d8451ddcb550eda824fdc1317f4ce7cb72f9455bc7b80804abd43; the manifest SHA-256 is b22b5f4fe769821cea3b1cd4111f66dad065836d1b13012fd5084e6ab160e3db.
+
+Nine TerrainPlanStillPaddingTests cover one immutable ring, levels/conflicts, bounds, encoded dryness and preservation. StPetersTerrainPlanGuardTests.TheCommittedStillWater_HoldsAllFiveSourceHeads samples the committed texture through PaintedStillWater within one R16 step of each source. Alder reads 5.249897 m; Barren, Gap, Storm and Heath read 5.299947 m. The eleven EditMode classes in Phase B passed all 128 cases, including the map/manifest determinism checks.
+
+The local atlas is survey evidence, excluded from the PR and normal test class because its large iterator stalled. B2 reached 130 passing body frames and one submerged body (hollow.stp_w39_s82 at -2.184 m, below daylight spring low -2.163 m). Every join passed at low water and every mouth passed at all three tides. All 120 residual tiles were captured at low and mean water; 69 high-water views are missing. Mean/high frames rejected by the unchanged 5% ground guard remain recorded refusals, not evidence of a map regression. The isolated key-scenes class passed 3/3, including residency. A complete B2 plate-class result was not obtained.
+
+Open findings: grass tufts still draw over pond, fen, brook and shallow water; Nine Mile Creek control parity is unverified because the title-state check failed after scene loading; Rice Point is owed when its scene lands. The atlas source remains uncommitted, with its diff and evidence under artifacts/stp-ground-3/alder-head/b2/. No complete visual-parity claim is made.
