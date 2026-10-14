@@ -1222,6 +1222,152 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["PX"] = "S",
                     ["defaultElev"] = "DEFAULT_ELEV",
                 },
+
+                // ---- THE HELD PROPS (ADR 0053) — four rigs a FIGURE holds, one `held` each --------
+                // None of the four exports F, MATS, GAIN, BIAS, LN or PX, and two of them have no ONE
+                // material table to widen: the rod builds one per TIER (`makeMats(t)`), the fish one
+                // per SPECIES (`matsFor(key)`). So each rig gets ONE reconstructed symbol, `held`, and
+                // the held-prop bake (HeldPropFleet) reads everything else through it — the table via
+                // RigPropExtraction.MaterialsCall. Its members:
+                //   · variants — the states the rig enumerates, in the rig's own order;
+                //   · faces(v) — the rig's OWN builder at the rig's OWN held pose (D1): resolveR, atFn
+                //                and facesOf for the rod; resolveR, frameOf and facesOf for the spade;
+                //                resolve at the tail rest and facesOf for a fish; facesFor plus the
+                //                carry offset for a bucket (a transcription: bucketRig.js:318-319);
+                //   · mats(v)  — the rig's own table for that state;
+                //   · grip(v)  — where the hand is, in the faces' metres, MEASURED off the rig's pose so
+                //                the bake can assert it is the origin rather than assume it: gripLocal()
+                //                for the rod, the shaft at s = 0 for the spade, the bail apex or the tray's
+                //                near rim after the carry offset, and for a fish the body's centreline at
+                //                gripU, read off the loft's own rings (a ring's centroid IS the spine at
+                //                its u; three rings' quadratic reproduces the rig's quadratic `lat` and
+                //                linear `yOf` exactly at a rest, where sweep and wave are 0);
+                //   · pose(v)  — the pose as text, for the def's provenance;
+                //   · lines(v) — the parts the rig PLOTS instead of building (D2: the shader's line pass
+                //                is PR 3), sampled by a transcription of the rig's own loop: the blank
+                //                (rodIsoRig.js:172-187), the shaft (shovelIsoRig.js:138-151), the bail
+                //                (bucketRig.js:257-271) and a fish's two eyes (fishIsoRig2.js:244-248);
+                //   · edge     — the rig's EDGE (the bucket's is 0.13, the others' 0.12);
+                //   · keyline(v) — whether the rig draws its 1 px outer keyline for that state: always
+                //                for the rod, spade and bucket (rodIsoRig.js:209, shovelIsoRig.js:173,
+                //                bucketRig.js:294), and for a fish whatever its own resolve() says
+                //                (KEYLINE_DEFAULT, off since ADR 0031) — read, not restated in C#.
+                // The bucket adds `cell` — it exports two pivots and no `pivot`, and carry is PXC — and
+                // meta(v), its tier, fill and catch.
+                //
+                // ⚠️ Every accessor THROWS on an unknown state. Each of these rigs silently falls back
+                // to a default for a name it does not know (the coast rod, the mackerel, the pail), and
+                // a bake that asked for one thing and got another must not look like success.
+                //
+                // ⚠️ Names unqualified ON PURPOSE, as for the ATV pack: this runs inside the closure.
+                ["rodIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["PX"] = "S",
+                    ["held"] =
+                        "(function(){" +
+                        "function R(v){if(!Object.prototype.hasOwnProperty.call(TIERS,v))" +
+                        "throw new Error('RodIso.held: unknown tier '+v);return resolveR(0,{tier:v});}" +
+                        "function AT(r){return atFn(r.t,r.pitch,r.yaw,r.bend,r.zOff);}" +
+                        "return {edge:EDGE,variants:ORDER.slice()," +
+                        "faces:function(v){var r=R(v);return facesOf(r.t,AT(r));}," +
+                        "mats:function(v){return makeMats(R(v).t).MATS;}," +
+                        "grip:function(v){R(v);return gripLocal();}," +
+                        "keyline:function(v){R(v);return true;}," +
+                        "pose:function(v){var r=R(v);return 'held: pitch '+(r.pitch/DEG).toFixed(4)+" +
+                        "' deg, yaw '+(r.yaw/DEG).toFixed(4)+' deg, bend '+r.bend+', zOff '+r.zOff;}," +
+                        "lines:function(v){var r=R(v),t=r.t,at=AT(r),ramps=[],pts=[];" +
+                        "function slot(a){var i=ramps.indexOf(a);if(i<0){ramps.push(a);i=ramps.length-1;}return i;}" +
+                        "var g0=0.16,steps=Math.ceil((t.len-g0)*S*2.2);" +
+                        "for(var i=0;i<=steps;i++){var s=g0+(t.len-g0)*i/steps,frac=(s-g0)/(t.len-g0),p=at(s);" +
+                        "var ramp=t.blank,bi=t.blankIdx;if(t.wrap&&frac>0.06&&frac<0.16){ramp=t.wrap;bi=3;}" +
+                        "var idx=Math.max(0,Math.min(ramp.length-1,frac<0.30?bi-1:(frac>0.86?bi+1:bi)));" +
+                        "pts.push([p[0],p[1],p[2],slot(ramp),idx,(t.thick===2&&frac<0.60)?Math.max(0,idx-2):-1]);}" +
+                        "return {ramps:ramps,lines:[{name:'blank',bias:0.03,dots:false,pts:pts}]};}" +
+                        "};})()",
+                },
+                ["shovelIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["PX"] = "S",
+                    ["held"] =
+                        "(function(){" +
+                        "function R(v){if(v!=='')throw new Error('ShovelIso.held: the spade has one state, not '+v);" +
+                        "return resolveR(0,{});}" +
+                        "function FR(r){return frameOf(r.pitch,r.yaw,r.zOff);}" +
+                        "return {edge:EDGE,variants:['']," +
+                        "faces:function(v){return facesOf(FR(R(v)));}," +
+                        "mats:function(v){R(v);return MATS;}," +
+                        "grip:function(v){return FR(R(v)).at(0);}," +
+                        "keyline:function(v){R(v);return true;}," +
+                        "pose:function(v){var r=R(v);return 'held: pitch '+(r.pitch/DEG).toFixed(4)+" +
+                        "' deg, yaw '+(r.yaw/DEG).toFixed(4)+' deg, zOff '+r.zOff;}," +
+                        "lines:function(v){var fr=FR(R(v)),pts=[],sA=-0.295,sB=0.325,steps=Math.ceil((sB-sA)*S*2.4);" +
+                        "for(var i=0;i<=steps;i++){var s=sA+(sB-sA)*i/steps,frac=(s-sA)/(sB-sA),p=fr.at(s);" +
+                        "var idx=Math.max(0,Math.min(WOOD.length-1,frac<0.18?2:(frac>0.82?4:3)));" +
+                        "pts.push([p[0],p[1],p[2],0,idx,Math.max(0,idx-2)]);}" +
+                        "return {ramps:[WOOD],lines:[{name:'shaft',bias:0.03,dots:false,pts:pts}]};}" +
+                        "};})()",
+                },
+                ["bucketRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["PX"] = "S",
+                    ["held"] =
+                        "(function(){var V={};" +
+                        "Object.keys(TIERS).forEach(function(k){var T=TIERS[k];FILLS.forEach(function(f){" +
+                        "if(f==='empty')V[T.id+'_empty']={tier:+k,fill:f,kind:''};" +
+                        "else CATCHES.forEach(function(c){V[T.id+'_'+f+'_'+c]={tier:+k,fill:f,kind:c};});});});" +
+                        "function R(v){if(!Object.prototype.hasOwnProperty.call(V,v))" +
+                        "throw new Error('BucketIso.held: unknown state '+v);return V[v];}" +
+                        "function OFF(s){var T=TIERS[s.tier];return s.tier===3?[0,T.LY,-T.h]:[0,0,-(T.h+T.bail)];}" +
+                        "function MOVE(p,o){return [p[0]+o[0],p[1]+o[1],p[2]+o[2]];}" +
+                        "return {edge:EDGE,cell:{W:W,H:H,pivot:PXC},variants:Object.keys(V)," +
+                        "meta:function(v){var s=R(v);return TIERS[s.tier].id+'|'+s.fill+'|'+s.kind;}," +
+                        "faces:function(v){var s=R(v),o=OFF(s);" +
+                        "return facesFor(s.tier,s.fill,s.kind||'fish').map(function(f){" +
+                        "var c={};for(var k in f)c[k]=f[k];c.v=f.v.map(function(p){return MOVE(p,o);});return c;});}," +
+                        "mats:function(v){R(v);return MATS;}," +
+                        "grip:function(v){var s=R(v),T=TIERS[s.tier];" +
+                        "return MOVE(s.tier===3?[0,-T.LY,T.h]:[0,0,T.h+T.bail],OFF(s));}," +
+                        "keyline:function(v){R(v);return true;}," +
+                        "pose:function(v){var s=R(v);return 'carry: tier '+s.tier+', offset '+" +
+                        "OFF(s).map(function(x){return x.toFixed(4);}).join(',')+' m, swing 0, tilt 0';}," +
+                        "lines:function(v){var s=R(v);if(s.tier===3)return {ramps:[],lines:[]};" +
+                        "var T=TIERS[s.tier],o=OFF(s),arc=bailArc(T),pts=[];" +
+                        "for(var i=0;i<arc.length;i++){var u=i/(arc.length-1),top=Math.sin(Math.PI*u)," +
+                        "idx=top>0.72?3:(top>0.3?2:1),p=MOVE(arc[i],o);" +
+                        "pts.push([p[0],p[1],p[2],0,idx,Math.max(0,idx-1)]);}" +
+                        "return {ramps:[s.tier===2?PLAST:STEEL],lines:[{name:'bail',bias:0.03,dots:false,pts:pts}]};}" +
+                        "};})()",
+                },
+                ["fishIsoRig2.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["PX"] = "S",
+                    ["held"] =
+                        "(function(){var NSEG=9,NR=8;" +
+                        "function R(v){if(!Object.prototype.hasOwnProperty.call(SPECIES,v))" +
+                        "throw new Error('FishIso2.held: unknown species '+v);" +
+                        "var r=resolve({species:v,rest:'tail',frame:0});" +
+                        "if(r.gripU==null)throw new Error('FishIso2.held: the tail rest has no grip for '+v);return r;}" +
+                        "function RINGS(F){var c=[],i,k;" +
+                        "if(F.length<NSEG*NR)throw new Error('FishIso2.held: the body loft changed shape');" +
+                        "for(i=0;i<NSEG-1;i++)for(k=0;k<NR;k++)if(F[i*NR+k].v[3]!==F[(i+1)*NR+k].v[0])" +
+                        "throw new Error('FishIso2.held: the body loft changed shape');" +
+                        "for(i=0;i<=NSEG;i++){var p=[0,0,0];for(k=0;k<NR;k++){" +
+                        "var q=i<NSEG?F[i*NR+k].v[0]:F[(NSEG-1)*NR+k].v[3];p[0]+=q[0]/NR;p[1]+=q[1]/NR;p[2]+=q[2]/NR;}" +
+                        "c.push(p);}return c;}" +
+                        "return {edge:EDGE,variants:ORDER.slice()," +
+                        "faces:function(v){return facesOf(R(v)).F;}," +
+                        "mats:function(v){R(v);return matsFor(v).MATS;}," +
+                        "keyline:function(v){return R(v).outline;}," +
+                        "grip:function(v){var r=R(v),C=RINGS(facesOf(r).F),x=r.gripU*NSEG," +
+                        "j=Math.max(0,Math.min(NSEG-2,Math.round(x)-1)),t=x-j," +
+                        "w=[(t-1)*(t-2)/2,-t*(t-2),t*(t-1)/2],g=[0,0,0];" +
+                        "for(var m=0;m<3;m++)for(var a=0;a<3;a++)g[a]+=w[m]*C[j+m][a];return g;}," +
+                        "pose:function(v){var r=R(v);return 'rest: tail, frame 0, pitch '+r.pitch+', curve '+r.curve+', gripU '+r.gripU;}," +
+                        "lines:function(v){var e=facesOf(R(v)).eyes;" +
+                        "return {ramps:[matsFor(v).MATS.fin.ramp],lines:[{name:'eyes',bias:0.05,dots:true," +
+                        "pts:e.map(function(p){return [p[0],p[1],p[2],0,0,-1];})}]};}" +
+                        "};})()",
+                },
             };
 
         /// <summary>One extra object literal a rig has to have widened before the exported one can
@@ -1451,6 +1597,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// exactly as <c>F</c>/<c>MATS</c> are — and retire the same way, on the day they are
         /// exported.</summary>
         public string[] ExtraSymbols = Array.Empty<string>();
+
+        /// <summary>
+        /// JS returning this fitting's material table, relative to the global — e.g.
+        /// <c>held.mats('cane')</c>. <b>Null = the rig's own <c>MATS</c></b>, which is every hull and
+        /// every boat fitting: they set nothing and take the identical road they always have.
+        ///
+        /// <para>For a rig whose palette is per VARIANT, so that there is no one <c>MATS</c> to widen:
+        /// the rod builds a table per tier in <c>makeMats(t)</c>, the fish one per species in
+        /// <c>matsFor(key)</c>. When set, <c>MATS</c> drops out of the symbols the shim must supply
+        /// and the table is read from this expression instead, in its own key order — which is the
+        /// order the face packer resolves names against, exactly as for <c>MATS</c>.</para>
+        /// </summary>
+        public string MaterialsCall;
 
         /// <summary>Optional JS for the fitting's articulation limits and mounts; null when it does
         /// not steer, tilt, or carry more than one instance.</summary>
@@ -1691,9 +1850,13 @@ namespace HiddenHarbours.Tools.RigBaking
             // has no `F` either, only a private builder keyed on a variant. Measured 2026-08-13 in
             // the repo's own V8 host — both pack generators export none of F/MATS/GAIN/BIAS/LN.
             bool variantHull = hull != null && hull.IsVariant;
+            // A fitting that names its own material table needs no `MATS` shimmed — see
+            // RigPropExtraction.MaterialsCall. False for every hull and every boat fitting.
+            bool ownMaterials = prop != null && !string.IsNullOrEmpty(prop.MaterialsCall);
             var required = new List<string>();
             foreach (string sym in RigMeshSymbols.Required)
-                if ((prop == null && !variantHull) || sym != "F") required.Add(sym);
+                if (((prop == null && !variantHull) || sym != "F") && !(ownMaterials && sym == "MATS"))
+                    required.Add(sym);
             if (prop != null) required.AddRange(prop.ExtraSymbols);
             if (variantHull) required.AddRange(hull.ExtraSymbols);
 
@@ -1790,7 +1953,7 @@ namespace HiddenHarbours.Tools.RigBaking
             };
 
             ReadBayer(host, g, bayerExported, data);
-            ReadMaterials(host, g, data);
+            ReadMaterials(host, g, data, prop?.MaterialsCall);
             // BEFORE the faces, and it has to be: the packer resolves each face's `lv` string against
             // this table inside JavaScript, so the vocabulary must exist by the time the blob is
             // built. A rig without geometry() leaves it empty and every face comes back Untagged.
@@ -2007,12 +2170,17 @@ namespace HiddenHarbours.Tools.RigBaking
                 data.Bayer[i / 4, i % 4] = double.Parse(parts[i], CultureInfo.InvariantCulture);
         }
 
-        static void ReadMaterials(IRigScriptHost host, string g, RigMeshData data)
+        static void ReadMaterials(IRigScriptHost host, string g, RigMeshData data,
+                                  string materialsCall = null)
         {
             // name|off|#rrggbb,#rrggbb,… ; …  — key order is the JS object's own enumeration order,
             // which is also the order the face packer resolves names against, below.
+            //
+            // A fitting may name its own table (RigPropExtraction.MaterialsCall). Everything else —
+            // every hull, every boat fitting — reads `{g}.MATS` through this identical expression.
+            string mats = string.IsNullOrEmpty(materialsCall) ? $"{g}.MATS" : $"{g}.{materialsCall}";
             string blob = host.EvaluateString(
-                $"(function(){{var M={g}.MATS,o=[];for(var k in M)" +
+                $"(function(){{var M={mats},o=[];for(var k in M)" +
                 "o.push(k+'|'+(M[k].off||0)+'|'+M[k].ramp.join(','));return o.join(';');})()");
 
             foreach (string part in blob.Split(';'))
@@ -2020,7 +2188,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 string[] f = part.Split('|');
                 if (f.Length != 3)
                     throw new InvalidOperationException(
-                        $"{g}.MATS entry '{part}' is not name|off|ramp. MATS must be " +
+                        $"{mats} entry '{part}' is not name|off|ramp. MATS must be " +
                         "{name:{ramp:[…],off:n}}.");
                 string[] hex = f[2].Split(',');
                 data.Materials.Add(new RigMaterial
@@ -2033,7 +2201,7 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             if (data.Materials.Count == 0)
-                throw new InvalidOperationException($"{g}.MATS is empty.");
+                throw new InvalidOperationException($"{mats} is empty.");
         }
 
         /// <summary>
