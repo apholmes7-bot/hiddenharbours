@@ -225,7 +225,7 @@ namespace HiddenHarbours.Art
             // The FETCH model (ADR 0027 #1) travels alongside the trains, from the SAME GameConfig the
             // hull consumers read — that shared instance is the whole reason the lee the player sees is
             // the lee the boat feels.
-            PublishFetchGlobals(GameServices.WaveFetch, sample.WindVector);
+            PublishFetchGlobals(GameServices.WaveFetch, GameServices.FetchWindAt(env, time, in field));
 
             // BREAKING (ADR 0040) rides alongside both: it consumes the SAME eased trains that were
             // just published and the SAME fetch settings, so the surf line the player sees stands on
@@ -275,10 +275,10 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static void PublishFetchGlobals(in WaveFetchSettings settings, Vector2 windVector)
         {
-            float windSpeed = Mathf.Sqrt(windVector.x * windVector.x + windVector.y * windVector.y);
-            Vector2 upwind = windSpeed > WaveFetch.CalmWindSpeed
-                ? new Vector2(-windVector.x / windSpeed, -windVector.y / windSpeed)
-                : Vector2.zero;   // no defined direction -> the shader skips the march (envelope 1)
+            Shader.SetGlobalVector("_WaveFetchGrowth", WaveFetch.GrowthShape(in settings));
+            Shader.SetGlobalFloat("_WaveFetchGrowthPower", WaveFetch.GrowthPower(in settings));
+            Shader.SetGlobalFloat("_WaveFetchFullStrength", WaveFetch.FullStrength(in settings));
+            Vector2 upwind = WaveFetch.Upwind(windVector);
 
             Shader.SetGlobalVector(IdWaveFetchParams, new Vector4(
                 Mathf.Clamp01(settings.Strength),
@@ -315,7 +315,7 @@ namespace HiddenHarbours.Art
         public static void PublishBreakerGlobals(in WaveTrain dominant, in WaveFetchSettings fetch,
                                                  in BreakerSettings breakers)
         {
-            float leeEnvelope = WaveFetch.Envelope01(0f, in fetch);      // 1 when fetch is off
+            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch);      // 1 when fetch is off
             BreakerContour contour = BreakerMath.ContourFor(in dominant, leeEnvelope, in breakers);
 
             Shader.SetGlobalVector(IdBreakerDepths, new Vector4(
@@ -514,6 +514,11 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static WaveSample ShaderTwinSample(Vector2 worldPos, in PackedWaveField field,
                                                   float freqScale, float fetchEnvelope01)
+            => ShaderTwinSample(worldPos, in field, freqScale, (WaveFetchSample)fetchEnvelope01);
+
+        /// <summary>Spectral payload applies the per-wavelength factor inside the shader's train sum.</summary>
+        public static WaveSample ShaderTwinSample(Vector2 worldPos, in PackedWaveField field,
+                                                  float freqScale, WaveFetchSample fetchEnvelope01)
         {
             float height = 0f;
             float slopeX = 0f;
@@ -527,6 +532,8 @@ namespace HiddenHarbours.Art
                 Vector4 train = field.Train(i);
                 float phi = field.Phase(i);
                 float amplitude = train.w;
+                if (fetchEnvelope01.Spectral && train.z > 0f)
+                    amplitude *= fetchEnvelope01.ForWavelength((2f * Mathf.PI) / train.z);
                 if (i >= count || amplitude <= 0f) continue;  // the shader masks on (i < count && amp > 0)
 
                 // `float k = trains[i].z * fs` — the shader scales the published wave number, and
@@ -550,7 +557,7 @@ namespace HiddenHarbours.Art
             // The fetch envelope, exactly where the HLSL twin applies it: height and slope scale,
             // totalAmplitude deliberately does not (so the crest factor — and the whitecaps with it —
             // collapse in a lee). WaveMath.Sample carries the identical block.
-            float fetch = Mathf.Clamp01(fetchEnvelope01);
+            float fetch = fetchEnvelope01.Uniform;
             if (fetch < 1f)
             {
                 height *= fetch;

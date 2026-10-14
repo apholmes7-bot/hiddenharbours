@@ -1359,6 +1359,9 @@ Shader "HiddenHarbours/Water"
             //
             // Both default to 0 when unpublished: strength 0 => envelope 1 => the legacy sea, so a bare
             // material or an art scene with no bridge is unaffected (the _DayNightTint/_MoonDir convention).
+            float4 _WaveFetchGrowth;
+            float _WaveFetchFullStrength;
+            float _WaveFetchGrowthPower;
             float4 _WaveFetchParams;
             float4 _WaveFetchParams2;
 
@@ -2511,6 +2514,13 @@ Shader "HiddenHarbours/Water"
                 return smoothstep(thr, solidLvl, field);
             }
 
+            // Scalar entry for field-only diagnostic passes; the runtime reuses the factors above.
+            void WaveFieldSample(float2 worldXY, float freqScale, float fetch01,
+                                 out float height, out float2 slopeXY, out float crestF, out float primaryCos)
+            {
+                WaveFieldSample(worldXY, freqScale, FetchFactorsFrom(fetch01), height, slopeXY, crestF, primaryCos);
+            }
+
             // ---- whitecap LIFECYCLE: form on the crest -> peak (dense) -> collapse to milky residual -------------
             // A natural wave lifecycle from the rolling-swell CREST factor (0..1; 1 = the breaking crest top).
             // Returns a DENSITY SCALE 0..1 the caller multiplies into the solid-core lift, so the cap is BORN dense
@@ -2609,15 +2619,6 @@ Shader "HiddenHarbours/Water"
                 return floor(p * FETCH_MARCH_PPU) / FETCH_MARCH_PPU;
             }
 
-            // Fetch -> amplitude multiplier: lerp(leeFloor, 1, fetch^exponent). Exactly the lee floor at fetch
-            // 0, exactly 1 at fetch 1 — so a fully exposed shore is untouched and the open sea stays the sea
-            // the field was tuned against. Twin: WaveFetch.Amplitude01.
-            float FetchAmplitude01(float fetch01)
-            {
-                float f = pow(max(saturate(fetch01), 1e-6), max(_WaveFetchParams.w, 0.01));
-                return lerp(saturate(_WaveFetchParams.z), 1.0, f);
-            }
-
             // The model's own quantization (_WaveFetchParams2.y). ⚠️ DEFAULTS OFF, unlike the col.rgb layers:
             // this envelope is not drawn, it scales GEOMETRY that already-pixelized layers draw downstream, so
             // banding it would stair-step the surface the hull rides for no pixel-character gain. Deliberately
@@ -2636,14 +2637,30 @@ Shader "HiddenHarbours/Water"
                 return floor(saturate(v01) * steps + 0.5) / steps;
             }
 
-            // The finished envelope from an already-marched fetch. strength 0 returns EXACTLY 1 (the shipped
-            // passthrough); bounded to (0, 1] for any input, which is what keeps the C# watertight hull clamp
-            // a valid bound at every strength. Twin: WaveFetch.Envelope01.
-            float FetchEnvelopeFrom(float fetch01)
+            // Twin: WaveFetch.TrainEnvelope01. Wavelength selects amplitude growth only.
+            float FetchTrainEnvelope01(float fetch01, float wavelength)
             {
-                float strength = saturate(_WaveFetchParams.x);
-                if (strength <= 0.0) return 1.0;
-                return lerp(1.0, FetchAmplitude01(FetchBand01(fetch01)), strength);
+                if (_WaveFetchParams.x <= 0.0 || fetch01 >= 1.0) return 1.0;
+                float4 shape = _WaveFetchGrowth;
+                float reach = FETCH_MARCH_STEPS * max(0.05, _WaveFetchParams.y);
+                float u = saturate((wavelength - shape.x) / max(shape.y - shape.x, 1e-3));
+                float curve = u > 0.0 ? pow(u, _WaveFetchGrowthPower) : 0.0;
+                float needed = lerp(min(shape.z, reach), reach, curve);
+                float floor = saturate(_WaveFetchParams.z)
+                            * (1.0 - smoothstep(shape.x, max(shape.w, shape.x + 1e-3), wavelength));
+                float growth = smoothstep(0.0, needed, FetchBand01(fetch01) * reach);
+                float amplitude = lerp(floor, 1.0, growth);
+                float strength = saturate(_WaveFetchParams.x / _WaveFetchFullStrength);
+                return lerp(1.0, amplitude, strength);
+            }
+
+            float FetchDominantEnvelope01(float fetch01)
+            {
+                float4 trains[8] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                     _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, 7);
+                float k = trains[dominant].z;
+                return FetchTrainEnvelope01(fetch01, k > 0.0 ? 6.28318530718 / k : 0.0);
             }
 
             // THE MARCH, written ONCE and instantiated against each stage's seabed sampler below — the same
@@ -2676,13 +2693,13 @@ Shader "HiddenHarbours/Water"
                     blocked *= smoothstep(0.0, band, fdepth);    /* land shadows everything beyond */  \
                     open += blocked;                                                                   \
                 }                                                                                      \
-                return FetchEnvelopeFrom(open / FETCH_MARCH_STEPS);
+                return open / FETCH_MARCH_STEPS;
 
             // FRAGMENT stage (implicit-LOD sampler).
-            float FetchEnvelope01(float2 worldXY)    { FETCH_MARCH_BODY(SeabedElevation) }
+            float FetchMarch01(float2 worldXY)    { FETCH_MARCH_BODY(SeabedElevation) }
             // VERTEX stage (explicit LOD 0 — _HeightTex has no mips, so the two read byte-identical
             // elevations and the displaced surface rides the SAME lee the fragment draws).
-            float FetchEnvelope01Lod(float2 worldXY) { FETCH_MARCH_BODY(SeabedElevationLod) }
+            float FetchMarch01Lod(float2 worldXY) { FETCH_MARCH_BODY(SeabedElevationLod) }
 
             // ==== BREAKING WAVES (ADR 0040) — the HLSL twin ==============================================
             // C# stays the PINNED REFERENCE (BreakerMath + BreakerContour, BreakerMathTests). Change one,
@@ -2958,6 +2975,30 @@ Shader "HiddenHarbours/Water"
 
             // ==== TWIN B (end) ====
 
+            struct FetchFactors
+            {
+                float4 low;
+                float4 high;
+            };
+            float FetchSlotFactor(float fetch01, float k)
+            {
+                return FetchTrainEnvelope01(fetch01, k > 0.0 ? 6.28318530718 / k : 0.0);
+            }
+            FetchFactors FetchFactorsFrom(float fetch01)
+            {
+                FetchFactors f;
+                f.low = float4(FetchSlotFactor(fetch01, _WaveTrain0.z), FetchSlotFactor(fetch01, _WaveTrain1.z),
+                               FetchSlotFactor(fetch01, _WaveTrain2.z), FetchSlotFactor(fetch01, _WaveTrain3.z));
+                f.high = float4(FetchSlotFactor(fetch01, _WaveTrain4.z), FetchSlotFactor(fetch01, _WaveTrain5.z),
+                                FetchSlotFactor(fetch01, _WaveTrain6.z), FetchSlotFactor(fetch01, _WaveTrain7.z));
+                return f;
+            }
+            float FetchFactorAt(FetchFactors f, int i)
+            {
+                return i < 4 ? f.low[i] : f.high[i - 4];
+            }
+
+
             // The depth the DRAWN EDGE asks the break gate at. Same BreakerMath.MinDepthMeters pin the
             // surf block already uses when it projects a dry fragment back to the waterline (l.4618):
             // the edge is a SHORE quantity, and asking the gate at the fragment’s own depth is what cut
@@ -3010,13 +3051,9 @@ Shader "HiddenHarbours/Water"
                 return floor(saturate(dithered) * steps + 0.5) / steps;
             }
 
-            // ⚠️ COST, stated rather than hidden: the march is FETCH_MARCH_STEPS height-map taps. Resolve it
-            // ONCE per pixel / per vertex and pass the result into every WaveFieldSample below — the finite-
-            // difference taps (foam convergence, caustic curvature, drift lines) sample a few centimetres
-            // apart, and the envelope turns over TENS OF METRES, so re-marching for each of them would pay
-            // ~13x for a number that does not change. That is also why the envelope is a PARAMETER here and
-            // not an internal call: the discipline is visible at every call site.
-            void WaveFieldSample(float2 worldXY, float freqScale, float fetchEnv,
+            // One march and one set of eight growth factors per pixel or vertex. Curvature and
+            // convergence taps reuse those factors. The omitted spatial gradient is quantified in ADR 0018.
+            void WaveFieldSample(float2 worldXY, float freqScale, FetchFactors fetch,
                                  out float height, out float2 slopeXY, out float crestF, out float primaryCos)
             {
                 height = 0.0;
@@ -3041,6 +3078,7 @@ Shader "HiddenHarbours/Water"
                 for (int i = 0; i < WAVE_MAX_TRAINS; i++)          // FIXED bound; the count masks inside
                 {
                     float amplitude = trains[i].w;
+                    amplitude *= FetchFactorAt(fetch, i);
                     if (i < count && amplitude > 0.0)              // a dead/silent slot contributes nothing
                     {
                         float k = trains[i].z * fs;                // published k = 2pi/lambda, visually scaled
@@ -3060,16 +3098,8 @@ Shader "HiddenHarbours/Water"
                     }
                 }
 
-                // The FETCH envelope (ADR 0027 #1), applied where the C# twins apply it: scaling height and
-                // slope, BEFORE the crest factor. totalAmp deliberately does NOT scale, so a lee shore loses
-                // its whitecaps for free — correct, and the reason fetch must never be folded into the trains.
-                // Only the E*grad(h) term of grad(E*h) is taken; E turns over the fetch scale (tens of metres)
-                // and h over the wavelength (metres), so the dropped term is small by construction.
-                // Twins: WaveMath.Sample and WaveFieldBridge.ShaderTwinSample carry this identical block.
-                float fetchE = saturate(fetchEnv);
-                height  *= fetchE;
-                slopeXY *= fetchE;
-
+                // Each amplitude was limited inside the loop. The crest denominator stays unfetched.
+                // Slope retains E times grad(h); ADR 0018 Stage B records the omitted gradient term.
                 if (totalAmp > 1e-6)                               // WaveMath.GlassAmplitudeMeters guard
                     crestF = pow(saturate(height / totalAmp), p);
             }
@@ -4424,7 +4454,7 @@ Shader "HiddenHarbours/Water"
             //     foam edge. All coords Pixelized (pixel-art faithful); noise is the shader's own ValueNoise
             //     (deterministic — no new RNG). Returns the additive RGB (faint, tinted toward the foam colour).
             float3 DriftLines(float2 worldXY, float dt, float depth, float t, float waveFreqScale,
-                              float waveFetchEnv)
+                              FetchFactors waveFetchFactors)
             {
                 if (_DriftLineStrength <= 0.001)
                     return float3(0, 0, 0);                 // EXACT passthrough — opt-in (rule 6): today's look
@@ -4490,13 +4520,13 @@ Shader "HiddenHarbours/Water"
                     float de = max(_FoamConvergenceStep, 1e-3);
                     float dhpx, dhmx, dhpy, dhmy, dcrF, dprF;
                     float2 dspx, dsmx, dspy, dsmy;
-                    WaveFieldSample(Pixelize(worldXY + float2(de, 0.0)), waveFreqScale, waveFetchEnv,
+                    WaveFieldSample(Pixelize(worldXY + float2(de, 0.0)), waveFreqScale, waveFetchFactors,
                                     dhpx, dspx, dcrF, dprF);
-                    WaveFieldSample(Pixelize(worldXY - float2(de, 0.0)), waveFreqScale, waveFetchEnv,
+                    WaveFieldSample(Pixelize(worldXY - float2(de, 0.0)), waveFreqScale, waveFetchFactors,
                                     dhmx, dsmx, dcrF, dprF);
-                    WaveFieldSample(Pixelize(worldXY + float2(0.0, de)), waveFreqScale, waveFetchEnv,
+                    WaveFieldSample(Pixelize(worldXY + float2(0.0, de)), waveFreqScale, waveFetchFactors,
                                     dhpy, dspy, dcrF, dprF);
-                    WaveFieldSample(Pixelize(worldXY - float2(0.0, de)), waveFreqScale, waveFetchEnv,
+                    WaveFieldSample(Pixelize(worldXY - float2(0.0, de)), waveFreqScale, waveFetchFactors,
                                     dhmy, dsmy, dcrF, dprF);
                     float dHxx = (dspx.x - dsmx.x) / (2.0 * de);
                     float dHyy = (dspy.y - dsmy.y) / (2.0 * de);
@@ -4536,7 +4566,9 @@ Shader "HiddenHarbours/Water"
                 // The WIND-FETCH envelope (ADR 0027 #1) — marched ONCE for this pixel and handed to every
                 // WaveFieldSample below, including the finite-difference taps a few centimetres away (see the
                 // cost note on WaveFieldSample). Exactly 1, and not one texture tap, while the model is off.
-                float waveFetchEnv = FetchEnvelope01(worldXY);
+                float waveFetch01 = FetchMarch01(worldXY);
+                FetchFactors waveFetchFactors = FetchFactorsFrom(waveFetch01);
+                float waveFetchEnv = FetchFactorAt(waveFetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
 
                 // ---- layer 2 surface (computed first; warps the coords every other layer reads) -------------
                 // ADR 0027 #9: the octaves' shoal depth — ONE guarded, STILL (unwarped) seabed read. The
@@ -5011,7 +5043,7 @@ Shader "HiddenHarbours/Water"
                 float waveCrest;
                 float wavePrimCos;
                 float waveFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
-                WaveFieldSample(Pixelize(worldXY), waveFreqScale, waveFetchEnv,
+                WaveFieldSample(Pixelize(worldXY), waveFreqScale, waveFetchFactors,
                                 waveHeight, waveSlope, waveCrest, wavePrimCos);
                 bool trainsLive = _WaveFieldParams.x >= 0.5;
 
@@ -5342,13 +5374,13 @@ Shader "HiddenHarbours/Water"
                         float ce = max(_CausticCurvatureStep, 1e-3);
                         float chx1, chx0, chy1, chy0, ccrestT, cprimT;
                         float2 cslopeT;
-                        WaveFieldSample(Pixelize(worldXY + float2(ce, 0.0)), waveFreqScale, waveFetchEnv,
+                        WaveFieldSample(Pixelize(worldXY + float2(ce, 0.0)), waveFreqScale, waveFetchFactors,
                                         chx1, cslopeT, ccrestT, cprimT);
-                        WaveFieldSample(Pixelize(worldXY - float2(ce, 0.0)), waveFreqScale, waveFetchEnv,
+                        WaveFieldSample(Pixelize(worldXY - float2(ce, 0.0)), waveFreqScale, waveFetchFactors,
                                         chx0, cslopeT, ccrestT, cprimT);
-                        WaveFieldSample(Pixelize(worldXY + float2(0.0, ce)), waveFreqScale, waveFetchEnv,
+                        WaveFieldSample(Pixelize(worldXY + float2(0.0, ce)), waveFreqScale, waveFetchFactors,
                                         chy1, cslopeT, ccrestT, cprimT);
-                        WaveFieldSample(Pixelize(worldXY - float2(0.0, ce)), waveFreqScale, waveFetchEnv,
+                        WaveFieldSample(Pixelize(worldXY - float2(0.0, ce)), waveFreqScale, waveFetchFactors,
                                         chy0, cslopeT, ccrestT, cprimT);
                         // Laplacian < 0 = locally convex UP (a dome toward the sun) -> focused light.
                         float lap = (chx1 + chx0 + chy1 + chy0 - 4.0 * waveHeight) / (ce * ce);
@@ -5797,13 +5829,13 @@ Shader "HiddenHarbours/Water"
                             float fe = max(_FoamConvergenceStep, 1e-3);
                             float chpx, chmx, chpy, chmy, ccrF, cprF;
                             float2 cspx, csmx, cspy, csmy;
-                            WaveFieldSample(Pixelize(worldXY + float2(fe, 0.0)), waveFreqScale, waveFetchEnv,
+                            WaveFieldSample(Pixelize(worldXY + float2(fe, 0.0)), waveFreqScale, waveFetchFactors,
                                             chpx, cspx, ccrF, cprF);
-                            WaveFieldSample(Pixelize(worldXY - float2(fe, 0.0)), waveFreqScale, waveFetchEnv,
+                            WaveFieldSample(Pixelize(worldXY - float2(fe, 0.0)), waveFreqScale, waveFetchFactors,
                                             chmx, csmx, ccrF, cprF);
-                            WaveFieldSample(Pixelize(worldXY + float2(0.0, fe)), waveFreqScale, waveFetchEnv,
+                            WaveFieldSample(Pixelize(worldXY + float2(0.0, fe)), waveFreqScale, waveFetchFactors,
                                             chpy, cspy, ccrF, cprF);
-                            WaveFieldSample(Pixelize(worldXY - float2(0.0, fe)), waveFreqScale, waveFetchEnv,
+                            WaveFieldSample(Pixelize(worldXY - float2(0.0, fe)), waveFreqScale, waveFetchFactors,
                                             chmy, csmy, ccrF, cprF);
                             // central differences of the ANALYTIC slope -> the second derivatives
                             // (hxy averaged from its two estimates — symmetric by construction).
@@ -5903,7 +5935,7 @@ Shader "HiddenHarbours/Water"
                 // below bounds them. Reads the CURRENT (_FlowDir/_Flow — the SMOOTHED tidal set) so the lines
                 // "read the tide" for free; a BELL over _Chop keeps them off dead glass AND out of a storm.
                 // dt (the depth key) is READ-ONLY here (never depth/clip/_WaterLevel/the sim — P1, rule 5).
-                col.rgb += DriftLines(worldXY, dt, depth, t, waveFreqScale, waveFetchEnv);
+                col.rgb += DriftLines(worldXY, dt, depth, t, waveFreqScale, waveFetchFactors);
 
                 // ---- PALETTE GUARD-RAIL: the final soft grade of the SEA itself (col.rgb ONLY; ADR 0015) -------
                 // Bound + gently pull the composited colour into the art-directed palette so it never washes out
@@ -6123,8 +6155,8 @@ Shader "HiddenHarbours/Water"
                 // The fetch envelope marched with the EXPLICIT-LOD seabed sampler — the vertex stage has no
                 // derivatives. _HeightTex carries no mips, so LOD 0 IS the texture and this reads the same
                 // elevations the fragment does: the displaced surface rides the lee the fragment draws.
-                float vFetchEnv = FetchEnvelope01Lod(ground);
-                WaveFieldSample(ground, vFreqScale, vFetchEnv, vHeight, vSlope, vCrest, vPrimCos);
+                float vFetchEnv = FetchMarch01Lod(ground);
+                WaveFieldSample(ground, vFreqScale, FetchFactorsFrom(vFetchEnv), vHeight, vSlope, vCrest, vPrimCos);
 
                 float stillDepth = _WaterLevel - SeabedElevationLod(ground);
                 float fade = ShoreFade01(stillDepth, _ShoreFadeBand);

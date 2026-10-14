@@ -249,7 +249,7 @@ namespace HiddenHarbours.Art
             if (!DisplacedSea.TryGet(out DisplacedSeaState sea)) return 0f;
             var field = WaveFieldBridge.ReadPublishedField();
             float height = WaveFieldBridge.ShaderTwinSample(at, in field, sea.FreqScale,
-                GameServices.FetchEnvelopeAt(at)).Height;
+                GameServices.FetchAt(at)).Height;
             float level = GameServices.Environment != null && GameServices.Clock != null
                 ? GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds) : 0f;
             float bed = GameServices.TidalTerrain != null ? GameServices.TidalTerrain.ElevationAt(at) : float.NegativeInfinity;
@@ -340,7 +340,7 @@ namespace HiddenHarbours.Art
                 freqScale = sea.FreqScale;
             }
             Vector2 samplePos = freqScale == 1f ? trueStern : trueStern * freqScale;
-            float rawHeight = _animator.Sample(samplePos, GameServices.FetchEnvelopeAt(trueStern)).Height;
+            float rawHeight = _animator.Sample(samplePos, GameServices.FetchAt(trueStern)).Height;
             float surfaceY = ShoreFadeMath.DisplacedHeight(rawHeight, depth, bandMeters, exaggeration);
 
             // A teleport is not way through the water. Re-prime rather than laying one capsule of

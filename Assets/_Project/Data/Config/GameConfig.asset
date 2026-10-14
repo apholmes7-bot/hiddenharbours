@@ -114,6 +114,12 @@ MonoBehaviour:
     ParameterSmoothingSeconds: 1.5
     GlassSnapAmplitudeMeters: 0.0001
   WaveFetch:
+    ShortWavelengthMeters: 6.5
+    LongWavelengthMeters: 30
+    ShortFetchMeters: 8
+    FloorMaxWavelengthMeters: 8.5
+    FullShelterStrength: 0.8
+    GrowthExponent: 0.25
     Strength: 0.8
     StepMeters: 4
     LeeFloor: 0.25

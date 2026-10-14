@@ -208,7 +208,7 @@ namespace HiddenHarbours.Art
             WaveFetchSettings fetch = GameServices.WaveFetch;
             BreakerSettings breakers = GameServices.Breakers;
             WaveTrain dominant = trains.Dominant;
-            BreakerContour contour = BreakerMath.ContourFor(in dominant, WaveFetch.Envelope01(0f, in fetch), in breakers);
+            BreakerContour contour = BreakerMath.ContourFor(in dominant, WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
             if (!contour.Breaks) return;
 
             float waterLevel = environment.WaterLevelAt(clock.TotalSeconds);

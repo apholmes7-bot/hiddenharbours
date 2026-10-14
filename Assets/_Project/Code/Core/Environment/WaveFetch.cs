@@ -31,12 +31,11 @@ namespace HiddenHarbours.Core
                  "rect. Longer steps see further for the same cost but stride over narrow islands.")]
         public float StepMeters;
 
-        [Tooltip("Amplitude multiplier in a FULL lee (fetch 0) — how calm the water right behind a " +
-                 "headland gets. Never 0 by default: a real lee is sheltered, not glass.")]
+        [Tooltip("Shortest-train amplitude floor in a lee. Tapers to zero at FloorMaxWavelengthMeters. " +
+                 "A silent field remains silent regardless of this factor.")]
         [Range(0f, 1f)] public float LeeFloor;
 
-        [Tooltip("Response curve: amplitude follows fetch^exponent. 1 = linear; >1 keeps the lee " +
-                 "reaching further out before the sea builds; <1 builds it back quickly.")]
+        [Tooltip("Legacy uniform-envelope exponent; retained for scalar fixtures. Spectral growth uses a smoothstep.")]
         public float Exponent;
 
         [Tooltip("Water depth (metres) over which the land→water gate opens. A hard cutoff would " +
@@ -48,12 +47,21 @@ namespace HiddenHarbours.Core
                  "layers, this band quantizes GEOMETRY the hull rides.")]
         public float Bands;
 
-        /// <summary>
-        /// The reference tuning — <b>OFF</b> (<see cref="Strength"/> 0), which is the exact
-        /// passthrough. The shape values are the ones a review judged sane for St Peters' 160 × 120 m
-        /// rect: a 96 m reach (24 × 4 m), a lee that keeps a quarter of the open-water amplitude, and
-        /// a mildly super-linear response so the calm reaches a little way out from the headland.
-        /// </summary>
+        [Tooltip("Shortest wavelength of the fetch curve, metres; zero uses 6.5.")]
+        [Range(1f, 100f)] public float ShortWavelengthMeters;
+        [Tooltip("Wavelength needing the entire march reach, metres; zero uses 30.")]
+        [Range(1f, 100f)] public float LongWavelengthMeters;
+        [Tooltip("Clear fetch needed by the shortest train, metres; zero uses 8.")]
+        [Range(0.05f, 288f)] public float ShortFetchMeters;
+        [Tooltip("Wavelength at which the short-chop lee floor reaches zero; zero uses 8.5 m.")]
+        [Range(1f, 100f)] public float FloorMaxWavelengthMeters;
+        [Tooltip("Exponent of the wavelength-to-fetch distance curve; zero uses 0.25.")]
+        [Range(0.05f, 4f)] public float GrowthExponent;
+        [Tooltip("Strength reaching full spectral shelter; zero uses 0.8. Lower values reach it sooner.")]
+        [Range(0.01f, 1f)] public float FullShelterStrength;
+
+        /// <summary>Code defaults keep fetch off. The serialized config enables spectral shelter.
+        /// The shortest band recovers over eight metres; longer waves need the broader reach.</summary>
         public static WaveFetchSettings Default => new WaveFetchSettings
         {
             Strength = 0f,          // ships OFF — the owner dials it in (rule 6, the ADR 0027 discipline)
@@ -61,79 +69,20 @@ namespace HiddenHarbours.Core
             LeeFloor = 0.25f,
             Exponent = 1.3f,
             ShoreBandMeters = 0.5f,
+            ShortWavelengthMeters = 6.5f,
+            LongWavelengthMeters = 30f,
+            ShortFetchMeters = 8f,
+            FloorMaxWavelengthMeters = 8.5f,
+            FullShelterStrength = 0.8f,
+            GrowthExponent = 0.25f,
             Bands = 0f,             // smooth: this band is geometry, not colour (see Band01)
         };
     }
 
-    /// <summary>
-    /// <b>ADR 0027 #1 — wind fetch, read from the height map.</b> The pure, deterministic,
-    /// headless-testable model: how far the wind has blown over open water before it reaches a
-    /// position, and what that does to the waves there. <b>Lee shores go calm, exposed shores
-    /// build</b> — the single most gameplay-legible item on the realness pass for an island game.
-    ///
-    /// <para><b>⚠️ This is TIER B: ONE field, seen == felt.</b> ADR 0027 originally phased #1 as
-    /// "visual first, promoted into the field later", on the reasoning that a visual-only fetch is
-    /// *"an acceptable intermediate, and an explicit one"*. That intermediate is <b>not built</b>, and
-    /// the reason is measured rather than argued: a shader-only damp is exactly the
-    /// <c>_OceanSwellScale</c> incident — the drawn sea ran at one amplitude while the sampler behind
-    /// the watertight hull clamp evaluated another, and the real crests boarded the boat on every
-    /// hull, worse the rougher it got (owner playtest 2026-07-25). A fetch that calms the lee only in
-    /// <c>col.rgb</c> would reintroduce that class of defect deliberately: the player would see glass
-    /// behind the headland and feel the open-water swell in it. The envelope therefore lands in the
-    /// ONE field both consumers read, or it does not land. Recorded as an amendment to ADR 0018.</para>
-    ///
-    /// <para><b>What it is, precisely: a spatial AMPLITUDE envelope on the shared field.</b>
-    /// <see cref="Fetch01"/> marches upwind over the authored seabed and returns the fraction of that
-    /// march that was open water; <see cref="Amplitude01"/> maps it to a multiplier in
-    /// [<c>LeeFloor</c>, 1]; every consumer multiplies the field's height and slope by it.</para>
-    ///
-    /// <para><b>⚠️ Fetch modulates AMPLITUDE ONLY — never wavelength, never speed.</b> Real fetch sets
-    /// both, and the temptation to scale wavelength here is strong. It is wrong three times over.
-    /// (a) A per-POSITION wavelength is not a wave field: the analytic slope
-    /// <c>A·p·s^(p−1)·cos θ·k·d</c>, the phase continuity the animator accumulates, and the
-    /// crest-factor normalizer all assume ONE k per train across space — vary k with position and the
-    /// slope stops being the derivative of the height, which is the number the deck tilt and the
-    /// windward gates read. (b) Speed is not ours to set: <see cref="WaveTrain.PhaseSpeed"/> already
-    /// IS the dispersion relation, derived from the wavelength at construction, and ADR 0027 P2's
-    /// audit found that re-applying the visual-octave laws to the field would DOUBLE-apply them.
-    /// (c) <c>freqScale</c> is likewise off limits — it is the displaced vertex stage's own knob, and
-    /// the clamp scans against it. Amplitude is the one term that can be varied spatially and stay a
-    /// coherent field.</para>
-    ///
-    /// <para><b>The slowly-varying-envelope approximation, stated honestly.</b> Scaling the height by
-    /// <c>E(pos)</c> makes the true gradient <c>∇(E·h) = E·∇h + h·∇E</c>; consumers apply only the
-    /// first term. The error is bounded by how fast E varies against how fast h does: E turns over the
-    /// FETCH scale (tens of metres — <see cref="MarchSteps"/> × <c>StepMeters</c>) while h turns over
-    /// the wavelength (metres), so <c>|h·∇E| ≪ |E·∇h|</c> everywhere the model is used. Computing ∇E
-    /// honestly would cost two more 24-step marches per sample for a term that is small by
-    /// construction. The same approximation is what licenses evaluating ONE envelope per hull rather
-    /// than one per probe: a hull is ~5 m and the envelope does not meaningfully turn over that span.</para>
-    ///
-    /// <para><b>What falls out for free.</b> The crest factor is <c>height / totalAmplitude</c>, and
-    /// the envelope scales the numerator but not the denominator — so a lee shore loses its whitecaps
-    /// without anything being wired to do that. That is correct physics and it is deliberate; it is
-    /// also why the envelope must NOT be folded into <c>TotalAmplitude</c>.</para>
-    ///
-    /// <para><b>Why the clamp is safe.</b> The envelope is ≤ 1 by construction, so the fetched sea is
-    /// never taller than the unfetched one the watertight hull clamp was calibrated against. The clamp
-    /// therefore stays a valid bound at any strength — it can only ever over-dry, never flood, which
-    /// is the direction ADR 0023 already chose for the shore fade.</para>
-    ///
-    /// <para><b>Determinism (rule 5).</b> Pure and allocation-free: a function of (position, wind,
-    /// water level, authored seabed, settings). The wind is already deterministic from
-    /// <c>(worldSeed, gameTime)</c> and the seabed is authored data, so the envelope is too. No RNG,
-    /// nothing saved — recomputed like tide and wind.</para>
-    ///
-    /// <para><b>The HLSL twin contract.</b> <c>HiddenHarboursWater.shader</c> carries a line-for-line
-    /// transcription (<c>FetchMarch01</c> / <c>FetchAmplitude01</c> / <c>FetchBand01</c> /
-    /// <c>FetchEnvelope01</c>) — change one, change BOTH in the same PR, the
-    /// <c>WaveMath</c>/<c>WaterRipple</c> discipline. <c>WaveFetchTests</c> pins this side.</para>
-    ///
-    /// <para><b>⚠️ The C#-twin trap.</b> <c>Mathf.SmoothStep(a, b, t)</c> is a smooth LERP between two
-    /// VALUES — it is NOT HLSL's <c>smoothstep(e0, e1, x)</c>, which is an EDGE GATE returning 0..1.
-    /// <see cref="SmoothstepEdge"/> spells the edge form out; using the Mathf overload would silently
-    /// pin the wrong law.</para>
-    /// </summary>
+    /// <summary>One fixed march supplies a clear-reach fraction to every wavelength.
+    /// Spectral fetch scales amplitudes, never wavelength, speed or phase. Crest normalization
+    /// retains the unfetched sum. Slope reports E times the wave gradient; the omitted h times
+    /// envelope gradient is documented and bounded in ADR 0018 Stage B.</summary>
     public static class WaveFetch
     {
         /// <summary>
@@ -251,8 +200,7 @@ namespace HiddenHarbours.Core
 
             // Upwind: the direction the weather came FROM. The primary train runs downwind, so this
             // is anti-parallel to the way the crests advance.
-            float invSpeed = 1f / windSpeed;
-            Vector2 upwind = new Vector2(-windVector.x * invSpeed, -windVector.y * invSpeed);
+            Vector2 upwind = Upwind(windVector);
 
             float step = Mathf.Max(MinStepMeters, settings.StepMeters);
             float band = Mathf.Max(MinGateBand, settings.ShoreBandMeters);
@@ -270,6 +218,56 @@ namespace HiddenHarbours.Core
             }
 
             return open / MarchSteps;
+        }
+
+        public static Vector2 Upwind(Vector2 windVector)
+        {
+            float speed = Mathf.Sqrt(windVector.x * windVector.x + windVector.y * windVector.y);
+            if (speed <= CalmWindSpeed) return Vector2.zero;
+            float inverse = 1f / speed;
+            return new Vector2(-windVector.x * inverse, -windVector.y * inverse);
+        }
+
+        public static float Positive(float value, float fallback, float minimum, float maximum)
+            => Mathf.Clamp(value > 0f ? value : fallback, minimum, maximum);
+
+        public static Vector4 GrowthShape(in WaveFetchSettings s) => new Vector4(
+            Positive(s.ShortWavelengthMeters, 6.5f, 1f, 100f),
+            Positive(s.LongWavelengthMeters, 30f, 1f, 100f),
+            Positive(s.ShortFetchMeters, 8f, MinStepMeters, 288f),
+            Positive(s.FloorMaxWavelengthMeters, 8.5f, 1f, 100f));
+
+        public static float GrowthPower(in WaveFetchSettings s)
+            => Positive(s.GrowthExponent, 0.25f, 0.05f, 4f);
+
+        public static float FullStrength(in WaveFetchSettings s)
+            => Positive(s.FullShelterStrength, 0.8f, 0.01f, 1f);
+
+        /// <summary>A stylised fetch-limited growth law. The required distance grows by a data exponent
+        /// between the two wavelength endpoints, then a Hermite gate grows each train over that
+        /// distance. Full reach and zero strength return exactly one before any curve arithmetic.</summary>
+        public static float TrainEnvelope01(float fetch01, float wavelength, in WaveFetchSettings settings)
+        {
+            if (settings.Strength <= 0f || fetch01 >= 1f) return 1f;
+            Vector4 shape = GrowthShape(in settings);
+            float reach = MarchSteps * Mathf.Max(MinStepMeters, settings.StepMeters);
+            float u = Mathf.Clamp01((wavelength - shape.x) / Mathf.Max(shape.y - shape.x, MinGateBand));
+            float curve = u > 0f ? Mathf.Pow(u, GrowthPower(in settings)) : 0f;
+            float needed = Mathf.Lerp(Mathf.Min(shape.z, reach), reach, curve);
+            float floor = Mathf.Clamp01(settings.LeeFloor)
+                        * (1f - SmoothstepEdge(shape.x, Mathf.Max(shape.w, shape.x + MinGateBand), wavelength));
+            float growth = SmoothstepEdge(0f, needed, Band01(fetch01, settings.Bands) * reach);
+            float amplitude = Mathf.Lerp(floor, 1f, growth);
+            float strength = Mathf.Clamp01(settings.Strength / FullStrength(in settings));
+            return Mathf.Lerp(1f, amplitude, strength);
+        }
+
+        public static WaveFetchSample At(Vector2 worldPos, Vector2 windVector, float waterLevelMeters,
+                                          ITidalTerrain terrain, in WaveFetchSettings settings)
+        {
+            if (settings.Strength <= 0f) return WaveFetchSample.Open;
+            return new WaveFetchSample(Fetch01(worldPos, windVector, waterLevelMeters, terrain, in settings),
+                                       in settings);
         }
 
         /// <summary>
@@ -314,7 +312,8 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
-        /// <b>THE ENVELOPE</b> — the finished multiplier every consumer applies to the shared field's
+        /// Legacy uniform envelope, retained for scalar fixtures. Runtime readers use TrainEnvelope01.
+        /// The finished multiplier applies to the shared field's
         /// height and slope: the banded fetch through the amplitude curve, blended from 1 by the
         /// master strength.
         ///
@@ -346,4 +345,29 @@ namespace HiddenHarbours.Core
                               in settings);
         }
     }
+
+    /// <summary>Allocation-free fetch payload. One march, any number of train evaluations.
+    /// The scalar conversion preserves callers supplying an explicitly uniform envelope.</summary>
+    public readonly struct WaveFetchSample
+    {
+        public readonly float Fraction;
+        private readonly WaveFetchSettings _settings;
+        private readonly float _uniform;
+        private readonly bool _spectral;
+        public static WaveFetchSample Open => new WaveFetchSample(1f);
+        private WaveFetchSample(float uniform)
+        {
+            Fraction = 1f; _settings = default; _uniform = Mathf.Clamp01(uniform); _spectral = false;
+        }
+        public WaveFetchSample(float fraction, in WaveFetchSettings settings)
+        {
+            Fraction = fraction; _settings = settings; _uniform = 1f; _spectral = true;
+        }
+        public float ForWavelength(float wavelength)
+            => _spectral ? WaveFetch.TrainEnvelope01(Fraction, wavelength, in _settings) : _uniform;
+        public float Uniform => _spectral ? 1f : _uniform;
+        public bool Spectral => _spectral;
+        public static implicit operator WaveFetchSample(float uniform) => new WaveFetchSample(uniform);
+    }
+
 }
