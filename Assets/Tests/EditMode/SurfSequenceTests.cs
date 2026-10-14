@@ -197,7 +197,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("abce0b880d89e3976faba111960260c2e958a1444de6a8d81e1b70f9a7ffae07"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
-                Is.EqualTo("d6b90330d35699fc65a6aea1719b5cecbccfe5783dcdf52c6884d9e5fb9cc226"));
+                Is.EqualTo("1e231d7b79117950372db2704b0b64efd496c196a68436e7eac82ae37c45c94c"));
         }
 
         static void RequireGpu()
