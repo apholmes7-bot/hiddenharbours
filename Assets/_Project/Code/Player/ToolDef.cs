@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.Player
@@ -61,5 +62,11 @@ namespace HiddenHarbours.Player
                  "⚠️ Do not point the shovel at 'gaff' to fill the gap — that row is a 1.55 m pole's " +
                  "grip and a spade is 1.04 m.")]
         public string HandPropKey;
+
+        [Tooltip("This tool in a hand as facet MESHES (ADR 0053): every held state its rig bakes, in the " +
+                 "rig's own order — a rod's three tiers, the spade's one state. Which tier shows is the " +
+                 "holder's to pick by the tier its own data names, so none is chosen here. Written by " +
+                 "the held-prop bake; nothing draws them yet.")]
+        public HeldPropMeshDef[] HeldMeshes = System.Array.Empty<HeldPropMeshDef>();
     }
 }

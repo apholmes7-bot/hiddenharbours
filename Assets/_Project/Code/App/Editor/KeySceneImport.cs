@@ -811,7 +811,8 @@ namespace HiddenHarbours.App.Editor
         }
 
         static void Write(Scene scene, Dictionary<string, Existing> byId, IReadOnlyDictionary<string, string> existing,
-                          string regionId, string scriptGuid, Result result)
+                          string regionId, string scriptGuid, Result result,
+                          Func<Row, string, bool> sameKit = null, ISet<string> transferred = null)
         {
             byId.TryGetValue(scene.Id, out Existing old);
             string file = old?.File ?? "KeyScene_" + scene.Id.Substring(SceneIdPrefix.Length) + ".asset";
@@ -831,13 +832,13 @@ namespace HiddenHarbours.App.Editor
                     oldRows[rid] = r;
                     if (!ids.Contains(rid))
                     {
-                        newlyRetired.Add(rid);
+                        if (transferred == null || !transferred.Contains(rid)) newlyRetired.Add(rid);
                         continue;
                     }
                     Row incoming = scene.Rows.First(x => x.Id == rid);
                     string kit = r.Get("Kit")?.Scalar ?? "";
                     string kind = r.Get("Kind")?.Scalar ?? KeySceneDef.KindSetPiece;
-                    if (kit != incoming.Kit) throw new Refusal($"{scene.Id} {rid}: its kit changes ({kit} to {incoming.Kit}). An id that changes kit is a STOP for the owner, not a move.");
+                    if (!(sameKit?.Invoke(incoming, kit) ?? (kit == incoming.Kit))) throw new Refusal($"{scene.Id} {rid}: its kit changes ({kit} to {incoming.Kit}). An id that changes kit is a STOP for the owner, not a move.");
                     if (kind != incoming.Kind) throw new Refusal($"{scene.Id} {rid}: its kind changes ({kind} to {incoming.Kind}). An id that changes kind is a STOP for the owner, not a move.");
                 }
             retired.AddRange(newlyRetired);

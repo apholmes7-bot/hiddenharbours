@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -502,6 +503,20 @@ class LockAndRecoveryTests(Base):
             self.k.cmd_queue_list()
         with open(os.path.join(self.state, "lock"), encoding="utf-8") as f:
             self.assertEqual(f.read(), text)
+
+    def test_a_lock_a_reader_holds_open_is_still_released(self):
+        # Windows refuses to delete a file another process holds open (WinError 32); 10-13 a watchdog died of it.
+        real, lock, refused = os.remove, os.path.join(self.state, "lock"), []
+
+        def remove(path, *a, **kw):
+            if os.path.abspath(path) == os.path.abspath(lock) and len(refused) < 3:
+                refused.append(path)
+                raise PermissionError(13, "The process cannot access the file", path)
+            return real(path, *a, **kw)
+        with mock.patch.object(slot.os, "remove", remove):
+            self.assertEqual(self.k.cmd_queue_list().code, slot.EXIT_OK)
+        self.assertEqual(len(refused), 3)
+        self.assertFalse(os.path.exists(lock))
 
     def test_a_dead_watchdog_leaves_watchdog_lost(self):
         def both_die():

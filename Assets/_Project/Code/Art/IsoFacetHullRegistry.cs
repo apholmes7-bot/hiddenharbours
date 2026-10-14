@@ -321,7 +321,9 @@ namespace HiddenHarbours.Art
         /// <summary>THE LID (coordinator ruling 2026-08-27): the level whose faces are the ceiling of
         /// the one the occupant is inside, and which comes off with it. 0 = none. Written per draw
         /// beside <see cref="LevelShown"/> and for the same reason.</summary>
-        public static readonly int LevelLid = Shader.PropertyToID("_HHLevelLid");
+        public static readonly int LiftLevels = Shader.PropertyToID("_HHLiftLevels");
+        public static readonly int ShownRoles = Shader.PropertyToID("_HHShownRoles");
+        public static readonly int RoleLiftMasks = Shader.PropertyToID("_HHRoleLiftMasks");
 
         /// <summary>The facet shader's cutaway keyword. <c>_local</c>, so it lives PER MATERIAL and
         /// <c>Shader.EnableKeyword</c> does not reach it — the renderer writes its own instance

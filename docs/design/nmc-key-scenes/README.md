@@ -1,171 +1,275 @@
-# Nine Mile Creek package contract — H1, 2026-10-06
+# Nine Mile Creek package contract — H1b, 2026-10-11
 
-The owner approved overhaul decision 1(b), origins with a canon amendment, and decisions
-2–7(a) at 2026-10-06 11:08:49Z. The named amendment is in `docs/vision-and-pillars.md`.
-P1 and P3 govern this import. H1 is data only: no Unity, scene, prefab, texture, route,
-traffic, access, calendar, NPC, Words or new activity system is applied.
+H1b re-takes the twelve unplaced key scenes on the third issue, before H2.
+P3 (the working coast), P1 (ground/water contracts) and P5 (the bluff) govern it.
+No scene, prefab, rig, texture, runtime activity or player-facing Words is changed.
 
-## Source verification
+## Sources and counts
 
-Base: `321cd0fcc92851cd738aa490175f3180daf5bea9` (#927). The two read-only roots are:
+Base: `640e3cc7234460f49aee79defb447c5aa32485c1`. K3 and G3 are the sibling
+`HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07` and
+`HH-nmc-ground-part-1-reissue-3-2026-10-07` directories under
+`C:/hh-drops/HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07/unzipped/`.
+The read-only Art input is `INPUT-2026-10-07-nmc-new-areas.md`.
 
-- K: `C:/hh-drops/HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02/unzipped/HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02/`
-- G: the sibling `HH-nmc-ground-part-1-reissue-2-2026-10-02/` directory.
-
-K's `SHA256SUMS.txt`: 336/336 pass. G's: 27/27 pass. K embeds the three ground
-files, not G's auxiliary tools/notes; all three embedded files equal G byte for byte.
-G is authoritative. Its identities are:
-
-| File | Bytes | SHA256 |
+| Source | Bytes | SHA256 |
 |---|---:|---|
-| `ground/plan.json` | 150238 | `d7a6a154b0a0ed1f6216821fdff6c885928a9fbc60e24def68ea0ebbb3faa2ad` |
-| `ground/NineMileCreekSeabed_HeightTex_plan.png` | 963052 | `c6b9f08b0dbef3dbd4d0cb225f0cbec1572537ec3c80f7b03c0474ce08178095` |
-| `ground/NineMileCreekSeabed_StillTex_plan.png` | 60647 | `f54a3bc66b0cb41f27cee5557490c2c8cd6b47691e9a52dd22431d77f3e36ecf` |
+| `INPUT-2026-10-07-nmc-new-areas.md` | 16333 | `1c1eddf24353a6d6bc01f07e01f50022356f71da8930f634e239d22fa3430184` |
+| `HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07/README.md` | 12932 | `80af6e4d64a06b34f1178f62d7c89fedde72ba84b54e6b4c5b2e995347811b51` |
+| `HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07/region.json` | 117892 | `239069e45e23e68a477ea60e4e1b2aaddad19f81b63fefe8df81d5522311302c` |
+| `HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07/hh-nmc-key-scenes/NOTES-one-scene.md` | 49162 | `a698d83f5035628034a5117a1d7adf21e9aff40dd50e6faff95fad58d5fd217b` |
+| `HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07/hh-nmc-key-scenes/NOTES-south-shore-redraw.md` | 15815 | `92f12a2ebd545f697e10c423f77029fcdff7190cf3f1cbde1db3dbaa797e3ff6` |
+| `HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07/check-nmc-one-scene.cjs` | 51287 | `9856e5f2fb76d8640a317d77a749d3bbe321e2d0bb81ddd76b731840ea97aab1` |
+| `HH-nmc-ground-part-1-reissue-3-2026-10-07/ground/plan.json` | 212937 | `06d0217c8c389c6b97582e2eb6b0cc44ff5bd042bde3af538ac47fd1fe89577a` |
+| `HH-nmc-ground-part-1-reissue-3-2026-10-07/ground/NineMileCreekSeabed_HeightTex_plan.png` | 985352 | `9a6c465002cb229d2853191757fb498af66cb81a635f6973f59bf95723ed9f47` |
+| `HH-nmc-ground-part-1-reissue-3-2026-10-07/ground/NineMileCreekSeabed_StillTex_plan.png` | 60809 | `0046179b7e66517f79b685807357aa82f5327d70c6d48d1b8d2c566582b5406b` |
 
-Independent PNG filter decoding gives 1520 × 1120 unsigned 16-bit greyscale maps.
-SHA256 of decoded big-endian u16, rows top-down:
+Every header hash matches. The header also names the Art relay (a5c2c8dd), old plan (d7a6a154), and old height/still pixels (b997bdce/4fccaf21); these were independently rechecked and match. K3's manifest passes 581/581; its six part lists pass
+278/45/19/58/135/46 entries, with no overlap. G3 passes 18/18. K3's embedded plan and
+both textures equal G3 byte for byte. Independent PNG decoding produces 1520 × 1120
+big-endian u16, rows top-down: height `5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0`,
+still `2c796a61961309de81777224c5c7f089aa2d1e1d35797895808bbcb8841e0d64`. The package checker passes **38/38** on Node 24.19.0.
+Mapped `idsBefore` equals all 589 committed ids on the base.
 
-- Height: `b997bdced7cddea68dc1b5487f5664973e2a8304a54d55a50f3406de43eecc88`.
-- Still: `4fccaf218f5694757539d73464da59bca0141816385a0b026115f479c2c59c67`.
-
-The source region schema is `hidden-harbours/nmc-one-scene@1`; current scenes use
-`hidden-harbours/key-scene@1` and `hidden-harbours/keyscene@2`. The explicit profile
-maps `region.nmc` to the game's existing `region.nine_mile_creek` exactly once.
-
-## Counts and identity
-
-| Scene suffix | Source rows | Owned rows | Serialized unique pieces | Placement owner |
+| Scene suffix | Source rows | Owned rows | Unique pieces | Placement owner |
 |---|---:|---:|---:|---|
 | wharf | 134 | 134 | 133 | H5/H6; N8 fleet; N9 crane |
 | fuel_stop | 30 | 30 | 30 | H9 |
-| town_bridge | 55 | 55 | 55 | H7 |
+| town_bridge | 55 | 53 | 53 | H7 |
 | the_falls | 21 | 11 | 11 | H7 |
 | landing | 25 | 25 | 25 | H8 |
 | campground | 178 | 178 | 178 | H12 |
 | north_creek | 53 | 53 | 53 | H11 |
 | weather_face | 11 | 11 | 11 | H8 |
-| main_street | 10 | 2 | 2 | H7 |
-| south_shore | 8 | 8 | 8 | H8 |
-| plaza | 51 | 51 | 51 | H10 |
-| shore_lane | 32 | 32 | 32 | H8 |
-| **Total** | **608** | **590** | **589** | |
+| main_street | 131 | 91 | 91 | H7 |
+| south_shore | 66 | 66 | 66 | H8 |
+| plaza | 122 | 122 | 122 | H10 |
+| shore_lane | 40 | 40 | 40 | H8 |
+| **Total** | **866** | **814** | **813** | |
 
-The crane's working/night poses share one id and one piece; `nmc.variantPoses` retains
-both complete poses and their disjoint variants. The Falls' ten and main_street's eight
-refs are validated against both the region index and the owned rows, then stored only
-as references. They spawn zero. The four superseded sources never supply placements:
-the old main-street plaza, wharf fuel stop, north creek record-2c and campground record-2b.
+The 50 refs (40 main street, ten Falls) and two takeover records spawn zero. The crane's
+night pose is the extra owned row; `nmc.variantPoses` retains both poses on one id.
+Main street's 21 `drawnAt` board offsets do not replace the town bridge's owned positions.
+Every asset Source names K3, its scene path, byte size and hash. Placed remains 0 everywhere.
 
-`key-scene-id-map.json` contains 167 explicit renames: the three required names below,
-plus the audit's capitals, secondary dots and coordinate labels in pieces and plan data.
-Coordinate labels become stable sequential ids in source order. Route 91's number,
-numbered house/lot/pitch labels and repeated trap-stack grid indices remain semantic
-labels. The map is one step and injective, and applies to nested references and owner keys.
+## Identity, takeovers and retirement
 
-- `prop.nmc_waterfront_6_bed_35` → `prop.nmc_waterfront_6_bed_w`.
-- `prop.nmc_waterfront_6_bed_29` → `prop.nmc_waterfront_6_bed_e`.
-- `prop.nmc_camp_tent_a19_cabinTent` → `prop.nmc_camp_tent_a19_cabin`.
+The package region alias `region.nmc` maps once to `region.nine_mile_creek`.
+Both scene schemas remain supported. The unchanged id map contains 167 renames;
+K3 still writes 112 old owned names, all mapped. There are no K3 piece ids with `@`.
+`prop.nmc_camp_tent_a19_cabinTent` still maps to `prop.nmc_camp_tent_a19_cabin`.
+The prior waterfront bed renames remain. Nested references and object keys use the same map.
 
-`key-scene-retired-ids.json` reserves 192 ids: renamed originals and removed identities
-from the superseded sources. Identities still present in the current package are retained.
-These package-wide reservations are copied into every scene's RetiredIds. Later removals
-append to that list; imports reject reuse, changed kind/kit or transfer to another owner.
-N3 still owns the unresolved `structure.nmc_harbourmaster` office identity; H1 does not
-invent a replacement id.
+Two manifest-listed takeovers keep kind and kit family:
 
-The current package supplies no `mount` field. `key-scene-hosts.json` therefore has no
-fabricated answers. If a future package supplies a mount, its exact words must have a
-piece/host/anchor answer and a resolvable host. Absolute gull/perch points remain data;
-N3 and H5/H6/H9 settle their support/anchor contracts before placement.
+- `structure.nmc_restaurant_bar`: town_bridge (-204, 232.5) → main_street (-226, 241.26), ManorIso harbourmaster preset, call 69.
+- `structure.nmc_chandlery`: town_bridge (-160, 234) → main_street (-160, 237.26), NmcSetPieces, call 80.
 
-## Data layout and named kinds
+Each destination row carries `nmc.takeover` with id/from/to/call/why. The town bridge's
+first owned piece carries `nmc.scene.takeoverRecords`, preserving both old rows as
+records of its 2a boards (call 76). Neither id enters RetiredIds, on the first or repeated import.
+An unlisted owner change, missing record/owner, duplicate takeover or changed kind/family refuses.
 
-`ImportNmc` is a pure profile in new partial files. It uses the existing KeySceneDef,
-KeyScenePiece, KeySceneLight and YAML writer. No additional entity identity or terrain
-implementation is created. The existing Options extension carries the additional
-unplaced contracts with an `nmc.` prefix:
+The retirement table appends exactly these fourteen entries after its existing 192:
 
-- Each piece: `nmc.ownerScene`, `nmc.type`, stations, footprint/footM/dims, float/groundZ,
-  facing, definition and source conditions as applicable. Source options retain their keys.
-- Each scene's first owned piece: `nmc.scene.*` holds the scene-level layout, refs, light,
-  flora/rules, sound, ground, budgets and game conditions. `sourceRows` and `ownedRows`
-  preserve the distinct counts. This carrier is deterministic; it is not a new placement.
-- Wharf's first owned piece: `nmc.plan.*` holds the final ground plan's coast, water,
-  roads, bridges, boardwalks, paths, lots and frozen areas. `nmc.ground.source` identifies
-  the checked plan; `nmc.plan.kinds` names its contracts. These records are measured data,
-  not newly instantiated roads, lots or gameplay entities.
-- `nmc.household`: each of the seven creek households is on its house; each of the
-  fourteen camp households is on its unit or tent-pitch piece. Text is verbatim. Eleven
-  name the real origins approved in canon. All `Words` arrays remain empty.
-- `nmc.visitMapping`: August → High Summer; the weekend May–October couple → Early Spring
-  through The Turn on rest days. Exact windows and source wording remain data for H13.
-- `nmc.deferred`: every scene names the owners of its conditional data.
+- `boat.nmc_shore_dory` (`keyscene.nmc_south_shore`): retired by the third issue's redraw.
+- `prop.nmc_bank_bench_4` (`keyscene.nmc_south_shore`): retired by the third issue's redraw.
+- `prop.nmc_bank_bench_5` (`keyscene.nmc_south_shore`): retired by the third issue's redraw.
+- `prop.nmc_shore_fire` (`keyscene.nmc_south_shore`): retired by the third issue's redraw.
+- `structure.nmc_bank_steps_4` (`keyscene.nmc_south_shore`): retired by the third issue's redraw.
+- `structure.nmc_bank_steps_5` (`keyscene.nmc_south_shore`): retired by the third issue's redraw.
+- `prop.nmc_lot_pole_05` (`keyscene.nmc_plaza`): retired by the third issue's redraw.
+- `prop.nmc_lot_pole_04` (`keyscene.nmc_plaza`): retired by the third issue's redraw.
+- `prop.nmc_yard_fence_e` (`keyscene.nmc_plaza`): retired by the third issue's redraw.
+- `prop.nmc_yard_rack_02` (`keyscene.nmc_plaza`): retired by the third issue's redraw.
+- `prop.nmc_yard_rack_01` (`keyscene.nmc_plaza`): retired by the third issue's redraw.
+- `structure.nmc_plaza_dock_grocery` (`keyscene.nmc_plaza`): retired by the third issue's redraw.
+- `structure.nmc_plaza_dock_lumber` (`keyscene.nmc_plaza`): retired by the third issue's redraw.
+- `structure.nmc_apartments_2` (`keyscene.nmc_main_street`): retired by the third issue's redraw.
 
-The lead-architect type map names **harbour** (the wharf/marina/yard composites) and
-**vehicle** (ambient and registered vehicle records), in addition to the existing kinds.
-`NmcKindOf` refuses unknown defTypes and incompatible kit families; a reimport also
-refuses an existing id's exact kit or kind changing. Existing building/boat/rock/gull/
-setPiece kinds are reused.
+All 206 reservations are present on every scene. No existing retirement entry is reordered;
+no retired id is reused. Five plaza removals arrive under old names already reserved by the map.
+Old main-street plaza/wharf fuel-stop sources and record-2b/c/d/e/f cannot be selected or parsed as scenes.
 
-The plan contract names **road**, **lot**, **bridge** and **household**, via the exhaustive
-`NmcPlanKindOf`. A road carries its class, surface, width and polyline; a lot its rig
-origin and extent; a bridge its span/deck/width and fitting record; a household its
-verbatim description and deferred visit record. These are H1 data kinds, not new runtime
-Def classes. H2 reuses RegionTerrainPlanDef/GroundFileDef, CoastSectionDef, StreamDef,
-PondDef and PathDef rather than introducing parallel terrain Defs. H4 consumes the road,
-lot and bridge records; H13 creates NpcDef/RoutineDef after the names slate.
+## Owner authorization: migrations and annotations
 
-Geometry stays in plan metres at PPU 32, with world y unsquashed. `footprint` is the extent;
-`at` is the origin. The four nearest-corner exceptions are 2.72, 2.78, 2.02 and 2.12 m.
-No new pads, terrain grading, access grant or route change is made here.
+The owner, via coordinator v60 at **2026-10-11 22:27Z**, authorized the two migrations after
+the import's identity guard stopped. The relay says **"The two migrations: AUTHORIZED by the owner,
+exactly as you proposed."** This fills the amendment's omission: call 65 and its six-building
+NmcShoreEstates table already expect both existing houses to become estates.
 
-## Shared seams and region isolation
+- `structure.nmc_south_shore_house_4`: `HouseIso (Art/houseIsoRig.js), its preset’s fields` → `NmcShoreEstates.estateHouse` — third issue south-shore redraw, call 65.
+- `structure.nmc_south_shore_house_5`: `HouseIso (Art/houseIsoRig.js), its preset’s fields` → `NmcShoreEstates.estateHouse` — third issue south-shore redraw, call 65.
 
-`KeySceneImport.cs` changes only these seams:
+The explicit NMC-only exception table requires the named id, old HouseIso family, exact new kit,
+building kind and south_shore scene. Ids and scene GUID stay stable. Other cross-family changes,
+wrong scenes/kinds and reverse migrations refuse; the original refusal message is unchanged.
 
-1. St Peters' pure Import excludes NMC filenames and rejects an NMC scene index entry.
-2. St Peters' filesystem Run filters NMC filenames **before reading** their bytes.
-3. ReadBeside accepts profile-specific map/table names for provenance and diagnostics.
-4. Scene/Write append explicit reserved ids, without changing St Peters' output.
+The same relay accepts all 29 annotation changes. **A family is the kit token before the first
+space, dot, comma or parenthesis.** NMC accepts annotations within that token; St Peters retains
+exact kit-string matching. The 29 concrete changes are:
 
-NMC filters to `KeyScene_nmc_*.asset`, then verifies the canonical region and Placed 0.
-It returns only NMC output. The synthetic isolation test supplies deliberately invalid
-foreign YAML in each direction and proves it is never parsed or rewritten.
+| Id | Old annotation | New annotation |
+|---|---|---|
+| `structure.nmc_restaurant_bar` | `ManorIso (Art/manorIsoRig.js)` | `ManorIso (docs/art/rigs/village-return/houses-kit/Art/manorIsoRig.js), its harbourmaster preset` |
+| `structure.nmc_plaza_grocery` | `NmcStores.grocery` | `NmcStores.grocery, o.dock east` |
+| `structure.nmc_plaza_lumber` | `NmcStores.lumber` | `NmcStores.lumber, o.dock west` |
+| `prop.nmc_yard_gatehouse` | `NmcStores (plaza-stores/nmcStores.js), yardOffice` | `NmcStores (plaza-stores/nmcStores.js 1.1), yardOffice` |
+| `prop.nmc_yard_forklift` | `NmcStores (plaza-stores/nmcStores.js), forklift` | `NmcStores (plaza-stores/nmcStores.js 1.1), forklift` |
+| `prop.nmc_yard_soil` | `NmcStores (plaza-stores/nmcStores.js), soilPallets` | `NmcStores (plaza-stores/nmcStores.js 1.1), soilPallets` |
+| `prop.nmc_yard_pavers` | `NmcStores (plaza-stores/nmcStores.js), paverPallets` | `NmcStores (plaza-stores/nmcStores.js 1.1), paverPallets` |
+| `prop.nmc_yard_shed` | `NmcStores (plaza-stores/nmcStores.js), shedDisplay` | `NmcStores (plaza-stores/nmcStores.js 1.1), shedDisplay` |
+| `prop.nmc_yard_fence_s` | `NmcStores (plaza-stores/nmcStores.js), fence` | `NmcStores (plaza-stores/nmcStores.js 1.1), fence` |
+| `prop.nmc_yard_fence_n` | `NmcStores (plaza-stores/nmcStores.js), fence` | `NmcStores (plaza-stores/nmcStores.js 1.1), fence` |
+| `prop.nmc_yard_fence_e78` | `NmcStores (plaza-stores/nmcStores.js), fence` | `NmcStores (plaza-stores/nmcStores.js 1.1), fence` |
+| `prop.nmc_yard_fence_e92` | `NmcStores (plaza-stores/nmcStores.js), fence` | `NmcStores (plaza-stores/nmcStores.js 1.1), fence` |
+| `prop.nmc_yard_fence_w` | `NmcStores (plaza-stores/nmcStores.js), fence` | `NmcStores (plaza-stores/nmcStores.js 1.1), fence` |
+| `prop.nmc_lot_strip_01` | `NmcStores (plaza-stores/nmcStores.js), island` | `NmcStores (plaza-stores/nmcStores.js 1.1), island` |
+| `prop.nmc_lot_strip_02` | `NmcStores (plaza-stores/nmcStores.js), island` | `NmcStores (plaza-stores/nmcStores.js 1.1), island` |
+| `prop.nmc_lot_strip_03` | `NmcStores (plaza-stores/nmcStores.js), island` | `NmcStores (plaza-stores/nmcStores.js 1.1), island` |
+| `prop.nmc_lot_island_01` | `NmcStores (plaza-stores/nmcStores.js), island` | `NmcStores (plaza-stores/nmcStores.js 1.1), island` |
+| `prop.nmc_lot_island_02` | `NmcStores (plaza-stores/nmcStores.js), island` | `NmcStores (plaza-stores/nmcStores.js 1.1), island` |
+| `prop.nmc_lot_island_03` | `NmcStores (plaza-stores/nmcStores.js), island` | `NmcStores (plaza-stores/nmcStores.js 1.1), island` |
+| `prop.nmc_lot_island_04` | `NmcStores (plaza-stores/nmcStores.js), island` | `NmcStores (plaza-stores/nmcStores.js 1.1), island` |
+| `prop.nmc_lot_pole_01` | `NmcStores (plaza-stores/nmcStores.js), lotPole` | `NmcStores (plaza-stores/nmcStores.js 1.1), lotPole` |
+| `prop.nmc_lot_pole_02` | `NmcStores (plaza-stores/nmcStores.js), lotPole` | `NmcStores (plaza-stores/nmcStores.js 1.1), lotPole` |
+| `prop.nmc_lot_pole_03` | `NmcStores (plaza-stores/nmcStores.js), lotPole` | `NmcStores (plaza-stores/nmcStores.js 1.1), lotPole` |
+| `prop.nmc_lot_corral_1` | `NmcStores (plaza-stores/nmcStores.js), cartCorral` | `NmcStores (plaza-stores/nmcStores.js 1.1), cartCorral` |
+| `prop.nmc_lot_corral_2` | `NmcStores (plaza-stores/nmcStores.js), cartCorral` | `NmcStores (plaza-stores/nmcStores.js 1.1), cartCorral` |
+| `prop.nmc_lot_access_14` | `NmcStores (plaza-stores/nmcStores.js), stallSign` | `NmcStores (plaza-stores/nmcStores.js 1.1), stallSign` |
+| `prop.nmc_lot_access_15` | `NmcStores (plaza-stores/nmcStores.js), stallSign` | `NmcStores (plaza-stores/nmcStores.js 1.1), stallSign` |
+| `prop.nmc_lot_access_3` | `NmcStores (plaza-stores/nmcStores.js), stallSign` | `NmcStores (plaza-stores/nmcStores.js 1.1), stallSign` |
+| `prop.nmc_lot_access_4` | `NmcStores (plaza-stores/nmcStores.js), stallSign` | `NmcStores (plaza-stores/nmcStores.js 1.1), stallSign` |
 
-At base 321cd0fc the H1 anchors were re-found: KeySceneDef `:35` / Placed `:78`, importer
-`:59` and owner table `:90`, KeySceneFolder `:49`, StPetersRegionId `:50`, existing NMC
-region in NineMileCreek.asset `:15` and builder `:390`, RegionTerrainPlanDef `:16`,
-GroundFileImport `:212`, world-map-plan Q12 `:327` and NMC row `:448`.
-The charter's Build anchor `:374` is its MenuItem; **Build is `:375`**. No other H1 anchor
-used here moved. Terrain changes in #927 are St Peters work; no NMC or importer path moved.
+## Kinds, hosts and data carriers
 
-## Verification and hand-on
+The six added pairs (87 rows) are exhaustive additions to `NmcKindOf`:
 
-Assets and asset metas are the pure ImportNmc result, written byte for byte by a .NET
-harness from this checkout's cwd. KeySceneDef's guid is read from its committed .meta.
-The harness references copies of terrain-pr5w's ScriptAssemblies and engine managed
-assemblies; it starts no Unity process. Local first/second reports are in
-`artifacts/nmc-h1/import-first.txt` and `import-second.txt` (ignored).
+| Source defType | Kit family | Rows | Scene(s) |
+|---|---|---:|---|
+| BuildingDef | NmcShoreEstates | 6 | south_shore |
+| SetPieceDef | NmcShoreEstates | 24 | south_shore 21; shore_lane 2; main_street 1 |
+| BuildingDef | NmcMainStreet | 15 | main_street |
+| SetPieceDef | NmcMainStreet | 39 | main_street |
+| BuildingDef | WalkupIso | 2 | plaza: cannery8Loft, walkup8 |
+| BuildingDef | RowhouseIso | 1 | plaza: coastalRow4 |
 
-The first report is **12 of 12 assets changed, 12 new metas**; the second is
-**0 of 12 assets changed, 0 new metas**. Both report 608 source rows, 18 refs,
-590 owned rows and 589 unique owned ids. The .NET build finished with zero warnings
-and errors. The reflection runner executed 21 existing importer tests and 14 new NMC
-tests: **35 passed, 0 failed, 0 skipped**. It did not execute Unity-dependent tests.
+Thirteen plaza rows resolve their host by id after mapping:
 
-The existing 21 KeySceneImportTests are unedited. NmcPackageImportTests uses synthetic
-in-memory packages, plus a committed-file contract test; CI never needs the drop roots.
-The new ContentValidationTests.NmcKeyScenes_Exist_AsUnplacedData_WithUniqueIdsAndResolvedRegion
-loads the actual assets through Unity in CI. StPetersKeyScenesTests is unedited and is
-compile-checked locally; its engine-dependent execution and content validation belong
-to Phase B. No test is removed or newly skipped. Forecast baseline: main 321cd0fc push
-run **37449242001**; the seat compares CI outcomes by name.
+| Piece | Owned host (same plaza scene) |
+|---|---|
+| `prop.nmc_lot_pole_01` | `prop.nmc_lot_strip_01` |
+| `prop.nmc_lot_pole_02` | `prop.nmc_lot_strip_02` |
+| `prop.nmc_lot_pole_03` | `prop.nmc_lot_strip_03` |
+| `prop.nmc_lot_pole_strip2_w` | `prop.nmc_lot_strip2_w` |
+| `prop.nmc_lot_pole_strip2_c` | `prop.nmc_lot_strip2_c` |
+| `prop.nmc_lot_pole_strip2_e` | `prop.nmc_lot_strip2_e` |
+| `prop.nmc_lot_pole_s2_w` | `prop.nmc_lot_island_s2_w` |
+| `prop.nmc_lot_pole_s2_e` | `prop.nmc_lot_island_s2_e` |
+| `prop.nmc_flats_lantern_w1` | `prop.nmc_flats_island_w1` |
+| `prop.nmc_flats_lantern_w2` | `prop.nmc_flats_island_w2` |
+| `prop.nmc_flats_lantern_w3` | `prop.nmc_flats_island_w3` |
+| `prop.nmc_flats_lantern_e1` | `prop.nmc_flats_island_e1` |
+| `prop.nmc_flats_lantern_e2` | `prop.nmc_flats_island_e2` |
 
-Deferred owners: N1 all scene writes; H2 ground/still water; H4 bridges/roads and their
-clearances as R2, then R4 traffic; H5/H6 wharf water/land, N8 fleet, N9 crane gameplay;
-H7 town/Falls/Water Street; H8 landing/weather/south shore/Shore Lane; H9 gas bar; H10
-plaza/reefer seating; H11 creek/dories/pickups/door occlusion; H12 campground/cooler/
-playground/bridge fit, with Camper pass 2 for the three CamperIso units; H13 household
-names/routines/visit windows and lights/fire timing; N3 office and art support contracts.
-The river fishery is M3. Bookings/fees, takeable ring/bell, pool/court play and playable
-interiors each require separate scope. Later regions and businesses remain logged only.
+A host must be another owned row of that same scene, not a ref, plan-only id, missing row or
+self. MountHost and StandsOn record the relationship; no anchor is invented. Legacy `mount`
+still requires its exact hosts-table answer and must agree with a simultaneous `host`.
+The hosts answer file remains empty because K3 contains no mount wording.
+
+Each piece's `nmc.*` options preserve stations, footprint, float/groundZ, definition,
+conditions and applicable source fields. The first owned piece carries `nmc.scene.*`,
+refs, counts, source layout/flora/light/sound and deferred owners. Wharf's first piece carries
+G3's coast, water, roads, bridges, boardwalks, paths, lots, frozen areas and **areas**;
+`nmc.ground.source` records G3's plan hash. `grading` remains H2's and is not carried.
+Existing TerrainPlan Def kinds and explicit road/lot/bridge/household contracts remain unchanged.
+Geometry is plan metres, PPU 32, y unsquashed; footprints are extents and at is the origin.
+
+The six south-shore household strings remain verbatim on house `nmc.household`/`nmc.def`
+and the corresponding `nmc.plan.lots.south_shore_houses` estate entries. Existing creek/camp
+briefs remain data too. All Words arrays are empty. The plan's list also includes three Shore Lane
+homes; those are not extra estate households. Numeric source reference-photo indices stay data;
+no photograph, real person's name or maker branding is copied into this commit.
+
+At **2026-10-11 17:38:40Z**, the owner ruled decisions 8 and 9: **"I agree with all leans"**.
+Decision 8 assigns Dan `lot.nmc_house_south`; H10 moves the farmhouse to (-200, -8)
+facing Route 91. No lane places `lot.nmc_house_north`. H1b carries the plan only.
+Decision 9 extends the household-origin permission to the six south-shore households;
+**H13 amends canon first**, then writes any player-facing lines. H1b writes no canon line.
+The 10-06 decisions 1(b), 2–7(a), names-slate requirement and deferred visit windows stand.
+
+## Importer seams and verification
+
+- `ImportNmc`: validate manifest takeovers, retain old rows as records, preserve old/new ownership and kind/family, record provenance and distinguish source/ref/record/owned counts. Carry G3 `areas` alongside the existing plan keys; grading stays H2.
+- `NmcSupersededFile`: exclude `record-2d`, `record-2e` and `record-2f` as well as the prior records.
+- `NmcKindOf`: add the six explicit type/family pairs above; all other incompatible pairs still refuse.
+- `NmcRow`: resolve `host` through the id map to another owned row in the same scene; set MountHost/StandsOn without inventing an anchor. Exact `mount` wording still needs its answer and must agree with an explicit host.
+- `NmcKitFamily`, `NmcKitMigrations` and `NmcSameKit`: NMC annotation matching and the two authorized one-way migrations, with report lines.
+- Shared `Write`: optional kit predicate and validated transfer set. Defaults preserve St Peters' exact kit comparison and retirement behavior; transfers are not retired.
+
+NMC filters existing filenames before parsing. St Peters excludes NMC before reading its
+assets. The isolation test supplies malformed foreign YAML in both directions and proves
+neither region reads, retires or rewrites the other.
+
+The headless .NET harness invokes this checkout's pure `ImportNmc` from this checkout's cwd.
+It writes `result.Assets` and `result.Metas` byte for byte; assets and metas are never hand-edited.
+The KeySceneDef script GUID comes from its committed meta. The first successful import reports
+**12/12 assets changed, 0 new metas**; the second reports **0/12 changed, 0 new metas**.
+All 12 existing meta files, hence their GUIDs, remain byte-identical. Both reports give
+866 source rows, 50 refs, 2 takeover records, 814 owned rows and 813 unique owned ids.
+Reports: `artifacts/nmc-h1b/import-first.txt` and `import-second.txt` (local, ignored).
+
+The shared YAML writer retains its existing empty-scalar trailing spaces (1,672 added lines); all such warnings were checked, and code/docs pass whitespace checks. Generated assets are kept byte for byte.
+
+The compile succeeds with **0 warnings, 0 errors**. All **48 headless tests pass**, with
+0 failures and 0 skips: 23 unchanged KeySceneImportTests and 25 NmcPackageImportTests.
+The committed-data test checks every NMC asset's region, unplaced state, ids, owner, kit,
+variants, empty Words, retirement exclusion and light ownership. The unchanged
+`ContentValidationTests.NmcKeyScenes_Exist_AsUnplacedData_WithUniqueIdsAndResolvedRegion`
+and StPetersKeyScenesTests compile against the named DLLs; their AssetDatabase/engine
+execution belongs to Phase B CI. No Unity process or CI read was used here.
+
+Project DLLs are read-only copies from `boats-walk-b0/Library/ScriptAssemblies`, compiled
+2026-10-11 13:01Z at 6fe4a0d9 (no KeyScene changes beyond this base). App.Editor is dated
+13:01:24Z, World 13:01:20Z, Core 13:01:18Z, Tools.Editor 13:01:20Z; Tools.JsEngine.Editor
+is 12:44:56Z. Every copied DLL's name, exact UTC timestamp and origin is recorded in
+`artifacts/nmc-h1b/borrowed-dlls.csv`. Current importer/test sources are compiled directly,
+so the borrowed App.Editor importer is not the tested implementation.
+
+Eleven tests added (all in NmcPackageImportTests):
+
+- `TheTwoRuledEstateMigrations_KeepIdKindSceneAndGuid`
+- `AnUnlistedNmcIdChangingFamily_StillRefuses`
+- `SameFamilyAnnotationChanges_PassOnlyOnNmc`
+- `StPeters_StillRefusesACrossFamilyChange`
+- `StPeters_StillRefusesASameFamilyAnnotationChange`
+- `TakenOverIds_ChangeOwner_OnlyAsRegionJsonListsThem_AndNeverRetire`
+- `TheNewKitFamilies_Import_AndEveryOtherPairStillRefuses`
+- `HostsNamedById_ResolveToAnOwnedRow_OrRefuse`
+- `TheThirdIssuesRecordFolders_AreNeverParsed`
+- `TheFourteenRedrawnIds_AreRetired_AndNeverReused`
+- `CommittedThirdIssue_HoldsTakeoversHostsAreasAndSixHouseholdsAsData`
+
+Two tests adapted, retaining their earlier assertions:
+
+- `CommittedScenes_HaveTheRuledCounts_AndPassTheDataContract`: third-issue counts/source and expanded content invariants.
+- `PlanKinds_ReuseTerrainDefs_AndKeepMeasuredGeometry`: areas carried, grading absent and plan source hash retained.
+
+No test removed, renamed or newly skipped. The stipulated baseline is main 640e3cc7 push run
+38127738602: EditMode total/pass/skip/fail **14445/14180/265/0**, PlayMode **1077/949/128/0**.
+This PR's forecast is **+11 EditMode tests**, hence **14456/14191/265/0** if all pass;
+PlayMode unchanged. Other main commits may add their own tests. These are forecasts,
+not observed CI outcomes; the seat reads CI by name.
+
+## Deferred owners
+
+N1 owns every scene write. H2 imports G3's ground/still water, grading and farmhouse pad;
+H3 the bluff; H4 roads, lots and bridges as R2, then R4 traffic. H5/H6 place the wharf;
+H7 town/Falls/main street; H8 landing/weather/south shore/Shore Lane; H9 gas bar;
+H10 plaza, reefer seating and farmhouse move; H11 creek/dories; H12 campground.
+H13 supplies household names, routines, visit windows, fire schedules and the south-shore
+canon amendment. N3 owns the office identity; N8 fleet and N9 crane gameplay remain separate.
+Art-pipeline/audio join the placement lanes for lights, flora and sound. River fishery stays M3.
+Bookings/fees, takeable ring/bell, pool/court play, interiors, residents' cars, truck bays and
+later regions/businesses require their own scope. The plaza's 20 homes and main street's
+east side have no new households assigned here.
