@@ -71,6 +71,8 @@ namespace HiddenHarbours.Art
             Lantern,
             /// <summary>A HEADLAMP worn on the walker's brow: a narrow cool beam that goes where she looks.</summary>
             Headlamp,
+            /// <summary>A fixed oil flame at a doorstep or on a short post, lit at dusk.</summary>
+            HungLantern,
         }
 
         /// <summary>
@@ -241,6 +243,17 @@ namespace HiddenHarbours.Art
                         flickerAmount: 0.09f,              // ⭐ a wick breathing — the one live flame in the library
                         originOffset: Vector2.zero);
 
+                // HUNG LANTERN — a fixed wick, with a stronger flicker at the glass.
+                case Kind.HungLantern:
+                    return new Config(
+                        SceneLight.LightShape.Radial,
+                        new Color(1f, 0.79f, 0.46f, 1f),
+                        intensity: 1.05f,
+                        range: 0.26f,
+                        edgeSoftness: 0.9f,
+                        flickerAmount: 0.15f,
+                        originOffset: Vector2.zero);
+
                 // HEADLAMP — the only CONE in this library, and the only one that is not placed decor: it is
                 // worn, it is switched, and it goes where she looks. Cool and close to white because it is an
                 // electric lamp on a band, not a flame; narrow, because a headlamp you can aim is the point.
@@ -306,6 +319,8 @@ namespace HiddenHarbours.Art
                 // charter's "~3 m". It is deliberately SHORTER than a lamp post's 3.6 m: a lantern in the
                 // hand is not a lamp on a pole, and if it lit as far it would stop being worth carrying.
                 case Kind.Lantern:    return 3f;
+                // Fixed oil flame: a close pool beneath the fitting.
+                case Kind.HungLantern: return 3.4f;
                 // The headlamp throws FURTHER than anything else she owns, because a cone concentrates what a
                 // radial spreads: the same lamp aimed is the same light over a fifth of the ground. The reach
                 // is down the beam, so this is a THROW and not a radius.

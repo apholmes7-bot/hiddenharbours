@@ -99,7 +99,7 @@ namespace HiddenHarbours.App.Editor
         {
             switch (key)
             {
-                case LanternPost: return LightPresets.Kind.Lightpost;
+                case LanternPost: return LightPresets.Kind.HungLantern;
                 case StreetLamp:  return LightPresets.Kind.Lightpost;
                 case YardLight:   return LightPresets.Kind.Floodlight;
                 case FloodMast:   return LightPresets.Kind.Floodlight;

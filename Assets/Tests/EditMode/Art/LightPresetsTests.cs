@@ -18,6 +18,35 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         private const float Eps = 1e-4f;
 
+        [Test]
+        public void HungLantern_PreservesSerializedKindsAndTheCarriedFlame()
+        {
+            Assert.AreEqual(0, (int)LightPresets.Kind.WindowGlow);
+            Assert.AreEqual(1, (int)LightPresets.Kind.Lightpost);
+            Assert.AreEqual(2, (int)LightPresets.Kind.Worklight);
+            Assert.AreEqual(3, (int)LightPresets.Kind.Floodlight);
+            Assert.AreEqual(4, (int)LightPresets.Kind.Lantern);
+            Assert.AreEqual(5, (int)LightPresets.Kind.Headlamp);
+            Assert.AreEqual(6, (int)LightPresets.Kind.HungLantern);
+            Assert.AreEqual(0.09f, LightPresets.For(LightPresets.Kind.Lantern).FlickerAmount, Eps);
+            Assert.AreEqual(3f, LightPresets.ReachMetres(LightPresets.Kind.Lantern), Eps);
+        }
+
+        [Test]
+        public void HungLantern_IsAWarmSmallPoolWithAStrongerFlicker()
+        {
+            var c = LightPresets.For(LightPresets.Kind.HungLantern);
+            Assert.AreEqual(SceneLight.LightShape.Radial, c.Shape);
+            Assert.IsFalse(LightPresets.IsDirected(LightPresets.Kind.HungLantern));
+            Assert.AreEqual(new Color(1f, 0.79f, 0.46f, 1f), c.Color);
+            Assert.AreEqual(1.05f, c.Intensity, Eps);
+            Assert.AreEqual(0.26f, c.Range, Eps);
+            Assert.AreEqual(0.9f, c.EdgeSoftness, Eps);
+            Assert.AreEqual(0.15f, c.FlickerAmount, Eps);
+            Assert.AreEqual(Vector2.zero, c.OriginOffset);
+            Assert.AreEqual(3.4f, LightPresets.ReachMetres(LightPresets.Kind.HungLantern), Eps);
+        }
+
         // ---- purity ---------------------------------------------------------------------------------------
 
         [Test]
