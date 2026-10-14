@@ -1,4 +1,8 @@
+using System;
+using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
 
 namespace HiddenHarbours.App.Editor
 {
@@ -20,6 +24,38 @@ namespace HiddenHarbours.App.Editor
         {
             GroundFileIntake.ReadRicePointFolder(GroundFolder);
             LandSceneTemplate.Refresh(LoadPlan());
+        }
+
+        // Batch entry points own scene selection and report success only after the saved output exists.
+        public static void CreateCli()
+        {
+            try
+            {
+                Create();
+                if (!File.Exists(LoadPlan().ScenePath)) throw new IOException("CREATE did not save its scene.");
+                Debug.Log("[rice-point] CREATE OK");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                EditorApplication.Exit(1);
+            }
+        }
+
+        public static void RefreshCli()
+        {
+            try
+            {
+                var scene = EditorSceneManager.OpenScene(LoadPlan().ScenePath, OpenSceneMode.Single);
+                Refresh();
+                if (!EditorSceneManager.SaveScene(scene)) throw new IOException("REFRESH did not save its scene.");
+                Debug.Log("[rice-point] REFRESH OK");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                EditorApplication.Exit(1);
+            }
         }
     }
 }

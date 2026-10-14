@@ -5,13 +5,64 @@ using HiddenHarbours.App.Editor;
 using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.EditMode
 {
     public sealed class RicePointRegionTests
     {
+        const string ProofSource = "Assets/_Project/Scenes/RicePointRefreshSource.unity";
+        const string ProofCopy = "Assets/_Project/Scenes/RicePointRefreshCopy.unity";
+        EditorBuildSettingsScene[] _buildList;
+        SceneSetup[] _sceneSetup;
+        LandScenePlanDef _proofPlan;
+
+        [TearDown]
+        public void RemoveDisposableRefreshScenes()
+        {
+            if (_sceneSetup == null) return;
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            AssetDatabase.DeleteAsset(ProofCopy);
+            AssetDatabase.DeleteAsset(ProofSource);
+            EditorBuildSettings.scenes = _buildList;
+            Object.DestroyImmediate(_proofPlan.Region);
+            Object.DestroyImmediate(_proofPlan);
+            EditorSceneManager.RestoreSceneManagerSetup(_sceneSetup);
+            _sceneSetup = null;
+        }
+
+        [Test]
+        public void RicePointRefresh_DisposableSceneCopy_PreservesMovedOwnerVisual()
+        {
+            Assert.That(System.IO.File.Exists(ProofSource) || System.IO.File.Exists(ProofCopy), Is.False,
+                "A previous disposable proof must be inspected before reuse.");
+            _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
+            _buildList = EditorBuildSettings.scenes;
+            _proofPlan = Object.Instantiate(RicePointBuilder.LoadPlan());
+            _proofPlan.Region = Object.Instantiate(_proofPlan.Region);
+            _proofPlan.Region.SceneName = "RicePointRefreshSource";
+            LandSceneTemplate.Create(_proofPlan);
+            Assert.That(AssetDatabase.CopyAsset(ProofSource, ProofCopy), Is.True);
+            _proofPlan.Region.SceneName = "RicePointRefreshCopy";
+            var copy = EditorSceneManager.OpenScene(ProofCopy, OpenSceneMode.Single);
+            var visual = copy.GetRootGameObjects().Single(g => g.name == "LandRegion")
+                .transform.Find("Visuals/ReviewCamera");
+            var moved = visual.position + new Vector3(7, -3, 0);
+            visual.position = moved;
+            var identity = GlobalObjectId.GetGlobalObjectIdSlow(visual);
+            EditorSceneManager.MarkSceneDirty(copy);
+            Assert.That(EditorSceneManager.SaveScene(copy), Is.True);
+            LandSceneTemplate.Refresh(_proofPlan);
+            copy = EditorSceneManager.OpenScene(ProofCopy, OpenSceneMode.Single);
+            visual = copy.GetRootGameObjects().Single(g => g.name == "LandRegion")
+                .transform.Find("Visuals/ReviewCamera");
+            Assert.That(visual.position, Is.EqualTo(moved));
+            Assert.That(GlobalObjectId.GetGlobalObjectIdSlow(visual), Is.EqualTo(identity));
+        }
+
         [Test]
         public void RicePointRegion_IsData_IdSizeSceneAndTide()
         {

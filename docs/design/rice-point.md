@@ -160,3 +160,35 @@ water code and MapGraph are unchanged.
 Owner recommendations for the next paste: keep the positive catch gate with RPT4 unless explicitly moved earlier;
 keep the coarse starter paint for the first plate review, then refine by the subsequent waves; leave buoy ownership
 with the Art desk. No new Phase A decision is required.
+
+## Phase B preparation
+
+The owner accepted all three recommendations above. The Core passage interface is approved.
+`RicePointBuilder.CreateCli` and `RefreshCli` are the batch entry points; they report a success marker only after
+saving, and exit with failure on exceptions. REFRESH opens its own scene.
+
+The inactive DEV CORE now sits below an active `DevCoreEnvelope`. The travel coordinator activates destination
+roots before their Start callbacks; nesting prevents that activation from waking a second core before the bootstrap
+can discard it. This changes only the new land template.
+
+The disposable REFRESH proof is `RicePointRefresh_DisposableSceneCopy_PreservesMovedOwnerVisual` in
+`RicePointRegionTests`. It creates a disposable source, copies it, moves the review camera, refreshes and reopens
+the copy, then checks position and object identity. Teardown deletes both disposable scenes and restores the build list.
+
+`RicePointPlayablePlayTests` adds:
+
+- `DirectPlay_OneCore_WalkStrand_RowPoint_CastHasNoEligibleSpecies`: actual walk intents, gated rowing around
+  the point and a full cast to NoBite. The fish roster still excludes this region.
+- `RoadRefusesDriving_AndArrivalKeepsThePersistentCore`: a test truck seat enters the driving mode, the road
+  refuses activation, and a subsequent additive arrival keeps the actual persistent rig while discarding DEV CORE.
+  Destination activation happens from sceneLoaded, before Start, matching travel's ordering. NMC is never loaded.
+- `Measure_SixtySecondWalkAndRow_AfterWarmup`: 20 seconds walking on the strand and 40 seconds rowing west of
+  the point, with staging excluded and separate warm-ups. It records frame intervals, median/p95, allocated/reserved
+  memory, texture/mesh memory, scene-load memory delta and graphics settings. The p95 target is reported, not asserted.
+
+`RicePointPlatePlayTests.Strand_Marsh_Gut_Ledges_AtThreeShippedTides` captures the four source-plan view boxes
+at the three day-one hours listed above. Measurement and plates skip without a graphics device. Captures stay in
+the box's ignored evidence directory, avoiding the cache shared by other boxes. Tests substitute an in-memory save
+and never deliberately write the player's save. The keeper still guards the complete editor lifecycle.
+
+These are prepared checks, not runtime results. Phase B's launch report supplies the actual outcomes.

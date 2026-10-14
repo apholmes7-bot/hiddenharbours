@@ -206,7 +206,10 @@ namespace HiddenHarbours.App.Editor
                 TideMean = plan.Region.TideMeanLevel, TideAmplitude = plan.Region.TideAmplitude, TidePhaseHours = plan.Region.TidePhaseHours
             });
             var roots = scene.GetRootGameObjects().Except(before).ToArray();
-            var dev = new GameObject("DevCore"); dev.SetActive(false);
+            // Travel activates destination roots before Start. Keep the inactive core one level
+            // below an active envelope so that root activation cannot awaken a second rig.
+            var envelope = new GameObject("DevCoreEnvelope");
+            var dev = Child(envelope.transform, "DevCore").gameObject; dev.SetActive(false);
             dev.AddComponent<LandDevCoreRoots>();
             foreach (var root in roots) root.transform.SetParent(dev.transform, true);
             var gameRoot = new SerializedObject(handle.ServicesRoot.GetComponent<GameRoot>());
