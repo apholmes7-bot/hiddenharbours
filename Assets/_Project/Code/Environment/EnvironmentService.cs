@@ -8,7 +8,7 @@ namespace HiddenHarbours.Environment
     /// active region. Deterministic from (WorldSeed, clock time), so nothing here is saved.
     /// Implements <see cref="IEnvironmentService"/>; registered into <see cref="GameServices"/>.
     /// </summary>
-    public class EnvironmentService : MonoBehaviour, IEnvironmentService
+    public class EnvironmentService : MonoBehaviour, IEnvironmentService, IWaveWindSource
     {
         [SerializeField] private GameConfig _config;
         [SerializeField] private int _worldSeed = 12345;
@@ -113,6 +113,26 @@ namespace HiddenHarbours.Environment
                 t, _worldSeed, _config.SecondsPerHour, _channelAxis, _currentFactor, rate, _activeCurrentProfile);
 
             return new EnvironmentSample(wind, current, tide, sea, vis, sea01);
+        }
+
+        /// <summary>Past wind for the shared sea. The active region law extends before time zero;
+        /// dev weather applies to every tap so storm and glass previews stay coherent.</summary>
+        public WaveWindSample WaveWindAt(double gameTimeSeconds)
+        {
+            double secondsPerHour = _config != null
+                ? _config.SecondsPerDay / 24.0 : GameConfig.DefaultSecondsPerDay / 24.0;
+            // Reading the asset directly avoids fetching the component name at every tap.
+            WindProfile profile = _windProfileAsset != null
+                ? _windProfileAsset.Profile : _activeWindProfile;
+            Vector2 wind = WeatherModel.SampleWind(gameTimeSeconds, _worldSeed, secondsPerHour, profile);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (_devForceSeaState)
+            {
+                float strength = WeatherModel.WindStrengthFor(Mathf.Clamp01(_devSeaState01));
+                wind = (wind.sqrMagnitude > 1e-8f ? wind.normalized : Vector2.up) * strength;
+            }
+#endif
+            return new WaveWindSample(wind, WeatherModel.SeaState01(wind.magnitude));
         }
 
         public float TideHeightAt(double totalSeconds) =>

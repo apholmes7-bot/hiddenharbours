@@ -4,280 +4,123 @@ using UnityEngine;
 
 namespace HiddenHarbours.Tests.EditMode
 {
-    /// <summary>
-    /// The presentation-side wave-field smoother (<see cref="WaveFieldAnimator"/>, ADR 0018
-    /// addendum — the fix for the owner's "jittery rocking, especially in calm seas"). These pin
-    /// the four properties the class exists for: (1) the sampled surface is PHASE-CONTINUOUS across
-    /// a sharp weather step (the old closed-form path jumped at every trains refresh because k and
-    /// c changed under a large running t); (2) GLASS IS SACRED — eased amplitudes snap to exactly 0
-    /// at sea state 0, never an asymptotic almost-zero; (3) dispersion holds on the EASED
-    /// parameters (c = √(g·λ/2π), speed never free); (4) the smoothing is fps-independent (two
-    /// half-steps == one full step; same accumulated field at any tick rate for constant weather).
-    /// All pure math, headless, deterministic.
-    /// </summary>
     public class WaveFieldAnimatorTests
     {
-        /// <summary>The game clock these ticks stand at. Since PR E the animator's
-        /// phase is the CLOSED FORM at this value rather than a running total, so a test
-        /// that ticks must say WHEN it is. Advancing it by each call's own dt reproduces
-        /// exactly what the superseded accumulator did.</summary>
-        private double _tickClock;
-
         private static readonly Vector2 SamplePos = new Vector2(12.3f, -7.7f);
-        private static readonly Vector2 WindA = new Vector2(6f, 0f);
-        private static readonly Vector2 WindB = new Vector2(2.5f, 9.5f);   // sharp shift: speed AND direction
-
-        private const float Dt60 = 1f / 60f;
-
-        private static WaveFieldSettings Field => WaveFieldSettings.Default;
-        private static WaveFieldAnimatorSettings Anim => WaveFieldAnimatorSettings.Default;
-
-        private static float Height(WaveFieldAnimator animator) => animator.Sample(SamplePos).Height;
-
-        // ---- (1) phase continuity — THE jitter fix ---------------------------------------------
 
         [Test]
         public void SharpWindStep_WithTinyDt_HeightIsContinuous()
         {
-            // The distilled bug: the OLD path re-derived TrainsFrom under a large running t, so a
-            // wind change JUMPED the phase even across an infinitesimal instant. By construction
-            // the animator cannot: with dt→0 nothing eases and no phase accrues, step or no step.
-            var field = Field;
-            var anim = Anim;
+            var field = ShippedWaveField.Settings();
+            var wind = new WaveMemoryTests.StepWind(600.0, new Vector2(6f, 0f), new Vector2(2.5f, 9.5f));
             var animator = new WaveFieldAnimator();
-
-            for (int i = 0; i < 200; i++)
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.35f, in field, in anim);   // build up real phase
-            float before = Height(animator);
-
-            animator.Tick(1e-5f, _tickClock += 1e-5f, WindB, 0.8f, in field, in anim);  // the weather STEPS, time doesn't
-            float after = Height(animator);
-
-            Assert.AreEqual(before, after, 1e-3f,
-                "a sharp weather step across a near-zero instant must not move the surface — " +
-                "the phase is accumulated incrementally, so it cannot jump when k/c retarget");
+            animator.Tick(600.0 - 1e-5, wind, in field);
+            float before = animator.Sample(SamplePos).Height;
+            animator.Tick(600.0 + 1e-5, wind, in field);
+            Assert.AreEqual(before, animator.Sample(SamplePos).Height, 1e-3f);
         }
 
         [Test]
         public void SharpWindStep_AtSixtyFps_FrameDeltasStayBounded()
         {
-            // Belt and braces at a real frame rate: through the whole eased transition (calm-ish
-            // sea → near-gale on a different bearing) every frame-to-frame height delta stays
-            // inside the physical rate of the sea itself (~0.1 m/frame for the Default field at
-            // 60 fps — see the analytic bound A·p·ω per train). The old refresh jump could be an
-            // arbitrary fraction of the full envelope in ONE frame.
-            var field = Field;
-            var anim = Anim;
+            var field = ShippedWaveField.Settings();
+            var wind = new WaveMemoryTests.StepWind(600.0, new Vector2(6f, 0f), new Vector2(2.5f, 9.5f));
             var animator = new WaveFieldAnimator();
-
-            for (int i = 0; i < 200; i++)
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.35f, in field, in anim);
-
-            float previous = Height(animator);
-            float maxDelta = 0f;
-            for (int i = 0; i < 600; i++)   // 10 s: the whole ease through the step and beyond
+            animator.Tick(599.0, wind, in field);
+            float previous = animator.Sample(SamplePos).Height;
+            for (int i = 1; i <= 37200; i++)
             {
-                animator.Tick(Dt60, _tickClock += Dt60, WindB, 0.8f, in field, in anim);
-                float h = Height(animator);
-                maxDelta = Mathf.Max(maxDelta, Mathf.Abs(h - previous));
-                previous = h;
+                animator.Tick(599.0 + i / 60.0, wind, in field);
+                float height = animator.Sample(SamplePos).Height;
+                Assert.Less(Mathf.Abs(height - previous), 0.15f);
+                previous = height;
             }
-
-            Assert.Less(maxDelta, 0.15f,
-                "frame deltas through a sharp weather transition must stay within the sea's own " +
-                "physical rate — no refresh pops");
         }
 
-        // ---- (1b) slot GROWTH is continuous too --------------------------------------------------
-
         [Test]
-        public void FieldGrowsATrain_ItsAmplitudeStartsAtZero_AndEasesIn()
+        public void FieldGrowsATrain_TinySpectrumBlend_EntersAtZero()
         {
-            // The other way a field can move discontinuously: not a parameter step but a NEW TRAIN.
-            // When the live count grows (the owner widening SecondaryTrainCount, or turning the ADR
-            // 0027 spectrum blend off zero) the grown slot has no eased history, so it is seeded
-            // rather than eased. Seeding its AMPLITUDE at the target made a full-height train appear
-            // in one tick — a step in the sea's shape, felt by the hull as much as seen. Wavelength
-            // and direction still snap (invisible at zero amplitude, and easing them from zero would
-            // start the train at the λ floor, k ≈ 628: a burst of shrieking slope).
-            var field = Field;
-            field.SecondaryTrainCount = 1;      // a two-train sea
-            var anim = Anim;
+            // Authoring count changes are immediate data edits. Spectrum growth is continuous
+            // in its blend dial, independently of how many frames have run.
+            var field = WaveFieldSettings.Default;
             var animator = new WaveFieldAnimator();
-
-            for (int i = 0; i < 300; i++)
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
-            Assert.AreEqual(2, animator.Current.Count, "sanity: the field started with two trains");
-
-            // Grow it. The FIRST tick after growth is the one that used to pop.
-            field.SecondaryTrainCount = 3;      // → four trains
-            animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
-
-            WaveTrains grown = animator.Current;
-            Assert.AreEqual(4, grown.Count, "sanity: the field grew to four trains");
-            for (int i = 2; i < 4; i++)
+            var wind = new WaveMemoryTests.StepWind(0, Vector2.right * 6f, Vector2.right * 6f);
+            field.SpectrumBlend = 1e-6f;
+            var small = animator.Tick(0, wind, in field);
+            Assert.AreEqual(8, small.Count);
+            for (int i = 4; i < 8; i++)
             {
-                Assert.Greater(grown[i].Wavelength, 0.05f,
-                    $"train {i}: wavelength SNAPS on growth — easing it from zero would ring at the " +
-                    "1 cm floor before settling");
-                Assert.Less(grown[i].Amplitude, 0.02f,
-                    $"train {i}: a newly grown train must arrive at (near) ZERO amplitude and ease " +
-                    "up — never at full height in one tick");
+                Assert.Less(small[i].Amplitude, 1e-5f);
+                Assert.Greater(small[i].Wavelength, 1f);
             }
-
-            // ...and it does arrive: given time, the grown trains reach their real amplitude.
-            for (int i = 0; i < 900; i++)       // 15 s ≫ τ
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
-            WaveTrains settled = animator.Current;
-            for (int i = 2; i < 4; i++)
-                Assert.Greater(settled[i].Amplitude, 0.02f,
-                    $"train {i}: the eased-in amplitude must actually converge, not stay at zero");
+            field.SpectrumBlend = 0.65f;
+            var grown = animator.Tick(0, wind, in field);
+            Assert.Greater(grown[5].Amplitude, small[5].Amplitude);
         }
 
         [Test]
         public void FieldGrowsATrain_TheSampledHeightDoesNotJump()
         {
-            // The property that matters at the surface: growing the field must not move the water.
-            var field = Field;
-            field.SecondaryTrainCount = 1;
-            var anim = Anim;
+            var field = ShippedWaveField.Settings();
             var animator = new WaveFieldAnimator();
-
-            for (int i = 0; i < 300; i++)
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.6f, in field, in anim);
-            float before = Height(animator);
-
-            field.SecondaryTrainCount = 3;
-            animator.Tick(1e-5f, _tickClock += 1e-5f, WindA, 0.6f, in field, in anim);   // the field grows, time does not
-            float after = Height(animator);
-
-            Assert.AreEqual(before, after, 1e-3f,
-                "growing the field across a near-zero instant must not move the surface — the new " +
-                "trains enter at zero amplitude and contribute nothing until they have eased in");
+            var wind = new WaveMemoryTests.StepWind(600, Vector2.zero, Vector2.up * 10f);
+            animator.Tick(600 - 1e-6, wind, in field);
+            float before = animator.Sample(SamplePos).Height;
+            animator.Tick(600 + 1e-6, wind, in field);
+            Assert.AreEqual(before, animator.Sample(SamplePos).Height, 1e-5f);
+            Assert.Greater(animator.Tick(660, wind, in field).TotalAmplitude, 0.01f);
         }
-
-        // ---- (2) glass is sacred ----------------------------------------------------------------
 
         [Test]
         public void SeaStateZero_EasedAmplitudes_SnapToExactZero()
         {
-            // Exponential easing toward 0 is asymptotic — the snap floor must land it EXACTLY, or
-            // the dead-calm mirror (the owner's ruling) never arrives.
-            var field = Field;
-            var anim = Anim;
+            var field = ShippedWaveField.Settings();
+            var wind = new WaveMemoryTests.StepWind(600, Vector2.right * 6f, Vector2.zero);
             var animator = new WaveFieldAnimator();
-
-            for (int i = 0; i < 100; i++)
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.5f, in field, in anim);    // a real sea first
-            Assert.Greater(animator.Current.TotalAmplitude, 0f, "sanity: the sea was running");
-
-            for (int i = 0; i < 1500; i++)                              // 25 s of dead calm
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0f, in field, in anim);
-
-            WaveTrains trains = animator.Current;
-            for (int i = 0; i < trains.Count; i++)
-                Assert.AreEqual(0f, trains[i].Amplitude,
-                    $"train {i}: at sea state 0 the eased amplitude must snap to EXACTLY 0 (glass), " +
-                    "not ease asymptotically forever");
-
-            WaveSample sample = animator.Sample(SamplePos);
-            Assert.AreEqual(0f, sample.Height, "glass is dead flat");
-            Assert.AreEqual(0f, sample.CrestFactor, "no crests on glass");
+            Assert.Greater(animator.Tick(600, wind, in field).TotalAmplitude, 0f);
+            var calm = animator.Tick(1238, wind, in field);
+            Assert.AreEqual(0f, calm.TotalAmplitude);
+            Assert.AreEqual(0f, animator.Sample(SamplePos).Height);
         }
-
-        // ---- (3) dispersion is canon, on the EASED parameters too --------------------------------
 
         [Test]
         public void EasedTrains_MidTransition_PhaseSpeedDerivesFromEasedWavelength()
         {
-            var field = Field;
-            var anim = Anim;
-            var animator = new WaveFieldAnimator();
-
-            for (int i = 0; i < 200; i++)
-                animator.Tick(Dt60, _tickClock += Dt60, WindA, 0.35f, in field, in anim);
-            for (int i = 0; i < 20; i++)                                // mid-ease: λ between A and B
-                animator.Tick(Dt60, _tickClock += Dt60, WindB, 0.8f, in field, in anim);
-
-            WaveTrains trains = animator.Current;
-            Assert.Greater(trains.Count, 0, "sanity: trains live");
+            var field = ShippedWaveField.Settings();
+            var wind = new WaveMemoryTests.StepWind(600, Vector2.right * 4f, Vector2.up * 10f);
+            var trains = new WaveFieldAnimator().Tick(660, wind, in field);
             for (int i = 0; i < trains.Count; i++)
-            {
-                WaveTrain train = trains[i];
-                float expected = Mathf.Sqrt(field.Gravity * train.Wavelength / (2f * Mathf.PI));
-                Assert.AreEqual(expected, train.PhaseSpeed, 1e-4f,
-                    $"train {i}: c = √(g·λ/2π) must hold on the EASED wavelength — dispersion is " +
-                    "canon, speed is never free (ADR 0018 owner ruling)");
-            }
+                Assert.AreEqual(Mathf.Sqrt(field.Gravity * trains[i].Wavelength / (2f * Mathf.PI)),
+                    trains[i].PhaseSpeed, 1e-4f);
         }
-
-        // ---- (4) fps independence ----------------------------------------------------------------
 
         [Test]
         public void SmoothHelper_TwoHalfSteps_EqualOneFullStep()
         {
-            const float target = 3.7f;
-            const float tau = 0.2f;
-            const float dt = 1f / 30f;
-
-            float oneStep = WaveFieldAnimator.Smooth(1.2f, target, dt, tau);
-            float twoHalf = WaveFieldAnimator.Smooth(1.2f, target, dt * 0.5f, tau);
-            twoHalf = WaveFieldAnimator.Smooth(twoHalf, target, dt * 0.5f, tau);
-
-            Assert.AreEqual(oneStep, twoHalf, 1e-5f,
-                "exponential smoothing must compose: two half-steps == one full step toward a " +
-                "constant target — that IS fps independence");
+            float once = WaveFieldAnimator.Smooth(1.2f, 3.7f, 1f / 30f, 0.2f);
+            float twice = WaveFieldAnimator.Smooth(1.2f, 3.7f, 1f / 60f, 0.2f);
+            twice = WaveFieldAnimator.Smooth(twice, 3.7f, 1f / 60f, 0.2f);
+            Assert.AreEqual(once, twice, 1e-5f);
         }
 
         [Test]
         public void ConstantWeather_SameSpanAtDifferentTickRates_SameSurface()
         {
-            var field = Field;
-            var anim = Anim;
-
-            var at30 = new WaveFieldAnimator();
-            var at60 = new WaveFieldAnimator();
-            double t30 = 0, t60 = 0;
-            for (int i = 0; i < 90; i++)  at30.Tick(1f / 30f, t30 += 1.0 / 30.0, WindA, 0.6f, in field, in anim);   // 3 s
-            for (int i = 0; i < 180; i++) at60.Tick(1f / 60f, t60 += 1.0 / 60.0, WindA, 0.6f, in field, in anim);   // 3 s
-
-            Assert.AreEqual(Height(at30), Height(at60), 1e-3f,
-                "the same span of constant weather must land on the same surface whether ticked at " +
-                "30 or 60 fps — the phase integral and the ease are both fps-independent");
-        }
-
-        // ---- housekeeping: deterministic given the same tick sequence ----------------------------
-
-        [Test]
-        public void SameTickSequence_SameResult()
-        {
-            var field = Field;
-            var anim = Anim;
+            var field = ShippedWaveField.Settings();
+            var wind = new WaveMemoryTests.StepWind(0, Vector2.right * 6f, Vector2.right * 6f);
             var a = new WaveFieldAnimator();
             var b = new WaveFieldAnimator();
-
-            double tSeq = 0;
-            for (int i = 0; i < 300; i++)
-            {
-                // A deterministic, drifting weather script — no RNG in tests either.
-                Vector2 wind = new Vector2(4f + Mathf.Sin(i * 0.01f) * 3f, Mathf.Cos(i * 0.013f) * 2f);
-                float sea = 0.3f + 0.2f * Mathf.Sin(i * 0.007f);
-                tSeq += Dt60;
-                a.Tick(Dt60, tSeq, wind, sea, in field, in anim);
-                b.Tick(Dt60, tSeq, wind, sea, in field, in anim);
-            }
-
-            Assert.AreEqual(Height(a), Height(b), 0f,
-                "identical tick sequences must produce identical fields — stateful, but " +
-                "deterministic (no hidden randomness, rule 5)");
+            for (int i = 0; i <= 90; i++) a.Tick(i / 30.0, wind, in field);
+            for (int i = 0; i <= 180; i++) b.Tick(i / 60.0, wind, in field);
+            WaveMemoryTests.AssertSame(a.Current, b.Current);
         }
 
         [Test]
         public void BeforeFirstTick_CurrentIsGlass()
         {
             var animator = new WaveFieldAnimator();
-            Assert.AreEqual(0, animator.Current.Count, "no trains before the first tick");
-            Assert.AreEqual(0f, animator.Sample(SamplePos).Height, "flat before the first tick");
+            Assert.AreEqual(0, animator.Current.Count);
+            Assert.AreEqual(0f, animator.Sample(SamplePos).Height);
         }
     }
 }
