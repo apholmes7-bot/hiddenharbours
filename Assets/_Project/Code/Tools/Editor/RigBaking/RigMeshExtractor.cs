@@ -1198,6 +1198,15 @@ namespace HiddenHarbours.Tools.RigBaking
                 // used, so it stays index 0 — which is what the packer resolves an unknown material
                 // to, and what the rig's own `MATS[f.mat] || MATS.paint` fallback agrees with.
                 //
+                // ⭐ THE VALUES ARE THE MACHINE'S OWN PAINT (owner's ruling, 2026-10-14: the enduro
+                // teal, the trike gold, the quad sage — the pack's own presets). The rig's render
+                // builds its table per call, `makeMats(resolve(opts))`, and `makeMats` reads only
+                // `paint`, `weather` and `night` off that bag — so the reconstruction takes the SAME
+                // bag, the hull's `ViewOptions`, through `ViewOptionsToken`. Read off `resolve({})`
+                // the table is the rig's default RED whatever the vehicle says, which is what every
+                // ATV baked before the ruling. Only the colours follow the bag: the union is over
+                // SPECS, so which ramps survive the filter, and their order, do not.
+                //
                 // ⚠️ Every name unqualified ON PURPOSE: this is inserted INSIDE the rig's closure, so
                 // `makeMats`, `resolve`, `build` and `SPECS` are in scope. Qualifying them is the
                 // shape a PROBE needs (the widening puts symbols on the global, not in scope) and it
@@ -1205,11 +1214,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["atvIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["MATS"] =
-                        "(function(){var M=makeMats(resolve({})),used={},out={};" +
+                        "(function(o){var M=makeMats(resolve(o)),used={},out={};" +
                         "for(var b in SPECS){var F=build(resolve({body:b}));" +
                         "for(var i=0;i<F.length;i++)used[F[i].mat]=1;}" +
                         "for(var k in M)if(used[k])out[k]=M[k];" +
-                        "return out;})()",
+                        "return out;})(" + ViewOptionsToken + ")",
                 },
 
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
@@ -1353,15 +1362,30 @@ namespace HiddenHarbours.Tools.RigBaking
                 : Array.Empty<InnerWidening>();
 
         /// <summary>
-        /// The JS expression the shim should bind <paramref name="symbol"/> to for this rig. Normally
-        /// the symbol's own name (a widening); a <see cref="Reconstructions"/> entry overrides it.
+        /// Where a reconstruction needs THIS hull's own descriptor —
+        /// <see cref="RigHullExtraction.ViewOptions"/>, the bag the rig's <c>render(dir, opts)</c>
+        /// takes — it writes this token, and <see cref="ExpressionFor"/> puts the bag in its place.
+        ///
+        /// <para>The FILE still knows HOW (the ATV pack: <c>makeMats(resolve(opts))</c>) and the
+        /// HULL says WHICH, the split <see cref="RigHullExtraction"/> keeps. No hull, or one with no
+        /// options, gets <c>{}</c> — the rig's own default — so a caller that names no hull reads
+        /// exactly the table it read before the token existed. Left unsubstituted it is an undeclared
+        /// name, and V8 refuses it with a ReferenceError that names it rather than defaulting.</para>
         /// </summary>
-        public static string ExpressionFor(string scriptPath, string symbol)
+        public const string ViewOptionsToken = "__hullViewOptions__";
+
+        /// <summary>
+        /// The JS expression the shim should bind <paramref name="symbol"/> to for this rig. Normally
+        /// the symbol's own name (a widening); a <see cref="Reconstructions"/> entry overrides it,
+        /// with <paramref name="viewOptions"/> written in for any <see cref="ViewOptionsToken"/>.
+        /// </summary>
+        public static string ExpressionFor(string scriptPath, string symbol, string viewOptions = null)
         {
             string file = Path.GetFileName(scriptPath ?? string.Empty);
             return Reconstructions.TryGetValue(file, out var bySymbol)
                    && bySymbol.TryGetValue(symbol, out string expr)
-                ? expr
+                ? expr.Replace(ViewOptionsToken,
+                               string.IsNullOrWhiteSpace(viewOptions) ? "{}" : viewOptions)
                 : symbol;
         }
 
@@ -1711,7 +1735,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 // must be present in the one string pass 2 executes — executing them separately would
                 // re-run the IIFE twice and the second run would win.
                 string widened = ApplyInnerWidenings(source, scriptPath);
-                widened = WidenExportedLiteral(widened, g, missing, scriptPath);
+                widened = WidenExportedLiteral(widened, g, missing, scriptPath, hull?.ViewOptions);
                 host.Execute(widened);
 
                 var stillMissing = new List<string>();
@@ -1923,7 +1947,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <remarks>Public only so the tests can hit it without an engine — it is not an entry
         /// point, and the day the rigs export their symbols it should be deleted outright.</remarks>
         public static string WidenExportedLiteral(
-            string source, string globalName, IReadOnlyList<string> missingSymbols, string scriptPathForMessages)
+            string source, string globalName, IReadOnlyList<string> missingSymbols, string scriptPathForMessages,
+            string viewOptions = null)
         {
             if (missingSymbols == null || missingSymbols.Count == 0) return source;
 
@@ -1941,10 +1966,12 @@ namespace HiddenHarbours.Tools.RigBaking
             // convention and has to have the symbol RECONSTRUCTED from its own values. The
             // expression is evaluated inside the rig's own closure, which is why it may name the
             // rig's private consts (the dory's RAMP/IRON) — see RigMeshSymbols.Reconstructions.
+            // `viewOptions` is the hull's own bag, for a reconstruction that is a function of it
+            // (RigMeshSymbols.ViewOptionsToken); null leaves every such one at the rig's default.
             var insert = new StringBuilder();
             foreach (string sym in missingSymbols)
                 insert.Append(' ').Append(sym).Append(':')
-                      .Append(RigMeshSymbols.ExpressionFor(scriptPathForMessages, sym)).Append(',');
+                      .Append(RigMeshSymbols.ExpressionFor(scriptPathForMessages, sym, viewOptions)).Append(',');
 
             var m = matches[0];
             return source.Insert(m.Index + m.Length, insert.ToString());

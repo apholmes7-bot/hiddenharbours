@@ -1340,14 +1340,24 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </list>
         /// <para>There is no per-body CELL to get wrong, which is the one way this is easier than the
         /// trailers: 256 × 192 at pivot (128,128) serves all three, and it is the Otter's cell.</para>
+        ///
+        /// <para>⭐ <b>The PAINT rides in the same pose</b> (owner's ruling, 2026-10-14): each machine
+        /// wears her pack preset's colour — <c>enduro</c> teal, <c>beachTrike</c> gold,
+        /// <c>wharfQuad</c> sage. It moves no face (<c>makeMats</c> reads it, <c>build</c> does not),
+        /// so the faces, anchors and probes are untouched. It is in the pose because
+        /// <c>Extraction.ViewOptions</c> is the bag BOTH the reconstructed <c>MATS</c>
+        /// (<see cref="RigMeshSymbols.ViewOptionsToken"/>) and the parity test's truth render read,
+        /// and the two must agree: a paint the table lacks is a foreign ramp on every panel. An
+        /// unknown paint id falls back to RED as silently as an unknown body falls back to the quad,
+        /// which is why the probe holds each one against the rig's own <c>BODY</c> table.</para>
         /// </summary>
         static Vehicle SaddleVehicle(string key, string pick, string label, string meshName,
-                                     string defName, string restExtras,
+                                     string defName, string restExtras, string paint,
                                      Axis[] axes, VehicleChassisSource chassis,
                                      string abeamLeft, string abeamRight,
                                      string aftAnchor, string foreAnchor)
         {
-            string pose = $"{{body:'{pick}'{restExtras}}}";
+            string pose = $"{{body:'{pick}'{restExtras},paint:'{paint}'}}";
             return new Vehicle(
                 key,
                 "docs/art/rigs/atv-pack/atvIsoRig.js",
@@ -1863,6 +1873,7 @@ namespace HiddenHarbours.Tools.RigBaking
             SaddleVehicle(
                 "enduro250", "dirtbike", "Enduro 250", "Enduro250", "Enduro250",
                 restExtras: ",stand:0",
+                paint: "teal",
                 axes: Enduro250Axes,
                 chassis: SaddleChassis("dirtbike", frontTrack: "0",
                                        maxInner: "AtvIso.steer.dirtbike.maxDeg",
@@ -1877,6 +1888,7 @@ namespace HiddenHarbours.Tools.RigBaking
             SaddleVehicle(
                 "trike200", "trike", "Trike 200", "Trike200", "Trike200",
                 restExtras: "",
+                paint: "gold",
                 axes: Trike200Axes,
                 chassis: SaddleChassis("trike", frontTrack: "0",
                                        maxInner: "AtvIso.steer.trike.maxDeg",
@@ -1893,6 +1905,7 @@ namespace HiddenHarbours.Tools.RigBaking
             SaddleVehicle(
                 "utilityQuad", "quad", "Utility Quad 4x4", "UtilityQuad", "UtilityQuad",
                 restExtras: "",
+                paint: "sage",
                 axes: UtilityQuadAxes,
                 chassis: SaddleChassis("quad", frontTrack: "AtvIso.SPECS.quad.wheelX * 2",
                                        maxInner: "AtvIso.steer.quad.innerMaxDeg",
