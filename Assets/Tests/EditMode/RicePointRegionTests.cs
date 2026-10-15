@@ -24,14 +24,31 @@ namespace HiddenHarbours.Tests.EditMode
         public void RemoveDisposableRefreshScenes()
         {
             if (_sceneSetup == null) return;
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            AssetDatabase.DeleteAsset(ProofCopy);
-            AssetDatabase.DeleteAsset(ProofSource);
-            EditorBuildSettings.scenes = _buildList;
-            Object.DestroyImmediate(_proofPlan.Region);
-            Object.DestroyImmediate(_proofPlan);
-            EditorSceneManager.RestoreSceneManagerSetup(_sceneSetup);
+            var setup = _sceneSetup;
             _sceneSetup = null;
+            var plan = _proofPlan;
+            var region = plan != null ? plan.Region : null;
+            var buildList = _buildList;
+            _proofPlan = null;
+            _buildList = null;
+            Action[] cleanup = {
+                () => EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single),
+                () => AssetDatabase.DeleteAsset(ProofCopy),
+                () => AssetDatabase.DeleteAsset(ProofSource),
+                () => EditorBuildSettings.scenes = buildList,
+                () => { if (region != null) Object.DestroyImmediate(region); },
+                () => { if (plan != null) Object.DestroyImmediate(plan); },
+                () => { if (setup.Length > 0) EditorSceneManager.RestoreSceneManagerSetup(setup); }
+            };
+            // Each remaining step runs even when an earlier cleanup throws. Reset fixture state
+            // before any scene operation, so a failure cannot repeat in the following test.
+            void RunCleanup(int index)
+            {
+                if (index == cleanup.Length) return;
+                try { cleanup[index](); }
+                finally { RunCleanup(index + 1); }
+            }
+            RunCleanup(0);
         }
 
         [Test]
@@ -42,7 +59,9 @@ namespace HiddenHarbours.Tests.EditMode
             _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
             _buildList = EditorBuildSettings.scenes;
             _proofPlan = Object.Instantiate(RicePointBuilder.LoadPlan());
+            _proofPlan.hideFlags = HideFlags.DontUnloadUnusedAsset;
             _proofPlan.Region = Object.Instantiate(_proofPlan.Region);
+            _proofPlan.Region.hideFlags = HideFlags.DontUnloadUnusedAsset;
             _proofPlan.Region.SceneName = "RicePointRefreshSource";
             LandSceneTemplate.Create(_proofPlan);
             Assert.That(AssetDatabase.CopyAsset(ProofSource, ProofCopy), Is.True);
@@ -55,6 +74,11 @@ namespace HiddenHarbours.Tests.EditMode
             var identity = GlobalObjectId.GetGlobalObjectIdSlow(visual);
             EditorSceneManager.MarkSceneDirty(copy);
             Assert.That(EditorSceneManager.SaveScene(copy), Is.True);
+            Assert.That(_proofPlan != null, Is.True, "The in-memory proof plan must survive opening its copy.");
+            Assert.That(_proofPlan.Region != null, Is.True, "The in-memory region must survive opening its copy.");
+            Assert.That(AssetDatabase.Contains(_proofPlan.Ground), Is.True);
+            Assert.That(AssetDatabase.Contains(_proofPlan.Source), Is.True);
+            Assert.That(AssetDatabase.Contains(_proofPlan.DevHull), Is.True);
             LandSceneTemplate.Refresh(_proofPlan);
             copy = EditorSceneManager.OpenScene(ProofCopy, OpenSceneMode.Single);
             visual = copy.GetRootGameObjects().Single(g => g.name == "LandRegion")
