@@ -352,7 +352,7 @@ namespace HiddenHarbours.Tests.EditMode
                     Rect = Shader.GetGlobalVector(SeabedGlobals.Rect), Range = Shader.GetGlobalVector(SeabedGlobals.Range) };
                 Assert.That(bed.Texture, Is.Not.Null);
                 trains = Get<WaveTrains>("_trainsNow"); Period = BreakerMath.PeriodSeconds(trains.Dominant);
-                contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch), GameServices.Breakers);
+                contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch), GameServices.Breakers);
                 scale = shipped.GetFloat("_OceanSwellScale") / (float)typeof(DisplacedWaterSurface).GetField("WaveLegacyScaleRef",
                     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).GetValue(null);
                 normal = Surf(aim).ShorewardDirection;
@@ -389,8 +389,11 @@ namespace HiddenHarbours.Tests.EditMode
                 return rt;
             }
             SurfState Surf(Vector2 p) => BreakerMath.SurfAt(p, Level, bed, contour,
-                WaveFetch.EnvelopeAt(p, Wind, Level, bed, GameServices.WaveFetch), trains,
+                LeeEnvelopeAt(p), trains,
                 GameServices.WaveField.Gravity, GameServices.Breakers, scale);
+            // The published surf's twin: the dominant train's own lee factor, as GameServices.FetchEnvelopeAt and the
+            // shader's break gate read it; the contour above anchors at its fetch-0 value, as WaveFieldBridge does.
+            float LeeEnvelopeAt(Vector2 p) => WaveFetch.At(p, Wind, Level, bed, GameServices.WaveFetch).ForWavelength(trains.Dominant.Wavelength);
             public void Publish(float time)
             {
                 seconds = time; Call("PublishTheSea", time); trains = Get<WaveTrains>("_trainsNow");
@@ -468,7 +471,7 @@ namespace HiddenHarbours.Tests.EditMode
                 for (int i = 0; i < 24; i++)
                 {
                     Vector2 n = BreakerMath.ShorewardDirection(guess, GameServices.Breakers.SlopeProbeMeters, bed);
-                    float env = WaveFetch.EnvelopeAt(guess, Wind, Level, bed, GameServices.WaveFetch);
+                    float env = LeeEnvelopeAt(guess);
                     float target = BreakerMath.DepthAtEnvelope(contour.BreakDepths, contour.LeeEnvelope, env);
                     float error = Level - bed.ElevationAt(guess) - target;
                     if (Mathf.Abs(error) < .001f) return guess;
@@ -534,7 +537,7 @@ namespace HiddenHarbours.Tests.EditMode
                     Vector2 d = p - aim;
                     if (Mathf.Abs(Vector2.Dot(d, tangent)) <= 4 && Vector2.Dot(d, normal) >= 0 && Vector2.Dot(d, normal) <= 4 && bed.ElevationAt(p) < Level)
                     {
-                        float env = WaveFetch.EnvelopeAt(p, Wind, Level, bed, GameServices.WaveFetch);
+                        float env = LeeEnvelopeAt(p);
                         Assert.That(BreakerMath.Breaking01FromContour(.02f, contour, env), Is.GreaterThan(.999f), "criterion requires full shore domain");
                         roi.Add(y * Pixels + x);
                     }
