@@ -100,6 +100,19 @@ namespace HiddenHarbours.Core
         [Tooltip("The rig source this was extracted from (repo-relative), for provenance and re-bakes.")]
         public string SourceRigPath = "";
 
+        [Tooltip("Empty for the deck-sidecar path; the walk schema for a switched hull.")]
+        public string LayoutSchema = "";
+
+        [Serializable]
+        public struct LiftSet
+        {
+            public string Key, DeckId;
+            public int Level, LiftLevels, ShownRoles;
+            public int[] RoleMasks;
+        }
+
+        public LiftSet[] LiftSets = Array.Empty<LiftSet>();
+
         /// <summary>
         /// The JS expression these faces came from, when the rig generates more than one hull —
         /// e.g. <c>LobsterBoatVariantsIso.variantFaces({size:'offshore',…})</c>.
@@ -345,10 +358,27 @@ namespace HiddenHarbours.Core
             /// <summary>The lid that comes off with it, or 0 for none.</summary>
             public readonly int Lid;
 
-            public Cut(int level, int lid) { Level = level; Lid = lid; }
+            public readonly int LiftLevels, ShownRoles;
+            public readonly int[] RoleMasks;
+            public Cut(int level, int lid)
+            {
+                Level = level; Lid = lid; RoleMasks = null;
+                LiftLevels = lid > 0 && lid < 31 ? 1 << lid : 0;
+                ShownRoles = level > 0 ? int.MaxValue : 0;
+            }
+            public Cut(int level, int liftLevels, int shownRoles, int[] roleMasks = null)
+            { Level = level; Lid = 0; LiftLevels = liftLevels; ShownRoles = shownRoles; RoleMasks = roleMasks; }
 
             /// <summary>True when this actually opens something.</summary>
-            public bool Opens => Level > 0;
+            public bool Opens
+            {
+                get
+                {
+                    if (Level > 0 || LiftLevels != 0) return true;
+                    if (RoleMasks != null) foreach (int mask in RoleMasks) if (mask != 0) return true;
+                    return false;
+                }
+            }
 
             /// <summary>Nothing comes off — the whole exterior draws.</summary>
             public static Cut None => default;
@@ -377,6 +407,13 @@ namespace HiddenHarbours.Core
         /// </summary>
         public Cut CutawayForDeck(string deckId)
         {
+            if (!string.IsNullOrEmpty(LayoutSchema) && LiftSets != null)
+            {
+                foreach (LiftSet set in LiftSets)
+                    if (!string.IsNullOrEmpty(deckId) && string.Equals(set.DeckId, deckId, StringComparison.Ordinal))
+                        return new Cut(set.Level, set.LiftLevels, set.ShownRoles, set.RoleMasks);
+                return Cut.None;
+            }
             if (string.IsNullOrEmpty(deckId) || LevelTags == null) return Cut.None;
             for (int i = 0; i < LevelTags.Length; i++)
             {

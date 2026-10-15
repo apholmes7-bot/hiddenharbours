@@ -1,9 +1,6 @@
 # ADR 0048 — The boats switch: each hull's rig carries its room, its cut and its walk
 
-- **Status: PROPOSED** (2026-09-27). The owner ruled the switch itself on 2026-09-26 (§1). Merging
-  this ADR accepts how it is done. Three decisions stay the owner's and are open (§11): ghost or gate,
-  drops 15 and 16, and where the sloops go. Batch 0's intake records the rulings and flips this line.
-  `lead-architect` records.
+- **Status: ACCEPTED** (2026-10-11). Drops 15 and 16 RULED 2026-10-10 01:15:38Z: "Yes: fold 15, never land 16 (Recommended)". Gate, sloops and conversion RULED 2026-10-11 about 09:40Z: "I go with gate lean, lets convert sloops and all hulls to new format, while doing so we can do a full art pass adding missing details/character/art aesthetics to each exisiting hull". The gate uses the lift-set form (§11.1); the sloops fold into the switch (§11.3); every hull converts with an art pass by the art lanes.
 - **Date:** 2026-09-27
 - **Decision owner:** the owner. `lead-architect` owns the Core contracts the switch touches and records
   this ADR. The other roles:

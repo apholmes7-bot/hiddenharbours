@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: keyscene.nmc_fuel_stop
   DisplayName: 'Nine Mile Creek: the gas station'
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_fuel_stop/scene.json,
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_fuel_stop/scene.json,
     22515 bytes, sha256 74c90644894f1ec30f86bc3b3adc82d494d5bb7dcda0347b5c126a948d5be66a
   Placed: 0
   Pieces:
@@ -1315,3 +1315,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - boat.nmc_shore_dory
+  - prop.nmc_bank_bench_4
+  - prop.nmc_bank_bench_5
+  - prop.nmc_shore_fire
+  - structure.nmc_bank_steps_4
+  - structure.nmc_bank_steps_5
+  - prop.nmc_lot_pole_05
+  - prop.nmc_lot_pole_04
+  - prop.nmc_yard_fence_e
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_rack_01
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  - structure.nmc_apartments_2
+  PlacementIds: []

@@ -38,6 +38,9 @@ namespace HiddenHarbours.Boats
                  "counter-clockwise from above. Imported verbatim from the sidecar.")]
         public Vector2[] Outline = Array.Empty<Vector2>();
 
+        [Tooltip("Player-centre holes subtracted from Outline, without another inset.")]
+        public DeckAreaHole[] Holes = Array.Empty<DeckAreaHole>();
+
         [Tooltip("The area's height as a fitted PLANE: z = x·HeightPlane.x + y·HeightPlane.y + " +
                  "HeightPlane.z (hull-local metres). A flat 'polygon' + 'z' area fits exactly (x,y = 0); " +
                  "a sheer-following 'polygon3d' area fits to within HeightResidualMax. A plane is O(1) " +
@@ -79,6 +82,12 @@ namespace HiddenHarbours.Boats
                 Bounds = DeckAreaMath.BoundsOf(outline),
             };
         }
+    }
+
+    [Serializable]
+    public sealed class DeckAreaHole
+    {
+        public Vector2[] Outline = Array.Empty<Vector2>();
     }
 
     /// <summary>A named tie-off point in hull-local metres — the sidecars' <c>CLEATS</c>. Carried
@@ -301,7 +310,7 @@ namespace HiddenHarbours.Boats
                 DeckArea hinted = Areas[areaHint];
                 if (Accepts(hinted, includeWashboards)
                     && (!oneFloor || IsOnTheFloor(hinted, floorPoint, floorHeightMeters, toleranceMetres))
-                    && DeckAreaMath.Contains(hinted.Outline, hinted.Bounds, deckPoint))
+                    && DeckAreaMath.Contains(hinted, deckPoint))
                 {
                     heightMeters = DeckAreaMath.HeightAt(hinted.HeightPlane, deckPoint);
                     return deckPoint;
@@ -315,7 +324,7 @@ namespace HiddenHarbours.Boats
                 DeckArea a = Areas[i];
                 if (!Accepts(a, includeWashboards)) continue;
                 if (oneFloor && !IsOnTheFloor(a, floorPoint, floorHeightMeters, toleranceMetres)) continue;
-                if (!DeckAreaMath.Contains(a.Outline, a.Bounds, deckPoint)) continue;
+                if (!DeckAreaMath.Contains(a, deckPoint)) continue;
                 areaHint = i;
                 heightMeters = DeckAreaMath.HeightAt(a.HeightPlane, deckPoint);
                 return deckPoint;
@@ -332,7 +341,7 @@ namespace HiddenHarbours.Boats
                 DeckArea a = Areas[i];
                 if (!Accepts(a, includeWashboards)) continue;
                 if (oneFloor && !IsOnTheFloor(a, floorPoint, floorHeightMeters, toleranceMetres)) continue;
-                Vector2 p = DeckAreaMath.ClosestPointOnOutline(a.Outline, deckPoint, out float sqr);
+                Vector2 p = DeckAreaMath.ClosestPointOnOutline(a, deckPoint, out float sqr);
                 if (sqr >= bestSqr) continue;
                 bestSqr = sqr;
                 best = p;
@@ -382,7 +391,7 @@ namespace HiddenHarbours.Boats
 
                 if (!DeckAreaMath.TryWorldToDeckOnPlane(worldOffset, a.HeightPlane, drawnHeadingDegrees,
                                                         out Vector2 deckPoint, bakeElevationDegrees)) continue;
-                if (!DeckAreaMath.Contains(a.Outline, a.Bounds, deckPoint) && !OnTheOutline(a, deckPoint)) continue;
+                if (!DeckAreaMath.Contains(a, deckPoint) && !OnTheOutline(a, deckPoint)) continue;
 
                 // ⭐ The HIGHEST match, not the first. A raised foredeck 2.3 m over the sole DRAWS across
                 // the sole behind it, so at a ¾ bake one screen point genuinely is over two decks — measured
@@ -412,7 +421,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private static bool OnTheOutline(DeckArea area, Vector2 deckPoint)
         {
-            DeckAreaMath.ClosestPointOnOutline(area.Outline, deckPoint, out float sqrDistance);
+            DeckAreaMath.ClosestPointOnOutline(area, deckPoint, out float sqrDistance);
             return sqrDistance <= OutlineSkinMetres * OutlineSkinMetres;
         }
 
@@ -505,8 +514,8 @@ namespace HiddenHarbours.Boats
         /// outline; <paramref name="planSqr"/> is the squared plan distance between the two.</summary>
         private static Vector2 NearestPointOn(DeckArea a, Vector2 p, out float planSqr)
         {
-            if (DeckAreaMath.Contains(a.Outline, a.Bounds, p)) { planSqr = 0f; return p; }
-            return DeckAreaMath.ClosestPointOnOutline(a.Outline, p, out planSqr);
+            if (DeckAreaMath.Contains(a, p)) { planSqr = 0f; return p; }
+            return DeckAreaMath.ClosestPointOnOutline(a, p, out planSqr);
         }
 
         /// <summary>The height (m above the keel) of the area at <paramref name="areaIndex"/> under

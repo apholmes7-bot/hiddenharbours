@@ -346,6 +346,19 @@ def atomic_write_bytes(path, data):
             time.sleep(0.05)
 
 
+def remove_retrying(path):
+    """os.remove, retried: Windows will not delete a file another process holds open (WinError 32),
+    and every keeper process opens the lock to read it."""
+    for attempt in range(REPLACE_RETRIES):
+        try:
+            os.remove(path)
+            return
+        except PermissionError:
+            if attempt == REPLACE_RETRIES - 1:
+                raise
+            time.sleep(0.05)
+
+
 def ident(pair):
     return {"pid": pair[0], "created_ms": pair[1]}
 
@@ -431,7 +444,7 @@ class Store:
                 with open(path, encoding="utf-8") as f:
                     still_mine = token in f.read()
                 if still_mine:
-                    os.remove(path)
+                    remove_retrying(path)
             except FileNotFoundError:
                 pass
 

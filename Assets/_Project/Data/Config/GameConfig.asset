@@ -70,6 +70,12 @@ MonoBehaviour:
     DragCreepMetersPerSec: 0.35
     DragBrakeStrength: 900
   WaveField:
+    MemoryShortSeconds: 30
+    MemoryMiddleSeconds: 120
+    MemoryLongSeconds: 600
+    MemoryShortMaxWavelengthMeters: 8.5
+    MemoryMiddleMaxWavelengthMeters: 20
+    MemoryTapCount: 16
     Gravity: 9.81
     SecondaryTrainCount: 3
     DominantWavelengthBase: 6

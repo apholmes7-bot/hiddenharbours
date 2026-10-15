@@ -56,6 +56,7 @@ When you add an ADR, add its row here in the same PR.
 | 0047 | Derived art is imported, not committed | Accepted (owner approved the array plan 2026-09-27; implementation awaiting validation) |
 | 0048 | The boats switch: each hull's rig carries its room, its cut and its walk | **Proposed** (the owner accepts it by merging; ghost or gate, drops 15 and 16, and the sloops' place open; each batch's intake extends its rollout record) |
 | 0052 | A failing event handler cannot cut its publisher short | **Proposed** (option A RULED 2026-10-08; ADR awaits owner approval in its PR) |
+| 0053 | Held props are facet meshes on the figure's sockets | **Proposed** (D1–D10 ruled by the owner 2026-10-08; lands with held props PR 2, the bake; the owner approves it in its PR) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

@@ -553,3 +553,104 @@ On the owner's 2026-09-02 ruling (*"a longer slower swell"*) all nine materials 
 scale is **1** and the drawn sea IS this field — same wavelengths, same periods, same evaluation. Nothing
 in this ADR changes; the caveat simply stops applying. The seam and every scaled read stay, because the
 knob is still the owner's. See ADR 0023's 2026-09-03 amendment for the detail and the cost numbers.
+
+## Amendment (2026-10-13) — Stage A: the sea remembers
+
+Stage A is built in W4-2. Wind sea direction and height now respond over different past
+windows for different wavelengths (P1, P5). `WaveMath.TrainsFrom` remains unchanged: it is
+the steady state, including its exact float results. The shipped fixed spectral ladder
+keeps dispersion and travel phase independent of wind.
+
+### Windows and the clock
+
+The six new fields live in `GameConfig.WaveField`, with matching serialized asset values:
+
+| Field | Default | Unit | Range |
+|---|---:|---|---|
+| `MemoryShortSeconds` | 30 | game seconds | 1–600 |
+| `MemoryMiddleSeconds` | 120 | game seconds | 1–3600, at least short |
+| `MemoryLongSeconds` | 600 | game seconds | 1–7200, at least middle |
+| `MemoryShortMaxWavelengthMeters` | 8.5 | metres | 1–100 |
+| `MemoryMiddleMaxWavelengthMeters` | 20 | metres | 1–100, at least short limit |
+| `MemoryTapCount` | 16 | cells per window | 4–64 |
+
+Zero or missing fields resolve to these defaults. On the shipped ladder, slots 5–7 use
+30 seconds, slots 2–4 use 120 seconds, and slots 0–1 use 600 seconds. This three-band
+curve retains a fast chop response while reducing the long crests' shared turning. At
+75 game seconds per clock hour, these windows span 24, 96 and 480 clock minutes.
+The water-four prediction compared 30, 120 and 600 seconds; the five-seed, three-day
+W4-2 repeat at St Peters gives long-wave p95 slide 0.464 m/game second at radius 262 m,
+versus 3.545 before. NMC gives 0.427 versus 3.139 at radius 278 m. The whole field's
+60-second relative Hs change falls from 149.6% to 55.6% at p95 in St Peters; the faster
+middle and short bands explain why this exceeds the uniform-600-second prediction.
+
+For each window W and tap count N, the world grid has spacing W/N and origin zero.
+Let q=floor(t/(W/N)) and f be its fractional remainder. Sample wind at (q−j)W/N,
+j=0…N, with weights f, 1…1, 1−f, divided by N. These are the exact fractional-cell
+weights of a trailing box integral over a held wind law. Every tap is at or before t;
+there is no forecast. Incoming and outgoing cells have zero weight at their boundary,
+so even a stepped wind enters continuously. The finite grid adds up to one cell of
+response delay; the grids continue into negative time when a world begins.
+
+Wind vectors are averaged directly, weighting bearing by wind speed. A zero wind has
+no bearing contribution, and angle wrap needs no special case. The continuous sea-state
+axis is averaged with the same weights for the derivation's glass gate and legacy
+height law. Differences from the first tap are accumulated in double, preserving a
+steady input bit for bit. Three calls to the unchanged derivation supply the three
+bands; the largest finished amplitude determines the dominant slot. When all windows
+agree, the original dominant metadata is preserved, including on a silent spectrum.
+
+### Core seam and consumers
+
+`IWaveWindSource.WaveWindAt(double)` is the new additive Core contract. It returns
+`WaveWindSample` (wind vector and continuous sea state). `EnvironmentService` implements
+it using `WeatherModel.SampleWind`, the active region profile, seed, clock scale and dev
+weather override. Core never depends on the Environment module. Historical queries use
+the destination region's law, not the route travelled to reach it.
+
+`WaveFieldAnimator` loses all parameter easing and accumulated state. It evaluates
+`WaveMemory` and bakes the closed-form travel phase into the returned trains. Its Current
+value is output only; reset, pause, a backward jump, or a cold load cannot affect the
+answer at t. Its previous settings remain serialized for compatibility and are inactive.
+The scalar Smooth helper remains for separate presentation motion. No save fields change.
+
+The bridge sends the same trains to `PackedWaveField` and `SharedWaveField`.
+`BoatController` seakeeping now reads that publication at time zero because travel is
+already baked. Before publication it derives raw memory trains from the Core seam and
+samples them at the clock; fixtures without the seam derive a steady current wind.
+Other depth, exposure, fetch and dominant-train reads keep their existing contracts.
+`WaterSurface` reads `WaveMemory.ShortWind` each frame at the same clock for `_WindDir`
+and `_Chop`; the separate 3-second wind and 2-second chop eases are removed. Current
+and tide easing remain separate. No shader loop, material, foam or fetch changes land.
+
+Wind-step continuity is guarded on the fixed shipped spectral ladder. Editing train
+count or disabling that ladder is an immediate configuration change, not past weather;
+there is no hidden frame-dependent fade for such edits. Slot-emergence tests now cover
+continuous spectrum blend and waves growing from calm through the wind window.
+
+### Danger timing and cost
+
+A steady 4-to-10 m/s wind step at shipped St Peters storm field settings reaches Hs
+0.404 m (50% of its final 0.808 m) after 21.4 clock minutes, and 90% after 396.8 minutes.
+The previous simulation changed immediately; the previous drawn 1.5-second ease reached
+these levels after 0.25 and 2.24 clock minutes. Long seas build and subside slowly, so a
+wind warning now precedes the full sea and a lull can retain waves. A wholly calm window
+still reaches exact glass. This duration change needs the Phase B sailing check.
+
+The headless warm sampler uses 51 wind-law calls and up to three train derivations per
+field evaluation, about 9 microseconds on the development machine. A 100,000-tick run
+allocated zero bytes after warm-up. Decorative short wind adds 17 taps per evaluation.
+GPU work and payload width are unchanged; editor/native publication and visual evidence
+remain Phase B checks.
+
+### Stages B and C: ruled, not built here
+
+- **Stage B, W4-3:** fetch growth acts per wavelength. Short chop can regrow in a lee
+  while long waves need a longer clear reach. The shader and every field consumer must
+  share that per-train amplitude envelope; dispersion is unchanged.
+- **Stage C, W4-5:** a swell independent of local wind takes the two shortest slots,
+  currently 6.34 m and 5.00 m, retaining eight trains. Glass stays glass in harbours and
+  sheltered water; low swell may cross the open coast in a calm. The open-water glass
+  premise changes when that stage lands, not in Stage A.
+- **Order:** C2a → W4-1 → W4-2 → W4-3 → W4-4a/b → W4-5 (Stage C) → W4-6a/b
+  (Stage D, bathymetry) → B2 (breakers) → P1 (wake riding). W4-2 lands after W4-1.
