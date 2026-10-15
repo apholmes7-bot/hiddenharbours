@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_ginnys_plot
   DisplayName: "Ginny\u2019s plot"
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_ginnys_plot/scene.json,
-    74708 bytes, sha256 485295444d40fdb2ca4811f1a1423591fda601646a6980f075332fc71e456edb
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ginnys_plot/scene.json,
+    78803 bytes, sha256 2df4b1b9509ce006b13eaf9ef4366698a708a64b1ca51732d01d212c25ba36e1
   Placed: 0
   Pieces:
   - Id: building.stp_ginny_cottage
@@ -1961,7 +1961,7 @@ MonoBehaviour:
     Piece: SweetGale
     State: 
     At: {x: 102.9, y: 51.8}
-    Z: 5.25
+    Z: 5.06
     StandsOn: ground
     MountHost: 
     MountAnchor: 
