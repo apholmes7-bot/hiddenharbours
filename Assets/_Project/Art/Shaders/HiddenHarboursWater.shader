@@ -2514,13 +2514,6 @@ Shader "HiddenHarbours/Water"
                 return smoothstep(thr, solidLvl, field);
             }
 
-            // Scalar entry for field-only diagnostic passes; the runtime reuses the factors above.
-            void WaveFieldSample(float2 worldXY, float freqScale, float fetch01,
-                                 out float height, out float2 slopeXY, out float crestF, out float primaryCos)
-            {
-                WaveFieldSample(worldXY, freqScale, FetchFactorsFrom(fetch01), height, slopeXY, crestF, primaryCos);
-            }
-
             // ---- whitecap LIFECYCLE: form on the crest -> peak (dense) -> collapse to milky residual -------------
             // A natural wave lifecycle from the rolling-swell CREST factor (0..1; 1 = the breaking crest top).
             // Returns a DENSITY SCALE 0..1 the caller multiplies into the solid-core lift, so the cap is BORN dense
@@ -3102,6 +3095,13 @@ Shader "HiddenHarbours/Water"
                 // Slope retains E times grad(h); ADR 0018 Stage B records the omitted gradient term.
                 if (totalAmp > 1e-6)                               // WaveMath.GlassAmplitudeMeters guard
                     crestF = pow(saturate(height / totalAmp), p);
+            }
+
+            // Scalar entry for field-only diagnostic passes; the runtime reuses the factors above.
+            void WaveFieldSample(float2 worldXY, float freqScale, float fetch01,
+                                 out float height, out float2 slopeXY, out float crestF, out float primaryCos)
+            {
+                WaveFieldSample(worldXY, freqScale, FetchFactorsFrom(fetch01), height, slopeXY, crestF, primaryCos);
             }
 
             // ---- whitecap LIFECYCLE on the REAL wave field (ADR 0018 B1): form -> BREAK -> fade ---------------

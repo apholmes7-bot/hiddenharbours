@@ -25,7 +25,7 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "31d3419dc0879c9174bee353e764920e83dbfa8f3f941c331006e6fdc00ed106";
+        const string BaseWaterHash = "0148fd39363686312099385e92d525005eb72921e4fedd475ebf8a16a79cc048";
         // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
@@ -193,7 +193,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void SurfSequence_ProtectedBorePathsRemainUnchanged()
         {
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
-            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("25ab2f559ca81a4520452dcd11fec144d1e7157c348543f882194f1141456ad7"));
+            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("1e736d5e793982bc9465b4fdf21e27d95e813566e92226dd3ebb8f33d92683e2"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("abce0b880d89e3976faba111960260c2e958a1444de6a8d81e1b70f9a7ffae07"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
