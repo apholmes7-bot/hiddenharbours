@@ -69,8 +69,13 @@ namespace HiddenHarbours.Tests.PlayMode
         const int WorldSeed = 7;
         const float MeanWater = 0f, LowWater = -1.9f, HighWater = 1.9f;
         const float Calm = 0f, Gale = 1f;
-        const float MorningHour = 9f, DawnHour = 6.5f, NoonHour = 13f, DuskHour = 19.5f, NightHour = 23f;
-        static readonly float[] PlateHours = { DawnHour, NoonHour, DuskHour, NightHour };
+        const float MorningHour = 9f, NoonHour = 13f, AfternoonHour = 15f, NightHour = 23f;
+
+        /// <summary>WharfNightStage.SetNight settles only where its fixed lamp rule (off from 05:00 to 20:00)
+        /// agrees with the day/night gate: by day in St Peters, about 07:40 to 16:00 on the plates' day.
+        /// 09:00 and 15:00 settle even in its thickest fog, and sit inside the cannery's busy 07:00 to 16:00,
+        /// an hour or more from every edge.</summary>
+        static readonly float[] PlateHours = { MorningHour, NoonHour, AfternoonHour, NightHour };
 
         const double FrameMilliseconds = 1000.0 / 60.0;
 
@@ -509,12 +514,12 @@ namespace HiddenHarbours.Tests.PlayMode
         // ── the plates ─────────────────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// The cannery at dawn, noon, dusk and night through the game's own camera, drawn by the game's
-        /// own flock in the region itself: four plates for the owner's eye. The cannery has birds at noon
-        /// and none at night.
+        /// The cannery in the morning, at noon, in the afternoon and at night through the game's own camera,
+        /// drawn by the game's own flock in the region itself: four plates for the owner's eye. The cannery
+        /// has birds at noon and none at night.
         /// </summary>
         [UnityTest]
-        public IEnumerator DawnNoonDuskNight_Plates()
+        public IEnumerator MorningNoonAfternoonNight_Plates()
         {
             WharfNightStage.RequireAGraphicsDevice();   // ⚠ first, before any yield
             BirdHauntDef cannery = Place(Cannery);
