@@ -449,6 +449,7 @@ namespace HiddenHarbours.Player
             // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are
             // the same number, so this is the aboard rule with the hull taken out.
             float heading = character.HeadingDegrees;
+            heading = FigureHeadingDial.Heading(heading, FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             float yaw = skin.AzimuthCounterClockwise ? -heading : heading;
             _ashoreFigure.SetAshoreYaw(yaw);
             AshoreYawDegrees = yaw;
@@ -712,6 +713,8 @@ namespace HiddenHarbours.Player
             Vector3 local = stand.FigureStandRigMetres + SabotageStandOffsetMetres;
             float bearing = stand.FigureDeckBearingDegrees;
             float yaw = skin.AzimuthCounterClockwise ? -bearing : bearing;
+            yaw = FigureHeadingDial.DeckYaw(yaw, _hull != null ? _hull.HeadingDirUnits * HullMeshMath.DegreesPerDirUnit : 0f,
+                                            FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             FigureLocalMetres = local;
             FigureYawDegrees = yaw;
             _figureRoot.SetLocalPositionAndRotation(local, Quaternion.AngleAxis(yaw, Vector3.forward));

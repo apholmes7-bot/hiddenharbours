@@ -170,6 +170,9 @@ namespace HiddenHarbours.Art
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+            // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
+            // this camera's recording publishes its own. A no-op once zero.
+            IsoFacetFigureTarget.Unpublish();
             // "Hulls" is the facet block: every subject of the HHHullFacet list. A mesh hull is one;
             // a skinned figure standing on NO hull (ADR 0044, ashore) is the other, and only while
             // she holds a figure id. With neither registered this is false and nothing below changes.
@@ -338,6 +341,8 @@ namespace HiddenHarbours.Art
             readonly Dictionary<EntityId, HullMeshReflection.CameraState> _meshCameras = new Dictionary<EntityId, HullMeshReflection.CameraState>();
             internal delegate void TargetAllocator(ref RTHandle handle, RenderTextureDescriptor descriptor, string name);
             readonly TargetAllocator _allocateTarget;
+            // The figure pixel look (route 1, GameConfig.FigurePixelTarget): records nothing while OFF.
+            readonly IsoFacetFigureTarget.Recorder _figureTarget;
             static void AllocateTarget(ref RTHandle handle, RenderTextureDescriptor descriptor, string name)
                 => RenderingUtils.ReAllocateHandleIfNeeded(ref handle, descriptor, FilterMode.Point, TextureWrapMode.Clamp, name: name);
 
@@ -544,6 +549,7 @@ namespace HiddenHarbours.Art
             public HullPass(TargetAllocator allocator = null)
             {
                 _allocateTarget = allocator ?? AllocateTarget;
+                _figureTarget = new IsoFacetFigureTarget.Recorder(_allocateTarget);
                 profilingSampler = new ProfilingSampler("HH IsoFacet Hulls");
             }
 
@@ -1104,6 +1110,13 @@ namespace HiddenHarbours.Art
                     }
                 }
 
+                // ---- the figure pixel look (route 1; GameConfig.FigurePixelTarget, ship OFF) ---------
+                // OFF, or a frame it cannot plan, records nothing and leaves everything below as it
+                // was. ON, the figures draw into their own art-pixel target here (after the water,
+                // whose depth hides them) and the facet list below leaves them out.
+                bool figuresLow = drawHulls && _figureTarget.Record(renderGraph, cameraData, renderingData,
+                    depthBuf, DrawWater, w, h, ResolveMaterial, profilingSampler);
+
                 // ---- transient MRT for the facet draw ------------------------------------
                 TextureHandle facet = default, dark = default, key = default, depthVal = default;
                 if (drawHulls)
@@ -1129,7 +1142,9 @@ namespace HiddenHarbours.Art
                 {
                     var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
                     var drawing = new DrawingSettings(s_FacetTag, sorting) { perObjectData = PerObjectData.None };
-                    var filtering = new FilteringSettings(RenderQueueRange.all);
+                    var filtering = figuresLow
+                        ? new FilteringSettings(IsoFacetFigureTarget.SceneQueue)
+                        : new FilteringSettings(RenderQueueRange.all);
                     passData.Renderers = renderGraph.CreateRendererList(
                         new RendererListParams(renderingData.cullResults, drawing, filtering));
                     // Deck occupants: drawn AFTER the hulls against the SAME private z-buffer, so
@@ -1410,6 +1425,7 @@ namespace HiddenHarbours.Art
 
             public void Dispose()
             {
+                _figureTarget.Dispose();
                 foreach (var state in _meshCameras.Values) state.Dispose();
                 _meshCameras.Clear();
                 _clearReflectHandle?.Release();
