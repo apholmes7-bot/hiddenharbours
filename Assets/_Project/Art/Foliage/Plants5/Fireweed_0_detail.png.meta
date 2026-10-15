@@ -1,0 +1,238 @@
+fileFormatVersion: 2
+guid: 20ec621e3e2a13743aee6f6d8435626e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5614245445436010055
+    second: Fireweed_0_detail_0
+  - first:
+      213: -2388244254187720005
+    second: Fireweed_0_detail_1
+  - first:
+      213: -1247186484924485197
+    second: Fireweed_0_detail_2
+  - first:
+      213: -4373356897338108888
+    second: Fireweed_0_detail_3
+  - first:
+      213: 8035383551485228718
+    second: Fireweed_0_detail_4
+  - first:
+      213: -3231497651029467605
+    second: Fireweed_0_detail_5
+  - first:
+      213: -3939880991088522184
+    second: Fireweed_0_detail_6
+  - first:
+      213: 6684151309322656356
+    second: Fireweed_0_detail_7
+  - first:
+      213: -3104643671953273484
+    second: Fireweed_0_detail_8
+  - first:
+      213: 968004755594221190
+    second: Fireweed_0_detail_9
+  - first:
+      213: 6651953749724533751
+    second: Fireweed_0_detail_10
+  - first:
+      213: 3641366761909302711
+    second: Fireweed_0_detail_11
+  - first:
+      213: -4464841891785671867
+    second: Fireweed_0_detail_12
+  - first:
+      213: -5922853774555134139
+    second: Fireweed_0_detail_13
+  - first:
+      213: 4739193924030141750
+    second: Fireweed_0_detail_14
+  - first:
+      213: 6037721778220412365
+    second: Fireweed_0_detail_15
+  - first:
+      213: 9131875779321415150
+    second: Fireweed_0_detail_16
+  - first:
+      213: -5096913352658206974
+    second: Fireweed_0_detail_17
+  - first:
+      213: -4016129736613622089
+    second: Fireweed_0_detail_18
+  - first:
+      213: -3540989961477480717
+    second: Fireweed_0_detail_19
+  - first:
+      213: 6953932261648830576
+    second: Fireweed_0_detail_20
+  - first:
+      213: 1675625692453912263
+    second: Fireweed_0_detail_21
+  - first:
+      213: -6972608616446895864
+    second: Fireweed_0_detail_22
+  - first:
+      213: 1948800975001081810
+    second: Fireweed_0_detail_23
+  - first:
+      213: -2897070550439618511
+    second: Fireweed_0_detail_24
+  - first:
+      213: -7369866431243207014
+    second: Fireweed_0_detail_25
+  - first:
+      213: -4089310437569299261
+    second: Fireweed_0_detail_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fireweed_0_detail_0: 5614245445436010055
+      Fireweed_0_detail_1: -2388244254187720005
+      Fireweed_0_detail_10: 6651953749724533751
+      Fireweed_0_detail_11: 3641366761909302711
+      Fireweed_0_detail_12: -4464841891785671867
+      Fireweed_0_detail_13: -5922853774555134139
+      Fireweed_0_detail_14: 4739193924030141750
+      Fireweed_0_detail_15: 6037721778220412365
+      Fireweed_0_detail_16: 9131875779321415150
+      Fireweed_0_detail_17: -5096913352658206974
+      Fireweed_0_detail_18: -4016129736613622089
+      Fireweed_0_detail_19: -3540989961477480717
+      Fireweed_0_detail_2: -1247186484924485197
+      Fireweed_0_detail_20: 6953932261648830576
+      Fireweed_0_detail_21: 1675625692453912263
+      Fireweed_0_detail_22: -6972608616446895864
+      Fireweed_0_detail_23: 1948800975001081810
+      Fireweed_0_detail_24: -2897070550439618511
+      Fireweed_0_detail_25: -7369866431243207014
+      Fireweed_0_detail_26: -4089310437569299261
+      Fireweed_0_detail_3: -4373356897338108888
+      Fireweed_0_detail_4: 8035383551485228718
+      Fireweed_0_detail_5: -3231497651029467605
+      Fireweed_0_detail_6: -3939880991088522184
+      Fireweed_0_detail_7: 6684151309322656356
+      Fireweed_0_detail_8: -3104643671953273484
+      Fireweed_0_detail_9: 968004755594221190
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

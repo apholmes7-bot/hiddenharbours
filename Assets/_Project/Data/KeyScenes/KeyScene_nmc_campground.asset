@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: "The campground: Loop A, the pool and the court, and the brook loop\u2019s
     tents"
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_campground/scene.json,
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_campground/scene.json,
     151590 bytes, sha256 4bf1136f675f2140dcb55ec3ba5c2e5caf0b5e81591e348c8f55381171fceb41
   Placed: 0
   Pieces:
@@ -8766,3 +8766,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - boat.nmc_shore_dory
+  - prop.nmc_bank_bench_4
+  - prop.nmc_bank_bench_5
+  - prop.nmc_shore_fire
+  - structure.nmc_bank_steps_4
+  - structure.nmc_bank_steps_5
+  - prop.nmc_lot_pole_05
+  - prop.nmc_lot_pole_04
+  - prop.nmc_yard_fence_e
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_rack_01
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  - structure.nmc_apartments_2
+  PlacementIds: []

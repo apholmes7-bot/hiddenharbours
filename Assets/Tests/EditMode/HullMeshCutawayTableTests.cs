@@ -41,6 +41,36 @@ namespace HiddenHarbours.Tests.EditMode
         public void TearDown() => Object.DestroyImmediate(_def);
 
         [Test]
+        public void LegacyLid_IsOneBitAndAllShownRoles()
+        {
+            var cut = _def.CutawayForDeck("below_sole");
+            Assert.That(cut.LiftLevels, Is.EqualTo(1 << 1));
+            Assert.That(cut.ShownRoles, Is.EqualTo(int.MaxValue));
+        }
+
+        [Test]
+        public void LiftSet_OpensSeveralLevelsAndSelectsShownRoles()
+        {
+            _def.LayoutSchema = "hidden-harbours/hull-walk@1";
+            _def.LiftSets = new[] { new HullMeshDef.LiftSet { Key = "room", DeckId = "room_floor",
+                Level = 2, LiftLevels = (1 << 3) | (1 << 4), ShownRoles = 1 << 1 } };
+            var cut = _def.CutawayForDeck("room_floor");
+            Assert.That(cut.Level, Is.EqualTo(2));
+            Assert.That(cut.LiftLevels, Is.EqualTo(24));
+            Assert.That(cut.ShownRoles, Is.EqualTo(2));
+            Assert.That(_def.CutawayForDeck("house_sole").Opens, Is.False);
+        }
+
+        [Test]
+        public void OpenDeck_CanLiftRiggingWithoutShowingRoom()
+        {
+            _def.LayoutSchema = "hidden-harbours/hull-walk@1";
+            _def.LiftSets = new[] { new HullMeshDef.LiftSet { Key = "deck", DeckId = "deck", LiftLevels = 8 } };
+            Assert.That(_def.CutawayForDeck("deck").Opens, Is.True);
+            Assert.That(_def.CutawayForDeck("deck").Level, Is.Zero);
+        }
+
+        [Test]
         public void AnEnclosedLevel_AnswersItsOwnTag()
         {
             Assert.AreEqual(2, _def.CutawayForDeck("house_sole").Level);

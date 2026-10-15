@@ -1,0 +1,382 @@
+[
+  {
+    "key": "coast",
+    "area": {
+      "eelgrass": 20.95703125,
+      "ripple": 27.9892578125,
+      "talus": 1.20703125,
+      "irishmoss": 0.8056640625,
+      "rockweed": 8.69140625,
+      "ledge": 5.2578125,
+      "musselbed": 2.6640625,
+      "foreshore": 20.3642578125,
+      "shelf": 1.216796875,
+      "silt": 3.619140625,
+      "marsh": 20.65234375,
+      "shingle": 5.36328125,
+      "sand": 21.6513671875,
+      "marram": 19.283203125,
+      "path": 3.265625,
+      "grass": 58.6025390625,
+      "sedge": 4.9599609375,
+      "dirt": 1.96484375
+    },
+    "rows": [
+      {
+        "material": "sedge",
+        "area": 4.9599609375,
+        "density": 2.620988383540067,
+        "mix": {
+          "SpeckledAlder": 1,
+          "WinterberryHolly": 1,
+          "TussockSedge": 3,
+          "SoftRush": 3,
+          "BlueFlag": 3,
+          "SweetGale": 2
+        }
+      },
+      {
+        "material": "grass",
+        "area": 58.6025390625,
+        "density": 0.9385258877834991,
+        "mix": {
+          "RedOsierDogwood": 1,
+          "WildRose": 3,
+          "Raspberry": 2,
+          "LowbushBlueberry": 4,
+          "CommonJuniper": 2,
+          "SheepLaurel": 1,
+          "StaghornSumac": 1,
+          "Lupin": 7,
+          "OxeyeDaisy": 6,
+          "Buttercup": 5,
+          "QueenAnne": 3,
+          "Fireweed": 3,
+          "Goldenrod": 3,
+          "MeadowGrass": 8,
+          "Timothy": 6
+        }
+      },
+      {
+        "material": "marram",
+        "area": 19.283203125,
+        "density": 1.1927478983085182,
+        "mix": {
+          "Bayberry": 2,
+          "SweetFern": 2,
+          "BeachPea": 3,
+          "MarramGrass": 16
+        }
+      },
+      {
+        "material": "sand",
+        "area": 21.6513671875,
+        "density": 0.13855937936944657,
+        "mix": {
+          "MarramGrass": 3
+        }
+      },
+      {
+        "material": "marsh",
+        "area": 20.65234375,
+        "density": 1.0168337431435597,
+        "mix": {
+          "SaltmeadowHay": 8,
+          "BlackRush": 6,
+          "Cattail": 2,
+          "Cordgrass": 5
+        }
+      },
+      {
+        "material": "silt",
+        "area": 3.619140625,
+        "density": 0.8289260658391797,
+        "mix": {
+          "Glasswort": 3
+        }
+      },
+      {
+        "material": "rockweed",
+        "area": 8.69140625,
+        "density": 1.6107865168539326,
+        "mix": {
+          "KnottedWrack": 7,
+          "Bladderwrack": 5,
+          "SeaLettuce": 2
+        }
+      },
+      {
+        "material": "foreshore",
+        "area": 20.3642578125,
+        "density": 0.14731693281542224,
+        "mix": {
+          "SeaLettuce": 3
+        }
+      },
+      {
+        "material": "talus",
+        "area": 1.20703125,
+        "density": 2.4854368932038833,
+        "mix": {
+          "Bladderwrack": 3
+        }
+      },
+      {
+        "material": "irishmoss",
+        "area": 0.8056640625,
+        "density": 3,
+        "mix": {
+          "IrishMoss": 5,
+          "SugarKelp": 2
+        }
+      },
+      {
+        "material": "eelgrass",
+        "area": 20.95703125,
+        "density": 0.2863000931966449,
+        "mix": {
+          "Eelgrass": 6
+        }
+      }
+    ]
+  },
+  {
+    "key": "barren",
+    "area": {
+      "shelf": 33.6572265625,
+      "talus": 6.2763671875,
+      "grass": 159.80859375,
+      "dirt": 6.1552734375,
+      "path": 3.943359375,
+      "sedge": 8.2919921875,
+      "mud": 2.220703125,
+      "silt": 8.162109375
+    },
+    "rows": [
+      {
+        "material": "grass",
+        "area": 159.80859375,
+        "density": 0.6445210334628828,
+        "mix": {
+          "LowbushBlueberry": 46,
+          "SheepLaurel": 8,
+          "Rhodora": 3,
+          "BlackHuckleberry": 7,
+          "CommonJuniper": 9,
+          "SweetFern": 6,
+          "Bayberry": 2,
+          "MeadowGrass": 10,
+          "Fireweed": 5,
+          "Goldenrod": 4,
+          "LadySlipper": 3
+        }
+      },
+      {
+        "material": "sedge",
+        "area": 8.2919921875,
+        "density": 2.17076904958191,
+        "mix": {
+          "Rhodora": 4,
+          "Leatherleaf": 5,
+          "TussockSedge": 6,
+          "SweetGale": 3
+        }
+      },
+      {
+        "material": "mud",
+        "area": 2.220703125,
+        "density": 3,
+        "mix": {
+          "SoftRush": 4,
+          "BlueFlag": 3
+        }
+      }
+    ]
+  },
+  {
+    "key": "marsh",
+    "area": {
+      "ripple": 21.716796875,
+      "musselbed": 1.5693359375,
+      "silt": 22.55859375,
+      "marsh": 145.9169921875,
+      "mud": 8.974609375,
+      "sand": 1.7529296875,
+      "grass": 15.216796875,
+      "sedge": 2.271484375,
+      "marram": 8.5380859375
+    },
+    "rows": [
+      {
+        "material": "marsh",
+        "area": 145.9169921875,
+        "density": 0.37007341770457575,
+        "mix": {
+          "SaltmeadowHay": 34,
+          "BlackRush": 14,
+          "Threesquare": 6
+        }
+      },
+      {
+        "material": "silt",
+        "area": 22.55859375,
+        "density": 1.7288311688311688,
+        "mix": {
+          "Cordgrass": 22,
+          "Glasswort": 14,
+          "Bladderwrack": 3
+        }
+      },
+      {
+        "material": "sedge",
+        "area": 2.271484375,
+        "density": 3,
+        "mix": {
+          "Cattail": 5,
+          "SoftRush": 3
+        }
+      },
+      {
+        "material": "mud",
+        "area": 8.974609375,
+        "density": 0.5571273122959739,
+        "mix": {
+          "SeaLettuce": 5
+        }
+      },
+      {
+        "material": "musselbed",
+        "area": 1.5693359375,
+        "density": 2.548848786558805,
+        "mix": {
+          "KnottedWrack": 4
+        }
+      },
+      {
+        "material": "marram",
+        "area": 8.5380859375,
+        "density": 1.756834038659499,
+        "mix": {
+          "MarramGrass": 12,
+          "BeachPea": 3
+        }
+      },
+      {
+        "material": "grass",
+        "area": 15.216796875,
+        "density": 1.1171864972404055,
+        "mix": {
+          "Bayberry": 2,
+          "SweetGale": 2,
+          "Goldenrod": 5,
+          "MeadowGrass": 6,
+          "WildRose": 2
+        }
+      },
+      {
+        "material": "ripple",
+        "area": 21.716796875,
+        "density": 0.18418922564978865,
+        "mix": {
+          "Eelgrass": 4
+        }
+      }
+    ]
+  },
+  {
+    "key": "meadow",
+    "area": {
+      "grass": 208.4814453125,
+      "talus": 2.3857421875,
+      "sedge": 3.5029296875,
+      "dirt": 5.68359375,
+      "path": 7.9208984375,
+      "mud": 0.541015625
+    },
+    "rows": [
+      {
+        "material": "grass",
+        "area": 208.4814453125,
+        "density": 0.5947771506194814,
+        "mix": {
+          "Lupin": 24,
+          "OxeyeDaisy": 14,
+          "Buttercup": 12,
+          "QueenAnne": 10,
+          "Fireweed": 7,
+          "Goldenrod": 9,
+          "Timothy": 14,
+          "MeadowGrass": 16,
+          "WildRose": 5,
+          "Raspberry": 5,
+          "StaghornSumac": 2,
+          "Serviceberry": 1,
+          "RedElderberry": 1,
+          "BeakedHazelnut": 1,
+          "WildRaisin": 1,
+          "CommonJuniper": 2
+        }
+      },
+      {
+        "material": "sedge",
+        "area": 3.5029296875,
+        "density": 2.569277948146083,
+        "mix": {
+          "SoftRush": 6,
+          "BlueFlag": 3
+        }
+      }
+    ]
+  },
+  {
+    "key": "swale",
+    "area": {
+      "grass": 135.525390625,
+      "sedge": 64.1708984375,
+      "mud": 9.5810546875,
+      "silt": 14.755859375,
+      "path": 3.5234375,
+      "dirt": 0.958984375
+    },
+    "rows": [
+      {
+        "material": "sedge",
+        "area": 64.1708984375,
+        "density": 0.8103361689823622,
+        "mix": {
+          "SpeckledAlder": 5,
+          "PussyWillow": 2,
+          "RedOsierDogwood": 3,
+          "Meadowsweet": 6,
+          "Steeplebush": 5,
+          "SweetGale": 5,
+          "Leatherleaf": 4,
+          "WinterberryHolly": 2,
+          "SoftRush": 10,
+          "TussockSedge": 10
+        }
+      },
+      {
+        "material": "mud",
+        "area": 9.5810546875,
+        "density": 1.5655896442768322,
+        "mix": {
+          "BlueFlag": 8,
+          "Cattail": 7
+        }
+      },
+      {
+        "material": "grass",
+        "area": 135.525390625,
+        "density": 0.17708858752828258,
+        "mix": {
+          "LadySlipper": 3,
+          "MeadowGrass": 8,
+          "Timothy": 5,
+          "Fireweed": 4,
+          "Goldenrod": 4
+        }
+      }
+    ]
+  }
+]

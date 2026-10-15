@@ -11,17 +11,9 @@ namespace HiddenHarbours.Art
     /// SAME advancing crests the hull rocks on (<c>BoatWaveMotion</c>, B2). One wave truth, two
     /// consumers, by construction.
     ///
-    /// <para><b>Smooth by construction (ADR 0018 addendum).</b> The bridge does not publish raw
-    /// throttled <see cref="WaveMath.TrainsFrom"/> snapshots — that design JUMPS the phase whenever the
-    /// drifting wind moves the dominant wavelength under a large running t (the owner's "jittery"
-    /// boat-rocking bug, which would have hit the water identically). Instead it owns a
-    /// <see cref="WaveFieldAnimator"/> — the SAME presentation smoother <c>BoatWaveMotion</c> ticks —
-    /// and ticks it every frame with the game-time delta: the animator eases each train's
-    /// wavelength/amplitude/direction toward the weather-derived targets, re-derives the dispersion
-    /// speed from the EASED wavelength (speed is never free), accumulates phase INCREMENTALLY in double,
-    /// and returns trains whose accumulated phase is BAKED INTO <see cref="WaveTrain.PhaseOffset"/> —
-    /// to be sampled at <c>timeSeconds = 0</c>. Both consumers tick the same animator code with the
-    /// same inputs each frame, so the water and the hull ride the IDENTICAL eased sea.</para>
+    /// <para>WaveMemory evaluates past wind on fixed world-time grids. WaveFieldAnimator bakes
+    /// travel at the clock into PhaseOffset; every consumer samples that payload at time zero.
+    /// SharedWaveField publishes the same payload to riders and seakeeping.</para>
     ///
     /// <para><b>What it publishes</b> (via <see cref="Shader.SetGlobalVector(int, Vector4)"/>, outside
     /// any per-material CBUFFER, like <c>_SunDir</c>/<c>_WindWorld</c>/<c>_MoonDir</c>):
@@ -32,7 +24,7 @@ namespace HiddenHarbours.Art
     /// <item><c>_WavePhases</c> (trains 0–3) and <c>_WavePhases2</c> (trains 4–7) — the animator-baked
     ///   phase (radians, wrapped to [0, 2π) in C# DOUBLE before the float cast). The shader evaluates
     ///   <c>θ = k·(dir·worldPos) + φᵢ</c> — <b>NO time uniform at all</b>: the advancing time lives in
-    ///   the phase the animator accumulates, so the unbounded game time never touches float trig on
+    ///   the phase the animator evaluates, so the unbounded game time never touches float trig on
     ///   the GPU, and the shader NEVER re-derives the phase speed (dispersion lives in C# only —
     ///   ADR 0018 §(4)).</item>
     /// <item><c>_WaveFieldParams</c> — x = live train count (0 = nothing published → the shader's
@@ -48,7 +40,7 @@ namespace HiddenHarbours.Art
     /// <see cref="RuntimeInitializeOnLoadMethod"/> spawns one hidden <c>[DontDestroyOnLoad]</c> host
     /// before the first scene, so every scene's water reads the field with no wiring. The host SURVIVES
     /// scene changes, so it calls <see cref="WaveFieldAnimator.Reset"/> on every scene load — a region
-    /// teleport must snap to the live weather, never ease across the travel gap.</para>
+    /// teleport evaluates the destination wind history at the current clock.</para>
     ///
     /// <para><b>Cycle-off / edit-mode convention.</b> When there is no sim (<c>GameServices.Environment</c>
     /// or <c>Clock</c> null — EditMode, pre-boot, a bare art scene), the bridge publishes an EMPTY field
@@ -59,12 +51,12 @@ namespace HiddenHarbours.Art
     ///
     /// <para><b>Seam discipline (rule 4) &amp; determinism (rule 5).</b> Reads the sim ONLY through the
     /// Core <see cref="GameServices.Environment"/>/<see cref="GameServices.Clock"/> accessors and never
-    /// writes it. Nothing is saved; the animator's presentation-only statefulness is documented on its
-    /// class (the sim contract — B3 forces — keeps reading the pure <see cref="WaveMath"/> path).
+    /// writes it. Nothing is saved; the field has no frame history. Core's IWaveWindSource
+    /// supplies the past weather without coupling Art to the Environment module.
     /// Visual-only: the sim never touches this bridge.</para>
     ///
     /// <para><b>Tuning (rule 6) — ONE settings instance (ADR 0018 §(5)).</b> The derivation constants
-    /// and the smoothing come from <c>GameConfig.WaveField</c> / <c>.WaveFieldAnimator</c> through
+    /// and wind windows come from <c>GameConfig.WaveField</c> through
     /// <see cref="GameServices"/>, which is the same instance <c>BoatWaveMotion</c>, the seakeeping
     /// forces, the wake, the buoys, the trap haul and the drift weed read. The hull therefore rocks on
     /// the waves the player sees because there is only one set of numbers — not because two copies
@@ -220,23 +212,13 @@ namespace HiddenHarbours.Art
             _lastTimeSeconds = time;
             _hasLastTime = true;
 
-            // Tick the eased, phase-continuous field and publish it. The accumulated phase rides in
-            // each train's PhaseOffset, so the packed field is the t = 0 evaluation frame.
-            //
-            // ⚠️ THIS ANIMATOR IS THE SEA. It used to say here that the boat "ticks the same animator
-            // code with the same inputs — the identical eased sea", which was true of the code and
-            // the inputs and false of the STATE: WaveFieldAnimator accumulates travel phase from zero
-            // at its own first tick and at every Reset, so a hull that woke at a different moment
-            // from this host carried a different Φ and rode the right wave at the wrong instant
-            // (owner playtest 2026-08-07 — the hulls that never settle at their waterline). The trains
-            // are therefore PUBLISHED to the Core seam beside the shader push, in the same statement
-            // pair, so a rider cannot even be one tick behind the pixels.
+            // Derive once, bake at the clock, then share the identical field with both readers.
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-            WaveTrains trains = _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
-                                               sample.WindVector, sample.SeaState01,
-                                               in field, in smoothing);
+            WaveTrains trains = env is IWaveWindSource history
+                ? _animator.Tick(time, history, in field)
+                : _animator.Tick(dt, time, sample.WindVector, sample.SeaState01, in field, in smoothing);
             PublishGlobals(Pack(in trains));
             SharedWaveField.Publish(this, in trains);
 

@@ -75,8 +75,9 @@ The editor's own environment gets `ALLUSERSPROFILE=<allusersprofile>` when the s
 
 **Locking.** Every state change happens under one lock file made by exclusive create, holding the
 PID, its creation time and what took it. A lock whose holder is dead is stale: it is renamed aside,
-checked and removed, and the break goes in `log.jsonl`. State files are written to a temp file and
-`os.replace`d.
+checked and removed, and the break goes in `log.jsonl`. Releasing the lock retries its delete for up
+to a second: Windows will not delete a file another process holds open, and every keeper process
+opens the lock to read it. State files are written to a temp file and `os.replace`d.
 
 **Recovery.** Every call first reconciles state with the process list. A launch whose watchdog and
 editor are both dead is closed as `watchdog lost`. An editor alive with no watchdog is adopted by a
@@ -115,7 +116,7 @@ RETURN <lease-id> | <label> on <box>, added by seat | 18:13:36Z to 18:15:06Z, gi
 python -m unittest discover -s tools/slot-keeper -p "test_slot.py" -v
 ```
 
-31 cases against a fake machine (clock, memory, disk, processes, kills); nothing real is started
+33 cases against a fake machine (clock, memory, disk, processes, kills); nothing real is started
 or closed. Each case gets its own state folder under the box's `Temp/slot-tests/` (git-ignored,
 never deleted). The fake clock moves only through `sleep` and fails a test that runs a whole fake
 day, so a broken stop rule shows up red instead of hanging.

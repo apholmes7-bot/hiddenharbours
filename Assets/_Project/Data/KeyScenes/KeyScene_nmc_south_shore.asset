@@ -13,28 +13,28 @@ MonoBehaviour:
   m_Name: KeyScene_nmc_south_shore
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
   Id: keyscene.nmc_south_shore
-  DisplayName: 'The south shore: houses on the red bank'
+  DisplayName: 'The south shore: the estates on the bluff and across the road'
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_south_shore/scene.json,
-    10999 bytes, sha256 e982b56c0d4e7b1762e228f1cedab2027bf5e03b86a405e796a8c1cde8c01c8c
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_south_shore/scene.json,
+    153269 bytes, sha256 556410360a25c9d3ce0082c30538cbd358d7ec584ea60cc52b1e3bd30d123739
   Placed: 0
   Pieces:
-  - Id: structure.nmc_south_shore_house_4
+  - Id: structure.nmc_south_shore_house_1
     Kind: building
     Owner: H8
-    Kit: "HouseIso (Art/houseIsoRig.js), its preset\u2019s fields"
-    Piece: HouseIso
+    Kit: NmcShoreEstates.estateHouse
+    Piece: estateHouse
     State: 
-    At: {x: -278, y: -160.1}
-    Z: 5.49
+    At: {x: -345, y: -148.5}
+    Z: 6.7
     StandsOn: ground
     MountHost: 
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
-    Dir: 2
-    HasSortY: 0
-    SortY: 0
+    Dir: 4
+    HasSortY: 1
+    SortY: -160.1
     Layer: 
     Walk: 
     Collider: 
@@ -43,170 +43,226 @@ MonoBehaviour:
     WhenTide: 
     Words: []
     Options:
-    - Key: preset
-      Value: dormerCape
-    - Key: nmc.name
-      Value: '"a south shore house (dormerCape)"'
-    - Key: nmc.faces
-      Value: '"N: its door to Route 91; its sea side to the camera"'
+    - Key: found
+      Value: '{"mat":"stoneG","tex":"granite"}'
+    - Key: frame
+      Value: trimT
+    - Key: trim
+      Value: trimT
+    - Key: lites
+      Value: '[2,3]'
+    - Key: door
+      Value: cedarN
+    - Key: patioZ
+      Value: -0.36
+    - Key: parts
+      Value: '[{"id":"body","e0":-8,"e1":6,"n0":-4,"n1":4.5,"H":3.1,"up":2.75,"roof":{"t":"gable","r":"e","p":0.95,"ov":0.55,"mat":"roofC","tex":"shake","fascia":"trimT"},"side":{"mat":"shingleG","tex":"shingle"},"skip":["E"],"S":{"g":"F:1.6
+        W:4.1 F:7.0 W:9.9 F:12.4"},"W":{"g":"w:6.8"},"N":{"g":"w:1.6 w:3.8 D:7.0 w:10.2
+        w:12.4"}},{"id":"wing","e0":6,"e1":13,"n0":-6,"n1":4.5,"H":3.1,"up":2.75,"roof":{"t":"gable","r":"n","p":1.25,"ov":0.5,"mat":"roofC","tex":"shake","fascia":"trimT"},"side":{"mat":"shingleG","tex":"shingle"},"skip":["W"],"S":{"g":"T:1.25
+        T:5.75","a":"v:1.75 v:5.25"},"E":{"g":"w:2.2 w:5.2 w:8.4"},"N":{"g":"g:1.9
+        g:5.1"}}]'
+    - Key: dormers
+      Value: '[{"e":-3.2,"w":1.4},{"e":2.4,"w":1.4}]'
+    - Key: towers
+      Value: '[{"e":-10.4,"n":-2.6,"R":3,"z0":0,"H":5.7,"up":2.9,"band":2.85,"side":{"mat":"shingleG","tex":"shingle"},"trim":"trimT","faces":{"S":{"g":"F:1.15","u":"w:1.15"},"SE":{"g":"w:1.15","u":"w:1.15"},"SW":{"g":"w:1.15","u":"w:1.15"},"W":{"g":"w:1.15","u":"w:1.15"}},"roof":{"ov":0.5,"kr":0.6,"kh":0.62,"ah":3.3,"mat":"roofC","tex":"shake","fascia":"trimT"},"finial":"copper"}]'
+    - Key: chimneys
+      Value: '[{"e0":8.1,"e1":10.9,"n0":-7.25,"n1":-6,"ground":true,"z1":2.5,"mat":"stoneG","tex":"granite","capMat":"stoneG"},{"e0":8.6,"e1":10.4,"n0":-6.95,"n1":-6,"ground":true,"z1":8.6,"mat":"stoneG","tex":"granite","capMat":"stoneG"},{"e0":-4.5,"e1":-3.6,"n0":0.6,"n1":1.5,"z0":5,"z1":8,"mat":"stoneG","tex":"granite","capMat":"stoneG"}]'
+    - Key: hearths
+      Value: '[{"e":9.5,"n":-7.25,"w":1.05,"h":0.95,"z":-0.36,"wood":[12.2,-7.6]}]'
+    - Key: porches
+      Value: '[{"side":"S","e0":-6.4,"e1":6,"n0":-7,"n1":-4,"z":-0.04,"roof":{"t":"shed","z0":2.65,"z1":3.05,"ov":0.35,"mat":"roofC","tex":"shake","fascia":"trimT"},"cols":{"n":9,"t":"round","mat":"trimT"},"floor":"stoneG","floorTex":"flag","skirt":"stoneG","skirtTex":"granite"},{"side":"N","e0":-1.4,"e1":1.4,"n0":4.5,"n1":6.2,"z":-0.04,"roof":{"t":"gable","z0":2.7,"p":0.9,"mat":"roofC","tex":"shake","fascia":"trimT"},"cols":{"n":2,"t":"round","mat":"trimT"},"steps":[{"at":0,"w":1.6,"mat":"stoneG","tex":"granite"}]}]'
+    - Key: patios
+      Value: '[{"e0":-13.6,"e1":13.6,"n0":-10.6,"n1":-7,"z":-0.36,"mat":"stoneG","tex":"flag","edge":"stoneG","edgeTex":"granite","sides":["W","E"]}]'
+    - Key: steps
+      Value: '[{"top":[0,-10.6,-0.36],"dir":[0,-1],"w":3.2,"mat":"stoneG","tex":"granite","topTex":"flag"}]'
+    - Key: furn
+      Value: '[{"k":"table","e":-8.6,"n":-8.9,"z":-0.36,"w":2.2,"d":0.95,"m":"wood"},{"k":"chair","e":-9.121052631578948,"n":-8.18,"z":-0.36,"f":"S","m":"trimT"},{"k":"chair","e":-9.121052631578948,"n":-9.620000000000001,"z":-0.36,"f":"N","m":"trimT"},{"k":"chair","e":-8.078947368421051,"n":-8.18,"z":-0.36,"f":"S","m":"trimT"},{"k":"chair","e":-8.078947368421051,"n":-9.620000000000001,"z":-0.36,"f":"N","m":"trimT"},{"k":"umb","e":-8.6,"n":-8.9,"z":-0.36,"r":1.5,"h":2.4,"m":"canvasW","m2":"canvasW"},{"k":"sofa","e":9.5,"n":-9.7,"z":-0.36,"f":"N","w":2.2,"m":"cushion"},{"k":"adk","e":7.6,"n":-8.6,"z":-0.36,"f":"E","m":"trimT"},{"k":"adk","e":11.4,"n":-8.6,"z":-0.36,"f":"W","m":"trimT"},{"k":"rtable","e":9.5,"n":-8.55,"z":-0.36,"r":0.38,"h":0.42,"m":"wood"},{"k":"adk","e":-3,"n":-5.6,"z":-0.04,"f":"S","m":"trimT"},{"k":"adk","e":3,"n":-5.6,"z":-0.04,"f":"S","m":"trimT"}]'
+    - Key: xfurn
+      Value: '[{"k":"planter","e":-12.9,"n":-10.15,"z":-0.36,"s":1},{"k":"planter","e":-5.2,"n":-10.15,"z":-0.36,"s":1},{"k":"planter","e":-2.1,"n":-10.15,"z":-0.36,"s":1},{"k":"planter","e":2.1,"n":-10.15,"z":-0.36,"s":1},{"k":"planter","e":5.2,"n":-10.15,"z":-0.36,"s":1},{"k":"planter","e":13,"n":-10.15,"z":-0.36,"s":1},{"k":"planter","e":-6,"n":-6.6,"z":-0.04,"s":0.85},{"k":"planter","e":5.6,"n":-6.6,"z":-0.04,"s":0.85}]'
+    - Key: entry
+      Value: '{"e":0,"n":4.5,"facing":"N"}'
+    - Key: g
+      Value: '{"e0":-19,"n0":-20,"s":1,"w":39,"h":33,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
     - Key: nmc.rig
-      Value: '"HouseIso"'
+      Value: '"NmcShoreEstates"'
     - Key: nmc.centre
-      Value: '[-278,-156.5]'
-    - Key: nmc.frontM
-      Value: 3.6
+      Value: '[-345,-148.5]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 14
+    - Key: nmc.def
+      Value: '{"name":"estate 1, the tower house (21 x 10.5 m; photo 4)","defType":"BuildingDef","kit":"NmcShoreEstates.estateHouse","faces":"N:
+        its door to its court and Route 91; its sea side, terrace and lawn to the
+        camera (dir 4)","lot":"lot.nmc_south_shore_estate_1","footprintM":[21,10.5],"mainFloor":6.7,"household":"a
+        retired judge from Halifax and her husband, who sails","extra":"an octagonal
+        tower 5.5 m across at the west end; a colonnade 12.4 m long; a granite terrace
+        26 x 3.6 m; the garage under the east wing, its doors to the court","photo":4}'
     - Key: nmc.lot
-      Value: '"lot.nmc_south_shore_4"'
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
+    - Key: nmc.reachBox
+      Value: '[-360.6,-329.4,-164.6,-140.3,5.2,19.7]'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_south_shore
     - Key: nmc.type
       Value: BuildingDef
+    - Key: nmc.household
+      Value: a retired judge from Halifax and her husband, who sails
+    - Key: nmc.scene.layout
+      Value: '{"units":"region metres (x east, y north), z about mean sea level","route91":{"id":"road.nmc_route_91","planTail":[[-206,-82],[-232,-112],[-268,-130],[-320,-138.5],[-380,-142]],"sceneTail":[[-206,-82],[-229.4,-109],[-240,-114.6],[-252,-117.6],[-266,-119],[-284,-119.6],[-302,-119.8],[-316,-120.4],[-328,-122],[-339,-124.8],[-349,-128.6],[-358,-133],[-366,-137.4],[-373,-140.6],[-380,-142]],"widthM":5.8,"surface":"asphalt","swing":[{"x":-366,"plan":-141.18,"scene":-137.4,"northM":3.78},{"x":-349,"plan":-140.19,"scene":-128.6,"northM":11.59},{"x":-328,"plan":-138.97,"scene":-122,"northM":16.97},{"x":-316,"plan":-137.85,"scene":-120.4,"northM":17.45},{"x":-302,"plan":-135.56,"scene":-119.8,"northM":15.76},{"x":-284,"plan":-132.62,"scene":-119.6,"northM":13.02},{"x":-266,"plan":-129,"scene":-119,"northM":10},{"x":-252,"plan":-122,"scene":-117.6,"northM":4.4},{"x":-240,"plan":-116,"scene":-114.6,"northM":1.4}],"edge":"(-380,
+        -142) as the plan has it","drawn":"the scene\u2019s own road kit nets in 26
+        m runs (the plan\u2019s line dropped by id in its views)"},"estates":[{"lot":"lot.nmc_south_shore_estate_1","n":1,"row":"the
+        bluff, south of Route 91","name":"the tower house","photo":4,"household":"a
+        retired judge from Halifax and her husband, who sails","centre":[-345,-148.5],"mainFloor":6.7,"bodyM":[21,10.5],"lotX":[-380,-330],"extra":"an
+        octagonal tower 5.5 m across at the west end; a colonnade 12.4 m long; a granite
+        terrace 26 x 3.6 m; the garage under the east wing, its doors to the court","style":"weathered
+        cedar shingle under cedar shakes; a long low body behind a colonnade of nine
+        round columns; an octagonal tower at the west end under a bell-cast roof with
+        a copper finial; a great gable at the east end with a granite chimney down
+        its face and an outdoor fireplace at its foot; a granite terrace 26 m long
+        with black planters and boxwood; the garage under the east wing","door":{"facing":"N","to":"its
+        court and Route 91"},"seaSide":"S: to the sea and the camera","drive":{"id":"drive.nmc_south_shore_1","surface":"setts","widthM":4,"pts":[[-345,-136.2],[-345,-129.78]]},"court":{"id":"court.nmc_south_shore_1","surface":"setts","widthM":6,"pts":[[-355.2,-138.8],[-335.8,-138.8]]}},{"lot":"lot.nmc_south_shore_estate_2","n":2,"row":"the
+        bluff, south of Route 91","name":"the roof-walk house","photo":2,"household":"a
+        family from Montreal who summer here, three children and a Bernese; the grandparents
+        come for July","centre":[-305,-143],"mainFloor":6.55,"bodyM":[29,10],"lotX":[-328,-284],"extra":"gambrel
+        wings 8.5 and 6.5 m wide either side of the main block; a roof walk 6.4 x
+        2.6 m; a bluestone terrace 18 x 3.6 m; the pool 12 x 4.8 m on the lawn","style":"silver
+        cedar shingle and white trim; a two-storey block under a hipped roof with
+        a roof walk and two fieldstone chimneys and three dormers; gambrel wings either
+        side, their gambrel ends to the sea; a portico; a bluestone terrace; the pool
+        on the lawn at the bluff\u2019s edge; a circular drive of setts round a grass
+        circle on the court side","door":{"facing":"N","to":"its court and Route 91"},"seaSide":"S:
+        to the sea and the camera","drive":{"id":"drive.nmc_south_shore_2","surface":"setts","widthM":3.6,"pts":[[-305,-126.4],[-305,-122.629]]},"court":{"id":"loop.nmc_south_shore_2","surface":"setts","widthM":3.6,"pts":[[-305,-126.2],[-306.068,-126.32],[-307.083,-126.675],[-307.993,-127.247],[-308.753,-128.007],[-309.325,-128.917],[-309.68,-129.932],[-309.8,-131],[-309.68,-132.068],[-309.325,-133.083],[-308.753,-133.993],[-307.993,-134.753],[-307.083,-135.325],[-306.068,-135.68],[-305,-135.8],[-303.932,-135.68],[-302.917,-135.325],[-302.007,-134.753],[-301.247,-133.993],[-300.675,-133.083],[-300.32,-132.068],[-300.2,-131],[-300.32,-129.932],[-300.675,-128.917],[-301.247,-128.007],[-302.007,-127.247],[-302.917,-126.675],[-303.932,-126.32],[-305,-126.2]]},"pool":{"at":[-305,-156.2],"m":[12,4.8],"deck":[-8.5,8.5,-4.6,3.6],"fence":false}},{"lot":"lot.nmc_south_shore_estate_3","n":3,"row":"the
+        bluff, south of Route 91","name":"the point estate","photo":3,"household":"a
+        Toronto family of four generations; the house is open from June to Thanksgiving,
+        a caretaker couple in the carriage house","centre":[-262,-142],"mainFloor":6.6,"bodyM":[34,10.5],"lotX":[-284,-240],"extra":"a
+        great gambrel wing 9 m wide to the west, a gabled wing to the east; a roof
+        deck 6 x 3.2 m; the carriage house (8 x 9 m, three bays) on the court\u2019s
+        west side; a bluestone terrace 25 x 3.6 m","style":"weathered grey shingle
+        under silvered shakes; a two-storey block under a gambrel with four dormers
+        and a roof deck; a great gambrel wing to the west, its end to the sea; a gabled
+        wing east; three white chimneys; a porch on square columns; a bluestone terrace;
+        the carriage house (three bays) on the west side of a court of white shell;
+        a curved lawn mown out of the meadow, its curb, the salt pond below it","door":{"facing":"N","to":"its
+        court and Route 91"},"seaSide":"S: to the sea and the camera","drive":{"id":"drive.nmc_south_shore_3","surface":"shell","widthM":4.4,"pts":[[-255,-124.8],[-255,-120.6]]},"court":{"id":"court.nmc_south_shore_3","surface":"shell","widthM":11.9,"pts":[[-272.2,-130.55],[-247.8,-130.55]]}},{"lot":"lot.nmc_south_shore_estate_4","n":4,"row":"the
+        second row, north of Route 91","name":"the cupola Cape","photo":1,"household":"two
+        architects from Halifax who keep the house full of friends every weekend;
+        the bikes are for the guests","centre":[-356,-100],"mainFloor":6.45,"bodyM":[35,10],"lotX":[-380,-336],"extra":"a
+        gable-front wing 8 x 10 m to the west, its cupola; a wing 8.5 m to the east
+        with a roof walk; a small gable-front wing at the east end; the gravel circle
+        14 m across","style":"honey cedar shingle, white trim, dark green shutters
+        and window boxes; a storey and a half under a red-brown roof with three dormers
+        and two fieldstone chimneys; a gable-front wing west with its cupola and a
+        whale on the vane; a flat-roofed link with a Chinese Chippendale rail; a lower
+        wing east and a small gable-front wing at the end; a gravel circle in front
+        round its grass; the bikes","door":{"facing":"S","to":"its front walk and
+        Route 91"},"seaSide":"S: to the sea and the camera","drive":{"id":"drive.nmc_south_shore_4","surface":"gravel","widthM":3.8,"pts":[[-356,-121.7],[-356,-129.322]]},"court":{"id":"loop.nmc_south_shore_4","surface":"gravel","widthM":3.8,"pts":[[-356,-111.1],[-357.123,-111.218],[-358.196,-111.567],[-359.174,-112.131],[-360.013,-112.887],[-360.677,-113.8],[-361.136,-114.831],[-361.37,-115.936],[-361.37,-117.064],[-361.136,-118.169],[-360.677,-119.2],[-360.013,-120.113],[-359.174,-120.869],[-358.196,-121.433],[-357.123,-121.782],[-356,-121.9],[-354.877,-121.782],[-353.804,-121.433],[-352.826,-120.869],[-351.987,-120.113],[-351.323,-119.2],[-350.864,-118.169],[-350.63,-117.064],[-350.63,-115.936],[-350.864,-114.831],[-351.323,-113.8],[-351.987,-112.887],[-352.826,-112.131],[-353.804,-111.567],[-354.877,-111.218],[-356,-111.1]]},"walk":{"id":"walk.nmc_south_shore_4","surface":"slab","widthM":1.6,"pts":[[-356,-107.6],[-356,-111.2]]}},{"lot":"lot.nmc_south_shore_estate_5","n":5,"row":"the
+        second row, north of Route 91","name":"the shingled Colonial","photo":5,"household":"a
+        surgeon at the hospital in Sydney and her husband, a potter; they live here
+        all year, his studio is the east wing","centre":[-316,-101],"mainFloor":6.45,"bodyM":[19.6,10],"lotX":[-334,-298],"extra":"a
+        wing 5.6 x 7.8 m to the east (his studio); a portico on two columns, its roof
+        railed; a roof balustrade 5.2 x 3.2 m","style":"brown-grey cedar shingle;
+        white pilasters at the corners and a cornice; black-green shutters; two storeys
+        under a hipped slate roof with two dormers and a balustrade round its top;
+        a portico on two columns with a railed roof; a wing east (his studio); a walk
+        of bluestone slabs from the picket fence and its rose arbor","door":{"facing":"S","to":"its
+        front walk and Route 91"},"seaSide":"S: to the sea and the camera","drive":{"id":"drive.nmc_south_shore_5","surface":"gravel","widthM":3,"pts":[[-302,-116.7],[-302,-96.2],[-305.6,-93.6]]},"walk":{"id":"walk.nmc_south_shore_5","surface":"stones","widthM":1.3,"pts":[[-316,-117.2],[-316,-108.8]]}},{"lot":"lot.nmc_south_shore_estate_6","n":6,"row":"the
+        second row, north of Route 91","name":"the pool house","photo":6,"household":"a
+        young family from Fredericton: he builds boats, she teaches; two girls, a
+        terrier and a lot of friends at the pool","centre":[-273,-95],"mainFloor":6.45,"bodyM":[20.8,9.5],"lotX":[-294,-252],"extra":"a
+        porch 8.8 x 2.6 m and the balcony on it; a hipped wing west, a gable-front
+        wing east; the pool 10 x 4.6 m in a fenced bluestone deck","style":"pale grey
+        shingle, black windows, dark roofs; a two-storey gable to the south with a
+        porch on square columns and a balcony with a wood rail on it; a hipped wing
+        west and a gable-front wing east, French doors all along; the pool in a black
+        fence, bluestone coping, loungers; the drive up the west side to the court
+        and the garage behind","door":{"facing":"N","to":"its drive"},"seaSide":"S:
+        to the sea and the camera","drive":{"id":"drive.nmc_south_shore_6","surface":"gravel","widthM":3.2,"pts":[[-289,-116.556],[-289,-92.2],[-285.6,-88.2]]},"court":{"id":"court.nmc_south_shore_6","surface":"gravel","widthM":6,"pts":[[-286.6,-87.4],[-276.2,-87.4]]},"walk":{"id":"walk.nmc_south_shore_6","surface":"stones","widthM":0.9,"pts":[[-265.4,-106.8],[-259,-106.2]]},"pool":{"at":[-273,-107.6],"m":[10,4.6],"deck":[-7.4,7.4,-4,3.5],"fence":true}}],"stairs":[{"n":1,"x":-333.2,"lip":-164.14,"deck":[-333.2,-163.14,6.12],"foot":2.25,"rise":3.87},{"n":2,"x":-320.8,"lip":-163.46,"deck":[-320.8,-162.46,6.12],"foot":2.25,"rise":3.87},{"n":3,"x":-272.4,"lip":-161.12,"deck":[-272.4,-160.12,6.12],"foot":2.25,"rise":3.87}],"curvedLawn":{"centre":[-266,-150],"semiAxesM":[19,8],"curb":"curb.nmc_south_shore_3,
+        a 0.32 m slab kerb round its seaward half"},"mown":"62 boxes"}'
+    - Key: nmc.scene.flora
+      Value: '[{"key":"WhitePine","stage":"mature","at":[-378.4,-158]},{"key":"BalsamFir","stage":"pole","at":[-377,-151.5]},{"key":"RedSpruce","stage":"mature","at":[-378.6,-145.2]},{"key":"WhitePine","stage":"pole","at":[-375.6,-139]},{"key":"BalsamFir","stage":"young","at":[-371.4,-155.6]},{"key":"RedOak","stage":"mature","at":[-365,-141.6]},{"key":"WhiteBirch","stage":"pole","at":[-333.8,-137]},{"key":"WhiteBirch","stage":"young","at":[-331.6,-140.2]},{"key":"RedMaple","stage":"mature","at":[-314.6,-127]},{"key":"RedMaple","stage":"mature","at":[-295.4,-127]},{"key":"WhiteCedar","stage":"pole","at":[-327.2,-150]},{"key":"WhiteCedar","stage":"pole","at":[-327.4,-145.6]},{"key":"WhiteCedar","stage":"young","at":[-327,-141.2]},{"key":"WhiteCedar","stage":"pole","at":[-285.6,-147.6]},{"key":"WhiteCedar","stage":"young","at":[-285.4,-143]},{"key":"RedOak","stage":"mature","at":[-282.4,-124.4]},{"key":"RedMaple","stage":"mature","at":[-246.6,-126.6]},{"key":"WhitePine","stage":"pole","at":[-282.6,-158.4]},{"key":"WhitePine","stage":"mature","at":[-238.2,-146.4]},{"key":"BalsamFir","stage":"pole","at":[-232.6,-148.8]},{"key":"WhiteBirch","stage":"pole","at":[-219.4,-147.2]},{"key":"TremblingAspen","stage":"pole","at":[-243.8,-142]},{"key":"WhiteCedar","stage":"pole","at":[-372.4,-104.6]},{"key":"WhiteCedar","stage":"pole","at":[-339,-103.4]},{"key":"RedMaple","stage":"mature","at":[-366.6,-117]},{"key":"WhiteBirch","stage":"pole","at":[-343.6,-118.4]},{"key":"WhitePine","stage":"mature","at":[-377,-88.6]},{"key":"RedOak","stage":"mature","at":[-350.6,-85]},{"key":"RedOak","stage":"mature","at":[-328.4,-111]},{"key":"RedMaple","stage":"pole","at":[-303.4,-111.6]},{"key":"WhiteBirch","stage":"pole","at":[-331.2,-92]},{"key":"WhiteCedar","stage":"young","at":[-254,-111.6]},{"key":"WhiteCedar","stage":"young","at":[-254,-107.4]},{"key":"WhiteCedar","stage":"young","at":[-254,-103.2]},{"key":"WhiteCedar","stage":"young","at":[-254,-99]},{"key":"RedMaple","stage":"mature","at":[-291.2,-100.2]},{"key":"BalsamFir","stage":"pole","at":[-257.2,-85.4]},{"key":"TremblingAspen","stage":"pole","at":[-366,-80.4]},{"key":"WhiteBirch","stage":"pole","at":[-320.6,-80.2]},{"key":"TremblingAspen","stage":"young","at":[-262,-80.6]},{"kind":"plant","key":"WildRose","at":[-376,-164.77]},{"kind":"plant","key":"WildRose","at":[-372.9,-164.54]},{"kind":"plant","key":"WildRose","at":[-369.8,-164.85]},{"kind":"plant","key":"Bayberry","at":[-366.7,-164.31]},{"kind":"plant","key":"WildRose","at":[-357.4,-164.26]},{"kind":"plant","key":"Bayberry","at":[-354.3,-163.95]},{"kind":"plant","key":"WildRose","at":[-351.2,-163.9]},{"kind":"plant","key":"Bayberry","at":[-341.9,-163.2]},{"kind":"plant","key":"Bayberry","at":[-338.8,-163.64]},{"kind":"plant","key":"Bayberry","at":[-329.5,-162.34]},{"kind":"plant","key":"WildRose","at":[-323.3,-162.69]},{"kind":"plant","key":"Bayberry","at":[-311.4,-161.72]},{"kind":"plant","key":"WildRose","at":[-307.8,-161.26]},{"kind":"plant","key":"WildRose","at":[-301.6,-161.14]},{"kind":"plant","key":"Bayberry","at":[-298.5,-161.02]},{"kind":"plant","key":"WildRose","at":[-295.4,-161.14]},{"kind":"plant","key":"WildRose","at":[-292.3,-160.65]},{"kind":"plant","key":"WildRose","at":[-289.2,-160.21]},{"kind":"plant","key":"WildRose","at":[-283,-160.16]},{"kind":"plant","key":"Bayberry","at":[-279.9,-160.43]},{"kind":"plant","key":"Bayberry","at":[-264.4,-159.94]},{"kind":"plant","key":"Bayberry","at":[-258.2,-159.58]},{"kind":"plant","key":"WildRose","at":[-255.1,-159.75]},{"kind":"plant","key":"WildRose","at":[-245.8,-159.62]},{"kind":"plant","key":"Bayberry","at":[-238,-173.3]},{"kind":"plant","key":"Bayberry","at":[-235.4,-173.34]},{"kind":"plant","key":"Bayberry","at":[-232.8,-173.34]},{"kind":"plant","key":"CommonJuniper","at":[-230.2,-173.34]},{"kind":"plant","key":"Bayberry","at":[-225,-173.34]},{"kind":"plant","key":"CommonJuniper","at":[-222.4,-173.34]},{"kind":"plant","key":"Bayberry","at":[-217.2,-173.34]},{"kind":"plant","key":"Bayberry","at":[-378,-80.77]},{"kind":"plant","key":"Bayberry","at":[-372.4,-80.2]},{"kind":"plant","key":"Raspberry","at":[-369.6,-80.63]},{"kind":"plant","key":"WildRose","at":[-364,-80.15]},{"kind":"plant","key":"WildRose","at":[-358.4,-80.91]},{"kind":"plant","key":"WildRose","at":[-355.6,-80.15]},{"kind":"plant","key":"Bayberry","at":[-352.8,-80.58]},{"kind":"plant","key":"Bayberry","at":[-350,-80.5]},{"kind":"plant","key":"Bayberry","at":[-347.2,-80.1]},{"kind":"plant","key":"WildRose","at":[-338.8,-80.51]},{"kind":"plant","key":"Raspberry","at":[-333.2,-80.75]},{"kind":"plant","key":"Bayberry","at":[-330.4,-80.26]},{"kind":"plant","key":"WildRose","at":[-327.6,-80.2]},{"kind":"plant","key":"Bayberry","at":[-319.2,-80.16]},{"kind":"plant","key":"Bayberry","at":[-316.4,-80.07]},{"kind":"plant","key":"Bayberry","at":[-313.6,-80.73]},{"kind":"plant","key":"Bayberry","at":[-305.2,-80.27]},{"kind":"plant","key":"WildRose","at":[-302.4,-80.86]},{"kind":"plant","key":"Bayberry","at":[-299.6,-80.58]},{"kind":"plant","key":"Raspberry","at":[-294,-80.29]},{"kind":"plant","key":"Raspberry","at":[-291.2,-80.66]},{"kind":"plant","key":"Bayberry","at":[-288.4,-81.02]},{"kind":"plant","key":"WildRose","at":[-282.8,-80.84]},{"kind":"plant","key":"Bayberry","at":[-273.6,-80.23]},{"kind":"plant","key":"WildRose","at":[-271.6,-81.11]},{"kind":"plant","key":"Bayberry","at":[-266,-81.04]},{"kind":"plant","key":"WildRose","at":[-263.2,-80.65]},{"kind":"plant","key":"Raspberry","at":[-254.8,-79.88]},{"kind":"plant","key":"Bayberry","at":[-252,-80.66]},{"kind":"plant","key":"WildRose","at":[-246.4,-80.16]},{"kind":"plant","key":"Bayberry","at":[-248,-146.81]},{"kind":"plant","key":"WildRose","at":[-241.6,-150.2]},{"kind":"plant","key":"Bayberry","at":[-233.6,-152]},{"kind":"plant","key":"CommonJuniper","at":[-214.6,-153.2]},{"kind":"plant","key":"Bayberry","at":[-212.6,-158.4]}]'
     - Key: nmc.scene.sound
-      Value: '[{"id":"sound.nmc_south_shore","kind":"surf","at":[-264,-181],"z":2,"radiusM":25,"gain":"the
-        swash on the berm at the flood; the fire; a screen door up on the bank","lane":"audio"}]'
+      Value: '[{"id":"sound.nmc_south_shore","kind":"surf","at":[-300,-185],"z":1,"radiusM":60,"gain":"the
+        swash at the bluff\u2019s foot; a screen door, children at the pool, the flag;
+        peepers at the pond after dark"}]'
     - Key: nmc.scene.game
-      Value: '["the houses as homes, their doors to Route 91","the steps as stairs;
-        the bank\u2019s red face not walkable","the beach walkable to the water; the
-        flats below the frame dug for clams at low water","the fire ring lit in the
-        evening on the lamp rule, a seat round it","the dory ambient"]'
+      Value: '{"houses":"BuildingDefs: the bluff\u2019s doors to their courts, the
+        second row\u2019s to their fronts (the pool house\u2019s to its drive); the
+        terraces, porches, the balcony and the roof walks walkable at their heights","bluff":"the
+        red face is not walkable; the three lookout decks\u2019 stairs are, to the
+        beach","pond":"still water at +2.3, wadeable at its marsh edge; the canoe
+        is ambient","pools":"swimmable; their underwater lights on the lamp rule","road":"Route
+        91 on its new line; the gates\u2019 lanterns and the lantern posts light on
+        the lamp rule","boats":"the sloop swings on her mooring; the dory is ambient"}'
     - Key: nmc.scene.budgets
-      Value: '{"masters":[{"board":"strand_afternoon","sprites":212,"byFamily":{"building":2,"piece":5,"boat":1,"tree":2,"shrub":5,"grass":78,"flower":119}}],"frames":[{"frame":"wide_bank","pieces":5,"lights":0,"note":"plants
-        and grass as the masters count them, by area"},{"frame":"of_beach","pieces":3,"lights":0,"note":"plants
-        and grass as the masters count them, by area"}],"note":"Every piece is one
-        sprite; the two houses are the costliest. The bank\u2019s red face, the wrack
-        line and the lawns are the ground\u2019s paint, not sprites."}'
+      Value: '{"tiles":{"shore_r0c0_afternoon":{"px":[1120,736],"sprites":275,"counts":{"building":1,"prop":4,"tree":7,"shrub":14,"flower":145,"grass":104},"ms":14172,"fnv1a":"719bb2f1","file":"boards/shore_r0c0_afternoon.png"},"shore_r0c1_afternoon":{"px":[1120,736],"sprites":323,"counts":{"building":2,"prop":4,"tree":7,"shrub":14,"grass":133,"flower":163},"ms":13584,"fnv1a":"c519d637","file":"boards/shore_r0c1_afternoon.png"},"shore_r0c2_afternoon":{"px":[1120,736],"sprites":351,"counts":{"building":3,"piece":1,"prop":4,"vehicle":1,"tree":5,"shrub":18,"flower":205,"grass":114},"ms":19418,"fnv1a":"22151e90","file":"boards/shore_r0c2_afternoon.png"},"shore_r0c3_afternoon":{"px":[1120,736],"sprites":464,"counts":{"building":2,"piece":1,"prop":4,"tree":7,"shrub":13,"flower":290,"grass":147},"ms":16336,"fnv1a":"f891d35e","file":"boards/shore_r0c3_afternoon.png"},"shore_r0c4_afternoon":{"px":[1088,736],"sprites":608,"counts":{"grass":243,"flower":346,"shrub":19},"ms":12421,"fnv1a":"821ffa70","file":"boards/shore_r0c4_afternoon.png"},"shore_r1c0_afternoon":{"px":[1120,736],"sprites":149,"counts":{"building":2,"prop":13,"vehicle":1,"tree":10,"grass":37,"flower":82,"shrub":4},"ms":16422,"fnv1a":"5501a43d","file":"boards/shore_r1c0_afternoon.png"},"shore_r1c1_afternoon":{"px":[1120,736],"sprites":165,"counts":{"building":4,"prop":12,"tree":9,"flower":86,"grass":52,"shrub":2},"ms":23014,"fnv1a":"4f631d7c","file":"boards/shore_r1c1_afternoon.png"},"shore_r1c2_afternoon":{"px":[1120,736],"sprites":152,"counts":{"building":4,"piece":1,"prop":15,"tree":7,"flower":70,"grass":52,"shrub":3},"ms":18275,"fnv1a":"04407a0f","file":"boards/shore_r1c2_afternoon.png"},"shore_r1c3_afternoon":{"px":[1120,736],"sprites":213,"counts":{"building":2,"piece":1,"prop":8,"vehicle":1,"tree":6,"flower":117,"grass":74,"shrub":4},"ms":18339,"fnv1a":"8d56a385","file":"boards/shore_r1c3_afternoon.png"},"shore_r1c4_afternoon":{"px":[1088,736],"sprites":529,"counts":{"prop":1,"tree":4,"grass":210,"flower":297,"shrub":17},"ms":13420,"fnv1a":"6eaeb4c0","file":"boards/shore_r1c4_afternoon.png"},"shore_r2c0_afternoon":{"px":[1120,736],"sprites":195,"counts":{"building":1,"prop":1,"tree":6,"shrub":14,"rock":1,"grass":67,"flower":105},"ms":16156,"fnv1a":"8513c02b","file":"boards/shore_r2c0_afternoon.png"},"shore_r2c1_afternoon":{"px":[1120,736],"sprites":78,"counts":{"building":2,"piece":1,"prop":5,"boat":1,"tree":5,"shrub":5,"flower":46,"grass":13},"ms":15107,"fnv1a":"0ee5af39","file":"boards/shore_r2c1_afternoon.png"},"shore_r2c2_afternoon":{"px":[1120,736],"sprites":95,"counts":{"building":2,"piece":1,"prop":3,"tree":3,"shrub":10,"grass":33,"flower":43},"ms":15289,"fnv1a":"2c344027","file":"boards/shore_r2c2_afternoon.png"},"shore_r2c3_afternoon":{"px":[1120,736],"sprites":175,"counts":{"building":1,"prop":5,"piece":1,"tree":2,"shrub":11,"rock":1,"grass":67,"flower":87},"ms":15176,"fnv1a":"861837e7","file":"boards/shore_r2c3_afternoon.png"},"shore_r2c4_afternoon":{"px":[1088,736],"sprites":436,"counts":{"prop":1,"tree":4,"shrub":27,"flower":123,"grass":281},"ms":16544,"fnv1a":"4e026ca3","file":"boards/shore_r2c4_afternoon.png"},"shore_r3c0_afternoon":{"px":[1120,736],"sprites":5,"counts":{"rock":2,"flower":1,"grass":2},"ms":8487,"fnv1a":"e03df9ba","file":"boards/shore_r3c0_afternoon.png","rebaked":"10-07
+        (the sloop out)"},"shore_r3c1_afternoon":{"px":[1120,736],"sprites":6,"counts":{"boat":1,"prop":1,"rock":4},"ms":8711,"fnv1a":"80297224","file":"boards/shore_r3c1_afternoon.png","rebaked":"10-07
+        (the sloop out)"},"shore_r3c2_afternoon":{"px":[1120,736],"sprites":1,"counts":{"rock":1},"ms":10165,"fnv1a":"1bbd1c2f","file":"boards/shore_r3c2_afternoon.png"},"shore_r3c3_afternoon":{"px":[1120,736],"sprites":3,"counts":{"prop":1,"rock":1,"grass":1},"ms":9973,"fnv1a":"3997185d","file":"boards/shore_r3c3_afternoon.png"},"shore_r3c4_afternoon":{"px":[1088,736],"sprites":54,"counts":{"rock":4,"flower":11,"shrub":3,"grass":36},"ms":9495,"fnv1a":"83849680","file":"boards/shore_r3c4_afternoon.png"},"shore_r0c0_evening":{"px":[1120,736],"sprites":273,"counts":{"building":1,"prop":4,"tree":7,"shrub":13,"grass":106,"flower":142},"ms":17292,"fnv1a":"932122bf","file":"boards/shore_r0c0_evening.png"},"shore_r0c1_evening":{"px":[1120,736],"sprites":303,"counts":{"building":2,"prop":4,"tree":7,"shrub":16,"flower":156,"grass":118},"ms":18915,"fnv1a":"7ef9136b","file":"boards/shore_r0c1_evening.png"},"shore_r0c2_evening":{"px":[1120,736],"sprites":340,"counts":{"building":3,"piece":1,"prop":4,"vehicle":1,"tree":5,"shrub":12,"grass":120,"flower":194},"ms":18454,"fnv1a":"1102c8a0","file":"boards/shore_r0c2_evening.png"},"shore_r0c3_evening":{"px":[1120,736],"sprites":448,"counts":{"building":2,"piece":1,"prop":4,"tree":7,"shrub":16,"flower":266,"grass":152},"ms":18811,"fnv1a":"1378a61b","file":"boards/shore_r0c3_evening.png"},"shore_r0c4_evening":{"px":[1088,736],"sprites":623,"counts":{"flower":372,"grass":243,"shrub":8},"ms":15512,"fnv1a":"74bf5fba","file":"boards/shore_r0c4_evening.png"},"shore_r1c0_evening":{"px":[1120,736],"sprites":155,"counts":{"building":2,"prop":13,"vehicle":1,"tree":10,"flower":82,"grass":46,"shrub":1},"ms":19311,"fnv1a":"7d61bfca","file":"boards/shore_r1c0_evening.png"},"shore_r1c1_evening":{"px":[1120,736],"sprites":153,"counts":{"building":4,"prop":12,"tree":9,"grass":34,"flower":93,"shrub":1},"ms":20840,"fnv1a":"004dc640","file":"boards/shore_r1c1_evening.png"},"shore_r1c2_evening":{"px":[1120,736],"sprites":139,"counts":{"building":4,"piece":1,"prop":15,"tree":7,"flower":72,"grass":37,"shrub":3},"ms":19902,"fnv1a":"9e9a3313","file":"boards/shore_r1c2_evening.png"},"shore_r1c3_evening":{"px":[1120,736],"sprites":197,"counts":{"building":2,"piece":1,"prop":8,"vehicle":1,"tree":6,"flower":119,"grass":57,"shrub":3},"ms":19082,"fnv1a":"4f996583","file":"boards/shore_r1c3_evening.png"},"shore_r1c4_evening":{"px":[1088,736],"sprites":488,"counts":{"prop":1,"tree":4,"flower":302,"grass":176,"shrub":5},"ms":22036,"fnv1a":"5b5bddbc","file":"boards/shore_r1c4_evening.png"},"shore_r2c0_evening":{"px":[1120,736],"sprites":204,"counts":{"building":1,"prop":1,"tree":6,"shrub":8,"rock":3,"flower":119,"grass":66},"ms":20384,"fnv1a":"8478ca94","file":"boards/shore_r2c0_evening.png"},"shore_r2c1_evening":{"px":[1120,736],"sprites":69,"counts":{"building":2,"piece":1,"prop":5,"boat":1,"tree":5,"shrub":7,"rock":2,"flower":36,"grass":10},"ms":15621,"fnv1a":"15b454c9","file":"boards/shore_r2c1_evening.png"},"shore_r2c2_evening":{"px":[1120,736],"sprites":97,"counts":{"building":2,"piece":1,"prop":3,"tree":3,"shrub":10,"grass":30,"flower":48},"ms":15132,"fnv1a":"ddfa38dd","file":"boards/shore_r2c2_evening.png"},"shore_r2c3_evening":{"px":[1120,736],"sprites":177,"counts":{"building":1,"prop":5,"piece":1,"tree":2,"shrub":8,"grass":74,"flower":86},"ms":16368,"fnv1a":"108222d6","file":"boards/shore_r2c3_evening.png"},"shore_r2c4_evening":{"px":[1088,736],"sprites":445,"counts":{"prop":1,"tree":4,"shrub":24,"grass":277,"flower":139},"ms":21648,"fnv1a":"4472ba2c","file":"boards/shore_r2c4_evening.png"},"shore_r3c0_evening":{"px":[1120,736],"sprites":4,"counts":{"grass":3,"flower":1},"ms":8526,"fnv1a":"cfad521a","file":"boards/shore_r3c0_evening.png","rebaked":"10-07
+        (the sloop out)"},"shore_r3c1_evening":{"px":[1120,736],"sprites":5,"counts":{"boat":1,"prop":1,"rock":3},"ms":8647,"fnv1a":"b05043dd","file":"boards/shore_r3c1_evening.png","rebaked":"10-07
+        (the sloop out)"},"shore_r3c2_evening":{"px":[1120,736],"sprites":3,"counts":{"rock":3},"ms":10883,"fnv1a":"f636a17f","file":"boards/shore_r3c2_evening.png"},"shore_r3c3_evening":{"px":[1120,736],"sprites":5,"counts":{"prop":1,"rock":4},"ms":10471,"fnv1a":"9dd2729b","file":"boards/shore_r3c3_evening.png"},"shore_r3c4_evening":{"px":[1088,736],"sprites":39,"counts":{"rock":3,"grass":31,"flower":5},"ms":10731,"fnv1a":"e7b45009","file":"boards/shore_r3c4_evening.png"}}}'
     - Key: nmc.scene.ground
-      Value: '{"source":"export/HH-nmc-ground-part-1-reissue-2026-10-01/ground/NineMileCreekSeabed_HeightTex_plan.png
-        (16-bit, -6 to +6 m; file sha256 e840457db37afd925afb585cab322e2908c9ec9643d758c58244a34ae32ad90f,
-        pixels sha256 00cf42cf3ee43620f226bc916471f7d630bb3c9da58ec8324a840c8ca27b7848),
-        with its still water, through NmcHeightTex","ruled":"10-01, the owner on part
-        2 and part 1\u2019s record (\u201cI go with leans\u201d, STATE.md s4); the
-        re-issue carries the groove\u2019s fill, lean A\u2019s ramp, the river wall\u2019s
-        fill and the waterfront pads (STATE.md s6)","laid":[],"note":"The south shore
-        lays nothing. The houses stand on part 1\u2019s bank top at +5.5 and the steps
-        on its red bank, +5.2 down to +2.8. The red face, the wrack and the lawns
-        are the picture\u2019s paint."}'
-    - Key: nmc.scene.context
-      Value: '{"beach":"coast.nmc_rice_point_strand: a red bank 2 m tall, a storm
-        berm, then a sand beach whose flats run 42 m out at the spring low (below
-        the frame)","lots":["lot.nmc_south_shore_4","lot.nmc_south_shore_5"],"road":"road.nmc_route_91,
-        25 to 33 m north of the houses, above the frame; the houses\u2019 drives come
-        off it","changedFromPlan":[{"what":"the houses","plan":"village houses, lots
-        7 x 8.7 m, facing N, z 5.6","scene":"HouseIso dormerCape (lot 4) and gothicRevival
-        (lot 5), at the kit\u2019s sizes, their doors north to Route 91, on the texture\u2019s
-        ground (+5.49 and +5.51)","why":"the house kit\u2019s own sizes, as on the
-        north creek; the texture\u2019s bank top stands 0.1 m under the plan\u2019s
-        +5.6"},{"what":"the steps down the bank","plan":"none","scene":"timber steps
-        (gullySteps) from each lawn\u2019s edge to the beach, 3 m east of each house\u2019s
-        middle: 8.75 m long, 2.37 m down","why":"the bank is a 1:3 face, and the beach
-        below is the shore\u2019s clam ground"},{"what":"a fire ring and a dory","plan":"none","scene":"a
-        fire ring on the berm at (-263.5, -175.4); a dory hauled up at (-283, -175.4)","why":"the
-        strand\u2019s evening fire, and a boat for the flats"}]}'
+      Value: '{"package":"export/HH-nmc-ground-part-1-reissue-3-2026-10-07/","drawnOn":"export/HH-nmc-ground-part-1-reissue-2-2026-10-02/
+        (pixels b997bdce\u2026), with the bluff, the lawns, the pond\u2019s bed and
+        its berm below laid by the scene itself","ceiling":"+6.0, the texture\u2019s
+        MAX","laid":[],"inTexture":{"grading":"laid.nmc_south_shore","reissue":"HH-nmc-ground-part-1-reissue-3-2026-10-07
+        (pixels 5924a642\u2026)","still":"pond.nmc_salt_pond: +2.3 in the still texture
+        (pixels 2c796a61\u2026)","rule":"tools/nmcReissue3.js: the scene\u2019s laid
+        (bluff -> pond -> berm), line for line, at every texel centre of its box [-384,
+        -202, -214, -71]","asLaid":[{"id":"bluff.nmc_south_shore","x":[-380,-240],"eased":[[-380,-371],[-250,-240]],"what":"the
+        bank top set to +6.0 from Route 91\u2019s south edge to the lip; the lip 36.5
+        m inland of the plan\u2019s coast line (+-0.5 m of noise); a 0.6 m rounded
+        lip to +5.65, the red face to +2.35 over 3.3 m (+-0.5), a talus apron to +2.25
+        over 2.1 m, the beach below cut to meet it","lipSamples":[[-372,-165.93,3.42],[-362,-165.47,3.13],[-352,-164.96,3.08],[-342,-164.66,3.26],[-332,-163.97,3.52],[-322,-163.57,3.35],[-312,-163,2.97],[-302,-162.47,3.17],[-292,-161.87,3.29],[-282,-161.55,3.06],[-272,-161.09,3.12],[-262,-160.99,3.66],[-252,-161.17,3.65],[-242,-160.73,2.98]]},{"id":"pond.nmc_south_shore","what":"two
+        lobes, the bed to +1.0 (1.3 m under the water), the bank a meadow to +6.0
+        over 5 to 9 m (6.5 m into the dune to the east)","lobes":[{"c":[-227.5,-163.8],"ax":11.2,"ay":7.6},{"c":[-218.2,-167.4],"ax":5.6,"ay":4.4}],"level":2.3},{"id":"berm.nmc_south_shore","what":"the
+        barrier beach between the pond and the sea, its crest +2.9 along y -175.9
+        (+-0.35), x -243..-209","crest":2.9}],"measured":{"texels":32111,"m2":8027.75,"raised":18969,"cut":13142,"maxRaise":0.744,"maxRaiseAt":[-338.25,-164.75],"maxCut":-4.083,"maxCutAt":[-227.25,-161.75],"box":[-379.25,-209.25,-186.25,-128.25],"note":"each
+        texel centre of the 0.5 m grid, the laid ground against the 10-02 texture;
+        for the next re-issue (call 67)"}},"note":"No scene lays ground of its own:
+        the ground this scene laid on the 10-02 re-issue is in the ground re-issued
+        on 10-07, texel for texel by the same rule (32,593 texels; the pond\u2019s
+        still water 1,233). The boards stand as baked: the tools bake them again on
+        the ground they were drawn on (groundPkg, with laid)."}'
     - Key: nmc.scene.refs
       Value: '[]'
     - Key: nmc.scene.sourceRows
-      Value: 8
+      Value: 66
     - Key: nmc.scene.ownedRows
-      Value: 8
+      Value: 66
     - Key: nmc.deferred
       Value: placement=H8; names/households/calendar/visits/fire schedules=H13 after
         the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
         lane with art-pipeline/audio; river fishery=M3; bookings/fees/ring/bell/pool/court/interiors=separate
         scope; roads/access=H4 (R2), then R4; office identity=N3; crane gameplay=N9
-  - Id: structure.nmc_bank_steps_4
-    Kind: setPiece
+  - Id: structure.nmc_south_shore_house_2
+    Kind: building
     Owner: H8
-    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
-    Piece: gullySteps
+    Kit: NmcShoreEstates.estateHouse
+    Piece: estateHouse
     State: 
-    At: {x: -275, y: -163}
-    Z: 2.77
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 0
-    HasSortY: 1
-    SortY: -172.05
-    Layer: raised
-    Walk: stairs; the rope rails hold
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: run
-      Value: 8.75
-    - Key: rise
-      Value: 2.37
-    - Key: width
-      Value: 1.1
-    - Key: yaw
-      Value: -90
-    - Key: landing
-      Value: 1
-    - Key: nmc.name
-      Value: '"timber steps down the red bank (the gully steps\u2019 piece)"'
-    - Key: nmc.faces
-      Value: '"the flight descends south into the cove"'
-    - Key: nmc.gameplay
-      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/gullySteps.gameplay.json"'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_south_shore
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: prop.nmc_bank_bench_4
-    Kind: setPiece
-    Owner: H8
-    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
-    Piece: bench
-    State: 
-    At: {x: -281.2, y: -162.1}
-    Z: 5.24
+    At: {x: -305, y: -143}
+    Z: 6.55
     StandsOn: ground
     MountHost: 
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
     Dir: 4
-    HasSortY: 0
-    SortY: 0
-    Layer: raised
-    Walk: solid; sit
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: nmc.name
-      Value: '"a bench"'
-    - Key: nmc.faces
-      Value: '"its seat faces local +Y"'
-    - Key: nmc.gameplay
-      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/bench.gameplay.json"'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_south_shore
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: structure.nmc_south_shore_house_5
-    Kind: building
-    Owner: H8
-    Kit: "HouseIso (Art/houseIsoRig.js), its preset\u2019s fields"
-    Piece: HouseIso
-    State: 
-    At: {x: -250, y: -157.96}
-    Z: 5.51
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 2
-    HasSortY: 0
-    SortY: 0
+    HasSortY: 1
+    SortY: -152.6
     Layer: 
     Walk: 
     Collider: 
@@ -215,110 +271,2145 @@ MonoBehaviour:
     WhenTide: 
     Words: []
     Options:
-    - Key: preset
-      Value: gothicRevival
-    - Key: nmc.name
-      Value: '"a south shore house (gothicRevival)"'
-    - Key: nmc.faces
-      Value: '"N: its door to Route 91; its sea side to the camera"'
+    - Key: found
+      Value: '{"mat":"stoneW","tex":"fieldstone"}'
+    - Key: frame
+      Value: trimW
+    - Key: lites
+      Value: '[2,2]'
+    - Key: door
+      Value: navy
+    - Key: patioZ
+      Value: -0.3
+    - Key: parts
+      Value: '[{"id":"body","e0":-7,"e1":7,"n0":-5,"n1":5,"H":5.5,"up":2.75,"roof":{"t":"hip","p":0.72,"ov":0.45,"mat":"roofS","fascia":"trimW"},"side":{"mat":"shingleS","tex":"shingle"},"S":{"g":"F:1.5
+        W:4.2 F:7.0 W:9.8 F:12.5","u":"w:1.5 w:4.2 w:7.0 w:9.8 w:12.5"},"W":{"u":"w:3.0
+        w:7.0"},"E":{"u":"w:3.0 w:7.0"},"N":{"g":"w:2.0 w:4.5 D:7.0 w:9.5 w:12.0","u":"w:2.0
+        w:4.5 w:7.0 w:9.5 w:12.0"}},{"id":"west","kind":"gambrelN","e0":-15.5,"e1":-7,"n0":-4.5,"n1":4,"H":3,"roof":{"p":2,"pu":0.55,"bk":1.25,"ov":0.4,"mat":"roofS","fascia":"trimW"},"side":{"mat":"shingleS","tex":"shingle"},"skip":["E"],"S":{"g":"W:4.25","u":"w:2.9
+        w:5.6"},"W":{"g":"w:2.4 w:6.1"},"N":{"g":"w:2.5 w:6.0"}},{"id":"east","kind":"gambrelN","e0":7,"e1":13.5,"n0":-3.8,"n1":4,"H":2.9,"roof":{"p":2,"pu":0.55,"bk":1.15,"ov":0.4,"mat":"roofS","fascia":"trimW"},"side":{"mat":"shingleS","tex":"shingle"},"skip":["W"],"S":{"g":"w:1.6
+        w:4.9","u":"w:3.25"},"E":{"g":"w:2.2 w:5.6"},"N":{"g":"g:3.25"}}]'
+    - Key: dormers
+      Value: '[{"e":-4,"w":1.4},{"e":0,"w":1.4},{"e":4,"w":1.4}]'
+    - Key: walks
+      Value: '[{"e0":-3.2,"e1":3.2,"n0":-1.3,"n1":1.3,"z":9.25,"zc":8,"rail":"white","curb":"roofS"}]'
+    - Key: chimneys
+      Value: '[{"e0":-6.1,"e1":-5.1,"n0":-0.5,"n1":0.5,"z0":6,"z1":10,"mat":"stoneW","tex":"fieldstone"},{"e0":5.1,"e1":6.1,"n0":-0.5,"n1":0.5,"z0":6,"z1":10,"mat":"stoneW","tex":"fieldstone"},{"e0":13.5,"e1":14.4,"n0":-0.5,"n1":0.6,"ground":true,"z1":7.4,"mat":"stoneW","tex":"fieldstone"}]'
+    - Key: porches
+      Value: '[{"side":"S","e0":-1.7,"e1":1.7,"n0":-6.6,"n1":-5,"z":-0.06,"roof":{"t":"gable","z0":2.85,"p":0.5,"mat":"roofS"},"cols":{"n":2,"t":"round"},"floor":"blueS","floorTex":"slabs","skirt":"stoneW"},{"side":"N","e0":-1.8,"e1":1.8,"n0":5,"n1":7,"z":-0.06,"roof":{"t":"gable","z0":2.9,"p":0.5,"mat":"roofS"},"cols":{"n":2,"t":"round"},"steps":[{"at":0,"w":2}]}]'
+    - Key: patios
+      Value: '[{"e0":-9.2,"e1":9.2,"n0":-8.6,"n1":-5,"z":-0.3,"mat":"blueS","tex":"slabs","edge":"stoneW","sides":["W","E"]}]'
+    - Key: steps
+      Value: '[{"top":[-4.5,-8.6,-0.3],"dir":[0,-1],"w":2.2,"topTex":"slabs","mat":"blueS","tex":"slabs"},{"top":[4.5,-8.6,-0.3],"dir":[0,-1],"w":2.2,"topTex":"slabs","mat":"blueS","tex":"slabs"}]'
+    - Key: furn
+      Value: '[{"k":"table","e":-5.6,"n":-7,"z":-0.3,"w":2.6,"d":0.95,"m":"wood"},{"k":"chair","e":-6.21578947368421,"n":-6.28,"z":-0.3,"f":"S","m":"trimW"},{"k":"chair","e":-6.21578947368421,"n":-7.72,"z":-0.3,"f":"N","m":"trimW"},{"k":"chair","e":-4.984210526315789,"n":-6.28,"z":-0.3,"f":"S","m":"trimW"},{"k":"chair","e":-4.984210526315789,"n":-7.72,"z":-0.3,"f":"N","m":"trimW"},{"k":"umb","e":-5.6,"n":-7,"z":-0.3,"r":1.6,"h":2.5,"m":"navy","m2":"trimW"},{"k":"sofa","e":4.2,"n":-7.6,"z":-0.3,"f":"S","w":2.4,"m":"cushion"},{"k":"rtable","e":4.2,"n":-6.6,"z":-0.3,"r":0.4,"h":0.42,"m":"wood"},{"k":"plant","e":-2.2,"n":-5.5,"z":-0.3,"s":1.2,"bloom":"hydB"},{"k":"plant","e":2.2,"n":-5.5,"z":-0.3,"s":1.2,"bloom":"hydB"},{"k":"grill","e":8.2,"n":-6,"z":-0.3,"f":"S"}]'
+    - Key: entry
+      Value: '{"e":0,"n":5,"facing":"N"}'
+    - Key: g
+      Value: '{"e0":-21,"n0":-18,"s":1,"w":42,"h":31,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
     - Key: nmc.rig
-      Value: '"HouseIso"'
+      Value: '"NmcShoreEstates"'
     - Key: nmc.centre
-      Value: '[-250,-154]'
-    - Key: nmc.frontM
-      Value: 3.96
+      Value: '[-305,-143]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 14
+    - Key: nmc.def
+      Value: '{"name":"estate 2, the roof-walk house (29 x 10 m; photo 2)","defType":"BuildingDef","kit":"NmcShoreEstates.estateHouse","faces":"N:
+        its door to its court and Route 91; its sea side, terrace and lawn to the
+        camera (dir 4)","lot":"lot.nmc_south_shore_estate_2","footprintM":[29,10],"mainFloor":6.55,"household":"a
+        family from Montreal who summer here, three children and a Bernese; the grandparents
+        come for July","extra":"gambrel wings 8.5 and 6.5 m wide either side of the
+        main block; a roof walk 6.4 x 2.6 m; a bluestone terrace 18 x 3.6 m; the pool
+        12 x 4.8 m on the lawn","photo":2}'
     - Key: nmc.lot
-      Value: '"lot.nmc_south_shore_5"'
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-322.5,-288.6,-157.1,-134,5.05,19.55]'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_south_shore
     - Key: nmc.type
       Value: BuildingDef
-  - Id: structure.nmc_bank_steps_5
+    - Key: nmc.household
+      Value: a family from Montreal who summer here, three children and a Bernese;
+        the grandparents come for July
+  - Id: structure.nmc_south_shore_pool_2
     Kind: setPiece
     Owner: H8
-    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
-    Piece: gullySteps
+    Kit: NmcShoreEstates.estatePool
+    Piece: estatePool
     State: 
-    At: {x: -247, y: -162.25}
-    Z: 2.8
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 0
-    HasSortY: 1
-    SortY: -171.3
-    Layer: raised
-    Walk: stairs; the rope rails hold
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: run
-      Value: 8.75
-    - Key: rise
-      Value: 2.36
-    - Key: width
-      Value: 1.1
-    - Key: yaw
-      Value: -90
-    - Key: landing
-      Value: 1
-    - Key: nmc.name
-      Value: '"timber steps down the red bank (the gully steps\u2019 piece)"'
-    - Key: nmc.faces
-      Value: '"the flight descends south into the cove"'
-    - Key: nmc.gameplay
-      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/gullySteps.gameplay.json"'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_south_shore
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: prop.nmc_bank_bench_5
-    Kind: setPiece
-    Owner: H8
-    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
-    Piece: bench
-    State: 
-    At: {x: -253.2, y: -161.35}
-    Z: 5.25
+    At: {x: -305, y: -156.2}
+    Z: 6
     StandsOn: ground
     MountHost: 
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
     Dir: 4
-    HasSortY: 0
-    SortY: 0
-    Layer: raised
-    Walk: solid; sit
+    HasSortY: 1
+    SortY: -160.9
+    Layer: 
+    Walk: 
     Collider: 
     Variants:
     - today
     WhenTide: 
     Words: []
     Options:
-    - Key: nmc.name
-      Value: '"a bench"'
-    - Key: nmc.faces
-      Value: '"its seat faces local +Y"'
-    - Key: nmc.gameplay
-      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/bench.gameplay.json"'
+    - Key: w
+      Value: 12
+    - Key: d
+      Value: 4.8
+    - Key: deck
+      Value: '[-8.5,8.5,-4.6,3.6]'
+    - Key: furn
+      Value: '[{"k":"chaise","e":-5.2,"n":3,"f":"S","m":"trimW"},{"k":"chaise","e":-3.4,"n":3,"f":"S","m":"trimW"},{"k":"chaise","e":3.4,"n":3,"f":"S","m":"trimW"},{"k":"chaise","e":5.2,"n":3,"f":"S","m":"trimW"},{"k":"umb","e":0,"n":3,"r":1.4,"h":2.3,"m":"navy","m2":"trimW"}]'
+    - Key: g
+      Value: '{"e0":-12,"n0":-8,"s":1,"w":25,"h":16,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-305,-156.2]'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 16
+    - Key: nmc.rad
+      Value: 9
+    - Key: nmc.reachBox
+      Value: '[-313.5,-296.5,-160.8,-152.6,5.5,8.6]'
+    - Key: nmc.def
+      Value: '{"name":"estate 2\u2019s pool (12 x 4.8 m) on its bluestone terrace","defType":"SetPieceDef","kit":"NmcShoreEstates.estatePool","faces":"S
+        (dir 4); its steps at the shallow (west) end","lights":"underwater, lit at
+        dusk"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_south_shore
     - Key: nmc.type
       Value: SetPieceDef
-  - Id: boat.nmc_shore_dory
+  - Id: structure.nmc_south_shore_house_3
+    Kind: building
+    Owner: H8
+    Kit: NmcShoreEstates.estateHouse
+    Piece: estateHouse
+    State: 
+    At: {x: -262, y: -142}
+    Z: 6.6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -153.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: found
+      Value: '{"mat":"stoneW","tex":"fieldstone"}'
+    - Key: frame
+      Value: trimW
+    - Key: lites
+      Value: '[2,2]'
+    - Key: door
+      Value: navy
+    - Key: patioZ
+      Value: -0.3
+    - Key: parts
+      Value: '[{"id":"body","e0":-9,"e1":9,"n0":-5,"n1":5,"H":5.2,"up":2.7,"roof":{"t":"gambrel","r":"e","p":1.7,"pu":0.45,"bk":1.5,"ov":0.4,"mat":"roofC","tex":"shake"},"side":{"mat":"shingleG","tex":"shingle"},"skip":["W","E"],"S":{"g":"F:2.0
+        W:5.0 F:9.0 W:13.0 F:16.0","u":"w:2.0 w:5.0 w:9.0 w:13.0 w:16.0"},"N":{"g":"w:2.0
+        w:5.0 D:9.0 w:13.0 w:16.0","u":"w:2.0 w:5.0 w:9.0 w:13.0 w:16.0"}},{"id":"west","kind":"gambrelN","e0":-18,"e1":-9,"n0":-6.5,"n1":4,"H":3,"roof":{"p":2.1,"pu":0.5,"bk":1.5,"ov":0.45,"mat":"roofC","tex":"shake"},"side":{"mat":"shingleG","tex":"shingle"},"skip":["E"],"S":{"g":"W:2.4
+        W:6.6","u":"w:2.6 w:4.5 w:6.4"},"W":{"g":"w:2.5 w:5.2 w:8.0"},"N":{"g":"w:2.5
+        w:6.5"}},{"id":"east","e0":9,"e1":16,"n0":-4,"n1":4,"H":2.9,"up":2.75,"roof":{"t":"gable","r":"n","p":1,"ov":0.4,"mat":"roofC","tex":"shake"},"side":{"mat":"shingleG","tex":"shingle"},"skip":["W"],"S":{"g":"w:1.3
+        F:3.5 w:5.7","u":"w:3.5"},"E":{"g":"w:2.0 w:6.0"},"N":{"g":"w:3.5"}},{"id":"carriage","kind":"gambrelN","e0":-18,"e1":-10,"n0":6.5,"n1":15.5,"H":2.9,"roof":{"p":2,"pu":0.5,"bk":1.3,"ov":0.4,"mat":"roofC","tex":"shake"},"side":{"mat":"shingleG","tex":"shingle"},"S":{"g":"w:4.0","u":"w:4.0"},"E":{"g":"g:1.8
+        g:4.6 g:7.4"},"W":{"g":"w:3.0 w:6.0"},"N":{"g":"D:4.0","u":"w:4.0"}}]'
+    - Key: dormers
+      Value: '[{"e":-6,"w":1.4},{"e":-2.2,"w":1.4},{"e":2.2,"w":1.4},{"e":6,"w":1.4}]'
+    - Key: walks
+      Value: '[{"e0":-3,"e1":3,"n0":-1.6,"n1":1.6,"z":9.45,"zc":8.4,"rail":"white","curb":"roofC"}]'
+    - Key: chimneys
+      Value: '[{"e0":-7.2,"e1":-6.3,"n0":0.6,"n1":1.6,"z0":7.8,"z1":10.4,"mat":"trimW","tex":"brick","capMat":"trimW"},{"e0":6.3,"e1":7.2,"n0":0.6,"n1":1.6,"z0":7.8,"z1":10.4,"mat":"trimW","tex":"brick","capMat":"trimW"},{"e0":-14,"e1":-13.1,"n0":0,"n1":1,"z0":6,"z1":8.6,"mat":"trimW","tex":"brick","capMat":"trimW"}]'
+    - Key: porches
+      Value: '[{"side":"S","e0":-6.2,"e1":6.2,"n0":-7.2,"n1":-5,"z":-0.05,"roof":{"t":"shed","z0":2.8,"z1":3.3,"ov":0.35,"mat":"roofC","tex":"shake"},"cols":{"n":6,"t":"sq"},"floor":"deck","floorTex":"boardsN","skirt":"stoneW"},{"side":"N","e0":-1.8,"e1":1.8,"n0":5,"n1":7,"z":-0.05,"roof":{"t":"gable","z0":2.8,"p":0.6,"mat":"roofC","tex":"shake"},"cols":{"n":2,"t":"round"},"steps":[{"at":0,"w":2}]}]'
+    - Key: patios
+      Value: '[{"e0":-12.2,"e1":13,"n0":-10.8,"n1":-7.2,"z":-0.3,"mat":"blueS","tex":"slabs","edge":"stoneW","sides":["W","E"]}]'
+    - Key: steps
+      Value: '[{"top":[-8.5,-10.8,-0.3],"dir":[0,-1],"w":2,"topTex":"slabs","mat":"blueS","tex":"slabs"},{"top":[9,-10.8,-0.3],"dir":[0,-1],"w":2,"topTex":"slabs","mat":"blueS","tex":"slabs"}]'
+    - Key: furn
+      Value: '[{"k":"table","e":-5,"n":-9,"z":-0.3,"w":3,"d":0.95,"m":"wood"},{"k":"chair","e":-5.7105263157894735,"n":-8.28,"z":-0.3,"f":"S","m":"trimW"},{"k":"chair","e":-5.7105263157894735,"n":-9.72,"z":-0.3,"f":"N","m":"trimW"},{"k":"chair","e":-4.2894736842105265,"n":-8.28,"z":-0.3,"f":"S","m":"trimW"},{"k":"chair","e":-4.2894736842105265,"n":-9.72,"z":-0.3,"f":"N","m":"trimW"},{"k":"table","e":0.6,"n":-9,"z":-0.3,"w":2,"d":0.95,"m":"wood"},{"k":"chair","e":0.12631578947368421,"n":-8.28,"z":-0.3,"f":"S","m":"trimW"},{"k":"chair","e":0.12631578947368421,"n":-9.72,"z":-0.3,"f":"N","m":"trimW"},{"k":"chair","e":1.0736842105263158,"n":-8.28,"z":-0.3,"f":"S","m":"trimW"},{"k":"chair","e":1.0736842105263158,"n":-9.72,"z":-0.3,"f":"N","m":"trimW"},{"k":"umb","e":-5,"n":-9,"z":-0.3,"r":1.6,"h":2.5,"m":"trimW","m2":"trimW"},{"k":"adk","e":5,"n":-6.4,"z":-0.05,"f":"S","m":"trimW"},{"k":"adk","e":3.6,"n":-6.4,"z":-0.05,"f":"S","m":"trimW"},{"k":"sofa","e":8.6,"n":-8.6,"z":-0.3,"f":"S","w":2.4,"m":"cushion"},{"k":"plant","e":-10.8,"n":-7.8,"z":-0.3,"s":1.3,"bloom":"hydB"},{"k":"plant","e":11.8,"n":-7.8,"z":-0.3,"s":1.3,"bloom":"hydB"}]'
+    - Key: entry
+      Value: '{"e":0,"n":5,"facing":"N"}'
+    - Key: g
+      Value: '{"e0":-23,"n0":-20,"s":1,"w":45,"h":42,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-262,-142]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 14
+    - Key: nmc.def
+      Value: '{"name":"estate 3, the point estate (34 x 10.5 m; photo 3)","defType":"BuildingDef","kit":"NmcShoreEstates.estateHouse","faces":"N:
+        its door to its court and Route 91; its sea side, terrace and lawn to the
+        camera (dir 4)","lot":"lot.nmc_south_shore_estate_3","footprintM":[34,10.5],"mainFloor":6.6,"household":"a
+        Toronto family of four generations; the house is open from June to Thanksgiving,
+        a caretaker couple in the carriage house","extra":"a great gambrel wing 9
+        m wide to the west, a gabled wing to the east; a roof deck 6 x 3.2 m; the
+        carriage house (8 x 9 m, three bays) on the court\u2019s west side; a bluestone
+        terrace 25 x 3.6 m","photo":3}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.reachBox
+      Value: '[-282,-244,-158.3,-124.5,5.1,19.6]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: BuildingDef
+    - Key: nmc.household
+      Value: a Toronto family of four generations; the house is open from June to
+        Thanksgiving, a caretaker couple in the carriage house
+  - Id: structure.nmc_south_shore_house_4
+    Kind: building
+    Owner: H8
+    Kit: NmcShoreEstates.estateHouse
+    Piece: estateHouse
+    State: 
+    At: {x: -356, y: -100}
+    Z: 6.45
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -110.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: found
+      Value: '{"mat":"stoneW","tex":"fieldstone"}'
+    - Key: frame
+      Value: trimW
+    - Key: lites
+      Value: '[3,2]'
+    - Key: shutters
+      Value: green
+    - Key: boxes
+      Value: trimW
+    - Key: door
+      Value: trimW
+    - Key: patioZ
+      Value: -0.3
+    - Key: parts
+      Value: '[{"id":"body","e0":-7,"e1":7,"n0":-4.5,"n1":4.5,"H":3.3,"up":2.75,"roof":{"t":"gable","r":"e","p":1.05,"ov":0.35,"mat":"roofR","tex":"shake"},"side":{"mat":"shingleH","tex":"shingle"},"skip":["W","E"],"S":{"g":"w:1.4
+        w:3.6 D:7.0 w:10.4 w:12.6"},"E":{"a":"F:4.5"},"N":{"g":"w:1.6 w:4.0 D:7.0
+        w:10.0 w:12.4"}},{"id":"west","e0":-15,"e1":-7,"n0":-6.5,"n1":3.5,"H":3,"up":2.75,"roof":{"t":"gable","r":"n","p":1.15,"ov":0.35,"mat":"roofS"},"side":{"mat":"shingleH","tex":"shingle"},"skip":["E"],"S":{"g":"w:1.5
+        P:4.0 w:6.5","u":"w:4.0"},"W":{"g":"w:2.5 w:5.0 w:7.5"},"N":{"g":"w:2.0 w:6.0"}},{"id":"link","e0":7,"e1":10,"n0":-3.2,"n1":3.5,"H":2.95,"roof":{"t":"flat","ov":0.05,"mat":"roofS","fascia":"trimW"},"side":{"mat":"shingleH","tex":"shingle"},"skip":["W","E"],"S":{"g":"F:1.5"},"N":{"g":"w:1.5"}},{"id":"east","e0":10,"e1":16.5,"n0":-3.5,"n1":4,"H":2.9,"up":2.75,"roof":{"t":"gable","r":"e","p":0.95,"ov":0.35,"mat":"roofS"},"side":{"mat":"shingleH","tex":"shingle"},"skip":["E"],"S":{"g":"w:1.4
+        w:3.25 w:5.1"},"W":{"a":"v:3.75"},"N":{"g":"w:2.0 D:4.2"}},{"id":"end","e0":16.5,"e1":21,"n0":-4.5,"n1":3,"H":2.9,"up":2.75,"roof":{"t":"gable","r":"n","p":1.1,"ov":0.35,"mat":"roofS"},"side":{"mat":"shingleH","tex":"shingle"},"skip":["W"],"S":{"g":"W:2.25","u":"v:2.25"},"E":{"g":"w:2.0
+        w:5.5"},"N":{"g":"w:2.25"}}]'
+    - Key: dormers
+      Value: '[{"e":-4,"w":1.5},{"e":0,"w":1.5},{"e":4,"w":1.5},{"part":"east","e":13.25,"w":1.3}]'
+    - Key: cupolas
+      Value: '[{"e":-11,"n":-2.2,"z":7.6,"w":1.3,"h":1.1,"mat":"trimW","roofMat":"roofS"}]'
+    - Key: balconies
+      Value: '[{"e0":7.05,"e1":9.95,"n0":-3.15,"n1":3.4,"z":3.27,"rail":"chip","sides":["S"],"deck":"deck","fascia":"trimW"}]'
+    - Key: chimneys
+      Value: '[{"e0":-5.1,"e1":-4.1,"n0":-0.4,"n1":0.6,"z0":5,"z1":8.6,"mat":"stoneW","tex":"fieldstone"},{"e0":4.1,"e1":5.1,"n0":-0.4,"n1":0.6,"z0":5,"z1":8.6,"mat":"stoneW","tex":"fieldstone"}]'
+    - Key: porches
+      Value: '[{"side":"S","e0":-1.5,"e1":1.5,"n0":-6.2,"n1":-4.5,"z":-0.1,"roof":{"t":"gable","z0":2.8,"p":0.8,"mat":"roofS"},"cols":{"n":4,"t":"round"},"steps":[{"at":0,"w":1.6,"mat":"stoneW","tex":"fieldstone"}],"floor":"stoneW","floorTex":"flag"}]'
+    - Key: patios
+      Value: '[{"e0":-14.4,"e1":-8,"n0":-10.4,"n1":-6.5,"z":-0.38,"mat":"stone","tex":"flag","edge":"stoneW"}]'
+    - Key: furn
+      Value: '[{"k":"sofa","e":-11,"n":-7.4,"z":-0.38,"f":"S","w":2.2,"m":"navy"},{"k":"adk","e":-13.4,"n":-8.8,"z":-0.38,"f":"E","m":"trimW"},{"k":"adk","e":-8.7,"n":-8.8,"z":-0.38,"f":"W","m":"trimW"},{"k":"rtable","e":-11,"n":-8.6,"z":-0.38,"r":0.45,"h":0.42,"m":"wood"},{"k":"umb","e":-11,"n":-9.4,"z":-0.38,"r":1.4,"h":2.3,"m":"trimW","m2":"trimW"},{"k":"shrub","e":-5.6,"n":-5.15,"z":"g","r":0.5,"m":"boxw"},{"k":"shrub","e":-3,"n":-5.15,"z":"g","r":0.5,"m":"boxw"},{"k":"shrub","e":3,"n":-5.15,"z":"g","r":0.5,"m":"boxw"},{"k":"shrub","e":5.6,"n":-5.15,"z":"g","r":0.5,"m":"boxw"},{"k":"shrub","e":11.2,"n":-4.1,"z":"g","r":0.45,"m":"leaf","bloom":"hydB"},{"k":"shrub","e":13.4,"n":-4.1,"z":"g","r":0.45,"m":"leaf","bloom":"hydB"},{"k":"shrub","e":15.6,"n":-4.1,"z":"g","r":0.45,"m":"leaf","bloom":"hydB"}]'
+    - Key: entry
+      Value: '{"e":0,"n":-4.5,"facing":"S"}'
+    - Key: g
+      Value: '{"e0":-20,"n0":-17,"s":1,"w":47,"h":28,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-356,-100]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 14
+    - Key: nmc.def
+      Value: '{"name":"estate 4, the cupola Cape (35 x 10 m; photo 1)","defType":"BuildingDef","kit":"NmcShoreEstates.estateHouse","faces":"S:
+        its front to Route 91, the sea and the camera (dir 4)","lot":"lot.nmc_south_shore_estate_4","footprintM":[35,10],"mainFloor":6.45,"household":"two
+        architects from Halifax who keep the house full of friends every weekend;
+        the bikes are for the guests","extra":"a gable-front wing 8 x 10 m to the
+        west, its cupola; a wing 8.5 m to the east with a roof walk; a small gable-front
+        wing at the east end; the gravel circle 14 m across","photo":1}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.reachBox
+      Value: '[-373,-333,-113.4,-93.5,4.95,19.45]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: BuildingDef
+    - Key: nmc.household
+      Value: two architects from Halifax who keep the house full of friends every
+        weekend; the bikes are for the guests
+  - Id: structure.nmc_south_shore_house_5
+    Kind: building
+    Owner: H8
+    Kit: NmcShoreEstates.estateHouse
+    Piece: estateHouse
+    State: 
+    At: {x: -316, y: -101}
+    Z: 6.45
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -109
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: found
+      Value: '{"mat":"brick","tex":"brick"}'
+    - Key: frame
+      Value: trimW
+    - Key: lites
+      Value: '[3,2]'
+    - Key: shutters
+      Value: fence
+    - Key: door
+      Value: trimW
+    - Key: patioZ
+      Value: -0.3
+    - Key: parts
+      Value: '[{"id":"body","e0":-7,"e1":7,"n0":-5,"n1":5,"H":5.6,"up":2.8,"roof":{"t":"hip","p":0.62,"ov":0.45,"mat":"slateB","fascia":"trimW"},"side":{"mat":"shingleB","tex":"shingle"},"corners":false,"S":{"g":"w:1.6
+        w:4.2 D:7.0 w:9.8 w:12.4","u":"w:1.6 w:4.2 w:7.0 w:9.8 w:12.4"},"W":{"g":"w:3.0
+        w:7.0","u":"w:3.0 w:7.0"},"E":{"u":"w:3.0 w:7.0"},"N":{"g":"w:2.0 w:5.0 D:8.6
+        w:11.6","u":"w:2.0 w:5.0 w:9.0 w:12.0"}},{"id":"east","e0":7,"e1":12.6,"n0":-3.2,"n1":4.6,"H":3,"up":2.75,"roof":{"t":"gable","r":"e","p":0.85,"ov":0.4,"mat":"slateB"},"side":{"mat":"shingleB","tex":"shingle"},"skip":["W"],"S":{"g":"w:1.5
+        F:4.1"},"E":{"g":"w:2.4 w:5.4"},"N":{"g":"D:2.8"}}]'
+    - Key: pilasters
+      Value: '[{"e":-7,"n":-5,"h":5.6},{"e":7,"n":-5,"h":5.6}]'
+    - Key: friezes
+      Value: '[{"e0":-7.1,"e1":7.1,"n":-5,"z0":5.2,"z1":5.6}]'
+    - Key: dormers
+      Value: '[{"e":-3.6,"w":1.5},{"e":3.6,"w":1.5},{"part":"east","e":9.8,"w":1.3}]'
+    - Key: walks
+      Value: '[{"e0":-2.6,"e1":2.6,"n0":-1.6,"n1":1.6,"z":8.85,"zc":7.6,"rail":"white","curb":"slateB"}]'
+    - Key: chimneys
+      Value: '[{"e0":-5.2,"e1":-4.3,"n0":1.2,"n1":2.1,"z0":7,"z1":9.7,"mat":"brick"},{"e0":4.3,"e1":5.2,"n0":1.2,"n1":2.1,"z0":7,"z1":9.7,"mat":"brick"}]'
+    - Key: porches
+      Value: '[{"side":"S","e0":-1.7,"e1":1.7,"n0":-6.9,"n1":-5,"z":-0.12,"roof":{"t":"shed","z0":3,"z1":3.15,"ov":0.2,"mat":"slateB"},"cols":{"n":2,"t":"round"},"steps":[{"at":0,"w":1.8,"mat":"brick","tex":"brick"}],"floor":"brick","floorTex":"brick","skirt":"brick","skirtTex":"brick"}]'
+    - Key: balconies
+      Value: '[{"e0":-1.85,"e1":1.85,"n0":-7.1,"n1":-5.05,"z":3.22,"rail":"white","sides":["S","E","W"]}]'
+    - Key: furn
+      Value: '[{"k":"shrub","e":-5.8,"n":-5.6,"z":"g","r":0.5,"m":"boxw"},{"k":"shrub","e":-3,"n":-5.6,"z":"g","r":0.5,"m":"boxw"},{"k":"shrub","e":3,"n":-5.6,"z":"g","r":0.5,"m":"boxw"},{"k":"shrub","e":5.8,"n":-5.6,"z":"g","r":0.5,"m":"boxw"},{"k":"plant","e":-1.2,"n":-7.2,"z":"g","s":1.1,"bloom":"pink"},{"k":"plant","e":1.2,"n":-7.2,"z":"g","s":1.1,"bloom":"pink"},{"k":"shrub","e":8,"n":-3.8,"z":"g","r":0.45,"m":"leaf","bloom":"hydB"},{"k":"shrub","e":9.6,"n":-3.8,"z":"g","r":0.45,"m":"leaf","bloom":"hydB"},{"k":"shrub","e":11.2,"n":-3.8,"z":"g","r":0.45,"m":"leaf","bloom":"hydB"}]'
+    - Key: entry
+      Value: '{"e":0,"n":-5,"facing":"S"}'
+    - Key: g
+      Value: '{"e0":-12,"n0":-14,"s":1,"w":31,"h":25,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-316,-101]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 14
+    - Key: nmc.def
+      Value: '{"name":"estate 5, the shingled Colonial (19.6 x 10 m; photo 5)","defType":"BuildingDef","kit":"NmcShoreEstates.estateHouse","faces":"S:
+        its front to Route 91, the sea and the camera (dir 4)","lot":"lot.nmc_south_shore_estate_5","footprintM":[19.6,10],"mainFloor":6.45,"household":"a
+        surgeon at the hospital in Sydney and her husband, a potter; they live here
+        all year, his studio is the east wing","extra":"a wing 5.6 x 7.8 m to the
+        east (his studio); a portico on two columns, its roof railed; a roof balustrade
+        5.2 x 3.2 m","photo":5}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_5"'
+    - Key: nmc.reachBox
+      Value: '[-325,-301.4,-111.1,-94,4.95,19.45]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: BuildingDef
+    - Key: nmc.household
+      Value: a surgeon at the hospital in Sydney and her husband, a potter; they live
+        here all year, his studio is the east wing
+  - Id: structure.nmc_south_shore_house_6
+    Kind: building
+    Owner: H8
+    Kit: NmcShoreEstates.estateHouse
+    Piece: estateHouse
+    State: 
+    At: {x: -273, y: -95}
+    Z: 6.45
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -103.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: found
+      Value: '{"mat":"conc","tex":"form"}'
+    - Key: modern
+      Value: true
+    - Key: frame
+      Value: iron
+    - Key: door
+      Value: iron
+    - Key: patioZ
+      Value: -0.3
+    - Key: parts
+      Value: '[{"id":"body","e0":-4.2,"e1":4.2,"n0":-5,"n1":4.5,"H":5.5,"up":2.8,"roof":{"t":"gable","r":"n","p":1,"ov":0.4,"mat":"roofA"},"side":{"mat":"shingleP","tex":"shingle"},"skip":["W","E"],"S":{"g":"F:2.1
+        F:6.3","u":"F:2.1 F:6.3","a":"w:4.2"},"N":{"g":"w:1.6 D:4.2 w:6.8","u":"w:2.1
+        w:6.3"}},{"id":"west","e0":-10.6,"e1":-4.2,"n0":-4.2,"n1":3.8,"H":3,"up":2.75,"roof":{"t":"hip","p":0.6,"ov":0.4,"mat":"roofA"},"side":{"mat":"shingleP","tex":"shingle"},"skip":["E"],"S":{"g":"F:1.7
+        F:4.7"},"W":{"g":"w:2.0 w:6.0"},"N":{"g":"g:3.2"}},{"id":"east","e0":4.2,"e1":10.2,"n0":-4.4,"n1":3.8,"H":3,"up":2.75,"roof":{"t":"gable","r":"n","p":0.95,"ov":0.4,"mat":"roofA"},"side":{"mat":"shingleP","tex":"shingle"},"skip":["W"],"S":{"g":"F:3.0","u":"w:3.0"},"E":{"g":"w:2.0
+        F:5.5"},"N":{"g":"w:3.0"}}]'
+    - Key: porches
+      Value: '[{"side":"S","e0":-4.4,"e1":4.4,"n0":-7.6,"n1":-5,"z":-0.1,"roof":{"t":"shed","z0":2.75,"z1":2.85,"ov":0.15,"mat":"roofA"},"cols":{"n":4,"t":"sq","mat":"trimW"},"steps":[{"at":0,"w":2.2,"mat":"blueS","tex":"slabs"}],"floor":"blueS","floorTex":"slabs","skirt":"conc","skirtTex":"form"}]'
+    - Key: balconies
+      Value: '[{"e0":-4.5,"e1":4.5,"n0":-7.75,"n1":-5,"z":2.95,"rail":"wood","railMat":"wood","deck":"deck","fascia":"trimW","sides":["S","E","W"]}]'
+    - Key: furn
+      Value: '[{"k":"grill","e":-3.2,"n":-6,"z":-0.1,"f":"S"},{"k":"adk","e":2.6,"n":-6.3,"z":-0.1,"f":"S","m":"wood"},{"k":"adk","e":3.7,"n":-6.3,"z":-0.1,"f":"S","m":"wood"},{"k":"chair","e":-1.6,"n":-6.6,"z":2.95,"f":"S","m":"iron"},{"k":"chair","e":1.6,"n":-6.6,"z":2.95,"f":"S","m":"iron"},{"k":"plant","e":-9.6,"n":-4.9,"z":"g","s":1.2},{"k":"plant","e":9.4,"n":-5.1,"z":"g","s":1.2}]'
+    - Key: entry
+      Value: '{"e":0,"n":4.5,"facing":"N"}'
+    - Key: g
+      Value: '{"e0":-16,"n0":-14,"s":1,"w":33,"h":25,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-273,-95]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 22
+    - Key: nmc.rad
+      Value: 14
+    - Key: nmc.def
+      Value: '{"name":"estate 6, the pool house (20.8 x 9.5 m; photo 6)","defType":"BuildingDef","kit":"NmcShoreEstates.estateHouse","faces":"S:
+        its front to Route 91, the sea and the camera (dir 4); its door on the north
+        side, to the drive","lot":"lot.nmc_south_shore_estate_6","footprintM":[20.8,9.5],"mainFloor":6.45,"household":"a
+        young family from Fredericton: he builds boats, she teaches; two girls, a
+        terrier and a lot of friends at the pool","extra":"a porch 8.8 x 2.6 m and
+        the balcony on it; a hipped wing west, a gable-front wing east; the pool 10
+        x 4.6 m in a fenced bluestone deck","photo":6}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-285.6,-260.8,-105.75,-88.5,4.95,19.45]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: BuildingDef
+    - Key: nmc.household
+      Value: 'a young family from Fredericton: he builds boats, she teaches; two girls,
+        a terrier and a lot of friends at the pool'
+  - Id: structure.nmc_south_shore_pool_6
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.estatePool
+    Piece: estatePool
+    State: 
+    At: {x: -273, y: -107.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -111.7
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 10
+    - Key: d
+      Value: 4.6
+    - Key: deck
+      Value: '[-7.4,7.4,-4,3.5]'
+    - Key: furn
+      Value: '[{"k":"chaise","e":-5.6,"n":2.75,"f":"S","m":"wood"},{"k":"chaise","e":-4,"n":2.75,"f":"S","m":"wood"},{"k":"chaise","e":-2.4,"n":2.75,"f":"S","m":"wood"},{"k":"umb","e":4.6,"n":2.6,"r":1.3,"h":2.3,"m":"trimW","m2":"trimW"},{"k":"chaise","e":3.4,"n":2.75,"f":"S","m":"wood"}]'
+    - Key: fence
+      Value: '{"gate":[2,6.4,8.4]}'
+    - Key: g
+      Value: '{"e0":-11,"n0":-7,"s":1,"w":23,"h":15,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-273,-107.6]'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 16
+    - Key: nmc.rad
+      Value: 9
+    - Key: nmc.reachBox
+      Value: '[-280.4,-265.6,-111.6,-104.1,5.5,8.6]'
+    - Key: nmc.def
+      Value: '{"name":"estate 6\u2019s pool (10 x 4.6 m) on its bluestone terrace,
+        its black fence","defType":"SetPieceDef","kit":"NmcShoreEstates.estatePool","faces":"S
+        (dir 4); its steps at the shallow (west) end","lights":"underwater, lit at
+        dusk"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_south_shore_bluff_deck_1
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.bluffDeck
+    Piece: bluffDeck
+    State: 
+    At: {x: -333.2, y: -163.138}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -170.338
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 2
+    - Key: z
+      Value: 0.12
+    - Key: rail
+      Value: white
+    - Key: stairs
+      Value: '[{"side":"S","at":0,"w":1.2,"zFoot":-3.75}]'
+    - Key: furn
+      Value: '[{"k":"bench","e":0,"n":0.55,"f":"S","m":"wood"}]'
+    - Key: g
+      Value: '{"e0":-6,"n0":-12,"s":1,"w":13,"h":18,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-333.2,-163.138]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 18
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.reachBox
+      Value: '[-334.8,-331.6,-170.64,-161.94,1.9,7.4]'
+    - Key: nmc.def
+      Value: '{"name":"estate 1\u2019s lookout deck at the bluff\u2019s lip and its
+        stair down the face to the beach","defType":"SetPieceDef","kit":"NmcShoreEstates.bluffDeck","faces":"S:
+        its stair down to the beach"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_south_shore_bluff_deck_2
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.bluffDeck
+    Piece: bluffDeck
+    State: 
+    At: {x: -320.8, y: -162.465}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -169.665
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 2
+    - Key: z
+      Value: 0.12
+    - Key: rail
+      Value: white
+    - Key: stairs
+      Value: '[{"side":"S","at":0,"w":1.2,"zFoot":-3.75}]'
+    - Key: furn
+      Value: '[{"k":"bench","e":0,"n":0.55,"f":"S","m":"wood"}]'
+    - Key: g
+      Value: '{"e0":-6,"n0":-12,"s":1,"w":13,"h":18,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-320.8,-162.465]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 18
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.reachBox
+      Value: '[-322.4,-319.2,-169.96,-161.27,1.9,7.4]'
+    - Key: nmc.def
+      Value: '{"name":"estate 2\u2019s lookout deck at the bluff\u2019s lip and its
+        stair down the face to the beach","defType":"SetPieceDef","kit":"NmcShoreEstates.bluffDeck","faces":"S:
+        its stair down to the beach"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_south_shore_bluff_deck_3
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.bluffDeck
+    Piece: bluffDeck
+    State: 
+    At: {x: -272.4, y: -160.116}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -167.316
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 2
+    - Key: z
+      Value: 0.12
+    - Key: rail
+      Value: white
+    - Key: stairs
+      Value: '[{"side":"S","at":0,"w":1.2,"zFoot":-3.75}]'
+    - Key: furn
+      Value: '[{"k":"bench","e":0,"n":0.55,"f":"S","m":"wood"}]'
+    - Key: g
+      Value: '{"e0":-6,"n0":-12,"s":1,"w":13,"h":18,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-272.4,-160.116]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 18
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.reachBox
+      Value: '[-274,-270.8,-167.62,-158.92,1.9,7.4]'
+    - Key: nmc.def
+      Value: '{"name":"estate 3\u2019s lookout deck at the bluff\u2019s lip and its
+        stair down the face to the beach","defType":"SetPieceDef","kit":"NmcShoreEstates.bluffDeck","faces":"S:
+        its stair down to the beach"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_wall_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.stoneWall
+    Piece: stoneWall
+    State: 
+    At: {x: -363.95, y: -140.073}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -146.1
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: pts
+      Value: '[[-15.55,-5.627],[-13.55,-5.227],[-11.55,-4.827],[-9.55,-4.427],[-7.55,-3.642],[-5.55,-2.727],[-3.55,-1.813],[-1.55,-0.852],[0.45,0.248],[2.45,1.347],[4.45,2.448],[6.45,3.517],[8.45,4.495],[10.45,5.472],[12.45,6.45],[14.45,7.428],[15.55,7.901]]'
+    - Key: h
+      Value: 0.75
+    - Key: t
+      Value: 0.6
+    - Key: mat
+      Value: stoneG
+    - Key: tex
+      Value: granite
+    - Key: g
+      Value: '{"e0":-20,"n0":-10,"s":1,"w":41,"h":23,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-363.95,-140.073]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 10
+    - Key: nmc.rad
+      Value: 15.550000000000011
+    - Key: nmc.reachBox
+      Value: '[-379.5,-348.4,-146.2,-131.67,5.6,7.2]'
+    - Key: nmc.def
+      Value: '{"name":"a dry-stone wall along Route 91 (31.1 m, granite)","defType":"SetPieceDef","kit":"NmcShoreEstates.stoneWall","faces":"along
+        the road"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_wall_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.stoneWall
+    Piece: stoneWall
+    State: 
+    At: {x: -336.05, y: -127.849}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -129.988
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: pts
+      Value: '[[-5.55,-1.739],[-3.55,-0.979],[-1.55,-0.395],[0.45,0.115],[2.45,0.624],[4.45,1.133],[5.55,1.413]]'
+    - Key: h
+      Value: 0.75
+    - Key: t
+      Value: 0.6
+    - Key: mat
+      Value: stoneG
+    - Key: tex
+      Value: granite
+    - Key: g
+      Value: '{"e0":-10,"n0":-6,"s":1,"w":21,"h":13,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-336.05,-127.849]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 10
+    - Key: nmc.rad
+      Value: 5.550000000000011
+    - Key: nmc.reachBox
+      Value: '[-341.6,-330.5,-130.09,-125.94,5.6,7.2]'
+    - Key: nmc.def
+      Value: '{"name":"a dry-stone wall along Route 91 (11.1 m, granite)","defType":"SetPieceDef","kit":"NmcShoreEstates.stoneWall","faces":"along
+        the road"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_piers
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), gatePiers
+    Piece: gatePiers
+    State: 
+    At: {x: -345, y: -130.88}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -131.28
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: gap
+      Value: 5.6
+    - Key: g
+      Value: '{"e0":-7,"n0":-5,"s":1,"w":15,"h":11,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: mat
+      Value: stoneG
+    - Key: tex
+      Value: granite
+    - Key: cap
+      Value: stoneG
+    - Key: h
+      Value: 1.4
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-345,-130.88]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.def
+      Value: '{"name":"Gate piers at a drive","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), gatePiers","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.reachBox
+      Value: '[-348,-342,-133.88,-127.88,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_mailbox
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -349.2, y: -132.048}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -132.048
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: stone
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-349.2,-132.048]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"A mailbox","defType":"SetPieceDef","kit":"NmcCreekHouses (north-creek/nmcCreekProps.js),
+        mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.reachBox
+      Value: '[-349.6,-348.8,-132.45,-131.65,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_hedge_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -317.95, y: -124.56}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -125.06
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 19.1
+    - Key: h
+      Value: 1.5
+    - Key: d
+      Value: 0.9
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-317.95,-124.56]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 9.550000000000011
+    - Key: nmc.def
+      Value: '{"name":"A clipped privet hedge","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-327.5,-308.4,-134.11,-115.01,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_hedge_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -293.05, y: -123.601}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -124.101
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 17.1
+    - Key: h
+      Value: 1.5
+    - Key: d
+      Value: 0.9
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-293.05,-123.601]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 8.550000000000011
+    - Key: nmc.def
+      Value: '{"name":"A clipped privet hedge","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-301.6,-284.5,-132.15,-115.05,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_piers
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), gatePiers
+    Piece: gatePiers
+    State: 
+    At: {x: -305, y: -123.729}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -124.129
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: gap
+      Value: 4.6
+    - Key: g
+      Value: '{"e0":-7,"n0":-5,"s":1,"w":15,"h":11,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-305,-123.729]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.def
+      Value: '{"name":"Gate piers at a drive","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), gatePiers","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-308,-302,-126.73,-120.73,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_mailbox
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -308, y: -123.407}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -123.407
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: white
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-308,-123.407]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"A mailbox","defType":"SetPieceDef","kit":"NmcCreekHouses (north-creek/nmcCreekProps.js),
+        mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-308.4,-307.6,-123.81,-123.01,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_wall_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.stoneWall
+    Piece: stoneWall
+    State: 
+    At: {x: -270.75, y: -122.958}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -123.783
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: pts
+      Value: '[[-12.75,-0.425],[-10.75,-0.358],[-8.75,-0.292],[-6.75,-0.225],[-4.75,-0.158],[-2.75,-0.092],[-0.75,-0.025],[1.25,0.042],[3.25,0.108],[5.25,0.208],[7.25,0.408],[9.25,0.608],[11.25,0.808],[12.75,0.958]]'
+    - Key: h
+      Value: 0.75
+    - Key: t
+      Value: 0.6
+    - Key: mat
+      Value: stoneG
+    - Key: tex
+      Value: fieldstone
+    - Key: g
+      Value: '{"e0":-17,"n0":-5,"s":1,"w":35,"h":11,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-270.75,-122.958]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 10
+    - Key: nmc.rad
+      Value: 12.75
+    - Key: nmc.reachBox
+      Value: '[-283.5,-258,-123.88,-121.5,5.6,7.2]'
+    - Key: nmc.def
+      Value: '{"name":"a dry-stone wall along Route 91 (25.5 m, fieldstone)","defType":"SetPieceDef","kit":"NmcShoreEstates.stoneWall","faces":"along
+        the road"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_wall_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.stoneWall
+    Piece: stoneWall
+    State: 
+    At: {x: -246.5, y: -120.025}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -121.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: pts
+      Value: '[[-5.5,-1.375],[-3.5,-0.875],[-1.5,-0.375],[0.5,0.125],[2.5,0.625],[4.5,1.125],[5.5,1.375]]'
+    - Key: h
+      Value: 0.75
+    - Key: t
+      Value: 0.6
+    - Key: mat
+      Value: stoneG
+    - Key: tex
+      Value: fieldstone
+    - Key: g
+      Value: '{"e0":-10,"n0":-6,"s":1,"w":21,"h":13,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-246.5,-120.025]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 10
+    - Key: nmc.rad
+      Value: 5.5
+    - Key: nmc.reachBox
+      Value: '[-252,-241,-121.9,-118.15,5.6,7.2]'
+    - Key: nmc.def
+      Value: '{"name":"a dry-stone wall along Route 91 (11 m, fieldstone)","defType":"SetPieceDef","kit":"NmcShoreEstates.stoneWall","faces":"along
+        the road"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_piers
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), gatePiers
+    Piece: gatePiers
+    State: 
+    At: {x: -255, y: -121.7}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -122.1
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: gap
+      Value: 4.9
+    - Key: g
+      Value: '{"e0":-7,"n0":-5,"s":1,"w":15,"h":11,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: mat
+      Value: stoneW
+    - Key: tex
+      Value: fieldstone
+    - Key: cap
+      Value: stone
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-255,-121.7]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.def
+      Value: '{"name":"Gate piers at a drive","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), gatePiers","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.reachBox
+      Value: '[-258,-252,-124.7,-118.7,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_mailbox
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -258.6, y: -121.61}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -121.61
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: black
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-258.6,-121.61]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"A mailbox","defType":"SetPieceDef","kit":"NmcCreekHouses (north-creek/nmcCreekProps.js),
+        mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.reachBox
+      Value: '[-259,-258.2,-122.01,-121.21,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_wall_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.stoneWall
+    Piece: stoneWall
+    State: 
+    At: {x: -369.15, y: -135.04}
+    Z: 5.95
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -138.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: pts
+      Value: '[[-10.35,-3.06],[-8.35,-2.66],[-6.35,-2.26],[-4.35,-1.86],[-2.35,-1.074],[-0.35,-0.16],[1.65,0.754],[3.65,1.715],[5.65,2.815],[7.65,3.915],[9.65,5.015],[10.35,5.4]]'
+    - Key: h
+      Value: 0.7
+    - Key: t
+      Value: 0.6
+    - Key: mat
+      Value: stoneG
+    - Key: tex
+      Value: fieldstone
+    - Key: g
+      Value: '{"e0":-15,"n0":-8,"s":1,"w":31,"h":19,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-369.15,-135.04]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 10
+    - Key: nmc.rad
+      Value: 10.349999999999994
+    - Key: nmc.reachBox
+      Value: '[-379.5,-358.8,-138.6,-129.14,5.55,7.15]'
+    - Key: nmc.def
+      Value: '{"name":"a dry-stone wall along Route 91 (20.7 m, fieldstone)","defType":"SetPieceDef","kit":"NmcShoreEstates.stoneWall","faces":"along
+        the road"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_wall_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates.stoneWall
+    Piece: stoneWall
+    State: 
+    At: {x: -344.85, y: -123.223}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -127.253
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: pts
+      Value: '[[-8.35,-3.63],[-6.35,-2.653],[-4.35,-1.675],[-2.35,-0.893],[-0.35,-0.133],[1.65,0.627],[3.65,1.387],[5.65,2.147],[7.65,2.681],[8.35,2.859]]'
+    - Key: h
+      Value: 0.7
+    - Key: t
+      Value: 0.6
+    - Key: mat
+      Value: stoneG
+    - Key: tex
+      Value: fieldstone
+    - Key: g
+      Value: '{"e0":-13,"n0":-8,"s":1,"w":27,"h":16,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-344.85,-123.223]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 10
+    - Key: nmc.rad
+      Value: 8.349999999999994
+    - Key: nmc.reachBox
+      Value: '[-353.2,-336.5,-127.35,-119.86,5.6,7.2]'
+    - Key: nmc.def
+      Value: '{"name":"a dry-stone wall along Route 91 (16.7 m, fieldstone)","defType":"SetPieceDef","kit":"NmcShoreEstates.stoneWall","faces":"along
+        the road"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_piers
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), gatePiers
+    Piece: gatePiers
+    State: 
+    At: {x: -356, y: -128.222}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -128.622
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: gap
+      Value: 4.6
+    - Key: g
+      Value: '{"e0":-7,"n0":-5,"s":1,"w":15,"h":11,"note":"the ground round it from
+        its floor, 1 m grid, sampled from the laid ground (the scene computes it)"}'
+    - Key: h
+      Value: 1.3
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-356,-128.222]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.def
+      Value: '{"name":"Gate piers at a drive","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), gatePiers","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.reachBox
+      Value: '[-359,-353,-131.22,-125.22,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_mailbox
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -360, y: -130.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -130.75
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: white
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-360,-130.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"A mailbox","defType":"SetPieceDef","kit":"NmcCreekHouses (north-creek/nmcCreekProps.js),
+        mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.reachBox
+      Value: '[-360.4,-359.6,-131.15,-130.35,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_5_fence
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), picketFence
+    Piece: picketFence
+    State: 
+    At: {x: -318.8, y: -116.973}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -117.273
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 28.4
+    - Key: gate
+      Value: '[16.25,17.75]'
+    - Key: roses
+      Value: true
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-318.8,-116.973]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 14.199999999999989
+    - Key: nmc.def
+      Value: '{"name":"A picket fence and its gate","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), picketFence","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_5"'
+    - Key: nmc.reachBox
+      Value: '[-333,-304.6,-131.17,-102.77,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_5_arbor
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), arbor
+    Piece: arbor
+    State: 
+    At: {x: -316, y: -116.923}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -116.923
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 1.6
+    - Key: h
+      Value: 2.3
+    - Key: roses
+      Value: true
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-316,-116.923]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.96
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"An arbor over the gate","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), arbor","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_5"'
+    - Key: nmc.reachBox
+      Value: '[-317.2,-314.8,-118.12,-115.72,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_5_mailbox
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -300, y: -116.428}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -116.428
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: black
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-300,-116.428]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"A mailbox","defType":"SetPieceDef","kit":"NmcCreekHouses (north-creek/nmcCreekProps.js),
+        mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_5"'
+    - Key: nmc.reachBox
+      Value: '[-300.4,-299.6,-116.83,-116.03,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_6_hedge_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -269.8, y: -115.227}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -115.727
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 33.6
+    - Key: h
+      Value: 1.5
+    - Key: d
+      Value: 0.9
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-269.8,-115.227]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 16.80000000000001
+    - Key: nmc.def
+      Value: '{"name":"A clipped privet hedge","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-286.6,-253,-132.03,-98.43,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_6_hedge_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -292.4, y: -115.793}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -116.293
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2.8
+    - Key: h
+      Value: 1.5
+    - Key: d
+      Value: 0.9
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-292.4,-115.793]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.1200000000000045
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.4000000000000057
+    - Key: nmc.def
+      Value: '{"name":"A clipped privet hedge","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-293.8,-291,-117.19,-114.39,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_6_mailbox
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -292.4, y: -116.343}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -116.343
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: cedar
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-292.4,-116.343]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"A mailbox","defType":"SetPieceDef","kit":"NmcCreekHouses (north-creek/nmcCreekProps.js),
+        mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-292.8,-292,-116.74,-115.94,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: boat.nmc_south_shore_dory
     Kind: boat
     Owner: H8
     Kit: DoryIso (Art/doryIsoRig.js)
     Piece: DoryIso
     State: 
-    At: {x: -283, y: -175.4}
-    Z: 2.52
+    At: {x: -330.6, y: -171.2}
+    Z: 2.23
     StandsOn: ground
     MountHost: 
     MountAnchor: 
@@ -337,24 +2428,319 @@ MonoBehaviour:
     Options:
     - Key: build
       Value: oars
-    - Key: nmc.name
-      Value: '"a dory hauled up on the berm"'
-    - Key: nmc.faces
-      Value: '"its bow up the beach"'
+    - Key: nmc.kind
+      Value: '"flat"'
     - Key: nmc.rig
       Value: '"DoryIso"'
+    - Key: nmc.family
+      Value: '"boat"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 2.3
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.def
+      Value: '{"name":"the tender, a dory hauled up at the foot of the tower house\u2019s
+        stair","defType":"AmbientBoatDef","kit":"DoryIso (Art/doryIsoRig.js)","faces":"its
+        bow up the beach"}'
+    - Key: nmc.reachBox
+      Value: '[-332.9,-328.3,-173.5,-168.9,1.73,16.23]'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_south_shore
     - Key: nmc.type
       Value: AmbientBoatDef
-  - Id: prop.nmc_shore_fire
+  - Id: prop.nmc_south_shore_2_kayaks
     Kind: setPiece
     Owner: H8
-    Kit: NmcSetPieces 1.4.0 (hh-nmc-key-scenes/nmc-set-pieces-kit/nmcSetPieces.js)
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), boatRack
+    Piece: boatRack
+    State: 
+    At: {x: -325, y: -158.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -158.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: items
+      Value: '["yel","red","skyB"]'
+    - Key: sup
+      Value: true
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-325,-158.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.def
+      Value: '{"name":"A rack of kayaks and a paddleboard","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), boatRack","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-327,-323,-160.6,-156.6,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_beach
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), beachSet
+    Piece: beachSet
+    State: 
+    At: {x: -318.2, y: -172.4}
+    Z: 2.19
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -172.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-318.2,-172.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"Beach umbrella, chairs, a towel and a cooler","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), beachSet","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-319.8,-316.6,-174,-170.8,1.69,5.39]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_chairs
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), lawnChairs
+    Piece: lawnChairs
+    State: 
+    At: {x: -250.8, y: -153.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -153.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: ring
+      Value: true
+    - Key: n
+      Value: 4
+    - Key: m
+      Value: '["trimW","trimW","trimW","trimW"]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-250.8,-153.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,0.6],"reachM":5.5,"intensity":0.9,"colour":"#ffa04a","when":"night","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"Adirondacks on the lawn","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), lawnChairs","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
+    - Key: nmc.reachBox
+      Value: '[-252.8,-248.8,-155.6,-151.6,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_flag
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), flagpole
+    Piece: flagpole
+    State: 
+    At: {x: -256.4, y: -157}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -157
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: h
+      Value: 7.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-256.4,-157]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.reachBox
+      Value: '[-257,-254,-157.6,-156.4,5.8,14.2]'
+    - Key: nmc.def
+      Value: '{"name":"A flagpole","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), flagpole","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_canoe
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), canoe
+    Piece: canoe
+    State: 
+    At: {x: -237.6, y: -158.6}
+    Z: 2.51
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -158.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: m
+      Value: seaG
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-237.6,-158.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.5
+    - Key: nmc.def
+      Value: '{"name":"A canoe on the pond\u2019s shore","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), canoe","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.reachBox
+      Value: '[-240.1,-235.1,-161.1,-156.1,2.01,5.71]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_fire
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcSetPieces 1.4.0, fireRing
     Piece: fireRing
     State: 
-    At: {x: -263.5, y: -175.4}
-    Z: 2.5
+    At: {x: -267.6, y: -172}
+    Z: 2.15
     StandsOn: ground
     MountHost: 
     MountAnchor: 
@@ -363,8 +2749,8 @@ MonoBehaviour:
     Dir: 0
     HasSortY: 0
     SortY: 0
-    Layer: floor
-    Walk: solid; sit round it
+    Layer: 
+    Walk: 
     Collider: 
     Variants:
     - today
@@ -373,17 +2759,1502 @@ MonoBehaviour:
     Options:
     - Key: lit
       Value: false
-    - Key: nmc.name
-      Value: '"a fire ring"'
-    - Key: nmc.faces
-      Value: '"any"'
-    - Key: nmc.gameplay
-      Value: '"hh-nmc-key-scenes/nmc-set-pieces-kit/gameplay/fireRing.gameplay.json"'
+    - Key: nmc.kind
+      Value: '"nmcPiece"'
+    - Key: nmc.family
+      Value: '"piece"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.nightOpts
+      Value: '{"lit":true}'
+    - Key: nmc.rad
+      Value: 0.8
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,0.6],"reachM":6.5,"intensity":0.95,"colour":"#ffa04a","when":"night","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"the beach fire ring below the point estate (the kit\u2019s
+        fireRing), cold by day, lit on a summer night","defType":"SetPieceDef","kit":"NmcSetPieces
+        1.4.0, fireRing","faces":"any"}'
+    - Key: nmc.reachBox
+      Value: '[-268.4,-266.8,-172.8,-171.2,1.65,5.65]'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_south_shore
     - Key: nmc.type
       Value: SetPieceDef
-  Lights: []
+  - Id: prop.nmc_south_shore_drift_logs
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), driftLogs
+    Piece: driftLogs
+    State: 
+    At: {x: -267.6, y: -172}
+    Z: 2.15
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -170.55
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-267.6,-172]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.2800000000000002
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"Driftwood logs round the fire","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), driftLogs","faces":"S (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-269.2,-266,-173.6,-170.4,1.65,5.35]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_bikes
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), bikeRack
+    Piece: bikeRack
+    State: 
+    At: {x: -348.4, y: -110}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -110
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: bikes
+      Value: '[["mintB",true],["pinkB",false],["skyB",false]]'
+    - Key: f
+      Value: E
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-348.4,-110]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.96
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"Bikes in their rack","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), bikeRack","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.reachBox
+      Value: '[-349.6,-347.2,-111.2,-108.8,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_6_shower
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcShoreEstates (south-shore/nmcShoreEstates.js), outdoorShower
+    Piece: outdoorShower
+    State: 
+    At: {x: -262.4, y: -100.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -100.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreEstates"'
+    - Key: nmc.centre
+      Value: '[-262.4,-100.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.7200000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.9
+    - Key: nmc.def
+      Value: '{"name":"An outdoor shower","defType":"SetPieceDef","kit":"NmcShoreEstates
+        (south-shore/nmcShoreEstates.js), outdoorShower","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-263.3,-261.5,-101.1,-99.3,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_6_boat
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), boatCradle
+    Piece: boatCradle
+    State: 
+    At: {x: -257.6, y: -94.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -94.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 5.2
+    - Key: m
+      Value: red
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-257.6,-94.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3
+    - Key: nmc.def
+      Value: '{"name":"his next boat on her stands: a 5.2 m cedar strip skiff, half
+        painted","defType":"SetPieceDef","kit":"NmcCreekHouses (north-creek/nmcCreekProps.js),
+        boatCradle","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-260.6,-254.6,-97.6,-91.6,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_lamp_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -347.8, y: -134.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -134.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-347.8,-134.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.reachBox
+      Value: '[-348.1,-347.5,-134.5,-133.9,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_lamp_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -342.2, y: -134.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -134.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-342.2,-134.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.reachBox
+      Value: '[-342.5,-341.9,-134.5,-133.9,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_lamp_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -309.6, y: -127.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -127.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-309.6,-127.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-309.9,-309.3,-127.5,-126.9,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_lamp_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -300.4, y: -127.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -127.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-300.4,-127.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-300.7,-300.1,-127.5,-126.9,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_lamp
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -257.6, y: -123.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -123.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-257.6,-123.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.reachBox
+      Value: '[-257.9,-257.3,-123.7,-123.1,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_lamp_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -351.4, y: -112.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -112.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-351.4,-112.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.reachBox
+      Value: '[-351.7,-351.1,-112.5,-111.9,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_lamp_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -360.6, y: -112.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -112.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-360.6,-112.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.reachBox
+      Value: '[-360.9,-360.3,-112.5,-111.9,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_5_lamp
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -313.8, y: -110.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -110.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-313.8,-110.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_5"'
+    - Key: nmc.reachBox
+      Value: '[-314.1,-313.5,-110.7,-110.1,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_6_lamp
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -291, y: -112}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -112
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-291,-112]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"A lantern post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-291.3,-290.7,-112.3,-111.7,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_bed_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -355.6, y: -139.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -139.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 1.8
+    - Key: d
+      Value: 1.2
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-355.6,-139.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.7200000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.9
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.reachBox
+      Value: '[-356.5,-354.7,-140.3,-138.5,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_1_bed_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -334.6, y: -139.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -139.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 1.8
+    - Key: d
+      Value: 1.2
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-334.6,-139.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.7200000000000001
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.9
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_1"'
+    - Key: nmc.reachBox
+      Value: '[-335.5,-333.7,-140.3,-138.5,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_bed_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -310.2, y: -153.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -153.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.4
+    - Key: d
+      Value: 1
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-310.2,-153.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.96
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-311.4,-309,-154.6,-152.2,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_2_bed_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -299.8, y: -153.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -153.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.4
+    - Key: d
+      Value: 1
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-299.8,-153.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.96
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_2"'
+    - Key: nmc.reachBox
+      Value: '[-301,-298.6,-154.6,-152.2,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_bed_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -274.6, y: -138.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -138.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 1.2
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-274.6,-138.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.04
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.3
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.reachBox
+      Value: '[-275.9,-273.3,-139.7,-137.1,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_3_bed_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -249.4, y: -138.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -138.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 1.2
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-249.4,-138.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.04
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.3
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.reachBox
+      Value: '[-250.7,-248.1,-139.7,-137.1,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_4_bed
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -361.8, y: -108}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -108
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.8
+    - Key: d
+      Value: 1.1
+    - Key: mix
+      Value: rose
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-361.8,-108]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.1199999999999999
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.4
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.reachBox
+      Value: '[-363.2,-360.4,-109.4,-106.6,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_5_bed_w
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -321, y: -108.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -108.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 1.1
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-321,-108.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.04
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.3
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_5"'
+    - Key: nmc.reachBox
+      Value: '[-322.3,-319.7,-109.9,-107.3,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_5_bed_e
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -311, y: -108.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -108.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.6
+    - Key: d
+      Value: 1.1
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-311,-108.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 1.04
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.3
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_5"'
+    - Key: nmc.reachBox
+      Value: '[-312.3,-309.7,-109.9,-107.3,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_south_shore_6_bed
+    Kind: setPiece
+    Owner: H8
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -265, y: -103.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -103.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 2.4
+    - Key: d
+      Value: 1
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-265,-103.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 0.96
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"A planted bed","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.reachBox
+      Value: '[-266.2,-263.8,-104.8,-102.4,5.5,9.2]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: vehicle.nmc_south_shore_3_truck
+    Kind: vehicle
+    Owner: H8
+    Kit: VehicleIso (Art/vehicleIsoRig.js), showroom
+    Piece: VehicleIso
+    State: 
+    At: {x: -266.4, y: -132.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -132.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: showroom
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"VehicleIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.centre
+      Value: '[-266.4,-129.6]'
+    - Key: nmc.frontM
+      Value: 3.3
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_3"'
+    - Key: nmc.def
+      Value: '{"name":"the caretaker\u2019s white pickup in the court","defType":"AmbientVehicleDef","kit":"VehicleIso
+        (Art/vehicleIsoRig.js), showroom","faces":"nose south (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-268,-264.8,-134.5,-131.3,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: AmbientVehicleDef
+  - Id: vehicle.nmc_south_shore_6_truck
+    Kind: vehicle
+    Owner: H8
+    Kit: VehicleIso (Art/vehicleIsoRig.js), workhorse
+    Piece: VehicleIso
+    State: 
+    At: {x: -289, y: -100.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -100.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: workhorse
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"VehicleIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.centre
+      Value: '[-289,-97]'
+    - Key: nmc.frontM
+      Value: 3.3
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_6"'
+    - Key: nmc.def
+      Value: '{"name":"the boatbuilder\u2019s pickup up the drive","defType":"AmbientVehicleDef","kit":"VehicleIso
+        (Art/vehicleIsoRig.js), workhorse","faces":"nose south (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-290.6,-287.4,-101.9,-98.7,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: AmbientVehicleDef
+  - Id: vehicle.nmc_south_shore_4_van
+    Kind: vehicle
+    Owner: H8
+    Kit: VanIso (Art/vanIsoRig.js), beachBus
+    Piece: VanIso
+    State: 
+    At: {x: -361.3, y: -118.1}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: -118.1
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: beachBus
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"VanIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.centre
+      Value: '[-361.3,-115.4]'
+    - Key: nmc.frontM
+      Value: 2.7
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_south_shore_estate_4"'
+    - Key: nmc.def
+      Value: '{"name":"the architects\u2019 van on the gravel circle","defType":"AmbientVehicleDef","kit":"VanIso
+        (Art/vanIsoRig.js), beachBus","faces":"nose south (dir 4)"}'
+    - Key: nmc.reachBox
+      Value: '[-362.9,-359.7,-119.7,-116.5,5.5,8.4]'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_south_shore
+    - Key: nmc.type
+      Value: AmbientVehicleDef
+  Lights:
+  - PieceId: prop.nmc_south_shore_3_chairs
+    Preset: 
+    Pool: 1
+    ReachMetres: 5.5
+    At: {x: 0, y: 0, z: 0.6}
+    Colour: '#ffa04a'
+    Intensity: 0.9
+    When: night
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_south_shore_fire
+    Preset: 
+    Pool: 1
+    ReachMetres: 6.5
+    At: {x: 0, y: 0, z: 0.6}
+    Colour: '#ffa04a'
+    Intensity: 0.95
+    When: night
+    WhoLights: 
+    Budget: 0
+    Note: 
   RetiredIds:
   - prop.nmc_waterfront_6_bed_35
   - prop.nmc_waterfront_6_bed_29
@@ -577,3 +4448,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - structure.nmc_bank_steps_4
+  - prop.nmc_bank_bench_4
+  - structure.nmc_bank_steps_5
+  - prop.nmc_bank_bench_5
+  - boat.nmc_shore_dory
+  - prop.nmc_shore_fire
+  - prop.nmc_lot_pole_05
+  - prop.nmc_lot_pole_04
+  - prop.nmc_yard_fence_e
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_rack_01
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  - structure.nmc_apartments_2
+  PlacementIds: []
