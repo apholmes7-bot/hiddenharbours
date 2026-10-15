@@ -33,9 +33,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
         private WharfNightStage _stage;
 
+        // The installed gull flock, stood down by the noon control alone, and every flag it saved.
+        private GullFlock _installedFlock;
+        private bool _flockWasEnabled;
+        private readonly List<(Renderer Renderer, bool Enabled)> _gullRenderers = new();
+        private readonly List<(SpriteShadow Shadow, bool Enabled)> _gullShadows = new();
+
         [UnityTearDown]
         public IEnumerator TearDownRegion()
         {
+            RestoreGulls();   // before the first yield, so the birds come back whatever the stage does
             if (_stage != null) yield return _stage.TearDown();
             _stage = null;
             // Put BOTH systems' profiles back. Null re-resolves the shipped Resources asset on the next
@@ -205,6 +212,11 @@ namespace HiddenHarbours.Tests.PlayMode
             IReadOnlyList<LampPosts.Site> sites = StPetersWharf.LampPostSites();
             GameObject lamps = PlaceLamps(sites);
             yield return _stage.FrameOn(sites[0].Position + new Vector2(0f, -1f));
+
+            // The gulls fly on UNSCALED time, so the stage's stopped clock does not hold them between the
+            // captures below, and a bird that moves between two of them is counted against the pools.
+            // Stood down for this control alone; the teardown puts them back.
+            StandDownGulls();
 
             LampShadowProfile profile = PoolProfile();
 
@@ -462,6 +474,50 @@ namespace HiddenHarbours.Tests.PlayMode
                 LampShadowSystem.Instance?.PublishFrame(_stage.Camera);
                 yield return null;
             }
+        }
+
+        /// <summary>Stands the installed gull flock down for one control, as <c>MeshInteriorLampsPlayTests</c>
+        /// does: the flock stops advancing and every bird and pooled shadow under it stops drawing, with each
+        /// flag saved for <see cref="RestoreGulls"/>.</summary>
+        void StandDownGulls()
+        {
+            // Match SeagullLandingPlayTests: the hidden DontDestroyOnLoad host is not a scene find.
+            foreach (GullFlock flock in Resources.FindObjectsOfTypeAll<GullFlock>())
+            {
+                if (flock == null || flock.gameObject.name != "GullFlock" ||
+                    (flock.gameObject.hideFlags & HideFlags.HideAndDontSave) != HideFlags.HideAndDontSave)
+                    continue;
+                _installedFlock = flock;
+                break;
+            }
+            if (_installedFlock == null) return; // The gulls' fixture owns the installation assertion.
+
+            _flockWasEnabled = _installedFlock.enabled;
+            // Save all flags BEFORE any OnDisable can change a pooled renderer's flag.
+            foreach (Renderer renderer in _installedFlock.GetComponentsInChildren<Renderer>(true))
+                _gullRenderers.Add((renderer, renderer.enabled));
+            foreach (SpriteShadow shadow in _installedFlock.GetComponentsInChildren<SpriteShadow>(true))
+                _gullShadows.Add((shadow, shadow.enabled));
+
+            _installedFlock.enabled = false;
+            foreach (var saved in _gullShadows) saved.Shadow.enabled = false;
+            foreach (var saved in _gullRenderers) saved.Renderer.enabled = false;
+        }
+
+        /// <summary>Puts back exactly what <see cref="StandDownGulls"/> saved; nothing when no case stood the
+        /// flock down.</summary>
+        void RestoreGulls()
+        {
+            // OnEnable can re-stamp a shadow renderer: restore its component first, then the exact
+            // renderer flags saved before stand-down. Do not destroy or replace the installed host.
+            foreach (var saved in _gullShadows)
+                if (saved.Shadow != null) saved.Shadow.enabled = saved.Enabled;
+            foreach (var saved in _gullRenderers)
+                if (saved.Renderer != null) saved.Renderer.enabled = saved.Enabled;
+            if (_installedFlock != null) _installedFlock.enabled = _flockWasEnabled;
+            _gullShadows.Clear();
+            _gullRenderers.Clear();
+            _installedFlock = null;
         }
     }
 }
