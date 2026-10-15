@@ -9,7 +9,9 @@ namespace HiddenHarbours.Audio
     /// persistent GameObject before the first scene's gameplay, builds its mix buses, subscribes to the
     /// EXISTING Core signals, and adapts the soundscape:
     /// <list type="bullet">
-    ///   <item>a calm-sea + gull AMBIENT BED (always),</item>
+    ///   <item>a calm-sea AMBIENT BED (always),</item>
+    ///   <item>GULL CALLS that follow the gulls: single calls from the birds near the view (read through
+    ///   <see cref="IBirdPresence"/>), each panned to its bird, and silence when none is near,</item>
     ///   <item>moderate and rough water beds following continuous sea state,</item>
     ///   <item>a sparse, game-clock-scheduled foghorn when visibility falls,</item>
     ///   <item>a propulsion-aware BOAT BED while aboard — the hand-rowed dory gets an oar-stroke/water
@@ -72,6 +74,9 @@ namespace HiddenHarbours.Audio
         [Tooltip("Loudness of the aboard outboard-engine bed (engine boats) relative to the ambience bus.")]
         [SerializeField, Range(0f, 1f)] private float _engineLayerGain = 0.8f;
 
+        [Header("Gull calls (they follow the birds near the view)")]
+        [SerializeField] private GullCallTuning _gullCalls = new GullCallTuning();
+
         [Header("Clips (placeholders generated if empty; slot owner SFX here later)")]
         [SerializeField] private AudioClip _calmBed;
         [SerializeField] private AudioClip _gulls;
@@ -94,7 +99,7 @@ namespace HiddenHarbours.Audio
 
         // ---- runtime sources ----------------------------------------------------------------
         private AudioSource _bed;     // calm-sea bed (ambience)
-        private AudioSource _gull;    // gull layer (ambience)
+        private GullCallPlayer _gullPlayer;   // gull calls (ambience): one-shot voices, one call each
         private AudioSource _oar;     // oar-stroke/water bed (ambience, aboard a rowed hull)
         private AudioSource _engine;  // outboard-engine bed (ambience, aboard an engine hull)
         private AudioSource _tell;    // rising-wind tell (ambience, wind-driven)
@@ -229,9 +234,12 @@ namespace HiddenHarbours.Audio
                 _envTimer = _envSampleHz > 0f ? 1f / _envSampleHz : 0.25f;
                 SampleEnvironment();
                 SampleBoat();
+                // The gulls are heard where they are: the birds near the view, at the same 4 Hz.
+                if (_gullPlayer != null) _gullPlayer.Listen(GameServices.BirdPresence);
             }
 
             ApplyMix();
+            if (_gullPlayer != null) _gullPlayer.Tick(dt);
         }
 
         private void SampleEnvironment()
@@ -286,7 +294,8 @@ namespace HiddenHarbours.Audio
             float bedGain = AudioDirectorLogic.CalmBedGain(_tell01);
 
             if (_bed  != null) _bed.volume  = ambDucked * bedGain;
-            if (_gull != null) _gull.volume = ambDucked * bedGain * 0.7f;
+            // The gulls ride the ducked bus, but not the calm bed's thinning: in wind their own numbers fall.
+            if (_gullPlayer != null) _gullPlayer.BusGain = ambDucked;
             if (_moderateSea != null) _moderateSea.volume = ambDucked * AudioDirectorLogic.ModerateSeaGain(_seaState01);
             if (_roughSea != null) _roughSea.volume = ambDucked * AudioDirectorLogic.RoughSeaGain(_seaState01);
             if (_fogHorn != null) _fogHorn.volume = amb * AudioDirectorLogic.FoghornAmbienceGain;
@@ -363,9 +372,11 @@ namespace HiddenHarbours.Audio
 
         private void BuildSources()
         {
+            // The gull slot empty, its clip is the procedural loop and the calls are that loop's phrases.
+            bool gullSlotEmpty = _gulls == null;
             EnsurePlaceholderClips();
             _bed    = MakeSource("Bed",      _calmBed,        loop: true,  play: true);
-            _gull   = MakeSource("Gulls",    _gulls,          loop: true,  play: true);
+            BuildGullVoices(gullSlotEmpty);
             // Both propulsion beds loop from boot at zero volume and crossfade in — no Play/Stop pops on a swap.
             _oar    = MakeSource("OarRow",   _hullRow,        loop: true,  play: true);
             _engine = MakeSource("Outboard", _outboardEngine, loop: true,  play: true);
@@ -375,6 +386,16 @@ namespace HiddenHarbours.Audio
             _moderateSea = MakeSource("ModerateSea", _moderateSeaBed, loop: true, play: true);
             _roughSea = MakeSource("RoughSea", _roughSeaBed, loop: true, play: true);
             _fogHorn = MakeSource("Foghorn", null, loop: false, play: false);
+        }
+
+        /// <summary>One one-shot voice per call at once: the player starts each call on a free one.</summary>
+        private void BuildGullVoices(bool gullSlotEmpty)
+        {
+            var voices = new AudioSource[GullCallLogic.VoiceCount(_gullCalls)];
+            for (int i = 0; i < voices.Length; i++)
+                voices[i] = MakeSource(GullCallPlayer.VoiceName(i), _gulls, loop: false, play: false);
+            _gullPlayer = new GullCallPlayer(_gullCalls, voices, _gulls,
+                                             gullSlotEmpty ? ProceduralAudio.GullCallPhrases : null);
         }
 
         private AudioSource MakeSource(string name, AudioClip clip, bool loop, bool play)

@@ -293,6 +293,28 @@ same wind memory at the clock. `WaterSurface` uses the short band's wind for dec
 wind and chop. Settings live solely in `GameConfig.WaveField`; nothing is saved. See
 ADR 0018's dated amendment for windows, causality, fallback and future-stage boundaries.
 
+### Birds belong to places (gulls, 2026-10-15)
+
+The flock no longer gathers around the camera. Each place a bird keeps is a `BirdHauntDef`, one
+file per place under `Data/Birds/Haunts/<Region>/`, with ids `birdhaunt.<region>_<place>` and
+`birdroost.<region>_<place>`. Where and when sit on the place: region, kind, box, roost, shelter,
+working hours, market day, tide, perches and away heading. How many sit in its list of birds, one
+`BirdHauntEntry` per species id (only `bird.herring_gull` today). `Resources/BirdHauntLibrary.asset`
+lists the places and holds the gull's `GullScheduleTuning`.
+
+`GullSchedule` (pure, no engine) turns a place, the calendar (season, day, hour, market day) and the
+sea (storm, visibility, tide) into how many birds it holds, from `(worldSeed, gameTime)` alone.
+`GullRoster` gives each bird slot its place (at the haunt, at the roost, commuting or away) and its
+spot. A bird left behind is where it was when the view comes back. `GullFlock` (Art) ticks the
+roster `ScheduleTicksPerSecond` times a second and binds its pool of `GullConfig.Count` drawn birds
+to the slots nearest the view.
+
+The flock publishes those birds through Core's `IBirdPresence`. `GameServices.BirdPresence` is never
+null: it falls back to `EmptyBirdPresence` when no flock is up. Audio's `GullCallPlayer` reads only
+that seam (rule 4). It calls for the birds near the view, panned to the bird, quieter with distance,
+and more often for feeding birds; its knobs are the director's `GullCallTuning`. The always-on gull
+bed is gone. Nothing is saved: the schedule is recomputed from seed and time.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
