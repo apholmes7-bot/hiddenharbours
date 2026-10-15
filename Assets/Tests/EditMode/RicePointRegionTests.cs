@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using HiddenHarbours.App;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Boats;
+using HiddenHarbours.Fishing;
 using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEditor;
@@ -17,6 +19,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string ProofSource = "Assets/_Project/Scenes/RicePointRefreshSource.unity";
         const string ProofCopy = "Assets/_Project/Scenes/RicePointRefreshCopy.unity";
         const string ProofFolder = "Assets/_Project/Scenes/RicePointRefreshProof";
+        const string CreateProofScene = "Assets/_Project/Scenes/RicePointCreateProof.unity";
+        const string CreateProofFolder = "Assets/_Project/Scenes/RicePointCreatePlan";
         EditorBuildSettingsScene[] _buildList;
         SceneSetup[] _sceneSetup;
         LandScenePlanDef _proofPlan;
@@ -34,9 +38,11 @@ namespace HiddenHarbours.Tests.EditMode
                 () => EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single),
                 () => AssetDatabase.DeleteAsset(ProofCopy),
                 () => AssetDatabase.DeleteAsset(ProofSource),
+                () => AssetDatabase.DeleteAsset(CreateProofScene),
                 () => EditorBuildSettings.scenes = buildList,
-                // Both scenes reference the proof's region, so its folder goes after them.
+                // The scenes reference the proofs' regions, so their folders go after them.
                 () => AssetDatabase.DeleteAsset(ProofFolder),
+                () => AssetDatabase.DeleteAsset(CreateProofFolder),
                 () => { if (setup.Length > 0) EditorSceneManager.RestoreSceneManagerSetup(setup); }
             };
             // Each remaining step runs even when an earlier cleanup throws. Reset fixture state
@@ -58,15 +64,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "A previous disposable proof must be inspected before reuse.");
             _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
             _buildList = EditorBuildSettings.scenes;
-            // A Single-mode scene open destroys in-memory objects, so the proof's plan and region
-            // are temporary assets, as the real plan and region are.
             Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", "RicePointRefreshProof"), Is.Not.Empty);
-            _proofPlan = Object.Instantiate(RicePointBuilder.LoadPlan());
-            _proofPlan.Region = Object.Instantiate(_proofPlan.Region);
-            _proofPlan.Region.SceneName = "RicePointRefreshSource";
-            AssetDatabase.CreateAsset(_proofPlan.Region, ProofFolder + "/Region.asset");
-            AssetDatabase.CreateAsset(_proofPlan, ProofFolder + "/Plan.asset");
-            AssetDatabase.SaveAssets();
+            _proofPlan = SaveProofPlan(ProofFolder, "RicePointRefreshSource");
             LandSceneTemplate.Create(_proofPlan);
             Assert.That(AssetDatabase.CopyAsset(ProofSource, ProofCopy), Is.True);
             _proofPlan.Region.SceneName = "RicePointRefreshCopy";
@@ -91,6 +90,79 @@ namespace HiddenHarbours.Tests.EditMode
                 .transform.Find("Visuals/ReviewCamera");
             Assert.That(visual.position, Is.EqualTo(moved));
             Assert.That(GlobalObjectId.GetGlobalObjectIdSlow(visual), Is.EqualTo(identity));
+        }
+
+        [Test]
+        public void RicePointCreate_PlanOnlyOnDisk_SavesPassagesRegionsHullAndFish()
+        {
+            Assert.That(System.IO.File.Exists(CreateProofScene) || System.IO.Directory.Exists(CreateProofFolder), Is.False,
+                "A previous disposable proof must be inspected before reuse.");
+            _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
+            _buildList = EditorBuildSettings.scenes;
+            Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", "RicePointCreatePlan"), Is.Not.Empty);
+            SaveProofPlan(CreateProofFolder, "RicePointCreateProof");
+            // The batch CREATE's flow: the plan comes from disk, and nothing static holds it across the new scene.
+            var handed = AssetDatabase.LoadAssetAtPath<LandScenePlanDef>(CreateProofFolder + "/Plan.asset");
+            LandSceneTemplate.Create(handed);
+            Debug.Log("[rice-point] CREATE proof: the new scene unloaded the plan handed in: " + (handed == null));
+            var roots = EditorSceneManager.OpenScene(CreateProofScene, OpenSceneMode.Single).GetRootGameObjects();
+            var plan = AssetDatabase.LoadAssetAtPath<LandScenePlanDef>(CreateProofFolder + "/Plan.asset");
+            plan.Validate();
+            var neighbour = AssetDatabase.LoadAssetAtPath<RegionDef>("Assets/_Project/Data/Regions/NineMileCreek.asset");
+            var passages = roots.SelectMany(g => g.GetComponentsInChildren<RegionPassage>(true)).ToArray();
+            Assert.That(passages.Length, Is.EqualTo(3));
+            foreach (var door in plan.Doors)
+            {
+                var passage = passages.Single(p => p.name == door.Id);
+                Assert.That(passage.Target != null && passage.Target == neighbour, Is.True, door.Id + " lost its target.");
+                Assert.That(Saved(passage, "_loader").Single() != null, Is.True, door.Id + " lost its loader.");
+                Assert.That(passage.ArrivalKey, Is.EqualTo(door.TargetArrival));
+            }
+            var registrar = roots.SelectMany(g => g.GetComponentsInChildren<RegionDisplayNameRegistrar>(true)).Single();
+            Assert.That(Saved(registrar, "_regions"), Is.EqualTo(new Object[] { plan.Region }));
+            var loaders = roots.SelectMany(g => g.GetComponentsInChildren<RegionSceneLoader>(true)).ToArray();
+            Assert.That(loaders.Length, Is.EqualTo(2));
+            foreach (var loader in loaders)
+                Assert.That(Saved(loader, "_regions"), Is.EqualTo(new Object[] { plan.Region, neighbour }));
+            var boat = roots.SelectMany(g => g.GetComponentsInChildren<BoatController>(true)).Single();
+            var hold = roots.SelectMany(g => g.GetComponentsInChildren<ShipHold>(true)).Single();
+            Assert.That(boat.Hull == plan.DevHull && hold.Hull == plan.DevHull, Is.True, "The dev boat lost its hull.");
+            var fishing = roots.SelectMany(g => g.GetComponentsInChildren<FishingController>(true)).Single();
+            Assert.That(plan.DevFish.Length > 0 && plan.DevFish.All(f => f != null), Is.True);
+            Assert.That(Saved(fishing, "_regionFish"), Is.EqualTo(plan.DevFish));
+        }
+
+        [Test]
+        public void LandSceneTemplate_Create_RefusesAPlanThatIsNotAnAsset()
+        {
+            var p = Object.Instantiate(RicePointBuilder.LoadPlan());
+            try
+            {
+                var refused = Assert.Throws<InvalidOperationException>(() => LandSceneTemplate.Create(p));
+                Assert.That(refused.Message, Does.Contain("saved as an asset"));
+            }
+            finally { Object.DestroyImmediate(p); }
+        }
+
+        // A Single-mode scene open destroys in-memory objects, so each proof's plan and region are
+        // disposable assets, as the real plan and region are.
+        static LandScenePlanDef SaveProofPlan(string folder, string sceneName)
+        {
+            var plan = Object.Instantiate(RicePointBuilder.LoadPlan());
+            plan.Region = Object.Instantiate(plan.Region);
+            plan.Region.SceneName = sceneName;
+            AssetDatabase.CreateAsset(plan.Region, folder + "/Region.asset");
+            AssetDatabase.CreateAsset(plan, folder + "/Plan.asset");
+            AssetDatabase.SaveAssets();
+            return plan;
+        }
+
+        // What the saved scene holds, read as the serializer reads it.
+        static Object[] Saved(Component component, string field)
+        {
+            var property = new SerializedObject(component).FindProperty(field);
+            return Enumerable.Range(0, property.isArray ? property.arraySize : 1)
+                .Select(i => (property.isArray ? property.GetArrayElementAtIndex(i) : property).objectReferenceValue).ToArray();
         }
 
         [Test]

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
+using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Fishing;
 using HiddenHarbours.World;
@@ -23,12 +24,21 @@ namespace HiddenHarbours.App.Editor
 
         public static void Create(LandScenePlanDef plan)
         {
+            // The new scene unloads every asset that no scene or static field holds, the plan among them,
+            // and a serialized write of an unloaded asset saves null. So the wiring reads the plan from disk.
+            var planPath = plan == null ? "" : AssetDatabase.GetAssetPath(plan);
+            if (string.IsNullOrEmpty(planPath))
+                throw new InvalidOperationException(
+                    "CREATE needs the land plan saved as an asset; it re-loads the plan after opening the new scene.");
             plan.Validate();
             if (File.Exists(plan.ScenePath))
                 throw new InvalidOperationException("Land scene already exists; use REFRESH Logic.");
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             PreflightArt(plan);
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            plan = AssetDatabase.LoadAssetAtPath<LandScenePlanDef>(planPath);
+            if (plan == null) throw new InvalidOperationException("Land plan did not re-load: " + planPath);
+            plan.Validate();
             var root = new GameObject(RootName);
             var logic = Child(root.transform, LogicName);
             logic.gameObject.AddComponent<RegionLogicRoot>();
@@ -65,7 +75,57 @@ namespace HiddenHarbours.App.Editor
             AddDoors(plan, Child(logic, "Doors"), loader);
             AddClosedEdges(plan, Child(logic, "ClosedEdges"));
             AddDevCore(plan, camera, scene);
+            CheckWiring(plan, scene);
             WaterSceneTemplate.SaveAndRegister(scene, plan.ScenePath);
+        }
+
+        /// <summary>Reads back every asset reference CREATE wires, and throws on the first that did not take,
+        /// so a null fails CREATE instead of being saved. Returns what it checked.</summary>
+        public static string CheckWiring(LandScenePlanDef plan, Scene scene)
+        {
+            var roots = scene.GetRootGameObjects();
+            var logic = roots.Single(g => g.name == RootName).transform.Find(LogicName);
+            Expect(logic.Find("Ground").GetComponent<PaintedTidalTerrain>(), "_map", plan.Ground);
+            Expect(logic.GetComponentInChildren<RegionDisplayNameRegistrar>(true), "_regions", plan.Region);
+            int lists = 1 + ExpectEach<RegionSceneLoader>(roots, "_regions", Targets(plan));
+            var loader = logic.GetComponentInChildren<RegionSceneLoader>(true);
+            var doors = logic.Find("Doors");
+            var placed = (plan.Doors ?? Array.Empty<LandDoor>()).Where(d => d.Target != null).ToArray();
+            if (doors.childCount != placed.Length)
+                throw new InvalidOperationException("CREATE placed " + doors.childCount + " of " + placed.Length + " passages.");
+            foreach (var door in placed)
+            {
+                var found = doors.Find(door.Id);
+                var passage = found == null ? null : found.GetComponent<RegionPassage>();
+                Expect(passage, "_target", door.Target);
+                Expect(passage, "_loader", loader);
+                if (passage.ArrivalKey != door.TargetArrival)
+                    throw new InvalidOperationException("CREATE did not wire " + door.Id + " _arrivalKey.");
+            }
+            int hulls = ExpectEach<BoatController>(roots, "_hull", plan.DevHull)
+                + ExpectEach<ShipHold>(roots, "_hull", plan.DevHull);
+            int fish = plan.DevFish == null || plan.DevFish.Length == 0 ? 0
+                : plan.DevFish.Length * ExpectEach<FishingController>(roots, "_regionFish", plan.DevFish);
+            return placed.Length + " passages, region in " + lists + " lists, hull " + plan.DevHull.Id + " x" + hulls +
+                ", " + fish + " fish slots";
+        }
+
+        static int ExpectEach<T>(GameObject[] roots, string field, params Object[] expected) where T : Component
+        {
+            var found = roots.SelectMany(g => g.GetComponentsInChildren<T>(true)).ToArray();
+            if (found.Length == 0) throw new InvalidOperationException("CREATE placed no " + typeof(T).Name + ".");
+            foreach (var component in found) Expect(component, field, expected);
+            return found.Length;
+        }
+
+        static void Expect(Component component, string field, params Object[] expected)
+        {
+            var property = component == null ? null : new SerializedObject(component).FindProperty(field);
+            var saved = property == null ? Array.Empty<Object>() : Enumerable.Range(0, property.isArray ? property.arraySize : 1)
+                .Select(i => (property.isArray ? property.GetArrayElementAtIndex(i) : property).objectReferenceValue).ToArray();
+            if (property == null || expected.Any(e => e == null) || !saved.SequenceEqual(expected))
+                throw new InvalidOperationException("CREATE did not wire " +
+                    (component == null ? "a missing object" : component.name) + " " + field + ".");
         }
 
         public static RegionAnchor AddAnchor(LandScenePlanDef plan, Transform logic)

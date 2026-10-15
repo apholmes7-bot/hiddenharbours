@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -32,8 +33,17 @@ namespace HiddenHarbours.App.Editor
             try
             {
                 Create();
-                if (!File.Exists(LoadPlan().ScenePath)) throw new IOException("CREATE did not save its scene.");
-                Debug.Log("[rice-point] CREATE OK");
+                var path = LoadPlan().ScenePath;
+                if (!File.Exists(path)) throw new IOException("CREATE did not save its scene.");
+                if (!EditorBuildSettings.scenes.Any(s => s.path == path && s.enabled))
+                    throw new InvalidOperationException("CREATE did not register its scene.");
+                // A saved file is not proof: the marker waits until the scene re-opened from disk holds every
+                // door's passage, the region in each list, the dev boat's hull and the fish slots.
+                var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+                var plan = LoadPlan();
+                if (plan.Doors == null || plan.Doors.Length == 0 || plan.Doors.Any(d => d.Target == null))
+                    throw new InvalidOperationException("Rice Point needs its doors, each with its target region.");
+                Debug.Log("[rice-point] CREATE OK: " + LandSceneTemplate.CheckWiring(plan, scene));
             }
             catch (Exception exception)
             {
