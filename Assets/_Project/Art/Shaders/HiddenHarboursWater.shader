@@ -2988,7 +2988,8 @@ Shader "HiddenHarbours/Water"
             }
             float FetchFactorAt(FetchFactors f, int i)
             {
-                return i < 4 ? f.low[i] : f.high[i - 4];
+                int j = i & 3;                      // HLSL evaluates both sides of ?: -- keep both reads in range
+                return i < 4 ? f.low[j] : f.high[j];
             }
 
 
