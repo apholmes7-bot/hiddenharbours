@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/NineMileCreek.unity
     guid: 0a46cd90f01cf754eb77122b12796cf3
+  - enabled: 1
+    path: Assets/_Project/Scenes/RicePoint.unity
+    guid: 3e7df5f73918ff149add1cd428b233de
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: f4e6011c9df149ac82504cb1b0661745, type: 3}
