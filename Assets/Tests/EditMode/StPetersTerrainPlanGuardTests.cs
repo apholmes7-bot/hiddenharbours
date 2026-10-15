@@ -56,6 +56,53 @@ namespace HiddenHarbours.Tests.EditMode
                                   $"({sw.Elapsed.TotalSeconds:0.0} s)");
         }
 
+        // A source rule alone does not prove the committed map carries that level: a bilinear footprint
+        // can include code 0 (none). Exercise the runtime sampler on the committed texture, not r.Still.
+        [Test]
+        public void TheCommittedStillWater_HoldsAllFiveSourceHeads()
+        {
+            var plan = StPetersTerrainPlan.LoadPlan();
+            var map = StPetersTerrainPlan.LoadSeabed();
+            Assert.NotNull(map.StillLevelTexture, "the committed still map must be assigned");
+            var still = new PaintedStillWater(map.StillLevelTexture, map.WorldCenter, map.WorldSize,
+                                             map.MinElevation, map.MaxElevation);
+            Assert.IsTrue(still.IsBound, "the committed still map must be readable");
+            CheckSourceHeads(plan, still, (map.MaxElevation - map.MinElevation) / TerrainPlanMaps.CodeCount);
+        }
+
+        // Kept separate so the same assertions and runtime sampling can also run headless after a
+        // managed PNG decode; only AssetDatabase/Texture2D acquisition requires the editor.
+        static void CheckSourceHeads(RegionTerrainPlanDef plan, HiddenHarbours.Core.IStillWater still, float step)
+        {
+            var expected = new Dictionary<string, float>
+            {
+                { "stream.stp_barren_brook", 5.3f },
+                { "stream.stp_alder_run", 5.25f },
+                { "stream.stp_gap_brook", 5.3f },
+                { "stream.stp_storm_brook", 5.3f },
+                { "stream.stp_heath_brook", 5.3f }
+            };
+            var heads = plan.Streams.Where(s => s.Source != null).ToArray();
+            CollectionAssert.AreEquivalent(expected.Keys, heads.Select(s => s.Id).ToArray(),
+                "all five sourced heads must be checked; Cove Brook has no source pond");
+            var failures = new List<string>();
+            foreach (var stream in heads)
+            {
+                Assert.IsNotEmpty(stream.Points, stream.Id + " has no head");
+                Assert.AreEqual(expected[stream.Id], stream.Source.Surface, stream.Id + " source rule moved");
+                float want = (float)TerrainPlanDerivation.BrookHeadLevel(stream, stream.BedZ[0], 0);
+                Assert.AreEqual(stream.Source.Surface, want, stream.Id + " does not use Source.Surface");
+                var head = stream.Points[0];
+                float actual = still.StillLevelAt(head);
+                float error = UnityEngine.Mathf.Abs(actual - want);
+                string measured = $"{stream.Id} at ({head.x:R}, {head.y:R}): committed {actual:R} m, " +
+                                  $"source {want:R} m, error {error:R} m, one R16 step {step:R} m";
+                TestContext.WriteLine(measured);
+                if (!(error <= step)) failures.Add(measured); // also rejects NaN and None
+            }
+            Assert.IsEmpty(failures, string.Join("\n", failures));
+        }
+
         [TestCaseSource(typeof(TerrainPlanGuards), nameof(TerrainPlanGuards.Names))]
         public void TheGuard_Holds(string name)
         {
