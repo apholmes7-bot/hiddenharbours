@@ -13,7 +13,7 @@ namespace HiddenHarbours.App.Editor
 {
     /// <summary>
     /// <b>A GROUND FILE INTO DATA, ONE PRESS</b> (terrain PR 5 B; amendment 1 §4.1 item 7). A package's ground file
-    /// (<c>hidden-harbours/island-ground@2</c>) becomes:
+    /// (<c>hidden-harbours/island-ground@3</c>) becomes:
     /// <list type="bullet">
     /// <item>its base, the PNG's bytes as they came (the import checks its pixels, not its file);</item>
     /// <item>one <see cref="GroundAskDef"/> per ask, by id, with its patch beside it as a 16-bit PNG (row 0 at the box's
@@ -25,9 +25,9 @@ namespace HiddenHarbours.App.Editor
     /// A revised file is a re-run: the package's asks are rewritten by id, and the game's asks are never touched. The
     /// file's JSON stays out of the repo (it is mostly base64). Every check STOPs the intake before it writes anything.
     /// </summary>
-    public static class GroundFileIntake
+    public static partial class GroundFileIntake
     {
-        public const string Schema = "hidden-harbours/island-ground@2";
+        public const string Schema = "hidden-harbours/island-ground@3";
         public const string AskPrefix = "GroundAsk_";
         public const string PatchPrefix = "GroundPatch_";
         public const string BasePrefix = "GroundBase_";
@@ -38,7 +38,8 @@ namespace HiddenHarbours.App.Editor
         public sealed class FileAsk
         {
             public string Id = "", Scene = "", FileKind = "", Ruled = "", Rule = "";
-            public bool HasPatch;
+            public bool HasPatch, IsGameCopy;
+            public Vector4[] IssueBoxes = new Vector4[0];
             public double X0, Y0, X1, Y1, Step, Lo, Hi;
             public int Width, Height;
             /// <summary>The samples, row 0 at the box's south edge, and the sha256 of their bytes as the file holds them.</summary>
@@ -58,6 +59,12 @@ namespace HiddenHarbours.App.Editor
             public Vector2 BaseRange, RectMin, RectMax;
             public int TexelsPerUnit, BaseWidth, BaseHeight;
             public readonly List<FileAsk> Asks = new List<FileAsk>();
+            public readonly Dictionary<string, Vector4> Dropped = new Dictionary<string, Vector4>(StringComparer.Ordinal);
+            public readonly Dictionary<string, string> DropReasons = new Dictionary<string, string>(StringComparer.Ordinal);
+            public Dictionary<string, object> StillWater;
+            public Dictionary<string, object> Sill;
+            public List<object> HeathStations;
+            public string[] GameAsks;
         }
 
         // ---- the file, read (pure) ---------------------------------------------------------------------------------------
@@ -98,6 +105,17 @@ namespace HiddenHarbours.App.Editor
             f.BaseWidth = (int)Math.Round(w * f.TexelsPerUnit);
             f.BaseHeight = (int)Math.Round(h * f.TexelsPerUnit);
 
+            f.GameAsks = Arr(Obj(root, "game"), "asks").Select(v => v as string ?? throw Bad("a game ask id is not words")).ToArray();
+            if (f.GameAsks.Distinct(StringComparer.Ordinal).Count() != f.GameAsks.Length) throw Bad("duplicate game ask ids");
+            f.StillWater = Obj(root, "stillWater");
+            foreach (var value in Arr(root, "dropped"))
+            {
+                var drop = value as Dictionary<string, object> ?? throw Bad("a dropped ask is not an object");
+                string id = Str(drop, "id");
+                if (f.Dropped.ContainsKey(id) || f.GameAsks.Contains(id)) throw Bad("invalid dropped ask " + id);
+                f.Dropped.Add(id, Box(Nums(drop, "box", 4)));
+                f.DropReasons.Add(id, Str(drop, "why"));
+            }
             var seen = new HashSet<string>(StringComparer.Ordinal);
             foreach (var o in Arr(root, "asks"))
             {
@@ -146,9 +164,17 @@ namespace HiddenHarbours.App.Editor
                         k.Reach = (float)Num(a, "reachM");
                     }
                 }
+                k.IsGameCopy = f.GameAsks.Contains(k.Id);
+                if (f.Dropped.ContainsKey(k.Id)) throw Bad(k.Id + " is both live and dropped");
+                if (a.TryGetValue("issue2", out var issue) && issue is Dictionary<string, object> ii)
+                    k.IssueBoxes = Arr(ii, "boxes").Select(v => Box((v as List<object> ?? throw Bad("invalid issue box")).Select(n => (double)n).ToArray())).ToArray();
+                if (a.TryGetValue("sill", out var sill)) f.Sill = sill as Dictionary<string, object> ?? throw Bad("invalid sill");
+                if (a.TryGetValue("brook", out var brook)) f.HeathStations = Arr((Dictionary<string, object>)brook, "stations");
                 f.Asks.Add(k);
             }
             if (f.Asks.Count == 0) throw Bad("the file has no asks");
+            if (f.GameAsks.Any(id => !seen.Contains(id))) throw Bad("a game ask has no copy");
+            ValidateStill(f);
             return f;
         }
 
@@ -182,6 +208,8 @@ namespace HiddenHarbours.App.Editor
             log.Add("READ " + f.Id + " (" + Schema + "), sha256 " + jsonSha + ": base " + f.BaseTexture + " " + img.Width + " × " + img.Height + ", pixels " + pix + " (the file's); " +
                     f.Asks.Count + " asks, " + f.Asks.Count(a => a.HasPatch) + " with samples");
 
+            // All identity and copy checks precede even directory creation or the first byte written.
+            Preflight(f, folder, img.Channel(0));
             if (!AssetDatabase.IsValidFolder(folder))
             {
                 string parent = Path.GetDirectoryName(folder)?.Replace('\\', '/');
@@ -200,7 +228,7 @@ namespace HiddenHarbours.App.Editor
 
             // the package's asks, by id
             var live = new List<GroundAskDef>();
-            foreach (var k in f.Asks)
+            foreach (var k in f.Asks.Where(a => !a.IsGameCopy))
             {
                 string name = NameOf(k.Id);
                 string askPath = folder + "/" + AskPrefix + name + ".asset";
@@ -215,6 +243,7 @@ namespace HiddenHarbours.App.Editor
                 d.Id = k.Id;
                 d.Source = GroundAskSource.Package;
                 d.Retired = false;
+                d.IssueBoxes = k.IssueBoxes;
                 d.Rule = k.Rule;
                 d.Package = package ?? "";
                 d.GroundFileSha256 = jsonSha;
@@ -259,6 +288,8 @@ namespace HiddenHarbours.App.Editor
             {
                 if (!d.Retired) log.Add("  retired " + d.Id + ": the file no longer lists it");
                 d.Retired = true;
+                if (f.Dropped.TryGetValue(d.Id, out var box)) d.IssueBoxes = new[] { box };
+                if (f.DropReasons.TryGetValue(d.Id, out var why)) d.RetirementWhy = why + "; owner accepted call 1 on 2026-10-07: the fen held full by its sill.";
                 EditorUtility.SetDirty(d);
             }
             var game = before.Where(d => d.Source == GroundAskSource.Game).ToList();
@@ -292,6 +323,7 @@ namespace HiddenHarbours.App.Editor
             file.RectMax = f.RectMax;
             file.Asks = live.Concat(retired).Concat(game).ToArray();
             EditorUtility.SetDirty(file);
+            ApplyIssue3(f, StPetersTerrainPlan.LoadPlan(), log);
             AssetDatabase.SaveAssets();
             log.Add("  " + (newFile ? "made " : "rewrote ") + FilePathOf(folder, f.Id) + ": " + live.Count + " of the package's asks, " + retired.Count + " retired, " +
                     game.Count + " of the game's (" + string.Join(", ", game.Select(d => d.Id)) + ")");

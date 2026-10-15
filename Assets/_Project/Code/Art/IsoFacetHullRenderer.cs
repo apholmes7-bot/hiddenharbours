@@ -165,6 +165,7 @@ namespace HiddenHarbours.Art
         // version stamp that could say yes while the mesh says nothing.
         private bool _hasRoomGeometry;
         private HiddenHarbours.Core.HullMeshDef.Cut _cutaway;
+        private readonly Vector4[] _roleLiftMasks = new Vector4[31];
 
         // THE DOOR LEAF (owner playtest 2026-09-17). The "DoorLeaf" child under FacetMesh, present
         // only when the setup carries both poses, and the pose last asked for. The answer outlives a
@@ -241,11 +242,16 @@ namespace HiddenHarbours.Art
         {
             // A hull with no tags cannot be cut, and a cut with no level cannot have a lid: both
             // collapse to None here rather than at four call sites.
-            if (!_hasLevelTags || cut.Level <= 0) cut = HiddenHarbours.Core.HullMeshDef.Cut.None;
-            else if (cut.Lid < 0) cut = new HiddenHarbours.Core.HullMeshDef.Cut(cut.Level, 0);
-            if (cut.Level == _cutaway.Level && cut.Lid == _cutaway.Lid) return;
+            if (!_hasLevelTags || !cut.Opens) cut = HiddenHarbours.Core.HullMeshDef.Cut.None;
+            if (cut.Level == _cutaway.Level && cut.LiftLevels == _cutaway.LiftLevels &&
+                cut.ShownRoles == _cutaway.ShownRoles && cut.RoleMasks == _cutaway.RoleMasks) return;
 
             _cutaway = cut;
+            for (int i = 0; i < _roleLiftMasks.Length; i++)
+            {
+                int mask = cut.RoleMasks != null && i < cut.RoleMasks.Length ? cut.RoleMasks[i] : 0;
+                _roleLiftMasks[i] = new Vector4(mask & 65535, (mask >> 16) & 32767, 0, 0);
+            }
             ApplyCutawayKeyword();
             ApplyPose();          // the level and its lid travel in the property block
         }
@@ -543,6 +549,7 @@ namespace HiddenHarbours.Art
             // is no longer the same geometry — and must not leave the keyword on a material that has
             // just been rebuilt underneath it.
             _cutaway = HiddenHarbours.Core.HullMeshDef.Cut.None;
+            System.Array.Clear(_roleLiftMasks, 0, _roleLiftMasks.Length);
 
             BuildRampTextures(setup);
             BuildFacetMaterial(setup);
@@ -979,7 +986,9 @@ namespace HiddenHarbours.Art
             // exterior" — so a block re-used across hulls can never carry one boat's open house onto
             // her sister. Inert while HH_LEVEL_GATE is off: nothing reads it.
             _props.SetFloat(IsoFacetShaderIds.LevelShown, _cutaway.Level);
-            _props.SetFloat(IsoFacetShaderIds.LevelLid, _cutaway.Lid);
+            _props.SetInteger(IsoFacetShaderIds.LiftLevels, _cutaway.LiftLevels);
+            _props.SetInteger(IsoFacetShaderIds.ShownRoles, _cutaway.ShownRoles);
+            _props.SetVectorArray(IsoFacetShaderIds.RoleLiftMasks, _roleLiftMasks);
             _props.SetVectorArray(IsoFacetShaderIds.DeckOccupant, _deckSlotVectors);
             _props.SetFloat(IsoFacetShaderIds.DeckOccupantCount, activeDeckSlots);
             target.SetPropertyBlock(_props);

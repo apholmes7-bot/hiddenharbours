@@ -52,8 +52,10 @@ of 69 poses checked, and every other face is identical and in the same order. Ev
 the gate is still one rigid leaf about its declared pin to 1e-6 m, and the per-facing `painted_bbox`
 did not move. She still paints 16 ramps by day and 15 by night, because twelve faces of her body still
 paint with the badge ramp. The sidecar was then re-derived from the cut rig (see *Known limits*), and
-the contract's `rigSha256`, `faces` and `triangles` were re-stamped from it. **The ten sheets were not
-re-rendered.** They still show the lettering, 899 px across the ten against the cut rig. That is debt.
+the contract's `rigSha256`, `faces` and `triangles` were re-stamped from it. **The ten sheets were
+re-rendered on 2026-10-10.** All 94 frames now match the cut rig. Against the pinned pre-cut sheets,
+exactly 899 pixels changed, all from the lettering; alpha stayed identical. Every encoded PNG was
+decoded back and matched its rendered pixels exactly. The rig, its pins and its bake stayed fixed.
 
 ### The pin
 
@@ -195,11 +197,9 @@ measurements of the rig. They are not the engine's.
 
 ## Known limits
 
-- **The `RAM` badge lettering is gone from the rig and `preview.html`** (owner's ruling D1,
-  2026-09-18; see the cut paragraph above). Three debts remain. The ten reference sheets still show
-  it, because they were not re-rendered. The words "Ram 3500 reference" / "Ram-inspired" survive as
-  provenance in the contract's `source` and in the rig's and the preview's header comments. And the
-  Codex drop upstream still draws the lettering, so a re-issue from there has to be cut again.
+- **The badge lettering is gone from the rig, preview and sheets.** The contract's source text
+  and the rig and preview headers retain their existing provenance wording. The upstream drop
+  still draws the lettering, so a re-issue from there has to be cut again.
 - **The sidecar was re-keyed on 2026-09-18** onto the fleet's schema, modelled on the Dually's. It now
   has a fitted `BODY.collider_bbox`, plus an `INTERACT` `drive` at `door_fl` and `ride` at `door_fr`,
   each with a `reach_point` and `visible_facings`. Her own door, hood, cargo, fuel and tow entries

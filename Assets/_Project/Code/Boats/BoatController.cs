@@ -893,7 +893,7 @@ namespace HiddenHarbours.Boats
         /// the state comes back <see cref="SurfState.Calm"/>.</para>
         /// </summary>
         private static SurfState SurfUnderTheHull(Vector2 pos, double now, in WaveTrains trains,
-                                                  float gravity, float freqScale)
+                                                  float gravity, float freqScale, bool published)
         {
             ITidalTerrain terrain = GameServices.TidalTerrain;
             if (terrain == null) return SurfState.Calm;
@@ -922,13 +922,10 @@ namespace HiddenHarbours.Boats
             // scale 1 while the surface draws it at 2.8 would be shoved by a crest that is not the one on
             // her — the _OceanSwellScale incident that already cost the ride and the watertight clamp.
             //
-            // …and `now`, which is NOT optional on this path. These trains come from WaveMath.TrainsFrom,
-            // whose phase offset is a hash of (index, seed) and carries no time at all; the published
-            // trains the renderer reads carry it inside their own PhaseOffset, which is why the parameter
-            // defaults to 0 for them. Pass 0 here and the bore stands still: a pulse that varies across
-            // the beach and never ARRIVES, which is the steady state this whole revision exists to end.
+            // Published trains already carry travel in PhaseOffset, just as in the swell read.
+            // Raw fallback trains still need the clock. Tide above always needs world time.
             return BreakerMath.SurfAt(pos, waterLevel, terrain, in contour, envelope,
-                                      in trains, gravity, in breakers, freqScale, now);
+                                      in trains, gravity, in breakers, freqScale, published ? 0.0 : now);
         }
 
         /// <summary>
@@ -963,13 +960,14 @@ namespace HiddenHarbours.Boats
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             Vector2 pos = _rb.position;
 
-            // The field this tick (SIM path — pure function of the deterministic wind + sea state).
             WaveFieldSettings waveField = GameServices.WaveField;
-            WaveTrains trains = WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
-            // The SIM path reads the pure WaveMath at game time (it never eases), through the same
-            // wind-fetch envelope the drawn sea uses — so the seakeeping forces in a lee match the calm
-            // water the player sees there. Exactly 1 while the model is off (ADR 0027 #1).
-            WaveSample wave = WaveMath.Sample(pos, now, in trains, GameServices.FetchEnvelopeAt(pos));
+            bool published = SharedWaveField.TryGet(out WaveTrains trains);
+            if (!published)
+                trains = GameServices.Environment is IWaveWindSource history
+                    ? WaveMemory.TrainsAt(history, now, in waveField)
+                    : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
+            // Published travel is baked; a first-frame fallback carries raw phases at the clock.
+            WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchEnvelopeAt(pos));
 
             // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the
             // same depth the boat-cross gate reads; open water (no seabed map) = +Inf depth = fully exposed.
@@ -1014,7 +1012,7 @@ namespace HiddenHarbours.Boats
             // (and a second contour inversion every frame). One computation, two consumers — the same
             // discipline SharedWaveField enforces one layer out.
             _surfUnderHull = SurfUnderTheHull(pos, now, in trains, waveField.Gravity,
-                                              displacedActive ? displaced.FreqScale : 1f);
+                                              displacedActive ? displaced.FreqScale : 1f, published);
             SeakeepingForce surfPush = SeakeepingForcesMath.SurfShove(in _surfUnderHull, fwd, in response, in _seakeeping);
             seaForce += surfPush.Force;
             seaTorque += surfPush.Torque;

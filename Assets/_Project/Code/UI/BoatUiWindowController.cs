@@ -28,6 +28,7 @@ namespace HiddenHarbours.UI
         private BoatUiWindowChrome _chrome;
 
         private Rect _card;          // the final windowed card rect this frame
+        private BoatUiWindowSettings _settings;
         private bool _applied;       // Apply ran this frame's path (chrome may draw)
 
         // Drag-session anchors (captured at the press that began it).
@@ -50,8 +51,13 @@ namespace HiddenHarbours.UI
         /// <paramref name="baseRect"/> bit-exact.
         /// </summary>
         public Rect Apply(Rect baseRect, float screenW, float screenH, float reservedTopPx)
+            => Apply(baseRect, screenW, screenH, reservedTopPx, GameServices.BoatUiWindowing);
+
+        /// <summary>Explicit chrome dimensions for a host whose card follows the HUD scale.</summary>
+        public Rect Apply(Rect baseRect, float screenW, float screenH, float reservedTopPx,
+                          in BoatUiWindowSettings cfg)
         {
-            BoatUiWindowSettings cfg = GameServices.BoatUiWindowing;
+            _settings = cfg;
             BoatUiWindowState st = BoatUiWindows.State(_id);
             _card = BoatUiWindowLayout.WindowRect(baseRect, in st, in cfg, screenW, screenH,
                                                   reservedTopPx);
@@ -74,7 +80,7 @@ namespace HiddenHarbours.UI
             if (!_applied) { HideChrome(); return; }
             _applied = false;
 
-            BoatUiWindowSettings cfg = GameServices.BoatUiWindowing;
+            BoatUiWindowSettings cfg = _settings;
             BoatUiWindowState st = BoatUiWindows.State(_id);
 
             bool hover = false;
@@ -114,7 +120,7 @@ namespace HiddenHarbours.UI
                     BoatUiWindows.EndSession(_id);
                     return true;   // consume the release frame — it is not a click
                 }
-                BoatUiWindowSettings cfg = GameServices.BoatUiWindowing;
+                BoatUiWindowSettings cfg = _settings;
                 BoatUiWindowState st = BoatUiWindows.State(_id);
                 if (mine == BoatUiDragKind.Move)
                 {
@@ -135,7 +141,7 @@ namespace HiddenHarbours.UI
             if (controlDragLive) return false;             // never steal a live steer/control drag
             if (!mouse.leftButton.wasPressedThisFrame) return false;
 
-            BoatUiWindowSettings cfgHit = GameServices.BoatUiWindowing;
+            BoatUiWindowSettings cfgHit = _settings;
             BoatUiChromeHit hit = BoatUiWindowLayout.HitChrome(pos, _card, in cfgHit);
             switch (hit)
             {

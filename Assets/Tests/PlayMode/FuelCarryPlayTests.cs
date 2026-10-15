@@ -176,7 +176,10 @@ namespace HiddenHarbours.Tests.PlayMode
             CarriableFuelContainer can = RealContainer(AshorePos + new Vector3(0.6f, 0f, 0f));
             yield return null;
 
-            Assert.AreEqual(1, Interactables.Count, "the can registered itself");
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank, can }, Interactables.Active,
+                "the can registered itself; the hull's own filler cap is registered too since #936");
 
             // PRESS ONE — pick it up.
             Assert.IsTrue(_switcher.BeginInteract(), "the press was spent on the can");
@@ -362,7 +365,10 @@ namespace HiddenHarbours.Tests.PlayMode
                           Def(carriable: false, facings: 4, id: "fuelstore.gas_bulk_s10k"));
             yield return null;
 
-            Assert.AreEqual(0, Interactables.Count, "nothing registered");
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
+                "nothing registered; the hull's own filler cap is registered too since #936");
             Assert.IsFalse(_switcher.BeginInteract(), "the press falls through untouched");
             Assert.IsFalse(_hands.IsCarrying);
             Assert.AreEqual(0, _performed.Count);
@@ -376,7 +382,10 @@ namespace HiddenHarbours.Tests.PlayMode
             // behaviour is reached unchanged.
             yield return null;
 
-            Assert.AreEqual(0, Interactables.Count);
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
+                "no portable fixture is registered; the hull's own filler cap is registered too since #936");
             Assert.IsFalse(_switcher.BeginInteract());
             Assert.IsFalse(_hands.IsCarrying);
             Assert.AreEqual(0, _performed.Count);
@@ -394,17 +403,22 @@ namespace HiddenHarbours.Tests.PlayMode
             CarriableFuelContainer can = RealContainer(AshorePos + new Vector3(0.6f, 0f, 0f));
             yield return null;
 
-            Assert.AreEqual(1, Interactables.Count, "its own OnEnable put it there");
-            Assert.AreSame(can, Interactables.Active[0]);
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank, can }, Interactables.Active,
+                "its own OnEnable put it there; the hull's own filler cap is registered too since #936");
+            Assert.AreSame(can, Interactables.Active[1]);
 
             can.enabled = false;
             yield return null;
-            Assert.AreEqual(0, Interactables.Count, "a disabled component must not be actable");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
+                "a disabled component must not be actable; the hull's own filler cap is registered too since #936");
             Assert.IsFalse(_switcher.BeginInteract(), "and the press finds nothing");
 
             can.enabled = true;
             yield return null;
-            Assert.AreEqual(1, Interactables.Count, "re-enabling puts it back, exactly once");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank, can }, Interactables.Active,
+                "re-enabling puts it back, exactly once; the hull's own filler cap is registered too since #936");
         }
 
         [UnityTest]
@@ -435,7 +449,10 @@ namespace HiddenHarbours.Tests.PlayMode
             CarriableFuelContainer can = RealContainer(BoatPos + new Vector3(0.7f, 0f, 0f));
             yield return null;
 
-            Assert.AreEqual(1, Interactables.Count, "the can IS registered — it simply does not get asked");
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank, can }, Interactables.Active,
+                "the can IS registered — it simply does not get asked; the hull's own filler cap is registered too since #936");
             Assert.IsTrue(_switcher.BeginInteract(), "the press boarded");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
             Assert.IsFalse(can.IsCarried, "and the can is still on the wharf");

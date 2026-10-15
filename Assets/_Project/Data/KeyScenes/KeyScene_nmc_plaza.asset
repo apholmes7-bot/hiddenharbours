@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: KeyScene_nmc_plaza
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KeySceneDef
   Id: keyscene.nmc_plaza
-  DisplayName: 'The plaza: the grocery and the lumber store'
+  DisplayName: 'The plaza: the grocery, the lumber store, the lot and the flats'
   RegionId: region.nine_mile_creek
-  Source: HH-nmc-key-scenes-one-scene-reissue-2-2026-10-02, hh-nmc-key-scenes/scenes/keyscene.nmc_plaza/scene.json,
-    40460 bytes, sha256 f498b86a4787b0c33af2228b5319ed5a5e2177a58f6ed5c6c869c7d2b2f992c2
+  Source: HH-nmc-key-scenes-one-scene-reissue-3-2026-10-07, hh-nmc-key-scenes/scenes/keyscene.nmc_plaza/scene.json,
+    113434 bytes, sha256 a0adaae191110dbecea15899e94da6216c766480e029c96e0c51fa5232c9a4cc
   Placed: 0
   Pieces:
   - Id: structure.nmc_plaza_grocery
     Kind: building
     Owner: H10
-    Kit: NmcStores.grocery
+    Kit: NmcStores.grocery, o.dock east
     Piece: grocery
     State: 
     At: {x: -213, y: 120.5}
@@ -45,66 +45,92 @@ MonoBehaviour:
     Options:
     - Key: walk
       Value: 4
+    - Key: dock
+      Value: '{"side":"E","w":11,"n0":-0.5,"doors":[{"e":18,"kind":"lift","taken":true},{"e":23,"kind":"lift"}],"man":25.45}'
     - Key: nmc.kind
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"the grocery (30 x 24 m, brick, a gabled entry tower)","defType":"BuildingDef","kit":"NmcStores.grocery","faces":"S
-        (dir 4): its doors to the walk","footprintM":[30,24],"interior":"section:
-        sales floor, four lanes, service desk, produce, deli, bakery, meat, dairy,
-        frozen, three gondola runs; stock room with two docks, walk-in cooler and
-        freezer, staff room, office, washroom"}'
-    - Key: nmc.section
+    - Key: nmc.centre
+      Value: '[-213,120.5]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 18
+    - Key: nmc.sectionOpts
       Value: '{"cutaway":"section"}'
-    - Key: nmc.stations
-      Value: '[{"id":"doorIn","verb":"enter","at":[-1.55,-13,0.15],"stand":[-1.55,-14.6]},{"id":"doorOut","verb":"exit","at":[1.55,-13,0.15],"stand":[1.55,-11.8]},{"id":"dock1","verb":"unload","at":[-10.5,12,0.15],"stand":[-10.5,10.4]},{"id":"dock2","verb":"unload","at":[-6.5,12,0.15],"stand":[-6.5,10.4]},{"id":"serviceDoor","verb":"enter","at":[-2.5,12,0.15],"stand":[-2.5,13.2]},{"id":"service","verb":"ask","at":[7.4,-10.2,1.05],"stand":[7.4,-9.4]},{"id":"staffRoom","verb":"rest","at":[12.6,10.4,0.15],"stand":[12.6,9.2]},{"id":"deli","verb":"order","at":[11.6,1.6,1.2],"stand":[11.6,0.8]}]'
-    - Key: nmc.footM
-      Value: '{"w":30,"d":24,"h":10.1,"walk":4}'
+    - Key: nmc.def
+      Value: '{"name":"the grocery (30 x 24 m, brick, a gabled entry tower) and its
+        side dock (11 x 12.5 m, two bays)","defType":"BuildingDef","kit":"NmcStores.grocery,
+        o.dock east","faces":"S (dir 4): its doors to the walk; its dock\u2019s doors
+        south to the court","footprintM":[41,24],"dock":{"bays":[-195,-190],"face":120,"kind":"dock
+        lift, at grade"},"interior":"section: sales floor, four lanes, service desk,
+        produce, deli, bakery, meat, dairy, frozen, three gondola runs; the stock
+        room by the side dock\u2019s receiving, walk-in cooler and freezer, staff
+        room, office, washroom"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_town_plaza"'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
       Value: BuildingDef
     - Key: nmc.scene.layout
-      Value: '{"units":"region metres (x east, y north), z about mean sea level","stores":{"grocery":{"centre":[-213,120.5],"size":[30,24],"front":108.5,"walk":4},"lumber":{"centre":[-244,121],"size":[24,22],"front":110,"walk":5.5}},"lot":{"box":[-256,-197,75,104.5],"rows":{"north":[90.5,96],"south":[78,83.5]},"aisles":{"main":[83.5,90.5],"front":[97.5,104.5]},"strip":[96,97.5],"verge":[75,78],"stalls":{"x0":-254,"width":2.75,"depth":5.5,"perRow":20,"total":40,"accessible":{"grocery":[14,15],"lumber":[3,4]},"wheelStops":0},"crossings":[[-216,-210],[-247,-241]],"entrance":{"from":"road.nmc_route_91","at":[-177.3,92],"width":9,"opposite":"road.nmc_wharf_road
-        (a four-way junction)"},"cars":0},"trucks":{"serviceDrive":{"x":[-197,-190],"from":"the
-        entrance","to":"the apron and Mill Road"},"apron":[-258,-190,132,156],"driveways":[{"x":-222,"width":12},{"x":-247,"width":10},{"x":-193.5,"width":7}],"wells":{"grocery":{"at":[-221.5,132.5],"doors":[-2,2],"compactor":11.5},"lumber":{"at":[-250,132],"doors":[0]}},"wellLen":18,"wellDepth":1.1,"semi":"a
-        53 ft reefer (16.15 m) and its tractor back down the grocery\u2019s well from
-        the apron; parked, the rig ends 5 m short of the apron\u2019s north edge"},"yard":{"box":[-282,-258,78,142],"gates":["east,
-        off the main aisle (y 83..91)","east, to the apron (y 131..140)"],"loop":"in
-        at the gate, north through the shed, back south along the yard\u2019s east
-        side"}}'
+      Value: '{"units":"region metres (x east, y north), heights above mean sea level","site":{"grocery":{"at":[-213,120.5],"hl":12,"hw":15,"walk":4,"dock":{"side":"E","w":11,"n0":-0.5,"doors":[{"e":18,"kind":"lift","taken":true},{"e":23,"kind":"lift"}],"man":25.45}},"lumber":{"at":[-244,121],"hl":11,"hw":12,"walk":5.5,"dock":{"side":"W","w":11,"n0":-1,"doors":[{"e":-20,"kind":"lift"},{"e":-14.6,"kind":"drive"}]}},"lot":[-256,-197,55.5,104.5],"rowN":[90.5,96],"rowS":[78,83.5],"rowN2":[71,76.5],"rowS2":[58.5,64],"mainAisle":[83.5,90.5],"aisle2":[64,71],"frontAisle":[97.5,104.5],"strip":[96,97.5],"strip2":[76.5,78],"verge":[55.5,58.5],"stall":{"x0":-254,"w":2.75,"n":20,"d":5.5},"eastAisle":[-197,-190],"throat":[87.5,96.5],"crossings":[[-216,-210],[-247,-241]],"access":{"grocery":[14,15],"lumber":[3,4],"flats":[8,9]},"court":[-198,-186.5,104.5,120],"apron":[-258,-186,132.5,156],"yard":[-288,-258,78,142],"gate":[-282,-276],"truckGate":[83,91.5],"lumberCourt":[-267,-258,96,120],"shed":{"at":[-279,111],"w":16,"lane":7,"d":18},"dockY":120,"bays":{"grocery":[-195,-190],"lumber":[-264,-258.6]},"backWalk":54.35,"field":0},"docks":{"grocery":{"side":"E","w":11,"n0":-0.5,"doors":[{"e":18,"kind":"lift","taken":true},{"e":23,"kind":"lift"}],"man":25.45},"lumber":{"side":"W","w":11,"n0":-1,"doors":[{"e":-20,"kind":"lift"},{"e":-14.6,"kind":"drive"}]}},"flats":[{"key":"cannery","rig":"WalkupIso","preset":"cannery8Loft","at":[-271.45,37.55],"frontM":12.3,"ext":[-15.28,15.53],"back":48,"entry":12.19,"flats":8,"foot":[30.3,20.9],"opts":{"parking":false,"kerb":false},"name":"the
+        cannery loft block (eight lofts, two storeys)","style":"walk-up, luxury tier
+        (cannery loft)"},{"key":"walkup","rig":"WalkupIso","preset":"walkup8","at":[-240.9,38.55],"frontM":10.99,"ext":[-11.56,14.28],"back":48,"entry":8.59,"flats":8,"foot":[22.6,18.9],"opts":{"parking":false,"kerb":false},"name":"the
+        walk-up (eight flats, two storeys, its steel stair tower)","style":"walk-up,
+        basic tier (concrete-banded brick)"},{"key":"terrace","rig":"RowhouseIso","preset":"coastalRow4","at":[-201.6,40.2],"frontM":7.34,"ext":[-14.09,14.06],"back":46,"entries":[-8.07,-1.07,5.93,12.93],"flats":4,"foot":[28,11.6],"opts":{"doorPaint":"varied"},"name":"the
+        coastal terrace (four houses, three storeys, each door its own colour)","style":"terrace,
+        luxury tier (contemporary coastal block)"}],"street":{"street":{"id":"road.nmc_plaza_flats_street","x0":-285.75,"x1":-191.25,"y":12.4,"w":6},"runY":[15.4,20.9],"walkN":[21.36,23.16],"walkS":[7.14,8.94],"runs":[{"id":"w","x0":-285.75,"items":["i",6,"i",6,"i",7],"access":[8,17],"islands":[[-285.75,-283.75],[-267.25,-265.25],[-248.75,-246.75]],"stalls":[[-283.75,-281],[-281,-278.25],[-278.25,-275.5],[-275.5,-272.75],[-272.75,-270],[-270,-267.25],[-265.25,-262.5],[-262.5,-259.75],[-259.75,-257],[-257,-254.25],[-254.25,-251.5],[-251.5,-248.75],[-246.75,-244],[-244,-241.25],[-241.25,-238.5],[-238.5,-235.75],[-235.75,-233],[-233,-230.25],[-230.25,-227.5]],"x1":-227.5},{"id":"e","x0":-214.5,"items":["i",7,"i"],"access":[0],"islands":[[-214.5,-212.5],[-193.25,-191.25]],"stalls":[[-212.5,-209.75],[-209.75,-207],[-207,-204.25],[-204.25,-201.5],[-201.5,-198.75],[-198.75,-196],[-196,-193.25]],"x1":-191.25}],"link":{"id":"road.nmc_plaza_flats_link","x":-221,"y0":64,"w":6},"s2cut":[10,13]},"paths":["walk.nmc_plaza_flats_back","path.nmc_plaza_flats_w","path.nmc_plaza_flats_x","walk.nmc_plaza_flats_r91","path.nmc_plaza_cannery","path.nmc_plaza_walkup","path.nmc_plaza_terrace_1","path.nmc_plaza_terrace_2","path.nmc_plaza_terrace_3","path.nmc_plaza_terrace_4"],"wells":[[-226.4,-216.6,132.3,151],[-252.9,-247.1,131.8,150.5]],"houseSouth":[-200,-8]}'
     - Key: nmc.scene.flora
-      Value: '[{"key":"RedMaple","stage":"pole","at":[-252,76.5]},{"key":"WhiteBirch","stage":"pole","at":[-240,76.5]},{"key":"RedMaple","stage":"mature","at":[-228,76.5]},{"key":"WhiteBirch","stage":"pole","at":[-216,76.5]},{"key":"RedMaple","stage":"pole","at":[-204,76.5]},{"key":"RedMaple","stage":"mature","at":[-186,77]},{"key":"RedMaple","stage":"pole","at":[-235,96.75]},{"key":"RedMaple","stage":"pole","at":[-221,96.75]},{"key":"WhiteBirch","stage":"pole","at":[-201,96.75]},{"key":"RedMaple","stage":"mature","at":[-185,112]},{"key":"WhiteBirch","stage":"pole","at":[-185,124]},{"key":"RedMaple","stage":"pole","at":[-185,136]},{"key":"RedMaple","stage":"mature","at":[-185,148]},{"key":"WhiteBirch","stage":"pole","at":[-233,158.6]},{"key":"RedMaple","stage":"pole","at":[-209,157.4]}]'
+      Value: '[{"key":"WhiteCedar","stage":"sapling","at":[-284.75,18],"host":"prop.nmc_flats_island_w1"},{"key":"RedMaple","stage":"sapling","at":[-266.25,17.9],"host":"prop.nmc_flats_island_w2"},{"key":"WhiteBirch","stage":"sapling","at":[-247.75,17.9],"host":"prop.nmc_flats_island_w3"},{"key":"RedMaple","stage":"sapling","at":[-213.5,17.9],"host":"prop.nmc_flats_island_e1"},{"key":"WhiteCedar","stage":"sapling","at":[-192.25,18],"host":"prop.nmc_flats_island_e2"},{"key":"WhiteCedar","stage":"sapling","at":[-261.5,25]},{"key":"WhiteCedar","stage":"sapling","at":[-257,25]},{"key":"WhiteCedar","stage":"sapling","at":[-234.2,27.3]},{"key":"WhiteCedar","stage":"sapling","at":[-230.4,27.3]},{"key":"WhiteBirch","stage":"sapling","at":[-205.4,28.6]},{"key":"RedOak","stage":"young","at":[-266.5,4.2]},{"key":"RedMaple","stage":"young","at":[-254,4.4]},{"key":"WhiteBirch","stage":"young","at":[-240,4.2]},{"key":"RedMaple","stage":"young","at":[-226,4.4]},{"key":"RedOak","stage":"young","at":[-212,4.2]},{"key":"RedMaple","stage":"young","at":[-198,4.4]},{"key":"WhiteBirch","stage":"pole","at":[-271,51]},{"key":"WhiteBirch","stage":"pole","at":[-241,51.2]},{"key":"RedMaple","stage":"young","at":[-204.5,50.8]},{"key":"RedMaple","stage":"pole","at":[-186.6,52]},{"key":"RedMaple","stage":"pole","at":[-252,77.25],"host":"prop.nmc_lot_strip2_w"},{"key":"WhiteBirch","stage":"pole","at":[-240,77.25],"host":"prop.nmc_lot_strip2_c"},{"key":"RedMaple","stage":"mature","at":[-228,77.25],"host":"prop.nmc_lot_strip2_c"},{"key":"WhiteBirch","stage":"pole","at":[-216,77.25],"host":"prop.nmc_lot_strip2_c"},{"key":"RedMaple","stage":"pole","at":[-204,77.25],"host":"prop.nmc_lot_strip2_e"},{"key":"RedMaple","stage":"pole","at":[-235,96.75],"host":"prop.nmc_lot_strip_02"},{"key":"RedMaple","stage":"pole","at":[-221,96.75],"host":"prop.nmc_lot_strip_02"},{"key":"WhiteBirch","stage":"pole","at":[-201,96.75],"host":"prop.nmc_lot_strip_03"},{"key":"RedMaple","stage":"young","at":[-246,57]},{"key":"RedMaple","stage":"young","at":[-231.5,57]},{"key":"WhiteBirch","stage":"young","at":[-210,57]},{"key":"RedMaple","stage":"mature","at":[-186,77]},{"key":"RedMaple","stage":"pole","at":[-185,61]},{"key":"RedMaple","stage":"mature","at":[-184.6,111]},{"key":"WhiteBirch","stage":"pole","at":[-184.6,124]},{"key":"RedMaple","stage":"pole","at":[-184.6,136]},{"key":"RedMaple","stage":"mature","at":[-184.6,148]},{"key":"WhiteBirch","stage":"pole","at":[-233,158.6]},{"key":"RedMaple","stage":"pole","at":[-209,157.4]}]'
     - Key: nmc.scene.sound
-      Value: '[{"id":"sound.nmc_plaza","kind":"town","at":[-228,104],"z":6.5,"radiusM":34,"gain":"the
+      Value: '[{"id":"sound.nmc_plaza","kind":"town","at":[-228,96],"z":6.5,"radiusM":40,"gain":"the
         grocery\u2019s doors sliding, a cart\u2019s wheels on the walk, the forklift\u2019s
-        beeper in the yard, the reefer\u2019s unit running at the dock"}]'
+        beeper in the yard, the reefer\u2019s unit running at the dock"},{"id":"sound.nmc_plaza_flats","kind":"town","at":[-234,34],"z":6.5,"radiusM":30,"gain":"a
+        radio through an open window, a screen door, a gate\u2019s latch, a car door
+        on the flats\u2019 street, the fields\u2019 wind"}]'
     - Key: nmc.scene.game
       Value: '{"stores":"BuildingDefs facing south, doors on the walk; their interiors
         are the section\u2019s rooms (stations listed per piece)","lot":"a car park
-        of painted stalls, no wheel stops; ambient cars may park in any stall","docks":"a
-        truck backs down a well to its door (stations bayN); the reefer is ambient","yard":"walkable
-        gravel; the shed\u2019s lane drivable; the forklift ambient","lights":"the
-        lot poles light on the lamp rule; the stores\u2019 signs and windows by the
-        dark; inside always lit"}'
+        of painted stalls, no wheel stops; ambient cars may park in any stall","docks":"each
+        store\u2019s dock on its outer side, doors to the south at the store\u2019s
+        floor: a truck backs in on the level (stations bay1, bay2)","yard":"one way:
+        in at the yard\u2019s south gate from the lot, north through the shed, out
+        at the north gate to Mill Road","lights":"the lot poles light on the lamp
+        rule; the stores\u2019 signs and windows by the dark; inside always lit","flats":"BuildingDefs
+        facing south to their street; each building\u2019s door on its front path;
+        the terrace\u2019s four houses each their own front door and garden","street":"the
+        flats\u2019 street and its stalls are reached only by the link from the lot;
+        no way onto Route 91"}'
+    - Key: nmc.scene.budgets
+      Value: '{"tiles":{"plaza_r0c0_morning":{"px":[896,1088],"sprites":82,"counts":{"building":2,"prop":19,"flower":50,"grass":11},"ms":15085,"fnv1a":"55b20e5a","file":"boards/plaza_r0c0_morning.png"},"plaza_r0c1_morning":{"px":[896,1088],"sprites":95,"counts":{"building":3,"prop":29,"flower":41,"grass":20,"shrub":2},"ms":16892,"fnv1a":"94aa964d","file":"boards/plaza_r0c1_morning.png"},"plaza_r0c2_morning":{"px":[896,1088],"sprites":108,"counts":{"building":3,"vehicle":2,"prop":27,"tree":1,"flower":54,"grass":20,"shrub":1},"ms":16961,"fnv1a":"ee8f6e5f","file":"boards/plaza_r0c2_morning.png"},"plaza_r0c3_morning":{"px":[896,1088],"sprites":94,"counts":{"building":2,"vehicle":2,"prop":15,"tree":3,"flower":48,"grass":23,"shrub":1},"ms":17836,"fnv1a":"471cbfb0","file":"boards/plaza_r0c3_morning.png"},"plaza_r1c0_morning":{"px":[896,1088],"sprites":57,"counts":{"building":2,"prop":32,"flower":19,"grass":4},"ms":16408,"fnv1a":"f334ecbe","file":"boards/plaza_r1c0_morning.png"},"plaza_r1c1_morning":{"px":[896,1088],"sprites":88,"counts":{"building":3,"prop":53,"tree":2,"flower":27,"grass":3},"ms":17814,"fnv1a":"a34b1f2c","file":"boards/plaza_r1c1_morning.png"},"plaza_r1c2_morning":{"px":[896,1088],"sprites":105,"counts":{"building":4,"vehicle":2,"prop":62,"tree":2,"flower":27,"grass":8},"ms":17748,"fnv1a":"f54e37de","file":"boards/plaza_r1c2_morning.png"},"plaza_r1c3_morning":{"px":[896,1088],"sprites":77,"counts":{"building":3,"vehicle":2,"prop":40,"tree":3,"flower":22,"grass":7},"ms":19234,"fnv1a":"305e67c5","file":"boards/plaza_r1c3_morning.png"},"plaza_r2c0_morning":{"px":[896,736],"sprites":55,"counts":{"prop":37,"building":2,"tree":1,"flower":14,"grass":1},"ms":19236,"fnv1a":"3c045b10","file":"boards/plaza_r2c0_morning.png"},"plaza_r2c1_morning":{"px":[896,736],"sprites":62,"counts":{"prop":55,"building":2,"tree":2,"flower":3},"ms":20816,"fnv1a":"49818fd6","file":"boards/plaza_r2c1_morning.png"},"plaza_r2c2_morning":{"px":[896,736],"sprites":66,"counts":{"prop":59,"building":2,"tree":2,"flower":3},"ms":19669,"fnv1a":"b4f4203a","file":"boards/plaza_r2c2_morning.png"},"plaza_r2c3_morning":{"px":[896,736],"sprites":51,"counts":{"prop":41,"building":1,"tree":3,"flower":4,"grass":2},"ms":22038,"fnv1a":"5eb85f1a","file":"boards/plaza_r2c3_morning.png"},"plaza_r3c0_morning":{"px":[896,736],"sprites":63,"counts":{"building":2,"prop":20,"tree":3,"flower":22,"grass":15,"shrub":1},"ms":12985,"fnv1a":"fc1685ba","file":"boards/plaza_r3c0_morning.png"},"plaza_r3c1_morning":{"px":[896,736],"sprites":76,"counts":{"building":2,"prop":30,"tree":6,"flower":29,"grass":8,"shrub":1},"ms":15145,"fnv1a":"30e8d575","file":"boards/plaza_r3c1_morning.png"},"plaza_r3c2_morning":{"px":[896,736],"sprites":77,"counts":{"building":2,"prop":33,"tree":4,"flower":21,"grass":15,"shrub":2},"ms":14295,"fnv1a":"10031286","file":"boards/plaza_r3c2_morning.png"},"plaza_r3c3_morning":{"px":[896,736],"sprites":64,"counts":{"building":1,"prop":26,"tree":3,"shrub":2,"flower":19,"grass":13},"ms":15255,"fnv1a":"a1b4b221","file":"boards/plaza_r3c3_morning.png"},"section_r0c0_morning":{"px":[917,1152],"sprites":86,"counts":{"building":2,"prop":40,"flower":38,"grass":6},"ms":21419,"fnv1a":"84082aeb","file":"boards/section_r0c0_morning.png"},"section_r0c1_morning":{"px":[918,1152],"sprites":113,"counts":{"building":2,"vehicle":2,"prop":45,"flower":53,"grass":11},"ms":22124,"fnv1a":"6e6824a3","file":"boards/section_r0c1_morning.png"},"section_r0c2_morning":{"px":[917,1152],"sprites":82,"counts":{"building":2,"vehicle":2,"prop":29,"tree":4,"flower":38,"grass":7},"ms":21631,"fnv1a":"ba3964dc","file":"boards/section_r0c2_morning.png"}}}'
     - Key: nmc.scene.ground
-      Value: '{"package":"export/HH-nmc-ground-part-1-reissue-2-2026-10-02/","drawnOn":"export/HH-nmc-ground-part-1-reissue-2026-10-01/
-        (pixels 00cf42cf\u2026), +6.0 over the block; the two truck wells drawn by
-        the dock pieces","laid":[],"inTexture":{"grading":"cut.nmc_plaza_wells","reissue":"HH-nmc-ground-part-1-reissue-2-2026-10-02
-        (pixels b997bdce\u2026)","wells":[{"id":"well.nmc_plaza_grocery","dock":"structure.nmc_plaza_dock_grocery","at":[-221.5,132.5],"z":6,"doors":[-2,2],"floorE":[-4.4,4.4],"len":18,"depth":1.1,"level":4},{"id":"well.nmc_plaza_lumber","dock":"structure.nmc_plaza_dock_lumber","at":[-250,132],"z":6,"doors":[0],"floorE":[-2.4,2.4],"len":18,"depth":1.1,"level":4}],"rule":"the
-        dock\u2019s floor: 1.1 m below the dock\u2019s z for 4 m from the doors, then
-        rising evenly to z at the well\u2019s mouth (len); the floor 2.4 m wider than
-        the doors each side; the retaining walls outside it"},"note":"No scene lays
-        ground of its own: the two truck wells the dock pieces drew on the 10-01 texture
-        are in the ground re-issued on 10-02 (call 36), so a truck can drive down
-        them. The boards stand as baked."}'
+      Value: '{"package":"export/HH-nmc-ground-part-1-reissue-3-2026-10-07/","drawnOn":"export/HH-nmc-ground-part-1-reissue-2-2026-10-02/
+        (pixels b997bdce\u2026), with part 2e\u2019s two truck wells filled back to
+        +6.0 by the scene itself","laid":[],"inTexture":{"grading":"fill.nmc_plaza_wells","reissue":"HH-nmc-ground-part-1-reissue-3-2026-10-07
+        (pixels 5924a642\u2026)","boxes":[[-226.4,-216.6,132.3,151],[-252.9,-247.1,131.8,150.5]],"z":6,"undoes":"cut.nmc_plaza_wells
+        (the 10-02 re-issue, call 36)","rule":"inside each box, where the 10-02 ground
+        is lower than +6.0, +6.0 (tools/nmcReissue3.js, the scene\u2019s laid line
+        for line)"},"note":"No scene lays ground of its own: the fill this scene laid
+        on the 10-02 re-issue is in the ground re-issued on 10-07 (1,008 texels, up
+        to 1.10 m). The plaza stands level at +6.0, the texture\u2019s ceiling; the
+        docks\u2019 doors are at the stores\u2019 floor, so their courts need no well.
+        The boards stand as baked."}'
     - Key: nmc.scene.refs
       Value: '[]'
     - Key: nmc.scene.sourceRows
-      Value: 51
+      Value: 122
     - Key: nmc.scene.ownedRows
-      Value: 51
+      Value: 122
     - Key: nmc.deferred
       Value: placement=H10; names/households/calendar/visits/fire schedules=H13 after
         the owner names slate; tide/float=H5/H7/H8/H11; lights/audio/flora=scene placement
@@ -113,7 +139,7 @@ MonoBehaviour:
   - Id: structure.nmc_plaza_lumber
     Kind: building
     Owner: H10
-    Kit: NmcStores.lumber
+    Kit: NmcStores.lumber, o.dock west
     Piece: lumber
     State: 
     At: {x: -244, y: 121}
@@ -136,137 +162,58 @@ MonoBehaviour:
     Options:
     - Key: walk
       Value: 5.5
+    - Key: dock
+      Value: '{"side":"W","w":11,"n0":-1,"doors":[{"e":-20,"kind":"lift"},{"e":-14.6,"kind":"drive"}]}'
     - Key: nmc.kind
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-244,121]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 16
+    - Key: nmc.sectionOpts
+      Value: '{"cutaway":"section"}'
     - Key: nmc.def
       Value: '{"name":"the lumber store (24 x 22 m, a green gable, a timber truss
-        canopy)","defType":"BuildingDef","kit":"NmcStores.lumber","faces":"S (dir
-        4): its doors to the walk","footprintM":[24,22],"interior":"section: three
-        lanes, contractor desk, paint counter, three hardware runs, millwork; receiving
-        with a dock and a grade door, staff room, office, washroom"}'
-    - Key: nmc.section
-      Value: '{"cutaway":"section"}'
-    - Key: nmc.stations
-      Value: '[{"id":"doorIn","verb":"enter","at":[-2.3,-12.2,0.15],"stand":[-2.3,-13.8]},{"id":"doorOut","verb":"exit","at":[2.3,-12.2,0.15],"stand":[2.3,-11]},{"id":"dock","verb":"unload","at":[-6,11,0.15],"stand":[-6,9.4]},{"id":"gradeDoor","verb":"drive","at":[-1,11,0],"stand":[-1,13]},{"id":"desk","verb":"order","at":[-8.9,-9.6,1.05],"stand":[-8.9,-8.8]},{"id":"paint","verb":"tint","at":[8,-1.8,1],"stand":[8,-3.2]},{"id":"staffRoom","verb":"rest","at":[6.2,8.7,0.15],"stand":[6.2,7.4]}]'
-    - Key: nmc.footM
-      Value: '{"w":24,"d":22,"h":10.3,"walk":5.5}'
+        canopy) and its side dock in the yard (11 x 12 m, a lift bay and a drive-in
+        door)","defType":"BuildingDef","kit":"NmcStores.lumber, o.dock west","faces":"S
+        (dir 4): its doors to the walk; its dock\u2019s doors south to the yard","footprintM":[35,22],"dock":{"bays":[-264,-258.6],"face":120,"kind":"a
+        dock lift and a drive-in door, at grade"},"interior":"section: three lanes,
+        contractor desk, paint counter, three hardware runs, millwork; receiving and
+        its side dock, staff room, office, washroom"}'
+    - Key: nmc.lot
+      Value: '"lot.nmc_town_plaza"'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
       Value: BuildingDef
-  - Id: structure.nmc_plaza_dock_grocery
-    Kind: setPiece
-    Owner: H10
-    Kit: NmcStores.dock
-    Piece: dock
-    State: 
-    At: {x: -221.5, y: 132.5}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 1
-    SortY: 150.5
-    Layer: 
-    Walk: 
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: doors
-      Value: '[-2,2]'
-    - Key: len
-      Value: 18
-    - Key: compactor
-      Value: 11.5
-    - Key: nmc.kind
-      Value: '"stores"'
-    - Key: nmc.rig
-      Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"the grocery\u2019s truck well (2 doors, 1.1 m down, 18 m long)","defType":"SetPieceDef","kit":"NmcStores.dock","faces":"N:
-        the well runs north from the wall","asks":"the well is a cut in the ground
-        the terrain lane takes (call 36); a semi backs down it, its trailer bed at
-        the store\u2019s floor"}'
-    - Key: nmc.stations
-      Value: '[{"id":"bay1","verb":"dock","at":[-2,0,0.15],"stand":[-2,18],"truck":"back
-        in from the yard; the trailer stands in the well, its doors at the seal"},{"id":"bay2","verb":"dock","at":[2,0,0.15],"stand":[2,18],"truck":"back
-        in from the yard; the trailer stands in the well, its doors at the seal"}]'
-    - Key: nmc.footM
-      Value: '{"w":9.4,"d":18,"h":3.8}'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_plaza
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: structure.nmc_plaza_dock_lumber
-    Kind: setPiece
-    Owner: H10
-    Kit: NmcStores.dock
-    Piece: dock
-    State: 
-    At: {x: -250, y: 132}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 1
-    SortY: 150
-    Layer: 
-    Walk: 
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: doors
-      Value: '[0]'
-    - Key: len
-      Value: 18
-    - Key: nmc.kind
-      Value: '"stores"'
-    - Key: nmc.rig
-      Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"the lumber\u2019s truck well (1 door, 1.1 m down, 18 m long)","defType":"SetPieceDef","kit":"NmcStores.dock","faces":"N:
-        the well runs north from the wall","asks":"the well is a cut in the ground
-        the terrain lane takes (call 36); a semi backs down it, its trailer bed at
-        the store\u2019s floor"}'
-    - Key: nmc.stations
-      Value: '[{"id":"bay1","verb":"dock","at":[0,0,0.15],"stand":[0,18],"truck":"back
-        in from the yard; the trailer stands in the well, its doors at the seal"}]'
-    - Key: nmc.footM
-      Value: '{"w":5.3999999999999995,"d":18,"h":3.8}'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_plaza
-    - Key: nmc.type
-      Value: SetPieceDef
   - Id: vehicle.nmc_plaza_reefer
     Kind: vehicle
     Owner: H10
     Kit: TrailerIso (Art/trailerIsoRig.js), reefer53
     Piece: TrailerIso
     State: 
-    At: {x: -223.5, y: 141.125}
-    Z: 5.45
+    At: {x: -195, y: 111.475}
+    Z: 6
     StandsOn: ground
     MountHost: 
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
-    Dir: 0
+    Dir: 4
     HasSortY: 1
-    SortY: 141.125
+    SortY: 103.375
     Layer: 
     Walk: 
     Collider: 
@@ -283,9 +230,22 @@ MonoBehaviour:
       Value: '"semi"'
     - Key: nmc.rig
       Value: '"TrailerIso"'
+    - Key: nmc.centre
+      Value: '[-195,111.475]'
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
     - Key: nmc.def
-      Value: '{"name":"a 53 ft reefer, backed into the grocery\u2019s first dock","defType":"AmbientVehicleDef","kit":"TrailerIso
-        (Art/trailerIsoRig.js), reefer53","faces":"its doors to the dock (dir 0)"}'
+      Value: '{"name":"a 53 ft reefer, backed up to the grocery\u2019s bay 1","defType":"AmbientVehicleDef","kit":"TrailerIso
+        (Art/trailerIsoRig.js), reefer53","faces":"its doors to the dock (dir 4: nose
+        south)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -296,16 +256,16 @@ MonoBehaviour:
     Kit: AeroSemiIso (Art/aeroSemiIsoRig.js)
     Piece: AeroSemiIso
     State: 
-    At: {x: -223.5, y: 150.7}
-    Z: 5.95
+    At: {x: -195, y: 101.9}
+    Z: 6
     StandsOn: ground
     MountHost: 
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
-    Dir: 0
+    Dir: 4
     HasSortY: 1
-    SortY: 150.7
+    SortY: 98.7
     Layer: 
     Walk: 
     Collider: 
@@ -320,9 +280,21 @@ MonoBehaviour:
       Value: '"semi"'
     - Key: nmc.rig
       Value: '"AeroSemiIso"'
+    - Key: nmc.centre
+      Value: '[-195,101.9]'
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.family
+      Value: '"vehicle"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
     - Key: nmc.def
       Value: '{"name":"its tractor, coupled","defType":"AmbientVehicleDef","kit":"AeroSemiIso
-        (Art/aeroSemiIsoRig.js)","faces":"nose north (dir 0)"}'
+        (Art/aeroSemiIsoRig.js)","faces":"nose south (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -357,13 +329,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-227,107.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Flower rack (the grocery\u2019s)","defType":"SetPieceDef","kit":"NmcStores.flowerRack","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":1,"h":1.9}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -398,13 +380,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-224.6,107.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Flower rack (the grocery\u2019s)","defType":"SetPieceDef","kit":"NmcStores.flowerRack","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":1,"h":1.9}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -439,13 +431,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-221.6,106.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Produce bins (the grocery\u2019s)","defType":"SetPieceDef","kit":"NmcStores.produceBins","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2.8,"d":1.2,"h":1.1}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -478,13 +480,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-218.95,107.7]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Newspaper boxes (the grocery\u2019s)","defType":"SetPieceDef","kit":"NmcStores.newsBoxes","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":1.6,"d":0.6,"h":1.2}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -517,13 +529,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-205.9,106.8]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Carts, nested (the grocery\u2019s)","defType":"SetPieceDef","kit":"NmcStores.cartNest","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3.2,"d":0.8,"h":1.05}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -556,13 +578,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-202.3,107.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Ice chest (the grocery\u2019s)","defType":"SetPieceDef","kit":"NmcStores.iceChest","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":1.7,"d":0.9,"h":1.36}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -573,7 +605,7 @@ MonoBehaviour:
     Kit: NmcStores.bikeRack
     Piece: bikeRack
     State: 
-    At: {x: -199.3, y: 105.6}
+    At: {x: -199.6, y: 105.6}
     Z: 6.15
     StandsOn: ground
     MountHost: 
@@ -595,13 +627,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-199.6,105.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Bike rack (the grocery\u2019s)","defType":"SetPieceDef","kit":"NmcStores.bikeRack","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":0.4,"h":0.9}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -634,13 +676,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-251.5,105.7]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Ride-on mowers on display (the lumber store\u2019s)","defType":"SetPieceDef","kit":"NmcStores.mowers","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":6.6,"d":2.1,"h":1.2}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -673,13 +725,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-236,105.5]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Bagged soil and mulch on pallets (the lumber store\u2019s)","defType":"SetPieceDef","kit":"NmcStores.soilPallets","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3.8,"d":1.2,"h":1.1}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -712,13 +774,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-253.4,108.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Barbecues on display (the lumber store\u2019s)","defType":"SetPieceDef","kit":"NmcStores.bbqs","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":5.2,"d":1.2,"h":1.3}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -751,13 +823,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-238.4,108.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Wheelbarrows (the lumber store\u2019s)","defType":"SetPieceDef","kit":"NmcStores.wheelbarrows","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3.2,"d":1.2,"h":0.8}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -790,13 +872,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-234.4,109.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Propane exchange (the lumber store\u2019s)","defType":"SetPieceDef","kit":"NmcStores.propaneCage","faces":"S
         (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":1.9,"d":1,"h":1.9}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -807,7 +899,7 @@ MonoBehaviour:
     Kit: NmcStores.lumberShed
     Piece: lumberShed
     State: 
-    At: {x: -270, y: 118}
+    At: {x: -279, y: 111}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -816,7 +908,7 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 111.4
+    SortY: 101.3
     Layer: 
     Walk: 
     Collider: 
@@ -826,29 +918,47 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: w
-      Value: 14
+      Value: 16
+    - Key: lane
+      Value: 7
+    - Key: d
+      Value: 18
+    - Key: arrows
+      Value: true
     - Key: nmc.kind
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-279,111]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 3
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 10
     - Key: nmc.def
-      Value: '{"name":"the drive-through lumber shed (14 x 13 m)","defType":"BuildingDef","kit":"NmcStores.lumberShed","faces":"S
-        (dir 4): its lane N-S, the gable to the yard gate"}'
-    - Key: nmc.stations
-      Value: '[{"id":"pickup","verb":"loadLumber","at":[0,0,0],"stand":[-2.2,0]}]'
-    - Key: nmc.footM
-      Value: '{"w":14,"d":13,"h":7.2}'
+      Value: '{"name":"the drive-through lumber shed (16 x 18 m, its lane 7 m, open
+        at both ends)","defType":"BuildingDef","kit":"NmcStores.lumberShed","faces":"S
+        (dir 4): its lane north-south, in at the south gable, out at the north","drive":"one
+        way, south to north","laneM":7,"clearM":5}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
       Value: BuildingDef
-  - Id: prop.nmc_yard_rack_01
+  - Id: prop.nmc_yard_rack_s
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), lumberRack
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lumberRack
     Piece: lumberRack
     State: 
-    At: {x: -276.5, y: 134.5}
+    At: {x: -272.6, y: 127.6}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -857,7 +967,7 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 134.5
+    SortY: 127.6
     Layer: 
     Walk: 
     Collider: 
@@ -872,24 +982,34 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-272.6,127.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.4
     - Key: nmc.def
       Value: '{"name":"A yard rack of lumber","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), lumberRack","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":6.4,"d":2.6,"h":3.4}'
+        (plaza-stores/nmcStores.js 1.1), lumberRack","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
       Value: SetPieceDef
-  - Id: prop.nmc_yard_rack_02
+  - Id: prop.nmc_yard_rack_n
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), lumberRack
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lumberRack
     Piece: lumberRack
     State: 
-    At: {x: -266.5, y: 134.5}
+    At: {x: -272.6, y: 134.8}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -898,7 +1018,7 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 134.5
+    SortY: 134.8
     Layer: 
     Walk: 
     Collider: 
@@ -913,13 +1033,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-272.6,134.8]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.4
     - Key: nmc.def
       Value: '{"name":"A yard rack of lumber","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), lumberRack","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":6.4,"d":2.6,"h":3.4}'
+        (plaza-stores/nmcStores.js 1.1), lumberRack","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -927,10 +1057,208 @@ MonoBehaviour:
   - Id: prop.nmc_yard_gatehouse
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), yardOffice
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), yardOffice
     Piece: yardOffice
     State: 
-    At: {x: -261, y: 95}
+    At: {x: -273, y: 81.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 81.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-273,81.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"the yard\u2019s gatehouse at the way in","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), yardOffice","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_yard_forklift
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), forklift
+    Piece: forklift
+    State: 
+    At: {x: -269.6, y: 106.5}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 106.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-269.6,106.5]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.4
+    - Key: nmc.def
+      Value: '{"name":"The yard forklift","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), forklift","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_yard_soil
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), soilPallets
+    Piece: soilPallets
+    State: 
+    At: {x: -285.2, y: 83.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 83.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: mats
+      Value: '["soil","prodBr","leaf"]'
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-285.2,83.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"Bagged soil and mulch on pallets","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), soilPallets","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_yard_pavers
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), paverPallets
+    Piece: paverPallets
+    State: 
+    At: {x: -285.2, y: 88.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 88.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-285.2,88.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"Patio stones on pallets","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), paverPallets","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_yard_shed
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), shedDisplay
+    Piece: shedDisplay
+    State: 
+    At: {x: -285, y: 95}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -952,171 +1280,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"The yard gatehouse","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), yardOffice","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3.2,"d":2.8,"h":3.2}'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_plaza
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: prop.nmc_yard_forklift
-    Kind: setPiece
-    Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), forklift
-    Piece: forklift
-    State: 
-    At: {x: -279.6, y: 102}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 1
-    SortY: 102
-    Layer: 
-    Walk: 
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: nmc.kind
-      Value: '"stores"'
-    - Key: nmc.rig
-      Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"The yard forklift","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), forklift","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":1.4,"d":3.2,"h":2.3}'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_plaza
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: prop.nmc_yard_soil
-    Kind: setPiece
-    Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), soilPallets
-    Piece: soilPallets
-    State: 
-    At: {x: -269.5, y: 81.6}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 1
-    SortY: 81.6
-    Layer: 
-    Walk: 
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: mats
-      Value: '["soil","prodBr","leaf"]'
-    - Key: nmc.kind
-      Value: '"stores"'
-    - Key: nmc.rig
-      Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"Bagged soil and mulch on pallets","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), soilPallets","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3.8,"d":1.2,"h":1.1}'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_plaza
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: prop.nmc_yard_pavers
-    Kind: setPiece
-    Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), paverPallets
-    Piece: paverPallets
-    State: 
-    At: {x: -275.8, y: 81.6}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 1
-    SortY: 81.6
-    Layer: 
-    Walk: 
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: nmc.kind
-      Value: '"stores"'
-    - Key: nmc.rig
-      Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"Patio stones on pallets","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), paverPallets","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2.6,"d":1.2,"h":0.9}'
-    - Key: nmc.ownerScene
-      Value: keyscene.nmc_plaza
-    - Key: nmc.type
-      Value: SetPieceDef
-  - Id: prop.nmc_yard_shed
-    Kind: setPiece
-    Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), shedDisplay
-    Piece: shedDisplay
-    State: 
-    At: {x: -279.6, y: 88.5}
-    Z: 6
-    StandsOn: ground
-    MountHost: 
-    MountAnchor: 
-    HasFoot: 0
-    Foot: {x: 0, y: 0}
-    Dir: 4
-    HasSortY: 1
-    SortY: 88.5
-    Layer: 
-    Walk: 
-    Collider: 
-    Variants:
-    - today
-    WhenTide: 
-    Words: []
-    Options:
-    - Key: nmc.kind
-      Value: '"stores"'
-    - Key: nmc.rig
-      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-285,95]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.6
     - Key: nmc.def
       Value: '{"name":"A garden shed on display","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), shedDisplay","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3.2,"d":2.6,"h":2.7}'
+        (plaza-stores/nmcStores.js 1.1), shedDisplay","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1124,10 +1304,10 @@ MonoBehaviour:
   - Id: prop.nmc_yard_fence_s
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), fence
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), fence
     Piece: fence
     State: 
-    At: {x: -270, y: 78}
+    At: {x: -273, y: 78}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -1146,18 +1326,30 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: len
-      Value: 24
+      Value: 30
+    - Key: gate
+      Value: '[-9,-3]'
     - Key: nmc.kind
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-273,78]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 15
     - Key: nmc.def
-      Value: '{"name":"Yard fence (slatted chain-link)","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), fence","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":24,"d":0.2,"h":2.4}'
+      Value: '{"name":"the yard\u2019s south fence, its gate the way in","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), fence","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1165,10 +1357,10 @@ MonoBehaviour:
   - Id: prop.nmc_yard_fence_n
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), fence
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), fence
     Piece: fence
     State: 
-    At: {x: -270, y: 142}
+    At: {x: -273, y: 142}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -1187,18 +1379,30 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: len
-      Value: 24
+      Value: 30
+    - Key: gate
+      Value: '[-9,-3]'
     - Key: nmc.kind
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-273,142]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 15
     - Key: nmc.def
-      Value: '{"name":"Yard fence (slatted chain-link)","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), fence","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":24,"d":0.2,"h":2.4}'
+      Value: '{"name":"the yard\u2019s north fence, its gate the way out to Mill Road","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), fence","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1206,7 +1410,7 @@ MonoBehaviour:
   - Id: prop.nmc_yard_fence_e78
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), fence
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), fence
     Piece: fence
     State: 
     At: {x: -258, y: 80.5}
@@ -1233,13 +1437,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-258,80.5]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Yard fence (slatted chain-link)","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), fence","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":5,"d":0.2,"h":2.4}'
+        (plaza-stores/nmcStores.js 1.1), fence","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1247,10 +1461,10 @@ MonoBehaviour:
   - Id: prop.nmc_yard_fence_e92
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), fence
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), fence
     Piece: fence
     State: 
-    At: {x: -258, y: 111.25}
+    At: {x: -258, y: 100.75}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -1269,29 +1483,39 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: len
-      Value: 39.5
+      Value: 18.5
     - Key: nmc.kind
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-258,100.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Yard fence (slatted chain-link)","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), fence","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":39.5,"d":0.2,"h":2.4}'
+        (plaza-stores/nmcStores.js 1.1), fence","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
       Value: SetPieceDef
-  - Id: prop.nmc_yard_fence_e
+  - Id: prop.nmc_yard_fence_e_dock
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), fence
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), fence
     Piece: fence
     State: 
-    At: {x: -258, y: 141}
+    At: {x: -258, y: 137}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -1300,7 +1524,7 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 2
     HasSortY: 1
-    SortY: 140
+    SortY: 132
     Layer: 
     Walk: 
     Collider: 
@@ -1310,18 +1534,28 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: len
-      Value: 2
+      Value: 10
     - Key: nmc.kind
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-258,137]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Yard fence (slatted chain-link)","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), fence","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":0.2,"h":2.4}'
+        (plaza-stores/nmcStores.js 1.1), fence","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1329,10 +1563,10 @@ MonoBehaviour:
   - Id: prop.nmc_yard_fence_w
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), fence
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), fence
     Piece: fence
     State: 
-    At: {x: -282, y: 110}
+    At: {x: -288, y: 110}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -1356,13 +1590,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-288,110]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"Yard fence (slatted chain-link)","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), fence","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":64,"d":0.2,"h":2.4}'
+        (plaza-stores/nmcStores.js 1.1), fence","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1370,7 +1614,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_strip_01
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), island
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
     Piece: island
     State: 
     At: {x: -251.5, y: 96.75}
@@ -1399,13 +1643,76 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-251.5,96.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 4.5
     - Key: nmc.def
       Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), island","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":9,"d":1.5,"h":0.15}'
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_strip2_w
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -251.5, y: 77.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 78
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 9
+    - Key: w
+      Value: 1.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-251.5,77.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 4.5
+    - Key: nmc.def
+      Value: '{"name":"the lot\u2019s second kerbed strip, its trees","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1413,7 +1720,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_strip_02
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), island
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
     Piece: island
     State: 
     At: {x: -228.5, y: 96.75}
@@ -1442,13 +1749,76 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-228.5,96.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 12.5
     - Key: nmc.def
       Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), island","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":25,"d":1.5,"h":0.15}'
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_strip2_c
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -228.5, y: 77.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 78
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 25
+    - Key: w
+      Value: 1.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-228.5,77.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 12.5
+    - Key: nmc.def
+      Value: '{"name":"the lot\u2019s second kerbed strip, its trees","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1456,7 +1826,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_strip_03
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), island
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
     Piece: island
     State: 
     At: {x: -203.5, y: 96.75}
@@ -1485,13 +1855,76 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-203.5,96.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 6.5
     - Key: nmc.def
       Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), island","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":13,"d":1.5,"h":0.15}'
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_strip2_e
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -203.5, y: 77.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 78
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 13
+    - Key: w
+      Value: 1.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-203.5,77.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 6.5
+    - Key: nmc.def
+      Value: '{"name":"the lot\u2019s second kerbed strip, its trees","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1499,7 +1932,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_island_01
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), island
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
     Piece: island
     State: 
     At: {x: -255, y: 93.25}
@@ -1528,13 +1961,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-255,93.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), island","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":5.5,"h":0.15}'
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1542,7 +1985,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_island_02
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), island
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
     Piece: island
     State: 
     At: {x: -198, y: 93.25}
@@ -1571,13 +2014,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-198,93.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), island","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":5.5,"h":0.15}'
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1585,7 +2038,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_island_03
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), island
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
     Piece: island
     State: 
     At: {x: -255, y: 80.75}
@@ -1614,13 +2067,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-255,80.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), island","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":5.5,"h":0.15}'
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1628,7 +2091,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_island_04
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), island
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
     Piece: island
     State: 
     At: {x: -198, y: 80.75}
@@ -1657,13 +2120,235 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-198,80.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
     - Key: nmc.def
       Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), island","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":2,"d":5.5,"h":0.15}'
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_island_n2_w
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -255, y: 73.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 76.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-255,73.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_island_n2_e
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -198, y: 73.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 76.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-198,73.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_island_s2_w
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -255, y: 61.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 64
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-255,61.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_island_s2_e
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -198, y: 61.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 64
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-198,61.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"A kerbed planting island","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), island","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1671,13 +2356,13 @@ MonoBehaviour:
   - Id: prop.nmc_lot_pole_01
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), lotPole
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
     Piece: lotPole
     State: 
     At: {x: -251.5, y: 96.75}
     Z: 6.15
-    StandsOn: ground
-    MountHost: 
+    StandsOn: mount
+    MountHost: prop.nmc_lot_strip_01
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
@@ -1698,15 +2383,27 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js),
-        lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.centre
+      Value: '[-251.5,96.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
     - Key: nmc.lights
       Value: '[{"at":[0,0,8],"reachM":18,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3,"d":0.8,"h":8.4}'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_strip_01"'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1714,13 +2411,13 @@ MonoBehaviour:
   - Id: prop.nmc_lot_pole_02
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), lotPole
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
     Piece: lotPole
     State: 
     At: {x: -228.5, y: 96.75}
     Z: 6.15
-    StandsOn: ground
-    MountHost: 
+    StandsOn: mount
+    MountHost: prop.nmc_lot_strip_02
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
@@ -1741,15 +2438,27 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js),
-        lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.centre
+      Value: '[-228.5,96.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
     - Key: nmc.lights
       Value: '[{"at":[0,0,8],"reachM":18,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3,"d":0.8,"h":8.4}'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_strip_02"'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1757,13 +2466,13 @@ MonoBehaviour:
   - Id: prop.nmc_lot_pole_03
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), lotPole
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
     Piece: lotPole
     State: 
     At: {x: -205.5, y: 96.75}
     Z: 6.15
-    StandsOn: ground
-    MountHost: 
+    StandsOn: mount
+    MountHost: prop.nmc_lot_strip_03
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
@@ -1784,35 +2493,212 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js),
-        lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.centre
+      Value: '[-205.5,96.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
     - Key: nmc.lights
       Value: '[{"at":[0,0,8],"reachM":18,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3,"d":0.8,"h":8.4}'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_strip_03"'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
       Value: SetPieceDef
-  - Id: prop.nmc_lot_pole_04
+  - Id: prop.nmc_lot_pole_strip2_w
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), lotPole
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
     Piece: lotPole
     State: 
-    At: {x: -255, y: 80.75}
+    At: {x: -251.5, y: 77.25}
     Z: 6.15
-    StandsOn: ground
-    MountHost: 
+    StandsOn: mount
+    MountHost: prop.nmc_lot_strip2_w
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 80.75
+    SortY: 77.25
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: heads
+      Value: 2
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-251.5,77.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,8],"reachM":18,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_strip2_w"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_pole_strip2_c
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
+    Piece: lotPole
+    State: 
+    At: {x: -228.5, y: 77.25}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_lot_strip2_c
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 77.25
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: heads
+      Value: 2
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-228.5,77.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,8],"reachM":18,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_strip2_c"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_pole_strip2_e
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
+    Piece: lotPole
+    State: 
+    At: {x: -205.5, y: 77.25}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_lot_strip2_e
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 77.25
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: heads
+      Value: 2
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-205.5,77.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,8],"reachM":18,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_strip2_e"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_pole_s2_w
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
+    Piece: lotPole
+    State: 
+    At: {x: -255, y: 61.25}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_lot_island_s2_w
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 61.25
     Layer: 
     Walk: 
     Collider: 
@@ -1827,35 +2713,47 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js),
-        lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.centre
+      Value: '[-255,61.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
     - Key: nmc.lights
       Value: '[{"at":[0,0,8],"reachM":10,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3,"d":0.8,"h":8.4}'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_island_s2_w"'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
       Value: SetPieceDef
-  - Id: prop.nmc_lot_pole_05
+  - Id: prop.nmc_lot_pole_s2_e
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), lotPole
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), lotPole
     Piece: lotPole
     State: 
-    At: {x: -198, y: 80.75}
+    At: {x: -198, y: 61.25}
     Z: 6.15
-    StandsOn: ground
-    MountHost: 
+    StandsOn: mount
+    MountHost: prop.nmc_lot_island_s2_e
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 80.75
+    SortY: 61.25
     Layer: 
     Walk: 
     Collider: 
@@ -1870,15 +2768,27 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
-    - Key: nmc.def
-      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js),
-        lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.centre
+      Value: '[-198,61.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.5
     - Key: nmc.lights
       Value: '[{"at":[0,0,8],"reachM":10,"intensity":0.8,"colour":"#f4e6c8","when":"dusk","pool":true,"dot":true}]'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3,"d":0.8,"h":8.4}'
+    - Key: nmc.def
+      Value: '{"name":"Lot light","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), lotPole","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_lot_island_s2_e"'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1886,7 +2796,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_corral_1
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), cartCorral
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), cartCorral
     Piece: cartCorral
     State: 
     At: {x: -227.875, y: 93.25}
@@ -1911,13 +2821,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-227.875,93.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
     - Key: nmc.def
-      Value: '{"name":"Cart corral","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js),
-        cartCorral","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":4,"d":1.8,"h":1.25}'
+      Value: '{"name":"Cart corral","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), cartCorral","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1925,7 +2845,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_corral_2
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), cartCorral
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), cartCorral
     Piece: cartCorral
     State: 
     At: {x: -216.875, y: 80.75}
@@ -1950,13 +2870,121 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-216.875,80.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
     - Key: nmc.def
-      Value: '{"name":"Cart corral","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js),
-        cartCorral","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":4,"d":1.8,"h":1.25}'
+      Value: '{"name":"Cart corral","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), cartCorral","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_corral_3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), cartCorral
+    Piece: cartCorral
+    State: 
+    At: {x: -236.125, y: 73.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 1
+    SortY: 73.75
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-236.125,73.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.def
+      Value: '{"name":"Cart corral","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), cartCorral","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_corral_4
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), cartCorral
+    Piece: cartCorral
+    State: 
+    At: {x: -208.625, y: 61.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 1
+    SortY: 61.25
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-208.625,61.25]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2
+    - Key: nmc.def
+      Value: '{"name":"Cart corral","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), cartCorral","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -1964,7 +2992,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_access_14
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), stallSign
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
     Piece: stallSign
     State: 
     At: {x: -214.125, y: 95.85}
@@ -1989,13 +3017,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-214.125,95.85]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
     - Key: nmc.def
       Value: '{"name":"Accessible stall sign","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), stallSign","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":0.4,"d":0.2,"h":1.9}'
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -2003,7 +3041,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_access_15
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), stallSign
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
     Piece: stallSign
     State: 
     At: {x: -211.375, y: 95.85}
@@ -2028,13 +3066,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-211.375,95.85]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
     - Key: nmc.def
       Value: '{"name":"Accessible stall sign","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), stallSign","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":0.4,"d":0.2,"h":1.9}'
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -2042,7 +3090,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_access_3
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), stallSign
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
     Piece: stallSign
     State: 
     At: {x: -244.375, y: 95.85}
@@ -2067,13 +3115,23 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-244.375,95.85]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
     - Key: nmc.def
       Value: '{"name":"Accessible stall sign","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), stallSign","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":0.4,"d":0.2,"h":1.9}'
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -2081,7 +3139,7 @@ MonoBehaviour:
   - Id: prop.nmc_lot_access_4
     Kind: setPiece
     Owner: H10
-    Kit: NmcStores (plaza-stores/nmcStores.js), stallSign
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
     Piece: stallSign
     State: 
     At: {x: -241.625, y: 95.85}
@@ -2106,13 +3164,121 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-241.625,95.85]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
     - Key: nmc.def
       Value: '{"name":"Accessible stall sign","defType":"SetPieceDef","kit":"NmcStores
-        (plaza-stores/nmcStores.js), stallSign","faces":"S (dir 4)"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":0.4,"d":0.2,"h":1.9}'
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_access_s2_8
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
+    Piece: stallSign
+    State: 
+    At: {x: -230.625, y: 58.65}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 58.65
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-230.625,58.65]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"an accessible stall\u2019s sign, by the flats\u2019 walk","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_lot_access_s2_9
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
+    Piece: stallSign
+    State: 
+    At: {x: -227.875, y: 58.65}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 58.65
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-227.875,58.65]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"an accessible stall\u2019s sign, by the flats\u2019 walk","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -2145,13 +3311,3149 @@ MonoBehaviour:
       Value: '"stores"'
     - Key: nmc.rig
       Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-185.5,101]'
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.6
     - Key: nmc.def
       Value: '{"name":"the plaza\u2019s sign: GROCERY, LUMBER, HARDWARE","defType":"SetPieceDef","kit":"NmcStores.pylon","faces":"S
         (dir 4): to the lot and Route 91\u2019s northbound"}'
-    - Key: nmc.stations
-      Value: '[]'
-    - Key: nmc.footM
-      Value: '{"w":3.2,"d":0.9,"h":7.4}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: structure.nmc_plaza_cannery
+    Kind: building
+    Owner: H10
+    Kit: "WalkupIso (Art/walkupIsoRig.js), its cannery8Loft preset\u2019s fields,
+      parking and kerb off"
+    Piece: WalkupIso
+    State: 
+    At: {x: -271.45, y: 25.25}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 25.25
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: cannery8Loft
+    - Key: parking
+      Value: false
+    - Key: kerb
+      Value: false
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"WalkupIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.nightOpts
+      Value: '{"night":true,"lit":0.6}'
+    - Key: nmc.centre
+      Value: '[-271.45,37.55]'
+    - Key: nmc.frontM
+      Value: 12.3
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 16.405
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_plaza_cannery"'
+    - Key: nmc.reachBox
+      Value: '[-287.23,-255.42,24.95,48.5,5.5,21]'
+    - Key: nmc.def
+      Value: '{"name":"the cannery loft block (eight lofts, two storeys)","defType":"BuildingDef","kit":"WalkupIso
+        (Art/walkupIsoRig.js), its cannery8Loft preset\u2019s fields, parking and
+        kerb off","faces":"S (dir 4): its front to the fields and its walk; its back
+        and bins to the lot","lot":"lot.nmc_plaza_cannery","flats":8,"footprintM":[30.3,20.9],"style":"walk-up,
+        luxury tier (cannery loft)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_plaza_walkup
+    Kind: building
+    Owner: H10
+    Kit: "WalkupIso (Art/walkupIsoRig.js), its walkup8 preset\u2019s fields, parking
+      and kerb off"
+    Piece: WalkupIso
+    State: 
+    At: {x: -240.9, y: 27.56}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 27.56
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: walkup8
+    - Key: parking
+      Value: false
+    - Key: kerb
+      Value: false
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"WalkupIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.nightOpts
+      Value: '{"night":true,"lit":0.6}'
+    - Key: nmc.centre
+      Value: '[-240.9,38.55]'
+    - Key: nmc.frontM
+      Value: 10.99
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 13.92
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_plaza_walkup"'
+    - Key: nmc.reachBox
+      Value: '[-252.96,-226.12,27.26,48.5,5.5,21]'
+    - Key: nmc.def
+      Value: '{"name":"the walk-up (eight flats, two storeys, its steel stair tower)","defType":"BuildingDef","kit":"WalkupIso
+        (Art/walkupIsoRig.js), its walkup8 preset\u2019s fields, parking and kerb
+        off","faces":"S (dir 4): its front to the fields and its walk; its back and
+        bins to the lot","lot":"lot.nmc_plaza_walkup","flats":8,"footprintM":[22.6,18.9],"style":"walk-up,
+        basic tier (concrete-banded brick)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: structure.nmc_plaza_terrace
+    Kind: building
+    Owner: H10
+    Kit: "RowhouseIso (Art/rowhouseIsoRig.js), its coastalRow4 preset\u2019s fields"
+    Piece: RowhouseIso
+    State: 
+    At: {x: -201.6, y: 32.86}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 32.86
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: preset
+      Value: coastalRow4
+    - Key: doorPaint
+      Value: varied
+    - Key: nmc.kind
+      Value: '"flat"'
+    - Key: nmc.rig
+      Value: '"RowhouseIso"'
+    - Key: nmc.presetMerge
+      Value: true
+    - Key: nmc.nightOpts
+      Value: '{"night":true,"lit":0.6}'
+    - Key: nmc.centre
+      Value: '[-201.6,40.2]'
+    - Key: nmc.frontM
+      Value: 7.34
+    - Key: nmc.family
+      Value: '"building"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.rad
+      Value: 15.075
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.lot
+      Value: '"lot.nmc_plaza_terrace"'
+    - Key: nmc.reachBox
+      Value: '[-216.19,-187.04,32.56,46.5,5.5,21]'
+    - Key: nmc.def
+      Value: '{"name":"the coastal terrace (four houses, three storeys, each door
+        its own colour)","defType":"BuildingDef","kit":"RowhouseIso (Art/rowhouseIsoRig.js),
+        its coastalRow4 preset\u2019s fields","faces":"S (dir 4): its front to the
+        fields and its walk; its back and bins to the lot","lot":"lot.nmc_plaza_terrace","flats":4,"footprintM":[28,11.6],"style":"terrace,
+        luxury tier (contemporary coastal block)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: BuildingDef
+  - Id: prop.nmc_flats_hedge_cannery
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -269.6, y: 55.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 55.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 27.8
+    - Key: h
+      Value: 1
+    - Key: d
+      Value: 0.7
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-269.6,55.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 13.900000000000006
+    - Key: nmc.def
+      Value: '{"name":"a clipped hedge between the flats\u2019 back walk and the lot","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_hedge_walkup
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -239.65, y: 55.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 55.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 26.1
+    - Key: h
+      Value: 1
+    - Key: d
+      Value: 0.7
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-239.65,55.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 13.049999999999997
+    - Key: nmc.def
+      Value: '{"name":"a clipped hedge between the flats\u2019 back walk and the lot","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_hedge_terrace
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -201.2, y: 55.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 55.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 28.4
+    - Key: h
+      Value: 1
+    - Key: d
+      Value: 0.7
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-201.2,55.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 14.200000000000003
+    - Key: nmc.def
+      Value: '{"name":"a clipped hedge between the flats\u2019 back walk and the lot","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_bins_cannery_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), binShelter
+    Piece: binShelter
+    State: 
+    At: {x: -274.6, y: 51.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 51.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-274.6,51.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"the flats\u2019 bin shelter on their back walk","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), binShelter","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_bins_cannery_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), binShelter
+    Piece: binShelter
+    State: 
+    At: {x: -262.6, y: 51.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 51.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-262.6,51.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"the flats\u2019 bin shelter on their back walk","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), binShelter","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_bins_walkup
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), binShelter
+    Piece: binShelter
+    State: 
+    At: {x: -246.5, y: 51.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 51.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-246.5,51.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"the flats\u2019 bin shelter on their back walk","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), binShelter","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_bins_terrace_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), binShelter
+    Piece: binShelter
+    State: 
+    At: {x: -210.5, y: 51.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 51.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-210.5,51.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"the flats\u2019 bin shelter on their back walk","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), binShelter","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_bins_terrace_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), binShelter
+    Piece: binShelter
+    State: 
+    At: {x: -193.5, y: 51.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 51.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-193.5,51.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"the flats\u2019 bin shelter on their back walk","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), binShelter","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_bikes_cannery
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), bikeRack
+    Piece: bikeRack
+    State: 
+    At: {x: -267.6, y: 51.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 51.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-267.6,51.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"Bike rack","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), bikeRack","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_bikes_walkup
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), bikeRack
+    Piece: bikeRack
+    State: 
+    At: {x: -235.5, y: 51.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 51.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-235.5,51.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"Bike rack","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), bikeRack","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_island_w1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -284.75, y: 18.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.499999999999998
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-284.75,18.15]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a kerbed island in the flats\u2019 stall run, its lantern and
+        its young tree","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_lantern_w1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -284.75, y: 20.3}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_flats_island_w1
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-284.75,20.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,2.2],"reachM":4.5,"intensity":0.6,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"A lantern on its post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_flats_island_w1"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_island_w2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -266.25, y: 18.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.499999999999998
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-266.25,18.15]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a kerbed island in the flats\u2019 stall run, its lantern and
+        its young tree","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_lantern_w2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -266.25, y: 20.3}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_flats_island_w2
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-266.25,20.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,2.2],"reachM":4.5,"intensity":0.6,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"A lantern on its post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_flats_island_w2"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_island_w3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -247.75, y: 18.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.499999999999998
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-247.75,18.15]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a kerbed island in the flats\u2019 stall run, its lantern and
+        its young tree","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_lantern_w3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -247.75, y: 20.3}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_flats_island_w3
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-247.75,20.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,2.2],"reachM":4.5,"intensity":0.6,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"A lantern on its post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_flats_island_w3"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_access_cannery
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
+    Piece: stallSign
+    State: 
+    At: {x: -258.37, y: 21.61}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 21.61
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-258.37,21.61]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"an accessible stall\u2019s sign, at the flats\u2019 doors","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_access_walkup
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
+    Piece: stallSign
+    State: 
+    At: {x: -231.62, y: 21.61}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 21.61
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-231.62,21.61]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"an accessible stall\u2019s sign, at the flats\u2019 doors","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_island_e1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -213.5, y: 18.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.499999999999998
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-213.5,18.15]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a kerbed island in the flats\u2019 stall run, its lantern and
+        its young tree","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_lantern_e1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -213.5, y: 20.3}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_flats_island_e1
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-213.5,20.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,2.2],"reachM":4.5,"intensity":0.6,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"A lantern on its post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_flats_island_e1"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_island_e2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), island
+    Piece: island
+    State: 
+    At: {x: -192.25, y: 18.15}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 2
+    - Key: w
+      Value: 5.499999999999998
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-192.25,18.15]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a kerbed island in the flats\u2019 stall run, its lantern and
+        its young tree","defType":"SetPieceDef","kit":"NmcStores (plaza-stores/nmcStores.js
+        1.1), island","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_lantern_e2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), lampPost
+    Piece: lampPost
+    State: 
+    At: {x: -192.25, y: 20.3}
+    Z: 6.15
+    StandsOn: mount
+    MountHost: prop.nmc_flats_island_e2
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 20.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-192.25,20.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.lights
+      Value: '[{"at":[0,0,2.2],"reachM":4.5,"intensity":0.6,"colour":"#ffcb7e","when":"dusk","pool":true,"dot":true}]'
+    - Key: nmc.def
+      Value: '{"name":"A lantern on its post","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), lampPost","faces":"S (dir 4)"}'
+    - Key: nmc.host
+      Value: '"prop.nmc_flats_island_e2"'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_access_terrace
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), stallSign
+    Piece: stallSign
+    State: 
+    At: {x: -211.12, y: 21.61}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 21.61
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-211.12,21.61]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.3
+    - Key: nmc.def
+      Value: '{"name":"an accessible stall\u2019s sign, at the flats\u2019 doors","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), stallSign","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_verge_bench_w
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), dockBench
+    Piece: dockBench
+    State: 
+    At: {x: -247, y: 4.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 4.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: m
+      Value: cedarN
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-247,4.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.9
+    - Key: nmc.def
+      Value: '{"name":"a bench on the verge under the street trees, facing the fields","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), dockBench","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_verge_bench_e
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), dockBench
+    Piece: dockBench
+    State: 
+    At: {x: -219, y: 4.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 4.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: m
+      Value: cedarN
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-219,4.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.9
+    - Key: nmc.def
+      Value: '{"name":"a bench on the verge under the street trees, facing the fields","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), dockBench","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_cannery_bed_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -282.6, y: 26}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 25.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 5.6
+    - Key: d
+      Value: 1.3
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-282.6,26]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a bed of perennials under the cannery loft\u2019s windows","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_cannery_bed_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -275.9, y: 26}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 25.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 5.6
+    - Key: d
+      Value: 1.3
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-275.9,26]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a bed of perennials under the cannery loft\u2019s windows","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_cannery_bed_3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -269.2, y: 26}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 25.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 5.6
+    - Key: d
+      Value: 1.3
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-269.2,26]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.8
+    - Key: nmc.def
+      Value: '{"name":"a bed of perennials under the cannery loft\u2019s windows","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_cannery_bench
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), planterBench
+    Piece: planterBench
+    State: 
+    At: {x: -264, y: 25.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 25.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-264,25.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.6
+    - Key: nmc.def
+      Value: '{"name":"a bench and its planter by the cannery loft\u2019s portal","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), planterBench","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_walkup_bed_w
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -248.3, y: 28}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 27.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 6.6
+    - Key: d
+      Value: 1.5
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-248.3,28]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.3
+    - Key: nmc.def
+      Value: '{"name":"a bed of hydrangeas along the walk-up\u2019s front","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_walkup_bed_e
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -240.9, y: 28}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 27.5
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 6.6
+    - Key: d
+      Value: 1.5
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-240.9,28]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.3
+    - Key: nmc.def
+      Value: '{"name":"a bed of hydrangeas along the walk-up\u2019s front","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_walkup_bench
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), dockBench
+    Piece: dockBench
+    State: 
+    At: {x: -236.3, y: 26.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 26.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: m
+      Value: trimW
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-236.3,26.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.9
+    - Key: nmc.def
+      Value: '{"name":"a bench by the walk-up\u2019s door","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), dockBench","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_walkup_bikes_front
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcStores (plaza-stores/nmcStores.js 1.1), bikeRack
+    Piece: bikeRack
+    State: 
+    At: {x: -228.4, y: 24.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 24.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcStores"'
+    - Key: nmc.centre
+      Value: '[-228.4,24.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"a bike rack by the walk-up\u2019s door","defType":"SetPieceDef","kit":"NmcStores
+        (plaza-stores/nmcStores.js 1.1), bikeRack","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_fence_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), picketFence
+    Piece: picketFence
+    State: 
+    At: {x: -212.1, y: 23.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 23.75
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 7
+    - Key: gate
+      Value: '[5.31,6.55]'
+    - Key: roses
+      Value: true
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-212.1,23.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.5
+    - Key: nmc.def
+      Value: '{"name":"house 1\u2019s picket fence and its gate, roses along it","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), picketFence","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_mailbox_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -210.67, y: 24.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 24.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: white
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-210.67,24.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"house 1\u2019s mailbox by its gate","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_bed_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -213.9, y: 33.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 32.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 3
+    - Key: d
+      Value: 1.1
+    - Key: mix
+      Value: rose
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-213.9,33.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.5
+    - Key: nmc.def
+      Value: '{"name":"a bed under house 1\u2019s window","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_birdbath_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), birdbath
+    Piece: birdbath
+    State: 
+    At: {x: -212.6, y: 28.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 28.4
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-212.6,28.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"A birdbath in house 1\u2019s front garden","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), birdbath","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_fence_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), picketFence
+    Piece: picketFence
+    State: 
+    At: {x: -205.1, y: 23.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 23.75
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 7
+    - Key: gate
+      Value: '[5.31,6.55]'
+    - Key: roses
+      Value: false
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-205.1,23.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.5
+    - Key: nmc.def
+      Value: '{"name":"house 2\u2019s picket fence and its gate","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), picketFence","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_mailbox_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -203.67, y: 24.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 24.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: black
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-203.67,24.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"house 2\u2019s mailbox by its gate","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_bed_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -206.9, y: 33.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 32.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 3
+    - Key: d
+      Value: 1.1
+    - Key: mix
+      Value: hydrangea
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-206.9,33.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.5
+    - Key: nmc.def
+      Value: '{"name":"a bed under house 2\u2019s window","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_party_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -208.6, y: 28.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 1
+    SortY: 24
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 8.6
+    - Key: h
+      Value: 0.75
+    - Key: d
+      Value: 0.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-208.6,28.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"a low hedge between two of the terrace\u2019s front gardens","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"its length north-south (dir
+        2)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_fence_3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), picketFence
+    Piece: picketFence
+    State: 
+    At: {x: -198.1, y: 23.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 23.75
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 7
+    - Key: gate
+      Value: '[5.31,6.55]'
+    - Key: roses
+      Value: true
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-198.1,23.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 3.5
+    - Key: nmc.def
+      Value: '{"name":"house 3\u2019s picket fence and its gate, roses along it","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), picketFence","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_mailbox_3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -196.67, y: 24.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 24.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: cedar
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-196.67,24.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"house 3\u2019s mailbox by its gate","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_bed_3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -199.9, y: 33.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 32.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 3
+    - Key: d
+      Value: 1.1
+    - Key: mix
+      Value: perennial
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-199.9,33.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.5
+    - Key: nmc.def
+      Value: '{"name":"a bed under house 3\u2019s window","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_party_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -201.6, y: 28.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 1
+    SortY: 24
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 8.6
+    - Key: h
+      Value: 0.75
+    - Key: d
+      Value: 0.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-201.6,28.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"a low hedge between two of the terrace\u2019s front gardens","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"its length north-south (dir
+        2)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_bench_3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), dockBench
+    Piece: dockBench
+    State: 
+    At: {x: -198.4, y: 28.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 28.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: m
+      Value: trimW
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-198.4,28.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"A bench in house 3\u2019s front garden","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), dockBench","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_hedge_4
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -191.96, y: 23.75}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 23.45
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 5.28
+    - Key: h
+      Value: 0.85
+    - Key: d
+      Value: 0.6
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-191.96,23.75]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.6
+    - Key: nmc.def
+      Value: '{"name":"house 4\u2019s clipped hedge along the walk","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_mailbox_4
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), mailbox
+    Piece: mailbox
+    State: 
+    At: {x: -187.87, y: 24.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 24.3
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: style
+      Value: stone
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-187.87,24.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"house 4\u2019s mailbox by its gate","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), mailbox","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_bed_4
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), gardenBed
+    Piece: gardenBed
+    State: 
+    At: {x: -192.9, y: 33.4}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 32.8
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: w
+      Value: 3
+    - Key: d
+      Value: 1.1
+    - Key: mix
+      Value: boxwood
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-192.9,33.4]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.5
+    - Key: nmc.def
+      Value: '{"name":"a bed under house 4\u2019s window","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), gardenBed","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_party_3
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcCreekHouses (north-creek/nmcCreekProps.js), hedge
+    Piece: hedge
+    State: 
+    At: {x: -194.6, y: 28.3}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 2
+    HasSortY: 1
+    SortY: 24
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: len
+      Value: 8.6
+    - Key: h
+      Value: 0.75
+    - Key: d
+      Value: 0.5
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcCreekHouses"'
+    - Key: nmc.centre
+      Value: '[-194.6,28.3]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1
+    - Key: nmc.def
+      Value: '{"name":"a low hedge between two of the terrace\u2019s front gardens","defType":"SetPieceDef","kit":"NmcCreekHouses
+        (north-creek/nmcCreekProps.js), hedge","faces":"its length north-south (dir
+        2)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_terrace_raised_beds_4
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), raisedBeds
+    Piece: raisedBeds
+    State: 
+    At: {x: -192, y: 28.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 28.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: n
+      Value: 1
+    - Key: seed
+      Value: 1
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-192,28.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 1.2
+    - Key: nmc.def
+      Value: '{"name":"Raised beds in house 4\u2019s front garden","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), raisedBeds","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_garden_beds_1
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), raisedBeds
+    Piece: raisedBeds
+    State: 
+    At: {x: -283.6, y: 3.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 3.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: n
+      Value: 2
+    - Key: seed
+      Value: 0
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-283.6,3.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.6
+    - Key: nmc.def
+      Value: '{"name":"the flats\u2019 community garden: two raised beds on the verge","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), raisedBeds","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_garden_beds_2
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), raisedBeds
+    Piece: raisedBeds
+    State: 
+    At: {x: -277.4, y: 3.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 3.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: n
+      Value: 2
+    - Key: seed
+      Value: 1
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-277.4,3.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 2.6
+    - Key: nmc.def
+      Value: '{"name":"the flats\u2019 community garden: two raised beds on the verge","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), raisedBeds","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_garden_bench
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), pottingBench
+    Piece: pottingBench
+    State: 
+    At: {x: -272.6, y: 4.9}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 4.9
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-272.6,4.9]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.8
+    - Key: nmc.def
+      Value: '{"name":"the community garden\u2019s potting bench","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), pottingBench","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_garden_compost
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), compost
+    Piece: compost
+    State: 
+    At: {x: -288.2, y: 4.6}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 4.6
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-288.2,4.6]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.6
+    - Key: nmc.def
+      Value: '{"name":"the community garden\u2019s compost bin","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), compost","faces":"S (dir 4)"}'
+    - Key: nmc.ownerScene
+      Value: keyscene.nmc_plaza
+    - Key: nmc.type
+      Value: SetPieceDef
+  - Id: prop.nmc_flats_garden_birdbath
+    Kind: setPiece
+    Owner: H10
+    Kit: NmcShoreLane (shore-lane/nmcShoreLaneProps.js), birdbath
+    Piece: birdbath
+    State: 
+    At: {x: -280.5, y: 6.2}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 1
+    SortY: 6.2
+    Layer: 
+    Walk: 
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options:
+    - Key: nmc.kind
+      Value: '"stores"'
+    - Key: nmc.rig
+      Value: '"NmcShoreLane"'
+    - Key: nmc.centre
+      Value: '[-280.5,6.2]'
+    - Key: nmc.family
+      Value: '"prop"'
+    - Key: nmc.cat
+      Value: '"piece"'
+    - Key: nmc.shadowBox
+      Value: 2
+    - Key: nmc.clear
+      Value: 0.4
+    - Key: nmc.occM
+      Value: 14
+    - Key: nmc.rad
+      Value: 0.4
+    - Key: nmc.def
+      Value: '{"name":"a birdbath in the community garden","defType":"SetPieceDef","kit":"NmcShoreLane
+        (shore-lane/nmcShoreLaneProps.js), birdbath","faces":"S (dir 4)"}'
     - Key: nmc.ownerScene
       Value: keyscene.nmc_plaza
     - Key: nmc.type
@@ -2190,7 +6492,40 @@ MonoBehaviour:
     WhoLights: 
     Budget: 0
     Note: 
-  - PieceId: prop.nmc_lot_pole_04
+  - PieceId: prop.nmc_lot_pole_strip2_w
+    Preset: 
+    Pool: 1
+    ReachMetres: 18
+    At: {x: 0, y: 0, z: 8}
+    Colour: '#f4e6c8'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_lot_pole_strip2_c
+    Preset: 
+    Pool: 1
+    ReachMetres: 18
+    At: {x: 0, y: 0, z: 8}
+    Colour: '#f4e6c8'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_lot_pole_strip2_e
+    Preset: 
+    Pool: 1
+    ReachMetres: 18
+    At: {x: 0, y: 0, z: 8}
+    Colour: '#f4e6c8'
+    Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_lot_pole_s2_w
     Preset: 
     Pool: 1
     ReachMetres: 10
@@ -2201,13 +6536,68 @@ MonoBehaviour:
     WhoLights: 
     Budget: 0
     Note: 
-  - PieceId: prop.nmc_lot_pole_05
+  - PieceId: prop.nmc_lot_pole_s2_e
     Preset: 
     Pool: 1
     ReachMetres: 10
     At: {x: 0, y: 0, z: 8}
     Colour: '#f4e6c8'
     Intensity: 0.8
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_flats_lantern_w1
+    Preset: 
+    Pool: 1
+    ReachMetres: 4.5
+    At: {x: 0, y: 0, z: 2.2}
+    Colour: '#ffcb7e'
+    Intensity: 0.6
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_flats_lantern_w2
+    Preset: 
+    Pool: 1
+    ReachMetres: 4.5
+    At: {x: 0, y: 0, z: 2.2}
+    Colour: '#ffcb7e'
+    Intensity: 0.6
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_flats_lantern_w3
+    Preset: 
+    Pool: 1
+    ReachMetres: 4.5
+    At: {x: 0, y: 0, z: 2.2}
+    Colour: '#ffcb7e'
+    Intensity: 0.6
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_flats_lantern_e1
+    Preset: 
+    Pool: 1
+    ReachMetres: 4.5
+    At: {x: 0, y: 0, z: 2.2}
+    Colour: '#ffcb7e'
+    Intensity: 0.6
+    When: dusk
+    WhoLights: 
+    Budget: 0
+    Note: 
+  - PieceId: prop.nmc_flats_lantern_e2
+    Preset: 
+    Pool: 1
+    ReachMetres: 4.5
+    At: {x: 0, y: 0, z: 2.2}
+    Colour: '#ffcb7e'
+    Intensity: 0.6
     When: dusk
     WhoLights: 
     Budget: 0
@@ -2405,3 +6795,18 @@ MonoBehaviour:
   - vehicle.nmc_plaza_truck_3
   - vehicle.nmc_plaza_truck_4
   - vehicle.nmc_plaza_van_3
+  - structure.nmc_plaza_dock_grocery
+  - structure.nmc_plaza_dock_lumber
+  - prop.nmc_yard_rack_01
+  - prop.nmc_yard_rack_02
+  - prop.nmc_yard_fence_e
+  - prop.nmc_lot_pole_04
+  - prop.nmc_lot_pole_05
+  - boat.nmc_shore_dory
+  - prop.nmc_bank_bench_4
+  - prop.nmc_bank_bench_5
+  - prop.nmc_shore_fire
+  - structure.nmc_bank_steps_4
+  - structure.nmc_bank_steps_5
+  - structure.nmc_apartments_2
+  PlacementIds: []

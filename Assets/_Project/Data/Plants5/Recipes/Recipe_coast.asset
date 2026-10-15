@@ -1,0 +1,206 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48be3e08e73c9ee561f90c5223a9dcbc, type: 3}
+  m_Name: Recipe_coast
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.BiomeRecipeDef
+  Id: biome_recipe.coast
+  YoungChance: 0.3
+  Materials:
+  - Material: 9
+    Density: 2.62098838
+    Choices:
+    - Species: 9
+      Weight: 1
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 8
+      Weight: 1
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 48
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 47
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 43
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 7
+      Weight: 2
+      MinElevation: -100
+      MaxElevation: 100
+  - Material: 0
+    Density: 0.93852589
+    Choices:
+    - Species: 11
+      Weight: 1
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 15
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 14
+      Weight: 2
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 1
+      Weight: 4
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 5
+      Weight: 2
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 2
+      Weight: 1
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 16
+      Weight: 1
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 37
+      Weight: 7
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 42
+      Weight: 6
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 44
+      Weight: 5
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 40
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 39
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 41
+      Weight: 3
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 45
+      Weight: 8
+      MinElevation: -100
+      MaxElevation: 100
+    - Species: 46
+      Weight: 6
+      MinElevation: -100
+      MaxElevation: 100
+  - Material: 1
+    Density: 1.19274790
+    Choices:
+    - Species: 34
+      Weight: 2
+      MinElevation: 2
+      MaxElevation: 100
+    - Species: 35
+      Weight: 2
+      MinElevation: 2
+      MaxElevation: 100
+    - Species: 36
+      Weight: 3
+      MinElevation: 2
+      MaxElevation: 100
+    - Species: 33
+      Weight: 16
+      MinElevation: 2
+      MaxElevation: 100
+  - Material: 2
+    Density: 0.13855938
+    Choices:
+    - Species: 33
+      Weight: 3
+      MinElevation: 2
+      MaxElevation: 100
+  - Material: 8
+    Density: 1.01683374
+    Choices:
+    - Species: 29
+      Weight: 8
+      MinElevation: 0.85
+      MaxElevation: 2.4
+    - Species: 30
+      Weight: 6
+      MinElevation: 0.85
+      MaxElevation: 2.4
+    - Species: 31
+      Weight: 2
+      MinElevation: 0.85
+      MaxElevation: 2.4
+    - Species: 27
+      Weight: 5
+      MinElevation: -0.15
+      MaxElevation: 1.25
+  - Material: 6
+    Density: 0.82892607
+    Choices:
+    - Species: 28
+      Weight: 3
+      MinElevation: -0.15
+      MaxElevation: 1.25
+  - Material: 13
+    Density: 1.61078652
+    Choices:
+    - Species: 24
+      Weight: 7
+      MinElevation: -1.47
+      MaxElevation: 0.25
+    - Species: 25
+      Weight: 5
+      MinElevation: -1.47
+      MaxElevation: 0.25
+    - Species: 26
+      Weight: 2
+      MinElevation: -1.47
+      MaxElevation: 0.25
+  - Material: 10
+    Density: 0.14731693
+    Choices:
+    - Species: 26
+      Weight: 3
+      MinElevation: -1.47
+      MaxElevation: 0.25
+  - Material: 11
+    Density: 2.48543689
+    Choices:
+    - Species: 25
+      Weight: 3
+      MinElevation: -1.47
+      MaxElevation: 0.25
+  - Material: 17
+    Density: 3.00000000
+    Choices:
+    - Species: 22
+      Weight: 5
+      MinElevation: -3.45
+      MaxElevation: -1.07
+    - Species: 21
+      Weight: 2
+      MinElevation: -3.45
+      MaxElevation: -1.07
+  - Material: 16
+    Density: 0.28630009
+    Choices:
+    - Species: 23
+      Weight: 6
+      MinElevation: -3.45
+      MaxElevation: -1.07

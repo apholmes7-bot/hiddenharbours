@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using NUnit.Framework;
 using UnityEditor;
@@ -338,7 +338,9 @@ namespace HiddenHarbours.Tests.EditMode
                         WorldCenter = new Vector2(0f, 0f), WorldSize = new Vector2(760f, 520f),
                         // Terrain PR 5 B: ground.stp_island's import (StPetersPlan.manifest.json's height values).
                         Bits = 16, StillBound = true,
-                        CodesSha256 = "5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261",
+                        // island-ground@3: independent PNG decode, little-endian R16, bottom row first.
+                        // Outside the issue boxes every code still equals main; the 1e-5 m decode bar stands.
+                        CodesSha256 = "d2a2bab9c2963abfe671cc0af2b561b7f164430f46414c6f753879216681c41a",
                     };
                 case "NineMileCreek":
                     return new CommittedMap

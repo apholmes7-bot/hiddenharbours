@@ -68,6 +68,7 @@ Material:
     - _MirrorTiltScale: 6
     - _BeamLitStrength: 1.6
     - _CausticAmount: 0.18
+    - _CausticClarity: 1
     - _CausticCurvatureBlend: 0.5
     - _CausticCurvatureStep: 0.5
     - _CausticCurvatureGain: 12
@@ -219,6 +220,8 @@ Material:
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
+    - _WakeBodyLift: 2
+    - _WakeBodyWhiten: 0.05
     - _WakeFoamAgeStrength: 1
     - _WakeFoamBands: 3
     - _WakeFoamBlueReach: 0.45

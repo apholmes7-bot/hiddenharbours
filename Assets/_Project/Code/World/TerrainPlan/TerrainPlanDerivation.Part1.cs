@@ -456,6 +456,15 @@ namespace HiddenHarbours.World
             for (int n = 0; n < ponds.Length; n++)
             {
                 var p = ponds[n];
+                if (p.Basin == UnityEngine.Vector2.zero)
+                {
+                    var wet = Filled(double.NaN);
+                    double step = (Num(_plan.HeightRange.y) - Num(_plan.HeightRange.x)) / TerrainPlanMaps.CodeCount;
+                    PondOnGround(Pz(E), wet, p, p.AdjustToSpill ? null : Outlet(p), p.AdjustToSpill ? Rules.StillStepsDown : 0,
+                                 step, _g.Mpp * _g.Mpp / HiddenHarbours.Core.IsoGround.GroundDepthScale, new List<int>());
+                    for (int i = 0; i < _n; i++) if (!double.IsNaN(wet[i])) Lay(_still, i, wet[i]);
+                    continue;
+                }
                 var cc = Num(p.Centre); double ra = Num(p.Radii.x), rb = Num(p.Radii.y), br = Num(p.Basin.x), bd = Num(p.Basin.y);
                 double R = Math.Max(ra, rb) * Rules.PondReach + br, surface = Num(p.Surface), bed = Num(p.Bed);
                 double rot = Radians(Num(p.RotationDeg)), cr = Math.Cos(rot), sr = Math.Sin(rot), rm = (ra + rb) / 2;

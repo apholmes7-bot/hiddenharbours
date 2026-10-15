@@ -34,6 +34,8 @@ namespace HiddenHarbours.UI
         private Rect _shownCard = new Rect(float.NaN, 0f, 0f, 0f);
         private BoatUiCollapse _shownTier = (BoatUiCollapse)(-1);
         private bool _visible;
+        private float _shownBarHeight = -1f;
+        private const float GlyphToBarRatio = 12f / 18f;
 
         public BoatUiWindowChrome(Transform canvasParent, string name)
         {
@@ -61,7 +63,9 @@ namespace HiddenHarbours.UI
                 _root.SetActive(true);
                 _visible = true;
             }
-            if (card == _shownCard && tier == _shownTier) return;
+            if (card == _shownCard && tier == _shownTier && cfg.TitleBarPx == _shownBarHeight) return;
+            _shownBarHeight = cfg.TitleBarPx;
+            _collapseGlyph.fontSize = _hideGlyph.fontSize = Mathf.Max(1, Mathf.RoundToInt(cfg.TitleBarPx * GlyphToBarRatio));
             _shownCard = card;
             _shownTier = tier;
 

@@ -71,6 +71,20 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the clamp ------------------------------------------------------------------------------
 
         [Test]
+        public void Hole_IsOutsideAndClampLandsOnItsEdge()
+        {
+            var area = DeckArea.From("deck", DeckAreaKind.Deck, new[] {
+                new Vector3(-2,-2,0),new Vector3(2,-2,0),new Vector3(2,2,0),new Vector3(-2,2,0) });
+            area.Holes = new[] { new DeckAreaHole { Outline = new[] {
+                new Vector2(-1,-1),new Vector2(1,-1),new Vector2(1,1),new Vector2(-1,1) } } };
+            Assert.That(DeckAreaMath.Contains(area, Vector2.zero), Is.False);
+            Assert.That(DeckAreaMath.Contains(area, new Vector2(1.5f,0)), Is.True);
+            Vector2 edge = DeckAreaMath.ClosestPointOnOutline(area, Vector2.zero, out float distance);
+            Assert.That(distance, Is.EqualTo(1).Within(.00001));
+            Assert.That(Mathf.Max(Mathf.Abs(edge.x), Mathf.Abs(edge.y)), Is.EqualTo(1).Within(.00001));
+        }
+
+        [Test]
         public void APointAlreadyOnTheDeckIsLeftExactlyWhereItIs()
         {
             BoatDeckDef def = DoryLike();

@@ -19,7 +19,7 @@ namespace HiddenHarbours.World
         public string Id = "ground.example";
         public string DisplayName = "";
         [Tooltip("The file's schema.")]
-        public string Schema = "hidden-harbours/island-ground@2";
+        public string Schema = "hidden-harbours/island-ground@3";
         [Tooltip("The package the file came in (its folder name).")]
         public string Package = "";
         [Tooltip("The file's sha256 (the JSON).")]

@@ -53,9 +53,21 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 
 ## 3. Core services (the spine)
 
+**Helm switches (2026-10-07):** `BoatAnchor` answers `IVesselWay` on the physics root and
+pushes `IVesselWayListener` when its derived lamp regime changes. Holding uses the existing
+`VesselWay.Moored`; stowed or dragging uses `UnderWay`. If a `MooredBoat` also lives on that
+root, both providers return the same combined answer: a declared berth or a holding anchor wins.
+Rebuilt lamps read that answer immediately; no way state is saved. `DeckIceBox` registers an
+`IInteractable` on the player's own deck, at the new `InteractPriority.DeckStorage` rung (-10),
+below doors (`Fixture`) and fuel work (`ToolTarget`). Both the box and the fuel tank register with
+`Interactables` on enable and relinquish that registration on disable; priority only applies to
+registered candidates. The switcher's helm-first ladder is unchanged.
+The lid consumes the shared interact verb (ADR 0043); its old L read is removed. The dev I ice
+scaffold remains as-is pending the input lane's PR 1; no binding or key is added.
+
 | Service | Responsibility | Notes / determinism |
 |---------|----------------|---------------------|
-| **EventBus** | Decoupled pub/sub between modules (`FishCaught`, `FishingStateChanged`, `TideChanged`, `BoatGrounded`, `DayStarted`, `MarketTick`). | Typed events; no module references another's classes. |
+| **EventBus** | Typed, synchronous, main-thread notifications between modules; events are notifications, not transactions. A handler failure is logged once and later handlers and the publisher continue, without rethrowing. A request still needs its own explicit outcome. | Ordered, flattened snapshots preserve delegate removal and reentrancy semantics. Successful Publish allocates zero bus bytes after initialization; subscription changes and fault logging may allocate. Unexpected exception logs fail tests; injected faults require exact `LogAssert.Expect`, never ignored failures. [ADR 0052](../adr/0052-event-handler-isolation.md). |
 | **TimeService** | The 24h clock, day/week/season/year, time scale, sleep/wait. `gameTime` is a `double` (in-game seconds). | The master clock everything derives from. |
 | **EnvironmentService** | Computes **tide, wind, weather, sea state, visibility** from `(worldSeed, gameTime, region)`. Emits an `EnvironmentSample` per region per tick. | **Deterministic** → not saved, recomputed. (`design/time-tides-weather.md`) |
 | **RegionService** | Additive load/unload of region scenes, the `MapGraph`, travel/transit, fog-of-war reveal state. | Reveal state is saved; geometry is authored. |
@@ -266,6 +278,20 @@ the boat up by `GameConfig.HelmFootprint.CameraBandShare` of a full-width band (
 by the framing on screen, added with the look-ahead ahead of the feel, the snap and the clamp, and
 never for a card. Change-detected, so a quiet frame is a struct compare. Presentation state: unsaved
 (rule 5), nothing published headless, so every reader stands where it did.
+
+
+### Wave wind history (ADR 0018, Stage A, 2026-10-13)
+
+Core's additive `IWaveWindSource.WaveWindAt(double gameTimeSeconds)` returns a
+`WaveWindSample` with wind vector and continuous sea state for any past world time,
+including negative times at startup. `EnvironmentService` evaluates the active region's
+wind law and dev override through this seam. `WaveMemory` averages fixed world-grid taps
+in wavelength bands; `WaveFieldAnimator` bakes travel at the clock without frame history.
+The bridge publishes one payload through `SharedWaveField` to both riders and seakeeping;
+published trains are sampled at time zero. Before publication consumers evaluate the
+same wind memory at the clock. `WaterSurface` uses the short band's wind for decorative
+wind and chop. Settings live solely in `GameConfig.WaveField`; nothing is saved. See
+ADR 0018's dated amendment for windows, causality, fallback and future-stage boundaries.
 
 ## 5. Boat & entity architecture (composition)
 

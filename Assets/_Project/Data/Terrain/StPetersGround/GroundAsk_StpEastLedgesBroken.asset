@@ -17,6 +17,8 @@ MonoBehaviour:
   Source: 0
   Kind: 0
   Retired: 0
+  IssueBoxes: []
+  RetirementWhy: 
   Rule: "pass 9\u2019s wall profile (the plateau at +6, the face, the toe channel
     at about -1.7) moved along the shore\u2019s normal by a seeded offset: coves
     and buttresses (26 m and 8.5 m, \xB12.2 and \xB11.0 m), a ragged brink (2.6 m,
@@ -26,8 +28,8 @@ MonoBehaviour:
     out, the plateau from 8 to 24 m in) and along it at the section\u2019s ends (x
     141 to 146, short of the lookout\u2019s and the bridge\u2019s frames; x 93 to
     98, short of the Weather Cliff\u2019s walls 040 to 044)"
-  Package: HH-st-peters-one-scene-package-2026-10-01
-  GroundFileSha256: c2cca02b0a9a41cfb2cdd47386f3fe2d839336c1e30b364af5693c9fd60e5e19
+  Package: HH-st-peters-one-scene-package-2026-10-07
+  GroundFileSha256: 0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad
   Scene: 
   FileKind: cut and fill
   Ruled: 

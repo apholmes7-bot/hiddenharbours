@@ -72,6 +72,7 @@ Material:
     - _CausticCurvatureGain: 12
     - _CausticDayGate: 1
     - _CausticAmount: 0.45
+    - _CausticClarity: 1
     - _CausticDepth: 1.4
     - _CausticScale: 0.9
     - _CausticTexStrength: 0.78
@@ -145,6 +146,8 @@ Material:
     - _UseSparkleTex: 1
     - _UseSurfaceTex: 1
     - _UseWhitecapTex: 1
+    - _WakeBodyLift: 2
+    - _WakeBodyWhiten: 0.05
     - _WakeFoamAgeStrength: 1
     - _WakeFoamBands: 3
     - _WakeFoamBlueReach: 0.45

@@ -458,6 +458,19 @@ namespace HiddenHarbours.Core
                  "fan (a fully confused sea); larger = energy pulled into a narrow following sea.")]
         public float SpectrumSpreadExponent;
 
+        [Tooltip("Past wind window for short chop, in game seconds. Zero in older assets uses 30.")]
+        [Range(1f, 600f)] public float MemoryShortSeconds;
+        [Tooltip("Past wind window for middle waves, in game seconds; at least the short window.")]
+        [Range(1f, 3600f)] public float MemoryMiddleSeconds;
+        [Tooltip("Past wind window for long waves, in game seconds; at least the middle window.")]
+        [Range(1f, 7200f)] public float MemoryLongSeconds;
+        [Tooltip("Largest wavelength using the short window, in metres. Zero uses 8.5.")]
+        [Range(1f, 100f)] public float MemoryShortMaxWavelengthMeters;
+        [Tooltip("Largest wavelength using the middle window, in metres; at least the short limit.")]
+        [Range(1f, 100f)] public float MemoryMiddleMaxWavelengthMeters;
+        [Tooltip("Completed cells per wind window. N+1 past taps include the fractional end cells. Zero uses 16.")]
+        [Range(4, 64)] public int MemoryTapCount;
+
         /// <summary>
         /// The reference tuning (ADR 0018 Arc B starting point): a 4-train field — the primary
         /// downwind swell plus three shorter, smaller cross-chop trains at asymmetric offsets
@@ -467,6 +480,12 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static WaveFieldSettings Default => new WaveFieldSettings
         {
+            MemoryShortSeconds = 30f,
+            MemoryMiddleSeconds = 120f,
+            MemoryLongSeconds = 600f,
+            MemoryShortMaxWavelengthMeters = 8.5f,
+            MemoryMiddleMaxWavelengthMeters = 20f,
+            MemoryTapCount = 16,
             Gravity = 9.81f,
             SecondaryTrainCount = 3,
             DominantWavelengthBase = 6f,

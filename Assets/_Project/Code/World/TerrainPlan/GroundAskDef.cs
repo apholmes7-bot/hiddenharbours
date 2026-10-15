@@ -48,6 +48,9 @@ namespace HiddenHarbours.World
         public GroundAskKind Kind = GroundAskKind.Patch;
         [Tooltip("A later package dropped it, or carries the fix itself: the import skips it, and its id stays taken.")]
         public bool Retired;
+        [Tooltip("This issue's permitted change boxes, x west, y south, z east, w north; kept on dropped asks too.")]
+        public Vector4[] IssueBoxes = new Vector4[0];
+        [TextArea] public string RetirementWhy = "";
         [Tooltip("The ask's rule: the file's words for a package's ask, the fix's for the game's own.")]
         [TextArea] public string Rule = "";
 

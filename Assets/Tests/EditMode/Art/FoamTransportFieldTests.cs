@@ -154,9 +154,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             using var field=new FoamTransportField(16,2);
             for(int i=0;i<8;i++) Prepare(field,Vector2.zero);
-            long before=GC.GetAllocatedBytesForCurrentThread();
+            using var probe=new FoamTransportAllocationProbe();probe.RequirePositiveControl();
+            probe.Begin();
             for(int i=0;i<16;i++) Prepare(field,Vector2.zero);
-            long allocated=GC.GetAllocatedBytesForCurrentThread()-before;
+            long allocated=probe.End();
             Assert.AreEqual(0,allocated,"Cold allocation/upload/driver costs are separately profiled in Phase C.");
         }
 

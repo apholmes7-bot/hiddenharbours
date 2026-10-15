@@ -34,6 +34,8 @@ namespace HiddenHarbours.World
     [CreateAssetMenu(menuName = "Hidden Harbours/World/Terrain Plan/Waterfall", fileName = "Waterfall")]
     public class WaterfallDef : ScriptableObject
     {
+        [Tooltip("Zero-based stations of Stream whose water belongs to this fall; the brook guard skips these by index.")]
+        public int[] StreamStations = new int[0];
         [Header("Identity")]
         [Tooltip("Stable id, append-only (fall.snake_case).")]
         public string Id = "fall.example";

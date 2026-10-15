@@ -25,8 +25,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "7639d4e86601c7d830c8aecd64b98c214a8430b5d067c3f27c189a71e6523403";
-        // Approved b5825e1f, UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "31d3419dc0879c9174bee353e764920e83dbfa8f3f941c331006e6fdc00ed106";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -164,15 +164,15 @@ namespace HiddenHarbours.Tests.EditMode
             var files = new[] { "Assets/_Project/Art/Materials/Water.mat" }.Concat(
                 Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat").OrderBy(p => p, StringComparer.Ordinal)).ToArray();
             string[] originalHashes = {
-                "99ec44b24e11904bc2a76618b1253d95b3268058cab715a12f557055fcd3351e",
-                "65c31ac5d408f3892c8351e47cfe48eeb1fa255df8c11a7c9783480a6eec44b6",
-                "0754e4bed8cc712c95364c43bef405bb0a348cf704dd347b1d8f0c04a5cfa503",
-                "f9db60937eebbb8fc0b27d09378c0c6a9e66f6b969ba7bb4aa35ebb0d8aa92c5",
-                "a9e2471696ab937823f20b12355b87febbe273b14fa39d925745e6dde66b99b9",
-                "232cffe5a1364ee88c0ca1a7d02067754891da1d551f23984d0994f6c5e2bf05",
-                "949deddee6eb1b67532f3c14be7428c0b9ea27bb2ee41f741dab6bbe25e9be5d",
-                "11bb592a9d9e82b2a7a39c987e645689b789b39e3e8abb21ff04358d9b89a38e",
-                "09e80cfaa580ddcf4fa312eb8a1a2c41d0db212c2add5ed30791f17557bab090" };
+                "74b4ed98a5c1fbe01c0a31f1f141bf2cb64f88bfb7b5d2af8858f2d718aa0827",
+                "46ff1a8bb7fe875d2f639f9ec123f11f74c1db3845222d2cd03b1802e788f7f4",
+                "ee83ebce68046314ad6adf9b2dcbaa52ab1c60380cec5354cd46075c89d2a600",
+                "305d6e0e2dfbfca1d456a5187f3a6e87bc55b5b3eb3afb41d25801304bb5ba27",
+                "8e68a0f9d164553f3ce4c71e272e5cdad8e7a821fb98966f7fb2bec0ef868127",
+                "2f6bf26ee760ff4c056dcb9f30d6690ba671520ae24aa0f2565aff49d73b094b",
+                "beb40b2652b8f5bb7d8b2ced8702b08325f932839ab660fbb6719cb2cb6323a9",
+                "2aa37d8b73b9bbed9fb6f2f222c516d4cb36ec9b84b9349fa4a21819ff54a50c",
+                "feb04726462ea48dd09b4cf9dde70eb6da7060f5de6fbcfa40258cce4ac50392" };
             Assert.That(files.Length, Is.EqualTo(9));
             for (int i = 0; i < files.Length; i++)
             {
@@ -197,7 +197,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("abce0b880d89e3976faba111960260c2e958a1444de6a8d81e1b70f9a7ffae07"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
-                Is.EqualTo("0de81020278ca98d019d6401514377558390a1d0837dd20cd2593434242cbcf0"));
+                Is.EqualTo("1e231d7b79117950372db2704b0b64efd496c196a68436e7eac82ae37c45c94c"));
         }
 
         static void RequireGpu()

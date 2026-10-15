@@ -16,7 +16,13 @@ MonoBehaviour:
   DisplayName: 
   Source: 0
   Kind: 0
-  Retired: 0
+  Retired: 1
+  IssueBoxes:
+  - {x: 100.75, y: 46, z: 115.25, w: 56}
+  RetirementWhy: 'dropped (s2.1): the owner ruled on 10-02 that the Fen Pool comes
+    back as still water; its fill raised 326 pixels by more than 5 mm (126.8 m2),
+    by up to +0.547 m; owner accepted call 1 on 2026-10-07: the fen held full by
+    its sill.'
   Rule: "inside the Fen Pool\u2019s ellipse (pass 5\u2019s POOL) the ground is raised
     to the pool\u2019s surface, never lowered; everywhere else pass 9"
   Package: HH-st-peters-one-scene-package-2026-10-01

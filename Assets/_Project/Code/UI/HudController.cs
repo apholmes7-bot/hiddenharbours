@@ -176,6 +176,11 @@ namespace HiddenHarbours.UI
         private bool _driving;              // ControlModeChanged — whether he is at one at all
         private string _captureVehicleId;   // TrailerCaptureChanged — whose plate took a pin
         private bool _captured;
+
+        // The control hint uses Core's carried-item identity, as the fishing gate does.
+        [SerializeField] private string _fishingHintRodId = "tool.rod";
+        private Text _helmFishingHint;
+        private ControlMode _controlMode;
         private bool _subscribed;
 
         // Cached so a missing GameConfig doesn't recompute the lookup every sample.
@@ -264,6 +269,7 @@ namespace HiddenHarbours.UI
             // Before anything else, and before the Ready gate: a HUD that never gets its services must
             // still obey the ruling rather than sit there showing "--" where the tide used to be.
             ApplyReadoutVisibility();
+            UpdateHelmFishingHint();
 
             // Boot/null safety: services may be unset for the first frame(s) at boot.
             if (!GameServices.Ready)
@@ -754,6 +760,15 @@ namespace HiddenHarbours.UI
             }
         }
 
+        /// <summary>Reads only Core's mode and hands. No formatting or allocation while unchanged.</summary>
+        private void UpdateHelmFishingHint()
+        {
+            if (_helmFishingHint == null) return;
+            bool shown = HelmFishingHint.ShouldShow(_controlMode, GameServices.Hands, _fishingHintRodId)
+                         && !ShellFlow.WorldInputBlocked && !InteractionGate.IsBlocked;
+            if (_helmFishingHint.enabled != shown) _helmFishingHint.enabled = shown;
+        }
+
         // ---- the coupling notice ------------------------------------------------------------
 
         /// <summary>
@@ -805,6 +820,8 @@ namespace HiddenHarbours.UI
         /// the last machine he drove, and the mode gates whether that matters.</summary>
         private void OnControlModeChanged(ControlModeChanged e)
         {
+            _controlMode = e.Mode;
+            UpdateHelmFishingHint();
             _driving = e.Mode == ControlMode.Driving;
             ApplyCouplingNotice();
         }
@@ -998,6 +1015,13 @@ namespace HiddenHarbours.UI
             _catchCardIcon = MakeIcon(canvasRt, "CatchCardIcon", null, TextAnchor.MiddleCenter,
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 0f, 184f, 64f);
             _catchCardIcon.enabled = false;
+
+            // A single control hint in the quiet band's right column. It earns no new readout.
+            _helmFishingHint = MakeLabel(bandRt, "HelmFishingHint", TextAnchor.UpperRight,
+                new Vector2(0.4f, 1f), new Vector2(1f, 1f), 0f, -176f, 22);
+            _helmFishingHint.rectTransform.sizeDelta = new Vector2(0f, 28f);
+            _helmFishingHint.text = HudStrings.FishingAtHelm;
+            _helmFishingHint.enabled = false;
 
             // VS-19 nav cluster (heading compass + set-&-drift). A sailing read, so it sits BOTTOM-CENTRE
             // (a natural compass spot, clear of the top conditions band) and is shown only while aboard
