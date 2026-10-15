@@ -16,6 +16,7 @@ namespace HiddenHarbours.Tests.EditMode
     {
         const string ProofSource = "Assets/_Project/Scenes/RicePointRefreshSource.unity";
         const string ProofCopy = "Assets/_Project/Scenes/RicePointRefreshCopy.unity";
+        const string ProofFolder = "Assets/_Project/Scenes/RicePointRefreshProof";
         EditorBuildSettingsScene[] _buildList;
         SceneSetup[] _sceneSetup;
         LandScenePlanDef _proofPlan;
@@ -26,8 +27,6 @@ namespace HiddenHarbours.Tests.EditMode
             if (_sceneSetup == null) return;
             var setup = _sceneSetup;
             _sceneSetup = null;
-            var plan = _proofPlan;
-            var region = plan != null ? plan.Region : null;
             var buildList = _buildList;
             _proofPlan = null;
             _buildList = null;
@@ -36,8 +35,8 @@ namespace HiddenHarbours.Tests.EditMode
                 () => AssetDatabase.DeleteAsset(ProofCopy),
                 () => AssetDatabase.DeleteAsset(ProofSource),
                 () => EditorBuildSettings.scenes = buildList,
-                () => { if (region != null) Object.DestroyImmediate(region); },
-                () => { if (plan != null) Object.DestroyImmediate(plan); },
+                // Both scenes reference the proof's region, so its folder goes after them.
+                () => AssetDatabase.DeleteAsset(ProofFolder),
                 () => { if (setup.Length > 0) EditorSceneManager.RestoreSceneManagerSetup(setup); }
             };
             // Each remaining step runs even when an earlier cleanup throws. Reset fixture state
@@ -54,15 +53,20 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void RicePointRefresh_DisposableSceneCopy_PreservesMovedOwnerVisual()
         {
-            Assert.That(System.IO.File.Exists(ProofSource) || System.IO.File.Exists(ProofCopy), Is.False,
+            Assert.That(System.IO.File.Exists(ProofSource) || System.IO.File.Exists(ProofCopy)
+                || System.IO.Directory.Exists(ProofFolder), Is.False,
                 "A previous disposable proof must be inspected before reuse.");
             _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
             _buildList = EditorBuildSettings.scenes;
+            // A Single-mode scene open destroys in-memory objects, so the proof's plan and region
+            // are temporary assets, as the real plan and region are.
+            Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", "RicePointRefreshProof"), Is.Not.Empty);
             _proofPlan = Object.Instantiate(RicePointBuilder.LoadPlan());
-            _proofPlan.hideFlags = HideFlags.DontUnloadUnusedAsset;
             _proofPlan.Region = Object.Instantiate(_proofPlan.Region);
-            _proofPlan.Region.hideFlags = HideFlags.DontUnloadUnusedAsset;
             _proofPlan.Region.SceneName = "RicePointRefreshSource";
+            AssetDatabase.CreateAsset(_proofPlan.Region, ProofFolder + "/Region.asset");
+            AssetDatabase.CreateAsset(_proofPlan, ProofFolder + "/Plan.asset");
+            AssetDatabase.SaveAssets();
             LandSceneTemplate.Create(_proofPlan);
             Assert.That(AssetDatabase.CopyAsset(ProofSource, ProofCopy), Is.True);
             _proofPlan.Region.SceneName = "RicePointRefreshCopy";
@@ -74,8 +78,10 @@ namespace HiddenHarbours.Tests.EditMode
             var identity = GlobalObjectId.GetGlobalObjectIdSlow(visual);
             EditorSceneManager.MarkSceneDirty(copy);
             Assert.That(EditorSceneManager.SaveScene(copy), Is.True);
-            Assert.That(_proofPlan != null, Is.True, "The in-memory proof plan must survive opening its copy.");
-            Assert.That(_proofPlan.Region != null, Is.True, "The in-memory region must survive opening its copy.");
+            Assert.That(_proofPlan != null, Is.True, "The proof plan must survive opening its copy.");
+            Assert.That(_proofPlan.Region != null, Is.True, "The proof region must survive opening its copy.");
+            Assert.That(AssetDatabase.Contains(_proofPlan), Is.True);
+            Assert.That(AssetDatabase.Contains(_proofPlan.Region), Is.True);
             Assert.That(AssetDatabase.Contains(_proofPlan.Ground), Is.True);
             Assert.That(AssetDatabase.Contains(_proofPlan.Source), Is.True);
             Assert.That(AssetDatabase.Contains(_proofPlan.DevHull), Is.True);
