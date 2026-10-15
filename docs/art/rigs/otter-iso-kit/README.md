@@ -39,8 +39,24 @@ sides are a convention here, not a helm position: read the handlebar, not the se
 Cell is **256 × 192**, pivot **128,128**, identical in all eight facings: model `z = 0` at the hull's
 ground-centre projects to the pivot row, so a tracked machine still sits on the road and an afloat one
 still cuts at the surface. Measured painted union is **104 × 89 px** at rest, **104 × 105** once the
-afloat attitude is included, and **104 × 90** over a ±22.5° yaw sweep — crop and pack from
-`painted_bbox` in the contract, per facing, not from the cell.
+afloat attitude is included, and **106 × 91** over a ±22.5° yaw sweep across all eight facings — crop
+from `painted_bbox` for the named facings, or `articulation.yaw.painted_bbox_over_sweep` for intermediate headings.
+
+## September 2026 visual review
+
+The benches now have bevelled cushion edges and upholstery seams. The helm has a dial and status
+lamp; the aft deck has a fuel cap. Hatch louvres, hinges and a latch are real geometry, so the
+mesh bake retains them and they follow the opening lid. These use the existing 16 base-build ramps.
+All seven reference sheets were regenerated. The physical dimensions, anchors, flotation geometry,
+eight-facing bounds and optional fittings are unchanged.
+
+The previous yaw bound was understated: a sweep at 1.125° intervals measures 106 × 91 on both the
+old and revised rig. The contract now reports that measurement. The harness also fetches the
+sidecar from its actual repository location. The source is pinned to LF for stable byte hashes.
+
+See the [before/after plate](../atv-pack/reference/OtterAtv_review.png) and
+[review record](../../briefs/otter-atv-visual-review.md). Rebuild the Otter vehicle mesh in Unity
+after merging; the reference sheets are previews, and existing Unity mesh assets retain the old geometry.
 
 ## Files
 
