@@ -721,6 +721,37 @@ namespace HiddenHarbours.Core
         public bool MeshFigureKeyline = DefaultMeshFigureKeyline;
 
         /// <summary>
+        /// Ship default for <see cref="FigurePixelTarget"/> — <b>OFF</b> (the figure pixel look,
+        /// route 1 of <c>docs/design/figure-pixel-target.md</c>). OFF is today's picture, byte for
+        /// byte: no figure changes queue, no pass is recorded and no overlay reads the figure
+        /// target. Turning it ON is the owner's call.
+        /// </summary>
+        public const bool DefaultFigurePixelTarget = false;
+
+        /// <summary>
+        /// Ship default for <see cref="FigureHeadingSteps"/> — <b>0, smooth</b>, by the owner's
+        /// ruling of 10-15 (D2: "heading steps built at 0 (smooth)"). 0 turns a figure through
+        /// every angle, exactly as before; N snaps her on-screen facing to N equal compass steps.
+        /// Read only while <see cref="FigurePixelTarget"/> is ON.
+        /// </summary>
+        public const int DefaultFigureHeadingSteps = 0;
+
+        [Header("Figure pixel look (route 1: the figures at the art's own pixel size)")]
+        [Tooltip("Draw the mesh figures at the art's own pixel size: one texel per art pixel " +
+                 "(1/32 m), enlarged with hard edges at the whole zoom steps (x2 and up), so the " +
+                 "player and the cast read like the drawn art and still turn as meshes. Boats are " +
+                 "unchanged. Where a nearer hull or wheelhouse covers a figure, that edge is drawn " +
+                 "at the same art-pixel size. OFF is exactly today's picture. Read live.")]
+        public bool FigurePixelTarget = DefaultFigurePixelTarget;
+
+        [Tooltip("With the pixel look ON: how many facings a figure turns through. 0 is smooth " +
+                 "(every angle, the shipped value); 8, 16 or 32 snap her facing on screen to that " +
+                 "many equal compass steps, the way a drawn figure turns. Boats keep turning " +
+                 "smoothly. Read live.")]
+        [Min(0)]
+        public int FigureHeadingSteps = DefaultFigureHeadingSteps;
+
+        /// <summary>
         /// Ship default — <b>ON</b>, by the owner's 2026-09-12 ruling ("ship it on"), taken with
         /// the look debt below written down and accepted: he wants her in play before the shader
         /// pass lands. ON draws her as ONE skinned mesh while she is ABOARD a mesh hull; ashore she

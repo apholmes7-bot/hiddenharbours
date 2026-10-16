@@ -723,6 +723,7 @@ namespace HiddenHarbours.Art
             if (IsAshore) WriteAshoreProperties();
             else WriteHullProperties();
             SyncInk();
+            IsoFacetFigureTarget.Sync(_facetMaterial, Visible);   // the figure pixel look; OFF: nothing
         }
 
         // ---------------------------------------------------------------- the rig's ink
@@ -941,6 +942,7 @@ namespace HiddenHarbours.Art
             if (!IsAshore || _meshRenderer == null || _overlayRenderer == null) return;
 
             Vector3 p = transform.position;
+            p = FigurePixelGrid.SnapDrawnRoot(p, GameServices.FigurePixelTarget, GameServices.WorldUnitsPerRenderedPixel);
             Vector4 shear = Vector4.zero;
             Vector3 framePosition = p;
             if (DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame frame))

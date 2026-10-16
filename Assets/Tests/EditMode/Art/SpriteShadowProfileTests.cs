@@ -35,6 +35,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         const string ShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursSpriteShadow.shader";
         const string MaterialPath = "Assets/_Project/Resources/SpriteShadow.mat";
         const string ShadeMaterialPath = "Assets/_Project/Resources/SpriteShadowShade.mat";
+        // The one other stencil user the guard at the end lets past, by this path alone; the test after it says why.
+        const string FigureTargetShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursFigurePixelTarget.shader";
+        const string FigureTargetCodePath = "Assets/_Project/Code/Art/IsoFacetFigureTarget.cs";
 
         readonly List<Object> _spawned = new List<Object>();
 
@@ -554,6 +557,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// Nothing else in the project may use the stencil, or "first shadow wins" becomes "first shadow
         /// wins unless something else got there". This is the check that made the cut safe to take, kept as
         /// a guard because the next feature to reach for a stencil would break shadows silently.
+        ///
+        /// <para>One other shader is let past, by its own path and never by a folder or a pattern: the figure
+        /// pixel target's (docs/design/figure-pixel-target.md). The stencil its passes test lives in the
+        /// target's OWN depth-stencil texture, never the camera's, so the shadows' claim on the camera's
+        /// stencil stands; <see cref="TheFigureTargetsStencil_IsItsOwnTexture_NeverTheCameras"/> reds the
+        /// moment that stops being true. Any other shader that gains a stencil block still reds here.</para>
         /// </summary>
         [Test]
         public void NothingElseInTheProjectUsesTheStencil()
@@ -562,6 +571,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach (string path in Directory.GetFiles("Assets/_Project", "*.shader", SearchOption.AllDirectories))
             {
                 if (path.Replace('\\', '/').EndsWith("HiddenHarboursSpriteShadow.shader")) continue;
+                if (path.Replace('\\', '/') == FigureTargetShaderPath) continue;   // its own depth-stencil: the next test
                 if (Regex.IsMatch(File.ReadAllText(path), @"(?m)^\s*Stencil\s*$|(?m)^\s*Stencil\s*\{"))
                     offenders.Add(path);
             }
@@ -569,6 +579,128 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "Another shader has started using the stencil buffer. The sun shadows claim it per frame to " +
                 "stop two shadows darkening the ground twice; a second consumer means whichever draws first " +
                 "silently suppresses the other. Give one of them a different bit and say which is which.");
+        }
+
+        /// <summary>
+        /// Why the guard above may let the figure pixel target's shader keep its stencil: each of its passes
+        /// that tests the stencil draws into the target's own depth-stencil texture, never the camera's, so it
+        /// can neither see nor spoil the stencil the sun shadows claim. Proved from the C# that draws it,
+        /// <see cref="IsoFacetFigureTarget"/>, so the exemption reds the moment that binding changes:
+        /// <list type="number">
+        /// <item>that file is the only code that names the shader, and no material is made of it, so nothing
+        /// else can draw its passes into the camera's buffers;</item>
+        /// <item>its depth-stencil is a texture the render graph creates for the target, assigned once;</item>
+        /// <item>every depth attachment the file binds is that texture;</item>
+        /// <item>every draw of a pass that has a stencil block in the shader, and every renderer list (the
+        /// figures write the stencil there), sits in a raster pass that binds that texture as its depth.</item>
+        /// </list>
+        /// </summary>
+        [Test]
+        public void TheFigureTargetsStencil_IsItsOwnTexture_NeverTheCameras()
+        {
+            // 1. The one drawer. The shader is found by name, so whatever names it could draw it.
+            var drawers = new List<string>();
+            foreach (string path in Directory.GetFiles("Assets/_Project", "*.cs", SearchOption.AllDirectories))
+            {
+                string text = File.ReadAllText(path);
+                if (text.Contains(IsoFacetFigureTarget.ShaderName) || text.Contains("IsoFacetFigureTarget.ShaderName") ||
+                    text.Contains("HiddenHarboursFigurePixelTarget"))
+                    drawers.Add(path.Replace('\\', '/'));
+            }
+            CollectionAssert.AreEqual(new[] { FigureTargetCodePath }, drawers,
+                "Code other than the figure target names its shader, so it could draw the stencil passes into the " +
+                "camera's buffers, where the sun shadows own the stencil. Draw it from " + FigureTargetCodePath + " only.");
+            Match guid = Regex.Match(File.ReadAllText(FigureTargetShaderPath + ".meta"), @"guid:\s*([0-9a-f]{32})");
+            Assert.IsTrue(guid.Success, "the figure target shader's .meta carries no guid");
+            var materials = new List<string>();
+            foreach (string path in Directory.GetFiles("Assets", "*.mat", SearchOption.AllDirectories))
+                if (File.ReadAllText(path).Contains(guid.Groups[1].Value)) materials.Add(path.Replace('\\', '/'));
+            CollectionAssert.IsEmpty(materials,
+                "A material is made of the figure target shader: a renderer drawing it would test and write the " +
+                "camera's stencil, which the sun shadows claim. The target makes its own material at run time.");
+
+            // 2. Its own depth-stencil: a texture the render graph makes for the target, never reassigned.
+            string code = CodeOnly(File.ReadAllText(FigureTargetCodePath));
+            Match own = Regex.Match(code, @"TextureHandle\s+(\w+)\s*=\s*\w+\.CreateTexture\(\s*new\s+TextureDesc\(" +
+                                          @"[^)]*\)\s*\{[^}]*GetDepthStencilFormat\(\s*\d+\s*,\s*8\s*\)");
+            Assert.IsTrue(own.Success, "The figure target no longer creates its own depth-stencil texture (a render " +
+                "graph CreateTexture with 8 stencil bits), so its passes would test a stencil they do not own.");
+            string depth = own.Groups[1].Value;
+            Assert.AreEqual(1, Regex.Matches(code, @"\b" + depth + @"\s*=[^=>]").Count,
+                depth + " is assigned again after it is made; it must stay the target's own texture");
+
+            // 3. Every depth attachment the file binds is that texture.
+            MatchCollection binds = Regex.Matches(code, @"SetRenderAttachmentDepth\(\s*([^,)]*?)\s*[,)]");
+            Assert.Greater(binds.Count, 0, "the figure target binds no depth attachment at all");
+            foreach (Match bind in binds)
+                Assert.AreEqual(depth, bind.Groups[1].Value,
+                    $"line {LineOf(code, bind.Index)} of {FigureTargetCodePath} binds a depth-stencil not its own");
+
+            // 4. Every draw that tests or writes the stencil sits in a raster pass binding it as the depth. The
+            //    passes that test it are read from the shader; the code draws each by the name of its index.
+            var passNames = new Dictionary<int, string>();
+            foreach (Match decl in Regex.Matches(code, @"\b(\w+Pass)\s*=\s*(\d+)\b"))
+                passNames[int.Parse(decl.Groups[2].Value)] = decl.Groups[1].Value;
+            string[] shaderPasses = Regex.Split(File.ReadAllText(FigureTargetShaderPath), @"\bPass\s*\{");
+            var draws = new List<Match>();
+            var stencilPasses = new List<string>();
+            for (int pass = 0; pass + 1 < shaderPasses.Length; pass++)
+            {
+                if (!Regex.IsMatch(shaderPasses[pass + 1], @"(?m)^\s*Stencil\s*$|(?m)^\s*Stencil\s*\{")) continue;
+                Assert.IsTrue(passNames.TryGetValue(pass, out string name),
+                    $"the shader's pass {pass} tests the stencil, and the code names no pass {pass}");
+                stencilPasses.Add(name);
+                MatchCollection uses = Regex.Matches(code, @"\b" + name + @"\b(?!\s*=\s*\d)");
+                Assert.Greater(uses.Count, 0, name + " tests the stencil, and the code never draws it by that name");
+                foreach (Match use in uses) draws.Add(use);
+            }
+            Assert.Greater(stencilPasses.Count, 0, "the shader tests no stencil any more: retire the guard's exemption");
+            foreach (Match list in Regex.Matches(code, @"\bDrawRendererList\s*(?=\()")) draws.Add(list);
+            foreach (Match draw in draws)
+            {
+                string scope = RasterPassAround(code, draw.Index);
+                Assert.IsTrue(scope != null && Regex.IsMatch(scope, @"SetRenderAttachmentDepth\(\s*" + depth + @"\s*,"),
+                    $"{draw.Value.Trim()} at line {LineOf(code, draw.Index)} of {FigureTargetCodePath} draws outside a " +
+                    $"raster pass that binds {depth} as its depth, so the stencil it uses could be the camera's");
+            }
+        }
+
+        /// <summary>
+        /// C# with its comments gone and its string literals emptied, line breaks kept: the braces and names
+        /// left are the code's own, and a line number still points into the file.
+        /// </summary>
+        static string CodeOnly(string text) =>
+            Regex.Replace(Regex.Replace(text, @"""(?:[^""\\\n]|\\.)*""", @""""""), @"//[^\n]*", "");
+
+        /// <summary>
+        /// The render pass whose builder holds <paramref name="at"/>: from its <c>Add…Pass&lt;</c> to the end
+        /// of the block holding it or to the next pass, whichever comes first. Null when that pass is not a
+        /// raster pass, or when <paramref name="at"/> lies past its end.
+        /// </summary>
+        static string RasterPassAround(string code, int at)
+        {
+            MatchCollection passes = Regex.Matches(code, @"\.(Add\w*Pass)\s*<");
+            for (int p = passes.Count - 1; p >= 0; p--)
+            {
+                if (passes[p].Index > at) continue;
+                int start = passes[p].Index, next = p + 1 < passes.Count ? passes[p + 1].Index : code.Length;
+                int end = next, depth = 0;
+                for (int i = start; i < next; i++)
+                {
+                    if (code[i] == '{') depth++;
+                    else if (code[i] == '}' && --depth < 0) { end = i; break; }
+                }
+                return at < end && passes[p].Groups[1].Value == "AddRasterRenderPass"
+                    ? code.Substring(start, end - start) : null;
+            }
+            return null;
+        }
+
+        static int LineOf(string text, int index)
+        {
+            int line = 1;
+            for (int i = 0; i < index; i++) if (text[i] == '\n') line++;
+            return line;
         }
     }
 }

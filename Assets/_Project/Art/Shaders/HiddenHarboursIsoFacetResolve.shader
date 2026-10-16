@@ -37,6 +37,18 @@
 // exactly the program above, byte for byte. With the flood on, a pixel the flood gives to a hull
 // keeps the hull's keyline; only a pixel it gives to an inked figure takes the figure's ink.
 //
+// ⭐ THE FIGURE PIXEL LOOK (route 1; GameConfig.FigurePixelTarget, ship OFF; IsoFacetFigureTarget).
+// ON, the figures leave this pass's facet list for a target of their own at one texel per art
+// pixel, so a deck pixel beside one would lose her as its rule-1 neighbour, and with her the
+// hull's contour against her. While _HHFigureNeighbours is up — a GLOBAL the hull feature raises
+// around this pass's own blit and drops after it, so the mesh reflection resolve and the figure
+// target's own resolve never see it — a neighbour on a texel where she shows
+// (_HHFigureCoverageTex) is solid at HER true depth there (_HHFigureDepthTex). The texel is the
+// one the overlays lay over that pixel: they read this pass's output at their own pixel and find
+// her texel from the same pixel by _HHFigurePixelMap, the arithmetic below. Rule 1 then darkens
+// the deck pixel as it does OFF: by 0.30 m, one screen pixel wide, in its own darkened colour.
+// Gate down, which is every frame with the switch OFF, the pass is the program above.
+//
 // Rules 1, 1' and 2 are neighbour-symmetric, so render-target y-orientation cannot change them;
 // 2' reads its scan order only to break exact ties (see kInkOffs).
 // Output alpha carries the hull id (id/255); 0 = nothing here. Runs once per camera into the
@@ -77,6 +89,14 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
             // Rig 9's ink (see the header): x = SHADING.edge, y = SHADING.keylineMix, z = 1 while live.
             float4 _HHFigureInk;
 
+            // The figure pixel look (see the header). The gate and the map are GLOBALS, never
+            // Properties entries (a material value would shadow them); the two textures, at texel
+            // size, are set on the hull resolve's material only while the gate is up.
+            float _HHFigureNeighbours;               // 1 around the hull resolve's blit while ON, else 0
+            float4 _HHFigurePixelMap;                // (offset x, offset y, 1/m, m), the overlays' map
+            Texture2D<float> _HHFigureCoverageTex;   // 1 where a figure shows
+            Texture2D<float> _HHFigureDepthTex;      // her true unbiased view depth, metres
+
             // The rig's doEdge threshold — a property of the art director's renderer being
             // transcribed (like GAIN and BIAS), not a game tunable.
             #define HH_EDGE_DEPTH_MIN 0.30
@@ -102,10 +122,25 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
                 return q.x >= 0 && q.y >= 0 && q.x < (int)w && q.y < (int)h;
             }
 
+            // The figure pixel look's neighbour: true when pixel q lies on a texel where a figure
+            // shows, with her true depth there. Gate down: false at once, and nothing is read.
+            bool HHFigureNeighbour(int2 q, out float dn)
+            {
+                dn = 0;
+                if (_HHFigureNeighbours < 0.5) return false;
+                int2 t = int2(floor((float2(q) + 0.5 - _HHFigurePixelMap.xy) * _HHFigurePixelMap.z));
+                uint tw, th;
+                _HHFigureCoverageTex.GetDimensions(tw, th);
+                if (!HHInBounds(t, tw, th) || _HHFigureCoverageTex.Load(int3(t, 0)) < 0.5) return false;
+                dn = _HHFigureDepthTex.Load(int3(t, 0));
+                return true;
+            }
+
             // Rules 1 and 1' for ONE solid pixel: its colour after the depth-edge darkening. Solid:
             // darken if ANY in-bounds solid 4-neighbour is nearer by more than the threshold
             // (equivalent to the rig's pairwise right/down sweep, which darkens the far side of each
-            // qualifying pair). The threshold is 0.30 m unless the pixel is an inked figure's.
+            // qualifying pair). The threshold is 0.30 m unless the pixel is an inked figure's. A
+            // neighbour where a small figure shows is hers, at her depth (the figure pixel look).
             float3 HHSolidRgb(int2 p, float4 c, uint w, uint h)
             {
                 float edge = HH_EDGE_DEPTH_MIN;
@@ -117,8 +152,12 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
                 {
                     int2 q = p + kOffs[k];
                     if (!HHInBounds(q, w, h)) continue;
-                    if (_HHFacetTex.Load(int3(q, 0)).a <= 0) continue;
-                    float dn = _HHDepthTex.Load(int3(q, 0));
+                    float dn;
+                    if (!HHFigureNeighbour(q, dn))
+                    {
+                        if (_HHFacetTex.Load(int3(q, 0)).a <= 0) continue;
+                        dn = _HHDepthTex.Load(int3(q, 0));
+                    }
                     if (abs(d - dn) > edge && d > dn) darken = true;
                 }
                 return darken ? _HHDarkTex.Load(int3(p, 0)).rgb : c.rgb;
