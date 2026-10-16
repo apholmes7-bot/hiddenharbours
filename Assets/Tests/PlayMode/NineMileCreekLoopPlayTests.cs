@@ -21,9 +21,13 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
     /// <para><b>NMC H2, PR 2 Phase B: the loop on the activated creek.</b> The scene's own fisher, in the scene
-    /// as it ships, walks, drives, climbs and trades on G3's ground and the live tide. Nothing here stands in a
-    /// rig: the walker, the switcher, the vehicles, the vendors, the pumps and the save service are the ones the
-    /// scene wakes. A scripted held intent is the only player.</para>
+    /// as it ships, walks, drives and trades on G3's ground and the live tide. Nothing here stands in a rig: the
+    /// walker, the switcher, the vehicles, the vendors, the pumps and the save service are the ones the scene
+    /// wakes. A scripted held intent is the only player.</para>
+    ///
+    /// <para><b>No boarding.</b> The creek's dev core is walk-only (its builder wires the switcher with no boat):
+    /// the boat that lies at berth 0 is the persistent core's, which arrives by sea. So the ladder and stepping
+    /// aboard are not proven here; the return ends on the wharf's step-off at berth 0.</para>
     ///
     /// <para><b>The fixture.</b> A previous fixture's core can outlive its scene, and while it (or the destroyed
     /// husk it leaves in the locator) answers, the creek's DevRegionBootstrap destroys the scene's own dev core and
@@ -59,6 +63,8 @@ namespace HiddenHarbours.Tests.PlayMode
         const string OutboardSellerId = "seller.hectors_barrel";
         const string FishBuyerStallName = "FishBuyerStall";
         const string WharfGasPumpId = "fixture.nmc.wharf_pump_gas";
+        const string WharfDieselPumpId = "fixture.nmc.wharf_pump_diesel";
+        const string RoadGasPumpId = "fixture.route_91.pump1a_gas";   // the creek's road station on Route 91
         const string ClamSpeciesPath = "Assets/_Project/Data/Fish/SoftShellClam.asset";
 
         // ---- the crossing: the tidal bar to St Peters, pushed along its centreline from 30 % of its length ---------
@@ -69,15 +75,13 @@ namespace HiddenHarbours.Tests.PlayMode
         const float HighWaterPushSeconds = 20f;                   // game seconds of swimming: long enough to read the crawl
 
         // ---- the wharf ------------------------------------------------------------------------------------------
-        static readonly Vector2 BerthZero = new Vector2(NineMileCreekGroundPlan.BerthX, 83.1f);
-        const float BerthZeroHullMetres = 4f;
         // On the wharf deck in line with the gangway, and on the float 0.8 m past the gangway's foot (the float's
         // footprint is x 104..152, y 68.8..71.2).
         static readonly Vector2 GangwayFromBody = new Vector2(105f, 87.7f);
         static readonly Vector2 GangwayToBody = new Vector2(105f, 70.4f);
         const float GangwayArriveMetres = 0.3f;
 
-        // ---- the drive: Wharf Road from x -40 up the final ramp, round inside the turning pad, and down ------------
+        // ---- the drive: Wharf Road from x -40 down the final ramp to the turning pad, round inside it, and back up -
         static readonly Vector2 DriveStart = new Vector2(-40f, 92f);
         static readonly Vector2 DriveEnd = new Vector2(-20f, 92f);
         // A circle inside the pad (centre (62, 125), r 15) that keeps clear of the derelict dory's box at (70, 118).
@@ -269,11 +273,11 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
-        //  2. THE DRIVE — up Wharf Road's final ramp, round inside the pad, and down
+        //  2. THE DRIVE — down Wharf Road's final ramp to the pad, round inside it, and back up
         // =============================================================================================
 
         [UnityTest, Timeout(600000)]
-        public IEnumerator TheDually_DrivesUpTheRamp_RoundThePad_AndDownTheRamp()
+        public IEnumerator TheDually_DrivesDownTheRamp_RoundThePad_AndBackUp()
         {
             VehicleController ctl = null;
             foreach (VehicleController v in Object.FindObjectsByType<VehicleController>())
@@ -305,27 +309,28 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.Driving), "E at her door and nobody took the wheel.");
 
-            var up = new List<Vector2>();
-            foreach (Vector2 p in NineMileCreekGroundPlan.WharfRoad) if (p.x > DriveStart.x) up.Add(p);
+            // Wharf Road falls from the town to the pad by the harbour: down the ramp first, then back up it.
+            var down = new List<Vector2>();
+            foreach (Vector2 p in NineMileCreekGroundPlan.WharfRoad) if (p.x > DriveStart.x) down.Add(p);
             var pad = new List<Vector2>();
-            Vector2 last = up[up.Count - 1];
+            Vector2 last = down[down.Count - 1];
             float a0 = Mathf.Atan2(last.y - PadLoopCentre.y, last.x - PadLoopCentre.x);
             for (int k = 1; k <= PadLoopPoints; k++)
             {
                 float a = a0 + k * 2f * Mathf.PI / PadLoopPoints;
                 pad.Add(PadLoopCentre + PadLoopRadius * new Vector2(Mathf.Cos(a), Mathf.Sin(a)));
             }
-            var down = new List<Vector2>();
-            for (int i = up.Count - 2; i >= 0; i--) down.Add(up[i]);
-            down.Add(DriveEnd);
+            var back = new List<Vector2>();
+            for (int i = down.Count - 2; i >= 0; i--) back.Add(down[i]);
+            back.Add(DriveEnd);
 
             var drive = new Drive();
-            for (var e = DriveThrough(machine, ctl, up, "up the ramp", drive); e.MoveNext();) yield return e.Current;
-            float top = terrain.ElevationAt(machine.position);
-            for (var e = DriveThrough(machine, ctl, pad, "round the pad", drive); e.MoveNext();) yield return e.Current;
-            float padTop = terrain.ElevationAt(machine.position);
             for (var e = DriveThrough(machine, ctl, down, "down the ramp", drive); e.MoveNext();) yield return e.Current;
-            float bottom = terrain.ElevationAt(machine.position);
+            float foot = terrain.ElevationAt(machine.position);
+            for (var e = DriveThrough(machine, ctl, pad, "round the pad", drive); e.MoveNext();) yield return e.Current;
+            float padRound = terrain.ElevationAt(machine.position);
+            for (var e = DriveThrough(machine, ctl, back, "back up the ramp", drive); e.MoveNext();) yield return e.Current;
+            float townEnd = terrain.ElevationAt(machine.position);
 
             _drive.Set(0f, 0f, true);
             for (int i = 0; i < MaxStepsToStop && Mathf.Abs(ctl.SpeedMetersPerSecond) > 0.05f; i++)
@@ -337,14 +342,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 landing = door.DoorWorldPosition;
             Assert.That(_switcher.BeginInteract(), Is.True, "E in the cab was not answered.");
             yield return null;
-            TestContext.WriteLine($"{drive}; the pad's head {top:0.###} m, round the pad {padTop:0.###} m, the foot {bottom:0.###} m; " +
-                                  $"odometer {ctl.OdometerMeters:0.#} m");
+            TestContext.WriteLine($"{drive}; the ramp's foot at the pad {foot:0.###} m, round the pad {padRound:0.###} m, " +
+                                  $"back at the town end {townEnd:0.###} m; odometer {ctl.OdometerMeters:0.#} m");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnFoot), "E in the cab did not put the fisher on her feet.");
             Assert.That(VehicleGrounding.IsDryLandNow(landing), Is.True, $"her door opened onto water at {landing}.");
             Assert.That(drive.WetSamples, Is.EqualTo(0), $"{drive.WetSamples} steps of the drive were off dry land, the first at {drive.FirstWet}.");
             Assert.That(drive.Afloat, Is.False, "the Dually floated somewhere on the drive.");
-            Assert.That(top - bottom, Is.GreaterThan(1f),
-                $"down the ramp she fell {top - bottom:0.###} m: the ramp she drove is not the ramp up to the pad.");
+            Assert.That(townEnd - foot, Is.GreaterThan(1f),
+                $"from the pad back to the town end she climbed {townEnd - foot:0.###} m: the road she drove is not the ramp down to the pad.");
         }
 
         // =============================================================================================
@@ -376,32 +381,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
-        //  4. THE LADDER — aboard at berth 0 at low and at high water
-        // =============================================================================================
-
-        [UnityTest, Timeout(300000)]
-        public IEnumerator TheLadder_AtLowWater_SheClimbsDownToBerthZero() => AboardAtBerthZero(low: true);
-
-        [UnityTest, Timeout(300000)]
-        public IEnumerator TheLadder_AtHighWater_SheStepsAcross() => AboardAtBerthZero(low: false);
-
-        IEnumerator AboardAtBerthZero(bool low)
-        {
-            Tide tide = ScanTheTide(daylightOnly: false);
-            for (var e = PinTheTide(low ? tide.LowAt : tide.HighAt); e.MoveNext();) yield return e.Current;
-            BoatController boat = TheFishersBoat();
-            TestContext.WriteLine($"{(low ? "low" : "high")} water {Water():0.###} m; her boat {boat.name} " +
-                                  $"({(boat.Hull != null ? boat.Hull.Id : "no hull")}) at {(Vector2)boat.transform.position}");
-            Assert.That(Vector2.Distance(boat.transform.position, BerthZero), Is.LessThan(BerthZeroHullMetres),
-                $"premise: her boat lies at {(Vector2)boat.transform.position}, not at berth 0 {BerthZero}.");
-
-            StandHerAt(NineMileCreekBuilder.DisembarkPos);
-            for (int i = 0; i < 4; i++) yield return null;
-            for (var e = Board(low ? true : (bool?)false); e.MoveNext();) yield return e.Current;
-        }
-
-        // =============================================================================================
-        //  5. THE LOOP — licence, rod, clams, the earned dory, its repair, the outboard, fuel, the return, a reload
+        //  4. THE LOOP — licence, rod, clams, the earned dory, its repair, the outboard, fuel, the return, a reload
         // =============================================================================================
 
         [UnityTest, Timeout(1500000)]
@@ -503,10 +483,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(save.OwnedBoats, Does.Contain(outboard.BoatId), "bought, and the outboard is not owned.");
             Say($"  {outboard.BoatId} for ₲{outboard.Price}");
 
-            // ---- the fuel ------------------------------------------------------------------------------------------------
-            var pump = Only<FuelPump>(p => p.Id == WharfGasPumpId, "the wharf's gas pump");
+            // ---- the fuel: a can at Route 91's forecourt (the wharf's pumps are their own case, below) -------------------
+            var pump = Only<FuelPump>(p => p.Id == RoadGasPumpId, "Route 91's gas pump");
             Vector2 pumpAt = pump.WorldPosition;
-            for (var e = WalkLeg(pumpAt, Mathf.Max(0.5f, pump.ReachMeters - 0.3f), "to the wharf's gas pump"); e.MoveNext();)
+            for (var e = WalkLeg(pumpAt, Mathf.Max(0.5f, pump.ReachMeters - 0.3f), "to Route 91's gas pump"); e.MoveNext();)
                 yield return e.Current;
             var can = new GasCan(pump.Grade);
             FuelQuote quote = pump.Quote(can, wallet.Money + 1000);
@@ -519,11 +499,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(before - wallet.Money, Is.GreaterThan(0), "the fuel was free.");
             Say($"  {pump.LastLitresDelivered:0.##} L of {pump.Grade} at {pumpAt} for ₲{before - wallet.Money}");
 
-            // ---- the return, and aboard ----------------------------------------------------------------------------------
-            for (var e = WalkLeg(NineMileCreekBuilder.DisembarkPos, StepOffArriveMetres, "back to the step-off"); e.MoveNext();)
+            // ---- the return: to the wharf's step-off at berth 0 (no boat on this core to board: see the class note) -----
+            for (var e = WalkLeg(NineMileCreekBuilder.DisembarkPos, StepOffArriveMetres, "back to the step-off at berth 0"); e.MoveNext();)
                 yield return e.Current;
-            for (var e = Board(null); e.MoveNext();) yield return e.Current;
-            Say($"  aboard at {Body()}");
+            Assert.That(Depth(Body()), Is.LessThanOrEqualTo(0f), $"the step-off at {Body()} is under {Depth(Body()):0.###} m of water.");
+            Say($"  back on the step-off at {Body()}, water {Water():0.###} m, depth {Depth(Body()):0.###} m");
 
             // ---- a save, and the reload --------------------------------------------------------------------------------------
             _save.Save();
@@ -546,6 +526,37 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(GameServices.Licenses.IsLicensed(licence.License.Id), Is.True, "Continue lost the licence.");
             Say($"  saved and reloaded: ₲{money}, {loaded.OwnedLicenses.Count} licence(s), {loaded.OwnedGear.Count} gear, " +
                 $"{loaded.OwnedBoats.Count} boat(s); fixture top-ups ₲{topUps}");
+        }
+
+        // =============================================================================================
+        //  5. THE WHARF'S PUMPS — walked to from the step-off at the month's lowest water
+        // =============================================================================================
+
+        /// <summary>The wharf's two fuel pedestals, each walked to from the step-off at berth 0 at the month's lowest
+        /// water, when the tide bares the most ground it ever will. Apart from the loop, so the loop proves the rest of
+        /// the day and this case alone names a pump she cannot reach.</summary>
+        [UnityTest, Timeout(600000)]
+        public IEnumerator TheWharfPumps_SheWalksToEach_AtLowWater()
+        {
+            Tide tide = ScanTheTide(daylightOnly: false);
+            for (var e = PinTheTide(tide.LowAt); e.MoveNext();) yield return e.Current;
+            var unreached = new List<string>();
+            foreach (string id in new[] { WharfGasPumpId, WharfDieselPumpId })
+            {
+                var pump = Only<FuelPump>(p => p.Id == id, id);
+                Vector2 at = pump.WorldPosition;
+                float ground = GameServices.TidalTerrain.ElevationAt(at);
+                StandHerAt(NineMileCreekBuilder.DisembarkPos);
+                for (int i = 0; i < 4; i++) yield return null;
+                var walk = new Walk();
+                for (var e = WalkTo(at, Mathf.Max(0.5f, pump.ReachMeters - 0.3f), "to " + id, walk); e.MoveNext();)
+                    yield return e.Current;
+                string line = $"{id} at ({at.x:0.##}, {at.y:0.##}): ground {ground:0.###} m, {Depth(at):0.###} m of water " +
+                              $"at the month's lowest ({Water():0.###} m); {walk}";
+                TestContext.WriteLine(line);
+                if (!walk.Reached) unreached.Add(line);
+            }
+            Assert.That(unreached, Is.Empty, "wharf pumps she cannot walk to at the lowest water:\n" + string.Join("\n", unreached));
         }
 
         // =============================================================================================
@@ -573,45 +584,6 @@ namespace HiddenHarbours.Tests.PlayMode
             _walk.transform.position = new Vector3(body.x, body.y, _walk.transform.position.z);
             _rb.position = body;
             _rb.linearVelocity = Vector2.zero;
-        }
-
-        BoatController TheFishersBoat()
-        {
-            FieldInfo f = typeof(ControlSwitcher).GetField("_boatController", BindingFlags.Instance | BindingFlags.NonPublic);
-            Assert.That(f, Is.Not.Null, "ControlSwitcher._boatController was renamed or removed — re-point this fixture.");
-            var boat = f.GetValue(_switcher) as BoatController;
-            Assert.That(boat, Is.Not.Null, "the fisher's switcher has no boat.");
-            return boat;
-        }
-
-        /// <summary>E on the quay: aboard by the ladder (<paramref name="ladder"/> true), by a step across (false),
-        /// or by whichever the gap asks for (null); then the move runs out and she is on deck.</summary>
-        IEnumerator Board(bool? ladder)
-        {
-            Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnFoot), "not on foot on the quay.");
-            Assert.That(_switcher.WithinBoardReach(), Is.True, $"from {Body()} her boat is out of reach.");
-            Assert.That(_switcher.BoardableNow(), Is.True, "her boat is not boardable (owned and unrepaired?).");
-            Assert.That(_switcher.BeginInteract(), Is.True, "E on the quay beside her boat was not answered.");
-            Assert.That(_switcher.IsBoardingMove, Is.True, "E answered, and no boarding move started.");
-            float gap = _switcher.LadderGapMetres;
-            bool byLadder = _switcher.IsLadderBoarding;
-            TestContext.WriteLine($"  boarding: {(byLadder ? $"by the ladder, a {gap:0.###} m gap" : "a step across")} " +
-                                  $"(clamp {GameServices.LadderBoarding.BoardClampMetres:0.###} m) at water {Water():0.###} m");
-            if (ladder == true)
-            {
-                Assert.That(byLadder, Is.True, "at low water the move is a step across, not the ladder.");
-                Assert.That(gap, Is.GreaterThan(GameServices.LadderBoarding.BoardClampMetres), "a ladder for a gap inside the clamp.");
-            }
-            else if (ladder == false)
-                Assert.That(byLadder, Is.False, $"at high water she is sent down the ladder (a {gap:0.###} m gap).");
-            float spent = 0f;
-            while (_switcher.IsBoardingMove && spent < 20f)
-            {
-                yield return null;
-                spent += Time.deltaTime;
-            }
-            yield return null;
-            Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck), $"after {spent:0.#} s of the move she is not on deck.");
         }
 
         // =============================================================================================

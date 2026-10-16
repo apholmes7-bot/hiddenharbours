@@ -36,7 +36,9 @@ namespace HiddenHarbours.Tests.PlayMode
         const double DaylightFromHour = 9.0, DaylightToHour = 16.0;
         const double MonthDays = 30.0, StepsPerDay = 240.0;
         const int MaxSettleFrames = 600, MaxFrameOnFrames = 400;
-        const double FlatPlateSpread = 4.0;   // luma standard deviation, 0..255: below it the plate is one colour
+        // Luma standard deviation, 0..255: below it the plate is one colour. A plate that drew nothing is the clear
+        // colour alone (0); the dimmest real plate so far measured 3.8 (the south shore's lawn on the low-water morning).
+        const double FlatPlateSpread = 1.0;
 
         [System.Flags]
         enum Water { Low = 1, Mean = 2, High = 4 }
@@ -118,9 +120,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 float ground = GameServices.TidalTerrain != null ? GameServices.TidalTerrain.ElevationAt(p.At) : float.NaN;
                 float depth = TidalWalkability.DepthNow(p.At);
                 float water = GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds);
+                EnvironmentSample sky = GameServices.Environment.Sample();
+                Color tint = Shader.GetGlobalColor("_DayNightTint");
                 Debug.Log($"[{PlateDir}] {name}: {tide} water {water:0.000} m (searched {level:0.000} m at {hour:0.00} h, " +
                           $"seed {GameServices.Environment.WorldSeed}); " +
                           $"centre ({p.At.x:0.##}, {p.At.y:0.##}) ground {ground:0.###} m, on-foot depth {depth:0.###} m; " +
+                          $"visibility {sky.Visibility:0.##}, sea state {sky.SeaState01:0.##}, " +
+                          $"tint ({tint.r:0.###}, {tint.g:0.###}, {tint.b:0.###}); " +
                           $"camera ortho {_cam.orthographicSize:0.##}; luma spread {spread:0.#}");
                 if (spread < FlatPlateSpread) flat.Add($"{name} ({spread:0.##})");
                 Debug.Log($"[{PlateDir}] plate written: {path}");
