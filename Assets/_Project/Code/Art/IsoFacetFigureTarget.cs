@@ -21,7 +21,7 @@ namespace HiddenHarbours.Art
     /// picture without their renderer, layer or scene changing, and the guard and reflection passes
     /// (which never filter by queue) keep them exactly as before. OFF puts the queue back.</para>
     ///
-    /// <para><b>The four passes</b>, recorded by the hull feature between the water and the facets,
+    /// <para><b>The five passes</b>, recorded by the hull feature between the water and the facets,
     /// all under its "HH IsoFacet Hulls" sampler:</para>
     /// <list type="number">
     ///   <item><b>Depth</b> — the water's hardware depth (the shared private z-buffer, written by the
@@ -34,10 +34,15 @@ namespace HiddenHarbours.Art
     ///   deck, and the house that stands in front of her.</item>
     ///   <item><b>Resolve</b> — the hulls' own resolve shader, unchanged, on its own material; the
     ///   legacy flood held off (it would ring the context hulls), the figure ink as the frame has it.</item>
+    ///   <item><b>Coverage</b> — 1 on each texel where a figure shows (stencil 1): her visible art
+    ///   pixels, at texel size.</item>
     ///   <item><b>Export</b> — a stencil-tested copy into a persistent per-camera target bound as
-    ///   <c>_HHFigureScreenTex</c>. Stencil 0 (empty, or her ink ring), 1 (her) and 3 (her, covered by
-    ///   context: the house in front of her, at art-pixel size — the owner's D4 of 10-15) are
-    ///   exported; 2 (context alone) never is, so <b>no hull pixel away from a figure is replaced</b>.</item>
+    ///   <c>_HHFigureScreenTex</c>. Stencil 0 (empty, or her ink ring) and 1 (her) are exported; 3
+    ///   (her, covered by context) only on a texel that shares an edge with one where she shows — the
+    ///   house's own texel squares off the edge beside her visible pixels, one art pixel deep (the
+    ///   owner's D4 of 10-15), and deeper under the house nothing is exported, so the full-size house
+    ///   draws over her hidden body exactly as OFF does (the owner's ruling of 10-16); 2 (context
+    ///   alone) never is, so <b>no hull pixel away from a figure is replaced</b>.</item>
     /// </list>
     ///
     /// <para><b>Re-entry.</b> Each hull overlay, and each ashore figure's cell overlay, reads
@@ -63,7 +68,7 @@ namespace HiddenHarbours.Art
         public const string ShaderName = "Hidden/HiddenHarbours/FigurePixelTarget";
 
         /// <summary><see cref="ShaderName"/>'s passes.</summary>
-        public const int DepthPass = 0, ExportPass = 1;
+        public const int DepthPass = 0, ExportPass = 1, CoveragePass = 2, EdgePass = 3;
 
         /// <summary>The stencil a figure writes, and the bit context writes.</summary>
         public const int FigureStencil = 1, ContextStencil = 2;
@@ -72,6 +77,7 @@ namespace HiddenHarbours.Art
         public static readonly int PixelMapId = Shader.PropertyToID("_HHFigurePixelMap");
         internal static readonly int SceneDepthId = Shader.PropertyToID("_HHFigureSceneDepth");
         internal static readonly int LowTexId = Shader.PropertyToID("_HHFigureLowTex");
+        internal static readonly int CoverageTexId = Shader.PropertyToID("_HHFigureCoverageTex");
         private static readonly int s_ScreenParamsId = Shader.PropertyToID("_ScreenParams");
 
         private static int s_LiveFrame = -2;
@@ -176,14 +182,19 @@ namespace HiddenHarbours.Art
                 public Vector4 FigureInk;
             }
 
+            private sealed class CoverageData
+            {
+                public Material Material;
+            }
+
             private sealed class ExportData
             {
                 public Material Material;
-                public TextureHandle Low;
+                public TextureHandle Low, Coverage;
             }
 
             /// <summary>
-            /// Record the four passes for this camera, or nothing. True only when they were recorded:
+            /// Record the five passes for this camera, or nothing. True only when they were recorded:
             /// the caller then filters its own facet list to <see cref="SceneQueue"/>. False leaves the
             /// caller's recording exactly as it was before this class existed.
             /// </summary>
@@ -319,7 +330,28 @@ namespace HiddenHarbours.Art
                     });
                 }
 
-                // ---- the figures (and what covers them) out to the overlays ---------------------------
+                // ---- where a figure shows (stencil 1), for the edge below ------------------------------
+                TextureHandle coverage = graph.CreateTexture(new TextureDesc(plan.Width, plan.Height)
+                {
+                    name = "_HHFigureCoverageTex",
+                    format = GraphicsFormat.R8_UNorm,
+                    clearBuffer = true,
+                    clearColor = Color.clear,
+                    filterMode = FilterMode.Point,
+                    wrapMode = TextureWrapMode.Clamp,
+                    msaaSamples = MSAASamples.None,
+                });
+                using (var builder = graph.AddRasterRenderPass<CoverageData>(
+                           "HH Figure Target Coverage", out CoverageData passData, sampler))
+                {
+                    passData.Material = _target;
+                    builder.SetRenderAttachment(coverage, 0);
+                    builder.SetRenderAttachmentDepth(lowDepth, AccessFlags.Read);
+                    builder.SetRenderFunc(static (CoverageData data, RasterGraphContext ctx) =>
+                        Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, CoveragePass));
+                }
+
+                // ---- the figures (and the edge beside them) out to the overlays ------------------------
                 RTHandle target = GetTarget(camera.GetEntityId(), plan.Width, plan.Height);
                 TextureHandle exported = graph.ImportTexture(target, new ImportResourceParams
                 {
@@ -332,7 +364,9 @@ namespace HiddenHarbours.Art
                 {
                     passData.Material = _target;
                     passData.Low = low;
+                    passData.Coverage = coverage;
                     builder.UseTexture(low, AccessFlags.Read);
+                    builder.UseTexture(coverage, AccessFlags.Read);
                     builder.SetRenderAttachment(exported, 0);
                     builder.SetRenderAttachmentDepth(lowDepth, AccessFlags.Read);
                     // The readers are the in-scene overlays, which the graph cannot see.
@@ -341,7 +375,9 @@ namespace HiddenHarbours.Art
                     builder.SetRenderFunc(static (ExportData data, RasterGraphContext ctx) =>
                     {
                         data.Material.SetTexture(LowTexId, (RTHandle)data.Low);
+                        data.Material.SetTexture(CoverageTexId, (RTHandle)data.Coverage);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, ExportPass);
+                        Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, EdgePass);
                     });
                 }
                 return true;

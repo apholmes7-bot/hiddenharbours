@@ -198,6 +198,17 @@ can answer the look question, not prove this integration.
   depth read and cuts blocks; it cannot simultaneously promise whole art-pixel edges.
 - D4's eventual zero-through-house gate must use the ruled mask (art or fine), explicitly
   named in the plate. Do not claim both interpretations are byte-identical.
+- As built (Phase C; the owner's D4 of 10-15 and ruling of 10-16): the facet pass leaves
+  the small target's stencil at 1 where a figure shows, 2 where context stands alone, 3
+  where context covers a figure, and 0 elsewhere (empty, or her ink ring). The export
+  copies 0 and 1. A coverage pass writes 1 on each texel where she shows (stencil 1) into
+  a texel-size R8 mask, and an edge pass copies a 3 only where one of the four texels that
+  share an edge with it (the 4-neighbourhood) is hers. The house's own art pixel squares
+  off the occlusion edge beside her visible pixels, one art pixel deep; deeper under the
+  house nothing is exported, so the full-size house draws over her hidden body exactly as
+  it does OFF. A 2 is never exported. Phase C checks it by removing her: a pixel that
+  changes between the shot and the same frame without her, farther than one art pixel
+  from her visible pixels, is a ghost, and the bar is zero.
 
 ### Lattice, motion, cameras and effects
 

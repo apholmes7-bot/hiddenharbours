@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,9 +20,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// <see cref="GameConfig.FigurePixelTarget"/>), everything that needs no graphics device: a figure's
     /// facet material moves to the figure queue only while ON and comes back when OFF; the full-size list
     /// and the figure list split the whole queue range with nothing lost; the overlays' map is zero
-    /// unless published; the target shader compiles with its two passes where the code expects them; the
-    /// overlays take a texel only behind a non-zero map; and the export stencil keeps her and what covers
-    /// her (the owner's D4 of 10-15) while never exporting a context pixel alone.
+    /// unless published; the target shader compiles with its four passes where the code expects them; the
+    /// overlays take a texel only behind a non-zero map; the export's stencils keep her, and of what
+    /// covers her only the texel beside her (the owner's D4 of 10-15, ruled down to that edge on 10-16),
+    /// while never exporting a context pixel alone; and the edge's neighbourhood is the four texels that
+    /// share an edge.
     /// </summary>
     public class IsoFacetFigureTargetTests
     {
@@ -139,7 +142,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // ==================================================================== the shaders
 
         [Test]
-        public void TheTargetShader_CompilesBothPasses_WhereTheCodeExpectsThem()
+        public void TheTargetShader_CompilesEveryPass_WhereTheCodeExpectsThem()
         {
             // The importer logs shader errors to the console; without this the runner would fail on
             // "Unhandled log message" instead of via the assertion below.
@@ -156,9 +159,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var material = new Material(shader);
             try
             {
-                Assert.AreEqual(2, material.passCount, "two passes: the depth transfer and the export");
+                Assert.AreEqual(4, material.passCount, "four passes: the depth transfer, the export, the coverage and the edge");
                 Assert.AreEqual(IsoFacetFigureTarget.DepthPass, material.FindPass("HHFigureTargetDepth"), "the depth pass's index");
                 Assert.AreEqual(IsoFacetFigureTarget.ExportPass, material.FindPass("HHFigureTargetExport"), "the export pass's index");
+                Assert.AreEqual(IsoFacetFigureTarget.CoveragePass, material.FindPass("HHFigureTargetCoverage"), "the coverage pass's index");
+                Assert.AreEqual(IsoFacetFigureTarget.EdgePass, material.FindPass("HHFigureTargetEdge"), "the edge pass's index");
                 for (int pass = 0; pass < material.passCount; pass++)
                     ShaderUtil.CompilePass(material, pass, true);
                 Collect(errors, ShaderUtil.GetShaderMessages(shader));
@@ -183,21 +188,56 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void TheExportStencil_KeepsHerAndWhatCoversHer_NeverContextAlone()
+        public void TheExportStencils_KeepHerAndTheEdgeBesideHer_NeverContextAlone()
         {
             string source = File.ReadAllText(TargetShaderPath);
-            Match block = Regex.Match(source, @"Stencil\s*\{\s*Ref\s+(\d+)\s+ReadMask\s+(\d+)\s+Comp\s+NotEqual\s*\}");
-            Assert.IsTrue(block.Success, "the export pass's stencil block (Ref, ReadMask, Comp NotEqual) is not where it was");
-            int reference = int.Parse(block.Groups[1].Value), mask = int.Parse(block.Groups[2].Value);
-            Assert.AreEqual(IsoFacetFigureTarget.ContextStencil, reference, "the test is against the context bit");
-            Assert.AreEqual(IsoFacetFigureTarget.FigureStencil | IsoFacetFigureTarget.ContextStencil, mask,
-                            "the test reads her bit and the context bit");
+            var tests = new Dictionary<string, StencilTest>();
+            foreach (Match pass in Regex.Matches(source,
+                         @"Name\s+""(\w+)""[^}]*?Stencil\s*\{\s*Ref\s+(\d+)\s+ReadMask\s+(\d+)\s+Comp\s+(\w+)\s*\}"))
+                tests[pass.Groups[1].Value] = new StencilTest(int.Parse(pass.Groups[2].Value),
+                                                              int.Parse(pass.Groups[3].Value), pass.Groups[4].Value);
+            Assert.AreEqual(3, tests.Count, "three stencil-tested passes: the export, the coverage and the edge");
+            Assert.IsTrue(tests.TryGetValue("HHFigureTargetExport", out StencilTest export), "the export pass's stencil block is not where it was");
+            Assert.IsTrue(tests.TryGetValue("HHFigureTargetCoverage", out StencilTest coverage), "the coverage pass's stencil block is not where it was");
+            Assert.IsTrue(tests.TryGetValue("HHFigureTargetEdge", out StencilTest edge), "the edge pass's stencil block is not where it was");
 
             int her = IsoFacetFigureTarget.FigureStencil, context = IsoFacetFigureTarget.ContextStencil;
-            Assert.IsTrue(Exported(0, reference, mask), "0, empty or her ink ring: exported");
-            Assert.IsTrue(Exported(her, reference, mask), "her alone: exported");
-            Assert.IsTrue(Exported(her | context, reference, mask), "her, covered by context (D4, the art-pixel edge): exported");
-            Assert.IsFalse(Exported(context, reference, mask), "context alone: NEVER exported, so no hull pixel away from her moves");
+            Assert.IsTrue(export.Passes(0), "export: 0, empty or her ink ring");
+            Assert.IsTrue(export.Passes(her), "export: her");
+            Assert.IsFalse(export.Passes(her | context), "export: her under the house is the edge pass's alone");
+            Assert.IsFalse(export.Passes(context), "export: context alone NEVER, so no hull pixel away from her moves");
+
+            Assert.IsFalse(coverage.Passes(0), "coverage: not on an empty texel or her ink ring");
+            Assert.IsTrue(coverage.Passes(her), "coverage: where she shows");
+            Assert.IsFalse(coverage.Passes(her | context), "coverage: not where the house covers her");
+            Assert.IsFalse(coverage.Passes(context), "coverage: not on context alone");
+
+            Assert.IsFalse(edge.Passes(0), "edge: not on an empty texel or her ink ring (the export has it)");
+            Assert.IsFalse(edge.Passes(her), "edge: not where she shows (the export has it)");
+            Assert.IsTrue(edge.Passes(her | context), "edge: her under the house, kept only beside her (D4; the ruling of 10-16)");
+            Assert.IsFalse(edge.Passes(context), "edge: context alone NEVER");
+        }
+
+        [Test]
+        public void TheEdge_KeepsACoveredTexel_OnlyWhenOneOfTheFourBesideItIsHers()
+        {
+            string source = File.ReadAllText(TargetShaderPath);
+            Match beside = Regex.Match(source, @"static\s+const\s+int2\s+kBeside\[(\d+)\]\s*=\s*\{([^}]*)\}");
+            Assert.IsTrue(beside.Success, "the edge's neighbourhood (kBeside) is not where it was");
+            var offsets = new List<Vector2Int>();
+            foreach (Match offset in Regex.Matches(beside.Groups[2].Value, @"int2\(\s*(-?\d+)\s*,\s*(-?\d+)\s*\)"))
+                offsets.Add(new Vector2Int(int.Parse(offset.Groups[1].Value), int.Parse(offset.Groups[2].Value)));
+            Assert.AreEqual(int.Parse(beside.Groups[1].Value), offsets.Count, "the array's bound is its offsets' count");
+            CollectionAssert.AreEquivalent(
+                new[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) }, offsets,
+                "the 4-neighbourhood: the four texels that share an edge with it, no diagonal, none twice");
+
+            Match loop = Regex.Match(source,
+                @"for\s*\(\s*int\s+k\s*=\s*0\s*;\s*k\s*<\s*(\d+)\s*;\s*k\+\+\s*\)\s*\{\s*int2\s+q\s*=\s*t\s*\+\s*kBeside\[k\]");
+            Assert.IsTrue(loop.Success, "the edge's loop over kBeside is not where it was");
+            Assert.AreEqual(offsets.Count, int.Parse(loop.Groups[1].Value), "the loop visits every one of the four");
+            Assert.AreEqual(1, Regex.Matches(source, Regex.Escape("if (!beside) discard;")).Count,
+                            "a covered texel with nothing of hers beside it is not exported: the full-size house stays");
         }
 
         // ==================================================================== rule 7
@@ -227,8 +267,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         // ==================================================================== helpers
 
-        // The fixed-function test: pass when (ref & mask) != (stencil & mask).
-        private static bool Exported(int stencil, int reference, int mask) => (reference & mask) != (stencil & mask);
+        // A pass's fixed-function stencil test: pass when (ref & mask) <comp> (stencil & mask).
+        private readonly struct StencilTest
+        {
+            private readonly int _reference, _mask;
+            private readonly string _comp;
+
+            public StencilTest(int reference, int mask, string comp)
+            {
+                _reference = reference;
+                _mask = mask;
+                _comp = comp;
+            }
+
+            public bool Passes(int stencil)
+            {
+                int a = _reference & _mask, b = stencil & _mask;
+                if (_comp == "Equal") return a == b;
+                if (_comp == "NotEqual") return a != b;
+                Assert.Fail($"a stencil comparison this test does not read: '{_comp}'");
+                return false;
+            }
+        }
 
         private static void AssertBefore(string source, string first, string then, string what)
         {
