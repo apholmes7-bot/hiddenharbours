@@ -38,6 +38,7 @@ namespace HiddenHarbours.Tests.PlayMode
         readonly HashSet<GameObject> _resident = new();
         ISaveService _save;
         Scene _origin;
+        Scene _standIn;
 
         sealed class MemorySave : ISaveService
         {
@@ -104,6 +105,14 @@ namespace HiddenHarbours.Tests.PlayMode
             SceneManager.sceneLoaded += Activate;
             try { yield return SceneManager.LoadSceneAsync(Plan.Region.SceneName, LoadSceneMode.Additive); }
             finally { SceneManager.sceneLoaded -= Activate; }
+        }
+
+        // The coordinator switches off every root of the scene an arrival leaves. Make an empty scene
+        // active before the region unloads, so the arrival leaves that and not the runner's scene.
+        protected void LeaveForAStandIn()
+        {
+            _standIn = SceneManager.CreateScene("RicePointStandIn");
+            SceneManager.SetActiveScene(_standIn);
         }
 
         protected static void SetHour(double hour)
@@ -195,6 +204,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (Oars != null) Oars.DriveOars(0, 0, true);
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
             if (RegionScene.IsValid() && RegionScene.isLoaded) yield return SceneManager.UnloadSceneAsync(RegionScene);
+            if (_standIn.IsValid() && _standIn.isLoaded) yield return SceneManager.UnloadSceneAsync(_standIn);
             foreach (var root in PersistentRoots()) if (!_resident.Contains(root)) Object.Destroy(root);
             yield return null;
             GameServices.Reset();
@@ -281,6 +291,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var root = Object.FindFirstObjectByType<GameRoot>();
             var clock = GameServices.Clock;
             var player = Walk;
+            LeaveForAStandIn();
             yield return SceneManager.UnloadSceneAsync(RegionScene);
             Assert.That(GameServices.Ready, Is.True);
             yield return LoadDestination();
