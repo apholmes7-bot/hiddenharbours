@@ -1364,6 +1364,11 @@ Shader "HiddenHarbours/Water"
             float _WaveFetchGrowthPower;
             float4 _WaveFetchParams;
             float4 _WaveFetchParams2;
+            //   _WaveFetchFringe  : the SHORE FRINGE in a lee. x = the roughness its foam keeps where the lee is
+            //                       complete, y = the sea state its swash keeps there, z = the fetch factor at and
+            //                       above which the fringe reads as open water. z = 0 (unpublished) = no lee: the
+            //                       fringe reads the open sea's values, as before. Twin: WaveFetch.FringeLee.
+            float4 _WaveFetchFringe;
 
             // ---- BREAKING WAVES (ADR 0040), published by WaveFieldBridge.PublishBreakerGlobals -------
             // The CONTOUR, solved once per tick rather than per pixel. The forward criterion costs a
@@ -2496,6 +2501,13 @@ Shader "HiddenHarbours/Water"
                 return saturate(_FoamDensity + _Roughness * _FoamDensityWind);
             }
 
+            // The same density at a given roughness: the shore fringe reads it at its lee roughness
+            // (FringeLeeReading below). One formula in both bodies.
+            float FoamDensityAt(float roughness)
+            {
+                return saturate(_FoamDensity + roughness * _FoamDensityWind);
+            }
+
             // ---- dual-zone SOLID CORE: a dense solid-white heart with a soft milky edge --------------------------
             // Given a foam FIELD value and its soft threshold, returns a SOLID-CORE weight 0..1 that is 1 where the
             // field is WELL above threshold (the dense heart, full opacity, the painted solid white showing
@@ -2654,6 +2666,25 @@ Shader "HiddenHarbours/Water"
                 int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, 7);
                 float k = trains[dominant].z;
                 return FetchTrainEnvelope01(fetch01, k > 0.0 ? 6.28318530718 / k : 0.0);
+            }
+
+            // THE SHORE FRINGE IN A LEE. The fringe (layer 3) dresses the wet edge from the open sea's wind
+            // readings, and behind land the per-train law leaves a far calmer sea than those readings say. So the
+            // fringe reads them through the dominant train's fetch factor: at or above _WaveFetchFringe.z the shore
+            // is open water and every reading passes through untouched; below it the lee's share grows linearly
+            // to a dead lee at 0. A shallow first step can shade the march a little at an open beach's wet edge,
+            // which is why open water starts below 1. Twin: WaveFetch.FringeLeeOpen01.
+            float FringeLeeOpen01(float fetchFactor)
+            {
+                return _WaveFetchFringe.z > 0.0 ? saturate(fetchFactor / _WaveFetchFringe.z) : 1.0;
+            }
+
+            // A reading above the lee's ceiling falls toward it by the lee's share. A reading at or under the
+            // ceiling (light wind), or on open water (open01 = 1), is returned as is, to the bit.
+            // Twin: WaveFetch.FringeLeeReading.
+            float FringeLeeReading(float reading, float ceiling, float open01)
+            {
+                return (open01 < 1.0 && reading > ceiling) ? lerp(ceiling, reading, open01) : reading;
             }
 
             // THE MARCH, written ONCE and instantiated against each stage's seabed sampler below — the same
@@ -3269,6 +3300,16 @@ Shader "HiddenHarbours/Water"
                 float lo = saturate(_SwellReadSeaStateLo);
                 float hi = max(saturate(_SwellReadSeaStateHi), lo + 1e-3);
                 float sea = smoothstep(lo, hi, saturate(_Chop));
+                return lerp(1.0 - saturate(_SwashCalmGate), 1.0, sea);
+            }
+
+            // The same calm fade at a given sea state: the shore fringe's swash reads it at its lee sea state
+            // (FringeLeeReading). One formula in both bodies. Twin: WaterSurface.SwashSeaStateGate.
+            float SwashSeaStateGateAt(float sea01)
+            {
+                float lo = saturate(_SwellReadSeaStateLo);
+                float hi = max(saturate(_SwellReadSeaStateHi), lo + 1e-3);
+                float sea = smoothstep(lo, hi, saturate(sea01));
                 return lerp(1.0 - saturate(_SwashCalmGate), 1.0, sea);
             }
 
@@ -5514,6 +5555,16 @@ Shader "HiddenHarbours/Water"
                 // gameplay waterline) stays the clean iso-contour. depthC is local + foam-only (P1, rule 5).
                 float swashReach = max(_FoamWidth, 1e-3) * 2.0 + max(abs(_SwashAmplitude), 1e-3);
                 float swashGate  = 1.0 - smoothstep(0.0, swashReach, depthC);   // 1 at the wet edge -> 0 deeper
+                // THE FRINGE IN A LEE: its roughness, density and swash read the open sea's wind through the
+                // local fetch factor (FringeLeeOpen01). Open water and light wind keep every reading, so their
+                // fringe is unchanged to the bit; a dead lee reads the lee's ceilings, the light breeze the
+                // per-train law leaves there. BeachSwash keeps the open sea's calm fade (the drawn edge reads
+                // it too), so the fringe's swash is rescaled here to the fade at the lee's sea state.
+                float fringeOpen      = FringeLeeOpen01(waveFetchEnv);
+                float fringeRoughness = FringeLeeReading(_Roughness, _WaveFetchFringe.x, fringeOpen);
+                float fringeSea       = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, fringeOpen);
+                swashGate *= fringeSea < saturate(_Chop)
+                           ? SwashSeaStateGateAt(fringeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;
                 // shoreSlope (computed with the fringe above) turns the swash's depth amplitude into a
                 // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
                 // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.
@@ -5573,10 +5624,10 @@ Shader "HiddenHarbours/Water"
                     // crossed by more of the field there. As two field maxima grow toward each other the valley
                     // between them rises above (thr - soft) and the blobs MERGE; when the field dips below they
                     // SEPARATE — organic, in-place, not a sliding stamp. col.a only blends the foam (P1, rule 5).
-                    float foamField = saturate(churn + foamEdge * 0.5 + _Roughness * 0.4);
+                    float foamField = saturate(churn + foamEdge * 0.5 + fringeRoughness * 0.4);
                     float thr  = saturate(_FoamThreshold);
                     float soft = max(_FoamThresholdSoft, 1e-3);
-                    float bandGate = saturate(foamEdge + _Roughness * 0.4);
+                    float bandGate = saturate(foamEdge + fringeRoughness * 0.4);
                     // the MILKY soft mask (the #101 metaball look): partial coverage across the soft band — kept
                     // as the LIGHT/dissipating end (the soft edge of every blob).
                     float milky = smoothstep(thr - soft, thr + soft, foamField);
@@ -5584,7 +5635,7 @@ Shader "HiddenHarbours/Water"
                     // FULL (the painted solid-white _FoamTex shows through at the heart), leaving the milky band
                     // only near the boundary. Density (driven by sea-state) sets how strongly the core lifts and
                     // how wide the solid zone is: CALM => barely lifted (milky), ROUGH => a dense solid heart.
-                    float dens = FoamDensity();
+                    float dens = FoamDensityAt(fringeRoughness);
                     float core = SolidCore(foamField, thr, dens);
                     float foamCoverage = lerp(milky, 1.0, core) * bandGate;
                     // THE FRINGE YIELDS to the physical whitewater (owner ruling 2026-08-28). At

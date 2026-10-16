@@ -32,7 +32,12 @@ namespace HiddenHarbours.Tests.PlayMode
     // Then the open sea. Every train's factor is exactly 1 at full fetch, under today's law and the lee law
     // alike, so a frame where every pixel has full fetch, in water deeper than any surf, must not move by
     // one bit. It is shot three times inside one rendered frame: shipped, with the fetch model off, and
-    // shipped again. That is the only assertion; the rest is plates.
+    // shipped again.
+    //
+    // The shore fringe reads the open sea's wind through the local fetch factor, so every lee station frame
+    // is shot twice inside one rendered frame: shipped, and with the fringe's lee off (ceilings of 1 keep
+    // every reading: the fringe as it was before it read the fetch). In light wind the two must not differ
+    // by one bit. Those two are the only assertions; the rest is plates.
 
     public class LeeSeaPlatePlayTests
     {
@@ -190,15 +195,17 @@ namespace HiddenHarbours.Tests.PlayMode
             var creekBed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>("Assets/_Project/Data/Terrain/NineMileCreekSeabed.asset");
             Assert.IsNotNull(bed);
             Assert.IsNotNull(creekBed);
-            WaveFetchSettings shipped = config.WaveFetch, off = shipped;
+            WaveFetchSettings shipped = config.WaveFetch, off = shipped, fringeOff = shipped;
             off.Strength = 0;
+            fringeOff.FringeLeeRoughness = 1f;
+            fringeOff.FringeLeeSeaState = 1f;
             // The lee law's per-train factor where this build has one; a build before it records today's.
             MethodInfo lee = typeof(WaveFetch).GetMethod("TrainEnvelope01", BindingFlags.Public | BindingFlags.Static,
                 null, new[] { typeof(float), typeof(float), typeof(WaveFetchSettings).MakeByRefType() }, null);
             string folder = Path.Combine(Application.temporaryCachePath, "lee-sea-w4-3");
             Directory.CreateDirectory(folder);
             var html = new StringBuilder("<meta charset='utf-8'><title>Lee sea plates</title>");
-            var frames = new StringBuilder("region,tide,level_m,wind,speed_m_per_s,toward_deg,offset_m,x,y,boat_x,boat_y,fetch01_drawn,fetch01_sim,today_factor,lee_factors,wavelengths_m\n");
+            var frames = new StringBuilder("region,tide,level_m,wind,speed_m_per_s,toward_deg,offset_m,x,y,boat_x,boat_y,fetch01_drawn,fetch01_sim,today_factor,lee_factors,wavelengths_m,dominant,changed_fringe_off,max_abs_fringe_off\n");
             var opens = new StringBuilder("region,tide,wind,x,y,lattice_points,min_fetch01,min_depth_m,surf_outer_depth_m,pixels,changed_fetch_off,max_abs_fetch_off,changed_repeat,max_abs_repeat\n");
             var failures = new List<string>();
             foreach (string region in new[] { "StPeters", "NineMileCreek" })
@@ -282,11 +289,23 @@ namespace HiddenHarbours.Tests.PlayMode
                             }
                             string stem = F($"{region}_{shore.Tide}_{mode}_{offset:000}m");
                             string caption = F($"{head}; {offset:F0} m off the lee waterline, at ({at.x:F2}, {at.y:F2}); a Cape Islander on the {Berth:F0} m berth at ({berth.x:F2}, {berth.y:F2}). Fetch here {fetch:F4} and {simFetch:F4}, {seabeds}. On the first, today's law gives every train {today:F4}; the lee law gives [{factors}] to trains of [{lambdas}] m.");
-                            Shoot(read, Path.Combine(folder, stem), false);
+                            // Shipped, then the fringe's lee off, inside one rendered frame (no yield between them).
+                            byte[] stationShot = Shoot(read, Path.Combine(folder, stem), false);
+                            config.WaveFetch = fringeOff;
+                            Publish(bridge, surface);
+                            byte[] fringeAsBefore = Shoot(read, Path.Combine(folder, stem + "_fringeoff"), false);
+                            config.WaveFetch = shipped;
+                            Publish(bridge, surface);
+                            Compare(stationShot, fringeAsBefore, out int changedFringe, out float maxFringe);
+                            Mask(stationShot, fringeAsBefore, Path.Combine(folder, stem + "_fringediff.png"));
+                            if (mode == "base" && changedFringe > 0)
+                                failures.Add(F($"{region} {shore.Tide} water, light wind, {offset:F0} m off the lee waterline: the fringe's lee moved {changedFringe} pixels (max |d| {maxFringe:R}); in light wind it must keep every reading"));
+                            caption += F($" Shot twice inside one rendered frame, shipped and with the fringe's lee off: {changedFringe} pixels differ (max |d| {maxFringe:R}).");
                             File.WriteAllText(Path.Combine(folder, stem + ".txt"), caption);
-                            html.Append("<figure><img width='768' src='").Append(stem)
-                                .Append(".png'><figcaption>").Append(caption).Append("</figcaption></figure>\n");
-                            frames.Append(F($"{region},{shore.Tide},{shore.Level:R},{mode},{speed:R},{toward:R},{offset:R},{at.x:R},{at.y:R},{berth.x:R},{berth.y:R},{fetch:R},{simFetch:R},{today:R},{factors},{lambdas}\n"));
+                            html.Append("<figure><img width='768' src='").Append(stem).Append(".png'><img width='768' src='")
+                                .Append(stem).Append("_fringeoff.png'><img width='768' src='").Append(stem)
+                                .Append("_fringediff.png'><figcaption>").Append(caption).Append("</figcaption></figure>\n");
+                            frames.Append(F($"{region},{shore.Tide},{shore.Level:R},{mode},{speed:R},{toward:R},{offset:R},{at.x:R},{at.y:R},{berth.x:R},{berth.y:R},{fetch:R},{simFetch:R},{today:R},{factors},{lambdas},{trains.DominantIndex},{changedFringe},{maxFringe:R}\n"));
                         }
 
                         // The open sea, on the drawn seabed: full fetch, and water deeper than this sea's surf.
@@ -397,6 +416,23 @@ namespace HiddenHarbours.Tests.PlayMode
                 for (int k = 0; k < 16; k += 4)
                     maxAbs = Mathf.Max(maxAbs, Mathf.Abs(BitConverter.ToSingle(a, i + k) - BitConverter.ToSingle(b, i + k)));
             }
+        }
+
+        // The pixels two shots differ in, white on black, laid out as the shots' PNGs are.
+        static void Mask(byte[] a, byte[] b, string path)
+        {
+            var colors = new Color32[Pixels * Pixels];
+            for (int p = 0, i = 0; p < colors.Length; p++, i += 16)
+            {
+                bool same = a.Length == b.Length;
+                for (int k = 0; k < 16 && same; k++) same = a[i + k] == b[i + k];
+                colors[p] = same ? new Color32(0, 0, 0, 255) : new Color32(255, 255, 255, 255);
+            }
+            var png = new Texture2D(Pixels, Pixels, TextureFormat.RGB24, false);
+            png.SetPixels32(colors);
+            png.Apply();
+            File.WriteAllBytes(path, png.EncodeToPNG());
+            Object.DestroyImmediate(png);
         }
     }
 }

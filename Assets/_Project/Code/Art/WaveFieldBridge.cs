@@ -104,6 +104,11 @@ namespace HiddenHarbours.Art
         /// of a drifting wind is one more place for the two seas to disagree.</summary>
         private static readonly int IdWaveFetchParams2 = Shader.PropertyToID("_WaveFetchParams2");
 
+        /// <summary>The shore fringe's lee (<see cref="WaveFetch.FringeLee"/>): x = the roughness its foam
+        /// keeps in a dead lee, y = the sea state its swash keeps there, z = the fetch factor at and above
+        /// which it reads as open water. Look only: no hull reads it.</summary>
+        private static readonly int IdWaveFetchFringe = Shader.PropertyToID("_WaveFetchFringe");
+
         /// <summary>xyz = the BREAK depth (metres) at fetch envelope 1, at the midpoint and at the lee
         /// floor; w = the lee floor itself. Water shallower than the depth read off this triple is
         /// breaking (ADR 0040). Solved on the tick by <c>BreakerMath.ContourFor</c> — inverting the
@@ -289,6 +294,7 @@ namespace HiddenHarbours.Art
                 Mathf.Max(WaveFetch.MinGateBand, settings.ShoreBandMeters),
                 settings.Bands,
                 upwind.x, upwind.y));
+            Shader.SetGlobalVector(IdWaveFetchFringe, WaveFetch.FringeLee(in settings));
         }
 
         /// <summary>The fetch model SILENT — strength 0, the exact passthrough — so a stopped play

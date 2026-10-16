@@ -126,6 +126,9 @@ MonoBehaviour:
     Exponent: 1.3
     ShoreBandMeters: 0.5
     Bands: 0
+    FringeLeeRoughness: 0.2
+    FringeLeeSeaState: 0.315
+    FringeOpenFactor: 0.9
   Breakers:
     BreakerIndex: 0.78
     BreakBandRatio: 0.15

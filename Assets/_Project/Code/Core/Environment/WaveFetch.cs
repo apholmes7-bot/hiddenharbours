@@ -60,6 +60,18 @@ namespace HiddenHarbours.Core
         [Tooltip("Strength reaching full spectral shelter; zero uses 0.8. Lower values reach it sooner.")]
         [Range(0.01f, 1f)] public float FullShelterStrength;
 
+        [Tooltip("The shore fringe in a dead lee: the wind roughness its foam keeps there (0..1, the wind " +
+                 "over 12 m/s). Zero uses 0.2, a light breeze of about 2.4 m/s; 1 = the fringe ignores the " +
+                 "lee. Look only: the hull never reads it.")]
+        [Range(0f, 1f)] public float FringeLeeRoughness;
+        [Tooltip("The same for the fringe's swash, on the sea-state axis (0 glass .. 1 storm). Zero uses " +
+                 "0.315, the same light breeze; 1 = the swash ignores the lee. Look only.")]
+        [Range(0f, 1f)] public float FringeLeeSeaState;
+        [Tooltip("The dominant train's fetch factor at and above which the shore fringe reads as open water; " +
+                 "below it the fringe's lee grows linearly to a dead lee at 0. Zero uses 0.9: a shallow first " +
+                 "march step reads an open beach's wet edge a little under 1. Look only.")]
+        [Range(0f, 1f)] public float FringeOpenFactor;
+
         /// <summary>Code defaults keep fetch off. The serialized config enables spectral shelter.
         /// The shortest band recovers over eight metres; longer waves need the broader reach.</summary>
         public static WaveFetchSettings Default => new WaveFetchSettings
@@ -76,6 +88,9 @@ namespace HiddenHarbours.Core
             FullShelterStrength = 0.8f,
             GrowthExponent = 0.25f,
             Bands = 0f,             // smooth: this band is geometry, not colour (see Band01)
+            FringeLeeRoughness = 0.2f,
+            FringeLeeSeaState = 0.315f,
+            FringeOpenFactor = 0.9f,
         };
     }
 
@@ -242,6 +257,28 @@ namespace HiddenHarbours.Core
 
         public static float FullStrength(in WaveFetchSettings s)
             => Positive(s.FullShelterStrength, 0.8f, 0.01f, 1f);
+
+        /// <summary>The shore fringe's lee, as the shader's <c>_WaveFetchFringe</c>: x = the roughness its
+        /// foam keeps in a dead lee, y = the sea state its swash keeps there, z = the fetch factor at and above
+        /// which it reads as open water. Zero fields use the defaults, so z is never zero here; the shader
+        /// reads z = 0 as unpublished (no lee).</summary>
+        public static Vector4 FringeLee(in WaveFetchSettings s) => new Vector4(
+            Positive(s.FringeLeeRoughness, 0.2f, 0f, 1f),
+            Positive(s.FringeLeeSeaState, 0.315f, 0f, 1f),
+            Positive(s.FringeOpenFactor, 0.9f, 0.01f, 1f),
+            0f);
+
+        /// <summary>How open the shore is for the fringe, from the dominant train's fetch factor: 1 at and
+        /// above <paramref name="openFactor"/>, falling linearly to 0 in a dead lee; a zero
+        /// <paramref name="openFactor"/> reads as open. Twin: the shader's FringeLeeOpen01.</summary>
+        public static float FringeLeeOpen01(float fetchFactor, float openFactor)
+            => openFactor > 0f ? Mathf.Clamp01(fetchFactor / openFactor) : 1f;
+
+        /// <summary>A fringe reading in the lee: above <paramref name="ceiling"/> it falls toward it by the
+        /// lee's share; at or under the ceiling, or on open water, it is returned as is, to the bit.
+        /// Twin: the shader's FringeLeeReading.</summary>
+        public static float FringeLeeReading(float reading, float ceiling, float open01)
+            => (open01 < 1f && reading > ceiling) ? Mathf.Lerp(ceiling, reading, open01) : reading;
 
         /// <summary>A stylised fetch-limited growth law. The required distance grows by a data exponent
         /// between the two wavelength endpoints, then a Hermite gate grows each train over that

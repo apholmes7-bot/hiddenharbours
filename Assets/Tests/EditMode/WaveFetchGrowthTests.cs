@@ -229,6 +229,79 @@ namespace HiddenHarbours.Tests.EditMode
                     Mathf.Pow(sum / trains.TotalAmplitude, trains.CrestSharpening) + 1e-6f);
         }
 
+        [Test]
+        public void TheFringeLee_KeepsOpenWaterAndLightWind_ToTheBit()
+        {
+            var s = ShippedFetch();
+            Vector4 lee = WaveFetch.FringeLee(in s);
+            // The lee plates' light wind, 2.3 m/s: roughness is the wind over 12 m/s, the sea state the
+            // weather's band axis. Both sit under the ceilings, so the fringe keeps them everywhere.
+            Assert.LessOrEqual(2.3f / 12f, lee.x);
+            Assert.LessOrEqual(HiddenHarbours.Environment.WeatherModel.SeaState01(2.3f), lee.y);
+            for (int i = 0; i <= 64; i++)
+            for (int j = 0; j <= 100; j++)
+            {
+                float reading = i / 64f, factor = j / 100f;
+                float kept = WaveFetch.FringeLeeReading(reading, lee.x, WaveFetch.FringeLeeOpen01(factor, lee.z));
+                if (factor >= lee.z || reading <= lee.x) Assert.AreEqual(reading, kept);
+                else Assert.That(kept, Is.InRange(lee.x, reading));
+            }
+            // A dead lee reads the ceiling; an unpublished open factor reads open water; zero fields use the defaults.
+            Assert.AreEqual(lee.x, WaveFetch.FringeLeeReading(0.8f, lee.x, WaveFetch.FringeLeeOpen01(0f, lee.z)));
+            Assert.AreEqual(1f, WaveFetch.FringeLeeOpen01(0f, 0f));
+            var zero = default(WaveFetchSettings);
+            Assert.AreEqual(WaveFetch.FringeLee(WaveFetchSettings.Default), WaveFetch.FringeLee(in zero));
+        }
+
+        [Test]
+        public void TheFringeLee_HasOneTwin_AndTheFringeReadsIt()
+        {
+            string water = Read("Art/Shaders/HiddenHarboursWater.shader");
+            string cpu = Read("Code/Core/Environment/WaveFetch.cs");
+            string gpuOpen = Group(water, @"float FringeLeeOpen01\(float fetchFactor\)\s*\{\s*return (.*?);");
+            string cpuOpen = Group(cpu, @"float FringeLeeOpen01\(float fetchFactor, float openFactor\)\s*=> (.*?);");
+            Assert.AreEqual(Canonical(gpuOpen),
+                Canonical(cpuOpen.Replace("openFactor", "_WaveFetchFringe.z").Replace("Mathf.Clamp01", "saturate")));
+            string gpuRead = Group(water, @"float FringeLeeReading\(float reading, float ceiling, float open01\)\s*\{\s*return (.*?);");
+            string cpuRead = Group(cpu, @"float FringeLeeReading\(float reading, float ceiling, float open01\)\s*=> (.*?);");
+            Assert.AreEqual(Canonical(gpuRead), Canonical(cpuRead.Replace("Mathf.Lerp", "lerp")));
+            // The fringe's density and swash fade keep the open sea's formulas, with the reading as a parameter.
+            Assert.AreEqual(Canonical(Group(water, @"float FoamDensity\(\)\s*\{(.*?)\}").Replace("_Roughness", "roughness")),
+                Canonical(Group(water, @"float FoamDensityAt\(float roughness\)\s*\{(.*?)\}")));
+            Assert.AreEqual(Canonical(Group(water, @"float SwashSeaStateGate\(\)\s*\{(.*?)\}").Replace("_Chop", "sea01")),
+                Canonical(Group(water, @"float SwashSeaStateGateAt\(float sea01\)\s*\{(.*?)\}")));
+            string code = Canonical(water);
+            foreach (string line in new[] {
+                "float fringeOpen = FringeLeeOpen01(waveFetchEnv);",
+                "float fringeRoughness = FringeLeeReading(_Roughness, _WaveFetchFringe.x, fringeOpen);",
+                "float fringeSea = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, fringeOpen);",
+                "swashGate *= fringeSea < saturate(_Chop) ? SwashSeaStateGateAt(fringeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;",
+                "float foamField = saturate(churn + foamEdge * 0.5 + fringeRoughness * 0.4);",
+                "float bandGate = saturate(foamEdge + fringeRoughness * 0.4);",
+                "float dens = FoamDensityAt(fringeRoughness);",
+                "float capDens = FoamDensity();" })
+                Assert.AreEqual(1, Regex.Matches(code, Regex.Escape(Canonical(line))).Count, line);
+        }
+
+        [Test]
+        public void TheBridge_PublishesTheFringeLee()
+        {
+            var s = ShippedFetch();
+            try
+            {
+                WaveFieldBridge.PublishFetchGlobals(in s, new Vector2(10f, 0f));
+                Assert.AreEqual(WaveFetch.FringeLee(in s), Shader.GetGlobalVector("_WaveFetchFringe"));
+            }
+            finally { WaveFieldBridge.PublishFetchOff(); }
+        }
+
+        private static string Group(string text, string pattern)
+        {
+            string value = Regex.Match(text, pattern, RegexOptions.Singleline).Groups[1].Value;
+            Assert.IsNotEmpty(value, pattern);
+            return value;
+        }
+
         private static string Canonical(string text)
         {
             text = Regex.Replace(text, @"(?<=\d)f\b", "");
