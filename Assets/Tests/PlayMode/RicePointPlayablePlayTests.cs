@@ -88,6 +88,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
         protected IEnumerator LoadDestination()
         {
+            // A live coordinator switches off every root of the scene left behind; here that would be the runner.
+            var leaving = SceneManager.GetActiveScene();
+            var coordinator = Object.FindAnyObjectByType<RegionTravelCoordinator>();
+            if (leaving == _origin && coordinator != null && coordinator.isActiveAndEnabled)
+                Assert.Fail("LoadDestination would leave the test runner's scene '" + leaving.name +
+                    "' while a RegionTravelCoordinator is live; it would switch the runner off and stop the test.");
             // Match the loader's scene-loaded activation, before destination Start callbacks.
             void Activate(Scene scene, LoadSceneMode mode)
             {
