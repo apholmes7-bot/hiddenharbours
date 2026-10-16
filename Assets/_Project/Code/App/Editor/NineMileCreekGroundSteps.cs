@@ -269,6 +269,7 @@ namespace HiddenHarbours.App.Editor
                 (WharfStep, s => Wharf(s, inputs)),
                 (WharfStep, s => Face(s, inputs)),
                 (WharfStep, ApronGear),
+                (WharfStep, WharfPumps),
                 (WharfStep, s => WallBerths(s, WharfStep, inputs.Berths)),
                 (RoadsStep, s => Roads(s, inputs)),
                 (CliffStep, Cliffs),
@@ -686,6 +687,26 @@ namespace HiddenHarbours.App.Editor
                 retired++;
             }
             patch.Note(NineMileCreekDressing.ApronRootName, "over the dredged basin", $"{retired} props inactive, ids kept");
+            return patch.Seal(scene);
+        }
+
+        /// <summary>The wharf's two fuel pumps stood on that apron too: both stand down with their ids kept (the owner's
+        /// ruling) until H5's drawn wharf re-sites them, and boats fuel by can from Route 91. One edit stops the pedestals
+        /// and their hoses together; the step refuses unless both ids are under it.</summary>
+        static LayerPatch WharfPumps(SceneYaml scene)
+        {
+            const string step = WharfStep;
+            Doc fuel = scene.RootNamed(NineMileCreekStation.RootName);
+            Doc pumps = RequireChild(scene, scene.TransformOf(fuel), NineMileCreekStation.WharfRootName, step);
+            var patch = new LayerPatch(step, NineMileCreekStation.RootName + "/" + NineMileCreekStation.WharfRootName, pumps.FileId);
+            HashSet<long> under = scene.SubtreeOf(pumps.FileId);
+            List<string> ids = scene.Docs.Where(d => under.Contains(d.FileId) && d.IsScript("HiddenHarbours.Economy.FuelPump"))
+                .Select(d => d.Field("_id")).ToList();
+            if (ids.Count != NineMileCreekStation.WharfPumpGrades.Length || ids.Any(string.IsNullOrEmpty))
+                throw new Refusal($"{step}: '{NineMileCreekStation.WharfRootName}' holds {ids.Count} pumps; the step stands " +
+                                  $"down {NineMileCreekStation.WharfPumpGrades.Length}, each on its id.");
+            patch.Edit(pumps, Set(pumps.Text, "m_IsActive", "0"), $"{NineMileCreekStation.WharfRootName} stood down");
+            patch.Note(NineMileCreekStation.WharfRootName, "over the dredged basin", $"{ids.Count} pumps inactive, ids kept: {string.Join(", ", ids)}");
             return patch.Seal(scene);
         }
 

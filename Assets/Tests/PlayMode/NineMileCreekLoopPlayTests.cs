@@ -529,34 +529,30 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
-        //  5. THE WHARF'S PUMPS — walked to from the step-off at the month's lowest water
+        //  5. THE WHARF'S PUMPS — stood down on their ids
         // =============================================================================================
 
-        /// <summary>The wharf's two fuel pedestals, each walked to from the step-off at berth 0 at the month's lowest
-        /// water, when the tide bares the most ground it ever will. Apart from the loop, so the loop proves the rest of
-        /// the day and this case alone names a pump she cannot reach.</summary>
-        [UnityTest, Timeout(600000)]
-        public IEnumerator TheWharfPumps_SheWalksToEach_AtLowWater()
+        /// <summary>The wharf's two fuel pedestals stood on the old west apron, which G3 dredged: they stood in 2.2 m of
+        /// water at the month's lowest. Both stand down with their ids kept (the owner's ruling) until H5's drawn wharf
+        /// re-sites them, and boats fuel by can from Route 91. Each id must still name one pump in the creek, and
+        /// neither that pump nor its pedestal may be live.</summary>
+        [UnityTest, Timeout(300000)]
+        public IEnumerator TheWharfPumps_StandDown_OnTheirIds()
         {
-            Tide tide = ScanTheTide(daylightOnly: false);
-            for (var e = PinTheTide(tide.LowAt); e.MoveNext();) yield return e.Current;
-            var unreached = new List<string>();
+            yield return null;
+            FuelPump[] pumps = Object.FindObjectsByType<FuelPump>(FindObjectsInactive.Include);
             foreach (string id in new[] { WharfGasPumpId, WharfDieselPumpId })
             {
-                var pump = Only<FuelPump>(p => p.Id == id, id);
-                Vector2 at = pump.WorldPosition;
-                float ground = GameServices.TidalTerrain.ElevationAt(at);
-                StandHerAt(NineMileCreekBuilder.DisembarkPos);
-                for (int i = 0; i < 4; i++) yield return null;
-                var walk = new Walk();
-                for (var e = WalkTo(at, Mathf.Max(0.5f, pump.ReachMeters - 0.3f), "to " + id, walk); e.MoveNext();)
-                    yield return e.Current;
-                string line = $"{id} at ({at.x:0.##}, {at.y:0.##}): ground {ground:0.###} m, {Depth(at):0.###} m of water " +
-                              $"at the month's lowest ({Water():0.###} m); {walk}";
-                TestContext.WriteLine(line);
-                if (!walk.Reached) unreached.Add(line);
+                var named = new List<FuelPump>();
+                foreach (FuelPump p in pumps)
+                    if (p.Id == id) named.Add(p);
+                Assert.That(named.Count, Is.EqualTo(1), $"{id} names {named.Count} pumps in the creek; the stand-down keeps it on one.");
+                GameObject hose = named[0].gameObject, pedestal = hose.transform.parent.gameObject;
+                TestContext.WriteLine($"{id}: '{hose.name}' on '{pedestal.name}', live {hose.activeInHierarchy}, " +
+                                      $"pedestal live {pedestal.activeInHierarchy}");
+                Assert.That(hose.activeInHierarchy, Is.False, $"{id} is live; the wharf pumps stand down until H5 re-sites them.");
+                Assert.That(pedestal.activeInHierarchy, Is.False, $"{id}'s pedestal '{pedestal.name}' still draws.");
             }
-            Assert.That(unreached, Is.Empty, "wharf pumps she cannot walk to at the lowest water:\n" + string.Join("\n", unreached));
         }
 
         // =============================================================================================

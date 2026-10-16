@@ -565,10 +565,14 @@ namespace HiddenHarbours.Tests.EditMode
             (1889992478, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_12"),
             (1740556376, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.bollard_13"),
             (1310633823, "HiddenHarbours.World.ShoreCleat", "wharf.nine_mile_creek.cleat_14"),
+            // The wharf's two fuel pumps, stood down in step 05 on their ids (the owner's ruling).
+            (1955470195, "HiddenHarbours.Economy.FuelPump", "fixture.nmc.wharf_pump_diesel"),
+            (2073826116, "HiddenHarbours.Economy.FuelPump", "fixture.nmc.wharf_pump_gas"),
         };
 
-        /// <summary>Every id rows 1 to 6 keep still names its object: the class, and the stable id where it has one.
-        /// The blockers, the waterlines and the wall berths are held by their own tests above.</summary>
+        /// <summary>Every id rows 1 to 6 keep still names its object: the class, and the stable id where it has one; so
+        /// do the wharf's two fuel pumps, stood down on theirs. The blockers, the waterlines and the wall berths are held
+        /// by their own tests above.</summary>
         [Test]
         public void EveryIdTheScopeKeeps_StillNamesItsObject()
         {
