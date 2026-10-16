@@ -55,12 +55,6 @@ namespace HiddenHarbours.Tests.PlayMode
         RenderTexture _rt;
         int _w, _h;
 
-        // The installed gull flock, stood down by the acceptance case alone, and every flag it saved.
-        GullFlock _installedFlock;
-        bool _flockWasEnabled;
-        readonly List<(Renderer Renderer, bool Enabled)> _gullRenderers = new();
-        readonly List<(SpriteShadow Shadow, bool Enabled)> _gullShadows = new();
-
         [UnityTearDown]
         public IEnumerator TearDownRegion()
         {
@@ -71,7 +65,6 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
             foreach (Object o in _spawned) if (o != null) Object.Destroy(o);
             _spawned.Clear();
-            RestoreGulls();   // before the first yield, so the birds come back whatever the unload does
 
             // ⚠⚠ LOOK THE CLEANUP SCENE UP BEFORE CREATING IT — CreateScene THROWS on a name that already
             // exists, and this teardown also runs after a case that SKIPPED before loading the region (on
@@ -107,13 +100,6 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator AtStPeters_TheWaterShowsTheFishTheFinderSays_AndYouCanCastAtThem()
         {
             RequireAGraphicsDevice();          // FIRST, before any yield
-
-            // This case measures where the fish are DRAWN, and the flock now comes down on surface schools
-            // and splashes into them, which makes the fish bolt (GullSplashed). It flies on UNSCALED time, so
-            // the stopped clock below does not hold it either. Stood down for this case alone, before the
-            // region loads, so no bird flies, lands or splashes while the shoal is measured; the teardown
-            // puts them back.
-            StandDownGulls();
 
             yield return LoadStPeters();
             yield return SetHour(12f);         // the charter's "a shallows school at noon"
@@ -610,50 +596,6 @@ namespace HiddenHarbours.Tests.PlayMode
             File.WriteAllBytes(path, tex.EncodeToPNG());
             Object.DestroyImmediate(tex);
             Debug.Log($"[{PlateDir}] plate -> {path}");
-        }
-
-        /// <summary>Stands the installed gull flock down for one case, as <c>MeshInteriorLampsPlayTests</c>
-        /// does: the flock stops advancing and every bird and pooled shadow under it stops drawing, with each
-        /// flag saved for <see cref="RestoreGulls"/>.</summary>
-        void StandDownGulls()
-        {
-            // Match SeagullLandingPlayTests: the hidden DontDestroyOnLoad host is not a scene find.
-            foreach (GullFlock flock in Resources.FindObjectsOfTypeAll<GullFlock>())
-            {
-                if (flock == null || flock.gameObject.name != "GullFlock" ||
-                    (flock.gameObject.hideFlags & HideFlags.HideAndDontSave) != HideFlags.HideAndDontSave)
-                    continue;
-                _installedFlock = flock;
-                break;
-            }
-            if (_installedFlock == null) return; // The gulls' fixture owns the installation assertion.
-
-            _flockWasEnabled = _installedFlock.enabled;
-            // Save all flags BEFORE any OnDisable can change a pooled renderer's flag.
-            foreach (Renderer renderer in _installedFlock.GetComponentsInChildren<Renderer>(true))
-                _gullRenderers.Add((renderer, renderer.enabled));
-            foreach (SpriteShadow shadow in _installedFlock.GetComponentsInChildren<SpriteShadow>(true))
-                _gullShadows.Add((shadow, shadow.enabled));
-
-            _installedFlock.enabled = false;
-            foreach (var saved in _gullShadows) saved.Shadow.enabled = false;
-            foreach (var saved in _gullRenderers) saved.Renderer.enabled = false;
-        }
-
-        /// <summary>Puts back exactly what <see cref="StandDownGulls"/> saved; nothing when the case did not
-        /// stand the flock down.</summary>
-        void RestoreGulls()
-        {
-            // OnEnable can re-stamp a shadow renderer: restore its component first, then the exact
-            // renderer flags saved before stand-down. Do not destroy or replace the installed host.
-            foreach (var saved in _gullShadows)
-                if (saved.Shadow != null) saved.Shadow.enabled = saved.Enabled;
-            foreach (var saved in _gullRenderers)
-                if (saved.Renderer != null) saved.Renderer.enabled = saved.Enabled;
-            if (_installedFlock != null) _installedFlock.enabled = _flockWasEnabled;
-            _gullShadows.Clear();
-            _gullRenderers.Clear();
-            _installedFlock = null;
         }
     }
 }
