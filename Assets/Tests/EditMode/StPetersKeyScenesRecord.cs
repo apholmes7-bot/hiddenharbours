@@ -5,11 +5,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// <b>ST PETERS' KEY SCENES, AS THEIR FILES RECORD THEM</b>, row by row in CD's order, for
     /// <see cref="StPetersKeyScenesContentTests"/>. Each scene's Source names the file its rows come from and pins it
-    /// by its hash. The Landing and the cannery are return 2's rows as main places them (#913); their new rows land
-    /// with them in wave 1b. The other seven are CD's one-scene package of 2026-10-01, read through the id map
-    /// (<c>docs/design/st-peters-key-scenes/key-scene-id-map.json</c>) and, where a mount names no host by id, the
-    /// hosts' table beside it: data, not placed, until their waves place them. Written from the importer's output and
-    /// checked row by row against the package by a reader of its own, so a row here changes only with its file. The
+    /// by its hash. Amendment 2 re-takes the nine scenes from CD's 2026-10-07 files, through the stable
+    /// id map and the two ruled gull exceptions. The east end joins its 17 and the Landing's four by id,
+    /// in the existing asset's order, on the committed ground. Placed flags and selections stand. The
     /// step reads no more of a piece than this holds; its foot, layer, walk, collider, tide window, options and
     /// lights are the importer's tests' (<see cref="KeySceneImportTests"/>).
     /// </summary>
@@ -58,22 +56,22 @@ namespace HiddenHarbours.Tests.EditMode
 
         internal static readonly Scene[] Scenes =
         {
-            new Scene("keyscene.stp_alder_fall", false, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_alder_fall/scene.json, 32326 bytes, sha256 cfdf7ca09bd48835ab3a0f2c9c9780f8a9c5ae8a974b81377fa89f93b79b7b1e", new string[] {  }),
-            new Scene("keyscene.stp_cannery", true, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_cannery/scene.json, 18018 bytes, sha256 e803abdb2a08f971140e0e7b9e9d6822a53f645dc7ccf6dcd99e3c7a60ec2f71", new string[] {  }),
-            new Scene("keyscene.stp_crossing", false, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_crossing/scene.json, 93787 bytes, sha256 3668d9f5d0ae81e89350222a1c2218a46a946643a1e6d734701601417555a395", new string[] {  }),
-            new Scene("keyscene.stp_east_end", true, "HH-st-peters-phase-a-art-2026-10-02/east-end/eastEndPieces.json; sha256 e7cd4023be9c6819a7c1d66143ba76dfa47ad5f13ba4f8e12c90c0080c160f9a", new string[] { "structure.stp_net_loft", "structure.stp_net_shed", "prop.stp_loft_traps", "prop.stp_loft_traps_b", "prop.stp_loft_buoys", "prop.stp_loft_nets", "prop.stp_loft_wood", "prop.stp_loft_oilskins", "prop.stp_loft_barrow", "prop.stp_flake_a", "prop.stp_flake_b", "prop.stp_shed_reel", "prop.stp_shed_totes", "prop.stp_shed_baskets", "prop.stp_bait_ice", "prop.stp_bait_salt", "prop.stp_bait_bike", "prop.stp_bait_flag" }),
-            new Scene("keyscene.stp_gap_bridge", false, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_gap_bridge/scene.json, 18372 bytes, sha256 f8a2c1a73d422b54ede4fa2967b314388cf7a1d4ebd05352d5f05f5d780e2a89", new string[] {  }),
-            new Scene("keyscene.stp_ginnys_plot", false, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_ginnys_plot/scene.json, 74708 bytes, sha256 485295444d40fdb2ca4811f1a1423591fda601646a6980f075332fc71e456edb", new string[] {  }),
-            new Scene("keyscene.stp_landing", true, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_landing/scene.json, 19211 bytes, sha256 0ec0da53ccf7f2a55a2f40697fa7fe6ec26e809c3ef4ed63a1ac6f1be5cdebd4", new string[] {  }),
-            new Scene("keyscene.stp_main_beach", false, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_main_beach/scene.json, 14731 bytes, sha256 5038d430dbb07cf5dcff89e399646ed98c531b9c0917f4baac7b5737ff118c27", new string[] {  }),
-            new Scene("keyscene.stp_ne_light", false, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_ne_light/scene.json, 36010 bytes, sha256 d9fec2ce6df52908432c0b88cc9cff7be21436fe7e61e5e551eea15c4060e901", new string[] {  }),
-            new Scene("keyscene.stp_whelps_lookout", true, "HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_whelps_lookout/scene.json, 51709 bytes, sha256 6da6a6029654821458c47d2702c855b6c013b16148a14e9671d9a8b5097225f4", new string[] { "prop.stp_whelps_lookout_bench" }),
+            new Scene("keyscene.stp_alder_fall", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_alder_fall/scene.json, 38349 bytes, sha256 4fe2103714b9f8f0148f131a7062f8bb6446aefd6dd4f55d2b4ece55f1834304", new string[] {  }),
+            new Scene("keyscene.stp_cannery", true, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_cannery/scene.json, 19582 bytes, sha256 ffd309881aebc4f7fa8773c49d1d479056b28f970188936b1507d3239462951a", new string[] {  }),
+            new Scene("keyscene.stp_crossing", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_crossing/scene.json, 99406 bytes, sha256 28b122128269c734fe1fcf57d07a02e80444e5dd1e09b32eb8f826ea82c32f90", new string[] {  }),
+            new Scene("keyscene.stp_east_end", true, "HH-st-peters-one-scene-package-2026-10-07, scenes/lookpass.stp_east_end/scene.json, 12695 bytes, sha256 ff311bcbcdad346c0b92795a5e28b38297404565015be2f1659259613738bf43; scenes/keyscene.stp_landing/scene.json, 25754 bytes, sha256 2d8bde76678511edfa188d3d5df58410dae14da69c862e1f7121a19c6778bb09", new string[] { "structure.stp_net_loft", "structure.stp_net_shed", "prop.stp_loft_traps", "prop.stp_loft_traps_b", "prop.stp_loft_buoys", "prop.stp_loft_nets", "prop.stp_loft_wood", "prop.stp_loft_oilskins", "prop.stp_loft_barrow", "prop.stp_flake_a", "prop.stp_flake_b", "prop.stp_shed_reel", "prop.stp_shed_totes", "prop.stp_shed_baskets", "prop.stp_bait_ice", "prop.stp_bait_salt", "prop.stp_bait_bike", "prop.stp_bait_flag" }),
+            new Scene("keyscene.stp_gap_bridge", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_gap_bridge/scene.json, 18913 bytes, sha256 33d72e01a23011f8b22fc013543c83c71c1e96a6184724a97c2e5c3d7f0fc4a6", new string[] {  }),
+            new Scene("keyscene.stp_ginnys_plot", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ginnys_plot/scene.json, 78803 bytes, sha256 2df4b1b9509ce006b13eaf9ef4366698a708a64b1ca51732d01d212c25ba36e1", new string[] {  }),
+            new Scene("keyscene.stp_landing", true, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_landing/scene.json, 25754 bytes, sha256 2d8bde76678511edfa188d3d5df58410dae14da69c862e1f7121a19c6778bb09", new string[] {  }),
+            new Scene("keyscene.stp_main_beach", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_main_beach/scene.json, 18219 bytes, sha256 b01491f3d2a018535c021bcbb77a1c83157cd9e85e56c2aea962820da53dc45e", new string[] {  }),
+            new Scene("keyscene.stp_ne_light", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ne_light/scene.json, 41882 bytes, sha256 4508886b3363e71c94b70ba481aa22d028dcf8385a8d125443c17add37d3832f", new string[] {  }),
+            new Scene("keyscene.stp_whelps_lookout", true, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_whelps_lookout/scene.json, 53824 bytes, sha256 fc8687ee9d34247dcda961fb02c94981c860685d4c495d832af9cdda915c0d4a", new string[] { "prop.stp_whelps_lookout_bench" }),
         };
 
         internal static readonly Row[] Rows =
         {
             // keyscene.stp_alder_fall
-            new Row("keyscene.stp_alder_fall", "fall.stp_alder_fall", "waterfall", "alderFall", "fallfx", "", 106.22f, 61.32f, 2.05f, "mount", 0, null, "", "pond.stp_alder_plunge", "surface", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_alder_fall", "fall.stp_alder_fall", "waterfall", "alderFall", "fallfx", "", 106.22f, 61.32f, 2.062f, "mount", 0, null, "", "pond.stp_alder_plunge", "surface", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_alder_fall", "rock.stp_af_flat_stone", "rock", "pxRockIso3", "rock", "", 103.85f, 63.5f, 2.16f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_alder_fall", "prop.stp_af_tin_cup", "setPiece", "afPieces", "tinCup", "", 103.98f, 63.44f, 2.33f, "mount", 1, null, "", "rock.stp_af_flat_stone", "top", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_alder_fall", "rock.stp_af_stepping_stone_1", "rock", "pxRockIso3", "rock", "", 104.55f, 63.95f, 2.07f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
@@ -307,7 +305,7 @@ namespace HiddenHarbours.Tests.EditMode
             new Row("keyscene.stp_ginnys_plot", "plant.stp_gp_meadowsweet_01", "plant", "plantIsoRig5", "Meadowsweet", "", 69f, 24.1f, 6f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ginnys_plot", "plant.stp_gp_steeplebush_01", "plant", "plantIsoRig5", "Steeplebush", "", 92.8f, 12.2f, 6f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ginnys_plot", "plant.stp_gp_speckled_alder_01", "plant", "plantIsoRig5", "SpeckledAlder", "", 104.6f, 57.2f, 5.37f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ginnys_plot", "plant.stp_gp_sweet_gale_01", "plant", "plantIsoRig5", "SweetGale", "", 102.9f, 51.8f, 5.25f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ginnys_plot", "plant.stp_gp_sweet_gale_01", "plant", "plantIsoRig5", "SweetGale", "", 102.9f, 51.8f, 5.06f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ginnys_plot", "rock.stp_gp_erratic_01", "rock", "pxRockIso3", "erratic", "", 97.6f, 30.2f, 6f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ginnys_plot", "rock.stp_gp_perched_01", "rock", "pxRockIso3", "perched", "", 68.9f, 36.8f, 6f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ginnys_plot", "rock.stp_gp_erratic_02", "rock", "pxRockIso3", "erratic", "", 110.2f, 77.9f, 0.02f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
@@ -344,9 +342,9 @@ namespace HiddenHarbours.Tests.EditMode
             new Row("keyscene.stp_ne_light", "prop.stp_ne_brow_bench", "setPiece", "wharfDecor", "bench", "", 189.6f, 45.9f, 11f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_barrow", "setPiece", "wharfDecor", "wheelbarrow", "", 194.2f, 57.4f, 11f, "ground", 5, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_0", "setPiece", "shoreFinds", "DriftBranch", "bleached", 188.19f, 37.77f, 0.55f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_1", "setPiece", "shoreFinds", "NetFloat", "dry", 192.87f, 40.86f, -0.51f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_1", "setPiece", "shoreFinds", "NetFloat", "dry", 192.98f, 41.01f, -0.49f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_2", "setPiece", "shoreFinds", "RopeScrap", "dry", 189.01f, 32.16f, 2.3f, "ground", 6, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_3", "setPiece", "shoreFinds", "TrapLath", "bleached", 191.6f, 40.6f, -0.32f, "ground", 1, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_3", "setPiece", "shoreFinds", "TrapLath", "bleached", 191.77f, 41f, -0.32f, "ground", 1, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_4", "setPiece", "shoreFinds", "Driftwood", "bleached", 194.4f, 42.8f, -0.05f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_5", "setPiece", "shoreFinds", "GullFeather", "dry", 188.38f, 36.67f, 0.82f, "ground", 7, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_stack_a", "gull", "seagull", "perch", "", 223.6f, 58.1f, 7.65f, "mount", 3, null, "", "form.stp_lantern_stack", "top", new string[] { "today" }, new string[] {  }),
@@ -355,14 +353,14 @@ namespace HiddenHarbours.Tests.EditMode
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_bar_a", "gull", "seagull", "perch", "", 233.6f, 75.2f, -0.02f, "ground", 2, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_bar_b", "gull", "seagull", "perch", "", 235.1f, 76.4f, -0.29f, "ground", 7, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_bar_c", "gull", "seagull", "perch", "", 231.8f, 73.9f, -0.03f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_face_a", "gull", "seagull", "perch", "", 199f, 46.2f, 6.4f, "mount", 4, null, "", "ground.stp_ne_head", "westFaceLedge", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_face_b", "gull", "seagull", "perch", "", 204.9f, 47.9f, 8.3f, "mount", 3, null, "", "ground.stp_ne_head", "westFaceLedge", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_face_c", "gull", "seagull", "perch", "", 210.6f, 50.2f, 4.6f, "mount", 5, null, "", "ground.stp_ne_head", "southFaceLedge", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_face_a", "gull", "seagull", "perch", "", 199f, 46.2f, 6.4f, "mount", 4, null, "", "form.stp_ne_head", "westFaceLedge", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_face_b", "gull", "seagull", "perch", "", 204.9f, 47.9f, 8.3f, "mount", 3, null, "", "form.stp_ne_head", "westFaceLedge", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_face_c", "gull", "seagull", "perch", "", 210.6f, 50.2f, 4.6f, "mount", 5, null, "", "form.stp_ne_head", "southFaceLedge", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "aid.stp_ne_bar_east_cardinal", "navMark", "navBuoyRig", "CardinalE", "", 259.8f, 105.2f, 0f, "water", 0, null, "StPetersNavMarks.Cardinals", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "structure.stp_ne_brow_fence", "setPiece", "stpLightPieces", "picket", "", 181.65f, 41.14f, 11f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "structure.stp_ne_garden_fence", "setPiece", "stpLightPieces", "picket", "", 187.2f, 58f, 11f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "path.stp_ne_plank", "setPiece", "stpLightPieces", "plank", "", 168.4f, 45f, 7.94f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "rock.stp_ne_fall_block", "rock", "pxRockIso3", "block", "", 191.2f, 41f, 0.11f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "rock.stp_ne_fall_block", "rock", "pxRockIso3", "block", "", 191.2f, 41f, -0.04f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "rock.stp_ne_fall_slab", "rock", "pxRockIso3", "slab", "", 197.9f, 44.2f, -0.07f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "rock.stp_ne_fall_cloven", "rock", "pxRockIso3", "cloven", "", 203.8f, 46f, -0.06f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "rock.stp_ne_tip_knuckle", "rock", "pxRockIso3", "knuckle", "", 220.8f, 56.8f, 0f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),

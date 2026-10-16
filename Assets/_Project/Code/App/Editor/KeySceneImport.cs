@@ -21,15 +21,16 @@ namespace HiddenHarbours.App.Editor
     ///
     /// <para><b>What it refuses, each a STOP for the owner and never a guess.</b> A package whose
     /// <c>SHA256SUMS</c> does not hold; a scene file the island does not list; a defType outside the type map;
-    /// a mount text the mount table cannot read, or a height off its anchor's; a frozen piece the owner table
+    /// a legacy mount text the mount table cannot read, invalid explicit host/anchor ids, or a height off its anchor's; a frozen piece the owner table
     /// does not name; an id that changes kit or kind; an id a scene once retired. The village's file is never
     /// read: its pieces stay with the village plan (V1/V3).</para>
     ///
     /// <para><b>What it reads beside the package (amendment 1).</b> The id map (<see cref="IdMapFile"/>): every
     /// id it reads, a row's own or a host's, goes from old to new, an id the map does not hold passes as it is,
     /// and one that holds a position the map does not rename is a STOP for the Art desk. The hosts' table
-    /// (<see cref="HostsFile"/>): the Art desk's answers, each by the piece's id and its mount words as the
-    /// package writes them, so a new wording still refuses.</para>
+    /// (<see cref="HostsFile"/>): only the two ruled gull exceptions in amendment 2, each by piece id and
+    /// package wording; schema 2 also carries a kept height. All other second-issue mounts read host/anchor ids.
+    /// The 18-text legacy table remains for older packages and is bypassed by explicit ids.</para>
     ///
     /// <para><b>What it records and never places.</b> A frozen piece names the code that places it
     /// (<see cref="KeyScenePiece.Owner"/>); what comes and goes keeps its variants without today's; a light is
@@ -67,10 +68,11 @@ namespace HiddenHarbours.App.Editor
         public const string IdMapFile = "docs/design/st-peters-key-scenes/key-scene-id-map.json";
         public const string IdMapSchema = "hidden-harbours/key-scene-id-map@1";
 
-        /// <summary>The hosts' table (amendment 1, 4.6), beside the map. It retires when CD's next issue names
-        /// every host by id.</summary>
+        /// <summary>The two ruled exceptions beside the map (amendment 2). Other mounts read CD's ids.
+        /// Schema 2 can keep a ruled height in data; schema 1 remains the legacy/NMC contract.</summary>
         public const string HostsFile = "docs/design/st-peters-key-scenes/key-scene-hosts.json";
         public const string HostsSchema = "hidden-harbours/key-scene-hosts@1";
+        public const string RuledHostsSchema = "hidden-harbours/key-scene-hosts@2";
 
         /// <summary>What marks an id that holds a position: <c>plant.SpeckledAlder@110.9,56.4</c>.</summary>
         public const char PositionMark = '@';
@@ -119,6 +121,7 @@ namespace HiddenHarbours.App.Editor
         {
             { "form.stp_harbour_stack", "PR 5b (part 2's coast forms)" },
             { "form.stp_lantern_stack", "PR 5's forms (Form_LanternStack.asset, on main)" },
+            { "form.stp_ne_head", "PR 5's forms (Form_NeHead.asset, on main)" },
         };
 
         /// <summary>The owner's rulings that make a later board's variant today's, by scene: the north-east
@@ -146,7 +149,8 @@ namespace HiddenHarbours.App.Editor
         static MountRule Water() => new MountRule(KeySceneDef.StandsOnWater, "", "");
         static MountRule On(string host, string anchor) => new MountRule(KeySceneDef.StandsOnMount, host, anchor);
 
-        /// <summary>The mount table: every mount text CD wrote, read exactly. A text not here is a STOP: a new
+        /// <summary>The legacy mount table: the 18 texts remain for first-issue packages only. Explicit
+        /// host/anchor fields take precedence and never consult this table. A legacy text not here is a STOP: a new
         /// text is a new ruling. A host left empty is one CD names by no id; the anchor is the mount contract's
         /// own name for the spot. The pieces the hosts' table answers (<see cref="HostsFile"/>) are read there,
         /// by their ids and words, and never here.</summary>
@@ -202,7 +206,7 @@ namespace HiddenHarbours.App.Editor
         static readonly HashSet<string> CarriedKeys = new HashSet<string>(StringComparer.Ordinal)
         {
             "id", "kit", "piece", "defType", "at", "z", "dir", "opts", "variants", "whenTide", "mount", "contact", "frozen",
-            "taken", "boardOnly", "sortY", "foot", "layer", "walk", "collider", "words", "light",
+            "taken", "boardOnly", "sortY", "foot", "layer", "walk", "collider", "words", "light", "host", "anchor", "hostZ", "footAt",
         };
 
         /// <summary>CD's record that stays in the package, which each asset's Source names: why, the tide's
@@ -212,7 +216,7 @@ namespace HiddenHarbours.App.Editor
             "name", "faces", "tide", "why", "new", "ground", "reseated", "art", "role", "family", "from", "site", "footprint",
             "plan", "isNew", "form", "animated", "look", "ask", "of", "drawnBy", "moved", "shell", "beam", "facing", "seat",
             "emits", "fx", "ruled", "build", "rig", "lights", "lightsNote", "gauge", "refuge", "wake", "span", "deck", "rail",
-            "anchors", "replaces",
+            "anchors", "replaces", "take", "with", "zPass2", "seated",
         };
 
         static readonly HashSet<string> LightKeys = new HashSet<string>(StringComparer.Ordinal)
@@ -335,6 +339,7 @@ namespace HiddenHarbours.App.Editor
         {
             public string Mount;
             public MountRule Rule;
+            public float? KeepZ;
         }
 
         /// <summary>What the importer reads beside the package: the id map and the hosts' table.</summary>
@@ -409,6 +414,12 @@ namespace HiddenHarbours.App.Editor
                     result.Report.Add($"refused: {id} ({file?.Text}): its pieces stay with the village plan (V1/V3); never read");
                     continue;
                 }
+                if (id == EastEndLookPassId)
+                {
+                    if (file == null || file.Text != EastEndFile) throw new Refusal("The east end must name " + EastEndFile);
+                    result.Report.Add("routed: " + id + " (" + file.Text + "): ImportEastEnd reads it with the Landing's four; never a tenth key scene");
+                    continue;
+                }
                 if (file == null)
                 {
                     result.Report.Add($"no file: {id} (the island names it; nothing to import)");
@@ -458,7 +469,14 @@ namespace HiddenHarbours.App.Editor
             {
                 List<Json> pieces = sceneJson[s].Get("pieces").Items;
                 for (int i = 0; i < pieces.Count; i++)
+                {
+                    if (IsEastEndCompanion(scenes[s].Id, pieces[i]))
+                    {
+                        result.Report.Add("routed: " + ids[s][i] + " from the Landing to keyscene.stp_east_end (take/with; zPass2 stays in the package)");
+                        continue;
+                    }
                     scenes[s].Rows.Add(RowOf(scenes[s], pieces[i], ids[s][i], held, beside, result));
+                }
             }
             foreach (string piece in beside.Hosts.Keys)
                 if (!beside.Answered.Contains(piece))
@@ -530,10 +548,13 @@ namespace HiddenHarbours.App.Editor
             Json table = Json.Parse(Text(hosts, hostsName), hostsName);
             Only(table, hostsName, "schema", "about", "hosts");
             schema = Need(table, "schema", hostsName).Str(hostsName + "'s schema");
-            if (schema != HostsSchema) throw new Refusal($"{hostsName}'s schema is '{schema}', not {HostsSchema}.");
+            bool ruled = hostsName == HostsFile && schema == RuledHostsSchema;
+            if (schema != HostsSchema && !ruled) throw new Refusal($"{hostsName}'s schema is '{schema}', not {HostsSchema} (or St Peters' {RuledHostsSchema}).");
             foreach (Json h in Items(Need(table, "hosts", hostsName), hostsName + "'s hosts"))
             {
-                Only(h, hostsName + "'s answer", "piece", "mount", "standsOn", "host", "anchor", "answer");
+                Only(h, hostsName + "'s answer", ruled
+                    ? new[] { "piece", "mount", "standsOn", "host", "anchor", "answer", "keepZ" }
+                    : new[] { "piece", "mount", "standsOn", "host", "anchor", "answer" });
                 string piece = beside.Id(Need(h, "piece", hostsName + "'s answer").Str(hostsName + "'s piece"), hostsName);
                 string what = hostsName + ": " + piece;
                 string mount = Need(h, "mount", what).Str(what + "'s mount");
@@ -556,6 +577,7 @@ namespace HiddenHarbours.App.Editor
                 {
                     Mount = mount,
                     Rule = new MountRule(standsOn, host.Length == 0 ? "" : beside.Id(host, what + "'s host"), anchor),
+                    KeepZ = h.Get("keepZ")?.Float(what + " keepZ"),
                 };
             }
             result.Report.Add($"hosts' table: {hostsName}, {beside.Hosts.Count} answers, {hosts.Length} bytes, sha256 {Sha256(hosts)}");
@@ -587,6 +609,24 @@ namespace HiddenHarbours.App.Editor
             if (row.Dir < 0 || row.Dir > 7) throw new Refusal($"{what}: dir {row.Dir} is not one of the kit's eight (0..7).");
 
             Json mount = p.Get("mount");
+            bool explicitMount = p.Has("host") || p.Has("anchor") || p.Has("hostZ");
+            MountRule explicitRule = null;
+            if (explicitMount)
+            {
+                if (mount == null) throw new Refusal(what + ": host/anchor fields require mount words.");
+                Json host = Need(p, "host", what);
+                string hostId = host.Kind == Json.Of.Null ? "" : beside.Id(host.Str(what + " host"), what + " host");
+                string anchor = Need(p, "anchor", what).Str(what + " anchor");
+                if (anchor.Length == 0) throw new Refusal(what + ": empty anchor.");
+                bool own = anchor == "ground" || anchor == "foot" || anchor == Afloat;
+                if (own && hostId.Length != 0) throw new Refusal(what + ": own ground/foot/water names no host.");
+                if (!own && hostId.Length == 0) throw new Refusal(what + ": this anchor needs a host id.");
+                if (hostId.Length > 0 && !(hostId.StartsWith(ContextPrefix, StringComparison.Ordinal)
+                        ? scene.Context.Contains(hostId) : held.ContainsKey(hostId) || HostsFromOtherWork.ContainsKey(hostId)))
+                    throw new Refusal(what + ": explicit host is held by no scene or other work: " + hostId);
+                explicitRule = own ? (anchor == Afloat ? Water() : Ground()) : anchor == "deck" ? Deck() : On(hostId, anchor);
+                result.Report.Add("ids: " + what + " host/anchor carried as " + explicitRule.StandsOn + "; hostZ checked when supplied");
+            }
             bool answered = beside.Hosts.TryGetValue(id, out HostAnswer answer);
             if (mount != null)
             {
@@ -600,6 +640,7 @@ namespace HiddenHarbours.App.Editor
                     rule = answer.Rule;
                     beside.Answered.Add(id);
                 }
+                else if (explicitRule != null) rule = explicitRule;
                 else if (!Mounts.TryGetValue(row.MountText, out rule))
                     throw new Refusal($"{what}: the mount table cannot read \"{row.MountText}\". A new mount text is a new ruling (lead-architect).");
                 row.StandsOn = rule.StandsOn;
@@ -618,6 +659,11 @@ namespace HiddenHarbours.App.Editor
             }
 
             Json z = Need(p, "z", what);
+            Json hostZ = p.Get("hostZ");
+            if (hostZ != null && (hostZ.Kind != z.Kind || (z.Kind == Json.Of.Number
+                    ? decimal.Parse(hostZ.Text, CultureInfo.InvariantCulture) != decimal.Parse(z.Text, CultureInfo.InvariantCulture)
+                    : hostZ.Text != z.Text)))
+                throw new Refusal(what + ": hostZ must equal z.");
             if (z.Kind == Json.Of.String)
             {
                 if (z.Text != TheTide || row.StandsOn != KeySceneDef.StandsOnWater)
@@ -637,7 +683,22 @@ namespace HiddenHarbours.App.Editor
                 }
             }
 
+            if (answered && answer.KeepZ.HasValue)
+            {
+                result.Report.Add("ruled: " + id + " keeps " + Num(answer.KeepZ.Value) + " against the file's " + Num(row.Z));
+                row.Z = answer.KeepZ.Value;
+            }
+
             Json foot = p.Get("foot");
+            Json footAt = p.Get("footAt");
+            if (footAt != null)
+            {
+                if (foot == null || Pair(footAt, what + " footAt") != Pair(foot, what + " foot"))
+                    throw new Refusal(what + ": footAt must equal foot.");
+                result.Report.Add("checked: " + id + " footAt equals foot");
+            }
+            foreach (string key in new[] { "take", "with", "zPass2", "seated" })
+                if (p.Has(key)) result.Report.Add("package only: " + id + " " + key);
             if (foot != null)
             {
                 row.HasFoot = true;
@@ -1132,7 +1193,11 @@ namespace HiddenHarbours.App.Editor
             foreach (string path in Directory.GetFiles(StPetersLayerRefresh.KeySceneFolder, "*.asset"))
                 if (!IsNmcAsset(Path.GetFileName(path))) existing[Path.GetFileName(path)] = File.ReadAllText(path);
 
-            Result result = Import(PackageName(root), read, existing, StPetersLayerRefresh.StPetersRegionId, ScriptGuid(), idMap, hosts);
+            string scriptGuid = ScriptGuid();
+            Result result = read(EastEndFile) == null
+                ? Import(PackageName(root), read, existing, StPetersLayerRefresh.StPetersRegionId, scriptGuid, idMap, hosts)
+                : ImportSecondIssue(PackageName(root), read, existing, scriptGuid, idMap, hosts,
+                    ReadGroundFromFiles("Assets/_Project/Data/Terrain/StPetersSeabed.asset").ElevationAt);
 
             var utf8 = new UTF8Encoding(false);
             string target = apply ? StPetersLayerRefresh.KeySceneFolder : DryRunFolder;
