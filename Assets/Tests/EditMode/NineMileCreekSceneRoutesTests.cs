@@ -289,8 +289,12 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The scope's sampled numbers for the final ramp (PR 2 row 8): the steepest quarter-metre centre grade
         /// and the lowest bed across the full width. The accepted design grade is 14.1%; the scope says plainly that it
-        /// is not a claim about every R16 quarter-metre slope, so it is held over a metre.</summary>
+        /// is not a claim about every R16 quarter-metre slope, so it is held over a metre. The quarter-metre grade is held
+        /// to the scope's number within one R16 code over a station: the sampler places a point in float texel
+        /// coordinates, and the editor rounds them differently from .NET. The steepest station, (30.08, 112.32), reads
+        /// 0.159691 in the editor and 0.159653 headless: a hundredth of a millimetre of height, where a code is 0.18 mm.</summary>
         const float RampLocalGrade = 0.15966738f, RampMinBed = 3.618219f, RampDesignGrade = 0.1415f;
+        const float RampStationRoundOff = NineMileCreekGround.CodeMetres / 0.25f;
 
         [Test]
         public void WharfRoadsFinalRampClimbsAtItsAcceptedGrade_OnDryGround_ClearOfEverySolid()
@@ -327,7 +331,7 @@ namespace HiddenHarbours.Tests.EditMode
                                   $"{steepest:0.######} at {At2(steepestAt)}; steepest over a metre {design:0.######} at {At2(designAt)}; " +
                                   $"lowest bed {lowest:0.######} at {At2(lowestAt)}; nearest solid {nearest.who} {nearest.clearance:0.###} m");
             Assert.That(firstGap, Is.Null, $"Wharf Road's centre line runs off the painted road at {firstGap}");
-            Assert.That(steepest, Is.LessThanOrEqualTo(RampLocalGrade), $"the ramp steepens at {At2(steepestAt)}");
+            Assert.That(steepest, Is.LessThanOrEqualTo(RampLocalGrade + RampStationRoundOff), $"the ramp steepens at {At2(steepestAt)}");
             Assert.That(design, Is.LessThanOrEqualTo(RampDesignGrade), $"the ramp climbs past its design grade at {At2(designAt)}");
             Assert.That(lowest, Is.GreaterThanOrEqualTo(RampMinBed), $"the ramp dips at {At2(lowestAt)}");
             Assert.That(inSolid, Is.Zero, $"Wharf Road's carriageway runs through {firstSolid}");
