@@ -11,9 +11,10 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// ⭐ <b>THE NAV MARKS — does every buoy float, and does every colour agree with the water?</b>
     ///
-    /// <para>The terrains are built through the SAME configure calls the builders use
-    /// (<see cref="NineMileCreekMainland.ConfigureTerrain"/> /
-    /// <see cref="StPetersBuilder.ConfigureTidalTerrain"/>), so a test can never assert a channel the
+    /// <para>Each region's marks are planned on the ground its scene stands on: Nine Mile Creek's on G3
+    /// (<see cref="NineMileCreekLiveGround.Plan"/>, the ground the builder and <c>09-nav-marks-g3</c>
+    /// plan them on since NMC H2), St Peters' through the SAME configure call its builder uses
+    /// (<see cref="StPetersBuilder.ConfigureTidalTerrain"/>), so a test can never assert a channel the
     /// scene does not carry. Nothing here loads a scene: the whole scheme is a pure function of the
     /// published plan plus that terrain, which is why it can be asserted headlessly at all.</para>
     ///
@@ -26,8 +27,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class NavMarkPlacementTests
     {
-        private GameObject _nmcGo;
-        private MainlandTidalTerrain _nmc;
+        private ITidalTerrain _nmc;
         private GameObject _spGo;
         private TidalTerrain _sp;
 
@@ -37,9 +37,7 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _nmcGo = new GameObject("NineMileCreekMainland_NavMarkTest");
-            _nmc = _nmcGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_nmc);
+            _nmc = NineMileCreekLiveGround.Plan;
             _nmcPlan = NineMileCreekNavMarks.Plan(_nmc);
 
             _spGo = new GameObject("StPeters_NavMarkTest");
@@ -51,7 +49,6 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            if (_nmcGo != null) Object.DestroyImmediate(_nmcGo);
             if (_spGo != null) Object.DestroyImmediate(_spGo);
             GameServices.Reset();
         }
@@ -355,6 +352,9 @@ namespace HiddenHarbours.Tests.EditMode
                     "skipper onto the shallower side, which is the thing it exists to prevent.");
             }
 
+            // A region that authors none asks nothing here: Nine Mile Creek since NMC H2, whose two
+            // guarded the old breakwater's head and the north shoal (NineMileCreekNavMarks.RetiredIds).
+            if (cardinals.Count == 0) return;
             Assert.That(placed, Is.GreaterThan(0),
                 $"{region} shipped no cardinals at all. Every one was refused — read the build log.");
         }
@@ -393,7 +393,8 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ACardinalPointedAtItsOwnDangerIsRefused()
         {
-            NavCardinal good = NineMileCreekNavMarks.Cardinals[0];
+            // St Peters' first: Nine Mile Creek authors none since NMC H2.
+            NavCardinal good = StPetersNavMarks.Cardinals[0];
             var flipped = new NavCardinal
             {
                 Id = good.Id,
@@ -404,9 +405,9 @@ namespace HiddenHarbours.Tests.EditMode
                 ProbeMetres = good.ProbeMetres,
             };
 
-            NavMarkPlanResult plan = NavMarkPlan.Plan(null, new[] { flipped }, _nmc.ElevationAt,
-                NineMileCreekMainland.TideMean, NineMileCreekMainland.TideAmplitude,
-                NineMileCreekNavMarks.Tuning);
+            NavMarkPlanResult plan = NavMarkPlan.Plan(null, new[] { flipped }, _sp.ElevationAt,
+                StPetersBuilder.TideMean, StPetersBuilder.TideAmplitude,
+                StPetersNavMarks.Tuning);
 
             Assert.That(plan.Marks, Is.Empty,
                 $"A {flipped.Quadrant} cardinal on a danger that wants {good.Quadrant} was PLACED. " +
@@ -689,6 +690,45 @@ namespace HiddenHarbours.Tests.EditMode
             var seen = new HashSet<string>();
             foreach (PlannedNavMark m in plan.Marks)
                 Assert.That(seen.Add(m.Id), Is.True, $"{region}: duplicate mark id '{m.Id}'.");
+        }
+
+        /// <summary>
+        /// ⭐ <b>A retired id is never worn again</b> (NMC H2). Nine Mile Creek's two cardinals guarded the
+        /// old breakwater's head and the north shoal; G3 dredges the one and fills the other, so
+        /// <c>09-nav-marks-g3</c> leaves both standing inactive on their ids. An id names a GameObject in a
+        /// committed scene, so a new mark that took one would read, in a diff, as the old mark moved.
+        /// </summary>
+        [Test]
+        public void NineMileCreeksRetiredIds_AreNeverPlannedAgain()
+        {
+            Assert.That(NineMileCreekNavMarks.RetiredIds,
+                Is.SupersetOf(new[] { "mark.nmc_breakwater_head", "mark.nmc_shoal_northeast" }),
+                "Ids are append-only: a retired id stays reserved for good.");
+
+            foreach (PlannedNavMark m in _nmcPlan.Marks)
+                Assert.That(NineMileCreekNavMarks.RetiredIds, Does.Not.Contain(m.Id),
+                    $"'{m.Id}' is planned, but that id is retired.");
+            foreach (NavCardinal c in NineMileCreekNavMarks.Cardinals)
+                Assert.That(NineMileCreekNavMarks.RetiredIds, Does.Not.Contain(c.Id),
+                    $"Cardinal '{c.DisplayName}' is authored on a retired id.");
+        }
+
+        /// <summary>
+        /// ⭐ <b>The Entrance claims the design boat at the worst hour</b> (NMC H2): the Cape Islander's
+        /// own draught, read off her def, at SPRING LOW. <see cref="EveryChannelCarriesTheDraughtItClaims"/>
+        /// proves the water holds the claim; this proves the claim is hers, so it moves when she does.
+        /// </summary>
+        [Test]
+        public void NineMileCreeksEntranceClaimsTheCapeIslander_AtSpringLow()
+        {
+            string hull = NineMileCreekGroundImportTests.Read("Assets/_Project/Data/Boats/CapeIslander.asset");
+            float draught = (float)NineMileCreekGroundImportTests.Number(hull, "DraughtMeters");
+            NavChannel entrance = NineMileCreekNavMarks.Entrance;
+
+            Assert.That(entrance.DeclaredDraughtMetres, Is.EqualTo(draught),
+                "The Entrance claims a draught that is not the Cape Islander's.");
+            Assert.That(entrance.NavigableTideFraction, Is.EqualTo(-1f),
+                "The Entrance claims her at some other tide than spring low.");
         }
 
         // =============================================================================================

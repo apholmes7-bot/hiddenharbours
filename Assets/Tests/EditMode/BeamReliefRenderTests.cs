@@ -282,7 +282,7 @@ namespace HiddenHarbours.Tests.EditMode
         void Measure(Color[] a, Color[] b, out float inCone, out float outOfCone, out int inConePx)
         {
             Assert.AreEqual(a.Length, b.Length);
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             float level = NineMileCreekMainland.SpringHighWater;
             double inSum = 0, outSum = 0;
             int inN = 0, outN = 0;
@@ -318,7 +318,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// </summary>
         float MeanConeLuma(Color[] shot)
         {
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             float level = NineMileCreekMainland.SpringHighWater;
             double sum = 0; int n = 0;
             for (int i = 0; i < shot.Length; i++)
@@ -360,7 +360,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>Point the camera at the most open water on this coast — the beam wants sea, not shore.</summary>
         void AimAtOpenWater()
         {
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             Vector2 centre = NineMileCreekBuilder.NineMileCreekSeaCenter;
             Vector2 size = NineMileCreekBuilder.NineMileCreekSeaSize;
             float level = NineMileCreekMainland.SpringHighWater;
@@ -402,9 +402,8 @@ namespace HiddenHarbours.Tests.EditMode
         void BuildTheShore()
         {
             _terrainGo = new GameObject("TidalTerrain");
-            var terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
-            GameServices.TidalTerrain = terrain;
+            // The scene's own ground (NMC H2): G3, registered by hand as its OnEnable registers it in play.
+            var terrain = NineMileCreekLiveGround.Register(_terrainGo);
 
             var region = AssetDatabase.LoadAssetAtPath<RegionDef>(
                 WaterSceneTemplate.RegionAssetPathFor("NineMileCreek"));
@@ -434,7 +433,9 @@ namespace HiddenHarbours.Tests.EditMode
                 NineMileCreekBuilder.NineMileCreekHeightResolution,
                 NineMileCreekBuilder.NineMileCreekHeightMin,
                 NineMileCreekBuilder.NineMileCreekHeightMax,
-                terrain.MaxShoreGradient());
+                NineMileCreekLiveGround.PremiseShoreGradient());
+            // …and the sea draws the G3 map it floats on, as the builder wires it.
+            NineMileCreekLiveGround.DrawUnder(_seaGo, terrain);
             _seaGo.SetActive(true);
 
             _camGo = new GameObject("BeamShotCam");

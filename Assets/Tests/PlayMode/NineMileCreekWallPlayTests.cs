@@ -18,19 +18,27 @@ namespace HiddenHarbours.Tests.PlayMode
     /// is the half that no amount of geometry can stand in for — a real dynamic body, in a real physics
     /// loop, in the real region, pushed at each wall until it stops her or does not.
     ///
-    /// <para><b>The edges are the REGION's, not this fixture's.</b> A PlayMode assembly may not reference
-    /// <c>HiddenHarbours.App.Editor</c> (it has no <c>includePlatforms</c>, so the reference would follow
-    /// a player build to a machine where that assembly does not exist), which is where Nine Mile Creek's
-    /// numbers live. So nothing is restated here: the scene's own quay <see cref="StandablePlatform"/>s
-    /// give the decks and their measured heights, the scene's own <see cref="ITidalTerrain"/> gives the
-    /// ground, and <see cref="QuayEdgePlan"/> — the SAME call the builder makes — turns those into the
-    /// edges she is pushed at. Re-site the wharf and this fixture re-aims itself.</para>
+    /// <para><b>The edges are the REGION's, not this fixture's.</b> Nothing is restated here: the scene's
+    /// own quay walls give the lines she is pushed at, the scene's own quay platforms give the deck height,
+    /// and the scene's own <see cref="ITidalTerrain"/> says which side of each line is the drop, by
+    /// <see cref="QuayEdgePlan.IsFallEdge"/> — the rule the plan walls a quay by. Re-site the wharf and
+    /// this fixture re-aims itself.</para>
     ///
-    /// <para><b>⚠ IT BUILDS ITS OWN BOUNDARY RATHER THAN LOOKING FOR THE BUILDER'S.</b> Committed scenes
-    /// in this repo are builder OUTPUT and are banked by hand, so the banked Nine Mile Creek predates this
-    /// slice and carries no walls. Hunting for one and skipping when it is absent would make this fixture
-    /// green on the very build it exists to catch. It configures a <see cref="PropertyBoundary"/> from the
-    /// plan instead, which is exactly what the builder does with exactly the same inputs.</para>
+    /// <para><b>⚠ SINCE THE G3 ACTIVATION THE QUAY IS GROUND, AND THE WALLS ARE THE SCENE'S.</b> N1 step
+    /// 05 (<c>05-wharf-support-g3</c>) carries the quay in the creek's G3 heightfield, leaves its two
+    /// platforms as quarter-metre caps along the faces, and re-lines the scene's own quay boundary on the
+    /// G3 quay line: the crane face, the step and the north face, cut at the brow. Before it, this fixture
+    /// handed the platforms' decks to <see cref="QuayEdgePlan"/> and built its own wall; there are no
+    /// decks to hand it now, and the wall the player meets is the scene's. So the fixture reads that wall
+    /// off the quay's own root, and FAILS, never skips, when it is not there — hunting for a wall and
+    /// skipping when it is absent would make it green on the very build it exists to catch.</para>
+    ///
+    /// <para><b>⚠ A wall must stand on a face, and every face must have its wall.</b> Each wall segment is
+    /// asked the fall rule both ways: no fall on either side is a wall where no face is, a fall on both is
+    /// a pier, and either fails by name. And every step of a cap's face that IS a fall must lie under a
+    /// wall, or inside the brow's gate — the one hole the plan allows. A cap's quarter-metre ends are
+    /// stubs, as they are to the probes: the rule's two-metre reach there reads the quay's own skirt (at
+    /// the east end, a metre over two of slope), not a face.</para>
     ///
     /// <para><b>⚠ Every claim has a sabotage arm.</b> A wharf is full of other colliders; "she stopped"
     /// is only evidence if she would NOT have stopped without the wall. Each acceptance below is run
@@ -58,6 +66,10 @@ namespace HiddenHarbours.Tests.PlayMode
         /// against the inner face she settles about 0.52 m inboard (half a thickness plus her radius); a
         /// quarter-metre allows for penetration slop and nothing else.</summary>
         const float HeldMarginMetres = 0.25f;
+
+        /// <summary>How close to a ladder's foot the quay's wall line must run (m) for the ladder to be the
+        /// quay's: the ladders hang off the face, so their feet stand on its line.</summary>
+        const float LadderOnTheWallMetres = 1f;
 
         readonly List<Object> _spawned = new List<Object>();
 
@@ -97,45 +109,53 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = 0; i < 4; i++) yield return null;   // let the self-installing components register
         }
 
-        /// <summary>The quay's fixed decks, read off the scene's own platforms. The float and the brow are
-        /// excluded by id: their decks ride the tide a foot over the water, so stepping off one is a wade,
-        /// which the wading model already owns.</summary>
-        static List<QuayDeck> QuayDecks()
+        /// <summary>The quay's platforms, read off the scene: since step 05, two quarter-metre caps along
+        /// the faces at the deck's height. The float and the brow are excluded by id: their decks ride the
+        /// tide a foot over the water, so stepping off one is a wade, which the wading model already
+        /// owns.</summary>
+        static List<StandablePlatform> QuayCaps()
         {
             return Object.FindObjectsByType<StandablePlatform>()
                          .Where(p => p.Id != null && p.Id.StartsWith(QuayIdPrefix)
-                                     && p.Id != FloatId && p.Id != GangwayId
-                                     && p.Footprint.width > 1f && p.Footprint.height > 1f)
+                                     && p.Id != FloatId && p.Id != GangwayId)
                          .OrderBy(p => p.Id)
-                         .Select(p => new QuayDeck(p.Footprint, p.DeckElevation))
                          .ToList();
         }
 
-        /// <summary>The gates the SCENE can vouch for. Only the brow: it is the one thing you reach by
-        /// walking, and it publishes its own hinge and width.</summary>
-        static List<EdgeGate> SceneGates()
+        static List<StandablePlatform> RequireCaps()
         {
-            var gates = new List<EdgeGate>();
-            foreach (var brow in Object.FindObjectsByType<GangwayPlatform>())
-                gates.Add(new EdgeGate(brow.ShoreEnd,
-                                       QuayEdgePlan.GateClearFor(brow.HalfWidthMetres * 2f),
-                                       "the brow to the float"));
-            return gates;
+            List<StandablePlatform> caps = QuayCaps();
+            Assert.GreaterOrEqual(caps.Count, 2,
+                $"'{SceneName}' has {caps.Count} quay platform(s) under '{QuayIdPrefix}'. The wharf is two " +
+                "faces; with fewer than two this fixture would push her at half a quay and call it covered.");
+            return caps;
         }
 
-        /// <summary>Build the walls the builder would build, from the scene's own geometry.</summary>
-        PropertyBoundary Wall(List<QuayDeck> decks, out List<Vector2[]> runs)
+        static List<QuayDeck> Decks(List<StandablePlatform> caps) =>
+            caps.Select(p => new QuayDeck(p.Footprint, p.DeckElevation)).ToList();
+
+        /// <summary>The quay's own walls: the boundary on the quay's root, the same root its platforms hang
+        /// on. Exactly one, with segments, or this fixture is measuring nothing.</summary>
+        static PropertyBoundary QuayWalls(List<StandablePlatform> caps)
+        {
+            Transform root = caps[0].transform.parent;
+            List<PropertyBoundary> walls = Object.FindObjectsByType<PropertyBoundary>()
+                                                 .Where(b => b.transform.parent == root)
+                                                 .ToList();
+            Assert.AreEqual(1, walls.Count,
+                $"'{SceneName}' has {walls.Count} boundaries on the quay's root " +
+                $"'{(root != null ? root.name : "(none)")}'. Since step 05 the quay's walls are the scene's own, " +
+                "re-lined on the G3 quay line; without them this fixture would push her at nothing.");
+            Assert.Greater(walls[0].SegmentCount, 0, "the quay's boundary carries no wall.");
+            return walls[0];
+        }
+
+        static System.Func<Vector2, float> Ground()
         {
             ITidalTerrain terrain = GameServices.TidalTerrain;
-            Assert.IsNotNull(terrain, $"'{SceneName}' registered no ITidalTerrain, so which edges are a " +
-                                      "fall cannot be asked and this fixture is measuring nothing.");
-
-            runs = QuayEdgePlan.GuardedRuns(decks, terrain.ElevationAt, SceneGates());
-            var go = new GameObject("QuayWalls_UnderTest");
-            _spawned.Add(go);
-            var boundary = go.AddComponent<PropertyBoundary>();
-            boundary.Configure(runs, PropertyBoundary.DefaultThicknessMetres, "the quay edge, under test");
-            return boundary;
+            Assert.IsNotNull(terrain, $"'{SceneName}' registered no ITidalTerrain, so which side of a wall is " +
+                                      "a fall cannot be asked and this fixture is measuring nothing.");
+            return terrain.ElevationAt;
         }
 
         /// <summary>A body the size and shape of the one both region builders give the player: a dynamic
@@ -175,7 +195,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
-        //  where she is pushed: the plan's own runs, sampled clear of their corners
+        //  where she is pushed: the scene's own walls, sampled clear of their corners
         // =============================================================================================
 
         struct Probe
@@ -184,10 +204,13 @@ namespace HiddenHarbours.Tests.PlayMode
             public Vector2 Outward;    // the way the water is
         }
 
-        /// <summary>Sample each run away from its corners, and work out which way is OUT by the same test
-        /// the plan used: the side with no deck on it.</summary>
-        static List<Probe> Probes(List<Vector2[]> runs, List<QuayDeck> decks)
+        /// <summary>Sample each wall segment away from its corners, and find which way is OUT by the rule
+        /// the plan walls a quay by: the side whose ground falls a metre below the deck. A segment that
+        /// falls neither way, or both, stands off its face and is named in <paramref name="offFace"/>.</summary>
+        static List<Probe> Probes(List<Vector2[]> runs, List<QuayDeck> decks, System.Func<Vector2, float> ground,
+                                  List<string> offFace)
         {
+            float deck = decks.Max(d => d.Elevation);
             var probes = new List<Probe>();
             foreach (Vector2[] run in runs)
             {
@@ -199,11 +222,16 @@ namespace HiddenHarbours.Tests.PlayMode
                     Vector2 n = new Vector2(along.y, -along.x);
                     Vector2 mid = (a + b) * 0.5f;
 
-                    bool outIsN = !decks.Any(d => StandablePlatform.Contains(d.Footprint, mid + n * 1.5f));
-                    bool outIsMinusN = !decks.Any(d => StandablePlatform.Contains(d.Footprint, mid - n * 1.5f));
-                    if (outIsN == outIsMinusN) continue;            // ambiguous: skip rather than guess
+                    bool fallsN = QuayEdgePlan.IsFallEdge(decks, deck, mid, n, ground);
+                    bool fallsMinusN = QuayEdgePlan.IsFallEdge(decks, deck, mid, -n, ground);
+                    if (fallsN == fallsMinusN)
+                    {
+                        offFace.Add($"({a.x:0.#}, {a.y:0.#})-({b.x:0.#}, {b.y:0.#}) falls " +
+                                    (fallsN ? "both ways" : "neither way"));
+                        continue;
+                    }
 
-                    Vector2 outward = outIsN ? n : -n;
+                    Vector2 outward = fallsN ? n : -n;
                     foreach (float t in new[] { 0.25f, 0.5f, 0.75f })
                         probes.Add(new Probe { On = Vector2.Lerp(a, b, t), Outward = outward });
                 }
@@ -211,24 +239,58 @@ namespace HiddenHarbours.Tests.PlayMode
             return probes;
         }
 
-        /// <summary>The spot with the most wall around it — the furthest any probe is from the nearest
-        /// OTHER stretch of wall. Where a gate can be cut and still be a gate.</summary>
-        static Probe Roomiest(List<Probe> spots, List<Vector2[]> runs)
+        /// <summary>Every <see cref="QuayEdgePlan.WalkStepMetres"/> of a cap's face that is a fall with no
+        /// wall over it — a place she could step off. The brow is excused, as wide a gate as the plan would
+        /// ever cut for it; a cap's quarter-metre ends are stubs and are not walked.</summary>
+        static List<string> UnwalledFalls(List<QuayDeck> decks, System.Func<Vector2, float> ground,
+                                          List<Vector2[]> runs, float halfThickness, GangwayPlatform brow)
         {
-            Probe best = spots[0];
-            float most = -1f;
-            foreach (Probe p in spots)
+            var open = new List<string>();
+            foreach (QuayDeck cap in decks)
             {
-                float nearestOther = float.PositiveInfinity;
-                foreach (Vector2[] run in runs)
-                    for (int i = 0; i + 1 < run.Length; i++)
+                Rect r = cap.Footprint;
+                var edges = new (Vector2 a, Vector2 b, Vector2 outward)[]
+                {
+                    (new Vector2(r.xMin, r.yMin), new Vector2(r.xMax, r.yMin), Vector2.down),
+                    (new Vector2(r.xMin, r.yMax), new Vector2(r.xMax, r.yMax), Vector2.up),
+                    (new Vector2(r.xMin, r.yMin), new Vector2(r.xMin, r.yMax), Vector2.left),
+                    (new Vector2(r.xMax, r.yMin), new Vector2(r.xMax, r.yMax), Vector2.right),
+                };
+                foreach (var (a, b, outward) in edges)
+                {
+                    float length = Vector2.Distance(a, b);
+                    if (length < 1f) continue;                      // an end, not a face
+                    int steps = Mathf.RoundToInt(length / QuayEdgePlan.WalkStepMetres);
+                    for (int s = 0; s <= steps; s++)
                     {
-                        float d = GroundPolygon.DistanceToSegment(p.On, run[i], run[i + 1]);
-                        if (d > 0.01f) nearestOther = Mathf.Min(nearestOther, d);   // skip its own segment
+                        Vector2 p = Vector2.Lerp(a, b, s / (float)steps);
+                        if (!QuayEdgePlan.IsFallEdge(decks, cap.Elevation, p, outward, ground)) continue;
+                        if (DistanceToWall(p, runs) <= halfThickness + 0.01f) continue;
+                        if (brow != null && InTheBrowsGate(p, brow)) continue;
+                        open.Add($"({p.x:0.0}, {p.y:0.0})");
                     }
-                if (nearestOther > most) { most = nearestOther; best = p; }
+                }
             }
-            return best;
+            return open;
+        }
+
+        static float DistanceToWall(Vector2 p, List<Vector2[]> runs)
+        {
+            float nearest = float.PositiveInfinity;
+            foreach (Vector2[] run in runs)
+                for (int i = 0; i + 1 < run.Length; i++)
+                    nearest = Mathf.Min(nearest, GroundPolygon.DistanceToSegment(p, run[i], run[i + 1]));
+            return nearest;
+        }
+
+        /// <summary>Is <paramref name="p"/> inside the widest gate the plan would cut for the brow: within
+        /// half of <see cref="QuayEdgePlan.GateClearFor"/> its width of the brow's centreline?</summary>
+        static bool InTheBrowsGate(Vector2 p, GangwayPlatform brow)
+        {
+            Vector2 axis = (brow.FloatEnd - brow.ShoreEnd).normalized;
+            Vector2 rel = p - brow.ShoreEnd;
+            float across = Mathf.Abs(rel.x * axis.y - rel.y * axis.x);
+            return across <= QuayEdgePlan.GateClearFor(brow.HalfWidthMetres * 2f) * 0.5f;
         }
 
         /// <summary>How far past the wall line her foot ended up, in metres. Negative is inboard.</summary>
@@ -248,19 +310,24 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return LoadTheCreek();
 
-            List<QuayDeck> decks = QuayDecks();
-            Assert.GreaterOrEqual(decks.Count, 2,
-                $"'{SceneName}' has {decks.Count} quay platform(s) under '{QuayIdPrefix}'. The wharf is " +
-                "two walls; with fewer than two this fixture would push her at half a quay and call it " +
-                "covered. Re-bank the scene from the builder.");
+            List<StandablePlatform> caps = RequireCaps();
+            List<QuayDeck> decks = Decks(caps);
+            System.Func<Vector2, float> ground = Ground();
+            PropertyBoundary walls = QuayWalls(caps);
+            List<Vector2[]> runs = walls.WorldRuns();
 
-            PropertyBoundary boundary = Wall(decks, out List<Vector2[]> runs);
-            Assert.Greater(boundary.SegmentCount, 0, "the plan built no wall in the real region.");
-
-            List<Probe> probes = Probes(runs, decks);
+            var offFace = new List<string>();
+            List<Probe> probes = Probes(runs, decks, ground, offFace);
+            Assert.IsEmpty(offFace, "a quay wall stands off its face: " + string.Join(" | ", offFace));
             Assert.GreaterOrEqual(probes.Count, 6,
-                $"only {probes.Count} places to push at on a quay whose water faces run to about 180 m — " +
-                "the plan or the sampler has collapsed and a green here would mean nothing.");
+                $"only {probes.Count} places to push at on a quay whose walls run to about 170 m — the walls " +
+                "or the sampler have collapsed and a green here would mean nothing.");
+
+            List<string> open = UnwalledFalls(decks, ground, runs, walls.ThicknessMetres * 0.5f,
+                                              Object.FindObjectsByType<GangwayPlatform>().FirstOrDefault());
+            Assert.IsEmpty(open,
+                $"{open.Count} point(s) of the quay's faces drop to the basin with no wall over them and no brow " +
+                "— the walk off the quay is open there: " + string.Join(" ", open.Take(12)));
 
             var worst = new List<string>();
             foreach (Probe p in probes)
@@ -296,23 +363,18 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return LoadTheCreek();
 
-            List<QuayDeck> decks = QuayDecks();
-            Assume.That(decks.Count, Is.GreaterThanOrEqualTo(2));
+            List<StandablePlatform> caps = QuayCaps();
+            Assume.That(caps.Count, Is.GreaterThanOrEqualTo(2));
 
-            PropertyBoundary boundary = Wall(decks, out List<Vector2[]> runs);
-            List<Probe> probes = Probes(runs, decks);
+            List<Probe> probes = Probes(QuayWalls(caps).WorldRuns(), Decks(caps), Ground(), new List<string>());
             Assume.That(probes.Count, Is.GreaterThanOrEqualTo(6));
 
-            // EVERY wall in the scene goes, not only the one this fixture built. Since the 2026-08-21
-            // scenes bank the builder's own quay wall is IN the committed scene (the #609 Build click),
-            // and a sabotage that deleted only its own copy found the scene's copy still holding her —
-            // 24 of 24 edges, every reading -0.53 — and read it as "some other collider". The question
-            // this arm asks is "is it a PropertyBoundary holding her, or something else?", so all of
-            // them go; everything that is not a wall stays.
+            // EVERY wall in the scene goes: the quay's own and every yard's fence. The question this arm
+            // asks is "is it a PropertyBoundary holding her, or something else?", so all of them go;
+            // everything that is not a wall stays.
             foreach (PropertyBoundary wall in
                      Object.FindObjectsByType<PropertyBoundary>(FindObjectsInactive.Include))
                 Object.Destroy(wall.gameObject);
-            _spawned.Remove(boundary.gameObject);
             yield return null;
 
             int through = 0;
@@ -334,7 +396,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(through * 2, probes.Count,
                 $"SABOTAGE NOT DETECTED: with the wall DELETED she still stopped at " +
                 $"{probes.Count - through} of {probes.Count} edges, so most of what the acceptance " +
-                "measures is some other collider and not this slice's wall at all. Readings: " +
+                "measures is some other collider and not the quay's wall at all. Readings: " +
                 string.Join(" | ", readings));
 
             Debug.Log($"[NineMileCreekWallPlayTests] sabotage arm: {through}/{probes.Count} edges walked " +
@@ -345,86 +407,39 @@ namespace HiddenHarbours.Tests.PlayMode
         //  …and the ways through it still work
         // =============================================================================================
 
-        /// <summary>How wide a gangway this fixture assumes when the scene has no real one to measure.
-        /// The shipped brow is <c>NineMileCreekQuayFace.BakedRigGangwayWidthMetres</c> = 0.95 m, which
-        /// lives in an EDITOR assembly this one may not reference — so a metre is declared here and
-        /// <c>NineMileCreekWallsTests.TheBrow_HasAGateWideEnoughToWalkThrough</c> is what holds the
-        /// shipped number to the table. It is within a hand's width either way, so a gate cut for it is
-        /// the same gate.</summary>
-        const float AssumedBrowWidthMetres = 1f;
-
         /// <summary>
-        /// <b>A gate on this quay's real wall lets her through it.</b> Preferring the SHIPPED brow when the
-        /// scene carries one, and falling back to a gate of the brow's size cut in the middle of the
-        /// apron's own east face when it does not.
-        ///
-        /// <para><b>⚠ The fallback is not a lesser test of the gate — only of the brow's SITING.</b> The
-        /// wall it opens is the real one on the real face, and the opening is the same width the plan
-        /// gives the brow. What it cannot say is that the hole is where the gangway is; that is
-        /// <c>NineMileCreekWallsTests.TheBrow_HasAGateWideEnoughToWalkThrough</c>'s claim, made against
-        /// the region's own numbers. The float and its brow shipped in #594, AFTER the last scene bank,
-        /// so today the fallback is what runs — and a fixture that merely skipped here would leave the
-        /// gate untested in physics at all.</para>
+        /// <b>The brow's gate in the quay's real wall lets her through it.</b> Since step 05 the scene
+        /// carries both the brow and the wall cut for it, so this is the SHIPPED opening at the shipped
+        /// brow — no longer a gate the fixture cuts. Its width is held by the scene's own numbers in
+        /// EditMode (<c>NineMileCreekWallsTests</c>, <c>NineMileCreekSceneQuayTests</c>); here she is pushed
+        /// from inside the wall along the brow and must come out more than a metre past its hinge.
         /// </summary>
         [UnityTest]
         public IEnumerator AGateInTheQuaysWall_LetsHerThrough()
         {
             yield return LoadTheCreek();
 
-            List<QuayDeck> decks = QuayDecks();
-            Assert.GreaterOrEqual(decks.Count, 2, "the quay is not in this scene to cut a gate in.");
-
-            ITidalTerrain terrain = GameServices.TidalTerrain;
-            Assert.IsNotNull(terrain, $"'{SceneName}' registered no ITidalTerrain.");
-
-            Vector2 hinge, outward;
-            float clear;
-            string what;
+            List<StandablePlatform> caps = QuayCaps();
+            Assert.GreaterOrEqual(caps.Count, 2, "the quay is not in this scene to cut a gate in.");
+            PropertyBoundary walls = QuayWalls(caps);
 
             var brow = Object.FindObjectsByType<GangwayPlatform>().FirstOrDefault();
-            if (brow != null)
-            {
-                hinge = brow.ShoreEnd;
-                outward = (brow.FloatEnd - brow.ShoreEnd).normalized;
-                clear = QuayEdgePlan.GateClearFor(brow.HalfWidthMetres * 2f);
-                what = $"the SHIPPED brow at ({hinge.x:0.#}, {hinge.y:0.#}), {brow.RunMetres:0.#} m to the float";
-            }
-            else
-            {
-                // No brow in this bank. Cut the same-sized gate in the middle of the longest guarded run
-                // there is — a real stretch of the real wall — and prove she gets through THAT.
-                List<Vector2[]> ungated = QuayEdgePlan.GuardedRuns(decks, terrain.ElevationAt);
-                List<Probe> spots = Probes(ungated, decks);
-                Assert.IsNotEmpty(spots, "no guarded edge to cut a gate in.");
+            Assert.IsNotNull(brow, $"'{SceneName}' carries no GangwayPlatform: the quay's one gate is the " +
+                                   "brow's, and with no brow there is no way through the wall to the float.");
 
-                // The roomiest spot on the wall, so what is left either side of the opening is still a
-                // wall — a gate cut through most of a short run would prove far less.
-                Probe at = Roomiest(spots, ungated);
-                hinge = at.On;
-                outward = at.Outward;
-                clear = QuayEdgePlan.GateClearFor(AssumedBrowWidthMetres);
-                what = $"a {clear:0.00} m gate cut in the real wall at ({hinge.x:0.#}, {hinge.y:0.#}) — " +
-                       $"'{SceneName}' as banked carries no GangwayPlatform (the brow shipped in #594, " +
-                       "after the last bank), so this proves the GATE and not the brow's siting";
-            }
-
-            var gates = new List<EdgeGate> { new EdgeGate(hinge, clear, "the brow to the float") };
-            var runs = QuayEdgePlan.GuardedRuns(decks, terrain.ElevationAt, gates);
-            var go = new GameObject("QuayWalls_Gated");
-            _spawned.Add(go);
-            go.AddComponent<PropertyBoundary>()
-              .Configure(runs, PropertyBoundary.DefaultThicknessMetres, "the quay edge, gated, under test");
+            Vector2 hinge = brow.ShoreEnd;
+            Vector2 outward = (brow.FloatEnd - brow.ShoreEnd).normalized;
+            string what = $"the SHIPPED brow at ({hinge.x:0.#}, {hinge.y:0.#}), {brow.RunMetres:0.#} m to the float";
 
             Rigidbody2D rb = Walker(hinge - outward * StartInset);
             yield return Push(rb, outward);
 
             float past = Vector2.Dot(FootOf(rb) - hinge, outward);
             Assert.Greater(past, 1f,
-                $"the gate did not let her through: she got {past:0.00} m past {what}. A wall across the " +
-                "gangway strands the float and every small craft on it. She is " +
-                $"{QuayEdgePlan.WalkerFootRadiusMetres * 2f:0.00} m across and the opening is " +
-                $"{clear:0.00} m — if that is genuinely too tight, widen GateClearFor rather than " +
-                "deleting the wall.");
+                $"the gate did not let her through: she got {past:0.00} m past {what}, through " +
+                $"'{walls.name}'. A wall across the gangway strands the float and every small craft on it. " +
+                $"She is {QuayEdgePlan.WalkerFootRadiusMetres * 2f:0.00} m across — if the opening is " +
+                "genuinely too tight, widen it rather than deleting the wall.");
 
             Debug.Log($"[NineMileCreekWallPlayTests] through {what}: {past:0.00} m past the hinge.");
         }
@@ -434,41 +449,52 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return LoadTheCreek();
 
-            var ladder = Object.FindObjectsByType<MonoBehaviour>()
-                               .OfType<IBoardingLadder>()
-                               .FirstOrDefault();
-            Assert.IsNotNull(ladder,
-                $"'{SceneName}' has no IBoardingLadder, so there is no boarding point to prove passable.");
+            List<StandablePlatform> caps = QuayCaps();
+            Assume.That(caps.Count, Is.GreaterThanOrEqualTo(2));
+            List<Vector2[]> runs = QuayWalls(caps).WorldRuns();
 
-            List<QuayDeck> decks = QuayDecks();
-            Assume.That(decks.Count, Is.GreaterThanOrEqualTo(2));
-            Wall(decks, out _);
+            List<IBoardingLadder> ladders = Object.FindObjectsByType<MonoBehaviour>()
+                                                  .OfType<IBoardingLadder>()
+                                                  .Where(l => DistanceToWall(l.WorldPosition, runs) <= LadderOnTheWallMetres)
+                                                  .OrderBy(l => l.WorldPosition.x)
+                                                  .ToList();
+            Assert.IsNotEmpty(ladders,
+                $"'{SceneName}' has no IBoardingLadder on the quay's wall, so there is no boarding point to " +
+                "prove passable.");
 
-            // ⚠ THE LADDER GETS NO GATE, ON PURPOSE — a hole at the lip is the 4.6 m fall this slice
-            // exists to close. It needs none: the climb is a scripted move that starts from wherever she
-            // is STANDING, so what has to be true is that she can stand somewhere the wall allows and
-            // still be within reach. She is walked at the wall, held, and the reach is measured from
-            // wherever the physics actually leaves her — not from a point picked to pass.
-            Vector2 at = ladder.WorldPosition;
-            Vector2 outward = new Vector2(Mathf.Sin(ladder.FaceHeadingDegrees * Mathf.Deg2Rad),
-                                          Mathf.Cos(ladder.FaceHeadingDegrees * Mathf.Deg2Rad));
-
-            Rigidbody2D rb = Walker(at - outward * StartInset);
-            yield return Push(rb, outward);
-
-            float reach = Vector2.Distance(FootOf(rb), at);
             float allowed = GameServices.LadderBoarding.LadderReachMetres;
+            var readings = new List<string>();
+            foreach (IBoardingLadder ladder in ladders)
+            {
+                // ⚠ THE LADDER GETS NO GATE, ON PURPOSE — a hole at the lip is the 4.6 m fall this slice
+                // exists to close. It needs none: the climb is a scripted move that starts from wherever she
+                // is STANDING, so what has to be true is that she can stand somewhere the wall allows and
+                // still be within reach. She is walked at the wall, held, and the reach is measured from
+                // wherever the physics actually leaves her — not from a point picked to pass.
+                Vector2 at = ladder.WorldPosition;
+                Vector2 outward = new Vector2(Mathf.Sin(ladder.FaceHeadingDegrees * Mathf.Deg2Rad),
+                                              Mathf.Cos(ladder.FaceHeadingDegrees * Mathf.Deg2Rad));
 
-            Assert.Less(Vector2.Dot(FootOf(rb) - at, outward), HeldMarginMetres,
-                "the lip at the ladder let her through — the ladder must be walled like the rest of the " +
-                "face; boarding does not need a hole and a hole there is a fall.");
-            Assert.Less(reach, allowed,
-                $"pressed against the wall at the ladder she is {reach:0.00} m from it, outside the " +
-                $"{allowed:0.#} m the boarding move reaches. The wall HAS closed the boarding point and " +
-                "the ladder needs a gate after all — size it with QuayEdgePlan.GateClearFor.");
+                Rigidbody2D rb = Walker(at - outward * StartInset);
+                yield return Push(rb, outward);
 
-            Debug.Log($"[NineMileCreekWallPlayTests] held at the ladder and still {reach:0.00} m from it, " +
-                      $"inside the {allowed:0.#} m boarding reach.");
+                float reach = Vector2.Distance(FootOf(rb), at);
+                Assert.Less(Vector2.Dot(FootOf(rb) - at, outward), HeldMarginMetres,
+                    $"the lip at the ladder at ({at.x:0.#}, {at.y:0.#}) let her through — the ladder must be " +
+                    "walled like the rest of the face; boarding does not need a hole and a hole there is a fall.");
+                Assert.Less(reach, allowed,
+                    $"pressed against the wall at the ladder at ({at.x:0.#}, {at.y:0.#}) she is {reach:0.00} m " +
+                    $"from it, outside the {allowed:0.#} m the boarding move reaches. The wall HAS closed the " +
+                    "boarding point and the ladder needs a gate after all — size it with QuayEdgePlan.GateClearFor.");
+                readings.Add($"({at.x:0.#}, {at.y:0.#}) {reach:0.00} m");
+
+                Object.Destroy(rb.gameObject);
+                _spawned.Remove(rb.gameObject);
+                yield return null;
+            }
+
+            Debug.Log($"[NineMileCreekWallPlayTests] held at {ladders.Count} ladder(s) and still within the " +
+                      $"{allowed:0.#} m boarding reach: " + string.Join(" | ", readings));
         }
     }
 }

@@ -19,15 +19,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// different question now that a carriageway is 5 m wide and can lose ground its centre-line never
     /// touched.</para>
     ///
-    /// <para>The terrain is built through the SAME configure call the builder uses
-    /// (<see cref="NineMileCreekMainland.ConfigureTerrain"/>), so a test can never assert a road the scene
-    /// does not carry. Nothing here loads an asset: the paving is a pure function of the published plan
-    /// plus that terrain, which is why it can be asserted headlessly at all.</para>
+    /// <para>The ground is the scene's: G3, through <see cref="NineMileCreekLiveGround"/> (NMC H2). The
+    /// network is step 06's (<see cref="NineMileCreekGroundPlan.Ways"/>: Route 91 and Wharf Road on their
+    /// final lines, the turning circle, the town walks joining them) and it is paved by
+    /// <see cref="NineMileCreekGroundPlan.Pave"/>, the call the road painter makes, so a test can never
+    /// assert a road the scene does not carry. Nothing here loads an asset: the paving is a pure function of
+    /// the published plan plus that ground, which is why it can be asserted headlessly at all.</para>
     /// </summary>
     public class NineMileCreekRoadsTests
     {
-        private GameObject _terrainGo;
-        private MainlandTidalTerrain _terrain;
+        private ITidalTerrain _terrain;
         private NineMileCreekRoads.Paving _paving;
 
         // Resolved once. The per-cell sweeps below run over thousands of cells, and re-building the
@@ -41,13 +42,12 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _terrainGo = new GameObject("NineMileCreekMainland_RoadTest");
-            _terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
-            _paving = NineMileCreekRoads.Pave(_terrain);
+            // The scene's ground and step 06's paving over it (NMC H2).
+            _terrain = NineMileCreekLiveGround.Plan;
+            _paving = NineMileCreekGroundPlan.Pave(_terrain);
 
             _ways = new Dictionary<string, NineMileCreekRoads.Way>();
-            foreach (var way in NineMileCreekRoads.Ways()) _ways[way.Name] = way;
+            foreach (var way in NineMileCreekGroundPlan.Ways()) _ways[way.Name] = way;
             _pads = new Dictionary<string, NineMileCreekRoads.Pad>();
             foreach (var pad in NineMileCreekRoads.Pads()) _pads[pad.Name] = pad;
         }
@@ -55,7 +55,6 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            if (_terrainGo != null) Object.DestroyImmediate(_terrainGo);
             GameServices.Reset();
         }
 
@@ -68,7 +67,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var kit = new List<string>(RoadKitV3.Surfaces);
 
-            foreach (var way in NineMileCreekRoads.Ways())
+            foreach (var way in NineMileCreekGroundPlan.Ways())
                 Assert.That(kit, Contains.Item(way.Surface),
                     $"{way.Name} is paved in '{way.Surface}', which the road kit v3 does not bake. Its " +
                     $"eleven are: {string.Join(", ", RoadKitV3.Surfaces)}.");
@@ -83,13 +82,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // ⭐ REFERENCE equality, not value equality. The point is that this pass reads the plan's own
             // arrays rather than a copy of their numbers — a copy would pass a value check and then drift
-            // silently the first time a road was re-sited.
+            // silently the first time a road was re-sited. Route 91 and Wharf Road are the third issue's
+            // lines, which NineMileCreekGroundPlan publishes (NMC H2); the bar road and the gully path have
+            // not moved.
             Assert.That(Way(NineMileCreekRoads.BarRoadName).Route,
                 Is.SameAs(NineMileCreekMainland.BarRoad));
             Assert.That(Way(NineMileCreekRoads.WharfRoadName).Route,
-                Is.SameAs(NineMileCreekMainland.WharfRoad));
+                Is.SameAs(NineMileCreekGroundPlan.WharfRoad));
             Assert.That(Way(NineMileCreekRoads.ThroughRoadName).Route,
-                Is.SameAs(NineMileCreekMainland.ThroughRoad));
+                Is.SameAs(NineMileCreekGroundPlan.Route91));
             Assert.That(Way(NineMileCreekRoads.GullyPathName).Route,
                 Is.SameAs(NineMileCreekMainland.GullyPath));
         }
@@ -136,11 +137,17 @@ namespace HiddenHarbours.Tests.EditMode
             // it" — and it is what the town-lot test, the dressing tests and the pole line all measure
             // against. A carriageway wider than its own corridor would pave ground another pass believes
             // it is allowed to stand a prop on.
-            foreach (var way in NineMileCreekRoads.Ways())
+            //
+            // The turning circle is the one way that is not a line: a round pad laid as a stroke on a
+            // single point, so its half-width is its radius, the ground a truck turns on (NMC H2).
+            foreach (var way in NineMileCreekGroundPlan.Ways())
+            {
+                if (way.Name == NineMileCreekGroundPlan.TurningPadName) continue;
                 Assert.That(way.HalfWidth,
                     Is.LessThanOrEqualTo(NineMileCreekMainland.RoadHalfWidth + 1e-4f),
                     $"{way.Name} is laid {way.HalfWidth} m either side of its centre-line, wider than " +
                     $"the {NineMileCreekMainland.RoadHalfWidth} m corridor the plan clears for it");
+            }
         }
 
         [Test]
@@ -194,7 +201,7 @@ namespace HiddenHarbours.Tests.EditMode
             // OUTER cells wherever the ground goes under — which is right at the landing, where the bar
             // road runs down to a beach. It must never let a road lose its MIDDLE: a route driven across
             // the marsh pool or the barachois comes back in two pieces, and this is where that shows.
-            foreach (var way in NineMileCreekRoads.Ways())
+            foreach (var way in NineMileCreekGroundPlan.Ways())
             {
                 if (!way.CentreLineCritical) continue;
 
@@ -214,7 +221,7 @@ namespace HiddenHarbours.Tests.EditMode
             // one PAST the last one. The through-road's last node is (−186, 280), which is the region's
             // north edge to the metre, and the first version of the continuity check therefore read the
             // road's own end as a hole in it. The road was paved correctly; the arithmetic asking about
-            // it was off by one cell.
+            // it was off by one cell. The third issue's Route 91 starts on that node too (NMC H2).
             Rect region = NineMileCreekRoads.RegionRect();
             var onTheEdge = new Vector2(-186f, region.yMax);
 
@@ -222,37 +229,40 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(cell.y, Is.EqualTo(Mathf.CeilToInt(region.yMax) - 1),
                 "a point on the region's closing edge must land in the LAST cell row, not one past it");
             Assert.IsTrue(_paving.IsPaved(cell.x, cell.y),
-                "…and that is the cell the through-road's last node is actually paved in");
+                "…and that is the cell Route 91's north end is actually paved in");
         }
 
         [Test]
-        public void NoPavedCellStandsInEitherPond()
+        public void EveryPavedCellStandsOnGroundThatStaysDryOrOnTheBridge()
         {
-            // Said geometrically as well as by elevation, because the two ponds are the named hazard: the
-            // barachois behind the spit and the marsh pool the road runs the neck of.
-            foreach (var carve in NineMileCreekMainland.Carves)
-            {
-                Rect pond = Rect.MinMaxRect(carve.Center.x - carve.HalfSize.x,
-                                            carve.Center.y - carve.HalfSize.y,
-                                            carve.Center.x + carve.HalfSize.x,
-                                            carve.Center.y + carve.HalfSize.y);
-                foreach (var cell in _paving.Cells)
-                    Assert.IsFalse(pond.Contains(cell.Centre),
-                        $"{cell.Way} paves {cell.Centre}, which is inside a pond ({pond}). The neck " +
-                        "between the two ponds is 12 m wide and the road goes through it, not over them.");
-            }
-        }
+            // ⭐ THE POND GUARD TOO. G3's barachois and marsh pool are its own low ground, not two authored
+            // rectangles, so a cell laid in either reads here as ground at or below spring high water. The
+            // premise's rectangles (NineMileCreekMainland.Carves) are not the scene's ponds any more: Wharf
+            // Road's final ramp runs on dry G3 ground inside one of them (NMC H2).
+            //
+            // The one exemption is Route 91's river bridge: its cells stand on the deck
+            // (NineMileCreekGroundPlan.BridgeDeck), carried above the water, not on the river under it.
+            Rect deck = NineMileCreekGroundPlan.BridgeDeck;
+            Assert.That(NineMileCreekGroundPlan.BridgeDeckElevation, Is.GreaterThan(SpringHigh),
+                "the bridge deck itself must stand above spring high water");
 
-        [Test]
-        public void EveryPavedCellStandsOnGroundThatStaysDry()
-        {
+            int onDeck = 0;
             foreach (var cell in _paving.Cells)
             {
+                if (deck.Contains(cell.Centre))
+                {
+                    onDeck++;
+                    Assert.That(cell.Way, Is.EqualTo(NineMileCreekRoads.ThroughRoadName),
+                        $"{cell.Way} paves {cell.Centre} on the bridge deck: only Route 91 crosses the river");
+                    continue;
+                }
+
                 float e = _terrain.ElevationAt(cell.Centre);
                 Assert.That(e, Is.GreaterThan(SpringHigh),
                     $"{cell.Way} paves {cell.Centre} where the ground is {e:0.00} m — at or below spring " +
                     $"high water ({SpringHigh:0.0} m)");
             }
+            Assert.That(onDeck, Is.GreaterThan(0), "Route 91 lays no cell on its bridge: the river crossing is gone");
         }
 
         [Test]
@@ -261,7 +271,7 @@ namespace HiddenHarbours.Tests.EditMode
             // The claimed footprint (no terrain) must be a strict SUPERSET of the laid one, and the
             // difference must be exactly what the paving reports as trimmed. If those two ever disagree,
             // something is dropping cells for a reason nobody wrote down.
-            var claimed = NineMileCreekRoads.Pave(null);
+            var claimed = NineMileCreekGroundPlan.Pave(null);
 
             Assert.That(claimed.Cells.Count, Is.GreaterThanOrEqualTo(_paving.Cells.Count));
             Assert.That(claimed.Cells.Count - _paving.Cells.Count, Is.EqualTo(_paving.Trimmed),
@@ -333,7 +343,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ThePavingIsAPureFunctionOfThePlan_AcrossRuns()
         {
-            var again = NineMileCreekRoads.Pave(_terrain);
+            var again = NineMileCreekGroundPlan.Pave(_terrain);
 
             Assert.That(again.Cells.Count, Is.EqualTo(_paving.Cells.Count));
             for (int i = 0; i < again.Cells.Count; i++)
@@ -416,7 +426,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryTownWalkJoinsARoadAtOneEndAndStopsAtItsOwnDoor()
         {
-            var walks = NineMileCreekRoads.TownWalks();
+            // The walks join Route 91 and Wharf Road where step 06 lays them now (NMC H2). The five lots
+            // and the doorstep rule are still the town wave's own authoring.
+            var walks = NineMileCreekGroundPlan.TownWalks();
             var lots = NineMileCreekRoads.PublicTownLots;
             Assert.That(walks.Count, Is.EqualTo(lots.Length),
                 "every public lot gets exactly one walk");
@@ -427,8 +439,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(route.Length, Is.EqualTo(2), "a front walk is one straight run, not a lane");
 
                 float toRoad = Mathf.Min(
-                    NineMileCreekMainland.DistanceToRoute(NineMileCreekMainland.ThroughRoad, route[0]),
-                    NineMileCreekMainland.DistanceToRoute(NineMileCreekMainland.WharfRoad, route[0]));
+                    NineMileCreekMainland.DistanceToRoute(NineMileCreekGroundPlan.Route91, route[0]),
+                    NineMileCreekMainland.DistanceToRoute(NineMileCreekGroundPlan.WharfRoad, route[0]));
                 Assert.That(toRoad, Is.LessThan(0.5f),
                     $"{walks[i].Name} starts {toRoad:0.00} m from the nearest carriageway — a walk that " +
                     "does not reach the road is a path from nowhere");
@@ -458,7 +470,7 @@ namespace HiddenHarbours.Tests.EditMode
                 NineMileCreekMainland.HouseSouthPos, NineMileCreekMainland.BoatShedPos,
             };
 
-            foreach (var walk in NineMileCreekRoads.TownWalks())
+            foreach (var walk in NineMileCreekGroundPlan.TownWalks())
             foreach (var house in houses)
                 Assert.That(Vector2.Distance(walk.Route[1], new Vector2(house.x, house.y)),
                     Is.GreaterThan(1f),
@@ -514,8 +526,8 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 if (cell.Surface != NineMileCreekRoads.WalkSurface) continue;
 
-                foreach (var road in new[] { NineMileCreekMainland.ThroughRoad,
-                                             NineMileCreekMainland.WharfRoad })
+                foreach (var road in new[] { NineMileCreekGroundPlan.Route91,
+                                             NineMileCreekGroundPlan.WharfRoad })
                     Assert.That(NineMileCreekMainland.DistanceToRoute(road, cell.Centre),
                         Is.GreaterThan(NineMileCreekRoads.CarriagewayHalfWidthMetres),
                         $"a shell cell at {cell.Centre} stands inside a gravel carriageway — the road " +

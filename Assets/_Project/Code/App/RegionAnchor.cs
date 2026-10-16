@@ -91,7 +91,32 @@ namespace HiddenHarbours.App
                  "they did before the bounds rig existed (the camera stays unclamped).")]
         [SerializeField] private Vector2 _worldSizeMeters = Vector2.zero;
 
+        // Opt-in: the arrival point is a berth ALONGSIDE a wall, laid for a design hull of this half
+        // beam. A hull of another beam lies with the same side against the same fender line, so her
+        // centre moves abeam by the difference (AlongsideCentre). Off, the arrival is the point itself.
+        [Tooltip("The arrival point is an alongside berth: the boat's centre is moved abeam so her side, " +
+                 "not her centre, lands on the fender line the point was laid for. Set by the region builder.")]
+        [SerializeField] private bool _alongsideBerth;
+
+        [Tooltip("The half beam (m) of the design hull the alongside arrival point was laid for. Set by the " +
+                 "region builder with the point; meaningless unless the berth is alongside.")]
+        [SerializeField, Min(0f)] private float _alongsideHalfBeamMetres;
+
         public string RegionId => _regionId;
+
+        /// <summary>True when the region's own arrival point is an alongside berth (see
+        /// <see cref="AlongsideCentre"/>).</summary>
+        public bool AlongsideBerth => _alongsideBerth;
+
+        /// <summary>The design hull's half beam the alongside arrival point was laid for.</summary>
+        public float AlongsideHalfBeamMetres => _alongsideHalfBeamMetres;
+
+        /// <summary>Where a hull of <paramref name="liveHalfBeam"/> lies at an alongside berth laid at
+        /// <paramref name="arrival"/> for <paramref name="designHalfBeam"/>: the same fender line on her
+        /// port side, so her centre moves to port by the difference. PURE, so EditMode asserts it.</summary>
+        public static Vector3 AlongsideCentre(Vector3 arrival, Quaternion rotation, float designHalfBeam,
+                                              float liveHalfBeam) =>
+            arrival + (rotation * Vector3.left) * (designHalfBeam - liveHalfBeam);
 
         /// <summary>This region's authored world rectangle, or a zero-size rect when the builder has
         /// not published one (which reads downstream as "unbounded").</summary>
@@ -277,6 +302,14 @@ namespace HiddenHarbours.App
         /// the region with a single arrival, which is what it had before this table existed.</summary>
         public void ConfigureArrivals(params NamedArrival[] arrivals) =>
             _arrivals = arrivals ?? new NamedArrival[0];
+
+        /// <summary>Mark the region's own arrival point as an alongside berth laid for a hull of
+        /// <paramref name="designHalfBeamMetres"/> (the region builder's push).</summary>
+        public void ConfigureAlongsideBerth(float designHalfBeamMetres)
+        {
+            _alongsideBerth = true;
+            _alongsideHalfBeamMetres = Mathf.Max(0f, designHalfBeamMetres);
+        }
 
         /// <summary>
         /// Publish this region's authored extent — pass <c>RegionDef.WorldCenter</c> /

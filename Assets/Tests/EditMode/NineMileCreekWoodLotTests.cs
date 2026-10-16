@@ -25,6 +25,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// if any of its trees has nine neighbours inside 24 m. That test was not touched, re-scoped or relaxed
     /// by this pass — <see cref="NoFarmedTreeStandsInsideAWoodLot"/> is the proof that it is still measuring
     /// the population it was written to measure, with the lots kept out of it.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> The lots are planted on the plan's analytic ground, through the
+    /// builder's own configure call. The scene's ground is G3 (<see cref="NineMileCreekLiveGround.Plan"/>), and
+    /// the lots move onto it in a later wave, from G3's wood mask (<see cref="NineMileCreekGroundMasks"/>). None
+    /// of these tests claims G3's woods.</para>
     /// </summary>
     public class NineMileCreekWoodLotTests
     {

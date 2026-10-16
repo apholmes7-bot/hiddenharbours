@@ -11,7 +11,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// you SAIL WEST to cross, ARRIVE FROM THE EAST in Nine Mile Creek (and continue west to the wharf), and the
     /// return trip leaves EAST so you come home to the cove dock FROM THE WEST. The boat's heading is
     /// preserved across the hop (RegionTravelCoordinator repositions only), so a west crossing → arriving
-    /// heading west falls straight out of these passage placements.
+    /// heading west falls straight out of these passage placements. (Since NMC H2 Nine Mile Creek's own arrival
+    /// is an alongside berth, which lays her on the berth's heading instead: see its case below.)
     ///
     /// Scene geometry (boat not sailing through the wharf, the actual sprites/headings) is play-mode/manual:
     /// the owner must re-run BOTH "Build Greybox Scene" and "Build Nine Mile Creek Scene" and re-test.
@@ -37,14 +38,22 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(Mathf.Abs(p.x), Mathf.Abs(p.y), "east must be the dominant axis");
         }
 
+        /// <summary>Replaces <c>NineMileCreekArrival_IsEastOfItsDock_EnterFromTheEast</c> (NMC H2). The arrival is now
+        /// an alongside berth on G3's north face (<see cref="NineMileCreekGroundPlan"/>): she is laid abreast of the
+        /// dock zone on the berth's own heading, not parked east of it on the heading she sailed in on, so "east of
+        /// the dock" no longer holds. What still does is that the way in is from the east and she lies ALONG the
+        /// face, not end-on to it.</summary>
         [Test]
-        public void NineMileCreekArrival_IsEastOfItsDock_EnterFromTheEast()
+        public void NineMileCreekArrival_LiesAlongsideItsDock_OffTheNorthFace()
         {
-            // You cross heading west and enter Nine Mile Creek from the EAST, so the arrival sits east of
-            // the dock zone and you come alongside heading west up the wall's face.
-            Assert.Greater(NineMileCreekBuilder.ArrivalPos.x, NineMileCreekBuilder.DockZonePos.x,
-                "the Nine Mile Creek arrival must be EAST of the dock zone (enter from the east, come " +
-                "alongside heading west)");
+            Vector3 arrival = NineMileCreekBuilder.ArrivalPos, dock = NineMileCreekBuilder.DockZonePos;
+
+            Assert.Greater(NineMileCreekBuilder.ToCovePassagePos.x, arrival.x,
+                "the way in from the cove must be EAST of the arrival: you still enter from the east");
+            Assert.Less(arrival.y, dock.y, "she lies SOUTH of the dock zone: off the north face, in the basin");
+            Assert.AreEqual(dock.x, arrival.x, 1e-3f, "…and abreast of it: alongside, not end-on");
+            float heading = NineMileCreekGroundPlan.BerthHeadingDegrees * Mathf.Deg2Rad;
+            Assert.Greater(Mathf.Abs(Mathf.Sin(heading)), 0.99f, "her heading runs east-west, along the face");
         }
 
         // ---- ⭐ THE OTHER crossing: the tidal bar out to St Peters ---------------------------------

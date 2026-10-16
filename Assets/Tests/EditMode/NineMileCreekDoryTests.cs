@@ -61,18 +61,23 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // Hauled out means hauled out. Really a guard on the spit's fill still reaching her: if the
             // made ground were ever trimmed, the derelict would be afloat and nothing else would say so.
-            var go = new GameObject("TidalTerrain");
-            try
+            // Since NMC H2 the scene stands on G3, so that is the ground she lies on — under her whole hull,
+            // not just her middle. (This file's spit, road and buyer tests stay with the plan's geometry: they
+            // hold where the plan PUTS her, which G3 does not move.)
+            HiddenHarbours.Core.ITidalTerrain ground = NineMileCreekLiveGround.Plan;
+            Rect hull = NineMileCreekDory.HullBounds();
+            foreach (var at in new[]
+                     {
+                         NineMileCreekDory.HaulOutPos,
+                         new Vector2(hull.xMin, hull.yMin), new Vector2(hull.xMax, hull.yMin),
+                         new Vector2(hull.xMin, hull.yMax), new Vector2(hull.xMax, hull.yMax),
+                     })
             {
-                var terrain = go.AddComponent<HiddenHarbours.World.MainlandTidalTerrain>();
-                NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
-
-                float ground = terrain.ElevationAt(NineMileCreekDory.HaulOutPos);
-                Assert.Greater(ground, NineMileCreekMainland.SpringHighWater,
-                    $"she lies on {ground:0.00} m against a spring high of " +
+                float under = ground.ElevationAt(at);
+                Assert.Greater(under, NineMileCreekMainland.SpringHighWater,
+                    $"at {at} she lies on {under:0.00} m against a spring high of " +
                     $"{NineMileCreekMainland.SpringHighWater:0.00} m — the derelict is floating");
             }
-            finally { Object.DestroyImmediate(go); }
         }
 
         [Test]

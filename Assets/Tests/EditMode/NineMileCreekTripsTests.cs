@@ -20,9 +20,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// defect once (dry NODES over a wet middle). So the machine is walked at metre resolution through
     /// the plan itself, which is also the only thing that proves the plan and the geometry agree.</para>
     ///
-    /// <para>Terrain through the same <see cref="NineMileCreekMainland.ConfigureTerrain"/> the builder
-    /// calls; paving is a pure function of the published plan plus that terrain. No assets, no scene, no
-    /// bake — honest headless.</para>
+    /// <para>The ground is the scene's: G3, through <see cref="NineMileCreekLiveGround"/> (NMC H2). The
+    /// paving is step 06's, <see cref="NineMileCreekGroundPlan.Pave"/> over that ground: a pure function of
+    /// the third issue's roads plus G3. No scene, no bake.</para>
     /// </summary>
     public class NineMileCreekTripsTests
     {
@@ -37,23 +37,25 @@ namespace HiddenHarbours.Tests.EditMode
         // the component's business, and NineMileCreekTripsPlayTests drives the real one.
         private static readonly Vector2 DoorLocal = new(-1.75f, 0.10f);
 
-        private GameObject _terrainGo;
-        private MainlandTidalTerrain _terrain;
+        /// <summary>The court between the turning pad's exit and her gravel is 5.9 m today (x 76.14 to 82),
+        /// and her road crosses 6.24 m of unpaved cells there (the pad's paving stops at x 76 on y 120).
+        /// Stated with a little room, so the test goes red if the pad, the gravel or the yard road's line
+        /// moves apart.</summary>
+        private const float CourtGapMetres = 6.5f;
+
+        private ITidalTerrain _terrain;
         private NineMileCreekRoads.Paving _paving;
 
         [SetUp]
         public void SetUp()
         {
-            _terrainGo = new GameObject("NineMileCreekMainland_TripsTest");
-            _terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
-            _paving = NineMileCreekRoads.Pave(_terrain);
+            _terrain = NineMileCreekLiveGround.Plan;
+            _paving = NineMileCreekGroundPlan.Pave(_terrain);
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_terrainGo != null) Object.DestroyImmediate(_terrainGo);
             GameServices.Reset();
         }
 
@@ -103,10 +105,17 @@ namespace HiddenHarbours.Tests.EditMode
         //  2. EVERY METRE SHE COVERS — sampled off the clock, not off the nodes
         // =============================================================================================
 
-        /// <summary>⭐ The load-bearing one. Walked at metre resolution through the PLAN, so a route whose
-        /// nodes are all on the road but whose middle cuts the marsh fails here.</summary>
+        /// <summary>⭐ The load-bearing one. Walked through the PLAN minute by minute, and along her road at a
+        /// quarter metre, so a route whose nodes are all on the road but whose middle cuts the marsh fails
+        /// here.
+        ///
+        /// <para>⚠ ONE KNOWN GAP (NMC H2). Wharf Road now ends in the turning circle, and the yard's own road
+        /// that will carry her from the circle's east side onto her gravel is a later wave's. So the court
+        /// between <see cref="NineMileCreekGroundPlan.TurningPadExit"/> and the gravel's west edge is dry and
+        /// unpaved: off the paving she may be there and nowhere else, and that stretch stays under
+        /// <see cref="CourtGapMetres"/>.</para></summary>
         [Test]
-        public void EveryMetreOfHerDayIsOnPavedGround()
+        public void EveryMetreOfHerDayIsOnPavedGroundButTheCourtBeforeHerGravel()
         {
             VehicleTripPlan plan = Plan();
             int offPaving = 0;
@@ -116,7 +125,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (float hour in EveryMinute())
             {
                 Vector2 at = plan.SampleAt(hour).MachinePosition;
-                if (_paving.Paved.Contains(NineMileCreekRoads.CellOf(at))) continue;
+                if (_paving.Paved.Contains(NineMileCreekRoads.CellOf(at)) || InTheCourt(at)) continue;
                 if (offPaving++ == 0) { firstOff = at; firstOffHour = hour; }
             }
 
@@ -124,6 +133,24 @@ namespace HiddenHarbours.Tests.EditMode
                 $"{offPaving} sampled minutes stand her off the paving, the first at {firstOff} " +
                 $"({firstOffHour:00.00}). Her route leaves the road, the spur, the park or the buyers' " +
                 "gravel somewhere between two of its nodes.");
+
+            float unpaved = 0f;
+            Vector2[] route = NineMileCreekTrips.OutboundRoute();
+            for (int i = 0; i + 1 < route.Length; i++)
+            {
+                float length = Vector2.Distance(route[i], route[i + 1]);
+                int steps = Mathf.Max(1, Mathf.CeilToInt(length / 0.25f));
+                for (int s = 0; s < steps; s++)
+                {
+                    Vector2 at = Vector2.Lerp(route[i], route[i + 1], (s + 0.5f) / steps);
+                    if (_paving.Paved.Contains(NineMileCreekRoads.CellOf(at))) continue;
+                    Assert.That(InTheCourt(at), Is.True,
+                        $"her road leaves the paving at {at}, outside the court before her gravel.");
+                    unpaved += length / steps;
+                }
+            }
+            Assert.That(unpaved, Is.LessThan(CourtGapMetres),
+                $"{unpaved:0.##} m of her road is unpaved court between the turning pad and her gravel.");
         }
 
         [Test]
@@ -194,11 +221,11 @@ namespace HiddenHarbours.Tests.EditMode
         public void OnTheRoadSheIsOnTheCarriageway()
         {
             VehicleTripPlan plan = Plan();
-            Vector2[] road = NineMileCreekMainland.WharfRoad;
+            Vector2[] road = NineMileCreekTrips.WharfRoad;
 
             // Only the stretch of the drive that is BETWEEN the spur join and the pull-off is a claim
-            // about Wharf Road; the spur, the park and the gravel are their own surfaces and the paving
-            // test above is what covers them.
+            // about Wharf Road; the spur, the park, the turning pad and the gravel are their own surfaces
+            // and the paving test above is what covers them.
             float alongJoin = NineMileCreekTrips.DistanceAlong(road, NineMileCreekTrips.SpurJoin());
             float alongPull = NineMileCreekTrips.DistanceAlong(road, NineMileCreekTrips.PullOff());
             float lo = Mathf.Min(alongJoin, alongPull) + 1f, hi = Mathf.Max(alongJoin, alongPull) - 1f;
@@ -313,15 +340,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             float metres = NineMileCreekTrips.Length(NineMileCreekTrips.OutboundRoute());
             Assert.That(metres, Is.GreaterThan(100f).And.LessThan(400f),
-                $"{metres:0.#} m from the park to the wharf. The village is ~320 m of Wharf Road end to "
-                + "end; a run much shorter than that is not going anywhere and one much longer has left "
-                + "the region.");
+                $"{metres:0.#} m from the park to the wharf. The village is ~245 m of Wharf Road, town to "
+                + "turning pad; a run much shorter than that is not going anywhere and one much longer has "
+                + "left the region.");
         }
 
         [Test]
         public void ThePullInGivesHerRoomToLineUpRatherThanTurningOffAtRightAngles()
         {
-            Vector2[] road = NineMileCreekMainland.WharfRoad;
+            Vector2[] road = NineMileCreekTrips.WharfRoad;
             Vector2 pullOff = NineMileCreekTrips.PullOff();
             Vector2 bay = NineMileCreekTrips.WharfBay();
 
@@ -330,9 +357,9 @@ namespace HiddenHarbours.Tests.EditMode
             float turn = Vector2.Angle(alongRoad, intoTheBay);
 
             Assert.That(turn, Is.LessThan(45f),
-                $"she leaves the carriageway through a {turn:0.#}° turn. A pull-in sharper than 45° is a "
-                + "truck pivoting off a road, not driving off one — lengthen "
-                + "NineMileCreekTrips.ApproachRunMetres.");
+                $"she leaves the turning pad through a {turn:0.#}° turn. A pull-in sharper than 45° is a "
+                + "truck pivoting off a road, not driving off one — see "
+                + "NineMileCreekGroundPlan.TurningPadExit.");
         }
 
         [Test]
@@ -380,6 +407,15 @@ namespace HiddenHarbours.Tests.EditMode
         private static System.Collections.Generic.IEnumerable<float> EveryMinute()
         {
             for (int m = 0; m < 24 * 60; m++) yield return m / 60f;
+        }
+
+        /// <summary>On the yard road's line between the turning pad's exit and her gravel's west edge.</summary>
+        private static bool InTheCourt(Vector2 at)
+        {
+            Vector2 exit = NineMileCreekGroundPlan.TurningPadExit;
+            Rect gravel = NineMileCreekRoads.ParkingArea();
+            return at.x >= exit.x - 0.5f && at.x <= gravel.xMin + 0.5f
+                   && Mathf.Abs(at.y - NineMileCreekGroundPlan.YardRoadY) <= NineMileCreekRoads.CarriagewayHalfWidthMetres;
         }
 
         private void AssertPaved(Vector2 at, string what)
