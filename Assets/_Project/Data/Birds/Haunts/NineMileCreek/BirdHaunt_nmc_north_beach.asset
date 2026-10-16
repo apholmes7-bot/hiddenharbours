@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705affcae831417704e895ac99de6acb, type: 3}
+  m_Name: BirdHaunt_nmc_north_beach
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.BirdHauntDef
+  Id: birdhaunt.nmc_north_beach
+  RegionId: region.nine_mile_creek
+  Kind: 2
+  Centre: {x: 131, y: 139}
+  HalfSize: {x: 38, y: 9}
+  RoostId: birdroost.nmc_weather_ledges
+  Sheltered: 0
+  BusyFromHour: 0
+  BusyToHour: 0
+  BusyBoost: 1
+  BusyOnFineDaysOnly: 0
+  MarketDayBoost: 1
+  HasTide: 1
+  TideOpensBelowMetres: -0.6
+  TideRampMetres: 0.8
+  HighWaterKeep: 0.45
+  MiddayLevel: 0.8
+  AfternoonLevel: 0.8
+  PerchIds:
+  - gull.nmc_flats
+  - gull.nmc_restaurant
+  AwayHeading: {x: 0, y: 0}
+  Birds:
+  - SpeciesId: bird.herring_gull
+    Capacity: 10
+    Typical: 6
+    SeasonWeights:
+    - 0.8
+    - 1
+    - 0.9
+    - 0.55
+    Residents:
+    - 0
+    - 0
+    - 0
+    - 0
+    Room: 0

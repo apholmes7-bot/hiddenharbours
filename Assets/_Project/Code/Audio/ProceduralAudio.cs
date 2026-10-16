@@ -74,29 +74,63 @@ namespace HiddenHarbours.Audio
             return (Sine(t * 180f) + 0.36f * Sine(t * 360f)) * attack * release * breath * 0.22f;
         });
 
+        /// <summary>The gull loop's length, seconds.</summary>
+        public const float GullLoopSeconds = 9.7f;
+
+        /// <summary>How long one wail of the gull loop lasts (a note of kind 0), seconds.</summary>
+        public const float GullWailSeconds = 0.52f;
+
+        /// <summary>How long one bark of the gull loop lasts (a note of kind 1), seconds.</summary>
+        public const float GullBarkSeconds = 0.11f;
+
+        /// <summary>The gull loop's notes: (start, kind, level) — kind 0 = the long wail, 1 = a short bark.
+        /// Placed off the grid so the loop does not announce itself; the tail is left empty for the seam
+        /// crossfade to work into. <see cref="GullCallPhrases"/> reads the same onsets. Read only.</summary>
+        public static readonly (float at, int kind, float gain)[] GullCallNotes =
+        {
+            (0.62f, 0, 1.00f), (1.31f, 1, 0.72f), (1.52f, 1, 0.60f), (1.71f, 1, 0.48f),
+            (3.94f, 0, 0.55f),
+            (5.28f, 0, 0.85f), (5.98f, 1, 0.62f), (6.19f, 1, 0.52f),
+            (8.10f, 1, 0.40f),
+        };
+
+        /// <summary>The gull loop's four phrases, which the call player plays one at a time while the gull
+        /// slot is empty: the long call (a wail and three barks), a lone wail, a wail and two barks, and a
+        /// lone bark. Read only.</summary>
+        public static readonly GullCallPhrase[] GullCallPhrases =
+        {
+            Phrase(GullPhraseKind.LongCall, 0, 4),
+            Phrase(GullPhraseKind.Wail, 4, 1),
+            Phrase(GullPhraseKind.WailAndBarks, 5, 3),
+            Phrase(GullPhraseKind.Bark, 8, 1),
+        };
+
+        /// <summary>How long a note of the gull loop lasts, by its kind.</summary>
+        public static float GullNoteSeconds(int kind) => kind == 0 ? GullWailSeconds : GullBarkSeconds;
+
+        private static GullCallPhrase Phrase(GullPhraseKind kind, int firstNote, int noteCount)
+        {
+            float start = GullCallNotes[firstNote].at;
+            float end = start;
+            for (int i = firstNote; i < firstNote + noteCount; i++)
+                end = Mathf.Max(end, GullCallNotes[i].at + GullNoteSeconds(GullCallNotes[i].kind));
+            return new GullCallPhrase(start, end - start, kind, firstNote, noteCount);
+        }
+
         /// <summary>Sparse gull calls over true silence. Each call is a harmonic stack (gulls are bright and
         /// harsh, not sinusoidal) with a rasp of noise, bent through a pitch contour and shaped by a formant
         /// band — a long wail, then the short barking "laugh" that follows it.</summary>
-        public static AudioClip GullCalls() => BuildBuffer("ph_gulls", 9.7f, true, data =>
+        public static AudioClip GullCalls() => BuildBuffer("ph_gulls", GullLoopSeconds, true, data =>
         {
             var formant = new Svf();
-            // (start, kind) — kind 0 = the long wail, 1 = a short bark. Placed off the grid so the loop
-            // does not announce itself; the tail is left empty for the seam crossfade to work into.
-            var calls = new (float at, int kind, float gain)[]
-            {
-                (0.62f, 0, 1.00f), (1.31f, 1, 0.72f), (1.52f, 1, 0.60f), (1.71f, 1, 0.48f),
-                (3.94f, 0, 0.55f),
-                (5.28f, 0, 0.85f), (5.98f, 1, 0.62f), (6.19f, 1, 0.52f),
-                (8.10f, 1, 0.40f),
-            };
             for (int n = 0; n < data.Length; n++)
             {
                 float t = (float)n / SampleRate;
                 float src = 0f, env = 0f, centre = 1800f;
-                foreach (var c in calls)
+                foreach (var c in GullCallNotes)
                 {
                     float u = t - c.at;
-                    float dur = c.kind == 0 ? 0.52f : 0.11f;
+                    float dur = GullNoteSeconds(c.kind);
                     if (u < 0f || u > dur) continue;
                     float k = u / dur;
                     // The wail climbs then falls away; the bark just falls.

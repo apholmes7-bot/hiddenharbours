@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705affcae831417704e895ac99de6acb, type: 3}
+  m_Name: BirdHaunt_stp_wharf
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.BirdHauntDef
+  Id: birdhaunt.stp_wharf
+  RegionId: region.st_peters
+  Kind: 1
+  Centre: {x: 206, y: 3}
+  HalfSize: {x: 12, y: 8}
+  RoostId: birdroost.stp_whelps
+  Sheltered: 1
+  BusyFromHour: 6.5
+  BusyToHour: 10.5
+  BusyBoost: 1.3
+  BusyOnFineDaysOnly: 0
+  MarketDayBoost: 1.2
+  HasTide: 0
+  TideOpensBelowMetres: 0
+  TideRampMetres: 0.8
+  HighWaterKeep: 0
+  MiddayLevel: 0.5
+  AfternoonLevel: 0.7
+  PerchIds:
+  - prop.stp_landing_gull
+  AwayHeading: {x: 0, y: 0}
+  Birds:
+  - SpeciesId: bird.herring_gull
+    Capacity: 14
+    Typical: 8
+    SeasonWeights:
+    - 0.8
+    - 1
+    - 1
+    - 0.85
+    Residents:
+    - 0
+    - 0
+    - 0
+    - 0
+    Room: 0
