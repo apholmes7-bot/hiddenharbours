@@ -3284,8 +3284,8 @@ Shader "HiddenHarbours/Water"
                 return lerp(1.0 - saturate(_SwashCalmGate), 1.0, sea);
             }
 
-            // The same calm fade at a given sea state: the shore fringe's swash reads it at its lee sea state
-            // (FringeLeeReading). One formula in both bodies. Twin: WaterSurface.SwashSeaStateGate.
+            // The same calm fade at a given sea state: in a lee the drawn edge's swash and the fringe's read it at
+            // the lee's sea state (FringeLeeReading). One formula in both bodies. Twin: WaterSurface.SwashSeaStateGate.
             float SwashSeaStateGateAt(float sea01)
             {
                 float lo = saturate(_SwellReadSeaStateLo);
@@ -3299,7 +3299,8 @@ Shader "HiddenHarbours/Water"
             // fringe reads them through the dominant train's fetch factor: at or above _WaveFetchFringe.z the shore
             // is open water and every reading passes through untouched; below it the lee's share grows linearly
             // to a dead lee at 0. A shallow first step can shade the march a little at an open beach's wet edge,
-            // which is why open water starts below 1. Twin: WaveFetch.FringeLeeOpen01.
+            // which is why open water starts below 1. The drawn edge's swash reads the same lee, so the edge and
+            // the fringe on it run up and back together. Twin: WaveFetch.FringeLeeOpen01.
             float FringeLeeOpen01(float fetchFactor)
             {
                 return _WaveFetchFringe.z > 0.0 ? saturate(fetchFactor / _WaveFetchFringe.z) : 1.0;
@@ -4911,6 +4912,16 @@ Shader "HiddenHarbours/Water"
                 // untouched, and the vertex/displaced pass and the fetch march keep the clean _WaterLevel.
                 // The cap is well inside the standing "wade ~0.5 m" tolerance, so no ground the player can
                 // stand on changes meaning. _SwashEdgeShift = 0 restores the previous edge exactly.
+                //
+                // IN A LEE the swash runs at the lee's sea state. BeachSwash carries the open sea's calm fade, and
+                // behind land the per-train law leaves a far calmer sea, so the drawn edge's swash is rescaled to
+                // the fade at the lee's reading (FringeLeeOpen01, FringeLeeReading). The fringe below takes the
+                // same factor, so the edge and the foam on it run up and back together. Open water and light wind
+                // keep the factor at exactly 1 (the select's else arm): their edge is unchanged to the bit.
+                float leeOpen  = FringeLeeOpen01(waveFetchEnv);
+                float leeSea   = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, leeOpen);
+                float leeSwash = leeSea < saturate(_Chop)
+                               ? SwashSeaStateGateAt(leeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;
                 float edgeSwash = 0.0;
                 if (swashEdgeReach > 0.0 && depth < shoreCosmeticReach)
                 {
@@ -4921,7 +4932,7 @@ Shader "HiddenHarbours/Water"
                     // thing the 2026-07-23 guard exists to forbid.
                     float cap = saturate(_SwashMaxEdgeShift);
                     edgeSwash = clamp(BeachSwash(worldXY, max(depth, 0.0), t)
-                                          * swashSlope * saturate(_SwashEdgeShift),
+                                          * swashSlope * saturate(_SwashEdgeShift) * leeSwash,
                                       -cap, cap);
                 }
                 // The EXACT edge. Everything past the coarse pre-clip above that the swash has not actually
@@ -5558,13 +5569,10 @@ Shader "HiddenHarbours/Water"
                 // THE FRINGE IN A LEE: its roughness, density and swash read the open sea's wind through the
                 // local fetch factor (FringeLeeOpen01). Open water and light wind keep every reading, so their
                 // fringe is unchanged to the bit; a dead lee reads the lee's ceilings, the light breeze the
-                // per-train law leaves there. BeachSwash keeps the open sea's calm fade (the drawn edge reads
-                // it too), so the fringe's swash is rescaled here to the fade at the lee's sea state.
-                float fringeOpen      = FringeLeeOpen01(waveFetchEnv);
-                float fringeRoughness = FringeLeeReading(_Roughness, _WaveFetchFringe.x, fringeOpen);
-                float fringeSea       = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, fringeOpen);
-                swashGate *= fringeSea < saturate(_Chop)
-                           ? SwashSeaStateGateAt(fringeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;
+                // per-train law leaves there. Its swash takes the drawn edge's lee factor (leeSwash, above), so
+                // the foam and the edge under it run up and back together.
+                float fringeRoughness = FringeLeeReading(_Roughness, _WaveFetchFringe.x, leeOpen);
+                swashGate *= leeSwash;
                 // shoreSlope (computed with the fringe above) turns the swash's depth amplitude into a
                 // CONTOUR excursion in metres — on a gently painted bar the run-up no longer sweeps a
                 // metres-wide worm tongue (the 2026-07-23 swirl defect); a steep edge keeps today's look.

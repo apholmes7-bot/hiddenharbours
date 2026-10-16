@@ -270,12 +270,15 @@ namespace HiddenHarbours.Tests.EditMode
                 Canonical(Group(water, @"float FoamDensityAt\(float roughness\)\s*\{(.*?)\}")));
             Assert.AreEqual(Canonical(Group(water, @"float SwashSeaStateGate\(\)\s*\{(.*?)\}").Replace("_Chop", "sea01")),
                 Canonical(Group(water, @"float SwashSeaStateGateAt\(float sea01\)\s*\{(.*?)\}")));
+            // The drawn edge's swash and the fringe's take one lee factor, so they run up and back together.
             string code = Canonical(water);
             foreach (string line in new[] {
-                "float fringeOpen = FringeLeeOpen01(waveFetchEnv);",
-                "float fringeRoughness = FringeLeeReading(_Roughness, _WaveFetchFringe.x, fringeOpen);",
-                "float fringeSea = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, fringeOpen);",
-                "swashGate *= fringeSea < saturate(_Chop) ? SwashSeaStateGateAt(fringeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;",
+                "float leeOpen = FringeLeeOpen01(waveFetchEnv);",
+                "float leeSea = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, leeOpen);",
+                "float leeSwash = leeSea < saturate(_Chop) ? SwashSeaStateGateAt(leeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;",
+                "edgeSwash = clamp(BeachSwash(worldXY, max(depth, 0.0), t) * swashSlope * saturate(_SwashEdgeShift) * leeSwash, -cap, cap);",
+                "float fringeRoughness = FringeLeeReading(_Roughness, _WaveFetchFringe.x, leeOpen);",
+                "swashGate *= leeSwash;",
                 "float foamField = saturate(churn + foamEdge * 0.5 + fringeRoughness * 0.4);",
                 "float bandGate = saturate(foamEdge + fringeRoughness * 0.4);",
                 "float dens = FoamDensityAt(fringeRoughness);",

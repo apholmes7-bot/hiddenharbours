@@ -34,10 +34,13 @@ namespace HiddenHarbours.Tests.PlayMode
     // one bit. It is shot three times inside one rendered frame: shipped, with the fetch model off, and
     // shipped again.
     //
-    // The shore fringe reads the open sea's wind through the local fetch factor, so every lee station frame
-    // is shot twice inside one rendered frame: shipped, and with the fringe's lee off (ceilings of 1 keep
-    // every reading: the fringe as it was before it read the fetch). In light wind the two must not differ
-    // by one bit. Those two are the only assertions; the rest is plates.
+    // The shore fringe and the drawn edge's swash read the open sea's wind through the local fetch factor, so
+    // every lee station frame is shot twice inside one rendered frame: shipped, and with the lee off (ceilings
+    // of 1 keep every reading: the fringe and the edge as they were before they read the fetch). In light wind
+    // the two must not differ by one bit. And every station shot draws the sea at its station's level: the
+    // displaced chunks draw from their own copy of the surface's uniforms, so Publish copies them too, or a
+    // station's first shot shows the level still easing in from the last station. Those three are the only
+    // assertions; the rest is plates.
 
     public class LeeSeaPlatePlayTests
     {
@@ -72,6 +75,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static readonly MethodInfo PushUniforms = typeof(WaterSurface).GetMethod("PushUniforms",
             BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+        static readonly MethodInfo SyncDisplaced = typeof(DisplacedWaterSurface).GetMethod("SyncUniforms",
+            BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(bool) }, null);
+        static readonly FieldInfo DisplacedChunks = typeof(DisplacedWaterSurface).GetField("_chunkRenderers",
+            BindingFlags.Instance | BindingFlags.NonPublic);
 
         readonly List<Object> _made = new List<Object>();
         readonly List<Camera> _cameras = new List<Camera>();
@@ -205,7 +212,7 @@ namespace HiddenHarbours.Tests.PlayMode
             string folder = Path.Combine(Application.temporaryCachePath, "lee-sea-w4-3");
             Directory.CreateDirectory(folder);
             var html = new StringBuilder("<meta charset='utf-8'><title>Lee sea plates</title>");
-            var frames = new StringBuilder("region,tide,level_m,wind,speed_m_per_s,toward_deg,offset_m,x,y,boat_x,boat_y,fetch01_drawn,fetch01_sim,today_factor,lee_factors,wavelengths_m,dominant,changed_fringe_off,max_abs_fringe_off\n");
+            var frames = new StringBuilder("region,tide,level_m,wind,speed_m_per_s,toward_deg,offset_m,x,y,boat_x,boat_y,fetch01_drawn,fetch01_sim,today_factor,lee_factors,wavelengths_m,dominant,changed_fringe_off,max_abs_fringe_off,drawn_level_m\n");
             var opens = new StringBuilder("region,tide,wind,x,y,lattice_points,min_fetch01,min_depth_m,surf_outer_depth_m,pixels,changed_fetch_off,max_abs_fetch_off,changed_repeat,max_abs_repeat\n");
             var failures = new List<string>();
             foreach (string region in new[] { "StPeters", "NineMileCreek" })
@@ -274,6 +281,9 @@ namespace HiddenHarbours.Tests.PlayMode
                             yield return null;
                             yield return null;
                             Publish(bridge, surface);
+                            float drawnLevel = DrawnLevel(surface);
+                            if (drawnLevel != shore.Level)
+                                failures.Add(F($"{region} {shore.Tide} water, {mode} wind, {offset:F0} m off the lee waterline: the sea is drawn at {drawnLevel:R} m, not at the station's {shore.Level:R} m"));
                             float fetch = WaveFetch.Fetch01(at, wind.Wind, shore.Level, drawn, in shipped);
                             float simFetch = WaveFetch.Fetch01(at, wind.Wind, shore.Level, sim, in shipped);
                             float today = WaveFetch.Envelope01(fetch, in shipped);
@@ -289,7 +299,8 @@ namespace HiddenHarbours.Tests.PlayMode
                             }
                             string stem = F($"{region}_{shore.Tide}_{mode}_{offset:000}m");
                             string caption = F($"{head}; {offset:F0} m off the lee waterline, at ({at.x:F2}, {at.y:F2}); a Cape Islander on the {Berth:F0} m berth at ({berth.x:F2}, {berth.y:F2}). Fetch here {fetch:F4} and {simFetch:F4}, {seabeds}. On the first, today's law gives every train {today:F4}; the lee law gives [{factors}] to trains of [{lambdas}] m.");
-                            // Shipped, then the fringe's lee off, inside one rendered frame (no yield between them).
+                            // Shipped, then the lee off (the fringe's and the drawn edge's), inside one rendered frame
+                            // (no yield between them).
                             byte[] stationShot = Shoot(read, Path.Combine(folder, stem), false);
                             config.WaveFetch = fringeOff;
                             Publish(bridge, surface);
@@ -299,13 +310,13 @@ namespace HiddenHarbours.Tests.PlayMode
                             Compare(stationShot, fringeAsBefore, out int changedFringe, out float maxFringe);
                             Mask(stationShot, fringeAsBefore, Path.Combine(folder, stem + "_fringediff.png"));
                             if (mode == "base" && changedFringe > 0)
-                                failures.Add(F($"{region} {shore.Tide} water, light wind, {offset:F0} m off the lee waterline: the fringe's lee moved {changedFringe} pixels (max |d| {maxFringe:R}); in light wind it must keep every reading"));
-                            caption += F($" Shot twice inside one rendered frame, shipped and with the fringe's lee off: {changedFringe} pixels differ (max |d| {maxFringe:R}).");
+                                failures.Add(F($"{region} {shore.Tide} water, light wind, {offset:F0} m off the lee waterline: the lee (fringe and drawn edge) moved {changedFringe} pixels (max |d| {maxFringe:R}); in light wind it must keep every reading"));
+                            caption += F($" Shot twice inside one rendered frame, shipped and with the lee off (the fringe's and the drawn edge's): {changedFringe} pixels differ (max |d| {maxFringe:R}).");
                             File.WriteAllText(Path.Combine(folder, stem + ".txt"), caption);
                             html.Append("<figure><img width='768' src='").Append(stem).Append(".png'><img width='768' src='")
                                 .Append(stem).Append("_fringeoff.png'><img width='768' src='").Append(stem)
                                 .Append("_fringediff.png'><figcaption>").Append(caption).Append("</figcaption></figure>\n");
-                            frames.Append(F($"{region},{shore.Tide},{shore.Level:R},{mode},{speed:R},{toward:R},{offset:R},{at.x:R},{at.y:R},{berth.x:R},{berth.y:R},{fetch:R},{simFetch:R},{today:R},{factors},{lambdas},{trains.DominantIndex},{changedFringe},{maxFringe:R}\n"));
+                            frames.Append(F($"{region},{shore.Tide},{shore.Level:R},{mode},{speed:R},{toward:R},{offset:R},{at.x:R},{at.y:R},{berth.x:R},{berth.y:R},{fetch:R},{simFetch:R},{today:R},{factors},{lambdas},{trains.DominantIndex},{changedFringe},{maxFringe:R},{drawnLevel:R}\n"));
                         }
 
                         // The open sea, on the drawn seabed: full fetch, and water deeper than this sea's surf.
@@ -372,9 +383,37 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             bridge.SendMessage("Update");
             PushUniforms.Invoke(surface, null);
+            // The displaced chunks draw the sea from their own copy of the surface's block, taken in their own
+            // Update: copy it now, or a station's first shot shows the level still easing in from the last.
+            var displaced = surface.GetComponent<DisplacedWaterSurface>();
+            if (displaced != null && displaced.Displaced)
+                SyncDisplaced.Invoke(displaced, new object[] { false });
             Shader.SetGlobalVector("_DayNightTint", Color.white);
             Shader.SetGlobalFloat("_SunElevation", 1);
             Shader.SetGlobalVector("_SunDir", new Vector4(.4f, .8f, 0, 0));
+        }
+
+        // The level the sea is drawn at: the displaced chunks' copy when they draw it (NaN if two chunks
+        // disagree), else the surface's own block.
+        static float DrawnLevel(WaterSurface surface)
+        {
+            var block = new MaterialPropertyBlock();
+            var displaced = surface.GetComponent<DisplacedWaterSurface>();
+            if (displaced != null && displaced.Displaced)
+            {
+                var chunks = (List<MeshRenderer>)DisplacedChunks.GetValue(displaced);
+                float level = float.NaN;
+                for (int i = 0; i < chunks.Count; i++)
+                {
+                    chunks[i].GetPropertyBlock(block);
+                    float chunk = block.GetFloat("_WaterLevel");
+                    if (i > 0 && chunk != level) return float.NaN;
+                    level = chunk;
+                }
+                if (chunks.Count > 0) return level;
+            }
+            surface.GetComponent<Renderer>().GetPropertyBlock(block);
+            return block.GetFloat("_WaterLevel");
         }
 
         // Renders twice and reads back, as WaveMemoryPlatePlayTests' Capture does. Returns the raw RGBA
