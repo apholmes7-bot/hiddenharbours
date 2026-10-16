@@ -64,9 +64,11 @@ namespace HiddenHarbours.Tests.EditMode
                 "A previous disposable proof must be inspected before reuse.");
             _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
             _buildList = EditorBuildSettings.scenes;
+            StartFromAnEmptyScene();
             Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", "RicePointRefreshProof"), Is.Not.Empty);
             _proofPlan = SaveProofPlan(ProofFolder, "RicePointRefreshSource");
             LandSceneTemplate.Create(_proofPlan);
+            Assert.That(System.IO.File.Exists(ProofSource), Is.True, "CREATE returned without saving its scene.");
             Assert.That(AssetDatabase.CopyAsset(ProofSource, ProofCopy), Is.True);
             _proofPlan.Region.SceneName = "RicePointRefreshCopy";
             var copy = EditorSceneManager.OpenScene(ProofCopy, OpenSceneMode.Single);
@@ -99,12 +101,14 @@ namespace HiddenHarbours.Tests.EditMode
                 "A previous disposable proof must be inspected before reuse.");
             _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
             _buildList = EditorBuildSettings.scenes;
+            StartFromAnEmptyScene();
             Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", "RicePointCreatePlan"), Is.Not.Empty);
             SaveProofPlan(CreateProofFolder, "RicePointCreateProof");
             // The batch CREATE's flow: the plan comes from disk, and nothing static holds it across the new scene.
             var handed = AssetDatabase.LoadAssetAtPath<LandScenePlanDef>(CreateProofFolder + "/Plan.asset");
             LandSceneTemplate.Create(handed);
             Debug.Log("[rice-point] CREATE proof: the new scene unloaded the plan handed in: " + (handed == null));
+            Assert.That(System.IO.File.Exists(CreateProofScene), Is.True, "CREATE returned without saving its scene.");
             var roots = EditorSceneManager.OpenScene(CreateProofScene, OpenSceneMode.Single).GetRootGameObjects();
             var plan = AssetDatabase.LoadAssetAtPath<LandScenePlanDef>(CreateProofFolder + "/Plan.asset");
             plan.Validate();
@@ -143,6 +147,12 @@ namespace HiddenHarbours.Tests.EditMode
             }
             finally { Object.DestroyImmediate(p); }
         }
+
+        // The runner's scene can be an Untitled scene that an earlier test changed. CREATE asks to save changed
+        // scenes, and in batch mode that prompt cancels, so CREATE would return without making its scene. Each
+        // proof starts from an empty scene; the teardown restores the runner's setup.
+        static void StartFromAnEmptyScene() =>
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
         // A Single-mode scene open destroys in-memory objects, so each proof's plan and region are
         // disposable assets, as the real plan and region are.
