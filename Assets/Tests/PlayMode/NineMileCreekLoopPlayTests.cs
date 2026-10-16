@@ -37,8 +37,12 @@ namespace HiddenHarbours.Tests.PlayMode
     /// opened. The licence wallet is the case's own too, woken on that file before New Game: the game's installs
     /// itself once per play session and publishes itself only as it wakes, so in the full run an earlier fixture's
     /// GameServices.Reset() leaves its slot empty for good (a launch of this class alone never shows it). The slot
-    /// goes back as the case found it. The walk is tide-gated as St Peters' fisher is (the creek's dev core leaves
-    /// the gate off; the fisher who crosses the bar from St Peters has it on, and the loop is about the tide).</para>
+    /// goes back as the case found it. The save's boat ledger has the same gap on the bus: the save hears a purchase
+    /// only through the one handler its Awake subscribed, and an earlier fixture's clear of the BoatPurchased channel
+    /// (DeckTrayPlayTests) takes it off before this class runs; so the case puts that handler back, exactly once, as
+    /// EventBusSaveHelmPlayTests does the save's ActiveBoatChanged one, and leaves it on, as the game's Awake does.
+    /// The walk is tide-gated as St Peters' fisher is (the creek's dev core leaves the gate off; the fisher who
+    /// crosses the bar from St Peters has it on, and the loop is about the tide).</para>
     ///
     /// <para><b>Where she is.</b> Every depth here is read where the walker reads it — at her body point, the
     /// rigidbody's position — and her foot circle (below it) is used only for clearance. The walking is an A*
@@ -175,6 +179,12 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Save = _save;
             _casePath = Path.Combine(runDirectory, "nmc-loop-" + TestContext.CurrentContext.Test.MethodName + ".json");
             _save.Open(_casePath);
+
+            // ---- the boat ledger: the save's own handler, on the bus exactly once (see the class note) ------------
+            var boatLedger = (System.Action<BoatPurchased>)System.Delegate.CreateDelegate(
+                typeof(System.Action<BoatPurchased>), _save, "OnBoatPurchased");
+            EventBus.Unsubscribe(boatLedger);   // the one its Awake made, if no earlier fixture's Clear took it
+            EventBus.Subscribe(boatLedger);
 
             // ---- the licence wallet: the case's own (see the class note), in its slot before New Game -------------
             _previousLicences = GameServices.Licenses;
