@@ -307,10 +307,10 @@ namespace HiddenHarbours.Art
         /// <see cref="PublishFetchGlobals"/> are: this is the only place these uniform names live, and
         /// the rendering acceptance suites drive the real shader with fields of their own.</para>
         ///
-        /// <para>The <b>lee floor</b> handed to the solve is the fetch model's own minimum envelope
-        /// (<c>WaveFetch.Envelope01(0, …)</c>), so with the fetch dial down it is exactly 1 and the
-        /// contour collapses to a single anchor — the interpolation becomes a no-op rather than a
-        /// second thing to reason about.</para>
+        /// <para>The <b>lee floor</b> handed to the solve is the fetch model's own minimum envelope for
+        /// the dominant train (<c>WaveFetch.TrainEnvelope01(0, dominant.Wavelength, …)</c>), so with the
+        /// fetch dial down it is exactly 1 and the contour collapses to a single anchor — the
+        /// interpolation becomes a no-op rather than a second thing to reason about.</para>
         /// </summary>
         public static void PublishBreakerGlobals(in WaveTrain dominant, in WaveFetchSettings fetch,
                                                  in BreakerSettings breakers)

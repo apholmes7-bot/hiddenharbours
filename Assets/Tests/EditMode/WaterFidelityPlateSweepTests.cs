@@ -2327,8 +2327,8 @@ namespace HiddenHarbours.Tests.EditMode
             WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in trains));
             WaveFieldBridge.PublishFetchGlobals(GameServices.WaveFetch, _env.Wind);
             WaveFieldBridge.PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch, GameServices.Breakers);
-            contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch),
-                                             GameServices.Breakers);
+            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch);
+            contour = BreakerMath.ContourFor(trains.Dominant, leeEnvelope, GameServices.Breakers);
 
             // The hour, published the way ADR 0013's controller publishes it (it does not tick in edit mode).
             // Moonless: the moon needs a clock for its phase, and a plate is an instant.
@@ -3682,8 +3682,8 @@ namespace HiddenHarbours.Tests.EditMode
         static BreakerContour ReferenceContour(out WaveTrains trains)
         {
             trains = WaveMath.TrainsFrom(WindFor(Weather.Blow), SeaStateFor(Weather.Blow), GameServices.WaveField);
-            return BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch),
-                                          GameServices.Breakers);
+            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch);
+            return BreakerMath.ContourFor(trains.Dominant, leeEnvelope, GameServices.Breakers);
         }
 
         /// <summary>#680's plunge scan: the highest surf-similarity number on the break contour — Nine Mile

@@ -933,7 +933,8 @@ namespace HiddenHarbours.Tests.EditMode
             var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
             WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
             BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
-                WaveFetch.Envelope01(0f, GameServices.WaveFetch), GameServices.Breakers);
+                WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch),
+                GameServices.Breakers);
             Assert.IsTrue(contour.Breaks, "the shot sea must break somewhere, or there is nothing to photograph");
 
             Vector2 at = BreakerSurfRenderTests.FindTheSurfZone(terrain, waterLevel, contour.BreakDepths.x);
@@ -951,7 +952,7 @@ namespace HiddenHarbours.Tests.EditMode
             WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
             var settings = GameServices.Breakers;
             BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
-                WaveFetch.Envelope01(0f, GameServices.WaveFetch), settings);
+                WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch), settings);
             float h0 = 2f * trains.Dominant.Amplitude;
             Vector2 centre = NineMileCreekBuilder.NineMileCreekSeaCenter;
             Vector2 size = NineMileCreekBuilder.NineMileCreekSeaSize;
