@@ -23,14 +23,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// unless published; the target shader compiles with its four passes where the code expects them; the
     /// overlays take a texel only behind a non-zero map; the export's stencils keep her, and of what
     /// covers her only the texel beside her (the owner's D4 of 10-15, ruled down to that edge on 10-16),
-    /// while never exporting a context pixel alone; and the edge's neighbourhood is the four texels that
-    /// share an edge.
+    /// while never exporting a context pixel alone; the edge's neighbourhood is the four texels that
+    /// share an edge; and the full-size hull resolve reads her as a depth-edge neighbour only behind its
+    /// global gate, finding her texel under a pixel exactly as the plan does (the ruling of 10-16).
     /// </summary>
     public class IsoFacetFigureTargetTests
     {
         private const string FacetShaderName = "HiddenHarbours/IsoFacet";
         private const string TargetShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursFigurePixelTarget.shader";
         private const string OverlayShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursIsoFacetOverlay.shader";
+        private const string ResolveShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursIsoFacetResolve.shader";
 
         private static object _sink;
         private static bool _live;
@@ -240,6 +242,45 @@ namespace HiddenHarbours.Tests.Art.EditMode
                             "a covered texel with nothing of hers beside it is not exported: the full-size house stays");
         }
 
+        // ==================================================================== the hull's contour against her
+
+        [Test]
+        public void TheHullResolve_ReadsHerAsANeighbour_OnlyBehindItsGlobalGate()
+        {
+            string source = File.ReadAllText(ResolveShaderPath);
+            Assert.AreEqual(1, Regex.Matches(source, Regex.Escape("if (_HHFigureNeighbours < 0.5) return false;")).Count,
+                            "her neighbour is read only while the gate is up: down, the helper returns before any load");
+            Assert.AreEqual(1, Regex.Matches(source, Regex.Escape("if (!HHFigureNeighbour(q, dn))")).Count,
+                            "rule 1 asks for her first, and falls back to the full-size facet only when she is not there");
+            Assert.AreEqual(1, Regex.Matches(source,
+                                Regex.Escape("int2(floor((float2(q) + 0.5 - _HHFigurePixelMap.xy) * _HHFigurePixelMap.z))")).Count,
+                            "her texel under a pixel is the overlays' own lookup, at that pixel's centre");
+            Match properties = Regex.Match(source, @"Properties\s*\{([^}]*)\}");
+            Assert.IsTrue(properties.Success, "the resolve shader's Properties block is not where it was");
+            Assert.IsFalse(Regex.IsMatch(properties.Groups[1].Value, @"_HHFigure(Neighbours|PixelMap)\b"),
+                           "the gate and the map are globals; a Properties entry would shadow them per material");
+        }
+
+        [Test]
+        public void TheHullResolve_FindsHerTexelUnderAPixel_AsThePlanDoes()
+        {
+            // The resolve's lookup, in single precision as the shader writes it, against the plan's integer
+            // one: every pixel of the screen and one past each edge, at every whole step. Never nearer
+            // than 0.5/m to a texel edge, so no rounding can move a pixel to the next art pixel.
+            foreach (var (w, h) in new[] { (1920, 1080), (2560, 1440), (1365, 767) })
+            {
+                for (int m = 2; m <= 8; m++)
+                {
+                    string what = $"{w}x{h} step {m}";
+                    Assert.IsTrue(FigurePixelGrid.TryPlan(w, h, -3.37d, 5.11d, FigurePixelGrid.ArtTexelMetres / m,
+                                                          out FigurePixelPlan plan), $"{what}: plans");
+                    Vector4 map = plan.PixelMap;
+                    AssertLookup(w, map.x, map.z, m, plan.TexelOfScreenX, what + " x");
+                    AssertLookup(h, map.y, map.z, m, plan.TexelOfScreenY, what + " y");
+                }
+            }
+        }
+
         // ==================================================================== rule 7
 
         [Test]
@@ -266,6 +307,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         // ==================================================================== helpers
+
+        private static void AssertLookup(int screen, float offset, float inverse, int m, System.Func<int, int> texelOf,
+                                         string what)
+        {
+            for (int q = -1; q <= screen; q++)
+            {
+                float product = ((float)q + 0.5f - offset) * inverse;
+                Assert.AreEqual(texelOf(q), Mathf.FloorToInt(product), $"{what}: pixel {q}");
+                float toEdge = Mathf.Abs(product - Mathf.Round(product));
+                Assert.GreaterOrEqual(toEdge, 0.5f / m - 1e-3f, $"{what}: pixel {q} lands {toEdge} from a texel edge");
+            }
+        }
 
         // A pass's fixed-function stencil test: pass when (ref & mask) <comp> (stencil & mask).
         private readonly struct StencilTest

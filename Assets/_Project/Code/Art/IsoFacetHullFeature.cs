@@ -647,6 +647,10 @@ namespace HiddenHarbours.Art
                 /// <summary>Character PR 2a: this frame's rig 9 ink, <c>(edge, mix, live, 0)</c> from
                 /// <see cref="IsoFacetFigureInk.Value"/>, applied in the render func the same way.</summary>
                 public Vector4 FigureInk;
+                /// <summary>The figure pixel look: her art pixels as the hull resolve's depth-edge
+                /// neighbours (<see cref="IsoFacetFigureTarget.Neighbours"/>), empty unless the figure
+                /// target recorded. The reflection resolve never opens it.</summary>
+                public IsoFacetFigureTarget.Neighbours Figures;
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -1114,8 +1118,9 @@ namespace HiddenHarbours.Art
                 // OFF, or a frame it cannot plan, records nothing and leaves everything below as it
                 // was. ON, the figures draw into their own art-pixel target here (after the water,
                 // whose depth hides them) and the facet list below leaves them out.
+                IsoFacetFigureTarget.Neighbours figures = default;
                 bool figuresLow = drawHulls && _figureTarget.Record(renderGraph, cameraData, renderingData,
-                    depthBuf, DrawWater, w, h, ResolveMaterial, profilingSampler);
+                    depthBuf, DrawWater, w, h, ResolveMaterial, profilingSampler, out figures);
 
                 // ---- transient MRT for the facet draw ------------------------------------
                 TextureHandle facet = default, dark = default, key = default, depthVal = default;
@@ -1191,11 +1196,15 @@ namespace HiddenHarbours.Art
                     passData.TexSize = new Vector4(w, h, 0, 0);
                     passData.KeylineFlood = KeylineFlood;
                     passData.FigureInk = IsoFacetFigureInk.Value;
+                    // The figure pixel look: her art pixels as depth-edge neighbours, so the deck keeps
+                    // its contour against her. Empty — a no-op throughout — unless the target recorded.
+                    passData.Figures = figures;
 
                     builder.UseTexture(facet, AccessFlags.Read);
                     builder.UseTexture(dark, AccessFlags.Read);
                     builder.UseTexture(key, AccessFlags.Read);
                     builder.UseTexture(depthVal, AccessFlags.Read);
+                    figures.Use(builder);
                     builder.SetRenderAttachment(resolved, 0);
                     // The consumers are ordinary scene renderers (the overlay quads) whose reads
                     // the graph cannot see — never cull this pass, and publish the result.
@@ -1210,7 +1219,9 @@ namespace HiddenHarbours.Art
                         data.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)data.Depth);
                         IsoFacetKeylineGate.Apply(data.Material, data.KeylineFlood);
                         IsoFacetFigureInk.Apply(data.Material, data.FigureInk);
+                        data.Figures.Open(data.Material, ctx.cmd);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
+                        data.Figures.Close(ctx.cmd);
                     });
                 }
             }

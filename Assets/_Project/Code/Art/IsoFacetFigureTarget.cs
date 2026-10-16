@@ -51,6 +51,13 @@ namespace HiddenHarbours.Art
     /// test then keeps or drops it. So the art-pixel image sorts exactly where the full-size one did.
     /// The map is ZERO for every camera this did not run for (<see cref="Unpublish"/> first thing in
     /// every <c>AddRenderPasses</c>), and zero is the overlay's untouched path.</para>
+    ///
+    /// <para><b>The hull's contour against her.</b> With the figures out of the full-size facet list,
+    /// a deck pixel beside her would lose her as its depth-edge neighbour. So the full-size hull
+    /// resolve, and it alone, takes her coverage and her true depth (<see cref="Neighbours"/>): a
+    /// neighbour on a texel where she shows is solid at her depth there, and the deck keeps its one
+    /// screen pixel of contour against her in its own darkened colour, as OFF has it (the owner's
+    /// ruling of 10-16).</para>
     /// </summary>
     public static class IsoFacetFigureTarget
     {
@@ -78,6 +85,8 @@ namespace HiddenHarbours.Art
         internal static readonly int SceneDepthId = Shader.PropertyToID("_HHFigureSceneDepth");
         internal static readonly int LowTexId = Shader.PropertyToID("_HHFigureLowTex");
         internal static readonly int CoverageTexId = Shader.PropertyToID("_HHFigureCoverageTex");
+        internal static readonly int DepthTexId = Shader.PropertyToID("_HHFigureDepthTex");
+        internal static readonly int NeighboursId = Shader.PropertyToID("_HHFigureNeighbours");
         private static readonly int s_ScreenParamsId = Shader.PropertyToID("_ScreenParams");
 
         private static int s_LiveFrame = -2;
@@ -146,6 +155,44 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalTexture(ScreenTexId, s_Clear);
         }
 
+        /// <summary>
+        /// Her art pixels as the full-size hull resolve's depth-edge neighbours: where she shows and her
+        /// true depth there, both at texel size. Handed out by <see cref="Recorder.Record"/> only when it
+        /// recorded; the default is empty and every member is then a no-op, so with the switch OFF the
+        /// resolve records exactly what it did before.
+        /// </summary>
+        internal struct Neighbours
+        {
+            internal TextureHandle Coverage, Depth;
+
+            internal bool Live => Coverage.IsValid();
+
+            /// <summary>Declare the two reads, and the gate the pass raises and drops.</summary>
+            internal void Use(IRasterRenderGraphBuilder builder)
+            {
+                if (!Live) return;
+                builder.UseTexture(Coverage, AccessFlags.Read);
+                builder.UseTexture(Depth, AccessFlags.Read);
+                builder.AllowGlobalStateModification(true);
+            }
+
+            /// <summary>Before the resolve's blit: its textures, and its GLOBAL gate up.</summary>
+            internal void Open(Material material, RasterCommandBuffer cmd)
+            {
+                if (!Live) return;
+                material.SetTexture(CoverageTexId, (RTHandle)Coverage);
+                material.SetTexture(DepthTexId, (RTHandle)Depth);
+                cmd.SetGlobalFloat(NeighboursId, 1f);
+            }
+
+            /// <summary>After it: the gate down, so no later pass (the reflection resolve, the next
+            /// camera's target) reads her.</summary>
+            internal void Close(RasterCommandBuffer cmd)
+            {
+                if (Live) cmd.SetGlobalFloat(NeighboursId, 0f);
+            }
+        }
+
         /// <summary>The per-camera state and recording. Owned by the hull feature's pass.</summary>
         internal sealed class Recorder : IDisposable
         {
@@ -195,13 +242,15 @@ namespace HiddenHarbours.Art
 
             /// <summary>
             /// Record the five passes for this camera, or nothing. True only when they were recorded:
-            /// the caller then filters its own facet list to <see cref="SceneQueue"/>. False leaves the
-            /// caller's recording exactly as it was before this class existed.
+            /// the caller then filters its own facet list to <see cref="SceneQueue"/> and hands
+            /// <paramref name="neighbours"/> to its own resolve. False leaves the caller's recording
+            /// exactly as it was before this class existed, with no neighbours.
             /// </summary>
             internal bool Record(RenderGraph graph, UniversalCameraData cameraData, UniversalRenderingData renderingData,
                                  TextureHandle sceneDepth, bool sceneDepthLive, int screenWidth, int screenHeight,
-                                 Material sharedResolve, ProfilingSampler sampler)
+                                 Material sharedResolve, ProfilingSampler sampler, out Neighbours neighbours)
             {
+                neighbours = default;
                 if (!GameServices.FigurePixelTarget || !FiguresLive || sharedResolve == null || _shaderMissing)
                     return false;
                 Camera camera = cameraData.camera;
@@ -380,6 +429,7 @@ namespace HiddenHarbours.Art
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, EdgePass);
                     });
                 }
+                neighbours = new Neighbours { Coverage = coverage, Depth = trueDepth };
                 return true;
             }
 

@@ -171,6 +171,16 @@ removal does not alter visible hull contour next to a figure. If needed, supply 
 low figure depth as read-only context to hull resolve, without shrinking hull shading.
 That potential resolve adapter is explicitly priced below.
 
+As built (Phase C; the owner's ruling of 10-16): ON keeps the hull's contour against her
+own deck, as OFF has it. The coverage pass's mask (her visible texels) and the small
+target's true depth go to the full-size hull resolve, and to it alone, as rule-1
+neighbours: a neighbour pixel whose texel, found by the overlays' own lookup, is hers is
+solid at her depth there. A deck pixel more than 0.30 m farther than her darkens to its
+own darkened colour, so the contour stays one screen pixel wide in the hull's own contour
+colour. The read sits behind a global gate the hull feature raises around that one blit
+and drops after it, so the mesh reflection resolve and the target's own resolve never see
+her; OFF records nothing new.
+
 Displaced water currently contributes to the private hardware depth before facets.
 Route 1 must preserve its occlusion too. Read/reproject the existing full-resolution
 hardware depth at the low texel's world sample into private depth before context replay;
