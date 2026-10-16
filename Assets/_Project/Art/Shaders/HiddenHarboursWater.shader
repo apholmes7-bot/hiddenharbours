@@ -2668,25 +2668,6 @@ Shader "HiddenHarbours/Water"
                 return FetchTrainEnvelope01(fetch01, k > 0.0 ? 6.28318530718 / k : 0.0);
             }
 
-            // THE SHORE FRINGE IN A LEE. The fringe (layer 3) dresses the wet edge from the open sea's wind
-            // readings, and behind land the per-train law leaves a far calmer sea than those readings say. So the
-            // fringe reads them through the dominant train's fetch factor: at or above _WaveFetchFringe.z the shore
-            // is open water and every reading passes through untouched; below it the lee's share grows linearly
-            // to a dead lee at 0. A shallow first step can shade the march a little at an open beach's wet edge,
-            // which is why open water starts below 1. Twin: WaveFetch.FringeLeeOpen01.
-            float FringeLeeOpen01(float fetchFactor)
-            {
-                return _WaveFetchFringe.z > 0.0 ? saturate(fetchFactor / _WaveFetchFringe.z) : 1.0;
-            }
-
-            // A reading above the lee's ceiling falls toward it by the lee's share. A reading at or under the
-            // ceiling (light wind), or on open water (open01 = 1), is returned as is, to the bit.
-            // Twin: WaveFetch.FringeLeeReading.
-            float FringeLeeReading(float reading, float ceiling, float open01)
-            {
-                return (open01 < 1.0 && reading > ceiling) ? lerp(ceiling, reading, open01) : reading;
-            }
-
             // THE MARCH, written ONCE and instantiated against each stage's seabed sampler below — the same
             // two-instantiation pattern SeabedElevation/SeabedElevationLod already uses, and for the same
             // reason: the vertex stage has no derivatives, so it cannot call the implicit-LOD sampler.
@@ -3311,6 +3292,25 @@ Shader "HiddenHarbours/Water"
                 float hi = max(saturate(_SwellReadSeaStateHi), lo + 1e-3);
                 float sea = smoothstep(lo, hi, saturate(sea01));
                 return lerp(1.0 - saturate(_SwashCalmGate), 1.0, sea);
+            }
+
+            // THE SHORE FRINGE IN A LEE. The fringe (layer 3) dresses the wet edge from the open sea's wind
+            // readings, and behind land the per-train law leaves a far calmer sea than those readings say. So the
+            // fringe reads them through the dominant train's fetch factor: at or above _WaveFetchFringe.z the shore
+            // is open water and every reading passes through untouched; below it the lee's share grows linearly
+            // to a dead lee at 0. A shallow first step can shade the march a little at an open beach's wet edge,
+            // which is why open water starts below 1. Twin: WaveFetch.FringeLeeOpen01.
+            float FringeLeeOpen01(float fetchFactor)
+            {
+                return _WaveFetchFringe.z > 0.0 ? saturate(fetchFactor / _WaveFetchFringe.z) : 1.0;
+            }
+
+            // A reading above the lee's ceiling falls toward it by the lee's share. A reading at or under the
+            // ceiling (light wind), or on open water (open01 = 1), is returned as is, to the bit.
+            // Twin: WaveFetch.FringeLeeReading.
+            float FringeLeeReading(float reading, float ceiling, float open01)
+            {
+                return (open01 < 1.0 && reading > ceiling) ? lerp(ceiling, reading, open01) : reading;
             }
 
             // SHOREWARD PHASE (the fix): the crest travels IN from the sea toward the beach, not around it.
