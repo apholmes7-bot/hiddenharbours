@@ -5,7 +5,7 @@ Shader "HiddenHarbours/Plant"
         [NoScaleOffset] _MainTex ("Albedo", 2D) = "white" {}
         [NoScaleOffset] _NormalTex ("Normal", 2D) = "bump" {}
         [NoScaleOffset] _LightTex ("Sky transmission height", 2D) = "white" {}
-        [NoScaleOffset] _DetailTex ("Stamp and part", 2D) = "black" {}
+        [NoScaleOffset] _DetailTex ("Part (r)", 2D) = "black" {}
         _Sway ("Wind bend metres", Float) = 0.16
         _FootRadius ("Foot radius metres", Float) = 0.7
         _FootStrength ("Foot bend metres", Float) = 0.3
@@ -69,7 +69,8 @@ Shader "HiddenHarbours/Plant"
                 half4 albedo = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv); clip(albedo.a - 0.01);
                 float3 n = normalize(SAMPLE_TEXTURE2D(_NormalTex, sampler_MainTex, i.uv).rgb * 2 - 1);
                 float3 light = SAMPLE_TEXTURE2D(_LightTex, sampler_MainTex, i.uv).rgb;
-                float part = SAMPLE_TEXTURE2D(_DetailTex, sampler_MainTex, i.uv).b;
+                // The import moves part from the detail map's b to r (PlantRig5Baker.Load), so Standalone keeps it as R8.
+                float part = SAMPLE_TEXTURE2D(_DetailTex, sampler_MainTex, i.uv).r;
                 float sunUp;
                 // Plant map depth runs opposite the shared sprite normal axis.
                 float3 sun = SpriteLightSunDirection(float2(_SunDir.x, -_SunDir.y), _SunElevation, sunUp);
