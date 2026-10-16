@@ -184,6 +184,12 @@ namespace HiddenHarbours.App
                  "for open planking crosses it in a second and spends that second against a wall.")]
         [Min(0f)] [SerializeField] private float _cabinWalkSpeed = 1.4f;
 
+        [Tooltip("How long her pace takes to go from one floor's walk speed to the other's once she is " +
+                 "through his doorway (s). She keeps the pace she came through at and eases to the new " +
+                 "floor's over this, so the cabin's and the deck's speeds are blended across the doorway " +
+                 "rather than switched on its sill. 0 switches them on the crossing frame.")]
+        [Min(0f)] [SerializeField] private float _doorwayPaceBlendSeconds = 0.25f;
+
         [Tooltip("Armand's aft door is standing OPEN as she comes in — his own boat, fair weather, and " +
                  "him at the wheel, which is the picture the owner's 2026-08-28 door ruling paints in " +
                  "as many words. It is what makes the passage a WALK: she wanders out on deck and back " +
@@ -431,11 +437,13 @@ namespace HiddenHarbours.App
         public bool WalkTheCabin(Vector2 moveInput, float deltaSeconds)
         {
             if (!IsBelowDecks || _boatRoot == null) return false;
-            _cabin.Step(moveInput, deltaSeconds, DrawnHeadingDegrees());
+            _cabin.Step(moveInput, deltaSeconds, DrawnHeadingDegrees(), _doorwayPaceBlendSeconds);
 
-            // ⭐ AND THE DOORWAY IS ASKED, on the sole's own hull-local point. Armand's aft door stands
-            // open while he is aboard, so walking into it walks her out on deck — no press, no cue. The
-            // door owns every part of that decision, including the latch the two floors share.
+            // ⭐ AND THE DOORWAY IS ASKED, on the sole's own hull-local point and with the key she holds.
+            // Armand's aft door stands open while he is aboard, so walking through it walks her out on
+            // deck — no press, no cue. The door owns every part of that decision, including the settle the
+            // two floors share (owner ruling D1, 2026-09-30: in the band with the key pointing through,
+            // she goes).
             //
             // ⚠ The CONCRETE door here, not Core's ICabinThreshold — App is the composition ROOT and
             // already holds this hull's BoatCabinDoor outright (CabinDoor, WorkTheCabinDoor, the offer it
@@ -446,7 +454,7 @@ namespace HiddenHarbours.App
             // ⚠ `!= null`, never `?.`: the operator that reports a destroyed component as null lives on
             // UnityEngine.Object and the null-propagating operators never reach it.
             BoatCabinDoor door = _cabin.Door;
-            if (door != null) door.TryWalkThrough(_cabin.LocalPosition);
+            if (door != null) door.TryWalkThrough(_cabin.LocalPosition, _cabin.HeldHullLocal, deltaSeconds);
             return true;
         }
 
@@ -478,15 +486,18 @@ namespace HiddenHarbours.App
         public bool WalkTheDeck(Vector2 moveInput, float deltaSeconds)
         {
             if (IsBelowDecks || _deckWalk == null || _boatRoot == null) return false;
-            if (!_deckWalk.Step(moveInput, deltaSeconds, DrawnHeadingDegrees(), BakeElevationDegrees()))
+
+            // His door steers her key near it and keeps her out of his house on deck, so the walk is told
+            // which door that is. (`!= null`, never `?.` — see WalkTheCabin.)
+            BoatCabinDoor door = _cabin != null ? _cabin.Door : null;
+            if (!_deckWalk.Step(moveInput, deltaSeconds, DrawnHeadingDegrees(), BakeElevationDegrees(), door,
+                                _doorwayPaceBlendSeconds))
                 return false;
 
             // ⭐ The other half of the same doorway, on the deck's own hull-local point — the SAME frame
             // the sole's is in, which is why one band answers both (BoatCabinThreshold). Walking back
-            // into his open door puts her below again with no press. (`!= null`, never `?.` — see
-            // WalkTheCabin.)
-            BoatCabinDoor door = _cabin != null ? _cabin.Door : null;
-            if (door != null) door.TryWalkThrough(_deckWalk.LocalPosition);
+            // through his open door puts her below again with no press.
+            if (door != null) door.TryWalkThrough(_deckWalk.LocalPosition, _deckWalk.HeldHullLocal, deltaSeconds);
             return true;
         }
 
@@ -875,8 +886,15 @@ namespace HiddenHarbours.App
 
             if (below)
             {
-                _cabin.SeedFromWorld(_boatRoot, _player != null ? _player.position : _boatRoot.position,
-                                     DrawnHeadingDegrees());
+                // From the deck walk's own hull-local point when it is what held her (her pace, gait and
+                // facing with it); from her world point when the shipped seat did.
+                if (_deckWalk != null && _deckWalk.CanWalk && _deckWalk.IsSeated)
+                    _cabin.SeedFromDeck(_deckWalk.LocalPosition, _deckWalk.PaceMetresPerSecond,
+                                        _deckWalk.GaitThroughTheDoorwayMetresPerSecond,
+                                        _deckWalk.HeadingDegrees(DrawnHeadingDegrees()));
+                else
+                    _cabin.SeedFromWorld(_boatRoot, _player != null ? _player.position : _boatRoot.position,
+                                         DrawnHeadingDegrees());
                 PoseTheSkipperAtHisWheel();
                 Debug.Log("[ArrivalOpening] she has gone below again.");
                 return;
@@ -910,15 +928,21 @@ namespace HiddenHarbours.App
             Vector3 local = Quaternion.Inverse(_boatRoot.rotation) * relative;
             _passengerDeckOffset = new Vector2(local.x, local.y);
 
-            // ⭐ AND THE WALK IS SEEDED THE SAME WAY, in its own frame. Two seats, one rule: whichever of
-            // them places her, the very next frame reproduces the world point she is already standing on,
-            // so the doorway moves nobody. The walk's inversion is the iterative one (the projection folds
-            // height and along-hull distance onto the same screen axis), and it carries her CABIN facing
-            // across as well — she steps out looking where she was looking, not spun to face the bow.
+            // ⭐ AND THE WALK IS SEEDED FROM THE SOLE'S OWN POINT — the same hull-local metres the deck is
+            // measured in, where the doorway let her out (on its wall line, which both floors can hold), so
+            // the doorway moves nobody. Not from her world point: that was drawn by LAST frame's hull, and
+            // the round trip through it jumped her on the crossing frame. Her CABIN facing, gait and pace
+            // come across as well — she steps out looking where she was looking, still walking.
             if (_deckWalk != null && _deckWalk.CanWalk)
-                _deckWalk.SeedFromWorld(_boatRoot, _player.position,
-                                        _cabin != null ? _cabin.HeadingDegrees : DrawnHeadingDegrees(),
-                                        DrawnHeadingDegrees(), BakeElevationDegrees());
+            {
+                if (_cabin != null)
+                    _deckWalk.SeedFromCabin(_cabin.LocalPosition, _cabin.PaceMetresPerSecond,
+                                            _cabin.GaitThroughTheDoorwayMetresPerSecond, _cabin.HeadingDegrees,
+                                            DrawnHeadingDegrees(), _cabin.Door);
+                else
+                    _deckWalk.SeedFromWorld(_boatRoot, _player.position, DrawnHeadingDegrees(),
+                                            DrawnHeadingDegrees(), BakeElevationDegrees());
+            }
         }
 
         /// <summary>
@@ -933,11 +957,19 @@ namespace HiddenHarbours.App
         /// a constant (rule 2). The arrival owns this boat and this skipper; nothing fleet-wide changes.
         /// </para>
         ///
-        /// <para><b>And he has to draw OVER the room.</b> The room sits at the installer's own order above
-        /// the hull and the skipper one above her visual's — which on this hull is the SAME number, and a
-        /// tie is not a rule. Raised while she is below, put back when she comes out, and guarded on
-        /// <see cref="_skipperPosed"/>: everything this touches is state it saved first, so an un-posed
-        /// restore has nothing of its own to undo.</para>
+        /// <para><b>And he has to draw OVER the room — where the room is a sprite.</b> A sprite room sits
+        /// at the installer's own order above the hull and the skipper one above her visual's — the SAME
+        /// number, and a tie is not a rule. Raised while she is below, put back when she comes out, and
+        /// guarded on <see cref="_skipperPosed"/>: everything this touches is state it saved first, so an
+        /// un-posed restore has nothing of its own to undo.</para>
+        ///
+        /// <para>⛔ <b>On a hull whose room is part of her hull mesh there is no room sprite, and nothing is
+        /// raised</b> (ADR 0041: the installer grows no sprite room when the bake carries the cabin). This
+        /// used to raise him to his OWN resting order plus one anyway, and a restaged sprite is the one
+        /// thing <c>CharacterFigurePresenter</c> refuses to stand a mesh figure on
+        /// (<c>Refusal.SpriteRestaged</c>): so below decks, on the cape, Armand came back as his flat
+        /// sprite instead of the figure at his wheel. His mesh is drawn in the hull's own depth, and that
+        /// is what puts him in front of or behind the house's furniture.</para>
         ///
         /// <para>⚠ <b>What is NOT claimed.</b> He rides her at the hull's full amplitude while the room
         /// rides at <c>InteriorRockScale</c>, so at the crest he moves a few pixels against the furniture —
@@ -951,7 +983,7 @@ namespace HiddenHarbours.App
             if (!FindTheSkipper() || _skipperRenderer == null) return;
 
             _skipperPosed = true;
-            _skipperRenderer.sortingOrder = RoomSortingOrder() + 1;
+            if (TryRoomSortingOrder(out int room)) _skipperRenderer.sortingOrder = room + 1;
         }
 
         /// <summary>
@@ -1156,15 +1188,19 @@ namespace HiddenHarbours.App
         private BoatVisualDef HullVisual()
             => _skipper != null && _skipper.Boat != null ? _skipper.Boat.Visual : null;
 
-        /// <summary>The order the interior room is drawn at, found by the installer's own published child
-        /// name rather than assumed. Falls back to the skipper's own resting order, which leaves the tie
-        /// exactly as it was rather than inventing a number.</summary>
-        private int RoomSortingOrder()
+        /// <summary>The order the interior room's SPRITE is drawn at, found by the installer's own published
+        /// child name rather than assumed. False when there is no room sprite — a hull whose cabin is part of
+        /// her hull mesh (see <see cref="PoseTheSkipperAtHisWheel"/>) — and then there is nothing to draw
+        /// over and nothing is raised.</summary>
+        private bool TryRoomSortingOrder(out int order)
         {
-            if (_boatRoot == null) return _skipperRestSortingOrder;
+            order = 0;
+            if (_boatRoot == null) return false;
             Transform room = _boatRoot.Find(BoatInteriorInstaller.RoomChildName);
             SpriteRenderer r = room != null ? room.GetComponent<SpriteRenderer>() : null;
-            return r != null ? r.sortingOrder : _skipperRestSortingOrder;
+            if (r == null) return false;
+            order = r.sortingOrder;
+            return true;
         }
 
         /// <summary>What the cutaway is being asked for, in words, for the one console line that says

@@ -279,11 +279,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"she could not walk within reach of her own doorway: {gap:F2} m against {reach:F2}. " +
                 Where());
 
-            // ⚠ A STEP BACK OFF THE SILL BEFORE THE PRESS, and the reason is what the next claim means.
-            // Standing IN an open doorway with a live approach is a crossing — correctly, that is the
-            // ruling — so pressing from the sill would prove nothing about whether the PRESS carried her.
-            // From a step back the two are separable, and the claim below is about the leaf alone.
-            yield return StepClearOfHisDoorway(opening);
+            // ⚠ NO KEY IS HELD THROUGH THE PRESS, and that is what the next claim means. Standing in an
+            // open doorway is a crossing only with her key pointing through it (owner ruling D1,
+            // 2026-09-30), so with none held the claim below is about the leaf alone.
 
             // ⭐ One press, and it moves the LEAF and nothing else. This is the whole of the 2026-09-04
             // fix, at the one place the owner met it: when the cue finishes she is STILL BELOW, with an
@@ -430,6 +428,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
             Assert.IsTrue(opening.IsBelowDecks, "the game did not open below decks. " + Where());
+            // His door shut, so the four keys walk her ABOUT the cabin: she opens in his doorway, and since
+            // owner ruling D1 (2026-09-30) the key among them that points out through an open one carries
+            // her through it — the passage's claim, not the seam's.
+            opening.CabinDoor.SetOpen(false);
             yield return null;   // the read is in Update: the first idle frame lands nothing
 
             Vector2 startSole = opening.CabinLocalPosition;
@@ -510,12 +512,12 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(door, "her cabin has no door to walk through");
             Assert.IsTrue(door.IsOpen, "this walks through an OPEN door; nothing here presses one");
 
-            // ⚠ CLEAR OF IT FIRST, and this is not fixture housekeeping — it is the shipped rule. She may
-            // already be standing IN the doorway: the game opens with her in Armand's (a threshold is on
-            // the sole's edge by construction), and the latch starts DISARMED precisely so that first
-            // frame does not walk her out of his cabin before she has touched a key. One approach is one
-            // crossing, so an approach has to begin outside the band — which for a player means taking a
-            // step into the room before the door will let her out of it.
+            // ⚠ SETTLED FIRST, and this is not fixture housekeeping — it is the shipped rule. The doorway
+            // takes her again only once it has settled since it last took her (owner ruling D1, 2026-09-30),
+            // so a walk straight back through the door she has just come through begins with a settle's
+            // length of walking away from it. Where it has settled already — the game opens with her in
+            // Armand's doorway and nothing has crossed — there is no step at all: she stands in it, and it is
+            // her key that decides.
             yield return StepClearOfHisDoorway(opening);
 
             bool startedBelow = opening.IsBelowDecks;
@@ -524,11 +526,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             while (opening.IsBelowDecks == startedBelow && Time.realtimeSinceStartup < deadline)
             {
-                Vector2 toDoor = (Vector2)door.transform.position - (Vector2)_player.transform.position;
-                Vector2 heading = toDoor.sqrMagnitude > 1e-6f ? toDoor.normalized : Vector2.up;
-
-                if (opening.IsBelowDecks) opening.WalkTheCabin(heading, Time.deltaTime);
-                else                      opening.WalkTheDeck(heading, Time.deltaTime);
+                Vector2 key = KeyThroughHisDoor(opening);
+                if (opening.IsBelowDecks) opening.WalkTheCabin(key, Time.deltaTime);
+                else                      opening.WalkTheDeck(key, Time.deltaTime);
 
                 yield return null;
                 jump(Vector3.Distance(_player.transform.position, last));
@@ -567,6 +567,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
             Assert.IsTrue(opening.IsBelowDecks, "the game did not open below decks. " + Where());
             yield return ComeUpOnDeck(opening);
+            // His door shut behind her, so the four keys walk her about his DECK: she comes up in his
+            // doorway, and since owner ruling D1 (2026-09-30) the key among them that points back in through
+            // an open one carries her below again — the passage's claim, not this one's.
+            opening.CabinDoor.SetOpen(false);
 
             Assert.IsTrue(opening.CanWalkTheDeck,
                 "the cape islander carries measured deck polygons (Data/Boats/Decks/CapeIslanderIso), so " +
@@ -624,6 +628,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
             yield return ComeUpOnDeck(opening);
+            // His door shut behind her, for the deck walk's reason above: a key back in through an open
+            // doorway she stands in takes her below (owner ruling D1, 2026-09-30).
+            opening.CabinDoor.SetOpen(false);
             Assert.IsTrue(opening.CanWalkTheDeck, "she has no measured deck to walk. " + Where());
 
             int readsBelow = held.Reads;
@@ -741,10 +748,11 @@ namespace HiddenHarbours.Tests.PlayMode
         /// back down through the same opening — two crossings, no press between them, and no frame in
         /// which anybody moved her.</para>
         ///
-        /// <para><b>The latch is what this would catch if it broke.</b> An unlatched doorway would put her
-        /// back out on the frame after she came in, and back in on the frame after that, at the frame rate
-        /// — so the step clear between the two crossings is asked of the DOOR
-        /// (<c>BoatCabinDoor.PassageIsArmed</c>) rather than counted in metres here.</para>
+        /// <para><b>Her key and the door's settle are what this would catch if they broke.</b> A doorway
+        /// that took her without her key pointing through it, or again before it had settled, would put her
+        /// back out on the frame after she came in (owner ruling D1, 2026-09-30) — so the walk away between
+        /// the two crossings is asked of the DOOR (<c>BoatCabinDoor.PassageIsSettled</c>) rather than
+        /// counted in seconds here.</para>
         /// </summary>
         [UnityTest]
         public IEnumerator OnDeck_SheWalksOutAndBackInThroughHisOpenDoor_UnderWay_AndNothingIsPressed()
@@ -764,7 +772,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreNotEqual(ArrivalOpening.Phase.Moored, opening.Current,
                 "she is tied up already, so this run says nothing about a crossing under way. " + Where());
 
-            // ---- a step clear of the sill, so the next approach is a fresh one -------------------
+            // ---- a settle's length away from the sill, so the doorway will take her again ---------
             yield return StepClearOfHisDoorway(opening);
 
             // ---- and BACK IN, through the same opening, still with no press ----------------------
@@ -780,26 +788,74 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertArmandKeepsTheHelm();
         }
 
-        /// <summary>Walk her off the sill until the doorway will take her again. How far that is belongs to
-        /// the DOOR — one whole clear width of daylight — so this asks it rather than counting metres.
-        /// Whichever floor she is on, "away" is away from the same drawn doorway.</summary>
+        /// <summary>Walk her off the sill until the doorway will take her again. How long that is belongs to
+        /// the DOOR — its settle since it last took her — so this asks it rather than counting seconds.
+        /// Whichever floor she is on, "away" is along the same doorway's axis reversed: into his cabin below,
+        /// out across his deck above, and never through it.</summary>
         private IEnumerator StepClearOfHisDoorway(ArrivalOpening opening)
         {
             BoatCabinDoor door = opening.CabinDoor;
             float deadline = Time.realtimeSinceStartup + 10f;
 
-            while (!door.PassageIsArmed && Time.realtimeSinceStartup < deadline)
+            while (!door.PassageIsSettled && Time.realtimeSinceStartup < deadline)
             {
-                Vector2 away = (Vector2)_player.transform.position - (Vector2)door.transform.position;
-                Vector2 heading = away.sqrMagnitude > 1e-6f ? away.normalized : Vector2.down;
-
-                if (opening.IsBelowDecks) opening.WalkTheCabin(heading, Time.deltaTime);
-                else                      opening.WalkTheDeck(heading, Time.deltaTime);
+                Vector2 away = ScreenKeyFor(opening, opening.IsBelowDecks ? -HisDoorsAxis(opening)
+                                                                          : HisDoorsAxis(opening));
+                if (opening.IsBelowDecks) opening.WalkTheCabin(away, Time.deltaTime);
+                else                      opening.WalkTheDeck(away, Time.deltaTime);
                 yield return null;
             }
 
-            Assert.IsTrue(door.PassageIsArmed,
-                          "she could not get a doorway's width clear of his sill. " + Where());
+            Assert.IsTrue(door.PassageIsSettled,
+                          "his doorway never settled while she walked away from it. " + Where());
+        }
+
+        /// <summary>
+        /// The key a player holds to walk through his open door: toward its LIVE position while she is
+        /// farther from it than its pull reaches (it rides his hull), and straight through it along its axis
+        /// within that reach — out of his cabin below, into it on deck — the key the doorway carries (owner
+        /// ruling D1, 2026-09-30: in the band with the key pointing through, she goes; a key held within its
+        /// cone and reach is carried to the opening).
+        /// </summary>
+        private Vector2 KeyThroughHisDoor(ArrivalOpening opening)
+        {
+            BoatCabinDoor door = opening.CabinDoor;
+            Vector2 here = opening.IsBelowDecks ? opening.CabinLocalPosition : opening.DeckLocalPosition;
+            if (Vector2.Distance(here, BoatCabinThreshold.PointOf(door.Door))
+                > BoatCabinThreshold.PullReachMetres(door.Door))
+            {
+                Vector2 toDoor = (Vector2)door.transform.position - (Vector2)_player.transform.position;
+                return toDoor.sqrMagnitude > 1e-6f ? toDoor.normalized : Vector2.up;
+            }
+            return ScreenKeyFor(opening, opening.IsBelowDecks ? HisDoorsAxis(opening) : -HisDoorsAxis(opening));
+        }
+
+        /// <summary>The way out through his doorway, in the hull's metres — measured off its wall.</summary>
+        private static Vector2 HisDoorsAxis(ArrivalOpening opening)
+        {
+            Vector2 outward = opening.CabinDoor.OutwardAxis;
+            Assert.AreNotEqual(Vector2.zero, outward, "his doorway is cut in no wall it could measure");
+            return outward;
+        }
+
+        /// <summary>
+        /// The screen key that walks her along <paramref name="hullLocal"/> on the floor she is on, through
+        /// the projection that floor's walk turns her key back with — the sole's turntable below
+        /// (<c>BoatCabinWalkMath.HeldOnTheSole</c>), the deck's above (<c>DeckWalkController.HeldInHullFrame</c>)
+        /// — so the direction she is handed is <paramref name="hullLocal"/> exactly. Off his LIVE drawn heading.
+        /// </summary>
+        private static Vector2 ScreenKeyFor(ArrivalOpening opening, Vector2 hullLocal)
+        {
+            IBoatHullPresenter hull = BoatHullPresenterHost.Resolve(opening.Boat.gameObject);
+            Assert.IsNotNull(hull, "his hull has no presenter to read his drawn heading from");
+            BoatVisualDef visual = opening.Boat.Hull != null ? opening.Boat.Hull.Visual : null;
+            float heading = hull.DrawnHeadingDegrees();
+            Vector2 screen = opening.IsBelowDecks
+                ? BoatCabinWalkMath.ToWorldOffset(hullLocal, 0f, heading,
+                                                  BoatInteriorInstaller.BakeElevationDegrees(visual),
+                                                  BoatInteriorInstaller.ExteriorAzimuthCounterClockwise(visual))
+                : DeckAreaMath.DeckToWorld(hullLocal, 0f, heading, hull.BakeElevationDegrees);
+            return screen.sqrMagnitude > 1e-12f ? screen.normalized : Vector2.zero;
         }
 
         /// <summary>Come up the way the player does — and since the 2026-08-28 ruling that is a WALK and

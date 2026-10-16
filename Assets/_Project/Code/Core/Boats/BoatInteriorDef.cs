@@ -89,6 +89,49 @@ namespace HiddenHarbours.Core
         [Tooltip("Clear opening height (m).")]
         public float ClearHeightMeters;
 
+        /// <summary>The pull's cone a door carries until the owner tunes it (D1 (a), 2026-09-30).</summary>
+        public const float DefaultPullConeDegrees = 30f;
+        /// <summary>The pull's reach a door carries until the owner tunes it: one clear width.</summary>
+        public const float DefaultPullReachClearWidths = 1f;
+        /// <summary>The crossing's cone a door carries until the owner tunes it.</summary>
+        public const float DefaultCrossingConeDegrees = 60f;
+        /// <summary>The settle a door carries until the owner tunes it.</summary>
+        public const float DefaultCrossingSettleSeconds = 0.16f;
+
+        [Header("Walking through (tunable — ≤ 0 means unset: the default is used)")]
+        [Tooltip("D1 (a), owner 2026-09-30: how far off the doorway's axis (degrees) a held key may point " +
+                 "and still be CARRIED through the opening — steered onto it from anywhere within the " +
+                 "pull's reach, and round the furniture just inside on the side the key leans to. Farther " +
+                 "off than this, nothing is bent.")]
+        public float PullConeDegrees = DefaultPullConeDegrees;
+
+        [Tooltip("D1 (a): how near the threshold the pull reaches, in clear widths of THIS opening — 1 is " +
+                 "one clear width (0.74 m on the cape islander).")]
+        public float PullReachClearWidths = DefaultPullReachClearWidths;
+
+        [Tooltip("How far off the way through (degrees) a held key may point and still take her across " +
+                 "when she stands in the doorway. 60: at least half of her step goes through it. A key " +
+                 "further round than this is walking along the wall, not through the door.")]
+        public float CrossingConeDegrees = DefaultCrossingConeDegrees;
+
+        [Tooltip("How long (s) after a crossing before this doorway will take her again. What keeps a key " +
+                 "rocked back and forth in the doorway from strobing the cabin; a player walking back " +
+                 "through on purpose never meets it.")]
+        public float CrossingSettleSeconds = DefaultCrossingSettleSeconds;
+
+        /// <summary>The pull's cone in force: the owner's value, or the default where unset.</summary>
+        public float PullCone => PullConeDegrees > 0f ? PullConeDegrees : DefaultPullConeDegrees;
+
+        /// <summary>The pull's reach in force, in clear widths.</summary>
+        public float PullReach => PullReachClearWidths > 0f ? PullReachClearWidths : DefaultPullReachClearWidths;
+
+        /// <summary>The crossing's cone in force.</summary>
+        public float CrossingCone => CrossingConeDegrees > 0f ? CrossingConeDegrees : DefaultCrossingConeDegrees;
+
+        /// <summary>The settle in force.</summary>
+        public float CrossingSettle =>
+            CrossingSettleSeconds > 0f ? CrossingSettleSeconds : DefaultCrossingSettleSeconds;
+
         [Tooltip("The sill, hull-local metres (+x starboard, +y bow, +z up). z is the level you walk in " +
                  "onto — the sport fishers' sill sits at MEZZANINE height, so you walk in level.")]
         public Vector3 ThresholdPoint = Vector3.zero;

@@ -53,8 +53,9 @@ namespace HiddenHarbours.Boats
 
         /// <summary>How far past an obstruction's edge a cleared point is put, metres. Small enough to be
         /// invisible and large enough that the crossing test on the next tick cannot report the walker as
-        /// still inside the thing they were just pushed out of.</summary>
-        private const float ClearEpsilonMetres = 0.001f;
+        /// still inside the thing they were just pushed out of. Public for the doorway's wall line
+        /// (<see cref="BoatCabinThreshold.OnTheWallLineMetres"/>), which has to admit it.</summary>
+        public const float ClearEpsilonMetres = 0.001f;
 
         // ---- the frame -------------------------------------------------------------------------------
 
@@ -205,19 +206,140 @@ namespace HiddenHarbours.Boats
                                    float speedMetresPerSecond, float deltaSeconds,
                                    float drawnHeadingDegrees, float bakeElevationDegrees,
                                    bool azimuthCounterClockwise)
+            => StepHeld(level, cabinLocal,
+                        HeldOnTheSole(moveInput, drawnHeadingDegrees, bakeElevationDegrees,
+                                      azimuthCounterClockwise),
+                        speedMetresPerSecond, deltaSeconds);
+
+        /// <summary>
+        /// <b>The held key, on the sole</b>: the screen-axis <paramref name="moveInput"/> as the hull-local
+        /// direction that DRAWS along it (<see cref="Step"/>'s projection, handedness and all), at the
+        /// key's own length up to 1. Zero for no key. The doorway asks this — where her key points, not
+        /// where she went — because a walker pressed against a wall goes nowhere and still means it
+        /// (<see cref="BoatCabinThreshold.IsHeldThrough"/>).
+        /// </summary>
+        public static Vector2 HeldOnTheSole(Vector2 moveInput, float drawnHeadingDegrees,
+                                            float bakeElevationDegrees, bool azimuthCounterClockwise)
         {
-            Vector2 wanted = cabinLocal;
             float magnitude = Mathf.Min(1f, moveInput.magnitude);
-            if (magnitude > 1e-4f)
+            if (magnitude <= 1e-4f) return Vector2.zero;
+            Vector2 dir = DeckAreaMath.WorldDirectionToDeck(
+                moveInput, TurntableHeading(drawnHeadingDegrees, azimuthCounterClockwise), bakeElevationDegrees);
+            return dir.sqrMagnitude > 1e-10f ? dir.normalized * magnitude : Vector2.zero;
+        }
+
+        /// <summary>
+        /// One step along a key already in the hull's frame (<see cref="HeldOnTheSole"/>, or that key as
+        /// a doorway steered it — <see cref="BoatCabinThreshold.Steer"/>): <paramref name="heldHullLocal"/>
+        /// times <paramref name="speedMetresPerSecond"/> times the tick, clamped onto somewhere she may
+        /// stand.
+        /// </summary>
+        public static Vector2 StepHeld(BoatInteriorLevel level, Vector2 cabinLocal, Vector2 heldHullLocal,
+                                       float speedMetresPerSecond, float deltaSeconds)
+        {
+            Vector2 wanted = cabinLocal + heldHullLocal * (Mathf.Max(0f, speedMetresPerSecond) *
+                                                           Mathf.Max(0f, deltaSeconds));
+            return ClampTheStep(level, cabinLocal, wanted);
+        }
+
+        /// <summary>
+        /// <b>D1 (a)'s second half, owner 2026-09-30: <i>"just inside, it takes her round the helm seat on
+        /// the side her key leans to (starboard on a dead-centre tie)."</i></b> <see cref="StepHeld"/>,
+        /// except that a step which would end inside a piece of furniture is turned along the face she is
+        /// standing at — at the full length of the step, toward the side the key leans to — instead of
+        /// being pushed back onto that face. Pressed square into a seat, the plain clamp leaves her
+        /// exactly where she was; this walks her round it.
+        ///
+        /// <para>Only for a key the doorway is carrying (<see cref="BoatCabinThreshold.IsInThePull"/>,
+        /// either way along the axis): anywhere else a wall is a wall and the plain clamp is the answer.
+        /// The lean is the key's own component along the face; a key with none (square on, to float
+        /// noise) goes to starboard, +x in the hull's frame.</para>
+        /// </summary>
+        public static Vector2 StepRound(BoatInteriorLevel level, Vector2 cabinLocal, Vector2 heldHullLocal,
+                                        float speedMetresPerSecond, float deltaSeconds)
+        {
+            float step = heldHullLocal.magnitude * Mathf.Max(0f, speedMetresPerSecond) * Mathf.Max(0f, deltaSeconds);
+            if (level == null || !level.IsUsable() || step <= 0f)
+                return StepHeld(level, cabinLocal, heldHullLocal, speedMetresPerSecond, deltaSeconds);
+
+            Vector2 direction = heldHullLocal.normalized;
+            Vector2 wanted = cabinLocal + direction * step;
+            int blocking = IndexOfBlockingObstruction(level, wanted);
+            if (blocking >= 0)
             {
-                Vector2 dir = DeckAreaMath.WorldDirectionToDeck(
-                    moveInput, TurntableHeading(drawnHeadingDegrees, azimuthCounterClockwise),
-                    bakeElevationDegrees);
-                if (dir.sqrMagnitude > 1e-10f)
-                    wanted += dir.normalized *
-                              (magnitude * Mathf.Max(0f, speedMetresPerSecond) * Mathf.Max(0f, deltaSeconds));
+                Vector2[] footprint = level.Obstructions[blocking].Footprint;
+                Vector2 face = DeckAreaMath.ClosestPointOnOutline(footprint, cabinLocal, out float sqr);
+                Vector2 away = sqr > 1e-12f ? cabinLocal - face : cabinLocal - CentroidOf(footprint);
+                if (away.sqrMagnitude > 1e-12f)
+                {
+                    Vector2 along = new Vector2(-away.y, away.x).normalized;
+                    float lean = Vector2.Dot(along, direction);
+                    if (Mathf.Abs(lean) <= 1e-4f) lean = Vector2.Dot(along, Vector2.right);   // starboard
+                    wanted = cabinLocal + (lean >= 0f ? along : -along) * step;
+                }
             }
-            return ClampToSole(level, wanted, cabinLocal);
+            return ClampTheStep(level, cabinLocal, wanted);
+        }
+
+        /// <summary>
+        /// <see cref="ClampToSole"/> for a step, which never carries her farther than the step itself.
+        /// The clamp pushes a point inside a piece of furniture out by that footprint's NEAREST face, and
+        /// at a corner the nearest face can be one she was not walking toward: sliding down the side of
+        /// the cape's helm seat with her key 48° off its face, one tick put her round its corner 56%
+        /// farther than her step. Then the step stops at the face it runs into and slides the rest of its
+        /// length along that face, which is what the plain clamp does everywhere else.
+        /// </summary>
+        private static Vector2 ClampTheStep(BoatInteriorLevel level, Vector2 from, Vector2 wanted)
+        {
+            Vector2 got = ClampToSole(level, wanted, from);
+            Vector2 step = wanted - from;
+            if ((got - from).magnitude <= step.magnitude + ClearEpsilonMetres) return got;
+
+            int blocking = IndexOfBlockingObstruction(level, wanted);
+            if (blocking < 0) return got;   // the outline's own clamp, not furniture's
+            Vector2[] footprint = level.Obstructions[blocking].Footprint;
+
+            // Where the step first runs into the footprint, and along which face.
+            float enter = float.PositiveInfinity;
+            Vector2 face = Vector2.zero;
+            for (int i = 0; i < footprint.Length; i++)
+            {
+                Vector2 a = footprint[i], edge = footprint[(i + 1) % footprint.Length] - a;
+                float cross = step.x * edge.y - step.y * edge.x;
+                if (Mathf.Abs(cross) <= 1e-12f) continue;   // parallel: never runs into it
+                Vector2 toA = a - from;
+                float t = (toA.x * edge.y - toA.y * edge.x) / cross;
+                float u = (toA.x * step.y - toA.y * step.x) / cross;
+                if (t < 0f || t > 1f || u < 0f || u > 1f || t >= enter) continue;
+                enter = t;
+                face = edge;
+            }
+            if (float.IsPositiveInfinity(enter)) return got;
+
+            float length = step.magnitude;
+            Vector2 direction = step / length;
+            Vector2 contact = from + direction * Mathf.Max(0f, enter * length - ClearEpsilonMetres);
+            Vector2 along = face.normalized;
+            Vector2 slid = contact + along * Vector2.Dot(step * (1f - enter), along);
+            if (IsStandable(level, slid)) return slid;
+            return IsStandable(level, contact) ? contact : got;
+        }
+
+        /// <summary>
+        /// <b>Out of the room, by its nearest edge and a hair further</b> — the deck walk's side of a
+        /// doorway. A deck def may measure its planking straight under a deckhouse (the cape islander's
+        /// cockpit sole runs forward under the whole of it), and a walker on deck who could stand inside
+        /// the house's outline would come up against the doorway from the wrong side of its wall line.
+        /// <see cref="PullOntoTheSole"/> turned inside out: a point outside <paramref name="room"/>'s
+        /// outline is returned as it is.
+        /// </summary>
+        public static Vector2 PushOutOfTheRoom(BoatInteriorLevel room, Vector2 deckLocal)
+        {
+            if (room == null || !room.IsUsable() || !DeckAreaMath.Contains(room.Outline, deckLocal))
+                return deckLocal;
+            Vector2 edge = DeckAreaMath.ClosestPointOnOutline(room.Outline, deckLocal, out float sqr);
+            Vector2 outward = sqr > 1e-12f ? edge - deckLocal : edge - CentroidOf(room.Outline);
+            return outward.sqrMagnitude > 1e-12f ? edge + outward.normalized * ClearEpsilonMetres : edge;
         }
 
         // ---- where you come in -----------------------------------------------------------------------
