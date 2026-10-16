@@ -28,11 +28,12 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>⚠ <c>aboard == false</c> is NOT "ashore".</b> The rider also says false in a cab and at
     /// a helm that hides its pilot. So the ashore figure draws only while the rider says her body is
-    /// shown on the root (<see cref="DeckRiderVisual.BodyShownOnRoot"/>), no clip is playing and she is
-    /// dry (<see cref="WhyNotShownAshore"/>). Any clip (the boarding vault, the ladders, the haul, the
-    /// chop, the bench, sleep, swim, the open machines' Drive) and wading hand the draw back to the
-    /// sprite for their length: the mesh follows stance and gait only and has no pose for any of
-    /// them. The held item stays at the sprite's hand.</para>
+    /// shown on the root (<see cref="DeckRiderVisual.BodyShownOnRoot"/>), no clip is playing, nothing has
+    /// claimed her skin and she is dry (<see cref="WhyNotShownAshore"/>). Any clip (the boarding vault,
+    /// the ladders, the haul, the chop, the bench, sleep, swim, the open machines' Drive), a claim on her
+    /// skin (<see cref="IsoCharacterSprite.IsSuspended"/>: the fight, the haul; aboard as well) and
+    /// wading hand the draw back to the sprite for their length: the mesh follows stance and gait only
+    /// and has no pose for any of them. The held item stays at the sprite's hand.</para>
     ///
     /// <para><b>⚠ Her body is hidden with <see cref="Renderer.forceRenderingOff"/>, never
     /// <c>enabled</c>.</b> <c>enabled</c> is the rider's stand-down's alone, and the sprite shadow and
@@ -271,6 +272,14 @@ namespace HiddenHarbours.Player
             if (config == null) { Stop("no GameConfig"); return; }
             if (!config.MeshCharacter) { Stop("GameConfig.MeshCharacter is off"); return; }
 
+            // Claimed: the fight, the haul or a clip is writing her body sprite, and the rider's child
+            // mirrors it. The mesh has none of those poses, so the sprite shows what it is made to show.
+            if (SkinSuspended(stand))
+            {
+                Stop("her skin is suspended (the fight, the haul, a clip), and the sprite shows what it is made to show");
+                return;
+            }
+
             CharacterSkinDef skin = ResolveSkin(stand);
             if (skin == null) { Stop("no CharacterSkinDef — none set here and none on the art def"); return; }
             if (!skin.IsUsable()) { Stop($"CharacterSkinDef '{skin.Id}' is not usable — re-bake it"); return; }
@@ -364,7 +373,8 @@ namespace HiddenHarbours.Player
                 hasBody: body != null,
                 bodyShownOnRoot: _rider != null && _rider.BodyShownOnRoot,
                 clipPlaying: ClipPlaying(),
-                water: WaterAtFeet());
+                water: WaterAtFeet(),
+                skinSuspended: SkinSuspended(stand));
             if (notShown != null) { StopAshore(notShown); return; }
 
             // Shown ashore on her own feet. An ARRIVAL clears a refusal, so the pool is asked once more.
@@ -468,20 +478,27 @@ namespace HiddenHarbours.Player
             config != null && config.MeshCharacter && config.MeshCharacterAshore;
 
         /// <summary>
-        /// <b>The ashore hand-over rule</b>, as a pure function of what the rider, the clip player and
-        /// the walk controller publish: null when she is SHOWN ASHORE on her own feet and her mesh may
-        /// stand in for her body sprite, else the reason she is not (the owner's ruling of 2026-09-19,
-        /// decision 4, and the NEITHER rule). Static, so EditMode holds it to the rule without a frame.
+        /// <b>The ashore hand-over rule</b>, as a pure function of what the rider, the clip player, her
+        /// skin and the walk controller publish: null when she is SHOWN ASHORE on her own feet and her
+        /// mesh may stand in for her body sprite, else the reason she is not (the owner's ruling of
+        /// 2026-09-19, decision 4, and the NEITHER rule). Static, so EditMode holds it to the rule
+        /// without a frame.
+        ///
+        /// <para><paramref name="skinSuspended"/>: another driver has claimed her skin
+        /// (<see cref="IsoCharacterSprite.IsSuspended"/>) and writes her body sprite itself — the fight
+        /// on the wharf, the haul. Left out, nothing has claimed it.</para>
         /// </summary>
         public static string WhyNotShownAshore(bool riderLive, bool hasRiderChild, bool hasBody,
                                                bool bodyShownOnRoot, bool clipPlaying,
-                                               OnFootWaterState water)
+                                               OnFootWaterState water, bool skinSuspended = false)
         {
             if (!riderLive) return "ashore — the rider is disabled, so nothing poses her each frame";
             if (!hasRiderChild) return "ashore — no rider child is wired, so the rider cannot tell a deck from the shore";
             if (!hasBody) return "ashore — there is no body sprite to stand in for";
             if (!bodyShownOnRoot) return "inside something (a cab, or a helm that hides its pilot): she draws neither";
             if (clipPlaying) return "ashore — a clip is playing, and the sprite draws every clip";
+            if (skinSuspended)
+                return "ashore — her skin is suspended (the fight, the haul), and the sprite shows what it is made to show";
             if (water == OnFootWaterState.Wade) return "ashore — wading, and the sprite draws her in the water";
             if (water != OnFootWaterState.Dry) return "ashore — swimming, and the sprite draws her in the water";
             return null;
@@ -588,6 +605,14 @@ namespace HiddenHarbours.Player
         {
             if (_walk == null) TryGetComponent(out _walk);
             return _walk != null ? _walk.WaterState : OnFootWaterState.Dry;
+        }
+
+        /// <summary>Claimed (<see cref="IsoCharacterSprite.Suspend"/>): another driver — the fight, the
+        /// haul, a clip — is writing her body sprite. A missing skin is claimed by nobody.</summary>
+        private static bool SkinSuspended(ICharacterFigureStand stand)
+        {
+            IsoCharacterSprite character = stand.FigureCharacter;
+            return character != null && character.IsSuspended;
         }
 
         // ---------------------------------------------------------------- resolution
