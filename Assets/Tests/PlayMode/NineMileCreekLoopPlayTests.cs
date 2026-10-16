@@ -34,8 +34,11 @@ namespace HiddenHarbours.Tests.PlayMode
     /// there is no fisher; so the old cores go first and the clock and environment slots are emptied before the
     /// load. The save is the run's redirected service (TestRunSave), checked the way EventBusSaveHelmPlayTests
     /// checks it, and then pointed at a file of this case's own in the run's directory. The shared save is never
-    /// opened. The walk is tide-gated as St Peters' fisher is (the creek's dev core leaves the gate off; the
-    /// fisher who crosses the bar from St Peters has it on, and the loop is about the tide).</para>
+    /// opened. The licence wallet is the case's own too, woken on that file before New Game: the game's installs
+    /// itself once per play session and publishes itself only as it wakes, so in the full run an earlier fixture's
+    /// GameServices.Reset() leaves its slot empty for good (a launch of this class alone never shows it). The slot
+    /// goes back as the case found it. The walk is tide-gated as St Peters' fisher is (the creek's dev core leaves
+    /// the gate off; the fisher who crosses the bar from St Peters has it on, and the loop is about the tide).</para>
     ///
     /// <para><b>Where she is.</b> Every depth here is read where the walker reads it — at her body point, the
     /// rigidbody's position — and her foot circle (below it) is used only for clearance. The walking is an A*
@@ -114,6 +117,7 @@ namespace HiddenHarbours.Tests.PlayMode
         HeldDriveInput _drive;
         SaveService _save;
         ISaveService _previousSave;
+        ILicenseService _previousLicences;
         string _runPath, _casePath;
         float _engineTimeScale = 1f;
 
@@ -172,6 +176,13 @@ namespace HiddenHarbours.Tests.PlayMode
             _casePath = Path.Combine(runDirectory, "nmc-loop-" + TestContext.CurrentContext.Test.MethodName + ".json");
             _save.Open(_casePath);
 
+            // ---- the licence wallet: the case's own (see the class note), in its slot before New Game -------------
+            _previousLicences = GameServices.Licenses;
+            var licences = new GameObject("[LicenseService] the loop's own").AddComponent<LicenseService>();
+            _spawned.Add(licences.gameObject);
+            Assert.That(GameServices.Licenses, Is.SameAs(licences),
+                "the case's licence wallet did not publish itself as it woke.");
+
             ShellFlow.StartNewGame();
             yield return null;
             Assert.That(ShellFlow.Phase, Is.EqualTo(ShellPhase.Playing), "New Game did not put the shell in play.");
@@ -192,6 +203,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = _engineTimeScale > 0f ? _engineTimeScale : 1f;
             if (_save != null && !string.IsNullOrEmpty(_runPath)) _save.Open(_runPath);   // back on the run's own file
             GameServices.Save = _previousSave ?? _save;
+            GameServices.Licenses = _previousLicences;   // as the case found it; its own wallet goes with _spawned
 
             foreach (Object o in _spawned) if (o != null) Object.Destroy(o);
             _spawned.Clear();
