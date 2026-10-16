@@ -717,30 +717,43 @@ namespace HiddenHarbours.Core
         ///
         /// <para><b>Resolve this ONCE per consumer per tick</b> — at a hull's centre, not per probe.
         /// The march is <see cref="WaveFetch.MarchSteps"/> terrain samples and the envelope does not
-        /// meaningfully vary across a hull (see <see cref="WaveFetch"/>'s slowly-varying-envelope
-        /// note).</para>
+        /// is shared by the probes. Stage B records the approximation and its limits in ADR 0018.</para>
         /// </summary>
         public static float FetchEnvelopeAt(UnityEngine.Vector2 worldPos)
         {
-            WaveFetchSettings settings = WaveFetch;
-            if (settings.Strength <= 0f) return 1f;      // cheapest OFF: no service reads at all
-            IEnvironmentService environment = Environment;
-            if (environment == null) return 1f;
-            IGameClock clock = Clock;
-            if (clock == null) return 1f;
-            return WaveFetch_EnvelopeAt(worldPos, environment, clock, in settings);
+            WaveFetchSample fetch = FetchAt(worldPos);
+            if (fetch.Fraction >= 1f) return 1f;
+            WaveTrains trains;
+            if (!SharedWaveField.TryGet(out trains))
+            {
+                var environment = Environment;
+                if (environment == null || Clock == null) return 1f;
+                var field = WaveField;
+                var sample = environment.Sample();
+                trains = environment is IWaveWindSource history
+                    ? WaveMemory.TrainsAt(history, Clock.TotalSeconds, in field)
+                    : WaveMath.TrainsFrom(sample.WindVector, sample.SeaState01, in field);
+            }
+            return fetch.ForWavelength(trains.Dominant.Wavelength);
         }
 
-        private static float WaveFetch_EnvelopeAt(UnityEngine.Vector2 worldPos,
-                                                  IEnvironmentService environment, IGameClock clock,
-                                                  in WaveFetchSettings settings)
+        /// <summary>Shared march bearing: short-window wind, matching the drawn chop.</summary>
+        public static UnityEngine.Vector2 FetchWindAt(IEnvironmentService environment, double time,
+                                                       in WaveFieldSettings field)
+            => environment is IWaveWindSource history
+                ? WaveMemory.ShortWind(history, time, in field).Wind : environment.Sample().WindVector;
+
+        /// <summary>Clear-reach fraction and data for each train; no allocation or saved state.</summary>
+        public static WaveFetchSample FetchAt(UnityEngine.Vector2 worldPos)
         {
-            EnvironmentSample sample = environment.Sample();
-            float waterLevel = environment.WaterLevelAt(clock.TotalSeconds);
-            // ⚠️ Fully qualified on purpose: the SETTINGS property above is also called `WaveFetch`,
-            // so the bare name binds to it and `WaveFetchSettings` has no EnvelopeAt.
-            return HiddenHarbours.Core.WaveFetch.EnvelopeAt(worldPos, sample.WindVector, waterLevel,
-                                                            TidalTerrain, in settings);
+            WaveFetchSettings settings = WaveFetch;
+            if (settings.Strength <= 0f) return WaveFetchSample.Open;
+            IEnvironmentService environment = Environment;
+            IGameClock clock = Clock;
+            if (environment == null || clock == null) return WaveFetchSample.Open;
+            WaveFieldSettings field = WaveField;
+            return HiddenHarbours.Core.WaveFetch.At(worldPos, FetchWindAt(environment, clock.TotalSeconds, in field),
+                environment.WaterLevelAt(clock.TotalSeconds), TidalTerrain, in settings);
         }
 
         /// <summary>
