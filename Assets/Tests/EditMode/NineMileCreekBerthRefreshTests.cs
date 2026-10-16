@@ -10,15 +10,39 @@ namespace HiddenHarbours.Tests.EditMode
     public class NineMileCreekBerthRefreshTests
     {
         static string Text => File.ReadAllText(NineMileCreekLayerRefresh.ScenePath);
+
+        /// <summary>The analytic plan's harbour channel, byte for byte as the scene carried it before NMC H2 (Unity
+        /// spells 100 as "100"; the step's own writer spells it "1E+02").</summary>
+        const string AnalyticHarbour =
+            "  _channels:\n" +
+            "  - Waypoints:\n" +
+            "    - {x: 204, y: 50}\n" +
+            "    - {x: 182, y: 62}\n" +
+            "    - {x: 170, y: 58}\n" +
+            "    - {x: 152, y: 67}\n" +
+            "    - {x: 132, y: 71}\n" +
+            "    - {x: 116, y: 67}\n" +
+            "    - {x: 100, y: 70}\n" +
+            "    BedElevation: -3.9\n" +
+            "    HalfWidthMetres: 12\n" +
+            "    CuttableCeiling: -1.6";
+
+        /// <summary>The committed scene with its ground put back to the analytic plan's harbour, as 03-berth-trench
+        /// found it. NMC H2's 04-ground-g3 bound the scene to G3, which the trench refuses
+        /// (<see cref="TheCommittedGroundIsG3_SoTheTrenchStepRefusesIt"/>), so the step's own mechanics are proved on
+        /// the plan they were written for. Every other document is the committed one.</summary>
         static string WithoutTrench()
         {
             string text = Text;
             var scene = SceneYaml.Parse(text);
-            var terrain = scene.ComponentsOf(scene.RootNamed("TidalTerrain"))
-                .Single(d => d.IsScript("HiddenHarbours.World.MainlandTidalTerrain"));
-            int first = terrain.Text.IndexOf("\n  - Waypoints:", System.StringComparison.Ordinal);
-            int second = terrain.Text.IndexOf("\n  - Waypoints:", first + 1, System.StringComparison.Ordinal);
-            return second < 0 ? text : text.Replace(terrain.Text, terrain.Text.Substring(0, second));
+            var ground = scene.ComponentsOf(scene.RootNamed("TidalTerrain")).Single(d => d.ClassId == 114);
+            int cut = ground.Text.IndexOf("\n  m_EditorClassIdentifier:", System.StringComparison.Ordinal);
+            string head = System.Text.RegularExpressions.Regex.Replace(ground.Text.Substring(0, cut),
+                @"(?m)^  m_Script: .*$", "  m_Script: {fileID: 11500000, guid: " +
+                UnityEditor.AssetDatabase.AssetPathToGUID("Assets/_Project/Code/World/MainlandTidalTerrain.cs") + ", type: 3}");
+            return text.Replace(ground.Text, head +
+                "\n  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.MainlandTidalTerrain\n" +
+                "  _deepElevation: -6\n" + AnalyticHarbour);
         }
         static string HarbourBlock()
         {
@@ -116,11 +140,16 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(once, twice);
         }
 
+        /// <summary>Replaces <c>TheCommittedTerrainCarriesTheBuildersBerthTrench</c> (NMC H2): the committed ground is
+        /// G3, whose painted height carries the berths' depth, so the trench has no channels to patch and refuses
+        /// rather than write an analytic trench into a painted ground.</summary>
         [Test]
-        public void TheCommittedTerrainCarriesTheBuildersBerthTrench()
+        public void TheCommittedGroundIsG3_SoTheTrenchStepRefusesIt()
         {
-            Assert.IsTrue(NineMileCreekBerthRefresh.Trench(SceneYaml.Parse(Text)).IsEmpty,
-                "The committed bed is missing the builder's berth trench.");
+            var scene = SceneYaml.Parse(Text);
+            var ground = scene.ComponentsOf(scene.RootNamed("TidalTerrain")).Single(d => d.ClassId == 114);
+            Assert.IsTrue(ground.IsScript("HiddenHarbours.World.PaintedTidalTerrain"), ground.Field("m_EditorClassIdentifier"));
+            Assert.Throws<Refusal>(() => NineMileCreekBerthRefresh.Trench(scene));
         }
         [Test]
         public void ASecondTrenchRunChangesNothing()

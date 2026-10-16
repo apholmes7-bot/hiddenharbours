@@ -21,34 +21,53 @@ namespace HiddenHarbours.Tests.EditMode
     /// tests hold it. So the berths, the dock zone and the arrival park are asserted here to be
     /// EXACTLY untouched — the channel is a lane cut past them, not a deeper harbour.</para>
     ///
-    /// <para>The terrain is built through <see cref="NineMileCreekMainland.ConfigureTerrain"/>, the same
-    /// call the region builder makes, so a test can never assert a channel the scene does not have.</para>
+    /// <para><b>Two grounds since NMC H2.</b> The scene stands on G3 (<see cref="NineMileCreekLiveGround.Plan"/>):
+    /// its dredged basin holds the berths' water from wall to wall, and the way out is the design boat's TRACK
+    /// through the mouth between the arms (<c>NineMileCreekDesignBoatTests</c> sweeps her hull along it). What
+    /// the scene must keep — the berths float, every berth reaches the bay, the flats outside the basin still
+    /// bare, the gut still dries, the drawn faces meet the bed — is asserted on G3. The analytic channel (the
+    /// meander, its banks, the berth trench and the cuttable ceiling) is the plan's AUTHORING through
+    /// <see cref="NineMileCreekMainland.ConfigureTerrain"/>, the premise the later waves still build on: its tests
+    /// are kept on that premise, each says so, and none of them claims the activated scene.</para>
     /// </summary>
     public class NineMileCreekChannelTests
     {
-        private GameObject _go;
-        private MainlandTidalTerrain _terrain;
+        private HiddenHarbours.Core.ITidalTerrain _terrain;   // G3: the ground the scene stands on
+        private GameObject _planGo;
+        private MainlandTidalTerrain _plan;      // the analytic premise, stood up only by the authoring tests
 
         private static float SpringLow => NineMileCreekMainland.SpringLowWater;    // -2.2
         private static float SpringHigh => NineMileCreekMainland.SpringHighWater;  //  2.2
         private static float Shoal => NineMileCreekMainland.BasinBedElevation;     // -1.6
 
         [SetUp]
-        public void SetUp()
-        {
-            _go = new GameObject("NineMileCreekChannel_Test");
-            _terrain = _go.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
-        }
+        public void SetUp() => _terrain = NineMileCreekLiveGround.Plan;
 
         [TearDown]
         public void TearDown()
         {
-            if (_go != null) Object.DestroyImmediate(_go);
+            if (_planGo != null) Object.DestroyImmediate(_planGo);
+            _planGo = null;
+            _plan = null;
+        }
+
+        /// <summary>The plan's analytic ground, built through the call the builder still makes for the premise.</summary>
+        private MainlandTidalTerrain Plan
+        {
+            get
+            {
+                if (_plan != null) return _plan;
+                _planGo = new GameObject("NineMileCreekChannel_Test");
+                _plan = _planGo.AddComponent<MainlandTidalTerrain>();
+                NineMileCreekMainland.ConfigureTerrain(_plan);
+                return _plan;
+            }
         }
 
         private float Elev(Vector2 p) => _terrain.ElevationAt(p);
         private float Depth(Vector2 p, float water) => water - Elev(p);
+        private float PlanElev(Vector2 p) => Plan.ElevationAt(p);
+        private float PlanDepth(Vector2 p, float water) => water - PlanElev(p);
 
         // =============================================================================================
         //  1. THE DERIVATION — every number traced back to the fleet, not typed
@@ -154,6 +173,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// resident plus her clearance at the WORST hour of the month. Asserted along the AUTHORED
         /// spline rather than at a searched minimum — a found minimum slides downhill and would pass by
         /// measuring somewhere the boat is not.
+        ///
+        /// <para>⚠ <b>The plan's authoring since NMC H2, not the scene's water.</b> G3 has no meander: its basin
+        /// is dredged wall to wall and the way out is the TRACK. That the scene's berths reach the bay with no dry
+        /// gap is <see cref="EveryBerthCanLeaveOnAnyTide_TheWholeWayToTheBay"/>, on G3.</para>
         /// </summary>
         [Test]
         public void EveryStationOnTheAuthoredChannelIsWetAtSpringLow()
@@ -163,7 +186,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach (Vector2 p in WalkTheChannel(0.5f))
             {
-                float depth = Depth(p, SpringLow);
+                float depth = PlanDepth(p, SpringLow);
                 Assert.That(depth, Is.GreaterThanOrEqualTo(needed),
                     $"the channel carries only {depth:0.000} m at ({p.x:0.#}, {p.y:0.#}) at spring low, " +
                     $"against the {needed:0.00} m the deepest resident needs. The owner's ruling is that " +
@@ -183,6 +206,12 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para>So this walks the region's authored way to sea — <c>Entrance</c>'s own waypoints, the
         /// line the fleet actually sails — from the basin out to the landfall in the −6 m bay, and
         /// demands the deepest resident's water the whole way at the worst hour of the month.</para>
+        ///
+        /// <para><b>On G3 since NMC H2.</b> The entrance now runs from the landfall up the TRACK into the mouth
+        /// between the arms; inside the mouth the berths' join is
+        /// <see cref="EveryBerthCanLeaveOnAnyTide_TheWholeWayToTheBay"/>. The sill check moved with it: the
+        /// analytic cut's seaward end is not the scene's, so it is the entrance's own landfall that must stand on
+        /// natural bottom deeper than the thalweg.</para>
         /// </summary>
         [Test]
         public void TheChannelJoinsTheDeepBay_SoAHullCanActuallyGetOutAtSpringLow()
@@ -213,16 +242,19 @@ namespace HiddenHarbours.Tests.EditMode
 
             // …and the seaward end must sit on ground the BAY already carries deeper than the thalweg,
             // which is what proves the cut has run out into real water rather than stopping on a sill.
-            Vector2 seaward = NineMileCreekMainland.ChannelWaypoints[0];
+            Vector2 seaward = approach[0];
             Assert.That(Elev(seaward), Is.LessThan(NineMileCreekMainland.ChannelThalwegElevation),
-                $"the channel's seaward end at {seaward} stands on {Elev(seaward):0.00} m, which the cut " +
-                "itself had to make. Carry the route further out until the natural bottom takes over, or " +
+                $"the way out's seaward end at {seaward} stands on {Elev(seaward):0.00} m, which a cut " +
+                "would have had to make. Carry the route further out until the natural bottom takes over, or " +
                 "there is no proof the lane does not simply stop somewhere shallower still.");
         }
 
         /// <summary>
         /// ⭐ <b>"…but always leaves enough to navigate out."</b> The floor is derived rather than felt:
         /// one widest beam, with half a beam of water either side of her.
+        ///
+        /// <para>⚠ The plan's authoring since NMC H2 (the meander's banks, on the premise): G3's basin has no lane
+        /// to narrow, and its way out is held to the design boat's whole swept hull instead.</para>
         /// </summary>
         [Test]
         public void TheChannelNeverNarrowsPastTheNavigableFloorAtSpringLow()
@@ -243,6 +275,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⭐ <b>"The channel SHRINKS IN WIDTH at low tide."</b> Nothing animates it — the waterline is
         /// where the falling water meets a sloping bank — so the shrink is a property of the section and
         /// is measured as one: monotone as the water drops, and never zero.
+        ///
+        /// <para>⚠ The plan's authoring since NMC H2, on the premise. G3's dredged basin does not visibly
+        /// narrow on the ebb: an owner question in the PR, not a claim this test makes about the scene.</para>
         /// </summary>
         [Test]
         public void TheLaneNarrowsAsTheTideFalls_AndNeverCloses()
@@ -276,7 +311,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// The floats are the whole reason the bullpen's own water matters (S2 hangs a tide-following
         /// deck here, S3 moors the small craft on it). Every metre of the authored float run must float
-        /// the deepest SMALL craft at spring low.
+        /// the deepest SMALL craft at spring low. On G3 since NMC H2: the float keeps its place in the scene.
         /// </summary>
         [Test]
         public void TheFloatRunLiesOverWaterAtEveryStateOfTheTide()
@@ -312,6 +347,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// the fairway's own standard; at the outboard edge of the widest hull's footprint it carries
         /// what she needs to float. The second is the one the bed was solved for and the one a
         /// flat-bottomed reading of the cut would have missed by 0.26 m.</para>
+        ///
+        /// <para><b>On G3 since NMC H2</b>, at the scene's berths (the player's alongside the north face, the
+        /// wall berths a metre south with the face) and the scene's dock zone and arrival.</para>
         /// </summary>
         [Test]
         public void EveryBerthHoldsWaterAtSpringLow_AndSoDoTheDockZoneAndTheArrival()
@@ -322,9 +360,8 @@ namespace HiddenHarbours.Tests.EditMode
             float underTheHull = NineMileCreekMainland.BerthDepthNeededMetres;
             float foot = NineMileCreekMainland.BerthFootprintHalfWidthMetres;
 
-            for (int i = 0; i < NineMileCreekMainland.BerthCount; i++)
+            foreach (var (i, berth) in NineMileCreekWharfTests.SceneBerths())
             {
-                Vector2 berth = NineMileCreekMainland.BerthPos(i);
                 Assert.That(SpringLow - Elev(berth), Is.GreaterThanOrEqualTo(onTheMark - 1e-3f),
                     $"berth {i} at {berth} carries {SpringLow - Elev(berth):0.00} m at spring low against " +
                     $"the {onTheMark:0.00} m the fairway that leads to it is cut for. The boats cannot " +
@@ -342,10 +379,10 @@ namespace HiddenHarbours.Tests.EditMode
                 }
             }
 
-            foreach (var (what, p) in new (string, Vector3)[]
+            foreach (var (what, p) in new (string, Vector2)[]
                      {
-                         ("the dock zone", NineMileCreekMainland.DockZonePos),
-                         ("the arrival park", NineMileCreekMainland.ArrivalPos),
+                         ("the dock zone", NineMileCreekGroundPlan.DockZonePos),
+                         ("the arrival park", NineMileCreekGroundPlan.ArrivalPos),
                      })
             {
                 Assert.That(SpringLow - Elev(new Vector2(p.x, p.y)),
@@ -366,6 +403,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// by the very points the geometry was authored from — the blind spot that hid #583's original
         /// 7 m sill. Measured before this test existed: without the trench's junction leg the worst
         /// station on this walk is <b>0.53 m</b>.</para>
+        ///
+        /// <para><b>On G3 since NMC H2 the journey is the water itself.</b> There is no trench or meander to
+        /// walk: the berths lie in a basin dredged from wall to wall and the way out is the TRACK through the
+        /// mouth. So every berth must lie in ONE body of water, joined to the entrance's landfall in the bay,
+        /// that carries the fairway's depth at spring low at every node of a half-metre lattice struck between
+        /// G3's texel centres, never on them. Measured on G3: the berths (x 86.2 to 160.2) lie in the joined
+        /// water, whose run along the berth line is x 78.5 to 186.5.</para>
         /// </summary>
         [Test]
         public void EveryBerthCanLeaveOnAnyTide_TheWholeWayToTheBay()
@@ -374,36 +418,16 @@ namespace HiddenHarbours.Tests.EditMode
                          + NineMileCreekMainland.ChannelKeelClearanceMetres
                          + NineMileCreekMainland.ChannelDredgeMarginMetres;
 
-            foreach (int berth in new[] { 0, NineMileCreekMainland.BerthCount - 1 })
-            {
-                var route = new List<Vector2> { NineMileCreekMainland.BerthPos(berth) };
-                // west along the trench to its junction (the trench is authored seaward -> harbour, so
-                // walking it backwards is walking OUT), then the meander, likewise backwards, to the bay.
-                var trench = NineMileCreekMainland.BerthTrenchWaypoints;
-                for (int i = trench.Length - 2; i >= 0; i--) route.Add(trench[i]);
-                var lane = NineMileCreekMainland.ChannelWaypoints;
-                for (int i = lane.Length - 2; i >= 0; i--) route.Add(lane[i]);
+            Vector2 landfall = NineMileCreekNavMarks.Entrance.Waypoints[0];
+            System.Func<Vector2, bool> joined = WaterJoinedTo(landfall, SpringLow - needed);
+            Assert.That(joined(landfall), Is.True,
+                $"the entrance's landfall at {landfall} does not carry {needed:0.00} m at spring low itself");
 
-                float worst = float.MaxValue;
-                Vector2 worstAt = route[0];
-                for (int i = 0; i < route.Count - 1; i++)
-                {
-                    float run = Vector2.Distance(route[i], route[i + 1]);
-                    int steps = Mathf.Max(1, Mathf.CeilToInt(run));
-                    for (int s = 0; s < steps; s++)
-                    {
-                        // half-step offsets: never a vertex of either array
-                        Vector2 p = Vector2.Lerp(route[i], route[i + 1], (s + 0.5f) / steps);
-                        float depth = SpringLow - Elev(p);
-                        if (depth < worst) { worst = depth; worstAt = p; }
-                    }
-                }
-
-                Assert.That(worst, Is.GreaterThanOrEqualTo(needed - 1e-3f),
-                    $"leaving berth {berth} at dead low spring, the shallowest metre of the way out is " +
-                    $"{worst:0.00} m at {worstAt} against the {needed:0.00} m the deepest resident needs. " +
+            foreach (var (berth, at) in NineMileCreekWharfTests.SceneBerths())
+                Assert.That(joined(at), Is.True,
+                    $"leaving berth {berth} at {at} (bed {Elev(at):0.00} m) at dead low spring, no water carrying " +
+                    $"the {needed:0.00} m the deepest resident needs joins her to the bay at {landfall}. " +
                     "A berth pocket that does not reach the fairway is a pond.");
-            }
         }
 
         /// <summary>
@@ -411,6 +435,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// wharf it lies against: <c>MainlandChannel.CuttableCeiling</c> is what stops it, and this is the
         /// test that would notice if it were ever raised. The deck, the apron and the yard all stand
         /// exactly where they stood.
+        ///
+        /// <para>⚠ The plan's authoring since NMC H2, on the premise: the trench and its ceiling are the
+        /// analytic cut's. G3 has no west apron or cross-basin breakwater (both retired from the scene), and
+        /// the scene's quay standing above every tide is <c>NineMileCreekWharfTests</c>' whole-quay case, on G3.</para>
         /// </summary>
         [Test]
         public void TheTrenchDidNotDredgeTheWharfItLiesAgainst()
@@ -423,8 +451,8 @@ namespace HiddenHarbours.Tests.EditMode
                          ("the breakwater crest", new Vector2(140f, 38f)),
                          ("the spit yard", new Vector2(119f, 118f)),
                      })
-                Assert.That(Elev(p), Is.GreaterThan(SpringHigh),
-                    $"{what} at {p} now stands at {Elev(p):0.00} m — the trench has cut into structure. " +
+                Assert.That(PlanElev(p), Is.GreaterThan(SpringHigh),
+                    $"{what} at {p} now stands at {PlanElev(p):0.00} m — the trench has cut into structure. " +
                     "Its CuttableCeiling is the guard, and something has moved it.");
         }
 
@@ -432,37 +460,37 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⚠ <b>THE COROLLARY THAT MUST NOT GENERALISE.</b> "Never assert depth at spring low" is
         /// reversed at the channel and NOWHERE ELSE: the harbour flats either side of the lane still
         /// bare, and if they stopped, the meander would have nothing to be a meander THROUGH.
+        ///
+        /// <para><b>On G3 since NMC H2</b> the reversal is the dredged basin, wall to wall, so the flats
+        /// that must still bare are the ones outside it: its undredged corners and the strip inside the east
+        /// arm. The plan's old flats (120, 56), (150, 52), (126, 48), (160, 46) and (180, 80) all lie in G3's
+        /// basin now, at −4.3 to −4.5 m.</para>
         /// </summary>
         [Test]
         public void TheHarbourFlatsStillBareAtSpringLow()
         {
-            // Inside the shoal, clear of both lanes: the ground the ebb uncovers.
-            //
-            // ⚠ TWO PROBES MOVED ON 2026-09-05, and the move is the reversal rather than a fudge. This
-            // list used to open with (120, 82) and (150, 84) — "between the lane and the north wall" —
-            // and that strip is now the BERTH TRENCH, by the owner's own ruling. What is left either
-            // side is the south half of the basin, which is where the meander's flats always were.
+            // Outside the dredged basin, inside the arms: the ground the ebb uncovers.
             var flats = new[]
             {
-                new Vector2(120f, 56f),   // between the lane and the breakwater, west
-                new Vector2(150f, 52f),   // …and east
-                new Vector2(126f, 48f),   // south of the lane, toward the breakwater
-                new Vector2(160f, 46f),
-                new Vector2(180f, 80f),   // the basin's north-east corner, past both lanes' ends
+                new Vector2(58f, 16f),    // the basin's undredged south-west corner, inside the south arm
+                new Vector2(46f, 64f),    // the west shore
+                new Vector2(190f, 32f),   // the undredged south-east corner, inside the east arm
+                new Vector2(204f, 50f),   // the strip along the east arm's inside face
+                new Vector2(204f, 30f),   // …further south along it
             };
 
             foreach (Vector2 p in flats)
             {
                 Assert.That(Elev(p), Is.GreaterThan(SpringLow),
-                    $"the flat at {p} no longer bares at spring low ({Elev(p):0.00} m). The channel has " +
-                    "spread into a deeper basin, and a lane with no flats either side is not a meander.");
+                    $"the flat at {p} no longer bares at spring low ({Elev(p):0.00} m). The dredging has " +
+                    "spread past the basin, and a harbour with no flats left in it is a dock.");
                 Assert.That(Elev(p), Is.LessThan(SpringHigh),
                     "…and it must still flood at spring high, or it is not a flat but a field");
             }
         }
 
         /// <summary>The drying world the ruling did NOT touch: the bar crest and the gut that carries the
-        /// crossing to St Peters both still bare, exactly as their own tests say.</summary>
+        /// crossing to St Peters both still bare, exactly as their own tests say. On G3 since NMC H2.</summary>
         [Test]
         public void TheCrossingAndItsGutStillDry()
         {
@@ -483,6 +511,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⭐ <b>A CHANNEL DREDGES SEABED, NEVER STRUCTURE.</b> The route runs hard against the apron the
         /// gangway comes down — within the cut's own half-width of the west wall — so without the
         /// cuttable-ceiling guard it would dredge the wharf out from under the float it exists to serve.
+        ///
+        /// <para>⚠ The plan's authoring since NMC H2, on the premise: these are the analytic plan's fill
+        /// zones and its channel. G3 has neither the west wall's apron nor the cross-basin breakwater; the
+        /// scene's quay is held on G3 by <c>NineMileCreekWharfTests</c>.</para>
         /// </summary>
         [Test]
         public void TheChannelNeverCutsAStructure()
@@ -496,8 +528,8 @@ namespace HiddenHarbours.Tests.EditMode
                      })
             {
                 foreach (Vector2 p in Corners(zone))
-                    Assert.That(Elev(p), Is.GreaterThan(SpringHigh),
-                        $"{what} at {p} stands on {Elev(p):0.00} m — the channel has eaten it. A channel " +
+                    Assert.That(PlanElev(p), Is.GreaterThan(SpringHigh),
+                        $"{what} at {p} stands on {PlanElev(p):0.00} m — the channel has eaten it. A channel " +
                         "may only cut ground at or below the cuttable ceiling.");
             }
         }
@@ -524,6 +556,11 @@ namespace HiddenHarbours.Tests.EditMode
         /// keeps its teeth for the case that would make it bite: a re-bake that lifted <c>mudZ</c> to or
         /// above the rig's datum would put the drawn foot at or above the lowest water, and a bed under a
         /// wall could then be exposed and short at the same time.</para>
+        ///
+        /// <para><b>On G3 since NMC H2.</b> The faces are re-lined to G3's caps, the north face at y 86 and
+        /// the crane apron's at y 76 (<see cref="NineMileCreekGroundPlan.NorthCap"/>,
+        /// <see cref="NineMileCreekGroundPlan.CraneCap"/>), and the bed in front of them is G3's dredged
+        /// basin, deeper again than the old trench.</para>
         /// </summary>
         [Test]
         public void TheQuayFacesFootIsNeverLeftSTANDINGShortOfGroundThatBARES()
@@ -536,11 +573,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "the drawn foot has come up to or above the lowest water. Every shortfall under this " +
                 "wharf can now be SEEN, and the first arm below is the one that matters again");
 
-            Rect deck = NineMileCreekWharf.DeckFootprint();
-            Rect apron = NineMileCreekWharf.ApronFootprint();
-
             float deepest = float.MaxValue;
-            foreach (Rect wall in new[] { deck, apron })
+            foreach (Rect wall in new[] { NineMileCreekGroundPlan.NorthCap, NineMileCreekGroundPlan.CraneCap })
                 foreach (Vector2 p in AroundTheFace(wall))
                 {
                     float bed = Elev(p);
@@ -580,10 +614,14 @@ namespace HiddenHarbours.Tests.EditMode
         /// <b>No new art is needed to mark this channel.</b></para>
         ///
         /// <para>⚠ It also states the other half of the finding: <c>Entrance</c>'s authored 12 m
-        /// half-width is WIDER than the lane itself at spring low, so its innermost marks stand on the
-        /// flats and are refused. <b>S2 followed that up and found the obvious fix does not work</b> —
-        /// see <see cref="NarrowingTheEntranceCannotSaveItsInnermostPair_TheLaneHasNoWetGroundOutsideItself"/>,
-        /// which measures why. Left to the owner, with the two moves that WOULD resolve it named there.</para>
+        /// half-width is WIDER than the lane itself at spring low, so its innermost marks stood on the
+        /// flats and were refused. S2 found that narrowing the half-width could not fix it, because the
+        /// lane had no wet ground outside itself.</para>
+        ///
+        /// <para>⚠ The plan's authoring since NMC H2, on the premise: both offsets are measured off the
+        /// analytic channel's centre-line. The Entrance no longer follows that channel. The owner ruled it
+        /// redrawn along the design boat's TRACK into G3's mouth, which closes the refusal on the ground the
+        /// scene stands on (<see cref="TheEntrancesInnermostPairFloatsOnG3_TheRefusalIsClosed"/>).</para>
         /// </summary>
         [Test]
         public void AFloatingMarkNowFitsTheInnerChannel_WhichAnswersThePerchAndWithyQuestion()
@@ -605,89 +643,49 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// ⚠⚠ <b>THE OBVIOUS FIX FOR THE REFUSED PAIR DOES NOT WORK, AND THIS IS THE MEASUREMENT.</b>
+        /// ⭐ <b>THE REFUSED PAIR IS CLOSED, ON G3.</b> Until NMC H2 this section held the measurement
+        /// that the Entrance's innermost pair could not be saved by narrowing its half-width: outside the
+        /// old dredged lane lay a drying flat, so a mark stood either in the fairway or on dry ground. The
+        /// owner ruled the redraw instead. The Entrance now runs along the design boat's TRACK into G3's
+        /// mouth (<see cref="NineMileCreekNavMarks.Entrance"/>), its last station stands in the mouth
+        /// between the arms, and the ground either side of it is water, not a flat.
         ///
-        /// <para>The finding above is that <c>Entrance</c>'s innermost pair stands on drying ground at its
-        /// declared 12 m half-width. The natural remedy is to narrow the declared half-width until the
-        /// marks fall back into water. <b>There is no such number.</b> Two constraints meet here and this
-        /// harbour cannot satisfy both:</para>
-        /// <list type="number">
-        /// <item><description><b>A mark must float.</b> Outside the cut is the −1.6 m shoal, which bares
-        /// by 0.60 m at spring low — so every half-width at or beyond the channel's own
-        /// <see cref="NineMileCreekMainland.ChannelHalfWidthMetres"/> is dry ground.</description></item>
-        /// <item><description><b>A mark must not stand IN the fairway.</b> The repo's own convention,
-        /// stated at the other harbour (<c>StPetersNavMarks.Entrance</c>: <i>"the cut is 8 m each side;
-        /// the marked fairway is a touch wider so a mark is not IN the cut"</i>) — because a buoy moored
-        /// inside the lane is an obstruction in the water a skipper is being told to steer down. St
-        /// Peters can honour it because the ground outside ITS cut is −4 m; here it is a drying
-        /// flat.</description></item>
-        /// </list>
-        ///
-        /// <para><b>So the window where a mark floats is entirely inside the lane</b>, and the fix would
-        /// trade a refused buoy for a buoy in the fairway — at dead low spring, on the very edges of the
-        /// 10 m of water the ruling promises to leave. That is worse than the refusal.</para>
-        ///
-        /// <para><b>What would actually resolve it</b>, both owner-level and neither this pass's:</para>
-        /// <list type="bullet">
-        /// <item><description><b>Perches or withies</b> for the inner lane — staffs driven into the bed,
-        /// which may stand on ground that bares precisely because they do not float. #575's art ask,
-        /// which the channel answered for the lane's WIDTH and, it turns out, not for its
-        /// EDGES.</description></item>
-        /// <item><description><b>End the buoyed channel at the basin entrance</b> — drop the innermost
-        /// waypoint so the last pair stands at (204, 50), where the natural bottom is −5.31 m and a
-        /// 12 m mark floats at any tide. That makes the wharf itself the mark from there in, and it
-        /// removes a refusal that can otherwise only ever repeat on every build (the noise
-        /// <c>NavChannel.StraightSpacingMetres</c> warns about).</description></item>
-        /// </list>
+        /// <para>So the finding is asserted closed, on the ground the scene stands on: the plan refuses
+        /// nothing on the Entrance, and the pair hung off its last station at the declared half-width floats
+        /// at the worst tide of the month. If this goes red, the refusal is back, and the two remedies the
+        /// old measurement named are owed again: perches or withies, or ending the buoyed channel short of
+        /// the harbour.</para>
         /// </summary>
         [Test]
-        public void NarrowingTheEntranceCannotSaveItsInnermostPair_TheLaneHasNoWetGroundOutsideItself()
+        public void TheEntrancesInnermostPairFloatsOnG3_TheRefusalIsClosed()
         {
             float floor = NineMileCreekNavMarks.Tuning.MinDepthAtSpringLowMetres;
-            Vector2[] route = NineMileCreekNavMarks.Entrance.Waypoints;
-            Assert.That(route.Length, Is.GreaterThan(1));
+            NavChannel entrance = NineMileCreekNavMarks.Entrance;
+            NavMarkPlanResult plan = NineMileCreekNavMarks.Plan(_terrain);
 
-            // The innermost station and the direction a skipper meets it on — an END station, so
-            // NavMarkPlan does not snap it and the pair really does hang off this exact point.
-            Vector2 station = route[route.Length - 1];
-            Vector2 course = (station - route[route.Length - 2]).normalized;
-            var normal = new Vector2(-course.y, course.x);
+            foreach (NavMarkRefusal r in plan.Refusals)
+                Assert.That(r.OwnerId, Is.Not.EqualTo(entrance.Id),
+                    $"the Entrance refused a mark at {r.At} on G3: {r.Reason}");
 
-            // The worst of the pair's two marks, as a function of the declared half-width.
-            float WorstOfThePair(float half)
+            // The last station is an END station, so the plan does not snap it: its pair hangs exactly
+            // the half-width either side of it, and no other station's marks come that close.
+            Vector2 station = entrance.Waypoints[entrance.Waypoints.Length - 1];
+            var pair = new List<PlannedNavMark>();
+            foreach (PlannedNavMark m in plan.Marks)
+                if (m.OwnerId == entrance.Id && Vector2.Distance(m.At, station) <= entrance.HalfWidthMetres + 0.5f)
+                    pair.Add(m);
+
+            Assert.That(pair.Count, Is.EqualTo(2),
+                $"the Entrance's last station at {station} should carry one pair, port and starboard; " +
+                $"{pair.Count} mark(s) stand within its half-width");
+            foreach (PlannedNavMark m in pair)
             {
-                float worst = float.MaxValue;
-                foreach (float side in new[] { 1f, -1f })
-                    worst = Mathf.Min(worst, Depth(station + normal * (half * side), SpringLow));
-                return worst;
+                float depth = Depth(m.At, SpringLow);
+                Assert.That(depth, Is.GreaterThan(floor),
+                    $"'{m.Id}' at {m.At} stands in {depth:0.00} m at spring low on G3, under the " +
+                    $"{floor:0.00} m floor: the refused pair is back");
+                TestContext.WriteLine($"[entrance] '{m.Id}' at {m.At}: {depth:0.00} m at spring low");
             }
-
-            float declared = NineMileCreekNavMarks.Entrance.HalfWidthMetres;
-            Assert.That(WorstOfThePair(declared), Is.LessThanOrEqualTo(floor),
-                "the innermost pair is no longer refused at its declared half-width — this whole finding " +
-                "is stale, and the two remedies named above are no longer owed");
-
-            // ⭐ The largest half-width at which BOTH marks still float, found by walking in from the
-            // declared one. Measured rather than asserted, so the number in the note cannot go stale.
-            float widestThatFloats = 0f;
-            for (float half = declared; half >= 0.5f; half -= 0.1f)
-                if (WorstOfThePair(half) > floor) { widestThatFloats = half; break; }
-
-            Assert.That(widestThatFloats, Is.GreaterThan(0f),
-                "no half-width floats this pair at all, which would be a stronger finding than the one " +
-                "recorded above — re-read it before acting");
-            Assert.That(widestThatFloats, Is.LessThan(NineMileCreekMainland.ChannelHalfWidthMetres),
-                $"the widest half-width that floats the innermost pair is {widestThatFloats:0.0} m, and " +
-                $"the dredged lane is {NineMileCreekMainland.ChannelHalfWidthMetres:0.0} m each side. If " +
-                "this ever passes the other way, a mark can stand OUTSIDE the cut and still float, and " +
-                "narrowing the declared half-width becomes the right fix after all.");
-
-            // …and specifically: the figure a re-narrowing would reach for first does NOT work. Half the
-            // lane's own waterline width at spring low (24 m → 16 m across, so ±8 m) still refuses,
-            // because ±8 m is where the bank has climbed back to within a hair of the bared shoal.
-            Assert.That(WorstOfThePair(8f), Is.LessThanOrEqualTo(floor),
-                "a mark at ±8 m — the lane's own waterline half-width at spring low — floats after all, " +
-                "which would make the cheap fix real; re-measure before trusting this note");
         }
 
         // =============================================================================================
@@ -696,6 +694,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>Elevation is a pure function of position (CLAUDE.md rule 5) — no RNG, nothing saved.
         /// A channel sampled twice, and a second terrain configured from the same plan, agree exactly.
+        /// The plan's authoring since NMC H2, on the premise: it is the analytic terrain that is configured.
         /// </summary>
         [Test]
         public void TheChannelIsPureAndReconfiguresIdentically()
@@ -708,8 +707,8 @@ namespace HiddenHarbours.Tests.EditMode
 
                 foreach (Vector2 p in WalkTheChannel(3f))
                 {
-                    Assert.That(Elev(p), Is.EqualTo(Elev(p)), "the same sample twice");
-                    Assert.That(other.ElevationAt(p), Is.EqualTo(Elev(p)),
+                    Assert.That(PlanElev(p), Is.EqualTo(PlanElev(p)), "the same sample twice");
+                    Assert.That(other.ElevationAt(p), Is.EqualTo(PlanElev(p)),
                         $"two terrains configured from one plan disagree at {p}");
                 }
             }
@@ -721,7 +720,8 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         /// <summary>The shallowest water any mark would stand in, offset this far either side of the
-        /// authored centre-line — the question "may this channel be buoyed with floats?" as a number.</summary>
+        /// authored centre-line — the question "may this channel be buoyed with floats?" as a number.
+        /// On the premise, as the channel it walks is.</summary>
         private float WorstMarkDepthAtOffset(float offsetMetres, out Vector2 worstAt)
         {
             float worst = float.MaxValue;
@@ -733,7 +733,7 @@ namespace HiddenHarbours.Tests.EditMode
                 foreach (float side in new[] { 1f, -1f })
                 {
                     Vector2 p = at + normal * (offsetMetres * side);
-                    float d = Depth(p, SpringLow);
+                    float d = PlanDepth(p, SpringLow);
                     if (d < worst) { worst = d; worstAt = p; }
                 }
             }
@@ -767,23 +767,55 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The wetted width of the lane measured ACROSS it at a point — marched perpendicular to
         /// the local course from the centre-line outward, stopping at the first dry step either side, so
-        /// a puddle out on the flats can never be counted as part of the channel.</summary>
+        /// a puddle out on the flats can never be counted as part of the channel. On the premise, as the
+        /// channel it measures is.</summary>
         private float LaneWidthAcross(Vector2 at, float water)
         {
             Vector2 course = CourseAt(at);
             var normal = new Vector2(-course.y, course.x);
             const float Step = 0.05f, Reach = 40f;
 
-            if (Depth(at, water) <= 0f) return 0f;
+            if (PlanDepth(at, water) <= 0f) return 0f;
 
             float width = 0f;
             foreach (float side in new[] { 1f, -1f })
                 for (float s = Step; s <= Reach; s += Step)
                 {
-                    if (Depth(at + normal * (s * side), water) <= 0f) break;
+                    if (PlanDepth(at + normal * (s * side), water) <= 0f) break;
                     width += Step;
                 }
             return width;
+        }
+
+        /// <summary>The water joined to a place by water at least this deep, on G3: a flood fill over a
+        /// half-metre lattice whose nodes stand on whole and half metres, between G3's texel centres and
+        /// never on them, four neighbours to a node. Any point is answered by its nearest node.</summary>
+        private System.Func<Vector2, bool> WaterJoinedTo(Vector2 from, float deepEnough)
+        {
+            const float X0 = 30f, X1 = 300f, Y0 = -60f, Y1 = 90f, Step = 0.5f;
+            int w = Mathf.RoundToInt((X1 - X0) / Step) + 1, h = Mathf.RoundToInt((Y1 - Y0) / Step) + 1;
+            var wet = new bool[w * h];
+            for (int j = 0; j < h; j++)
+                for (int i = 0; i < w; i++)
+                    wet[j * w + i] = Elev(new Vector2(X0 + i * Step, Y0 + j * Step)) <= deepEnough;
+
+            int NodeOf(Vector2 p) => Mathf.Clamp(Mathf.RoundToInt((p.y - Y0) / Step), 0, h - 1) * w
+                                   + Mathf.Clamp(Mathf.RoundToInt((p.x - X0) / Step), 0, w - 1);
+            var seen = new bool[w * h];
+            int start = NodeOf(from);
+            if (!wet[start]) return _ => false;
+
+            var queue = new Queue<int>();
+            seen[start] = true;
+            queue.Enqueue(start);
+            while (queue.Count > 0)
+            {
+                int k = queue.Dequeue(), i = k % w, j = k / w;
+                foreach (int n in new[] { i > 0 ? k - 1 : -1, i < w - 1 ? k + 1 : -1,
+                                          j > 0 ? k - w : -1, j < h - 1 ? k + w : -1 })
+                    if (n >= 0 && !seen[n] && wet[n]) { seen[n] = true; queue.Enqueue(n); }
+            }
+            return p => seen[NodeOf(p)];
         }
 
         /// <summary>The authored waypoint nearest a place of interest — so a test can name the station it

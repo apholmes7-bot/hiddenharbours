@@ -18,6 +18,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// <item><description>rock comes from the COAST PLAN, so the painted rock and the terrain's own cliff
     /// walls cannot disagree.</description></item>
     /// </list>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> This is the plan's classifier on the plan's analytic ground
+    /// (<c>MakeTerrain</c>, through <c>NineMileCreekMainland.ConfigureTerrain</c>): the shore painter, the starter
+    /// splat and the fields still read it until the wave that moves each onto G3's masks
+    /// (<see cref="NineMileCreekGroundMasks"/>). None of these tests claims the scene's ground. G3's classification
+    /// is <c>NineMileCreekGroundMasksTests</c>', the made ground's included.</para>
     /// </summary>
     public class NineMileCreekShoreMapTests
     {
@@ -179,6 +185,12 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ============================ 4. MADE GROUND AND PONDS ============================
 
+        /// <summary>⚠ The plan's analytic classifier since NMC H2: <see cref="NineMileCreekShoreMap.IsMadeGround"/>
+        /// is the plan's fills, which the fields and the starter splat still read until their wave. The scene's made
+        /// ground is G3's own, classified from G3 and the final exclusions with no height written back, and its test
+        /// is the ruled successor: <c>NineMileCreekGroundMasksTests.TheMadeGroundTakesTheSplatAndNothingElse_TheFieldsTakeTheirOwn</c>. On G3
+        /// two of these four centres lie in the dredged basin: the west wall's (87, 68) at −4.36 m and the
+        /// breakwater's (140, 38) at −4.49 m.</summary>
         [Test]
         public void MadeGroundIsTheFills_AndTheFieldsAreNot()
         {

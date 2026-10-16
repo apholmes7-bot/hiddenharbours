@@ -30,6 +30,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// it</b> — that is what makes the file a check rather than a second copy of the plan. Where a number
     /// appears below it is because a test needs to say what a metre means (a hull's draught, a walking
     /// lane), not because the geography was restated.</para>
+    ///
+    /// <para><b>NMC H2: the scene stands on G3, and this file splits.</b> The claims about the quay the SCENE
+    /// carries (it stays dry, its berths float and lie off its face, the flats still bare, the boat parks in
+    /// water, the arm leaves the basin open) are probed on G3 (<see cref="NineMileCreekLiveGround"/>) at the sites
+    /// <see cref="NineMileCreekGroundPlan"/> and 05-wharf-support-g3 give them. The rest test the plan's own wharf,
+    /// which the builder still authors on the analytic premise: they prove the plan, not the activated scene.</para>
     /// </summary>
     public class NineMileCreekWharfTests
     {
@@ -55,6 +61,28 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static float SpringHigh => NineMileCreekMainland.SpringHighWater;
         private static float SpringLow => NineMileCreekMainland.SpringLowWater;
+
+        /// <summary>The ground the scene stands on since NMC H2.</summary>
+        private static ITidalTerrain Ground => NineMileCreekLiveGround.Plan;
+
+        /// <summary>The quay the scene stands on since NMC H2: G3's north apron, from the north cap's brow back to
+        /// the plan's own deck edge, and its crane apron, from the crane cap's brow to the north face.</summary>
+        private static IEnumerable<Rect> SceneAprons()
+        {
+            Rect north = NineMileCreekGroundPlan.NorthCap, crane = NineMileCreekGroundPlan.CraneCap;
+            yield return Rect.MinMaxRect(north.xMin, north.yMax, north.xMax, NineMileCreekWharf.DeckFootprint().yMax);
+            yield return Rect.MinMaxRect(crane.xMin, crane.yMax, crane.xMax, NineMileCreekGroundPlan.NorthFaceY);
+        }
+
+        /// <summary>The berths the scene lays its boats in since NMC H2 (05-wharf-support-g3): the player's berth 0
+        /// alongside the north face, and each wall owner's berth on the plan's line one metre south, at the widest
+        /// resident's standoff (every hull's own lie is inboard of it). The channel tests walk the same berths.</summary>
+        internal static IEnumerable<(int index, Vector2 at)> SceneBerths()
+        {
+            yield return (0, NineMileCreekGroundPlan.ArrivalPos);
+            for (int i = 1; i < NineMileCreekWharf.BerthCount; i++)
+                yield return (i, NineMileCreekGroundSteps.WallBerth(i, 0f));
+        }
 
         /// <summary>The rectangle a plan fill occupies — computed here the same way the wharf computes it,
         /// so "the deck IS the fill" is a real comparison rather than a tautology through one helper.</summary>
@@ -120,26 +148,18 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheWholeQuay_StaysDryAtSpringHigh()
         {
-            var terrain = MakeCreekTerrain();
-
-            foreach (Rect deck in NineMileCreekWharf.Decks())
-            foreach (var p in Corners(deck).Append(deck.center))
+            // NMC H2: the scene's quay is G3's two aprons, probed every metre. Half a metre inside each edge: an
+            // edge sits on the face's own transition, and the claim is about the DECK rather than about its lip.
+            foreach (Rect apron in SceneAprons())
+            for (float x = apron.xMin + 0.5f; x < apron.xMax; x += 1f)
+            for (float y = apron.yMin + 0.5f; y < apron.yMax; y += 1f)
             {
-                float ground = terrain.ElevationAt(p);
+                var p = new Vector2(x, y);
+                float ground = Ground.ElevationAt(p);
                 Assert.That(TidalExposure.IsExposed(SpringHigh, ground), Is.True,
                     $"the quay at {p} stands at {ground:0.00} m against a spring high of {SpringHigh:0.00} m " +
                     "— a working wharf does not go under. Move the deck; do not lower the tide");
             }
-        }
-
-        private static IEnumerable<Vector2> Corners(Rect r)
-        {
-            // Half a metre inside each corner: a corner sits exactly on the fill's edge, where the
-            // falloff begins, and the claim is about the DECK rather than about its lip.
-            yield return new Vector2(r.xMin + 0.5f, r.yMin + 0.5f);
-            yield return new Vector2(r.xMax - 0.5f, r.yMin + 0.5f);
-            yield return new Vector2(r.xMin + 0.5f, r.yMax - 0.5f);
-            yield return new Vector2(r.xMax - 0.5f, r.yMax - 0.5f);
         }
 
         // =============================================================================================
@@ -154,13 +174,14 @@ namespace HiddenHarbours.Tests.EditMode
             // ⚠ The GATE has not gone: what admits a hull to this harbour was never the berth, it is the
             // FAIRWAY that leads to it (NineMileCreekChannelTests names that finding). The trench is cut
             // for the same deepest resident the fairway is, so nothing new is admitted by it.
-            var terrain = MakeCreekTerrain();
+            //
+            // NMC H2: the berths are the scene's and the bed is G3's, whose basin is painted to the berths' depth
+            // from wall to wall. The ruling's floor is still the bar each berth is held to.
             float needed = NineMileCreekMainland.BerthDepthNeededMetres;
 
-            for (int i = 0; i < NineMileCreekWharf.BerthCount; i++)
+            foreach (var (i, berth) in SceneBerths())
             {
-                Vector2 berth = NineMileCreekWharf.BerthPos(i);
-                float bed = terrain.ElevationAt(berth);
+                float bed = Ground.ElevationAt(berth);
 
                 Assert.That(NineMileCreekMainland.SpringLowWater - bed,
                     Is.GreaterThanOrEqualTo(needed - 1e-3f),
@@ -177,19 +198,20 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // ⚠ THE DEFECT A-1 CAUGHT IN ITS OWN FIRST DRAFT, kept as a guard: the west wall stood at
             // x ∈ [85, 95] with the first berth at x = 92.5, i.e. the first two boats were moored ON the
-            // concrete. Re-derived here against the walls the builder actually writes.
-            Rect deck = NineMileCreekWharf.DeckFootprint();
-            Rect apron = NineMileCreekWharf.ApronFootprint();
-
-            for (int i = 0; i < NineMileCreekWharf.BerthCount; i++)
+            // concrete. Re-derived here against the face the scene's ground carries since NMC H2: G3's north
+            // face, from the crane step to the east arm, with each hull's inboard side on its fender line.
+            foreach (var (i, berth) in SceneBerths())
             {
-                Vector2 berth = NineMileCreekWharf.BerthPos(i);
+                float half = i == 0 ? NineMileCreekGroundPlan.DesignHalfBeamMetres
+                                    : NineMileCreekMainland.WidestResidentBeamMetres * 0.5f;
 
-                Assert.That(deck.Contains(berth), Is.False, $"berth {i} at {berth} is on the north wall's deck");
-                Assert.That(apron.Contains(berth), Is.False, $"berth {i} at {berth} is on the west wall's deck");
-                Assert.That(berth.y, Is.LessThan(NineMileCreekWharf.MooringEdgeY),
+                Assert.That(TidalExposure.IsExposed(SpringHigh, Ground.ElevationAt(berth)), Is.False,
+                    $"berth {i} at {berth} is on the quay");
+                Assert.That(berth.y, Is.LessThan(NineMileCreekGroundPlan.NorthFaceY),
                     $"berth {i} must lie SOUTH of the mooring edge — that is the face with the fleet on it");
-                Assert.That(berth.x, Is.InRange(deck.xMin, deck.xMax),
+                Assert.That(berth.y + half, Is.LessThanOrEqualTo(NineMileCreekGroundPlan.FenderLineY + 1e-3f),
+                    $"berth {i} at {berth} lays her side past the fender line and onto the face");
+                Assert.That(berth.x, Is.InRange(NineMileCreekGroundPlan.FaceStepX, NineMileCreekGroundPlan.NorthFaceEastX),
                     $"berth {i} at {berth} has run past the end of the wall it is supposed to lie against");
             }
         }
@@ -205,11 +227,13 @@ namespace HiddenHarbours.Tests.EditMode
             //
             // ⚠ OWNER RULING 2026-09-04, and it moved this assertion: *"the bullpen should always have water at low tide so all the lobster boats can park on the wall."* The −1.6 m shoal is still the gate everywhere else in the basin — it is what the flats, the crossing and the guts are measured against — but along the berth line the trench (NineMileCreekMainland §8b¾) has cut it to the depth the fleet lies in. What used to be "exactly the gate" is now "deeper than the gate, by the trench's own arithmetic".
             // So the drying is asserted where it still happens — the FLATS — and the berth is asserted to
-            // float, which is what the ruling bought. The ladders keep their job: the deck stands 3.00 m
-            // over a berth that now carries 2.01 m at dead low water, so you still climb 5 m of wall.
-            var terrain = MakeCreekTerrain();
-            float berth = terrain.ElevationAt(NineMileCreekWharf.BerthPos(0));
-            float flat = terrain.ElevationAt(new Vector2(120f, 56f));
+            // float, which is what the ruling bought. The ladders keep their job: on G3 the deck stands 3.40 m
+            // over a berth that carries 2.1 m at dead low water, so you still climb over 5 m of wall.
+            //
+            // NMC H2: G3's basin is dredged to the berths' depth from wall to wall, so the flats that still bare
+            // are its undredged corners inside the arms: the south-west corner off the old beach, and the
+            // south-east corner under the east arm. Berth 0 is the player's, alongside the north face.
+            float berth = Ground.ElevationAt(NineMileCreekGroundPlan.ArrivalPos);
 
             const float LobsterBoatDraught = 1.30f;
             Assert.That(TidalExposure.WaterDepth(SpringHigh, berth), Is.GreaterThan(LobsterBoatDraught),
@@ -218,25 +242,29 @@ namespace HiddenHarbours.Tests.EditMode
                 Is.GreaterThanOrEqualTo(NineMileCreekMainland.BerthDepthNeededMetres - 1e-3f),
                 "…and she must still float at dead low spring, which is the ruling");
 
-            Assert.That(TidalExposure.WaterDepth(SpringLow, flat), Is.LessThanOrEqualTo(0f),
-                "the harbour FLATS must still bare at spring low. If nothing dries, the shoal has stopped " +
-                "being a gate and Nine Mile Creek has quietly become the dredged harbour Port Greywick is");
-            Assert.That(TidalExposure.WaterDepth(SpringHigh, flat), Is.GreaterThan(0f),
-                "…and flood again at spring high, or it is not a flat but a field");
+            foreach (var p in new[] { new Vector2(58f, 16f), new Vector2(190f, 32f) })
+            {
+                float flat = Ground.ElevationAt(p);
+                Assert.That(TidalExposure.WaterDepth(SpringLow, flat), Is.LessThanOrEqualTo(0f),
+                    $"the harbour FLATS must still bare at spring low, and the one at {p} stands at {flat:0.00} m. " +
+                    "If nothing dries, the shoal has stopped being a gate and Nine Mile Creek has quietly become " +
+                    "the dredged harbour Port Greywick is");
+                Assert.That(TidalExposure.WaterDepth(SpringHigh, flat), Is.GreaterThan(0f),
+                    "…and flood again at spring high, or it is not a flat but a field");
+            }
         }
 
         [Test]
         public void TheBoatParksWhereItCanLie_AndTheApproachIsWaterTheWholeWayIn()
         {
-            var terrain = MakeCreekTerrain();
-
+            // NMC H2: berth 0 alongside G3's north face, probed on G3.
             foreach (var (what, p) in new (string, Vector3)[]
                      {
                          ("the arrival park", NineMileCreekBuilder.ArrivalPos),
                          ("the dock zone", NineMileCreekBuilder.DockZonePos),
                      })
             {
-                float bed = terrain.ElevationAt(new Vector2(p.x, p.y));
+                float bed = Ground.ElevationAt(new Vector2(p.x, p.y));
                 Assert.That(bed, Is.LessThanOrEqualTo(NineMileCreekMainland.BasinBedElevation + 0.01f),
                     $"{what} at {p} sits on {bed:0.00} m — a boat cannot park on the quay");
                 Assert.That(TidalExposure.WaterDepth(SpringHigh, bed), Is.GreaterThan(0.3f),
@@ -376,8 +404,31 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(NineMileCreekBuilder.ToCovePassagePos.x,
                 Is.GreaterThan(NineMileCreekWharf.BreakwaterEastX),
                 "the passage home must be clear of the arm's seaward tip");
+
+            // NMC H2: the scene's blocking arm runs on the wharf source's two arms (05-wharf-support-g3), so the
+            // same separation is held against those: the berth, the dock and the step ashore lie north of the south
+            // arm and west of the east arm's run down from the north face, and the passage home lies east of it.
+            float south = Mathf.Max(NineMileCreekGroundPlan.SouthArm[0].y, NineMileCreekGroundPlan.SouthArm[1].y);
+            Vector2 eastTop = NineMileCreekGroundPlan.EastArm[0], eastFoot = NineMileCreekGroundPlan.EastArm[1];
+            Assert.That(eastFoot.x, Is.EqualTo(eastTop.x), "the east arm runs due south from the north face");
+            foreach (var (what, p) in new (string, Vector3)[]
+                     {
+                         ("the arrival park", NineMileCreekBuilder.ArrivalPos),
+                         ("the dock zone", NineMileCreekBuilder.DockZonePos),
+                         ("the step ashore", NineMileCreekBuilder.DisembarkPos),
+                     })
+            {
+                Assert.That(p.y, Is.GreaterThan(south), $"{what} at {p} is seaward of the scene's south arm");
+                Assert.That(p.y, Is.GreaterThan(eastFoot.y), $"{what} at {p} is south of the east arm's straight run");
+                Assert.That(p.x, Is.LessThan(eastTop.x), $"{what} at {p} is seaward of the scene's east arm");
+            }
+            Assert.That(NineMileCreekBuilder.ToCovePassagePos.x, Is.GreaterThan(eastTop.x),
+                "the passage home must be clear of the scene's east arm");
         }
 
+        /// <summary>The PLAN's beacon on the PLAN's arm: a premise test. Since NMC H2 the scene's blocking arm runs on
+        /// the wharf source's two arms (05-wharf-support-g3), and the two dry head lights that move with it are a
+        /// later wave's, not PR 2's; the beacon still stands where this test puts it, off the scene's arm.</summary>
         [Test]
         public void TheBreakwaterHead_IsWhereTheBeaconStands()
         {

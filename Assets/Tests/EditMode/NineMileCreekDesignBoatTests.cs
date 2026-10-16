@@ -13,7 +13,7 @@ namespace HiddenHarbours.Tests
     /// This is a depth proof, not a collision, manoeuvring dynamics or imported GPU texture proof.</summary>
     public class NineMileCreekDesignBoatTests
     {
-        static readonly double[][][] Track = {
+        internal static readonly double[][][] Track = {
             new[] { P(137,-45),P(137,-10),P(136.2,5),P(131,16.5),P(121,23.5),P(108,27),P(98.5,31.5),P(94.5,38),P(96.5,44),P(100.8,47.6),P(104.6,50.6),P(106.26,54.02) },
             new[] { P(106.26,54.02),P(106.1,46),P(106,38.5) },
             new[] { P(106,38.5),P(108.2,31.5),P(115,25.5),P(126,21),P(133.5,13),P(136.6,2),P(137,-10),P(137,-45) }

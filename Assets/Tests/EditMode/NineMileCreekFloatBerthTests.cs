@@ -28,11 +28,18 @@ namespace HiddenHarbours.Tests.EditMode
     /// run, by the skinner; a builder that skinned hulls here would bake the sprite fallback into the
     /// committed scene and the fleet would silently never be mesh. <see cref="TheBuilderPlacesAndDoesNotDraw"/>
     /// is that law, carried onto the float's boats.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> The builder still places the fleet on the plan's analytic ground,
+    /// and the scene keeps the float boats where it put them while the water under them is G3's (step 05 keeps
+    /// the float's footprint and takes its bed from G3). So the tables, the gates and the placement stand the
+    /// plan's ground up (<c>Plan</c>), and <see cref="EveryBoatPlacedAtTheFloatFloatsWhereSheWasPut"/> measures
+    /// the boats the builder placed on G3 (<see cref="NineMileCreekLiveGround.Plan"/>), the scene's ground.</para>
     /// </summary>
     public class NineMileCreekFloatBerthTests
     {
         private GameObject _go;
-        private MainlandTidalTerrain _terrain;
+        private ITidalTerrain _ground;            // G3: the water the scene's float boats lie in
+        private MainlandTidalTerrain _plan;       // the plan's analytic ground, which the builder still places on
 
         private static float SpringLow => NineMileCreekMainland.SpringLowWater;
         private static float Clearance => NineMileCreekMainland.ChannelKeelClearanceMetres;
@@ -41,16 +48,29 @@ namespace HiddenHarbours.Tests.EditMode
         public void SetUp()
         {
             DestroyAnyFleet();
-            _go = new GameObject("NineMileCreekFloatBerth_Test");
-            _terrain = _go.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
+            _ground = NineMileCreekLiveGround.Plan;
         }
 
         [TearDown]
         public void TearDown()
         {
             if (_go != null) Object.DestroyImmediate(_go);
+            _go = null;
+            _plan = null;
             DestroyAnyFleet();
+        }
+
+        /// <summary>The plan's analytic ground: what the builder still places the fleet on.</summary>
+        private MainlandTidalTerrain Plan
+        {
+            get
+            {
+                if (_plan != null) return _plan;
+                _go = new GameObject("NineMileCreekFloatBerth_Test");
+                _plan = _go.AddComponent<MainlandTidalTerrain>();
+                NineMileCreekMainland.ConfigureTerrain(_plan);
+                return _plan;
+            }
         }
 
         /// <summary>Tear the placer's root out BY NAME — a fixture's cleanup must not depend on the thing
@@ -203,14 +223,14 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < NineMileCreekWharf.FloatBerthCount; i++)
             {
                 (Vector2 north, Vector2 south) = NineMileCreekWharf.FloatBerthSides(i);
-                Vector2 chosen = NineMileCreekWharf.FloatBerthPos(i, _terrain);
+                Vector2 chosen = NineMileCreekWharf.FloatBerthPos(i, Plan);
                 Vector2 other = chosen == north ? south : north;
 
-                Assert.That(_terrain.ElevationAt(chosen),
-                    Is.LessThanOrEqualTo(_terrain.ElevationAt(other) + 1e-4f),
+                Assert.That(Plan.ElevationAt(chosen),
+                    Is.LessThanOrEqualTo(Plan.ElevationAt(other) + 1e-4f),
                     $"float berth {i} was put on the SHALLOWER side: {chosen} reads " +
-                    $"{_terrain.ElevationAt(chosen):0.00} m against {other}'s " +
-                    $"{_terrain.ElevationAt(other):0.00} m");
+                    $"{Plan.ElevationAt(chosen):0.00} m against {other}'s " +
+                    $"{Plan.ElevationAt(other):0.00} m");
             }
         }
 
@@ -232,7 +252,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < NineMileCreekWharf.FloatBerthCount; i++)
             {
                 (Vector2 n, _) = NineMileCreekWharf.FloatBerthSides(i);
-                if (NineMileCreekWharf.FloatBerthPos(i, _terrain) == n) north++; else south++;
+                if (NineMileCreekWharf.FloatBerthPos(i, Plan) == n) north++; else south++;
             }
 
             Assert.That(north, Is.GreaterThan(0),
@@ -264,6 +284,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⭐ <b>THE HEADLINE: every berth on the run floats the deepest small craft the register keeps,
         /// at dead low spring.</b> The float is fit for its purpose along its whole length, not just where
         /// the lane happens to be deepest — otherwise half the fingers are decoration.
+        ///
+        /// <para>⚠ The builder's gate, on the plan's ground since NMC H2. The water under the boats it placed is
+        /// the scene's G3: <see cref="EveryBoatPlacedAtTheFloatFloatsWhereSheWasPut"/>.</para>
         /// </summary>
         [Test]
         public void EveryFloatBerthFloatsTheDeepestSmallCraftOnTheRegister()
@@ -274,10 +297,10 @@ namespace HiddenHarbours.Tests.EditMode
 
             for (int i = 0; i < NineMileCreekWharf.FloatBerthCount; i++)
             {
-                float carries = NineMileCreekWharf.DeepestDraughtAFloatBerthCarries(i, _terrain);
+                float carries = NineMileCreekWharf.DeepestDraughtAFloatBerthCarries(i, Plan);
                 Assert.That(carries, Is.GreaterThanOrEqualTo(deepest),
                     $"float berth {i} carries {carries:0.00} m of draught (measured " +
-                    $"{NineMileCreekWharf.FloatBerthDepthAtSpringLow(i, _terrain):0.00} m at spring low, " +
+                    $"{NineMileCreekWharf.FloatBerthDepthAtSpringLow(i, Plan):0.00} m at spring low, " +
                     $"less the region's {Clearance:0.00} m keel clearance) and the deepest small craft on " +
                     $"the register draws {deepest:0.00} m. That berth is on the mud for part of every " +
                     "big tide.");
@@ -292,7 +315,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var o in AtTheFloat())
             {
                 if (o.Boat == null) continue;
-                float carries = NineMileCreekWharf.DeepestDraughtAFloatBerthCarries(o.BerthIndex, _terrain);
+                float carries = NineMileCreekWharf.DeepestDraughtAFloatBerthCarries(o.BerthIndex, Plan);
                 Assert.That(o.Boat.DraughtMeters, Is.LessThanOrEqualTo(carries),
                     $"'{o.Id}' keeps '{o.Boat.Id}' ({o.Boat.DraughtMeters:0.00} m) in float berth " +
                     $"{o.BerthIndex}, which carries {carries:0.00} m. The builder REFUSES her, so she " +
@@ -367,15 +390,15 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < NineMileCreekWharf.FloatBerthCount; i++)
             {
                 (Vector2 north, Vector2 south) = NineMileCreekWharf.FloatBerthSides(i);
-                float deep = SpringLow - Mathf.Min(_terrain.ElevationAt(north),
-                                                   _terrain.ElevationAt(south));
-                float shallow = SpringLow - Mathf.Max(_terrain.ElevationAt(north),
-                                                      _terrain.ElevationAt(south));
+                float deep = SpringLow - Mathf.Min(Plan.ElevationAt(north),
+                                                   Plan.ElevationAt(south));
+                float shallow = SpringLow - Mathf.Max(Plan.ElevationAt(north),
+                                                      Plan.ElevationAt(south));
 
                 widestSpread = Mathf.Max(widestSpread, deep - shallow);
                 if (shallow < needs) aSideWouldGroundHer = true;
 
-                Assert.That(NineMileCreekWharf.FloatBerthDepthAtSpringLow(i, _terrain),
+                Assert.That(NineMileCreekWharf.FloatBerthDepthAtSpringLow(i, Plan),
                     Is.EqualTo(deep).Within(1e-4f),
                     $"float berth {i} reports a depth that is not its deeper side's");
             }
@@ -399,9 +422,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ABerthAndTheDockAreDifferentMeasurements()
         {
-            float underTheDock = SpringLow - NineMileCreekWharf.FloatBedElevationFrom(_terrain);
+            float underTheDock = SpringLow - NineMileCreekWharf.FloatBedElevationFrom(Plan);
             var berths = Enumerable.Range(0, NineMileCreekWharf.FloatBerthCount)
-                .Select(i => NineMileCreekWharf.FloatBerthDepthAtSpringLow(i, _terrain))
+                .Select(i => NineMileCreekWharf.FloatBerthDepthAtSpringLow(i, Plan))
                 .ToList();
 
             Assert.That(berths.Min(), Is.Not.EqualTo(underTheDock).Within(1e-3f),
@@ -428,7 +451,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheBuilderMoorsEveryOwnerOnTheRegister()
         {
             var owners = Owners();
-            var boats = PlaceAndRead(_terrain);
+            var boats = PlaceAndRead(Plan);
 
             Assert.That(boats.Count, Is.EqualTo(owners.Count),
                 $"{owners.Count} owners are authored and the placer moored {boats.Count}. Somebody was " +
@@ -446,7 +469,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheSmallCraftLieAtTheFloatAndTheWorkingBoatsAtTheWall()
         {
-            var boats = PlaceAndRead(_terrain);
+            var boats = PlaceAndRead(Plan);
             int atFloat = 0, atWall = 0;
 
             foreach (MooredBoat boat in boats)
@@ -494,7 +517,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Vector2 player = NineMileCreekMainland.BerthPos(NineMileCreekMooredFleet.PlayerBerthIndex());
 
-            foreach (MooredBoat boat in PlaceAndRead(_terrain))
+            foreach (MooredBoat boat in PlaceAndRead(Plan))
             {
                 var at = new Vector2(boat.transform.position.x, boat.transform.position.y);
                 Assert.That(Vector2.Distance(at, player), Is.GreaterThan(0.01f),
@@ -504,17 +527,20 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>Every boat the builder actually put at the float floats there at dead low spring,
-        /// measured at the position she was placed at rather than at the berth she claims.</summary>
+        /// measured at the position she was placed at rather than at the berth she claims.
+        ///
+        /// <para>⭐ On the scene's ground since NMC H2: the builder places her on the plan's ground and the scene
+        /// keeps her there, so the water under her is measured on G3.</para></summary>
         [Test]
         public void EveryBoatPlacedAtTheFloatFloatsWhereSheWasPut()
         {
-            foreach (MooredBoat boat in PlaceAndRead(_terrain))
+            foreach (MooredBoat boat in PlaceAndRead(Plan))
             {
                 BoatOwnerDef o = boat.Owner;
                 if (o.Moorage != BoatMoorage.Float || o.Boat == null) continue;
 
                 var at = new Vector2(boat.transform.position.x, boat.transform.position.y);
-                float depth = SpringLow - _terrain.ElevationAt(at);
+                float depth = SpringLow - _ground.ElevationAt(at);
 
                 Assert.IsFalse(BoatCrossingWouldGround(depth, o.Boat.DraughtMeters),
                     $"'{o.Id}' draws {o.Boat.DraughtMeters:0.00} m and was placed at {at}, where there " +
@@ -539,7 +565,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheBuilderPlacesAndDoesNotDraw()
         {
-            var boats = PlaceAndRead(_terrain);
+            var boats = PlaceAndRead(Plan);
             Assert.IsNotEmpty(boats);
 
             GameObject root = GameObject.Find(NineMileCreekMooredFleet.RootName);

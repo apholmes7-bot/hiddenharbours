@@ -6,9 +6,9 @@ using HiddenHarbours.Vehicles;
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// <b>THE OTTER, STAGED AT THE BOAT RAMP</b> — the amphibian's first place in the world, and the
-    /// same shape the Dually's <see cref="NineMileCreekTruckPark"/> established: one drivable
-    /// <see cref="ParkedVehicle"/>, placed by the region builder off a published PROPOSAL constant.
+    /// <b>THE OTTER, PARKED SAFE FOR NOW</b> — the amphibian's place in the world, and the same shape the
+    /// Dually's <see cref="NineMileCreekTruckPark"/> established: one drivable
+    /// <see cref="ParkedVehicle"/>, placed by the region builder off a published constant.
     ///
     /// <para><b>Why she needed placing at all.</b> #562 built the whole drive⇄swim model and #581 baked
     /// her, and until now she existed only in tests: usable, and standing nowhere. That is the exact
@@ -18,16 +18,14 @@ namespace HiddenHarbours.App.Editor
     /// skins herself at play; a builder that skinned her here would bake the sprite fallback into the
     /// committed scene (memory <c>mesh-hulls-must-skin-at-runtime</c>).</para>
     ///
-    /// <para><b>She is pointed down the ramp</b>, which is the one thing here that is presentation
-    /// rather than position: an amphibian parked square to the water reads as abandoned, and one
-    /// pointed at it reads as about to go. The heading derives from the ramp's own axis, so it cannot
-    /// drift from the site.</para>
-    ///
-    /// <para>⚠️ <b>THE SITE IS A PROPOSAL AWAITING THE OWNER'S WALK</b> —
-    /// <see cref="NineMileCreekMainland.OtterLandingPos"/> says so at length, including the one thing
-    /// worth arguing with (the basin bares at spring low). Placing her does not pre-empt that verdict:
-    /// she derives from the boat ramp's own two ends, so moving the ramp moves her, and moving her
-    /// alone is a one-line change to that property.</para>
+    /// <para><b>Where she stands since NMC H2.</b> She was staged beside the boat ramp
+    /// (<see cref="NineMileCreekMainland.OtterLandingPos"/>), pointed down it. G3 has no boat ramp,
+    /// and the owner ruled (2026-10-15): "Just place the otter somewhere safe for now. Finishing the
+    /// scene is more important". So she keeps her spot and faces inland
+    /// (<see cref="NineMileCreekGroundPlan.OtterParkPos"/>,
+    /// <see cref="NineMileCreekGroundPlan.OtterParkHeadingDegrees"/>), and N1's step 08 turns the
+    /// scene's Otter the same way. Her launch is a later wave's; her name stays, so a rebuild still
+    /// finds her.</para>
     /// </summary>
     public static class NineMileCreekOtterLanding
     {
@@ -38,24 +36,22 @@ namespace HiddenHarbours.App.Editor
         public const string OtterDefPath = "Assets/_Project/Data/Vehicles/Otter8x8.asset";
 
         /// <summary>
-        /// Stand the Otter beside the boat ramp. Returns her, or null (with a warning) when her def is
-        /// not on disk — a region built before the vehicle bake gets an empty ramp, stated rather than
-        /// silent.
+        /// Stand the Otter at her park. Returns her, or null (with a warning) when her def is not on
+        /// disk — a region built before the vehicle bake has no Otter, stated rather than silent.
         /// </summary>
         public static GameObject Place()
         {
             var otter = AssetDatabase.LoadAssetAtPath<VehicleDef>(OtterDefPath);
             if (otter == null)
             {
-                Debug.LogWarning($"[NineMileCreekOtterLanding] No def at {OtterDefPath} — the ramp " +
-                                 "builds empty. Bake the vehicle (#581) before the region.");
+                Debug.LogWarning($"[NineMileCreekOtterLanding] No def at {OtterDefPath} — she " +
+                                 "stands nowhere. Bake the vehicle (#581) before the region.");
                 return null;
             }
 
             var otterGo = new GameObject(OtterName, typeof(Rigidbody2D));
-            otterGo.transform.position = NineMileCreekMainland.OtterLandingPos;
-            otterGo.transform.rotation =
-                Quaternion.Euler(0f, 0f, NineMileCreekMainland.OtterLandingHeadingDegrees);
+            otterGo.transform.position = NineMileCreekGroundPlan.OtterParkPos;
+            otterGo.transform.rotation = NineMileCreekGroundPlan.OtterParkRotation;
 
             // Serialized state carries gravityScale 0 too, though VehicleController.Awake re-zeroes it
             // at play — a machine must not fall south through a top-down world.
