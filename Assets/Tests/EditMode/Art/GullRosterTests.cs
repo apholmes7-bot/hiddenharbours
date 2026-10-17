@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -444,6 +445,170 @@ namespace HiddenHarbours.Tests.Art.EditMode
             for (int i = 0; i < index && i < text.Length; i++)
                 if (text[i] == '\n') line++;
             return line;
+        }
+    }
+
+    /// <summary>
+    /// <b>A gull asked down comes down.</b> The flock asks a bird in the air to put down at its place
+    /// whenever her settle window comes due — and the departures that come before the window (getting
+    /// up to commute, off ground she has wandered from, or with a catch) leave it where it was, so it
+    /// can come due while she is still getting up.
+    /// These ask a bird down from every airborne state the flock can find her in, on the state table
+    /// built from the committed def as the repo holds it (read by <see cref="GullYaml"/>, in
+    /// GullScheduleTests.cs).
+    /// </summary>
+    public class GullFlockDecisionTests
+    {
+        private const string DefFile = "Assets/_Project/Resources/" + SeagullVisualDef.ResourcesPath + ".asset";
+        private const int TicksPerSecond = 30;
+
+        [Test]
+        public void AGullAskedDownNeverHangsInTheAir()
+        {
+            SeagullBehaviour table = Table();
+            int land = table.IndexOf(SeagullStates.Land);
+            var slot = WheelSlot(table);
+            var refused = new HashSet<string>();
+            var failures = new List<string>();
+
+            foreach ((string label, SeagullSimBird found) in BirdsInTheAir(table, slot))
+            {
+                SeagullSimBird bird = found;
+                if (!GullFlock.CanBeAskedDown(table, bird.State)) { refused.Add(table.IdOf(bird.State)); continue; }
+                if (!SeagullStateMachine.CommandAlight(ref bird, land, 6.0, 0.0, 0.0, table))
+                {
+                    failures.Add(label + ": the flock may ask her down but the table refuses the descent");
+                    continue;
+                }
+                string hang = FirstSecondWithoutDescent(table, ref bird, slot);
+                if (hang != null) failures.Add(label + ": " + hang);
+            }
+
+            foreach (string wheel in new[] { SeagullStates.Fly, SeagullStates.Glide, SeagullStates.Swoop })
+                if (refused.Contains(wheel))
+                    failures.Add(wheel + " is never asked down: the wheel's own birds could not settle");
+            GullAssert.None(failures, "a gull asked down hangs in the air");
+        }
+
+        /// <summary>
+        /// Every way the flock can find a bird in the air when her window comes due: on the wheel in each
+        /// of its three states, at the bottom and the top of its band; at every tick of a takeoff off the
+        /// ground, as a departure leaves her; and in each other airborne state at the height it is
+        /// entered at.
+        /// </summary>
+        private static List<(string Label, SeagullSimBird Bird)> BirdsInTheAir(
+            SeagullBehaviour table, in SeagullFlockMath.SeagullFlockBird slot)
+        {
+            var birds = new List<(string, SeagullSimBird)>();
+            int takeoff = table.IndexOf(SeagullStates.Takeoff);
+            foreach (string id in SeagullStates.Order)
+            {
+                int state = table.IndexOf(id);
+                if (table.SurfaceOf(state) != SeagullSurface.None) continue;
+
+                if (table.IsFlockDriven(state))
+                {
+                    foreach (double band in new[] { table.Flock.AltitudeMinMetres, table.Flock.AltitudeMaxMetres })
+                    {
+                        var bird = new SeagullSimBird { IntentState = -1, FlockBound = true };
+                        SeagullStateMachine.Enter(ref bird, state, table);
+                        bird.AltitudeMetres = Math.Min(band, table.AltitudeMax(state));
+                        birds.Add((id + " on the wheel at " + Metres(bird.AltitudeMetres), bird));
+                    }
+                }
+                else if (state == takeoff)
+                {
+                    var bird = new SeagullSimBird { IntentState = -1 };
+                    SeagullStateMachine.Enter(ref bird, table.IndexOf(SeagullStates.Stand), table);
+                    Assert.IsTrue(SeagullStateMachine.CommandDepart(ref bird, table), "a standing gull cannot take off");
+                    for (int t = 1; t <= TicksPerSecond * 10; t++)
+                    {
+                        Tick(table, ref bird, slot);
+                        if (bird.State != takeoff) break;
+                        int ms = (int)Math.Round(t * 1000.0 / TicksPerSecond);
+                        birds.Add(("takeoff " + ms + " ms up, at " + Metres(bird.AltitudeMetres), bird));
+                    }
+                }
+                else
+                {
+                    var bird = new SeagullSimBird { IntentState = -1 };
+                    SeagullStateMachine.Enter(ref bird, state, table);
+                    bird.AltitudeMetres = table.EntryAltitude(state);
+                    birds.Add((id + " at " + Metres(bird.AltitudeMetres), bird));
+                }
+            }
+            return birds;
+        }
+
+        /// <summary>Runs one settle window — as long as the flock gives a descent before it hands her
+        /// back to the wheel — and names the first whole second in which she lost no height and reached
+        /// no surface; null when there is none.</summary>
+        private static string FirstSecondWithoutDescent(SeagullBehaviour table, ref SeagullSimBird bird,
+                                                        in SeagullFlockMath.SeagullFlockBird slot)
+        {
+            double atLastSecond = bird.AltitudeMetres;
+            for (int s = 1; s <= table.Flock.SettleAfterSeconds; s++)
+            {
+                for (int t = 0; t < TicksPerSecond; t++)
+                {
+                    Tick(table, ref bird, slot);
+                    if (table.SurfaceOf(bird.State) != SeagullSurface.None) return null;
+                }
+                if (bird.AltitudeMetres > atLastSecond - 1e-6)
+                    return "in second " + s + " she lost no height (" + table.IdOf(bird.State) + " at " +
+                           Metres(bird.AltitudeMetres) + ")";
+                atLastSecond = bird.AltitudeMetres;
+            }
+            return null;
+        }
+
+        /// <summary>One tick of the flock's step for a single bird: the step, then the arrival.</summary>
+        private static void Tick(SeagullBehaviour table, ref SeagullSimBird bird,
+                                 in SeagullFlockMath.SeagullFlockBird slot)
+        {
+            SeagullStateMachine.Step(ref bird, 1000.0 / TicksPerSecond, table, in slot, 0.0, 0.0);
+            SeagullStateMachine.TryAlight(ref bird, table);
+        }
+
+        /// <summary>Her place on the wheel, at the bottom of its band: where a rising bird rejoins.</summary>
+        private static SeagullFlockMath.SeagullFlockBird WheelSlot(SeagullBehaviour table)
+            => new SeagullFlockMath.SeagullFlockBird(0.0, 0.0, table.Flock.AltitudeMinMetres, 0.0, 0,
+                                                     SeagullFlockMath.SeagullFlockAnim.Fly, 0, 1.0);
+
+        private static string Metres(double metres) => metres.ToString("0.00", CultureInfo.InvariantCulture) + " m";
+
+        /// <summary>The state table, field by field as <see cref="SeagullVisualDef.Behaviour"/> builds it,
+        /// from the committed asset and without the asset database.</summary>
+        private static SeagullBehaviour Table()
+        {
+            GullYaml def = GullYaml.ReadAsset(DefFile);
+            var rows = new List<SeagullStateRow>();
+            foreach (GullYaml s in def["_states"].Items)
+                rows.Add(new SeagullStateRow(
+                    s["State"].Scalar, s["Frames"].AsInt, s["FrameMilliseconds"].AsFloat,
+                    s["SpeedMetresPerSecond"].AsFloat, s["ClimbMetresPerSecond"].AsFloat,
+                    s["AltitudeA"].AsFloat, s["AltitudeB"].AsFloat, s["Loop"].AsBool,
+                    string.IsNullOrEmpty(s["Next"].Scalar) ? null : s["Next"].Scalar,
+                    s["TravelMetres"].AsFloat, s["CyclesMin"].AsInt, s["CyclesMax"].AsInt));
+            var edges = def["_transitions"].Items.Select(e => new SeagullEdge(e["From"].Scalar, e["To"].Scalar)).ToList();
+
+            var clear = def["_landNeedsClear"].AsVector2;
+            return new SeagullBehaviour(
+                rows, edges,
+                new SeagullLandRules(clear.x, clear.y, def["_landApproachIntoWind"].AsBool,
+                                     def["_landMinFlatMetres"].AsFloat),
+                new SeagullWaterRules(def["_floatBodyZMetres"].AsFloat, def["_splashBurstFrame"].AsInt,
+                                      def["_driftWithCurrent"].AsBool, def["_rockRollDegreesMax"].AsFloat,
+                                      def["_rockHeavePixelsMax"].AsFloat),
+                new SeagullFlockRules(def["_flockSizeMin"].AsInt, def["_flockSizeMax"].AsInt,
+                                      def["_flockRadiusMetres"].AsFloat,
+                                      def["_flockAltitudeMinMetres"].AsFloat, def["_flockAltitudeMaxMetres"].AsFloat,
+                                      def["_flockPeriodMinSeconds"].AsFloat, def["_flockPeriodMaxSeconds"].AsFloat,
+                                      def["_flockGlideDuty"].AsFloat,
+                                      def["_flockSwoopEveryMinSeconds"].AsFloat, def["_flockSwoopEveryMaxSeconds"].AsFloat,
+                                      def["_flockSpacingMetres"].AsFloat, def["_flockAttractRadiusMetres"].AsFloat,
+                                      def["_flockFleeRadiusMetres"].AsFloat, def["_flockSettleAfterSeconds"].AsFloat,
+                                      def["_flockRegroupSeconds"].AsFloat));
         }
     }
 }

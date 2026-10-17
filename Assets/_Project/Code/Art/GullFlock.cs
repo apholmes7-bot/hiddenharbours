@@ -1157,8 +1157,22 @@ namespace HiddenHarbours.Art
             }
 
             if (_placeSettled[p] >= _placeWanted[p]) return;
+            // Still getting up (the departures above leave her window where it was) or already on her
+            // way down: not this window. By the next she is back on her wheel.
+            if (!CanBeAskedDown(_behaviour, b.Sim.State)) return;
             if (TryPutDownAtPlace(b, windHeading)) _placeSettled[p]++;
         }
+
+        /// <summary>
+        /// Can a bird in the air be asked down from this state? Only from the three the wheel flies —
+        /// <c>fly</c>, <c>glide</c>, <c>swoop</c> — the ones a commanded descent can start from.
+        /// <c>takeoff</c> has no edge to <c>swoop</c> or <c>land</c>: asked down while still getting
+        /// up, a gull keeps the intent with no state that loses height, chains into <c>fly</c> with her
+        /// rejoin cancelled, and hangs a metre up until the deadline hands her back to the wheel. One
+        /// already coming down (<c>land</c>, <c>splash</c>, <c>dive</c>) is not asked again.
+        /// </summary>
+        internal static bool CanBeAskedDown(SeagullBehaviour behaviour, int state)
+            => behaviour != null && behaviour.IsFlockDriven(state);
 
         /// <summary>At the roost: a gull stands and sleeps. Nothing else on a surface there.</summary>
         private void RoostDown(Bird b)
