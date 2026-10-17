@@ -53,3 +53,6 @@ MonoBehaviour:
   SailPolar: {fileID: 11400000, guid: c51a3736810f56742acbb10d429e28f3, type: 2}
   NoGoTrueWindDeg: 45
   SpriteIronsApparentDeg: 25
+  IronsPayOffTorque: 800
+  RudderFullAuthorityWayMs: 2
+  SailYawReferenceWindKn: 10

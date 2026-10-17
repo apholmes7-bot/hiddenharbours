@@ -220,6 +220,25 @@ namespace HiddenHarbours.Core
             return twa < noGoTrueDeg || awa < spriteIronsApparentDeg;
         }
 
+        /// <summary>
+        /// Slow escape from drawn irons, in design torque units (positive = counter-clockwise).
+        /// A held helm chooses the exit side, including carrying a tack across the eye of the wind.
+        /// With no helm, fall away on the nearer side; exactly head-to-wind falls to starboard.
+        /// Wind strength and remaining rudder authority bound the assist. No state, RNG or trim input.
+        /// </summary>
+        public static float IronsPayOffTorque(bool drawnInIrons, float trueAngleDeg, float helm,
+            float wayMs, float torque, float fullRudderWayMs, float trueWindKn, float referenceWindKn)
+        {
+            if (!drawnInIrons || torque <= 0f || fullRudderWayMs <= 0f) return 0f;
+            float side = helm != 0f ? -Mathf.Sign(helm)
+                : trueAngleDeg != 0f ? Mathf.Sign(trueAngleDeg) : -1f;
+            return side * torque * (1f - Mathf.Clamp01(Mathf.Abs(wayMs) / fullRudderWayMs))
+                * SailTorqueWindFactor(trueWindKn, referenceWindKn);
+        }
+
+        private static float SailTorqueWindFactor(float trueWindKn, float referenceWindKn)
+            => referenceWindKn > 0f ? Mathf.Clamp01(trueWindKn / referenceWindKn) : 0f;
+
         // ---- the grid ---------------------------------------------------------------------------
 
         /// <summary>
