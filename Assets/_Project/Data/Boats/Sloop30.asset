@@ -56,3 +56,5 @@ MonoBehaviour:
   IronsPayOffTorque: 800
   RudderFullAuthorityWayMs: 2
   SailYawReferenceWindKn: 10
+  UnmannedRoundUpTorque: 2400
+  RoundUpReferenceDriveKn: 6
