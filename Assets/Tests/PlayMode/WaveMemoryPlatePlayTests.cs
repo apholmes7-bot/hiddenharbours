@@ -174,8 +174,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
                 else
                 {
-                    var terrain = terrainHost.AddComponent<MainlandTidalTerrain>();
-                    NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
+                    // The scene's own ground (NMC H2): G3, enabled with its map so it registers itself (and its
+                    // still water) as the scene's does on load.
+                    terrainHost.SetActive(false);
+                    var terrain = terrainHost.AddComponent<PaintedTidalTerrain>();
+                    terrain.Map = NineMileCreekBuilder.LoadGround();
+                    terrainHost.SetActive(true);
                     GameServices.TidalTerrain = terrain;
                 }
                 var sea = Host(region + "Sea");
@@ -194,6 +198,13 @@ namespace HiddenHarbours.Tests.PlayMode
                     Assert.IsNotNull(bed);
                     surface.ConfigurePaintedHeightMap(bed.HeightTexture, bed.WorldCenter,
                         bed.WorldSize, bed.MinElevation, bed.MaxElevation);
+                }
+                else
+                {
+                    // …and the sea draws the G3 map it floats on, as the builder wires it.
+                    var ground = terrainHost.GetComponent<PaintedTidalTerrain>().Map;
+                    surface.ConfigurePaintedHeightMap(ground.HeightTexture, ground.WorldCenter,
+                        ground.WorldSize, ground.MinElevation, ground.MaxElevation);
                 }
                 sea.SetActive(true);
                 var boat = Host("CapeIslander");

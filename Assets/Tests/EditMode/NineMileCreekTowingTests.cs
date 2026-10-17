@@ -53,14 +53,14 @@ namespace HiddenHarbours.Tests.EditMode
 
             Vector2 chandler = NineMileCreekTrips.ChandleryPost();
             yield return ("the chandler's fuel run",
-                          NineMileCreekTrips.ToTheForecourt(NineMileCreekMainland.ThroughRoad, chandler),
-                          NineMileCreekTrips.FromTheForecourt(NineMileCreekMainland.ThroughRoad, chandler),
+                          NineMileCreekTrips.ToTheForecourt(NineMileCreekTrips.ThroughRoad, chandler),
+                          NineMileCreekTrips.FromTheForecourt(NineMileCreekTrips.ThroughRoad, chandler),
                           chandler, NineMileCreekTrips.ForecourtPost());
 
             Vector2 outboard = NineMileCreekTrips.DoryYardPost();
             yield return ("the outboard man's run",
-                          NineMileCreekTrips.ToTheForecourt(NineMileCreekMainland.WharfRoad, outboard),
-                          NineMileCreekTrips.FromTheForecourt(NineMileCreekMainland.WharfRoad, outboard),
+                          NineMileCreekTrips.ToTheForecourt(NineMileCreekTrips.WharfRoad, outboard),
+                          NineMileCreekTrips.FromTheForecourt(NineMileCreekTrips.WharfRoad, outboard),
                           outboard, NineMileCreekTrips.ForecourtPost());
         }
 

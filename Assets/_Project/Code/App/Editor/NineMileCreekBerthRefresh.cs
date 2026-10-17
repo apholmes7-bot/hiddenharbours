@@ -18,7 +18,9 @@ namespace HiddenHarbours.App.Editor
         public static LayerPatch Trench(SceneYaml scene)
         {
             Doc root = scene.RootNamed("TidalTerrain");
-            Doc ground = scene.ComponentsOf(root).Single(d => d.IsScript("HiddenHarbours.World.MainlandTidalTerrain"));
+            Doc ground = scene.ComponentsOf(root).SingleOrDefault(d => d.IsScript("HiddenHarbours.World.MainlandTidalTerrain"))
+                ?? throw new Refusal("Berth trench: the ground is not the analytic plan. On G3 (NMC H2) the " +
+                                     "berths' depth is in the painted height; there are no channels to patch.");
             const string marker = "  _channels:";
             int start = ground.Text.IndexOf(marker, StringComparison.Ordinal);
             if (start < 0) throw new Refusal("Berth trench: terrain has no channels field.");
@@ -94,40 +96,10 @@ namespace HiddenHarbours.App.Editor
         }
 
         public const string FleetStep = "04-wall-berths";
-        public static LayerPatch Fleet(SceneYaml scene)
-        {
-            Doc root = scene.RootNamed(NineMileCreekMooredFleet.RootName);
-            Doc rootTransform = scene.TransformOf(root);
-            if (rootTransform.Field("m_LocalPosition") != "{x: 0, y: 0, z: 0}" ||
-                rootTransform.Field("m_LocalRotation") != "{x: 0, y: 0, z: 0, w: 1}" ||
-                rootTransform.Field("m_LocalScale") != "{x: 1, y: 1, z: 1}")
-                throw new Refusal("The fleet root must retain its builder transform.");
-            var patch = new LayerPatch(FleetStep, NineMileCreekMooredFleet.RootName, root.FileId);
-            var mine = scene.SubtreeOf(root.FileId);
-            var found = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal);
-            var expected = NineMileCreekMooredFleet.LoadOwners().Where(o => !o.LiesAtTheFloat && o.IsPresentable())
-                .ToDictionary(o => o.Id, StringComparer.Ordinal);
-            foreach (Doc boat in scene.Docs.Where(d => mine.Contains(d.FileId) && d.IsScript("HiddenHarbours.Boats.MooredBoat")))
-            {
-                string guid = ObjRef.Parse(boat.Field("_owner")).Guid;
-                var owner = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatOwnerDef>(AssetDatabase.GUIDToAssetPath(guid));
-                if (owner == null) throw new Refusal("A fleet hull has an unresolved owner reference.");
-                if (owner.LiesAtTheFloat) continue;
-                if (!expected.ContainsKey(owner.Id) || !found.Add(owner.Id))
-                    throw new Refusal("Unknown or repeated wall owner: " + owner.Id);
-                Doc go = scene.Require(boat.FieldRef("m_GameObject"), owner.Id);
-                Doc tr = scene.TransformOf(go);
-                if (tr.FieldRef("m_Father") != rootTransform.FileId)
-                    throw new Refusal(owner.Id + " is not a direct fleet child.");
-                var at = NineMileCreekMainland.BerthPos(owner.BerthIndex, NineMileCreekMooredFleet.HalfBeamOf(owner));
-                var old = ParseVec3(tr.Field("m_LocalPosition"));
-                string value = $"{{x: {F(at.x)}, y: {F(at.y)}, z: {F(old.z)}}}";
-                string after = tr.Text.Replace("  m_LocalPosition: " + tr.Field("m_LocalPosition"), "  m_LocalPosition: " + value);
-                patch.Edit(tr, after, "NineMileCreekFleet/" + owner.Id);
-            }
-            if (!found.SetEquals(expected.Keys)) throw new Refusal("The serialized wall fleet differs from its owner register.");
-            return patch.Seal(scene);
-        }
+        /// <summary>The wall fleet at its owners' berths on the G3 north face (NMC H2 moved the face, and the
+        /// berths with it, 1 m south): the same plan, refusals and ids as 05-wharf-support-g3's fleet patch.</summary>
+        public static LayerPatch Fleet(SceneYaml scene) =>
+            NineMileCreekGroundSteps.WallBerths(scene, FleetStep, new NineMileCreekGroundSteps.EditorBerths());
 
         [MenuItem("Hidden Harbours/Nine Mile Creek Layers/Apply wall berths")]
         public static void ApplyFleet() => Apply(Fleet);

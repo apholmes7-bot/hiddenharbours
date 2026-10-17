@@ -33,7 +33,9 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>Nine Mile Creek's own authored terrain — the same one the dressing tests measure
-        /// against, and the one the lamp siting walks along looking for dry ground.</summary>
+        /// against, and the one the lamp siting walks along looking for dry ground. ⚠ The plan's analytic
+        /// ground, the builder's premise: since NMC H2 the scene stands on G3 and the lamps move onto it in a
+        /// later wave, so nothing here proves the activated scene.</summary>
         private ITidalTerrain CreekTerrain()
         {
             if (_terrainHost == null)

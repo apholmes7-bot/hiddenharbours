@@ -1,67 +1,54 @@
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
-using HiddenHarbours.World;
 using HiddenHarbours.App.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// ⭐ <b>THE OTTER'S LANDING — is there somewhere to leave an amphibian, and is it a LAUNCH?</b>
+    /// ⭐ <b>THE OTTER, PARKED SAFE — is the amphibian left somewhere she cannot come to harm?</b>
     ///
-    /// <para>The sibling of <see cref="NineMileCreekTruckParkTests"/>, and it asks one question a truck
-    /// never has to answer: a road vehicle needs dry ground, but a machine whose whole point is
-    /// changing medium needs dry ground <em>with water at the bottom of it</em>. So the site is
-    /// asserted against the built terrain — the same
-    /// <see cref="NineMileCreekMainland.ConfigureTerrain"/> the builder calls — rather than against the
-    /// arithmetic that chose it.</para>
+    /// <para>The sibling of <see cref="NineMileCreekTruckParkTests"/>. She was staged beside the boat
+    /// ramp, pointed down it, and this file proved the launch. G3 has no boat ramp, and the owner ruled
+    /// (2026-10-15): "Just place the otter somewhere safe for now. Finishing the scene is more
+    /// important". So this file proves the park instead: her spot
+    /// (<see cref="NineMileCreekGroundPlan.OtterParkPos"/>) and her heading
+    /// (<see cref="NineMileCreekGroundPlan.OtterParkHeadingDegrees"/>) against the scene's own ground
+    /// (G3, <see cref="NineMileCreekLiveGround.Plan"/>), the roads the scene paves, the wharf's working
+    /// ground and the region. Her launch is a later wave's, and so are its tests.</para>
     ///
-    /// <para>Every claim derives from <see cref="NineMileCreekMainland.OtterLandingPos"/> and the boat
-    /// ramp's own two ends, never from a coordinate, because the site is a PROPOSAL awaiting the
-    /// owner's walk: he must be able to move the ramp, or her, and have this file follow.</para>
+    /// <para>Every claim reads the plan's two constants, never a coordinate, so moving her is a change
+    /// to those and this file follows.</para>
     /// </summary>
     public class NineMileCreekOtterLandingTests
     {
-        GameObject _terrainGo;
-        MainlandTidalTerrain _terrain;
+        /// <summary>Round her: her collider's far corner is 1.8 m from her origin
+        /// (<c>Otter8x8VehicleMesh</c>: x ±0.83, y −1.48 to +1.62), so 10 m is her, room to walk round
+        /// her to the door, and room to spare.</summary>
+        const float DryRoundHerMetres = 10f;
 
-        /// <summary>Her flotation, from the sidecar and pinned there by <c>AmphibiousVehicleTests</c>:
-        /// she lifts at draft + hysteresis, which is what <c>VehicleGrounding.IsAfloatAtDepth</c>
-        /// compares against.</summary>
-        const float FloatsAtDepth = 0.28f + 0.06f;
+        /// <summary>Ahead of her nose: a forward drive from the park stays on dry yard at least this far.</summary>
+        const float DryAheadMetres = 20f;
 
-        /// <summary>The owner's ruled wade ceiling (<c>GameConfig.WadeDepth</c>) — deeper than this and
-        /// stepping off is a swim, not a step.</summary>
-        const float WadeDepth = 0.5f;
+        /// <summary>Off a paved way's edge or a pad: her far corner and a lane to pass her.</summary>
+        const float ClearOfThePavingMetres = 4f;
 
-        static Vector2 Landing => NineMileCreekMainland.OtterLandingPos;
-        static Vector2 RampHead => NineMileCreekMainland.BoatRampHeadPos;
-        static Vector2 RampToe => NineMileCreekMainland.BoatRampToePos;
-        static Vector2 DownRamp => (RampToe - RampHead).normalized;
+        static Vector2 Park => NineMileCreekGroundPlan.OtterParkPos;
 
-        [SetUp]
-        public void SetUp()
+        /// <summary>Her nose: local +y turned by her heading.</summary>
+        static Vector2 Nose
         {
-            _terrainGo = new GameObject("NineMileCreekMainland_OtterLandingTest");
-            _terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
+            get
+            {
+                float rad = NineMileCreekGroundPlan.OtterParkHeadingDegrees * Mathf.Deg2Rad;
+                return new Vector2(-Mathf.Sin(rad), Mathf.Cos(rad));
+            }
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            if (_terrainGo != null) Object.DestroyImmediate(_terrainGo);
-            GameServices.Reset();
-        }
-
-        float Elev(Vector2 p) => _terrain.ElevationAt(p);
-
-        /// <summary>Water depth at a point for a given water level — the same subtraction every depth
-        /// gate in the game makes.</summary>
-        float Depth(Vector2 p, float waterLevel) => waterLevel - Elev(p);
+        static float Elev(Vector2 p) => NineMileCreekLiveGround.Plan.ElevationAt(p);
 
         // =============================================================================================
-        //  1. SHE IS ON DRY GROUND — at the biggest tide there is
+        //  1. SHE IS ON DRY GROUND — at the biggest tide there is, and all round her
         // =============================================================================================
 
         /// <summary>
@@ -71,13 +58,13 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SheStandsOnGroundThatIsDryAtSpringHigh()
         {
-            float ground = Elev(Landing);
+            float ground = Elev(Park);
             float high = NineMileCreekMainland.SpringHighWater;
 
             Assert.That(ground, Is.GreaterThan(high),
-                $"the Otter's landing {Landing} is at {ground:0.##} m and spring high water is " +
+                $"the Otter's park {Park} is at {ground:0.##} m on G3 and spring high water is " +
                 $"{high:0.##} m — she is parked in the sea for part of every spring cycle. Move " +
-                "NineMileCreekMainland.OtterLandingPos onto higher ground.");
+                "NineMileCreekGroundPlan.OtterParkPos onto higher ground.");
         }
 
         /// <summary>Not merely dry — dry with room. A site clearing the biggest tide by a few
@@ -85,149 +72,86 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void HerGroundClearsTheBiggestTideByAMarginRatherThanAHair()
         {
-            float freeboard = Elev(Landing) - NineMileCreekMainland.SpringHighWater;
+            float freeboard = Elev(Park) - NineMileCreekMainland.SpringHighWater;
 
             Assert.That(freeboard, Is.GreaterThan(0.5f),
-                $"her landing clears spring high by only {freeboard:0.##} m. That is inside the noise " +
-                "of a tide-amplitude change, and the elevations here are deliberately tide-FRACTIONS " +
-                "for exactly that reason.");
+                $"her park clears spring high by only {freeboard:0.##} m. That is inside the noise " +
+                "of a tide-amplitude change.");
         }
 
-        // =============================================================================================
-        //  2. IT IS A LAUNCH — the question a truck park never has to answer
-        // =============================================================================================
-
         /// <summary>
-        /// ⭐⭐ <b>There is water she can float in, and it is a short drive DOWN THE RAMP.</b> This is
-        /// the whole reason the site is the boat ramp rather than any dry rectangle: an amphibian
-        /// parked where she cannot reach water is a truck with a silly hull.
+        /// ⭐ <b>Safe is a disc, not a point.</b> Every metre round her is above spring high: no step
+        /// face, slip or drain she can be nudged into, and dry ground to walk round her to her door.
         /// </summary>
         [Test]
-        public void ThereIsWaterSheFloatsIn_AShortDriveDownTheRamp()
+        public void EveryMetreRoundHerIsDryAtSpringHigh()
         {
-            const float reach = 20f;
-            float found = -1f;
-            for (float s = 0.5f; s <= reach; s += 0.25f)
-            {
-                if (Depth(Landing + DownRamp * s, NineMileCreekMainland.TideMean) >= FloatsAtDepth)
+            float high = NineMileCreekMainland.SpringHighWater;
+            for (float dx = -DryRoundHerMetres; dx <= DryRoundHerMetres; dx += 0.5f)
+                for (float dy = -DryRoundHerMetres; dy <= DryRoundHerMetres; dy += 0.5f)
                 {
-                    found = s;
-                    break;
+                    if (dx * dx + dy * dy > DryRoundHerMetres * DryRoundHerMetres) continue;
+                    var p = new Vector2(Park.x + dx, Park.y + dy);
+                    float ground = Elev(p);
+                    if (ground <= high)
+                        Assert.Fail($"G3 at {p}, {Mathf.Sqrt(dx * dx + dy * dy):0.#} m from the Otter, is " +
+                                    $"{ground:0.##} m: under spring high ({high:0.##} m) within " +
+                                    $"{DryRoundHerMetres} m of her.");
                 }
-            }
-
-            Assert.That(found, Is.GreaterThan(0f),
-                $"driving {reach} m down the ramp's axis from {Landing} never reaches water " +
-                $"{FloatsAtDepth:0.##} m deep at mean tide, so she cannot launch from here at all. " +
-                "That is the one thing this site exists to provide.");
-
-            Assert.That(found, Is.LessThan(12f),
-                $"she has to drive {found:0.#} m before she floats — a long way to walk a machine " +
-                "down a ramp. The site is further from the water than it looks.");
         }
 
-        /// <summary>
-        /// ⭐ <b>The loop closes: somewhere on this ramp she is AFLOAT and the fisher can still step
-        /// off into water he can stand in.</b> Those are two different rules — hers is a draft, his is
-        /// the wade ceiling — and a launch where they never overlap is one where getting out means
-        /// swimming every single time.
-        /// </summary>
+        /// <summary>She faces inland: the first thing the fisher does on climbing in is drive forward,
+        /// and that must not be into the basin.</summary>
         [Test]
-        public void SomewhereOnTheRampSheFloatsAndTheFisherCanStillWade()
+        public void TheYardAheadOfHerNoseIsDryAtSpringHigh()
         {
-            float found = -1f;
-            for (float s = 0f; s <= 20f; s += 0.1f)
+            float high = NineMileCreekMainland.SpringHighWater;
+            for (float s = 0f; s <= DryAheadMetres; s += 0.25f)
             {
-                float d = Depth(Landing + DownRamp * s, NineMileCreekMainland.TideMean);
-                if (d >= FloatsAtDepth && d <= WadeDepth)
-                {
-                    found = s;
-                    break;
-                }
-            }
-
-            Assert.That(found, Is.GreaterThanOrEqualTo(0f),
-                $"nowhere on the first 20 m of this ramp is the water between {FloatsAtDepth:0.##} m " +
-                $"(she floats) and {WadeDepth:0.##} m (he can wade) at mean tide. The face is too " +
-                "steep for the two bands to overlap, so every exit here would be a swim.");
-        }
-
-        /// <summary>
-        /// ⭐⭐ <b>There is water she can float in at EVERY tide, including the lowest one — and this
-        /// test is the reason that claim is true rather than plausible.</b>
-        ///
-        /// <para><b>It failed the first time it ran, asserting the opposite.</b> The obvious reading of
-        /// this region is that her ramp dries out: the basin bed is −1.6 m against a spring low of
-        /// −2.2 m, and both harbours baring is the ruled character of the place. So the first version
-        /// of this test asserted that, and the site's own note said so. The terrain disagreed — there
-        /// is 1.47 m at the foot of her ramp at spring low, because her axis crosses a GUT (down to
-        /// −3.67 m) before it ever reaches the shoal.</para>
-        ///
-        /// <para>Kept pointed the same way round: if a re-cut of the basin or the tide ever DOES dry
-        /// this out, the machine staged at a launch would have a launch that works for part of the day,
-        /// and the owner should hear it from a red test rather than from a walk.</para>
-        /// </summary>
-        [Test]
-        public void ThereIsStillWaterSheFloatsInAtSpringLow()
-        {
-            float deepest = 0f;
-            for (float s = 0f; s <= 24f; s += 0.5f)
-            {
-                deepest = Mathf.Max(deepest,
-                    Depth(Landing + DownRamp * s, NineMileCreekMainland.SpringLowWater));
-            }
-
-            Assert.That(deepest, Is.GreaterThan(FloatsAtDepth),
-                $"at spring low the deepest water within 24 m down her ramp is {deepest:0.##} m, and " +
-                $"she needs {FloatsAtDepth:0.##} m to float. Her launch now dries out for part of " +
-                "every spring cycle — which may be acceptable, but it is a change to what the site " +
-                "was chosen for and OtterLandingPos should be rewritten to say so.");
-        }
-
-        /// <summary>
-        /// ⭐ <b>The loop works at the extremes, not just at mean tide.</b> The wade-and-afloat overlap
-        /// is asserted at spring low and spring high as well, because that band is NARROW here — the
-        /// gut is close in and the face is steep — and a site where it exists only near mean water is
-        /// one the player can arrive at and find unusable.
-        /// </summary>
-        [Test]
-        public void SheCanBeSteppedOffAtSpringLowAndAtSpringHighToo()
-        {
-            foreach (float water in new[] { NineMileCreekMainland.SpringLowWater,
-                                            NineMileCreekMainland.SpringHighWater })
-            {
-                bool found = false;
-                for (float s = 0f; s <= 28f && !found; s += 0.05f)
-                {
-                    float d = Depth(Landing + DownRamp * s, water);
-                    found = d >= FloatsAtDepth && d <= WadeDepth;
-                }
-
-                Assert.That(found, Is.True,
-                    $"at a water level of {water:0.##} m there is nowhere on her ramp where she is " +
-                    $"afloat ({FloatsAtDepth:0.##} m) and the fisher can still stand " +
-                    $"({WadeDepth:0.##} m). At that tide the launch is drive-in-and-swim-out only.");
+                Vector2 p = Park + Nose * s;
+                float ground = Elev(p);
+                Assert.That(ground, Is.GreaterThan(high),
+                    $"{s:0.##} m ahead of her nose, at {p}, G3 is {ground:0.##} m: under spring high. " +
+                    "She is parked facing the water.");
             }
         }
 
         // =============================================================================================
-        //  3. SHE IS BESIDE THE RAMP, NOT ON IT — and clear of the working wharf
+        //  2. SHE IS OUT OF EVERYONE'S WAY — the roads, the wharf, the buildings, the region
         // =============================================================================================
 
-        /// <summary>Off the ramp's centre line: hulls are dragged up this, and a machine left across it
-        /// is a machine in the way.</summary>
+        /// <summary>
+        /// ⭐ Off every road the scene paves (G3's network: Route 91 and Wharf Road on their final
+        /// lines, the turning pad, and the rest unchanged), by her far corner and a lane: a machine left
+        /// on a carriageway is a machine in the way.
+        /// </summary>
         [Test]
-        public void SheStandsBesideTheRampRatherThanOnIt()
+        public void SheIsClearOfEveryPavedWay()
         {
-            float off = MainlandTidalTerrain.DistanceToSegment(Landing, RampHead, RampToe);
+            foreach (NineMileCreekRoads.Way way in NineMileCreekGroundPlan.Ways())
+            {
+                float centre = Vector2.Distance(Park, NineMileCreekRoads.NearestPointOnRoute(way.Route, Park));
+                Assert.That(centre - way.HalfWidth, Is.GreaterThan(ClearOfThePavingMetres),
+                    $"the Otter's park is {centre - way.HalfWidth:0.##} m from {way.Name}'s edge: inside " +
+                    $"the {ClearOfThePavingMetres} m that keeps her out of its way.");
+            }
+        }
 
-            Assert.That(off, Is.GreaterThan(3f),
-                $"she is {off:0.##} m from the boat ramp's centre line — close enough to be parked " +
-                "across the thing hulls are hauled up.");
-
-            Assert.That(off, Is.LessThan(12f),
-                $"she is {off:0.##} m from the ramp. At that distance she no longer reads as staged " +
-                "AT the launch, which is the whole argument for this site.");
+        /// <summary>And off every paved pad: the winch apron, the buyers' gravel, the truck park, the
+        /// laydown and the forecourt.</summary>
+        [Test]
+        public void SheIsOffEveryPavedPad()
+        {
+            foreach (NineMileCreekRoads.Pad pad in NineMileCreekRoads.Pads())
+            {
+                Rect r = pad.Area;
+                float gx = Mathf.Max(r.xMin - Park.x, 0f, Park.x - r.xMax);
+                float gy = Mathf.Max(r.yMin - Park.y, 0f, Park.y - r.yMax);
+                float gap = Mathf.Sqrt(gx * gx + gy * gy);
+                Assert.That(gap, Is.GreaterThan(ClearOfThePavingMetres),
+                    $"the Otter's park is {gap:0.##} m from the {pad.Name} pad: inside the " +
+                    $"{ClearOfThePavingMetres} m that keeps her off it.");
+            }
         }
 
         /// <summary>Clear of every working site the wharf plan reserves — by the plan's own rule rather
@@ -235,9 +159,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SheIsNotStandingOnTheWharfsWorkingGround()
         {
-            Assert.That(NineMileCreekMainland.IsWorkingSiteInTheWay(Landing), Is.False,
-                $"the Otter's landing {Landing} is inside a working site's reserved ground. The wharf " +
-                "is already full — see the yard finding — so she must have her own corner of it.");
+            Assert.That(NineMileCreekMainland.IsWorkingSiteInTheWay(Park), Is.False,
+                $"the Otter's park {Park} is inside a working site's reserved ground. The wharf is " +
+                "already full, so she must have her own corner of it.");
         }
 
         /// <summary>Clear of the creekside buildings too, at the radius the wharf's own sheds keep from
@@ -247,7 +171,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (Vector3 site in NineMileCreekBuilder.CreeksideBuildingSites)
             {
-                float d = Vector2.Distance(Landing, new Vector2(site.x, site.y));
+                float d = Vector2.Distance(Park, new Vector2(site.x, site.y));
                 Assert.That(d, Is.GreaterThan(NineMileCreekMainland.WharfShedRadius * 2f),
                     $"she is {d:0.##} m from a creekside building at {site} — inside the " +
                     $"{NineMileCreekMainland.WharfShedRadius * 2f:0.#} m the wharf's own sites keep " +
@@ -255,86 +179,49 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        /// <summary>Inside the region — a landing past the edge is somewhere nobody can reach.</summary>
+        /// <summary>Inside the region — a park past the edge is somewhere nobody can reach.</summary>
         [Test]
-        public void TheLandingLiesInsideTheRegion()
+        public void HerParkLiesInsideTheRegion()
         {
-            Assert.That(NineMileCreekRoads.RegionRect().Contains(Landing), Is.True,
-                $"the Otter's landing {Landing} is outside the region.");
+            Assert.That(NineMileCreekRoads.RegionRect().Contains(Park), Is.True,
+                $"the Otter's park {Park} is outside the region.");
         }
 
         // =============================================================================================
-        //  4. IT DERIVES — so the owner's walk moves her
-        // =============================================================================================
-
-        /// <summary>
-        /// ⭐ Her position is the ramp's own geometry plus one published offset, at a right angle to
-        /// the ramp's axis. Asserted as a RELATIONSHIP rather than a coordinate, which is what lets the
-        /// owner move either end of the ramp and have her follow.
-        /// </summary>
-        [Test]
-        public void HerSpotIsDerivedFromTheRampRatherThanTyped()
-        {
-            Vector2 fromHead = Landing - RampHead;
-
-            Assert.That(fromHead.magnitude,
-                Is.EqualTo(NineMileCreekMainland.OtterLandingBesideRampMetres).Within(1e-3f),
-                "she is not the published offset from the ramp head, so the two have drifted apart.");
-
-            Assert.That(Vector2.Dot(fromHead.normalized, DownRamp), Is.EqualTo(0f).Within(1e-3f),
-                "her offset from the ramp head is not square to the ramp's axis — she is up or down " +
-                "the slope rather than beside it.");
-        }
-
-        /// <summary>She is pointed DOWN the ramp: staged to launch, not parked square to the water. Her
-        /// nose is local +y, so the heading maps that onto the ramp's descent.</summary>
-        [Test]
-        public void SheIsPointedDownTheRamp()
-        {
-            float deg = NineMileCreekMainland.OtterLandingHeadingDegrees;
-            Vector2 nose = Quaternion.Euler(0f, 0f, deg) * Vector2.up;
-
-            Assert.That(Vector2.Dot(nose, DownRamp), Is.EqualTo(1f).Within(1e-3f),
-                $"her heading {deg:0.#}° points {nose} and the ramp descends {DownRamp} — she is " +
-                "staged facing somewhere other than the water.");
-        }
-
-        // =============================================================================================
-        //  5. THE BUILDER ACTUALLY PLACES HER — scene-wired is not builder-wired
+        //  3. THE BUILDER ACTUALLY PLACES HER — scene-wired is not builder-wired
         // =============================================================================================
 
         /// <summary>
         /// ⭐⭐ <b>The pin that matters.</b> #560 shipped a drive mode reachable in no scene and nothing
-        /// failed; the Otter has been usable-and-nowhere since #562. This asserts the placement the
-        /// builder now makes — one drivable <c>ParkedVehicle</c>, on the landing's own published
-        /// constant, carrying the def #581 baked.
+        /// failed; the Otter was usable-and-nowhere from #562. This asserts the placement the builder
+        /// makes — one drivable <c>ParkedVehicle</c>, on the park's own published constant, carrying
+        /// the def #581 baked.
         /// </summary>
         [Test]
-        public void TheBuilderStagesADrivableOtterOnTheLandingsOwnConstant()
+        public void TheBuilderStagesADrivableOtterOnTheParksOwnConstant()
         {
             GameObject otter = NineMileCreekOtterLanding.Place();
             try
             {
                 Assert.IsNotNull(otter,
                     "Place() returned nothing — the Otter's def is missing from " +
-                    NineMileCreekOtterLanding.OtterDefPath + ", so the ramp builds empty.");
+                    NineMileCreekOtterLanding.OtterDefPath + ", so she stands nowhere.");
 
-                Assert.AreEqual(Landing, (Vector2)otter.transform.position,
-                    "she is not on the landing's published constant. She must derive from " +
-                    "OtterLandingPos so the owner's walk verdict moves her with the ramp.");
+                Assert.AreEqual(Park, (Vector2)otter.transform.position,
+                    "she is not on the park's published constant, NineMileCreekGroundPlan.OtterParkPos.");
 
                 var parked = otter.GetComponent<HiddenHarbours.Vehicles.ParkedVehicle>();
                 Assert.IsNotNull(parked, "no ParkedVehicle — she would never skin at play.");
                 Assert.IsNotNull(parked.Vehicle, "no def on her — a machine with no identity.");
                 Assert.AreEqual("vehicle.otter_8x8", parked.Vehicle.Id,
-                    "the ramp carries something other than the Otter.");
+                    "the park carries something other than the Otter.");
 
                 Assert.IsNotNull(parked.Vehicle.Mesh,
                     "her def wears no mesh, so VehicleDef.IsUsable refuses her and she is placed " +
                     "invisible — the state #581 existed to end.");
                 Assert.IsTrue(parked.Vehicle.Mesh.Floats,
-                    "the machine staged at a LAUNCH reports that she does not float. Her flotation " +
-                    "fields are zero — see AmphibiousVehicleTests for where they come from.");
+                    "the amphibian reports that she does not float. Her flotation fields are zero — " +
+                    "see AmphibiousVehicleTests for where they come from.");
 
                 Assert.IsNotNull(otter.GetComponent<HiddenHarbours.Vehicles.VehicleDoor>(),
                     "no driver's door — parked scenery, not the drivable machine the gap was about.");
@@ -354,18 +241,18 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The heading actually reaches the transform, not just the constant.</summary>
         [Test]
-        public void ThePlacedOtterCarriesTheRampHeading()
+        public void ThePlacedOtterCarriesTheParkHeading()
         {
             GameObject otter = NineMileCreekOtterLanding.Place();
             try
             {
                 Assert.IsNotNull(otter, "no Otter to measure — see the placement test.");
 
-                float want = Quaternion.Euler(0f, 0f, NineMileCreekMainland.OtterLandingHeadingDegrees)
-                                       .eulerAngles.z;
-                Assert.That(otter.transform.eulerAngles.z, Is.EqualTo(want).Within(1e-2f),
-                    "the placed machine does not carry OtterLandingHeadingDegrees — she is staged " +
-                    "facing somewhere the ramp does not go.");
+                float off = Mathf.DeltaAngle(otter.transform.eulerAngles.z,
+                                             NineMileCreekGroundPlan.OtterParkHeadingDegrees);
+                Assert.That(Mathf.Abs(off), Is.LessThan(1e-2f),
+                    "the placed machine does not carry OtterParkHeadingDegrees — she is parked facing " +
+                    "somewhere the park does not say.");
             }
             finally
             {

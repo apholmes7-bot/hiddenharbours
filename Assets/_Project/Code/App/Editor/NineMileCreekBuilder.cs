@@ -147,12 +147,13 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly Vector2 PassageBandSize = new Vector2(6f, 40f);
 
-        /// <summary>Where the boat parks arriving under power — in the basin, off the north wall's face.</summary>
-        public static Vector3 ArrivalPos   => NineMileCreekMainland.ArrivalPos;
-        /// <summary>The dock zone: against the north wall's south face, beside the unloading apron.</summary>
-        public static Vector3 DockZonePos  => NineMileCreekMainland.DockZonePos;
-        /// <summary>Step ashore onto the north wall's deck.</summary>
-        public static Vector3 DisembarkPos => NineMileCreekMainland.DisembarkPos;
+        /// <summary>Where the boat parks arriving under power — alongside berth 0 at the north face, its
+        /// design beam off the fender line (NineMileCreekGroundPlan; the anchor re-lays a live beam).</summary>
+        public static Vector3 ArrivalPos   => NineMileCreekGroundPlan.ArrivalPos;
+        /// <summary>The dock zone: on berth 0's fender line, beside the unloading apron.</summary>
+        public static Vector3 DockZonePos  => NineMileCreekGroundPlan.DockZonePos;
+        /// <summary>Step ashore onto the north wall's deck, by berth 0's ladder.</summary>
+        public static Vector3 DisembarkPos => NineMileCreekGroundPlan.DisembarkPos;
         /// <summary>Return passage to Coddle Cove — the cove lies EAST (canon), so you sail east out of
         /// the bay, well clear of the crossing's flats to the south.</summary>
         public static Vector3 ToCovePassagePos => NineMileCreekMainland.ToCovePassagePos;
@@ -496,15 +497,23 @@ namespace HiddenHarbours.App.Editor
             }
 
             // --- TIDAL TERRAIN (the converged one-height source; ADR 0012 rec. 4) -----------
-            // Nine Mile Creek's analytic seabed: town land + wharf plateaus over the dredged -6 m floor. It
-            // registers into GameServices.TidalTerrain at runtime so the walkability, boat grounding AND
-            // the water shader below read the SAME height (P1). Created BEFORE the Sea so on a region
-            // toggle-on the terrain's OnEnable registers before the WaterSurface's OnEnable bakes (scene
-            // roots activate in order). Hand-painting later replaces this via the Terrain Paint Tool's
-            // Adopt step (ADR 0014) — the same adoption seam St Peters has.
+            // Nine Mile Creek's ground is the painted third issue, G3 (ADR 0014; NMC H2): the same map
+            // N1's 04-ground-g3 step binds into the committed scene. It registers into
+            // GameServices.TidalTerrain at runtime so the walkability, boat grounding AND the water shader
+            // below read the SAME height (P1). Created BEFORE the Sea so on a region toggle-on the
+            // terrain's OnEnable registers before the WaterSurface's OnEnable bakes (scene roots activate
+            // in order).
+            //
+            // The analytic plan stays only as the AUTHORING PREMISE of the passes a later wave still owns
+            // (the wharf, the dressing, the lots, the fleet, the cliffs and the shore): an
+            // inactive probe, never saved and never registered, as N1's ground probe was before G3.
             var terrainGo = new GameObject("TidalTerrain");
-            var terrain = terrainGo.AddComponent<MainlandTidalTerrain>();
-            ConfigureNineMileCreekTerrain(terrain);
+            var terrain = terrainGo.AddComponent<PaintedTidalTerrain>();
+            terrain.Map = LoadGround();
+            var premiseGo = new GameObject("NMC analytic authoring premise") { hideFlags = HideFlags.HideAndDontSave };
+            premiseGo.SetActive(false);
+            var premise = premiseGo.AddComponent<MainlandTidalTerrain>();
+            ConfigureNineMileCreekTerrain(premise);
 
             // --- DEEP HARBOUR WATER (the layered SIM-DRIVEN water shader — the St Peters model) ---
             // The harbour plane now carries Water.mat + a WaterSurface baking the terrain above, so the
@@ -551,7 +560,12 @@ namespace HiddenHarbours.App.Editor
                 WaterSceneTemplate.ConfigureLandRegionWater(
                     water, NineMileCreekSeaCenter, NineMileCreekSeaSize,
                     NineMileCreekHeightResolution, NineMileCreekHeightMin, NineMileCreekHeightMax,
-                    terrain.MaxShoreGradient());
+                    premise.MaxShoreGradient());
+                // The Sea draws the G3 map it floats on (ADR 0014's painted source), as St Peters' does:
+                // the same texture the terrain above decodes, so the visible depth is the sailed depth.
+                water.GetComponent<HiddenHarbours.Art.WaterSurface>().ConfigurePaintedHeightMap(
+                    terrain.Map.HeightTexture, terrain.Map.WorldCenter, terrain.Map.WorldSize,
+                    terrain.Map.MinElevation, terrain.Map.MaxElevation);
             }
             else
             {
@@ -640,7 +654,7 @@ namespace HiddenHarbours.App.Editor
             // dock zone and the arrival park are all authored around it, so it is re-dressed, not
             // re-sited. Null-tolerant — an unimported kit warns and leaves the quay unbuilt rather than
             // half-built.
-            NineMileCreekWharf.Place(terrain);
+            NineMileCreekWharf.Place(premise);
 
             // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
             var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), ShipwrightShedPos, waterSprite, new Color(0.50f, 0.42f, 0.34f));
@@ -653,7 +667,7 @@ namespace HiddenHarbours.App.Editor
             // building kit (NineMileCreekFlavour), which is what §7.2 means by replacing the region's
             // outdated art from the rigs rather than repainting it. The WORKING buildings above and below
             // keep theirs on purpose: their kit (wharfBuildingRig's sheds) has never been baked.
-            NineMileCreekFlavour.Place(terrain, SpringHighWater);
+            NineMileCreekFlavour.Place(premise, SpringHighWater);
 
             // --- PHASE B DRESSING: the gear, the services and the tideline -------------------
             // ⭐ BUILDER-WIRED, NOT SCENE-WIRED, and that is the whole point of it living here. Phase B's
@@ -668,7 +682,7 @@ namespace HiddenHarbours.App.Editor
             // 2.4 m too short and the pack has no furniture-free course to stack. NineMileCreekQuayFace
             // measures that and states the re-bake that closes it; Place() logs the finding on every
             // build so it cannot go quiet.
-            NineMileCreekDressing.Place(terrain);
+            NineMileCreekDressing.Place(premise);
 
             // --- THE PHOTOGRAPH PASS: the lots along Wharf Road, and the fleet at the berths -----------
             // ⭐ THE LOTS. The owner's satellite view (2026-08-10) shows a cluster of buildings behind the
@@ -678,14 +692,14 @@ namespace HiddenHarbours.App.Editor
             // standing in for one would look finished while being wrong. NineMileCreekLots reports the
             // gap on every build so the art-director's ask cannot go quiet.
             var creekOwners = NineMileCreekMooredFleet.LoadOwners();
-            NineMileCreekLots.Place(terrain, creekOwners);
+            NineMileCreekLots.Place(premise, creekOwners);
 
             // ⭐ THE FLEET. One MooredBoat per owner at their berth, carrying their Def. It places and
             // does NOT draw — the mesh path is runtime-owned (see NineMileCreekMooredFleet's class note),
             // so a builder that skinned the hulls here would bake the sprite fallback into the committed
             // scene and the fleet would never be mesh. The berth the player docks in is derived and left
             // clear.
-            NineMileCreekMooredFleet.Place(terrain);
+            NineMileCreekMooredFleet.Place(premise);
 
             // ⭐ THE REVIEW ANCHORAGE — the owner's "every boat model must be VISIBLE in game" ruling
             // (2026-08-14). Twenty-three fleet-pack hulls lying at anchor in the −6 m water east of the
@@ -716,22 +730,20 @@ namespace HiddenHarbours.App.Editor
             // NineMileCreekMainland.LaydownPos.
             NineMileCreekLaydown.Place();
 
-            // ⭐ THE OTTER, STAGED AT THE BOAT RAMP — the same gap, one machine along: #562 built her
+            // ⭐ THE OTTER, PARKED SAFE FOR NOW — the same gap, one machine along: #562 built her
             // drive⇄swim model and #581 baked her, and she stood nowhere. Places and does NOT draw.
-            // Her site is a PROPOSAL derived from the ramp's own two ends, and the one thing to walk
-            // and judge is written on it: this basin BARES at spring low. See
-            // NineMileCreekOtterLanding and NineMileCreekMainland.OtterLandingPos.
+            // G3 has no boat ramp, so she keeps her old landing spot facing inland (the owner's
+            // ruling, 2026-10-15); her launch is a later wave's. See NineMileCreekOtterLanding and
+            // NineMileCreekGroundPlan.OtterParkPos.
             NineMileCreekOtterLanding.Place();
 
             // ⭐ THE NAV MARKS — the channels a skipper reads coming home. Places and does NOT decide:
-            // every position, colour, size and facing is derived by NavMarkPlan against THIS terrain,
+            // every position, colour, size and facing is derived by NavMarkPlan against the G3 ground,
             // the same ElevationAt the boat's depth gate reads, so "paint = sail" (ADR 0014) extends to
             // "paint = sail = marked". IALA Region B — red to starboard returning from seaward — with
             // the handedness derived from each channel's authored seaward end rather than hand-typed.
-            //
-            // ⚠ It will REFUSE marks, loudly, every build: this basin bares 0.6 m at spring low and a
-            // floating mark cannot stand in it. That is the finding, not a gap — see
-            // NineMileCreekNavMarks' class note and the art ask it states.
+            // The entrance follows the design boat's TRACK into the G3 mouth, and 09-nav-marks-g3
+            // re-places the committed scene's marks from this same plan.
             NineMileCreekNavMarks.Place(terrain);
 
             // --- (NO SHORELINE FENCE — the coast is the terrain now) -------------------------
@@ -957,13 +969,18 @@ namespace HiddenHarbours.App.Editor
             // EditMode test asserts the arrival↔dock distance stays inside DockZoneRadius without a scene
             // (NineMileCreekDockTests).
             var gwArrival = new GameObject("NineMileCreekArrival");
-            gwArrival.transform.position = ArrivalPos;         // in the basin, off the north wall's south face
+            gwArrival.transform.position = ArrivalPos;         // alongside berth 0, off the north face
+            // Bow east along the face (a compass heading turns clockwise; Unity's z turns counter-clockwise).
+            gwArrival.transform.localEulerAngles = new Vector3(0f, 0f, -NineMileCreekGroundPlan.BerthHeadingDegrees);
             var gwDock = new GameObject("NineMileCreekDockZone");
             gwDock.transform.position = DockZonePos;           // against the wall by the unloading apron
             var gwDisembark = new GameObject("NineMileCreekDisembark");
             gwDisembark.transform.position = DisembarkPos;     // up onto the quay deck
             var gwAnchor = new GameObject("NineMileCreekRegionAnchor").AddComponent<RegionAnchor>();
             gwAnchor.Configure("region.nine_mile_creek", gwArrival.transform, gwDock.transform, gwDisembark.transform);
+            // The arrival is laid ALONGSIDE: the anchor keeps the hull's side on the fender line whatever
+            // its beam, so a bigger boat lies against the face instead of in it (NMC H5/H6).
+            gwAnchor.ConfigureAlongsideBerth(NineMileCreekGroundPlan.DesignHalfBeamMetres);
 
             // ⭐ THE SECOND DOOR (#456). This is the first region you can enter two ways, and this is the
             // half of it that lives here: the bar landing, named, so a fisher who walked the crossing
@@ -1055,7 +1072,7 @@ namespace HiddenHarbours.App.Editor
             // NineMileCreek.unity directly and the shops open for the dev player (the serialized
             // reference wins while it is alive); sail in from St Peters and they open for the fisher who
             // actually arrived. Driven end to end by InteriorTravelPlayTests.
-            NineMileCreekShops.Place(terrain, devPlayer);
+            NineMileCreekShops.Place(premise, devPlayer);
 
             // --- WHERE THE ISLAND BUYS FUEL (the owner's 2026-08-20 ask) --------------------------------
             // ⭐ TWO SITES, ONE KIT, TWO PRICES: a couple of dock pedestals on the wharf's service wall
@@ -1067,7 +1084,7 @@ namespace HiddenHarbours.App.Editor
             // ⚠ PLACED AFTER the wharf economy above, and that order IS load-bearing: a pump charges
             // through the PersistentWalletProxy this scene stands, and NineMileCreekStation FINDS that
             // proxy rather than making a second one. Run it earlier and every press refuses.
-            NineMileCreekStation.Place(terrain);
+            NineMileCreekStation.Place(premise);
 
             // --- THE DOORYARDS (the lawn ruling's third derivation) ------------------------------------
             // #604 authored one yard POLYGON per property here too, faced at NearestPointOnAnyRoad — the
@@ -1103,7 +1120,7 @@ namespace HiddenHarbours.App.Editor
             // v1/v3 split ("two road families at different vertical scales in one village is a bug only
             // the eye would ever catch"); NineMileCreekFlavour made exactly this move for the houses one
             // pass earlier. The shelter belt's ground is inside the new hedgerow lattice anyway.
-            NineMileCreekFieldPlanter.Plant(terrain);
+            NineMileCreekFieldPlanter.Plant(premise);
 
             // --- THE SHORE: the coast stands up, and the tide gets something to move --------------------
             // ⭐ THE THIRD PASS OF THE TERRAIN ARC, and the one that makes the other two READ. #520 gave
@@ -1124,9 +1141,22 @@ namespace HiddenHarbours.App.Editor
             // committed source), so a fresh checkout has no faces and the coast would stand up untextured
             // without a word. St Peters' builder makes the same call for the same reason.
             HiddenHarbours.Tools.RigBaking.CliffBakeMenu.EnsureBaked();
-            int cliffChunks = NineMileCreekCliffWalls.Build(terrain);
-            var shore = NineMileCreekShorePainter.Paint(terrain);
+            int cliffChunks = NineMileCreekCliffWalls.Build(premise);
+            var shore = NineMileCreekShorePainter.Paint(premise);
             shore.CliffChunks = cliffChunks;
+
+            // The chunks 07-loop-wall-contacts-g3 stands down: they draw a face G3 does not have across Wharf
+            // Road's ramp. The builder stands down the same eight, by the step's own names.
+            var cliffRoot = GameObject.Find(NineMileCreekCliffWalls.RootName);
+            foreach (string chunk in NineMileCreekGroundSteps.Pr2CliffChunks)
+            {
+                var standDown = cliffRoot != null ? cliffRoot.transform.Find(chunk) : null;
+                if (standDown == null)
+                    throw new System.InvalidOperationException("[NineMileCreekBuilder] no cliff chunk " + chunk +
+                        " to stand down — the premise's coast no longer resolves the chunks 07 names.");
+                standDown.gameObject.SetActive(false);
+            }
+            Object.DestroyImmediate(premiseGo);
 
             // --- SAVE & REGISTER ------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -1440,9 +1470,9 @@ namespace HiddenHarbours.App.Editor
         // ---- converged water model — shared config (single source of truth with the EditMode test) ----
 
         /// <summary>
-        /// Author Nine Mile Creek's seabed — the whole authored plan, pushed in one call. The builder and
-        /// every EditMode test go through HERE, so a test can never assert a coast the scene does not
-        /// have (the <see cref="StPetersBuilder.ConfigureTidalTerrain"/> convention).
+        /// Author Nine Mile Creek's ANALYTIC plan — the whole authored plan, pushed in one call. Since NMC
+        /// H2 this is not the scene's ground (that is G3, <see cref="LoadGround"/>): it is the authoring
+        /// premise of the passes a later wave still owns, and of the tests that keep that premise.
         ///
         /// <para>It is a one-line forward to <see cref="NineMileCreekMainland.ConfigureTerrain"/> and that
         /// is deliberate: A-1 proved the plan with its own fixtures before any of this existed, and a
@@ -1452,6 +1482,19 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static void ConfigureNineMileCreekTerrain(MainlandTidalTerrain terrain) =>
             NineMileCreekMainland.ConfigureTerrain(terrain);
+
+        /// <summary>
+        /// The region's ground, G3 (NMC H2): the one PaintedHeightMap the scene's terrain, its sea and its
+        /// splat all read. Refuses rather than build a region with no ground under it.
+        /// </summary>
+        public static PaintedHeightMap LoadGround()
+        {
+            var map = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(NineMileCreekGround.MapPath);
+            if (map == null || map.HeightTexture == null)
+                throw new System.InvalidOperationException("[NineMileCreekBuilder] no G3 ground at " +
+                    NineMileCreekGround.MapPath + " — the region has no height to build on.");
+            return map;
+        }
 
         /// <summary>
         /// <b>THE PAINTED GROUND (ADR 0028)</b> — one full-region quad carrying the TerrainSplat shader,
@@ -1511,21 +1554,10 @@ namespace HiddenHarbours.App.Editor
             splat.Configure(NineMileCreekSeaCenter, NineMileCreekSeaSize, splatMat,
                             HiddenHarbours.Art.TerrainSplatSurface.DefaultSortingOrder);
 
-            // The owner's painted seabed if it exists, else a fresh bake of the analytic coast — NEVER
-            // overwrite an existing paint (ADR 0019: refresh, don't clobber).
-            var heightMap = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(
-                DataTerrain + "/" + TerrainPaintTool.NineMileCreekSeabedName + ".asset");
-            if (heightMap == null)
-                heightMap = TerrainPaintTool.BakeNineMileCreekSeabed(
-                    region.WorldCenter, region.WorldSizeMeters, region.SeabedTexels);
-            if (heightMap != null && heightMap.HeightTexture != null)
-                splat.ConfigureHeightMap(heightMap.HeightTexture,
-                    heightMap.MinElevation, heightMap.MaxElevation);
-            else
-                Debug.LogWarning("[NineMileCreekBuilder] no painted height map for the splat ground — the " +
-                                 "quad clips itself empty (below the paint floor everywhere). Run " +
-                                 "'Hidden Harbours ▸ Art ▸ Regenerate Nine Mile Creek Starter Splat' " +
-                                 "after re-baking the seabed.");
+            // The ground's own height: the G3 map the terrain and the sea read, so the painted ground
+            // clips where the sailed and walked ground does (NMC H2). Never a bake of the analytic coast.
+            var heightMap = LoadGround();
+            splat.ConfigureHeightMap(heightMap.HeightTexture, heightMap.MinElevation, heightMap.MaxElevation);
 
             ConfigureSplatSurface(splat);
 
