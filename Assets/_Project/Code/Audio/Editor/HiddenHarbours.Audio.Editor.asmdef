@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.Audio.Editor",
+    "rootNamespace": "HiddenHarbours.Audio.Editor",
+    "references": ["HiddenHarbours.Audio"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": true
+}

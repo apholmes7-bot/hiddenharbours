@@ -20,7 +20,9 @@ namespace HiddenHarbours.Audio
     ///   exhale is EARNED: it fires only when the sea had become a worry that trip (the rising-wind tell
     ///   peaked past a small threshold), so a flat-calm hop ends quietly (P5 "warmth is earned"),</item>
     ///   <item>the SACRED rising-wind TELL — as the <see cref="IEnvironmentService"/> wind strengthens
-    ///   the bed thins and a cue rises, audible BEFORE the sea turns dangerous (Pillar 1).</item>
+    ///   the bed thins and a cue rises, audible BEFORE the sea turns dangerous (Pillar 1),</item>
+    ///   <item>the MUSIC bus playing the clip set's songs one after another, a gap apart
+    ///   (<see cref="MusicCycle"/>); a set without songs leaves it silent.</item>
     /// </list>
     /// Independent ambience/SFX/music volumes; cues duck the beds; nothing allocates per frame. Real
     /// owner SFX slot into the serialized clip refs later — placeholders are generated procedurally
@@ -99,7 +101,7 @@ namespace HiddenHarbours.Audio
         private AudioSource _engine;  // outboard-engine bed (ambience, aboard an engine hull)
         private AudioSource _tell;    // rising-wind tell (ambience, wind-driven)
         private AudioSource _cue;     // one-shot stings/warmth (sfx)
-        private AudioSource _music;   // music bus (reserved — no stem yet; volume + duck are live)
+        private AudioSource _music;   // music bus: the set's songs in turn (silent without songs; volume + duck are live)
         private AudioSource _moderateSea;
         private AudioSource _roughSea;
         private AudioSource _fogHorn;
@@ -119,6 +121,7 @@ namespace HiddenHarbours.Audio
         private float _seaState01;
         private double _lastFogGameSeconds;
         private bool _hasFogClockSample;
+        private MusicCycle _songCycle;  // what the music bus plays next (null until the set is read)
 
         // ---- lifecycle ----------------------------------------------------------------------
 
@@ -153,7 +156,7 @@ namespace HiddenHarbours.Audio
         /// </summary>
         private void ApplyClipSet()
         {
-            var set = Resources.Load<AudioClipSetDef>("AudioClipSet");
+            var set = AudioClipSets.Effective();
             if (set == null) return;
 
             if (set.CalmBed        != null) _calmBed        = set.CalmBed;
@@ -173,6 +176,9 @@ namespace HiddenHarbours.Audio
             if (set.ModerateSeaBed  != null) _moderateSeaBed = set.ModerateSeaBed;
             if (set.RoughSeaBed     != null) _roughSeaBed    = set.RoughSeaBed;
             if (set.Foghorn        != null) _foghorn        = set.Foghorn;
+
+            // The music bus plays the set's songs in turn; the public set has none, so it stays silent.
+            _songCycle = MusicCycle.For(set);
         }
 
         private void OnEnable()  => Subscribe();
@@ -215,6 +221,9 @@ namespace HiddenHarbours.Audio
             // The cue duck recovers smoothly (event-set, frame-decayed).
             if (_duck > 0f)
                 _duck = Mathf.MoveTowards(_duck, 0f, AudioDirectorLogic.DuckRecoveryPerSec * dt);
+
+            // The music bus: one song through, the set's gap, then the next.
+            TickMusic(dt);
 
             // Crossfade the aboard propulsion beds toward the active layer (smooth swap, no pop).
             BoatAudioLayer layer = AudioDirectorLogic.BoatLayerFor(_mode, _boatId);
@@ -277,6 +286,16 @@ namespace HiddenHarbours.Audio
             var boat = GameServices.ActiveBoat;
             float sog = (boat != null && boat.HasActiveBoat) ? boat.Sample().SpeedOverGround : 0f;
             _engineThrottle01 = AudioDirectorLogic.EngineThrottle01(sog);
+        }
+
+        // Whatever song the cycle hands back starts now; the bus's volume and duck stay ApplyMix's.
+        private void TickMusic(float dt)
+        {
+            if (_music == null || _songCycle == null) return;
+            var song = _songCycle.Tick(_music.isPlaying, dt);
+            if (song == null) return;
+            _music.clip = song;
+            _music.Play();
         }
 
         private void ApplyMix()
@@ -371,7 +390,7 @@ namespace HiddenHarbours.Audio
             _engine = MakeSource("Outboard", _outboardEngine, loop: true,  play: true);
             _tell   = MakeSource("WindTell", _windTell,       loop: true,  play: true);
             _cue    = MakeSource("Cue",      null,            loop: false, play: false);
-            _music  = MakeSource("Music",    null,            loop: true,  play: false); // bus ready; stem slots in later
+            _music  = MakeSource("Music",    null,            loop: false, play: false); // one song at a time (TickMusic)
             _moderateSea = MakeSource("ModerateSea", _moderateSeaBed, loop: true, play: true);
             _roughSea = MakeSource("RoughSea", _roughSeaBed, loop: true, play: true);
             _fogHorn = MakeSource("Foghorn", null, loop: false, play: false);
