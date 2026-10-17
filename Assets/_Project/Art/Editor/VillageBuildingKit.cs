@@ -205,6 +205,9 @@ namespace HiddenHarbours.Art.Editor
             /// <c>BuildingAxesTests</c>, which is what keeps a silently-ignored key out of here.</summary>
             public readonly IReadOnlyDictionary<string, object> Dialled;
 
+            /// <summary>Options layered over the rig's own preset, without copying its axes.</summary>
+            public readonly IReadOnlyDictionary<string, object> Overrides;
+
             /// <summary>Why this build is in the set, in one line — read by nobody and worth
             /// keeping anyway, since "which of these is the school" is the question a future reader
             /// arrives with.</summary>
@@ -244,16 +247,22 @@ namespace HiddenHarbours.Art.Editor
 
             Build(string key, string label, string rigKey, string preset,
                   IReadOnlyDictionary<string, object> dialled, string why,
-                  string phase = null, string decay = null, bool burnt = false, int importCap = 0)
+                  string phase = null, string decay = null, bool burnt = false, int importCap = 0,
+                  IReadOnlyDictionary<string, object> overrides = null)
             {
                 Key = key; Label = label; RigKey = rigKey; Preset = preset;
                 Dialled = dialled; Why = why;
                 Phase = phase; Decay = decay; Burnt = burnt; ImportCap = importCap;
+                Overrides = overrides;
             }
 
             public static Build FromPreset(string key, string label, string rigKey, string preset,
                                            string why)
                 => new Build(key, label, rigKey, preset, null, why);
+
+            public static Build FromPresetWithOptions(string key, string label, string rigKey, string preset,
+                                                       Dictionary<string, object> options, string why)
+                => new Build(key, label, rigKey, preset, null, why, overrides: options);
 
             public static Build FromDialled(string key, string label, string rigKey,
                                             Dictionary<string, object> dialled, string why)
@@ -558,13 +567,26 @@ namespace HiddenHarbours.Art.Editor
         /// walk <see cref="M1Set"/> alone. Two different questions: "did everything the kit declares get
         /// baked?" and "is the M1 village still five clapboard buildings you can walk into?"</para>
         /// </summary>
+        public static readonly Build[] KeySceneSet =
+        {
+            Build.FromPresetWithOptions("stPetersBaitStore", "St Peters bait store", "wharfBuilding2", "tealShack",
+                new Dictionary<string, object> { { "sign", true } }, "O3 Landing: the store at the head of its walk."),
+            Build.FromPresetWithOptions("stPetersNetLoft", "St Peters net loft", "wharfBuilding2", "redShed",
+                new Dictionary<string, object> { { "weather", 0.55 } }, "O3 east end: pass 2's net loft."),
+            Build.FromPresetWithOptions("stPetersNetShed", "St Peters net shed", "wharfBuilding2", "netShed",
+                new Dictionary<string, object> { { "weather", 0.70 } }, "O3 east end: pass 2's net shed."),
+            Build.FromPresetWithOptions("stPetersIceHouse", "St Peters ice house", "wharfBuilding2", "iceHouse",
+                new Dictionary<string, object> { { "weather", 0.60 } }, "O3 east end: pass 2's ice house."),
+        };
+
         public static Build[] AllBuilds
         {
             get
             {
-                var all = new Build[M1Set.Length + LifecycleSet.Length];
+                var all = new Build[M1Set.Length + LifecycleSet.Length + KeySceneSet.Length];
                 M1Set.CopyTo(all, 0);
                 LifecycleSet.CopyTo(all, M1Set.Length);
+                KeySceneSet.CopyTo(all, M1Set.Length + LifecycleSet.Length);
                 return all;
             }
         }

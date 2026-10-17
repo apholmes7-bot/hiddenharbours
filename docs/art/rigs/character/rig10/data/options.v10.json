@@ -2,9 +2,9 @@
  "schema": "hidden-harbours/character-options@2",
  "rig": "characterIsoRig10.js",
  "exportSymbol": "CharacterIso10",
- "derivedFromRigSha256": "cbd50b54001d504d711a6a2e96ea01b1843a12e8b30665c9002e6ce45a7ed814",
- "posesDerivedFromRigSha256": "89c7c902d3575e9ea905aade6c43a26c91bc29653467f62fdd80fb9e2713f820",
- "revision": "10.2",
+ "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+ "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+ "revision": "10.3",
  "authoring": "Generated from the rig's tables. Do not hand-edit.",
  "options": {
   "shape": [
@@ -1817,7 +1817,7 @@
    "a man never draws a garment or bottom marked fem (skirt and shawl, dress, gown, sundress, pinafore, swimsuit, bikini; skirt, long skirt); a woman may draw anything",
    "swimwear one draw in twelve; trunks or briefs on a woman come with a top (swimTop f)",
    "beards only on adult and elder men, 3 in 5; a youth: none, none, stubble or moustache",
-   "elders draw salt, grey or white hair 3 in 4; nobody else draws grey or white, and salt only on adults",
+   "elders draw salt, grey or white hair 5 in 6: 3 in 4 from those three, else from all nine colours (which hold the three); nobody else draws grey or white, and salt only on adults",
    "bald only on adult and elder men",
    "a hat 3 in 5"
   ]

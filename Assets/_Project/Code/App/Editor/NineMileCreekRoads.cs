@@ -261,7 +261,12 @@ namespace HiddenHarbours.App.Editor
         /// ranks below every road (<see cref="RankTownWalk"/>), so where it reaches the carriageway the
         /// road is what is drawn. Nothing here is measured by eye.</para>
         /// </summary>
-        public static IReadOnlyList<Way> TownWalks()
+        public static IReadOnlyList<Way> TownWalks() =>
+            TownWalks(NineMileCreekMainland.ThroughRoad, NineMileCreekMainland.WharfRoad);
+
+        /// <summary>The same five walks, joining the given through-road and Wharf Road. Step 06 paves them joining
+        /// the two roads' final lines (<see cref="NineMileCreekGroundPlan.TownWalks"/>).</summary>
+        public static IReadOnlyList<Way> TownWalks(Vector2[] throughRoad, Vector2[] wharfRoad)
         {
             var walks = new List<Way>();
             Vector2[] lots = PublicTownLots;
@@ -270,7 +275,7 @@ namespace HiddenHarbours.App.Editor
             for (int i = 0; i < lots.Length; i++)
             {
                 Vector2 lot = lots[i];
-                Vector2 joinsAt = NearestPointOnAnyRoad(lot);
+                Vector2 joinsAt = NearestPointOnAnyRoad(lot, throughRoad, wharfRoad);
 
                 // ⚠ THE WALK STOPS AT THE DOOR, NOT IN THE PARLOUR. A run all the way to the lot CENTRE
                 // would put shell under the building standing on it. Every town lot reserves
@@ -567,7 +572,12 @@ namespace HiddenHarbours.App.Editor
         /// questions about corridors and widths that no terrain is involved in; the builder always passes
         /// the real one.</para>
         /// </summary>
-        public static Paving Pave(ITidalTerrain terrain)
+        public static Paving Pave(ITidalTerrain terrain) => Pave(terrain, Ways(), Pads(), null);
+
+        /// <summary>The same rule over a given network. <paramref name="dryExempt"/> are decks that carry a road
+        /// over water (a bridge): a cell whose centre lies on one is paved whatever the ground under it.</summary>
+        public static Paving Pave(ITidalTerrain terrain, IReadOnlyList<Way> ways, IReadOnlyList<Pad> pads,
+                                  IReadOnlyList<Rect> dryExempt)
         {
             var paving = new Paving();
 
@@ -575,8 +585,8 @@ namespace HiddenHarbours.App.Editor
             // terrain about, and the terrain read is by far the expensive half.
             var claims = new Dictionary<Vector2Int, PavedCell>();
 
-            foreach (var way in Ways()) ClaimWay(claims, way);
-            foreach (var pad in Pads()) ClaimPad(claims, pad);
+            foreach (var way in ways) ClaimWay(claims, way);
+            foreach (var pad in pads) ClaimPad(claims, pad);
 
             // ⚠ SORTED, not enumerated out of the dictionary. A HashSet/Dictionary walk order is not
             // guaranteed across runtimes, and the builder writes these into a committed scene: an
@@ -589,7 +599,7 @@ namespace HiddenHarbours.App.Editor
             foreach (var key in keys)
             {
                 PavedCell cell = claims[key];
-                if (terrain != null && terrain.ElevationAt(cell.Centre) <= highWater)
+                if (terrain != null && !OnDeck(dryExempt, cell.Centre) && terrain.ElevationAt(cell.Centre) <= highWater)
                 {
                     paving.Trimmed++;
                     continue;
@@ -602,6 +612,14 @@ namespace HiddenHarbours.App.Editor
             }
 
             return paving;
+        }
+
+        static bool OnDeck(IReadOnlyList<Rect> decks, Vector2 p)
+        {
+            if (decks == null) return false;
+            foreach (Rect deck in decks)
+                if (deck.Contains(p)) return true;
+            return false;
         }
 
         static void ClaimWay(Dictionary<Vector2Int, PavedCell> claims, Way way)
@@ -789,13 +807,16 @@ namespace HiddenHarbours.App.Editor
         /// The point on the nearest published CARRIAGEWAY to <paramref name="from"/> — the through-road or
         /// Wharf Road, the two roads the town is strung along. What a front walk joins.
         /// </summary>
-        public static Vector2 NearestPointOnAnyRoad(Vector2 from)
+        public static Vector2 NearestPointOnAnyRoad(Vector2 from) =>
+            NearestPointOnAnyRoad(from, NineMileCreekMainland.ThroughRoad, NineMileCreekMainland.WharfRoad);
+
+        /// <summary>The same, over the given through-road and Wharf Road.</summary>
+        public static Vector2 NearestPointOnAnyRoad(Vector2 from, Vector2[] throughRoad, Vector2[] wharfRoad)
         {
             Vector2 best = from;
             float bestDistance = float.MaxValue;
 
-            foreach (var route in new[] { NineMileCreekMainland.ThroughRoad,
-                                          NineMileCreekMainland.WharfRoad })
+            foreach (var route in new[] { throughRoad, wharfRoad })
             {
                 Vector2 p = NearestPointOnRoute(route, from);
                 float d = Vector2.Distance(p, from);

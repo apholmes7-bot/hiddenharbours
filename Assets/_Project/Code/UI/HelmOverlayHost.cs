@@ -238,6 +238,11 @@ namespace HiddenHarbours.UI
             if (!_cardGo.activeSelf) _cardGo.SetActive(true);
 
             HelmOverlaySettings cfg = GameServices.HelmOverlay;
+            BoatUiWindowSettings windowCfg = HelmOverlayLayout.WindowSettings(
+                GameServices.BoatUiWindowing, Screen.width, Screen.height);
+            float bandReserve = HudBandLayout.ReservedTopPx();
+            float dashReserve = HelmOverlayLayout.DashReservedTopPx(
+                Screen.width, Screen.height, bandReserve, windowCfg.TitleBarPx);
 
             // A lever hull whose console has a ported dash renderer shows the COMPOSED DASH. S2a
             // brought the two skiffs; S4 brings the two wheelhouses, so that is now every rig the
@@ -264,12 +269,12 @@ namespace HiddenHarbours.UI
                 int dashW = HelmDashGeometry.CanvasW(fit.Rig), dashH = HelmDashGeometry.CanvasH(fit.Rig);
                 Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, dashW, dashH, in cfg,
                                                                Screen.width, Screen.height,
-                                                               HudBandLayout.ReservedTopPx());
+                                                               dashReserve);
                 // The player's window layout goes over the shipped one (2026-08-07 ruling). Windowing
                 // the rect HERE, before anything consumes it, is what makes the flush brow mounts and
                 // the pointer mapping follow the moved/resized dash for free.
                 dashCard = _window.Apply(dashCard, Screen.width, Screen.height,
-                                         HudBandLayout.ReservedTopPx());
+                                         dashReserve, in windowCfg);
                 bool cardVisible = _window.CardVisible;
                 if (_image.enabled != cardVisible) _image.enabled = cardVisible;
 
@@ -284,7 +289,7 @@ namespace HiddenHarbours.UI
                 _dashCard = dashCard;
                 _dashFit = fit;
                 _dashLive = cardVisible;
-                PublishFootprint(FootprintOf(dashCard, GameServices.BoatUiWindowing.TitleBarPx));
+                PublishFootprint(FootprintOf(dashCard, windowCfg.TitleBarPx));
 
                 // An EXPANDED instrument owns the pointer outright (S4.5), chrome included: its card
                 // sorts over the dash, so a bar the player cannot see must not swallow its clicks.
@@ -309,10 +314,10 @@ namespace HiddenHarbours.UI
             int rigH = style == HelmControlStyle.Lever ? LeverRigRender.H : TillerRigRender.H;
 
             Rect card = HelmOverlayLayout.CardRect(_focused, rigW, rigH, in cfg, Screen.width, Screen.height);
-            card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
+            card = _window.Apply(card, Screen.width, Screen.height, bandReserve, in windowCfg);
             bool visible = _window.CardVisible;
             if (_image.enabled != visible) _image.enabled = visible;
-            PublishFootprint(FootprintOf(card, GameServices.BoatUiWindowing.TitleBarPx));
+            PublishFootprint(FootprintOf(card, windowCfg.TitleBarPx));
 
             LayoutCard(style, card, rigW, rigH, helm.Steer);
             if (visible) Repaint(style, helm);

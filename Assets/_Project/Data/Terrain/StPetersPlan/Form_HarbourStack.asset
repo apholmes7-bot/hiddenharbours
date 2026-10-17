@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb11aca9151bc16fc634998c41a2c3fa, type: 3}
+  m_Name: Form_HarbourStack
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.FormDef
+  Id: form.stp_harbour_stack
+  DisplayName: Harbour Stack
+  Kind: stack
+  Stone: sandstone
+  BatterDeg: 80
+  Brow: []
+  TopInset: 0.4
+  Top: 6.2
+  LedgeHeight: 0
+  LedgeOut: 0
+  LedgeEastOf: 0
+  Centre: {x: 192, y: -38}
+  Radii: {x: 3.2, y: 2.6}
+  RotationDeg: 20
+  PlinthRadii: {x: 5.5, y: 5.5}
+  PlinthTop: -1.2
+  PlinthFall: 0
+  PlinthSkirt: {x: 0.85, y: 1.9}
+  SkirtLedgeRadii: {x: 0, y: 0}
+  SkirtLedgeTop: 0
+  Members: []
+  PlinthRadius: 5.5
+  PlinthSkirtSlope: 0.7
+  Feet:
+  - {x: 192, y: -38, z: 5.5}
+  Recipe: {fileID: 11400000, guid: ca719065258ff30cb60e6315e593f5af, type: 2}
+  SourceId: 
+  Why: 'The harbour''s south gatepost, 37.6 m from the dock and 30.5 m off the entrance''s port mark p3. Strata 0.9 m. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

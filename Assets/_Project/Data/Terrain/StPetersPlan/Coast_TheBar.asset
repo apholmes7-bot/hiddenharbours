@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_TheBar
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_the_bar
+  DisplayName: The Bar
+  Type: the_bar
+  Mode: 3
+  Recipe: {fileID: 11400000, guid: d38524bb2023670050c81e83b6685532, type: 2}
+  Edge: {x: 2, y: 10}
+  Knots: []
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: -356, y: -70}
+  HalfWidth: 45
+  WindowWest: 30
+  GutX: -234.1
+  GutKeep: 20
+  RunnelEvery: {x: 9, y: 14}
+  RunnelWidth: 0.9
+  RunnelDepth: 0.1
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 26
+  MusselBand: {x: -1.3, y: -0.3}
+  LobeAmp: 0.45
+  LobeLambda: 26
+  LobeBand: {x: 5.5, y: 8, z: 24, w: 30}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep:
+  - {x: -115, y: -32}
+  - {x: -115, y: 34}
+  - {x: -40, y: 34}
+  - {x: -30, y: 0}
+  - {x: -40, y: -8}
+  - {x: -72, y: -8}
+  - {x: -76, y: -32}
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Why: 'The north shore''s low-tide detailing carried out along the bar: ripple and sand, runnels on the flanks (silt), eelgrass below -2.0, a mussel bed either side of the gut, and pools.'

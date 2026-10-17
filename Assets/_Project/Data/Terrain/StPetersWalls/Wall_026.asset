@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_026
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_026
+  Status: 0
+  SplitFrom: 
+  Follows: wall.stp_225
+  Rock: sandstone
+  Class: 5
+  Aspect: SE
+  Batter: steep
+  Brow:
+  - {x: 150.61052, y: -51.85418}
+  - {x: 150.38927, y: -51.970924}
+  - {x: 150.16779, y: -52.087208}
+  - {x: 149.9461, y: -52.203026}
+  - {x: 149.72415, y: -52.3184}
+  - {x: 149.50195, y: -52.433323}
+  - {x: 149.27956, y: -52.547787}
+  Toe:
+  - {x: 151.58437, y: -53.695164}
+  - {x: 151.3582, y: -53.811806}
+  - {x: 151.13184, y: -53.927975}
+  - {x: 150.90529, y: -54.043663}
+  - {x: 150.6785, y: -54.158905}
+  - {x: 150.45149, y: -54.273697}
+  - {x: 150.22429, y: -54.388012}
+  DropMetres:
+  - 7.329096
+  - 7.4656353
+  - 7.5674744
+  - 7.63031
+  - 7.65
+  - 7.65
+  - 7.65
+  ToeElevations:
+  - -1.3290956
+  - -1.4656351
+  - -1.5674744
+  - -1.63031
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  TextureBrow: []
+  Stations:
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.8887806
+  - 5.868329
+  - 5.9156775
+  - 5.9468083
+  - 5.9071236
+  - 5.8438706
+  - 5.8971496
+  ToePass9:
+  - -1.2257456
+  - -1.4165633
+  - -1.4388318
+  - -1.4493289
+  - -1.5153393
+  - -1.6130955
+  - -1.5852525
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 26
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Kept as the scene had it at 883f27b5: the list''s row 026 (East Ledges): kept. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k3-k9.'

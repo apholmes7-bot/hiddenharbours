@@ -52,7 +52,17 @@ namespace HiddenHarbours.Boats
         /// STATE with a berth's default, not a constant, and whoever is driving her says otherwise.
         /// </para>
         /// </summary>
-        public VesselWay Way => _way;
+        public VesselWay Way
+        {
+            get
+            {
+                // A declared berth or a holding anchor wins. BoatAnchor delegates to this answer,
+                // so two IVesselWay components never disagree, even on the arrival's moving hull.
+                var anchor = GetComponent<BoatAnchor>();
+                return _way == VesselWay.Moored || (anchor != null && anchor.IsHolding)
+                    ? VesselWay.Moored : VesselWay.UnderWay;
+            }
+        }
 
         private VesselWay _way = VesselWay.Moored;
 
@@ -73,7 +83,7 @@ namespace HiddenHarbours.Boats
                 // Spelled through the Core seam rather than by type: Boats may not reference Art
                 // (rule 4), and the lamps live there. IVesselWayListener is Core's own hook for
                 // exactly this — "the boat you are hanging off has changed her mind".
-                if (lamps is IVesselWayListener listener) listener.OnVesselWayChanged(way);
+                if (lamps is IVesselWayListener listener) listener.OnVesselWayChanged(Way);
             }
         }
 

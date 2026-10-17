@@ -19,43 +19,71 @@ namespace HiddenHarbours.Tests.EditMode
     /// and flooded on the other — the region's whole lesson, broken by arithmetic that nothing else
     /// would catch.</para>
     ///
-    /// <para>Both terrains are built here through the SAME configure calls the region builders use
-    /// (<see cref="NineMileCreekMainland.ConfigureTerrain"/> and
-    /// <see cref="StPetersBuilder.ConfigureTidalTerrain"/>), so a test can never assert a coast the
-    /// scene does not have.</para>
+    /// <para><b>Two grounds since NMC H2.</b> The scene stands on G3 (<see cref="NineMileCreekLiveGround.Plan"/>),
+    /// and what the scene must keep is asserted on it: the crossing against St Peters' terrain (built through
+    /// <see cref="StPetersBuilder.ConfigureTidalTerrain"/>, the call its builder makes), the bar, the ponds, the
+    /// open bay, the arrival, the wharf's markers, the roads on the lines step 06 paves and the town's lots. The
+    /// analytic ground (<see cref="NineMileCreekMainland.ConfigureTerrain"/>: its tide reference, its fills, its
+    /// berth trench, its plateau and its cached coast run) is the plan's AUTHORING, the premise the builder and
+    /// the later waves still build on: those tests stand it up on their own, each says so, and none of them
+    /// claims the activated scene.</para>
     /// </summary>
     public class NineMileCreekMainlandTerrainTests
     {
-        private GameObject _mainlandGo;
+        private ITidalTerrain _ground;            // G3: the ground the scene stands on
+        private GameObject _planGo;
+        private MainlandTidalTerrain _plan;       // the analytic premise, stood up only by the authoring tests
         private GameObject _islandGo;
-        private MainlandTidalTerrain _mainland;
-        private TidalTerrain _island;
+        private TidalTerrain _island;             // St Peters' half of the bar, stood up only by the crossing
 
         private static float SpringHigh => NineMileCreekMainland.SpringHighWater;   //  2.2
         private static float SpringLow => NineMileCreekMainland.SpringLowWater;     // -2.2
 
         [SetUp]
-        public void SetUp()
-        {
-            _mainlandGo = new GameObject("NineMileCreekMainland_Test");
-            _mainland = _mainlandGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_mainland);
-
-            _islandGo = new GameObject("StPeters_SeamReference");
-            _island = _islandGo.AddComponent<TidalTerrain>();
-            StPetersBuilder.ConfigureTidalTerrain(_island);
-        }
+        public void SetUp() => _ground = NineMileCreekLiveGround.Plan;
 
         [TearDown]
         public void TearDown()
         {
-            if (_mainlandGo != null) Object.DestroyImmediate(_mainlandGo);
+            if (_planGo != null) Object.DestroyImmediate(_planGo);
             if (_islandGo != null) Object.DestroyImmediate(_islandGo);
+            _planGo = null;
+            _plan = null;
+            _islandGo = null;
+            _island = null;
             GameServices.Reset();
         }
 
-        private float Elev(Vector2 p) => _mainland.ElevationAt(p);
-        private float Elev(Vector3 p) => _mainland.ElevationAt(new Vector2(p.x, p.y));
+        /// <summary>The plan's analytic ground, built through the call the builder still makes for the premise.</summary>
+        private MainlandTidalTerrain Plan
+        {
+            get
+            {
+                if (_plan != null) return _plan;
+                _planGo = new GameObject("NineMileCreekMainland_Test");
+                _plan = _planGo.AddComponent<MainlandTidalTerrain>();
+                NineMileCreekMainland.ConfigureTerrain(_plan);
+                return _plan;
+            }
+        }
+
+        /// <summary>St Peters' terrain, built through the call its builder makes.</summary>
+        private TidalTerrain Island
+        {
+            get
+            {
+                if (_island != null) return _island;
+                _islandGo = new GameObject("StPeters_SeamReference");
+                _island = _islandGo.AddComponent<TidalTerrain>();
+                StPetersBuilder.ConfigureTidalTerrain(_island);
+                return _island;
+            }
+        }
+
+        private float Elev(Vector2 p) => _ground.ElevationAt(p);
+        private float Elev(Vector3 p) => _ground.ElevationAt(new Vector2(p.x, p.y));
+        private float PlanElev(Vector2 p) => Plan.ElevationAt(p);
+        private float PlanElev(Vector3 p) => Plan.ElevationAt(new Vector2(p.x, p.y));
 
         // =============================================================================================
         //  the region rectangle holds what it is asked to hold
@@ -86,12 +114,19 @@ namespace HiddenHarbours.Tests.EditMode
             Inside(NineMileCreekMainland.DockZonePos, "the dock zone");
             Inside(NineMileCreekMainland.ArrivalPos, "the boat arrival");
             Inside(NineMileCreekMainland.DisembarkPos, "the disembark point");
+            // The scene's own arrival, on the third issue's quay (NMC H2).
+            Inside(NineMileCreekBuilder.DockZonePos, "the scene's dock zone");
+            Inside(NineMileCreekBuilder.ArrivalPos, "the scene's boat arrival");
+            Inside(NineMileCreekBuilder.DisembarkPos, "the scene's disembark point");
 
             foreach (var lot in NineMileCreekMainland.TownLots) Inside(lot, "a town lot");
             foreach (var shanty in NineMileCreekMainland.ShantyRow) Inside(shanty, "a shanty");
 
-            foreach (var route in AllRoutes())
+            // Both networks: the lines the scene paves and the plan's own.
+            foreach (var route in SceneRoutes())
                 for (int i = 0; i < route.Length; i++) Inside(route[i], "a road node");
+            foreach (var route in PlanRoutes())
+                for (int i = 0; i < route.Length; i++) Inside(route[i], "a plan road node");
         }
 
         [Test]
@@ -130,8 +165,9 @@ namespace HiddenHarbours.Tests.EditMode
                 "a phase offset between the two halves would put high water on one side of the seam and " +
                 "low water on the other, which is worse than a different amplitude, not better");
 
-            // And the terrain the builder pushes must have been authored against that same tide.
-            Assert.That(_mainland.TideAmplitude,
+            // And the plan's analytic ground must have been authored against that same tide. (The scene's
+            // painted G3 ground carries no tide reference: its heights are metres, NMC H2.)
+            Assert.That(Plan.TideAmplitude,
                 Is.EqualTo(NineMileCreekMainland.TideAmplitude).Within(1e-4f),
                 "the terrain's authoring reference must match the region's own tide, or every " +
                 "tide-fraction elevation in it means something else");
@@ -172,8 +208,9 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheCrossingIsOneBarEitherSideOfTheSeam()
         {
             // The ground under each region's passage band. Walk out of one and you stand on the other:
-            // if these disagree, the crossing bares at a different tide on each side of the load.
-            float islandGround = _island.ElevationAt(
+            // if these disagree, the crossing bares at a different tide on each side of the load. This
+            // side is the scene's G3 ground (NMC H2).
+            float islandGround = Island.ElevationAt(
                 new Vector2(StPetersBuilder.ToNineMileCreekPassagePos.x,
                             StPetersBuilder.ToNineMileCreekPassagePos.y));
             float mainlandGround = Elev(NineMileCreekMainland.ToStPetersPassagePos);
@@ -188,9 +225,9 @@ namespace HiddenHarbours.Tests.EditMode
             // The flats must not visibly narrow across the load either. This is what the bar's shoulder
             // is for: the mainland's bay floor is -6 m where St Peters' is -4 m, and without a matching
             // shoulder the same half-width would bare a quarter narrower on this side.
-            float islandWidth = BaredHalfWidth(_island, StPetersBuilder.SandbarFrom,
+            float islandWidth = BaredHalfWidth(Island, StPetersBuilder.SandbarFrom,
                                                StPetersBuilder.SandbarTo, 0.6f);
-            float mainlandWidth = BaredHalfWidth(_mainland, NineMileCreekMainland.BarFrom,
+            float mainlandWidth = BaredHalfWidth(_ground, NineMileCreekMainland.BarFrom,
                                                  NineMileCreekMainland.BarTo, 0.6f);
 
             Assert.That(mainlandWidth, Is.EqualTo(islandWidth).Within(1f),
@@ -237,6 +274,9 @@ namespace HiddenHarbours.Tests.EditMode
         //  the wharf — the ruled 1.6 m gate
         // =============================================================================================
 
+        /// <summary>⚠ The plan's authoring since NMC H2, on the premise: the analytic trench along the plan's own
+        /// berth line. The scene's berths lie on the third issue's wall in G3's dredged basin, and are held there by
+        /// <c>NineMileCreekWharfTests.EveryBerth_IsWaterTheFleetCanLieIn_NotDryLandAndNotTheOpenBay</c>.</summary>
         [Test]
         public void EveryBerthLiesInTheTrenchThatWasCutForIt_NotOnTheDeckAndNotInTheOpenBay()
         {
@@ -245,7 +285,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < NineMileCreekMainland.BerthCount; i++)
             {
                 Vector2 berth = NineMileCreekMainland.BerthPos(i);
-                float bed = Elev(berth);
+                float bed = PlanElev(berth);
                 Assert.That(NineMileCreekMainland.SpringLowWater - bed,
                     Is.GreaterThanOrEqualTo(needed - 1e-3f),
                     $"berth {i} at {berth} sits on {bed:0.00} m and carries only " +
@@ -272,15 +312,18 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(depthAtMeanWater, Is.LessThan(6f), "shallower than Greywick's dredged harbour");
         }
 
+        /// <summary>⚠ The plan's authoring since NMC H2, on the premise: the analytic fills and the plan's deck.
+        /// The scene's quay is G3's (its deck at <see cref="NineMileCreekGroundPlan.DeckElevation"/>), held dry
+        /// along its whole length by <c>NineMileCreekWharfTests.TheWholeQuay_StaysDryAtSpringHigh</c>.</summary>
         [Test]
         public void TheWharfIsDryAtEveryTideAndItsFaceIsATallOne()
         {
-            Assert.That(Elev(NineMileCreekMainland.NorthWallFill.Center), Is.GreaterThan(SpringHigh),
+            Assert.That(PlanElev(NineMileCreekMainland.NorthWallFill.Center), Is.GreaterThan(SpringHigh),
                 "the deck has to stay above the water the fleet is floating in");
-            Assert.That(Elev(NineMileCreekMainland.WestWallFill.Center), Is.GreaterThan(SpringHigh));
-            Assert.That(Elev(NineMileCreekMainland.SpitFill.Center), Is.GreaterThan(SpringHigh),
+            Assert.That(PlanElev(NineMileCreekMainland.WestWallFill.Center), Is.GreaterThan(SpringHigh));
+            Assert.That(PlanElev(NineMileCreekMainland.SpitFill.Center), Is.GreaterThan(SpringHigh),
                 "the yard carries the sheds and the trucks");
-            Assert.That(Elev(NineMileCreekMainland.BreakwaterFill.Center), Is.GreaterThan(SpringHigh),
+            Assert.That(PlanElev(NineMileCreekMainland.BreakwaterFill.Center), Is.GreaterThan(SpringHigh),
                 "a breakwater awash at high water shelters nothing");
 
             // You step DOWN from the yard onto the wharf, which is how a working wharf is built.
@@ -298,30 +341,33 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void ArrivingByBoatPutsYouInReachOfTheDeck()
         {
-            float dockToArrival = Vector3.Distance(NineMileCreekMainland.ArrivalPos,
-                                                   NineMileCreekMainland.DockZonePos);
+            // The scene's arrival (NMC H2): the builder's anchors, which are the third issue's
+            // (NineMileCreekGroundPlan), on G3.
+            float dockToArrival = Vector3.Distance(NineMileCreekBuilder.ArrivalPos,
+                                                   NineMileCreekBuilder.DockZonePos);
             Assert.That(dockToArrival, Is.LessThan(NineMileCreekMainland.DockZoneRadius),
                 "the persistent ControlSwitcher disembarks on a pure DISTANCE test, so a boat parked " +
                 "outside the dock radius on arrival cannot be got off (the #52 playtest gap)");
 
             // ⚠ OWNER RULING 2026-09-04, and it moved this assertion: *"the bullpen should always have water at low tide so all the lobster boats can park on the wall."* The −1.6 m shoal is still the gate everywhere else in the basin — it is what the flats, the crossing and the guts are measured against — but along the berth line the trench (NineMileCreekMainland §8b¾) has cut it to the depth the fleet lies in. What used to be "exactly the gate" is now "deeper than the gate, by the trench's own arithmetic".
-            // The dock zone and the arrival park sit ON the berth line (y = 84.5), so they came with it:
+            // The dock zone and the arrival park sit ON the berth line, so they came with it:
             // you used to arrive at dead low water onto mud.
             float needed = NineMileCreekMainland.BerthDepthNeededMetres;
-            Assert.That(NineMileCreekMainland.SpringLowWater - Elev(NineMileCreekMainland.DockZonePos),
+            Assert.That(NineMileCreekMainland.SpringLowWater - Elev(NineMileCreekBuilder.DockZonePos),
                 Is.GreaterThanOrEqualTo(needed - 1e-3f),
                 "you dock in the basin, and it holds water at every state of tide now");
-            Assert.That(NineMileCreekMainland.SpringLowWater - Elev(NineMileCreekMainland.ArrivalPos),
+            Assert.That(NineMileCreekMainland.SpringLowWater - Elev(NineMileCreekBuilder.ArrivalPos),
                 Is.GreaterThanOrEqualTo(needed - 1e-3f),
                 "and you arrive in water, not on a wall and not on mud");
-            Assert.That(Elev(NineMileCreekMainland.DisembarkPos),
-                Is.EqualTo(NineMileCreekMainland.WharfDeckElevation).Within(0.05f),
+            Assert.That(Elev(NineMileCreekBuilder.DisembarkPos),
+                Is.EqualTo(NineMileCreekGroundPlan.DeckElevation).Within(0.05f),
                 "and you step ashore onto the deck");
         }
 
         [Test]
         public void EveryWharfMarkerStandsOnMadeGroundThatStaysDry()
         {
+            // On the scene's ground (G3, NMC H2): the sheds, the stores, the parking, the buyer and the dory.
             void Dry(Vector3 p, string what) =>
                 Assert.That(Elev(p), Is.GreaterThan(SpringHigh),
                     $"{what} at {p} stands on {Elev(p):0.00} m — under spring high water ({SpringHigh:0.0} m)");
@@ -333,8 +379,17 @@ namespace HiddenHarbours.Tests.EditMode
             Dry(NineMileCreekMainland.ParkingPos, "the parking");
             Dry(NineMileCreekMainland.FishBuyerPos, "the fish buyer's truck");
             Dry(NineMileCreekMainland.DerelictDoryPos, "the derelict dory");
-            Dry(NineMileCreekMainland.WinchPos, "the winch");
-            Dry(NineMileCreekMainland.HarbourBeaconPos, "the harbour beacon");
+
+            // Two of the plan's markers are later waves', so they are held on the plan's own made ground (its
+            // AUTHORING) and claim nothing about the scene: at the winch site the scene's apron gear is stood
+            // down by step 05, the davit's id kept for the crane (H5/N9), and the harbour beacon waits at the old
+            // arm's head for the two head lights (H5; NineMileCreekWharfTests.TheBreakwaterHead_IsWhereTheBeaconStands).
+            void PlanDry(Vector3 p, string what) =>
+                Assert.That(PlanElev(p), Is.GreaterThan(SpringHigh),
+                    $"{what} at {p} stands on {PlanElev(p):0.00} m of the plan's ground — under spring high water");
+
+            PlanDry(NineMileCreekMainland.WinchPos, "the winch");
+            PlanDry(NineMileCreekMainland.HarbourBeaconPos, "the harbour beacon");
         }
 
         [Test]
@@ -361,7 +416,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // Sampled at a metre, not at the nodes: the first draft's bar road had dry NODES and ran
             // straight through the marsh pool in between.
-            foreach (var route in AllRoutes())
+            //
+            // The scene's roads on the scene's ground (NMC H2): the bar road, Wharf Road and Route 91 on the
+            // lines step 06 paves, and the gully path. Route 91 crosses the river on its bridge, so its samples
+            // on the deck stand on the deck, not on the river under it, and the deck itself must clear the water.
+            Rect deck = NineMileCreekGroundPlan.BridgeDeck;
+            Assert.That(NineMileCreekGroundPlan.BridgeDeckElevation, Is.GreaterThan(SpringHigh),
+                "the bridge deck itself must stand above spring high water");
+
+            int onDeck = 0;
+            foreach (var route in SceneRoutes())
             {
                 for (int i = 0; i < route.Length - 1; i++)
                 {
@@ -370,6 +434,11 @@ namespace HiddenHarbours.Tests.EditMode
                     for (int k = 0; k <= steps; k++)
                     {
                         Vector2 p = Vector2.Lerp(route[i], route[i + 1], k / (float)steps);
+                        if (ReferenceEquals(route, NineMileCreekGroundPlan.Route91) && deck.Contains(p))
+                        {
+                            onDeck++;
+                            continue;
+                        }
                         float e = Elev(p);
                         Assert.That(e, Is.GreaterThan(SpringHigh),
                             $"a road passes through {p} where the ground is {e:0.00} m — under spring " +
@@ -377,6 +446,7 @@ namespace HiddenHarbours.Tests.EditMode
                     }
                 }
             }
+            Assert.That(onDeck, Is.GreaterThan(0), "Route 91 crosses no bridge: the river crossing is gone");
         }
 
         [Test]
@@ -388,23 +458,35 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(roadToLanding, Is.LessThan(25f),
                 "the bar road has to start AT the crossing's landing, not near it");
 
-            // "A road named Wharf Road runs all the way to Nine Mile Creek's wharf front."
-            Vector2 wharfFront = NineMileCreekMainland.SpitFill.Center;
-            float roadToWharf = NineMileCreekMainland.DistanceToRoute(NineMileCreekMainland.WharfRoad, wharfFront);
-            Assert.That(roadToWharf, Is.LessThan(NineMileCreekMainland.SpitFill.HalfSize.y),
-                "Wharf Road has to reach the yard, not stop at the shore");
+            // "A road named Wharf Road runs all the way to Nine Mile Creek's wharf front." On the lines the scene
+            // paves (NineMileCreekGroundPlan, NMC H2) Wharf Road climbs the final ramp and ends ON the turning
+            // circle at the head of the yard, and the circle opens onto the yard's made ground; the yard's own
+            // road beyond it is a later wave's.
+            Vector2 roadEnd = NineMileCreekGroundPlan.WharfRoad[NineMileCreekGroundPlan.WharfRoad.Length - 1];
+            Assert.That(Vector2.Distance(roadEnd, NineMileCreekGroundPlan.TurningPadCentre),
+                Is.LessThan(NineMileCreekGroundPlan.TurningPadRadius),
+                "Wharf Road has to reach the turning circle at the yard, not stop short of it");
+            Vector2 intoTheYard = NineMileCreekGroundPlan.TurningPadExit;
+            var yard = NineMileCreekMainland.SpitFill;
+            Assert.That(Mathf.Abs(intoTheYard.x - yard.Center.x) <= yard.HalfSize.x &&
+                        Mathf.Abs(intoTheYard.y - yard.Center.y) <= yard.HalfSize.y, Is.True,
+                $"the circle opens at {intoTheYard}, outside the yard: Wharf Road has to reach the yard, not " +
+                "stop at the shore");
+            Assert.That(Elev(intoTheYard), Is.GreaterThan(SpringHigh),
+                "and the yard it opens onto is made ground that stays dry");
 
             // The two meet, or the crossing does not connect to the town at all.
             float junctionToBarRoad =
                 NineMileCreekMainland.DistanceToRoute(NineMileCreekMainland.BarRoad, NineMileCreekMainland.RoadJunction);
             float junctionToWharfRoad =
-                NineMileCreekMainland.DistanceToRoute(NineMileCreekMainland.WharfRoad, NineMileCreekMainland.RoadJunction);
+                NineMileCreekMainland.DistanceToRoute(NineMileCreekGroundPlan.WharfRoad, NineMileCreekMainland.RoadJunction);
             Assert.That(junctionToBarRoad, Is.LessThan(0.5f), "the junction must be ON the bar road");
             Assert.That(junctionToWharfRoad, Is.LessThan(0.5f), "and ON Wharf Road");
 
-            // And the through-road passes through the town end of Wharf Road (the overhead's Route 19).
-            Vector2 townEnd = NineMileCreekMainland.WharfRoad[0];
-            Assert.That(NineMileCreekMainland.DistanceToRoute(NineMileCreekMainland.ThroughRoad, townEnd),
+            // And the through-road passes through the town end of Wharf Road: Route 91, on the third issue's
+            // line (NMC H2).
+            Vector2 townEnd = NineMileCreekGroundPlan.WharfRoad[0];
+            Assert.That(NineMileCreekMainland.DistanceToRoute(NineMileCreekGroundPlan.Route91, townEnd),
                 Is.LessThan(0.5f), "Wharf Road starts on the through-road the community is strung along");
         }
 
@@ -423,6 +505,9 @@ namespace HiddenHarbours.Tests.EditMode
                 $"the path ends at s={along:0.0} where the coast is {c}; it is supposed to reach the gully");
         }
 
+        /// <summary>⚠ The plan's authoring since NMC H2, on the premise: the legacy zone math, kept as the town
+        /// wave's own premise (its final lot ids migrate with it). The lots on the scene's ground are
+        /// <see cref="EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes"/>.</summary>
         [Test]
         public void EveryTownLotIsOnDryFieldsClearOfItsNeighboursAndOffTheRoad()
         {
@@ -431,10 +516,10 @@ namespace HiddenHarbours.Tests.EditMode
 
             for (int i = 0; i < lots.Length; i++)
             {
-                Assert.That(Elev(lots[i]), Is.EqualTo(NineMileCreekMainland.LandElevation).Within(0.05f),
+                Assert.That(PlanElev(lots[i]), Is.EqualTo(NineMileCreekMainland.LandElevation).Within(0.05f),
                     $"town lot {i} at {lots[i]} is not on the plateau — is it in a pond?");
 
-                foreach (var route in AllRoutes())
+                foreach (var route in PlanRoutes())
                 {
                     float d = NineMileCreekMainland.DistanceToRoute(route, lots[i]);
                     Assert.That(d, Is.GreaterThan(NineMileCreekMainland.RoadHalfWidth
@@ -453,6 +538,59 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>
+        /// ⭐ THE TOWN ON THE SCENE'S GROUND (NMC H2). Each lot's whole reserved footprint (the
+        /// <see cref="NineMileCreekMainland.TownLotRadius"/> disc round its centre, sampled every half metre)
+        /// stands on G3 ground above spring high water, and its centre is clear of every road the scene carries
+        /// (Route 91 and Wharf Road on their final lines, the bar road and the gully path) by the corridor and
+        /// the lot.
+        ///
+        /// <para>⚠ Two lots are named, not hidden: the north house (<see cref="NineMileCreekMainland.HouseNorthPos"/>)
+        /// and the north-west house (<see cref="NineMileCreekMainland.HouseNorthWestPos"/>) stand in the river
+        /// valley G3 cuts north of the town. The town wave's final plan has no lots there (its "gone north" lots,
+        /// migrating with the final lot ids), and their yards are the A2 inventory's deferred conflicts. The list
+        /// is held exact: the day either stands dry, this test asks for it to come off.</para>
+        /// </summary>
+        [Test]
+        public void EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes()
+        {
+            var riverValley = new[] { NineMileCreekMainland.HouseNorthPos, NineMileCreekMainland.HouseNorthWestPos };
+            float r = NineMileCreekMainland.TownLotRadius;
+
+            foreach (var lot in NineMileCreekMainland.TownLots)
+            {
+                Vector2 centre = new Vector2(lot.x, lot.y);
+
+                // The lowest ground under the lot's footprint, on a half-metre grid.
+                float lowest = float.MaxValue;
+                Vector2 lowestAt = centre;
+                for (float dx = -r; dx <= r + 1e-3f; dx += 0.5f)
+                    for (float dy = -r; dy <= r + 1e-3f; dy += 0.5f)
+                    {
+                        if (dx * dx + dy * dy > r * r) continue;
+                        Vector2 p = centre + new Vector2(dx, dy);
+                        float e = Elev(p);
+                        if (e < lowest) { lowest = e; lowestAt = p; }
+                    }
+
+                if (System.Array.IndexOf(riverValley, lot) >= 0)
+                    Assert.That(lowest, Is.LessThanOrEqualTo(SpringHigh),
+                        $"the lot at {lot} stands dry on G3 now: take it off the river valley's list");
+                else
+                    Assert.That(lowest, Is.GreaterThan(SpringHigh),
+                        $"the lot at {lot} has ground of {lowest:0.00} m at {lowestAt}, under spring high water " +
+                        $"({SpringHigh:0.0} m). A house does not stand in the tide.");
+
+                foreach (var route in SceneRoutes())
+                {
+                    float d = NineMileCreekMainland.DistanceToRoute(route, centre);
+                    Assert.That(d, Is.GreaterThan(NineMileCreekMainland.RoadHalfWidth + r),
+                        $"the lot at {lot} is {d:0.0} m from a road the scene paves; its footprint would " +
+                        "stand in the carriageway");
+                }
+            }
+        }
+
         // =============================================================================================
         //  the ponds, and the ground behind the shore
         // =============================================================================================
@@ -460,6 +598,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void BothPondsFillAndDrainWithTheTide()
         {
+            // On the scene's ground (G3, NMC H2), at the plan's two carve centres.
             foreach (var pond in new[] { NineMileCreekMainland.BarachoisCarve,
                                          NineMileCreekMainland.MarshPoolCarve })
             {
@@ -475,6 +614,9 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>⚠ The plan's authoring since NMC H2, on the premise: in the analytic plan a mainland is a
+        /// SIDE. G3 is not one: its south shore reaches up to y −180 and the river runs north of the town, so the
+        /// scene's claim is the town's own ground (<see cref="EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes"/>).</summary>
         [Test]
         public void TheFieldsInlandAreDryEverywhereTheTownStands()
         {
@@ -487,7 +629,7 @@ namespace HiddenHarbours.Tests.EditMode
                     // Skip the two ponds; they are meant to be wet.
                     if (InZone(p, NineMileCreekMainland.BarachoisCarve)) continue;
                     if (InZone(p, NineMileCreekMainland.MarshPoolCarve)) continue;
-                    Assert.That(Elev(p), Is.GreaterThan(SpringHigh),
+                    Assert.That(PlanElev(p), Is.GreaterThan(SpringHigh),
                         $"the fields at {p} are under water at spring high");
                 }
         }
@@ -501,13 +643,15 @@ namespace HiddenHarbours.Tests.EditMode
                     $"the open bay at {p} should be the region's floor");
         }
 
+        /// <summary>⚠ The plan's authoring since NMC H2, on the premise: the analytic terrain and its memo. The
+        /// scene's G3 ground is a decoded map, pinned code for code by <c>NineMileCreekGroundImportTests</c>.</summary>
         [Test]
         public void TheTerrainIsAPureFunctionOfPosition_AcrossSampleOrderAndAcrossRebuilds()
         {
             // Deterministic from geometry alone: no RNG, no clock, nothing saved (rule 5) — and the whole
             // simulation contract rests on it.
             //
-            // ⚠ Asserting Elev(p) == Elev(p) would prove nothing (the compiler is free to fold it). The
+            // ⚠ Asserting PlanElev(p) == PlanElev(p) would prove nothing (the compiler is free to fold it). The
             // two things that could actually break purity here are ORDER and CACHED STATE: the terrain
             // memoises the coast run's length rather than re-summing the polyline on all 1.7 million
             // samples of a seabed bake, so a stale cache is a live failure mode this feature introduced.
@@ -524,7 +668,7 @@ namespace HiddenHarbours.Tests.EditMode
             };
 
             var forwards = new float[probes.Length];
-            for (int i = 0; i < probes.Length; i++) forwards[i] = Elev(probes[i]);
+            for (int i = 0; i < probes.Length; i++) forwards[i] = PlanElev(probes[i]);
 
             var rebuiltGo = new GameObject("NineMileCreekMainland_DeterminismRebuild");
             try
@@ -541,6 +685,7 @@ namespace HiddenHarbours.Tests.EditMode
             finally { Object.DestroyImmediate(rebuiltGo); }
         }
 
+        /// <summary>⚠ The plan's authoring since NMC H2, on the premise: the analytic terrain's one cache.</summary>
         [Test]
         public void ReAuthoringTheCoastlineInvalidatesTheCachedRunLength()
         {
@@ -548,22 +693,34 @@ namespace HiddenHarbours.Tests.EditMode
             // does not clear it, the blend keeps measuring the LAST coastline's end — which reads as a
             // coast plan that silently refuses to move, the worst kind of bug to chase in a builder that
             // is meant to converge on re-run.
-            float authored = _mainland.CoastRunLength;
+            var plan = Plan;
+            float authored = plan.CoastRunLength;
             Assert.That(authored, Is.EqualTo(MainlandCoast.RunLength(NineMileCreekMainland.CoastPoints))
                 .Within(0.01f));
 
-            _mainland.CoastPoints = new[] { new Vector2(0f, -100f), new Vector2(0f, 100f) };
-            Assert.That(_mainland.CoastRunLength, Is.EqualTo(200f).Within(0.01f),
+            plan.CoastPoints = new[] { new Vector2(0f, -100f), new Vector2(0f, 100f) };
+            Assert.That(plan.CoastRunLength, Is.EqualTo(200f).Within(0.01f),
                 "re-authoring the coastline must invalidate the cached run length");
 
-            NineMileCreekMainland.ConfigureTerrain(_mainland);
-            Assert.That(_mainland.CoastRunLength, Is.EqualTo(authored).Within(0.01f),
+            NineMileCreekMainland.ConfigureTerrain(plan);
+            Assert.That(plan.CoastRunLength, Is.EqualTo(authored).Within(0.01f),
                 "and so must a full re-configure");
         }
 
         // ---- helpers --------------------------------------------------------------------------------
 
-        private static Vector2[][] AllRoutes() => new[]
+        /// <summary>The roads the scene carries: the bar road and the gully path, and Route 91 and Wharf Road on the
+        /// lines step 06 paves (<see cref="NineMileCreekGroundPlan"/>, NMC H2).</summary>
+        private static Vector2[][] SceneRoutes() => new[]
+        {
+            NineMileCreekMainland.BarRoad,
+            NineMileCreekGroundPlan.WharfRoad,
+            NineMileCreekGroundPlan.Route91,
+            NineMileCreekMainland.GullyPath,
+        };
+
+        /// <summary>The plan's own roads: the premise's authoring.</summary>
+        private static Vector2[][] PlanRoutes() => new[]
         {
             NineMileCreekMainland.BarRoad,
             NineMileCreekMainland.WharfRoad,

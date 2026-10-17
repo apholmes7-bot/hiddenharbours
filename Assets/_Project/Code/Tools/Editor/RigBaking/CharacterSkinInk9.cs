@@ -177,14 +177,14 @@ namespace HiddenHarbours.Tools.RigBaking
                     "The def's keyline would be a different colour from the rig's wherever that pair meets.");
             List<Shot> plan = Plan(def, clipOfState);
             var readings = new Reading[plan.Count];
-            var poser = new Poser(def);
+            var poser = new Poser(def, CharacterSkinExtractor.PaintTolerance9(host));
             for (int i = 0; i < plan.Count; i++) readings[i] = Measure(host, def, plan[i], poser);
             return readings;
         }
 
         /// <summary>One shot, compared.</summary>
         public static Reading Measure(IRigScriptHost host, CharacterSkinDef def, Shot shot) =>
-            Measure(host, def, shot, new Poser(def));
+            Measure(host, def, shot, new Poser(def, CharacterSkinExtractor.PaintTolerance9(host)));
 
         static Reading Measure(IRigScriptHost host, CharacterSkinDef def, Shot shot, Poser poser)
         {
@@ -245,7 +245,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     };
             }
             Vector3d key = CharacterSkinExtractor.V9Shading3(host, "key");
-            CharacterSkinExtractor.MarkCull9 marks = CharacterSkinExtractor.ReadMarkCull9(kit);
+            CharacterSkinExtractor.MarkCull9 marks = CharacterSkinExtractor.ReadMarkCull9(host);
             var ink = new RigPaint9.Ink
             {
                 KeyX = key.X, KeyY = key.Y, KeyZ = key.Z,
@@ -254,8 +254,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 Edge = CharacterSkinExtractor.V9ShadingNumber(host, "edge"),
                 Keyline = Rgb(posed.Keyline),
                 KeylineMix = CharacterSkinExtractor.V9ShadingNumber(host, "keylineMix"),
-                CullFloor = CharacterSkinExtractor.CullFloor9(kit),
+                CullFloor = CharacterSkinExtractor.CullFloor9(host),
                 MarkAzFloor = marks.AzFloor, MarkEdge = marks.Edge,
+                Tol = CharacterSkinExtractor.PaintTolerance9(host),
                 SinglePrecisionMix = false,
             };
 
@@ -389,7 +390,7 @@ namespace HiddenHarbours.Tools.RigBaking
             readonly RigPaint9.Material[] _mats;
             readonly RigPaint9.Ink _ink;
 
-            public Poser(CharacterSkinDef def)
+            public Poser(CharacterSkinDef def, RigPaint9.Tolerance tol)
             {
                 _def = def ?? throw new ArgumentNullException(nameof(def));
                 if (def.ToneRule != ToneRule.V9 || !def.HasFace)
@@ -446,6 +447,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     Form = def.Form, FormMid = def.FormMid, Edge = def.Edge,
                     Keyline = Rgb(def.Keyline), KeylineMix = def.KeylineMix,
                     CullFloor = def.FaceCullFloor, MarkAzFloor = def.FaceMarkAzFloor, MarkEdge = def.FaceMarkEdge,
+                    Tol = tol,
                     SinglePrecisionMix = true,
                 };
             }

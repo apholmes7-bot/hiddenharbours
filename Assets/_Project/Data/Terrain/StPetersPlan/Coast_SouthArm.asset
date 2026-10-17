@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_SouthArm
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_south_arm
+  DisplayName: South Arm
+  Type: deep_cliff
+  Mode: 4
+  Recipe: {fileID: 11400000, guid: ca719065258ff30cb60e6315e593f5af, type: 2}
+  Edge: {x: 2, y: 10}
+  Knots: []
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls:
+  - {fileID: 11400000, guid: 24e7a8d233a2105b8be5c3e64fc48368, type: 2}
+  - {fileID: 11400000, guid: b4f34ff7cfbaa963921680ce5708d928, type: 2}
+  - {fileID: 11400000, guid: 77be024a099b427d799edd79e1c9ed97, type: 2}
+  - {fileID: 11400000, guid: 03b7298bc777fcff275c79c5d2da6ae1, type: 2}
+  - {fileID: 11400000, guid: 2943026f60bdc0d868eec6c5738b7080, type: 2}
+  - {fileID: 11400000, guid: e2c4c9ce5b7ec548fc2870084b82f9bf, type: 2}
+  - {fileID: 11400000, guid: 9e805345d384a7320b97326407d4276f, type: 2}
+  - {fileID: 11400000, guid: 41fbe6546e00311433fbddb993aeacd5, type: 2}
+  - {fileID: 11400000, guid: 7f7a5def66381b6240152a54e17bde1d, type: 2}
+  - {fileID: 11400000, guid: 7e4b961df70c2eaa043cc65c53e3a93b, type: 2}
+  - {fileID: 11400000, guid: 873528fb4f6916887cac04fbbf36a9c8, type: 2}
+  - {fileID: 11400000, guid: 3dede3a8b5ad833994272d055b6b20f7, type: 2}
+  - {fileID: 11400000, guid: 4aa5e0cc915afa7afbdc9c1da4ad5a55, type: 2}
+  - {fileID: 11400000, guid: 06e1df3bd135cbb8cd10da3d55dfa306, type: 2}
+  - {fileID: 11400000, guid: eff65c4d0915c3276b02c9ab65966c97, type: 2}
+  - {fileID: 11400000, guid: 8364cdf55731daecc3e87a33622ded88, type: 2}
+  - {fileID: 11400000, guid: 4edabca4572961c22220982ee577d3de, type: 2}
+  - {fileID: 11400000, guid: 74e593fe5a68c75ea29ccdcbcc03bd9a, type: 2}
+  - {fileID: 11400000, guid: 71684302a2e96f90cf02395fe8fef44b, type: 2}
+  - {fileID: 11400000, guid: 9bccd4a27de9f1ccf273c7cda0541e6b, type: 2}
+  - {fileID: 11400000, guid: 4dfaeed27052d59205e3228a1d32b9a2, type: 2}
+  - {fileID: 11400000, guid: 4562a33d6b18f23a724f73390e6d1e1c, type: 2}
+  - {fileID: 11400000, guid: beae3ca0d25b36612987feec05b5e3b6, type: 2}
+  - {fileID: 11400000, guid: 9a9fd03f2120708d3cc96cdbcf7e24d3, type: 2}
+  - {fileID: 11400000, guid: 08f105696260efd0a2f57cef1d89d7cc, type: 2}
+  - {fileID: 11400000, guid: a7175bb38a794b9bbda8f722c174ac99, type: 2}
+  - {fileID: 11400000, guid: 12244546ed65beeff88ab42dc16a803a, type: 2}
+  - {fileID: 11400000, guid: 9c73def90201783b0687b4e0f4d5a1b3, type: 2}
+  - {fileID: 11400000, guid: 0b1ae5ea7b64bb42ad64ddfe5b22510b, type: 2}
+  - {fileID: 11400000, guid: cc75ec9fff45c81fa7b3ad84e4b386a5, type: 2}
+  - {fileID: 11400000, guid: c107a715b3a82c8e7393b41310488568, type: 2}
+  - {fileID: 11400000, guid: 9b86732b264d6da842bd4d9b28fca376, type: 2}
+  - {fileID: 11400000, guid: 08e8c758167ce51dc7b75d2754ed71f5, type: 2}
+  - {fileID: 11400000, guid: 507de9573bb203ba8946ca2939914c45, type: 2}
+  - {fileID: 11400000, guid: 217afa2ced482f3a3ba0f02ff96d05e1, type: 2}
+  - {fileID: 11400000, guid: de565ce4dc9e37e1acc8aedac9b566f8, type: 2}
+  - {fileID: 11400000, guid: b3dedd4150d4926a105f85df90f27fc2, type: 2}
+  - {fileID: 11400000, guid: 37818136bc8b997b025f23016d080bf4, type: 2}
+  - {fileID: 11400000, guid: a00a63fde315c42fae5d64df39c36043, type: 2}
+  - {fileID: 11400000, guid: 86b63ea5cfa0ab03b1d37f15be71cc98, type: 2}
+  - {fileID: 11400000, guid: b298f33066b5acfe56e0d0246288013e, type: 2}
+  - {fileID: 11400000, guid: cf36638518627cc154d18fb22863d6be, type: 2}
+  - {fileID: 11400000, guid: ba44170d1251b9e2ffc9401245f69ecb, type: 2}
+  - {fileID: 11400000, guid: 6086e0212821fc76f4c5ac8f0f081a73, type: 2}
+  - {fileID: 11400000, guid: 2c6e2d55cfe8949e6616db8a1a2ef39a, type: 2}
+  - {fileID: 11400000, guid: 88d1864e85ac208b27e95f49ee27b3e7, type: 2}
+  - {fileID: 11400000, guid: 995e19c05dabb76ef7b3f240c3bf8aff, type: 2}
+  - {fileID: 11400000, guid: ab992205915d42c686067f5516b7afb3, type: 2}
+  - {fileID: 11400000, guid: c37858c2448e095d4902f2776de4bf1d, type: 2}
+  - {fileID: 11400000, guid: 411585f08bb5914fcee3607663a58c6c, type: 2}
+  - {fileID: 11400000, guid: c39c8203accc6abac98622b753b23f71, type: 2}
+  - {fileID: 11400000, guid: 8cc4c18bfb55a489b73846d89778404a, type: 2}
+  - {fileID: 11400000, guid: 72582f47b16061ee9fed2beaa7fca448, type: 2}
+  - {fileID: 11400000, guid: 55feee14fc55864d013776bc60443cd7, type: 2}
+  - {fileID: 11400000, guid: 6badb7d5198c49fa325c7ec473028f75, type: 2}
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: boulder
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'Walls 000-022 (DeepShoreCliff, E/SE) are the harbour''s south arm. The deep water at their foot stays deep (the arrival is from the north-east); a stack and three skerries stand off the arm so the harbour reads as held between two arms. Its walls (PR 5w, by real id, clockwise): 000, 001, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 013, 014, 015, 016, 017, 018, 019, 020, 021, 022; part 2 drew it on walls 000-022. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

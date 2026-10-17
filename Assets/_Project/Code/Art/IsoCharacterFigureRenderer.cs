@@ -886,7 +886,8 @@ namespace HiddenHarbours.Art
         /// <summary>
         /// Her overlay: the def's cell rectangle around the pivot, padded 1 px, and on each side as many
         /// whole pixels again as the figure's measured reach passes the cell by there
-        /// (<see cref="CharacterSkinDef.ReachPx"/>: rig 10's deck boss asleep reaches 1.69 px below it).
+        /// (<see cref="CharacterSkinDef.ReachPx"/>: on rig 10.3 the mount clips reach furthest, 10.15 to
+        /// 11.14 px below it).
         /// Built exactly as <see cref="IsoFacetHullRenderer"/> builds a hull's from its setup — and, like
         /// it, under a SortingGroup, because a mesh renderer does not sort against sprites without one.
         /// </summary>

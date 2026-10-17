@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 
 namespace HiddenHarbours.Core
@@ -19,12 +20,21 @@ namespace HiddenHarbours.Core
     /// <para>Restoring the captured fleet/clock/wallet back into the live gameplay objects is the owning
     /// lanes' follow-up (e.g. OwnedFleet's <c>TODO(VS-08)</c>); they read <see cref="Current"/>. This
     /// service's job is the durable, versioned, migratable substrate.</para>
+    ///
+    /// <para><b>Which file, and what is never lost.</b> It opens <see cref="SaveStore.ActivePath"/>: the
+    /// player's save, or under the editor's test runner the run's own. A write that replaces a game the
+    /// player did not choose to replace keeps that file first (<see cref="SaveStore.KeepReplaced"/>): a New
+    /// Game keeps the game it erases, and the first write over a save that could not be read keeps it.</para>
     /// </summary>
     public sealed class SaveService : MonoBehaviour, ISaveService
     {
         private static SaveService _instance;
 
         private string _path;
+
+        // A file was at _path when it was opened but could not be read as a save (corrupt, cut short, a
+        // format this build cannot parse). The first write keeps it whole before replacing it.
+        private bool _unreadableOnDisk;
 
         public SaveData Current { get; private set; }
 
@@ -52,10 +62,10 @@ namespace HiddenHarbours.Core
             }
             _instance = this;
 
-            _path = SaveStore.DefaultPath;
-            var loaded = SaveStore.Read(_path);                           // null when no save on disk yet
-            LoadedExistingSave = loaded != null;
-            Current = loaded ?? SaveMigration.NewGame();                  // load on launch (or new game)
+            // The test runner's redirect must already be in place here, at BeforeSceneLoad: its setup sets it
+            // before the runner enters play mode (SaveStore.ActivePath). The file opened now is the one every
+            // later write goes to, the quit's included.
+            Open(SaveStore.ActivePath);
 
             GameServices.Save = this;
 
@@ -84,6 +94,23 @@ namespace HiddenHarbours.Core
             if (ReferenceEquals(GameServices.Save, this)) GameServices.Save = null;
             if (_instance == this) _instance = null;
         }
+
+        /// <summary>
+        /// Read the save at <paramref name="path"/> into <see cref="Current"/> and write there from now on.
+        /// Awake opens <see cref="SaveStore.ActivePath"/>. Tests open a temp file, so a real service can be
+        /// driven without going near the player's save.
+        /// </summary>
+        internal void Open(string path)
+        {
+            _path = path;
+            var loaded = SaveStore.Read(_path);                           // null when no save on disk yet
+            LoadedExistingSave = loaded != null;
+            Current = loaded ?? SaveMigration.NewGame();                  // load on launch (or new game)
+            _unreadableOnDisk = loaded == null && File.Exists(_path);
+        }
+
+        /// <summary>The file this service reads and writes.</summary>
+        internal string SavePath => _path;
 
         // ---- autosave on suspend / exit --------------------------------------------------------
 
@@ -115,6 +142,7 @@ namespace HiddenHarbours.Core
 
             if (Current == null) Current = SaveMigration.NewGame();
             SnapshotLiveState();
+            KeepAnUnreadableSave();
             SaveStore.Write(Current, _path);
 
             // The write landed (a failed one throws out of Write rather than reaching here), so there is now
@@ -135,9 +163,17 @@ namespace HiddenHarbours.Core
         /// <para>Deliberately no <see cref="SnapshotLiveState"/> on the way out: this is not a save of
         /// the session being abandoned, it is the erasure of it. The live services are then brought to
         /// the fresh blob's state by the shell's restore, not the other way round.</para>
+        ///
+        /// <para>The erased game is not thrown away: the file on disk is kept beside the save, whole, before
+        /// the fresh blob replaces it (<see cref="SaveStore.KeepReplaced"/>), so a mistaken New Game can be
+        /// undone by hand. If it cannot be kept, the exception stops the New Game before anything is
+        /// written.</para>
         /// </summary>
         public void BeginNewGame()
         {
+            SaveStore.KeepReplaced(_path);
+            _unreadableOnDisk = false;
+
             Current = SaveMigration.NewGame();
             LoadedExistingSave = false;
             SaveStore.Write(Current, _path);
@@ -185,6 +221,18 @@ namespace HiddenHarbours.Core
 
             if (GameServices.Environment != null) Current.WorldSeed = GameServices.Environment.WorldSeed;
             if (GameServices.Wallet != null) Current.Money = GameServices.Wallet.Money;
+        }
+
+        /// <summary>
+        /// Before the first write replaces a save that was there but could not be read, keep it whole
+        /// (<see cref="SaveStore.KeepReplaced"/>). It may be a real game that a fixed build, or a hand, can
+        /// still recover. Only the first write keeps it: after that the file is this session's own.
+        /// </summary>
+        private void KeepAnUnreadableSave()
+        {
+            if (!_unreadableOnDisk) return;
+            SaveStore.KeepReplaced(_path);
+            _unreadableOnDisk = false;
         }
 
         private void OnBoatPurchased(BoatPurchased e) => RecordActiveBoat(e.BoatId);

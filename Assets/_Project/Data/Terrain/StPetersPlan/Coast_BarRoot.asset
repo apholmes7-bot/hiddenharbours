@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba11a965f465ae7368870a5168abc3cc, type: 3}
+  m_Name: Coast_BarRoot
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastSectionDef
+  Id: coast.stp_bar_root
+  DisplayName: Bar root
+  Type: sandy_flats
+  Mode: 5
+  Recipe: {fileID: 11400000, guid: 3e76672de336f002bf4dae14e31c9d6e, type: 2}
+  Edge: {x: 2, y: 10}
+  Knots: []
+  SeaTail: 12
+  HasRockEdge: 0
+  RockEdge: 0
+  Poly: []
+  Sector: {x: 0, y: 0}
+  Below: 0
+  XRange: {x: 0, y: 0}
+  HalfWidth: 0
+  WindowWest: 30
+  GutX: 0
+  GutKeep: 0
+  RunnelEvery: {x: 0, y: 0}
+  RunnelWidth: 0
+  RunnelDepth: 0
+  RunnelBand: {x: -1.8, y: 0.4}
+  RunnelAcross: {x: 5.5, y: 30}
+  MusselNearGut: 0
+  MusselBand: {x: 0, y: 0}
+  LobeAmp: 0
+  LobeLambda: 0
+  LobeBand: {x: 0, y: 0, z: 0, w: 0}
+  PaintBelow: 2.4
+  CrestKeep: {x: 5, y: 1.5}
+  HeadKeep: []
+  HeadKeepFeather: 3
+  PoolRelease: {x: 1.2, y: 0.3}
+  PoolWobble: 0.06
+  Walls: []
+  Broken: 0
+  KeepAbove: 1
+  FlatsCharacter: sand
+  HasSpit: 0
+  SpitBearing: 0
+  SpitLength: 0
+  SpitHalfWidth: 0
+  SpitCrest: {x: 0, y: 0}
+  SpitMaxCut: 0
+  Why: 'Part 1''s Bar-Head Flats (paint-only, the clam flats): kept as part 1 planned them. (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

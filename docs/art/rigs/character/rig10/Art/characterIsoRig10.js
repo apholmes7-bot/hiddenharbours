@@ -82,7 +82,13 @@
      the engine on top of any clip. The mounts keep the standing foot on the ground until the seat carries the body (CONTRACT.saddleFit
      is the saddle they are gated at). The load, lift and haul hands stay in reach in transit. The open mouth is three pixels wide. The
      hood's neck rides the neck bone. The collider is in the sidecar.
-   Pass 9's contract, which 10.0 keeps except the cell (now 80 x 104, pivot 40, 90): axes, cell 64x92, pivot (32,82), 32 px/m, 40 deg, 8 facings, the ANIMS table, world opts (saddleFit is new).
+   PASS 10.3 — THE SEND-BACK (2026-10-03)
+     DITHER, TOL, INK and AIM are exported beside SHADING, BLINK and LOOK, and paint() reads its tolerances from TOL. The rod's bend chords
+     keep the rod's own roll (10.2 turned them 180 deg about the rod each time it passed vertical). A profile eye the hair covers moves a
+     column forward (the square and wide heads); a knit brow wins over a lidded eye's lid; the mouth's centre goes a row up where the chin
+     is too short for it. sizes() counts the bind mesh at 7 decimals, as the builds print it.
+   The contract every pass keeps: axes, 32 px/m, 40 deg, 8 facings, the ANIMS table, world opts (saddleFit since 9.2); the cell is
+   80 x 104, pivot (40, 90), since 10.0 (pass 9: 64 x 92, pivot (32, 82)).
    Load order: characterIsoRig10.js, characterIsoRig10.poses.js, characterIsoRig10.checks.js (optional).
    Exposes globalThis.CharacterIso10. */
 (function (root) {
@@ -102,6 +108,18 @@
     edge: 0.12, keyline: '#101a19', keylineMix: 0.22, keylineDefault: false, cull: 'back faces (toward-camera component of the flat normal <= 0)',
     step: 'clamp(round(s*gain + bias + b), lo, hi) + off, clamped to the ramp; s = n.key + form*(n.toward - formMid). lo..hi is four tones: shadow, base, light, highlight; the contour pass may take one below',
     headSnap: 'the head bone is moved in screen space so its centre sits on a pixel centre (<= 0.5 px)' };
+  /* 10.3: what a port of the reference renderer needs besides SHADING, exported so the game reads it instead of copying it.
+     DITHER: rig 10 never dithers (every tone is rounded: SHADING.step); the fleet rigs' 4x4 Bayer is given for a baker that shares one
+     rasteriser. TOL: every tolerance paint() and the gates use; paint() reads them from here. */
+  const DITHER = { used:false, bayer4:[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]], index:'bayer4[x & 3][y & 3], x the cell column, y the cell row',
+    threshold:'(m + 0.5) / 16', note:'no pixel of rig 10 is dithered: the step is clamp(round(...)), never a threshold against this matrix' };
+  const TOL = { gate_m:1e-6, inside:1e-6, area:1e-9, cull:1e-4, markEdge:1e-4, depthScale:1e7, shadeScale:1e9, tieDepth:1e-9,
+    use:{ gate_m:'the round trip, the loops, the hand-offs and the rocked skin are held equal to this, in metres',
+      inside:'a pixel centre (x + 0.5, y + 0.5) is inside a triangle when each barycentric weight is >= -inside',
+      area:'a triangle whose screen area is below this draws nothing', cull:'a face draws when its toward-camera component is > max(cull, minT); a point mark when it is > cull',
+      markEdge:'a point mark whose projected centre is within markEdge of a pixel edge draws nothing',
+      depthScale:'the z-test compares round((d - db) * depthScale) / depthScale', shadeScale:'the shade value s is round(s * shadeScale) / shadeScale before the step',
+      tieDepth:'the A/B keyline takes its nearest neighbour by depth, ties within tieDepth going to the darker' } };
   /* 10.1: the parts that shade on smooth normals, and how far from vertical a face may lean and still count as vertical (35 deg: the waist's taper and the bust stay one tone with the chest; the yoke, steeper, keeps its own) */
   const SMOOTH=/^(torso|pelvis|skirt|shawl|upper_|fore_|thigh_|shin_|boot_|bib|strap|belt|vest|jacket|lapel|tie|apron)/, SMOOTH_Z=Math.sin(35*DEG);
 
@@ -126,6 +144,10 @@
   /* a tool's attitude (rig 7 / RodIso): local +y along the tool, pitched up by p, then turned by y */
   const aimM=(p,y)=>mM(Rz(-y),Rx(p));
   const aimTo=(A,B)=>{ const d=vnorm(vsub(B,A)); return aimM(Math.asin(Math.max(-1,Math.min(1,d[2]))), Math.atan2(d[0],d[1])); };
+  /* 10.3: the shortest turn taking unit u onto unit v (Rodrigues), and a frame R turned that way so its +y runs from A to B */
+  function rotOnto(u,v){ const c=vdot(u,v), a=vcross(u,v), s=vlen(a); if(s<1e-12) return I3.slice(); const k=vmul(a,1/s), t=1-c;
+    const col=(e)=>vadd(vadd(vmul(e,c), vmul(vcross(k,e),s)), vmul(k, t*vdot(k,e))); return cols(col([1,0,0]), col([0,1,0]), col([0,0,1])); }
+  const onto=(R,A,B)=>mM(rotOnto(mV(R,[0,1,0]), vnorm(vsub(B,A))), R);
   function quatOf(R){
     const m00=R[0],m10=R[1],m20=R[2], m01=R[3],m11=R[4],m21=R[5], m02=R[6],m12=R[7],m22=R[8];
     const tr=m00+m11+m22; let x,y,z,w;
@@ -148,6 +170,8 @@
   const fk=(Wp,L)=>({ p:vadd(Wp.p, mV(Wp.R, L.p)), R:mM(Wp.R, L.R) });
   const fkp=(Wf,p)=>vadd(Wf.p, mV(Wf.R, p));
   const localOf=(Wp,Wc)=>({ p:mTV(Wp.R, vsub(Wc.p, Wp.p)), R:mTM(Wp.R, Wc.R) });
+  /* 10.3: the JSON replacer every export prints with: numbers to 7 decimals */
+  const R7=(k,v)=>typeof v==='number' ? +v.toFixed(7) : v;
   const clamp=(v,a,b)=>v<a?a:v>b?b:v, clamp01=(v)=>v<0?0:v>1?1:v, lerp=(a,b,t)=>a+(b-a)*t;
   const sm=(t)=>t<=0?0:t>=1?1:t*t*(3-2*t), seg=(t,a,b)=>sm((t-a)/((b-a)||1e-9)), frac=(t)=>((t%1)+1)%1;
   const sn=(u,ph)=>Math.sin(TAU*(u+(ph||0))), cs=(u,ph)=>Math.cos(TAU*(u+(ph||0)));
@@ -275,6 +299,9 @@
     black:['#08090b','#111418','#1b2026','#272e36','#353e48'], red:['#4a100e','#7c1a15','#a8241b','#cf3626','#e2573c'], navy:['#0e1526','#172644','#223764','#2f4c88','#4166ac'],
     white:['#80857f','#9ea39c','#babfb8','#d2d6cf','#e6e9e3'], orange:['#4a1d0c','#7a3112','#a8461a','#d4632a','#e8834a'], yellow:['#6b5212','#8f6e16','#b8901d','#dcb534','#f0d062'] };
   const BOOT=['#101317','#1d2127','#2b323a','#3d454e','#525c63'], BRASS=['#5a4318','#7d6024','#a68333','#c9a548','#e3c46a'], LEATHER=['#241611','#38221a','#4d2f22','#63402d','#7c553c'];
+  /* INK (exported in 10.3): INK[0] is the eye's dark and the brow's mix, INK[1] the half tone. SHADING.keyline is another colour. */
+  const INK_ROLES = { 0:'material ink: the open eye and the gaze pupil; the brow is mix(hair ramp[0], INK[0], 0.34)', 1:'material ink2: the half-shut round and lidded eye; the round eye\'s gaze turned in, seen from the side',
+    keyline:'SHADING.keyline #101a19 is the A/B keyline\'s tint (keylineDefault false), a colour of its own, not INK[0]', iris:'no rig 10 face is drawn in iris: since 10.0 the eye is one pixel of ink, so EYES only names the colour' };
   const INK=['#12181b','#243036'], EYES={ sea:'#2ba39a', sky:'#4166ac', bark:'#6b4f35', slate:'#8a969b', amber:'#e0b13a', moss:'#627457', umber:'#4f2f1e' };
   const EYE_WHITE='#e6e9e2';
   const hex2=(c)=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
@@ -599,13 +626,21 @@
        neck.local = clip.neck.local * E(0.4 yaw, 0.4 pitch)     head.local = rock.head * clip.head.local * E(0.6 yaw, 0.6 pitch)
      with E(y, p) = eul({ yaw:y, pitch:p }) = Rz(-y) * Rx(-p). Limits: yaw -60..60, pitch -15 (up) .. 20 (down). */
   const LOOK = { bones:['neck','head'], split:{ neck:0.4, head:0.6 }, yaw:[-60,60], pitch:[-15,20], eyesBeyond_deg:8, headShare:0.7 };
+  /* 10.3: THE AIM BAR. lookAt() is one pass, measured on the frame as the clip poses it, unturned. On the turned head two things move
+     the aim off the target: the turn is split over two bones, each in its own frame (up to 1.6 deg; 2.3 on a stooped elder), and the
+     head point the aim is taken from (headMid, 10.4 cm ahead of the head bone since 10.0; 2 cm in 9.2) swings with the head (up to
+     2.5 deg for a target 2 m away). bar_deg holds every build, the elders included. */
+  const AIM = { bar_deg:4, share:1, distance_m:2, bearings_deg:[-50,-30,-15,0,15,30,50], dz_m:[-0.35,0,0.25], clip:'idle', frame:0,
+    targets:'from the head point (head bone * headMid) of idle f0, unturned: distance_m away at each bearing (from the figure\'s +y toward +x) and at each height dz; only the targets whose need is inside the limits',
+    measure:'turn = lookAt(S, target, share), applied: the angle between the turned head bone\'s +y and the target seen from the turned head point',
+    measured:'10.3 on the 30 builds: 2.82 to 2.98 deg, the seven elders 3.65 to 3.73 (9.2: 1.70, the skipper and Nan 2.40)' };
   function lookE(look, id){ const w=LOOK.split[id], y=clamp(+look.yaw||0, LOOK.yaw[0], LOOK.yaw[1]), p=clamp(+look.pitch||0, LOOK.pitch[0], LOOK.pitch[1]); return eul({ yaw:y*w, pitch:p*w }); }
   /* 10.1: the four roles of a point mark: its design camera (yaw, for the mark's eye g: +1 the right eye) and its screen column from
      headMid (c counts out from the nose column); it draws while the camera's azimuth is within az deg of the design camera's. FRONT both
      eyes from ahead, DIAG the near eye at its diagonal, FAR the far eye at the other diagonal (column 1 only), SIDE the eye in profile,
      one pixel further back. PT_UNDER: what a mark may draw over. FACE_EMPTY: groups that draw nothing on purpose. */
   const ROLES = { front:{ az:24, yaw:()=>180, dx:(g,c)=>-g*c }, diag:{ az:21, yaw:(g)=>180-45*g, dx:(g,c,s)=>-g*c-g*(s||0) },
-    far:{ az:21, yaw:(g)=>180+45*g, dx:(g,c,s)=>-g*c+g*(s||0) }, side:{ az:24, yaw:(g)=>180-90*g, dx:(g,c)=>-g*(c+1) } };
+    far:{ az:21, yaw:(g)=>180+45*g, dx:(g,c,s)=>-g*c+g*(s||0) }, side:{ az:24, yaw:(g)=>180-90*g, dx:(g,c,s)=>-g*(c+1-(s||0)) } };
   const PT_UNDER = { head:1, nose:1, beard:1, face:1 }, FACE_EMPTY = { 'brows.flat':'the fringe\'s edge is the flat brow' };
   function meshOf(b, D, SK){
     const ix=SK.ix, F=[], FG=[], GM=garmentOf(b), HAT=HATS[b.hat]||null;
@@ -959,17 +994,27 @@
     /* the far eye at a diagonal sits a column past the bridge; on a head too narrow for that (or where its hair or hat covers that pixel)
        the pair moves a column toward the near side: diagS 1 */
     const seenAt=(yawD,dx,dy)=>{ const [O,v]=rayOf(yawD,dx,dy), t=rayHit(O,v); if(t===null) return false; const t2=rayHit(O,v,OCC); return !(t2!==null && t2>t+0.004); };
-    const pairAt=(sh)=>seenAt(135, 1-sh, 0) && seenAt(135, -1-sh, 0), diagS = pairAt(0) ? 0 : pairAt(1) ? 1 : 0;
+    /* 10.3: the body round the head (collar, shoulders, straps, the neck), taken into the head's unscaled frame. A diagonal eye pair or a
+       mouth pixel the body covers from its camera (a child's head sits low between the shoulders) moves as it does for the hair */
+    const OCCB=[]; { const k=D.kH, h0=D.headZ, un=(p)=>[p[0]/k, p[1]/k, h0+(p[2]-h0)/k], HPs={ head:1, nose:1, ear:1, hair:1, hat:1, beard:1, face:1 };
+      for(const f of F) if(!HPs[f.part] && f.v.some(p=>p[2]>D.shZ-0.12)) for(let i=1;i+1<f.v.length;i++) OCCB.push([un(f.v[0]),un(f.v[i]),un(f.v[i+1])]); }
+    const seenB=(yawD,dx,dy)=>{ if(!seenAt(yawD,dx,dy)) return false; const [O,v]=rayOf(yawD,dx,dy), t=rayHit(O,v), t3=rayHit(O,v,OCCB); return !(t3!==null && t3>t+0.004); };
+    /* the pair holds 0.08 px inside the cheek's edge, so the small turn and roll of a clip's head (idle: 0.5 deg, 0.8 deg) cannot take the far
+       eye's pixel off the face (10.2: the Wharf girl at SW) */
+    const pairAt=(sh)=>seenB(135, 1-sh, 0) && seenB(135, -1-sh, 0) && seenB(135, 1-sh+0.08, 0) && seenB(135, -1-sh-0.08, 0), diagS = pairAt(0) ? 0 : pairAt(1) ? 1 : 0;
     /* the face rows are anchored at headMid, on the centreline; the side plane is hwAt(1.31) nearer a profile camera, so at the same
        height it shows sideDy rows lower: a profile mark's row is the face row plus sideDy */
     const rowPx=(r)=>ROWP[r-1], sideDy=Math.round(seE*PX*D.kH*hwAt(1.31));
+    /* 10.3: the profile eye sits a column further back than the front view's (SIDE). Where the hair, hat, hood or ear covers that pixel
+       from the profile camera (the bob's curtain and the temple hair on the square and wide heads), it moves a column forward: sideS 1 */
+    const sideAt=(sh)=>seenAt(90, -(2-sh), rowPx(3)+sideDy) && seenAt(270, 2-sh, rowPx(3)+sideDy), sideS = sideAt(0) ? 0 : sideAt(1) ? 1 : 0;
     function markAt(group, mat, role, yawD, dx, dy, g, db, oh){ const [O,v]=rayOf(yawD,dx,dy), t=rayHit(O,v); if(t===null) return false;
       const P=vadd(O, vmul(v, t+0.002/D.kH)), nh=vnorm([v[0],v[1],0]), a=[-nh[1],nh[0],0], q=0.25*pxP, cn=(sa,sb)=>vadd(P, vadd(vmul(a,sa*q), [0,0,sb*q]));
       put([cn(-1,-1),cn(1,-1),cn(1,1),cn(-1,1)], same(4,HD), mat, 'face', { inside:vsub(P,vmul(nh,0.01)), db:(db||0.022)*D.kH, group, side:g, pt:1, oh:oh||0, az:Math.cos(ROLES[role].az*DEG) }); return true; }
     function marks(group, cells, g, o){ o=o||{};
       const emit=(role, list)=>{ if(!list) return; const R=ROLES[role];
         for(const [c0,c1,r0,r1,mat] of list) for(let c=c0;c<=c1;c++) for(let r=Math.min(r0,r1);r<=Math.max(r0,r1);r++){ if(role==='far' && c>1) continue;
-          markAt(group, mat, role, R.yaw(g), R.dx(g,c,diagS), rowPx(r)+(role==='side'?sideDy:0), g, o.db && (mat==='ink'||mat==='iris') ? o.db : 0, o.oh); } };
+          markAt(group, mat, role, R.yaw(g), R.dx(g,c,role==='side'?sideS:diagS), rowPx(r)+(role==='side'?sideDy:0), g, o.bias || (o.db && (mat==='ink'||mat==='iris') ? o.db : 0), o.oh); } };
       emit('front', cells); emit('diag', cells); emit('far', o.far||cells); emit('side', o.side||cells); }
     const ES=EYE_SHAPES[b.eyeShape]||EYE_SHAPES.round;
     /* gaze: eyes.right turns the right eye's pupil out a column (away from the nose) and leaves the left eye's where the open eye has it;
@@ -980,10 +1025,14 @@
       if(st==='left' || st==='right'){ const L=ES.gaze[(st==='right')===(g>0) ? 'out' : 'in']; marks('eyes.'+st, L.near==='open' ? ES.open : L.near, g, { side:L.side, far:L.far, db:0.024 }); }
       else marks('eyes.'+st, ES[st], g); }
     const BR={ flat:[], up:[[1,2,1,1,'brow']], knit:[[1,1,2,2,'brow']] };   /* 10.0: the flat brow is the fringe's edge; knit is a pixel over each eye */
-    for(const st of FACE_SLOTS.brows) for(const g of [-1,1]) marks('brows.'+st, BR[st], g, { oh:1 });   /* 10.1: a brow may sit on the fringe's edge (oh) */
+    /* 10.1: a brow may sit on the fringe's edge (oh). 10.3: and it wins over the eye's marks (depth bias 0.023 against 0.022), so knit
+       shows over a lidded eye, whose lid is on the knit brow's pixel */
+    for(const st of FACE_SLOTS.brows) for(const g of [-1,1]) marks('brows.'+st, BR[st], g, { oh:1, bias:0.023 });
     /* the mouth: the centre column on the mouth row from ahead and at both diagonals (moved with the eyes by diagS); grit adds a column
        each side, a row up where the chin is too narrow for it; smile's corners are a row up */
-    const mouth=(group, cols, mat, up)=>{ for(const col of cols){ const g=Math.sign(col), c=Math.abs(col), dy=rowPx(6)-(g && up ? 1 : 0), at=(role,yw,dx,gg)=>markAt(group,mat,role,yw,dx,dy,gg,0.045) || (g && markAt(group,mat,role,yw,dx,dy-1,gg,0.045));
+    /* 10.3: the centre column too goes a row up where the chin is too short for the mouth row, or the collar covers it (the heart head, a
+       child's head); there it takes the nose's lowest pixel */
+    const mouth=(group, cols, mat, up)=>{ for(const col of cols){ const g=Math.sign(col), c=Math.abs(col), dy=rowPx(6)-(g && up ? 1 : 0), at=(role,yw,dx,gg)=>(seenB(yw,dx,dy) && markAt(group,mat,role,yw,dx,dy,gg,0.045)) || markAt(group,mat,role,yw,dx,dy-1,gg,0.045);
       if(!g){ at('front', 180, 0, 0); at('diag', 135, -diagS, 0); at('diag', 225, diagS, 0); }
       else for(const role of ['front','diag','far']) at(role, ROLES[role].yaw(g), ROLES[role].dx(g,c,diagS), g); } };
     mouth('mouth.flat', [0], 'lip'); mouth('mouth.open', [0], 'mouth'); mouth('mouth.grit', [-1,0,1], 'mouth'); mouth('mouth.smile', [-1,0,1], 'lip', true);
@@ -991,7 +1040,7 @@
        then the style's columns among them. They sit under the eyes and the mouth (depth bias 0.018; the moustache 0.030, over the nose),
        and never on an eye's column (in profile, nor beside it). */
     if(BS.marks){ const vis=(yw,dy)=>{ const o=[]; for(let dx=-9;dx<=9;dx++) if(seenAt(yw,dx,dy)) o.push(dx); return o; };
-      const CAMS=[['front',180,0,0,[-1,1]],['diag',135,-1,-diagS,[-1-diagS,1-diagS]],['diag',225,1,diagS,[1+diagS,-1+diagS]],['side',90,-1,null,[-2]],['side',270,1,null,[2]]];
+      const CAMS=[['front',180,0,0,[-1,1]],['diag',135,-1,-diagS,[-1-diagS,1-diagS]],['diag',225,1,diagS,[1+diagS,-1+diagS]],['side',90,-1,null,[-(2-sideS)]],['side',270,1,null,[2-sideS]]];
       for(const [role,yw,ear,nose,eyes] of CAMS){ const prof=role==='side';
         for(const rs of Object.keys(BS.marks)){ const r=+rs, spec=BS.marks[rs], dy=r+(prof?sideDy:0), V=vis(yw,dy); if(!V.length) continue;
           const lo=V[0], hi=V[V.length-1], out=new Map(), add=(dx,mat,db)=>{ if(V.indexOf(dx)<0) return; if(r<=0 && eyes.some(c=>Math.abs(c-dx)<=(prof?1:0))) return; out.set(dx,[mat,db]); };
@@ -1089,7 +1138,9 @@
       loc[ix['tool_'+s]]=localOf(Wh,Wt);
       const len=(T && T.len) || D.rodLen, bend=(T && T.bend) || 0, Dd=mV(R0,[0,1,0]);
       const pt=(sl)=>{ const q=Math.max(0, sl/len-0.40)/0.60; return [gp[0]+Dd[0]*sl, gp[1]+Dd[1]*sl, gp[2]+Dd[2]*sl - bend*q*q*len*0.24]; };
-      const p1=pt(0.40*len), p2=pt(0.70*len), p3=pt(len), W1={ p:p1, R:bend ? aimTo(p1,p2) : R0 }, W2={ p:p2, R:bend ? aimTo(p2,p3) : R0 };
+      /* 10.3: a bend chord's frame is the frame before it turned the shortest way onto the chord, so the chords keep the rod's roll
+         (10.2's aimTo took a world-up frame, which turned 180 deg about the rod each time the rod passed vertical) */
+      const p1=pt(0.40*len), p2=pt(0.70*len), p3=pt(len), W1={ p:p1, R:bend ? onto(R0,p1,p2) : R0 }, W2={ p:p2, R:bend ? onto(W1.R,p2,p3) : R0 };
       loc[ix['tool_'+s+'_1']]=localOf(Wt,W1); loc[ix['tool_'+s+'_2']]=localOf(W1,W2);
       loc[ix['carry_'+s]]=localOf(Wh,{ p:gp, R:mM(Wh.R, Rx((I.swing[s]||0)*DEG)) }); }
     loc[ix.carry_mid]=localOf(W0[ix.chest], { p:vlerp(palm('L'),palm('R'),0.5), R:mM(W0[ix.chest].R, Rx((I.swing.mid||0)*DEG)) });
@@ -1175,6 +1226,7 @@
     sense:'yaw > 0 turns the face toward the figure\'s +x (its right); pitch > 0 tips it down (the rig\'s pitch: the top toward +y)',
     compose:'neck.local = clip.neck.local * E(split.neck * yaw, split.neck * pitch); head.local = rock.head * clip.head.local * E(split.head * yaw, split.head * pitch); E(y, p) = Rz(-y) * Rx(-p), angles in degrees, both clamped to the limits first',
     aim:'on the frame as the clip poses it (unrocked, no turn): d = the target minus the head point (head bone * headMid), f = the head bone\'s +y, both in the chest frame; need.yaw = atan2(d.x, d.y) - atan2(f.x, f.y) (wrapped to -180..180), need.pitch = -atan2(d.z, |d.xy|) + atan2(f.z, |f.xy|); turn = clamp(headShare * need) per axis',
+    aimBar:{ deg:AIM.bar_deg, share:AIM.share, distance_m:AIM.distance_m, bearings_deg:AIM.bearings_deg, dz_m:AIM.dz_m, targets:AIM.targets, measure:AIM.measure },
     headShare:LOOK.headShare, eyes:{ left:'eyes.left', centre:'eyes.open', right:'eyes.right', beyond_deg:LOOK.eyesBeyond_deg, rule:'eyes.right when need.yaw - turn.yaw > beyond_deg, eyes.left when < -beyond_deg, else eyes.open; only in place of eyes.open (half, shut and wide stay as the clip has them); vertical gaze is the head pitch' } }; }
   function gameplay(build, opts){ const B=buildOf(build), out={};
     for(const name of clipNames()){ const cd=clipDef(name), A=ANIMS[cd.anim], fr=[];
@@ -1208,7 +1260,8 @@
     return Object.assign({}, SHADING, { materials:m }); }
   function sizes(build){ const B=buildOf(build), f=B.mesh.faces, tris=f.reduce((s,x)=>s+x.v.length-2,0), verts=f.reduce((s,x)=>s+x.v.length,0);
     const frames=clipNames().reduce((s,n)=>s+ANIMS[clipDef(n).anim].frames,0);
-    return { bones:B.sk.bones.length, deform:B.sk.deform, faces:f.length, tris, verts, clipCount:clipNames().length, frames, bindBytes:JSON.stringify(f).length }; }
+    /* 10.3: counted at 7 decimals, as the builds print it, so every engine counts the same bytes */
+    return { bones:B.sk.bones.length, deform:B.sk.deform, faces:f.length, tris, verts, clipCount:clipNames().length, frames, bindBytes:JSON.stringify(f, R7).length }; }
   function exportBuild(build, opts){ const B=buildOf(build);
     return { rig:'characterIsoRig10', revision:API.revision, build:B.b, frame:FRAME_DOC, humanoid:HUMANOID, skeleton:skeleton(B.key), bindMesh:bindMesh(B.key),
       faceGroups:B.mesh.groups, faceSlots:FACE_SLOTS, shading:shadingContract(B.key), faceClips:[blinkClip()], look:lookContract(), clips:clips(B.key, opts) }; }
@@ -1237,33 +1290,33 @@
     const K=SHADING.key, snap=o.snap||null, GR=o.grade||null, lt=new Uint8Array(N), pts=[];
     const nrmP=(P)=>{ let nx=0,ny=0,nz=0; for(let i=0;i<P.length;i++){ const a=P[i], c=P[(i+1)%P.length]; nx+=(a.yr-c.yr)*(a.zr+c.zr); ny+=(a.zr-c.zr)*(a.xr+c.xr); nz+=(a.xr-c.xr)*(a.yr+c.yr); }
       const nl=Math.hypot(nx,ny,nz)||1; return [nx/nl,ny/nl,nz/nl]; };
-    const stepOf=(M,ux,uy,uz,b)=>{ if(M.fixed) return 0; const up=uy*C.se+uz*C.ce, tw=-uy*C.ce+uz*C.se, s=Math.round((ux*K[0]+up*K[1]+tw*K[2] + SHADING.form*(tw-SHADING.formMid))*1e9)/1e9;
+    const stepOf=(M,ux,uy,uz,b)=>{ if(M.fixed) return 0; const up=uy*C.se+uz*C.ce, tw=-uy*C.ce+uz*C.se, s=Math.round((ux*K[0]+up*K[1]+tw*K[2] + SHADING.form*(tw-SHADING.formMid))*TOL.shadeScale)/TOL.shadeScale;
       return Math.max(0, Math.min(M.ramp.length-1, clamp(Math.round(s*M.gain + M.bias + (b||0)), M.lo==null?0:M.lo, M.hi==null?99:M.hi) + (M.off||0))); };
     for(let fi=0; fi<faces.length; fi++){ const f=faces[fi]; if(f.pt){ pts.push(fi); continue; } const P=f.v.map(p=>proj(p,C));
       if(snap && f.head) for(const q of P){ q.sx+=snap[0]; q.sy+=snap[1]; }
-      const [nx,ny,nz]=nrmP(P), toward=-ny*C.ce+nz*C.se; if(toward<=Math.max(1e-4, f.minT||0)) continue;
+      const [nx,ny,nz]=nrmP(P), toward=-ny*C.ce+nz*C.se; if(toward<=Math.max(TOL.cull, f.minT||0)) continue;
       /* 10.1: a face with a smooth normal is culled on its own normal and lit on the smooth one */
       const sv=f.sn ? rotC(f.sn,C) : null, ux=sv?sv[0]:nx, uy=sv?sv[1]:ny, uz=sv?sv[2]:nz;
       const M=MATS[f.mat]||MATS.skin, step=stepOf(M,ux,uy,uz,f.b), fl=GR&&GR.sunOn&&(ux*GR.L[0]+uy*GR.L[1]+uz*GR.L[2])>0.12?1:0;
       const mi=mIx[f.mat]!=null ? mIx[f.mat] : mIx.skin, db=f.db||0;
       for(let t=1;t+1<P.length;t++){ const a=P[0], bq=P[t], c=P[t+1];
-        const area=(bq.sx-a.sx)*(c.sy-a.sy)-(c.sx-a.sx)*(bq.sy-a.sy); if(Math.abs(area)<1e-9) continue;
+        const area=(bq.sx-a.sx)*(c.sy-a.sy)-(c.sx-a.sx)*(bq.sy-a.sy); if(Math.abs(area)<TOL.area) continue;
         const x0=Math.max(0,Math.floor(Math.min(a.sx,bq.sx,c.sx))), x1=Math.min(Wd-1,Math.ceil(Math.max(a.sx,bq.sx,c.sx)));
         const y0=Math.max(0,Math.floor(Math.min(a.sy,bq.sy,c.sy))), y1=Math.min(Hd-1,Math.ceil(Math.max(a.sy,bq.sy,c.sy)));
         for(let y=y0;y<=y1;y++) for(let x=x0;x<=x1;x++){ const px=x+0.5, py=y+0.5;
           const w0=((bq.sx-px)*(c.sy-py)-(c.sx-px)*(bq.sy-py))/area, w1=((c.sx-px)*(a.sy-py)-(a.sx-px)*(c.sy-py))/area, w2=1-w0-w1;
-          if(w0<-1e-6||w1<-1e-6||w2<-1e-6) continue;
-          const d=w0*a.d+w1*bq.d+w2*c.d, i=y*Wd+x, dq=Math.round((d-db)*1e7)/1e7; if(dq<zb[i]){ zb[i]=dq; dep[i]=d; mat[i]=mi; stp[i]=step; fid[i]=fi; lt[i]=fl; } } }
+          if(w0<-TOL.inside||w1<-TOL.inside||w2<-TOL.inside) continue;
+          const d=w0*a.d+w1*bq.d+w2*c.d, i=y*Wd+x, dq=Math.round((d-db)*TOL.depthScale)/TOL.depthScale; if(dq<zb[i]){ zb[i]=dq; dep[i]=d; mat[i]=mi; stp[i]=step; fid[i]=fi; lt[i]=fl; } } }
     }
     /* 10.1: the point marks (the face). Each draws the one pixel under its centre: over a pixel the head already covers (PT_UNDER), nearer
        by its depth bias, while the horizontal angle between its normal and the camera is within acos(az). A centre on a pixel edge draws
        nothing, so a mirrored head draws mirrored marks. */
     for(const fi of pts){ const f=faces[fi], P=f.v.map(p=>proj(p,C)); if(snap && f.head) for(const q of P){ q.sx+=snap[0]; q.sy+=snap[1]; }
-      const [nx,ny,nz]=nrmP(P); if(-ny*C.ce+nz*C.se<=1e-4) continue; if(f.az!=null){ const hh=Math.hypot(nx,ny); if(hh<1e-6 || -ny/hh<=f.az) continue; }
+      const [nx,ny,nz]=nrmP(P); if(-ny*C.ce+nz*C.se<=TOL.cull) continue; if(f.az!=null){ const hh=Math.hypot(nx,ny); if(hh<1e-6 || -ny/hh<=f.az) continue; }
       let cx=0, cy=0, cd=0; for(const q of P){ cx+=q.sx; cy+=q.sy; cd+=q.d; } cx/=P.length; cy/=P.length; cd/=P.length;
-      if(Math.abs(cx-Math.round(cx))<1e-4 || Math.abs(cy-Math.round(cy))<1e-4) continue;
+      if(Math.abs(cx-Math.round(cx))<TOL.markEdge || Math.abs(cy-Math.round(cy))<TOL.markEdge) continue;
       const X=Math.floor(cx), Y=Math.floor(cy); if(X<0||Y<0||X>=Wd||Y>=Hd) continue; const i=Y*Wd+X; if(fid[i]<0) continue; const up_=faces[fid[i]].part; if(!PT_UNDER[up_] && !(f.oh && up_==='hair')) continue;
-      const dq=Math.round((cd-(f.db||0))*1e7)/1e7; if(dq>=zb[i]) continue; const M=MATS[f.mat]||MATS.skin;
+      const dq=Math.round((cd-(f.db||0))*TOL.depthScale)/TOL.depthScale; if(dq>=zb[i]) continue; const M=MATS[f.mat]||MATS.skin;
       zb[i]=dq; dep[i]=cd; mat[i]=mIx[f.mat]!=null ? mIx[f.mat] : mIx.skin; stp[i]=stepOf(M,nx,ny,nz,f.b); fid[i]=fi; lt[i]=0; }
     /* inner contour: across a depth break the far pixel drops one step */
     const lit=stp.slice();
@@ -1280,7 +1333,7 @@
     if(o.keyline===true) for(let y=0;y<Hd;y++) for(let x=0;x<Wd;x++){ const i=y*Wd+x; if(col[i]) continue; let src=null, sd=Infinity, sl=Infinity;
       for(const [dx,dy] of [[0,-1],[1,0],[-1,0],[0,1]]){ const X=x+dx, Y=y+dy; if(X<0||X>=Wd||Y<0||Y>=Hd) continue; const j=Y*Wd+X, c=col[j]; if(!c) continue;
         const lum=parseInt(c.slice(1,3),16)+parseInt(c.slice(3,5),16)+parseInt(c.slice(5,7),16);
-        if(dep[j]<sd-1e-9 || (Math.abs(dep[j]-sd)<=1e-9 && lum<sl)){ src=c; sd=dep[j]; sl=lum; } }
+        if(dep[j]<sd-TOL.tieDepth || (Math.abs(dep[j]-sd)<=TOL.tieDepth && lum<sl)){ src=c; sd=dep[j]; sl=lum; } }
       if(src) out[i]=mixHex(SHADING.keyline, src, SHADING.keylineMix); }
     const rgba=new Uint8ClampedArray(N*4);
     for(let i=0;i<N;i++){ const c=out[i]; if(!c) continue; rgba[i*4]=parseInt(c.slice(1,3),16); rgba[i*4+1]=parseInt(c.slice(3,5),16); rgba[i*4+2]=parseInt(c.slice(5,7),16); rgba[i*4+3]=255; }
@@ -1338,7 +1391,7 @@
   const zcOfBuild=(B,z)=>1.31+((B.D.headZ+(z-B.D.headZ)/B.D.kH)-B.D.eyeZ)/B.D.zs;   /* 10.0: undo the head's scale first */
 
   const API = {
-    rig:'characterIsoRig10', pass:10, revision:'10.2', PX, W, H, pivot:PIVOT, ELEV, order:ORDER, SHADING, BOTTOMS, garmentOf, BEARDS, randomBuild, CAST10, NPCS,
+    rig:'characterIsoRig10', pass:10, revision:'10.3', PX, W, H, pivot:PIVOT, ELEV, order:ORDER, SHADING, DITHER, TOL, INK, INK_ROLES, EYE_WHITE, AIM, R7, BOTTOMS, garmentOf, BEARDS, randomBuild, CAST10, NPCS,
     ANIMS, ANIMS_SHIPPED, SEGMENTS, GROUPS, ANIM_MOUNT, CARRIES, CARRY_ORDER, CARRY_CLIPS, CONTRACT, BUILDS, CAST, READY, SOCKETS, HUMANOID,
     OPTIONS, FIELDS, AGES, SHAPE, SEX, FRAMES, frameOf, HEADS, GARMENTS, HATS, EYE_SHAPES, ROLES, PT_UNDER, FACE_EMPTY, HSTEP, normBuild, buildKey, dimsOf, kOf, zmOf,
     palettes:{ SKINS, HAIRS, OUTFITS, SHIRTS, HATCOLS, APRONS, EYES },

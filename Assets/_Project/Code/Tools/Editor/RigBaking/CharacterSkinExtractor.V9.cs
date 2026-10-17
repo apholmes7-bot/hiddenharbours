@@ -58,10 +58,10 @@ namespace HiddenHarbours.Tools.RigBaking
     //    CAST before anything is read under its name.
     //  - Its poses are a second file that must run after the body, and its checks a third.
     //
-    // Rig 10 (the kit 10.2, character/rig10/, the intake of 2026-10-02) keeps that API and is read by
-    // this same half: CharacterRigKit names its files, global, revision and preset table, and a host
-    // holds one kit (Load9(host, kit); every reader asks KitOf(host)). What rig 10 changes, and where
-    // it is met:
+    // Rig 10 (character/rig10/: the kit 10.2 landed by the intake of 2026-10-02, 10.3 over it on
+    // 2026-10-03) keeps that API and is read by this same half: CharacterRigKit names its files, global,
+    // revision and preset table, and a host holds one kit (Load9(host, kit); every reader asks
+    // KitOf(host)). What rig 10 changes, and where it is met:
     //  - Its CAST is the ten presets and the twenty NPCs; the game bakes CAST10 alone (owner, 10-01),
     //    and an unknown preset now throws in the rig itself.
     //  - The cell is 80 x 104 with its pivot at (40, 90): read off the rig, as rig 9's was.
@@ -70,6 +70,12 @@ namespace HiddenHarbours.Tools.RigBaking
     //    smooth parts are lit on their own normal (sn). ROLE and minT are gone. ReadFaces9 carries
     //    all four onto each face, and brows.flat binds no faces on purpose (FACE_EMPTY).
     //  - SHADING.keylineDefault is false: rig 10 draws no keyline unless asked (owner ruling K4).
+    //  - Since 10.3 it exports what a port of its paint needs (TOL, DITHER, INK with INK_ROLES and
+    //    EYE_WHITE, AIM), and its paint reads its tolerances from TOL. The bake reads each there and
+    //    copies none (Tol9, GateTolerance9, CullFloor9(host), ReadMarkCull9(host), PaintTolerance9,
+    //    Bayer9), each paint site held to read the TOL key the port reads; the materials' ink colours
+    //    come from shadingContract, which takes them from INK and EYE_WHITE. The marks' band floor
+    //    (hh < floor) is still a literal in paint() with no TOL key, read off it as 10.2's was.
     public static partial class CharacterSkinExtractor
     {
         public const string V9CatalogKey = "characterRig9";
@@ -78,8 +84,9 @@ namespace HiddenHarbours.Tools.RigBaking
         public const int V9Pass = 9;
 
         /// <summary>The tolerance rig 9's own checks gate on (checks.js, "gate 1e-6 m"). Rig 9
-        /// exports no TOL, and borrowing rig 7's would judge one rig by another's bar. Rig 10's
-        /// checks gate on the same 1e-6 m and it exports none either.</summary>
+        /// exports no TOL, and borrowing rig 7's would judge one rig by another's bar. Rig 10 exports
+        /// its own since 10.3 (<c>TOL.gate_m</c>): <see cref="GateTolerance9"/> reads the bar of the rig
+        /// a host holds.</summary>
         public const double V9Tolerance = 1e-6;
 
         public static RigEntry V9Entry => CharacterRigKit.Rig9.Entry;
@@ -487,13 +494,18 @@ namespace HiddenHarbours.Tools.RigBaking
         public static double CullFloor9() => CullFloor9(CharacterRigKit.Rig9);
 
         /// <summary>
-        /// <see cref="CullFloor9()"/> for <paramref name="kit"/>. Rig 10 culls its marks in a loop of
-        /// their own, <c>if(-ny*C.ce+nz*C.se&lt;=FLOOR) continue;</c>, with a second literal; the def
-        /// carries one floor, so the two must be the same number.
+        /// <see cref="CullFloor9()"/> for a kit whose paint holds its floor as a literal. A rig with
+        /// marks culls them in a loop of their own, <c>if(-ny*C.ce+nz*C.se&lt;=FLOOR) continue;</c>,
+        /// with a second literal; the def carries one floor, so the two must be the same number. A kit
+        /// that exports its tolerances (rig 10.3) holds no literal there: its floor is read from a host
+        /// holding it, <see cref="CullFloor9(IRigScriptHost)"/>.
         /// </summary>
         public static double CullFloor9(CharacterRigKit kit)
         {
             if (kit == null) throw new ArgumentNullException(nameof(kit));
+            if (kit.ExportsNumbers)
+                throw new InvalidOperationException(
+                    $"{kit} culls at TOL.cull, which it exports; read the floor from a host holding it (CullFloor9(host)).");
             string source = ReadRepoText(kit.ScriptPath);
             double floor = OneLiteral9(kit, source, @"toward<=Math\.max\(([0-9.eE+-]+),\s*f\.minT\|\|0\)",
                                        "the face cull 'toward<=Math.max(<floor>, f.minT||0)'");
@@ -509,10 +521,31 @@ namespace HiddenHarbours.Tools.RigBaking
             return floor;
         }
 
-        /// <summary>The two numbers rig 10's mark loop holds as literals, read off its source: the
-        /// shortest horizontal normal a mark may have before its turn band is not asked
-        /// (<c>hh&lt;AZFLOOR</c> skips it) and how near a pixel edge its centre may fall before it
-        /// draws nothing (<c>Math.abs(cx-Math.round(cx))&lt;EDGE</c>, the same for y).</summary>
+        /// <summary>
+        /// The floor every face culls at, for the kit <paramref name="host"/> holds: rig 10.3's
+        /// <c>TOL.cull</c>, read in V8, its paint holding <c>toward&lt;=Math.max(TOL.cull, f.minT||0)</c>
+        /// and the marks' <c>if(-ny*C.ce+nz*C.se&lt;=TOL.cull) continue;</c> once each, so the one floor
+        /// the def carries is the one both culls read; rig 9's literal otherwise
+        /// (<see cref="CullFloor9(CharacterRigKit)"/>).
+        /// </summary>
+        public static double CullFloor9(IRigScriptHost host)
+        {
+            Load9(host);
+            CharacterRigKit kit = KitOf(host);
+            if (!kit.ExportsNumbers) return CullFloor9(kit);
+            string source = ReadRepoText(kit.ScriptPath);
+            ReadsTol9(kit, source, @"toward<=Math\.max\(TOL\.cull,\s*f\.minT\|\|0\)",
+                      "the face cull 'toward<=Math.max(TOL.cull, f.minT||0)'");
+            ReadsTol9(kit, source, @"if\(-ny\*C\.ce\+nz\*C\.se<=TOL\.cull\)\s*continue;",
+                      "the mark cull 'if(-ny*C.ce+nz*C.se<=TOL.cull) continue;'");
+            return Tol9(host, "cull");
+        }
+
+        /// <summary>The two numbers rig 10's mark loop culls by: the shortest horizontal normal a mark
+        /// may have before its turn band is not asked (<c>hh&lt;AZFLOOR</c> skips it) and how near a
+        /// pixel edge its centre may fall before it draws nothing (<c>Math.abs(cx-Math.round(cx))&lt;EDGE</c>,
+        /// the same for y). Rig 10.2 held both as literals; 10.3 reads the edge from
+        /// <c>TOL.markEdge</c> and keeps the band floor a literal.</summary>
         public readonly struct MarkCull9
         {
             public readonly double AzFloor, Edge;
@@ -520,14 +553,19 @@ namespace HiddenHarbours.Tools.RigBaking
             public MarkCull9(double azFloor, double edge) { AzFloor = azFloor; Edge = edge; }
         }
 
-        /// <summary><see cref="MarkCull9"/> for <paramref name="kit"/>; zeros for a kit without marks.</summary>
+        /// <summary><see cref="MarkCull9"/> for a kit whose paint holds both as literals; zeros for a
+        /// kit without marks. A kit that exports its tolerances (rig 10.3) is read from a host holding
+        /// it, <see cref="ReadMarkCull9(IRigScriptHost)"/>.</summary>
         public static MarkCull9 ReadMarkCull9(CharacterRigKit kit)
         {
             if (kit == null) throw new ArgumentNullException(nameof(kit));
             if (!kit.FaceMarks) return default;
+            if (kit.ExportsNumbers)
+                throw new InvalidOperationException(
+                    $"{kit} keeps its marks off a pixel edge by TOL.markEdge, which it exports; read the floors " +
+                    "from a host holding it (ReadMarkCull9(host)).");
             string source = ReadRepoText(kit.ScriptPath);
-            double azFloor = OneLiteral9(kit, source, @"if\(hh<([0-9.eE+-]+)\s*\|\|\s*-ny/hh<=f\.az\)\s*continue;",
-                                         "the turn band 'if(hh<<floor> || -ny/hh<=f.az) continue;'");
+            double azFloor = MarkAzFloor9(kit, source);
             MatchCollection m = Regex.Matches(source,
                 @"Math\.abs\(cx-Math\.round\(cx\)\)<([0-9.eE+-]+)\s*\|\|\s*Math\.abs\(cy-Math\.round\(cy\)\)<([0-9.eE+-]+)");
             if (m.Count != 1)
@@ -545,6 +583,35 @@ namespace HiddenHarbours.Tools.RigBaking
             return new MarkCull9(azFloor, ex);
         }
 
+        /// <summary>
+        /// <see cref="MarkCull9"/> for the kit <paramref name="host"/> holds; zeros for a kit without
+        /// marks. Rig 10.3's paint reads the pixel edge from <c>TOL.markEdge</c> (for x and y, the test
+        /// held there once), so that is read in V8; its band floor is still a literal in paint
+        /// (<c>hh&lt;floor</c>, which TOL names no key for), read off the source as 10.2's was.
+        /// </summary>
+        public static MarkCull9 ReadMarkCull9(IRigScriptHost host)
+        {
+            Load9(host);
+            CharacterRigKit kit = KitOf(host);
+            if (!kit.FaceMarks) return default;
+            if (!kit.ExportsNumbers) return ReadMarkCull9(kit);
+            string source = ReadRepoText(kit.ScriptPath);
+            double azFloor = MarkAzFloor9(kit, source);
+            ReadsTol9(kit, source,
+                      @"Math\.abs\(cx-Math\.round\(cx\)\)<TOL\.markEdge\s*\|\|\s*Math\.abs\(cy-Math\.round\(cy\)\)<TOL\.markEdge",
+                      "the marks' pixel-edge test 'Math.abs(cx-Math.round(cx))<TOL.markEdge || …(cy)…<TOL.markEdge'");
+            if (!(azFloor > 0))
+                throw new InvalidOperationException(
+                    $"{kit.ScriptPath}'s turn band floor is {azFloor}; it must be above 0.");
+            return new MarkCull9(azFloor, Tol9(host, "markEdge"));
+        }
+
+        /// <summary>The marks' band floor: the one literal of
+        /// <c>if(hh&lt;floor || -ny/hh&lt;=f.az) continue;</c> in the rig's paint.</summary>
+        static double MarkAzFloor9(CharacterRigKit kit, string source) =>
+            OneLiteral9(kit, source, @"if\(hh<([0-9.eE+-]+)\s*\|\|\s*-ny/hh<=f\.az\)\s*continue;",
+                        "the turn band 'if(hh<<floor> || -ny/hh<=f.az) continue;'");
+
         static bool IsFinite9(double v) => !double.IsNaN(v) && !double.IsInfinity(v);
 
         static double OneLiteral9(CharacterRigKit kit, string source, string pattern, string what)
@@ -554,6 +621,194 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new InvalidOperationException(
                     $"{kit.ScriptPath} holds {what} {m.Count} times, not once. Re-read paint() before baking it.");
             return Finite9(m[0].Groups[1].Value, $"{kit.Name}'s {what}");
+        }
+
+        /// <summary>The one number <paramref name="pattern"/> captures, once, in every group it has: a
+        /// site that holds a tolerance twice or three times (the inside test's three weights, a
+        /// quantum's scale and its divisor) must hold one number there, above 0.</summary>
+        static double SameLiteral9(CharacterRigKit kit, string source, string pattern, string what)
+        {
+            MatchCollection m = Regex.Matches(source, pattern);
+            if (m.Count != 1)
+                throw new InvalidOperationException(
+                    $"{kit.ScriptPath} holds {what} {m.Count} times, not once. Re-read paint() before baking it.");
+            GroupCollection g = m[0].Groups;
+            double v = Finite9(g[1].Value, $"{kit.Name}'s {what}");
+            for (int i = 2; i < g.Count; i++)
+                if (Finite9(g[i].Value, $"{kit.Name}'s {what}") != v)
+                    throw new InvalidOperationException(
+                        $"{kit.ScriptPath} holds {what} with {g[i].Value} beside {g[1].Value}; the port reads one number there.");
+            if (!(v > 0))
+                throw new InvalidOperationException($"{kit.ScriptPath} holds {what} at {v}; a tolerance is above 0.");
+            return v;
+        }
+
+        /// <summary>Hold that <paramref name="kit"/>'s paint reads a tolerance where the port does:
+        /// <paramref name="pattern"/>, which names the <c>TOL</c> key, once in its source.</summary>
+        static void ReadsTol9(CharacterRigKit kit, string source, string pattern, string what)
+        {
+            int n = Regex.Matches(source, pattern).Count;
+            if (n != 1)
+                throw new InvalidOperationException(
+                    $"{kit.ScriptPath} holds {what} {n} times, not once. The port reads that TOL key where the " +
+                    "rig's paint does; re-read paint() before baking it.");
+        }
+
+        // ---------------------------------------------------------------------------------------
+        // The numbers the rig paints and gates with: rig 10.3's exports (TOL, DITHER), or rig 9's
+        // paint literals and canonical dither
+        // ---------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// One of rig 10.3's tolerances, <c>TOL[key]</c>, read in V8: every tolerance its paint and its
+        /// gates use, which its paint reads from there. A value that is not a finite number above 0, and
+        /// a kit that exports no TOL, refuse: the bake never falls back to a copy.
+        /// </summary>
+        public static double Tol9(IRigScriptHost host, string key)
+        {
+            Load9(host);
+            CharacterRigKit kit = KitOf(host);
+            if (!kit.ExportsNumbers)
+                throw new InvalidOperationException($"{kit} exports no TOL; its tolerances are its paint's own literals.");
+            string text = host.EvaluateString(
+                "(function(){var T=" + kit.GlobalName + ".TOL;if(!T||typeof T!=='object')return 'none';" +
+                "var v=T[" + Js(key) + "];return typeof v==='number'?String(v):typeof v;})()");
+            if (text == "none")
+                throw new InvalidOperationException($"{kit.Title} exports no TOL, and {kit} should.");
+            double v = Finite9(text, $"{kit.Title}'s TOL.{key}");
+            if (!(v > 0))
+                throw new InvalidOperationException($"{kit.Title}'s TOL.{key} is {text}; a tolerance is above 0.");
+            return v;
+        }
+
+        /// <summary>The tolerance the host's rig gates its own checks on, metres: rig 10.3's
+        /// <c>TOL.gate_m</c>; rig 9's <see cref="V9Tolerance"/>, since 9.2 exports none.</summary>
+        public static double GateTolerance9(IRigScriptHost host)
+        {
+            Load9(host);
+            return KitOf(host).ExportsNumbers ? Tol9(host, "gate_m") : V9Tolerance;
+        }
+
+        /// <summary>
+        /// The tolerances the host's rig paints with, for <see cref="RigPaint9"/>: rig 10.3's
+        /// <c>TOL.area</c>, <c>inside</c>, <c>depthScale</c>, <c>tieDepth</c> and <c>shadeScale</c>,
+        /// read in V8, its paint holding each read where the port reads it (the marks' depth too); a
+        /// rig that exports none, off the literals its paint holds at the same places, each once.
+        /// </summary>
+        public static RigPaint9.Tolerance PaintTolerance9(IRigScriptHost host)
+        {
+            Load9(host);
+            CharacterRigKit kit = KitOf(host);
+            string source = ReadRepoText(kit.ScriptPath);
+            if (kit.ExportsNumbers)
+            {
+                ReadsTol9(kit, source, @"if\(Math\.abs\(area\)<TOL\.area\)\s*continue;",
+                          "the triangle's area test 'if(Math.abs(area)<TOL.area) continue;'");
+                ReadsTol9(kit, source, @"if\(w0<-TOL\.inside\|\|w1<-TOL\.inside\|\|w2<-TOL\.inside\)\s*continue",
+                          "the pixel's inside test 'if(w0<-TOL.inside||w1<-TOL.inside||w2<-TOL.inside) continue'");
+                ReadsTol9(kit, source, @"Math\.round\(\(d-db\)\*TOL\.depthScale\)/TOL\.depthScale",
+                          "a face's depth quantum 'Math.round((d-db)*TOL.depthScale)/TOL.depthScale'");
+                if (kit.FaceMarks)
+                    ReadsTol9(kit, source, @"Math\.round\(\(cd-\(f\.db\|\|0\)\)\*TOL\.depthScale\)/TOL\.depthScale",
+                              "a mark's depth quantum 'Math.round((cd-(f.db||0))*TOL.depthScale)/TOL.depthScale'");
+                ReadsTol9(kit, source, @"SHADING\.form\*\(tw-SHADING\.formMid\)\)\*TOL\.shadeScale\)/TOL\.shadeScale",
+                          "the shade's rounding '…SHADING.form*(tw-SHADING.formMid))*TOL.shadeScale)/TOL.shadeScale'");
+                ReadsTol9(kit, source, @"dep\[j\]<sd-TOL\.tieDepth \|\| \(Math\.abs\(dep\[j\]-sd\)<=TOL\.tieDepth &&",
+                          "the keyline's depth tie 'dep[j]<sd-TOL.tieDepth || (Math.abs(dep[j]-sd)<=TOL.tieDepth &&'");
+                return new RigPaint9.Tolerance
+                {
+                    Area = Tol9(host, "area"),
+                    Inside = Tol9(host, "inside"),
+                    DepthScale = Tol9(host, "depthScale"),
+                    TieDepth = Tol9(host, "tieDepth"),
+                    ShadeScale = Tol9(host, "shadeScale"),
+                };
+            }
+            double depth = SameLiteral9(kit, source, @"Math\.round\(\(d-db\)\*([0-9.eE+-]+)\)/([0-9.eE+-]+)",
+                                        "a face's depth quantum 'Math.round((d-db)*<scale>)/<scale>'");
+            if (kit.FaceMarks &&
+                SameLiteral9(kit, source, @"Math\.round\(\(cd-\(f\.db\|\|0\)\)\*([0-9.eE+-]+)\)/([0-9.eE+-]+)",
+                             "a mark's depth quantum 'Math.round((cd-(f.db||0))*<scale>)/<scale>'") != depth)
+                throw new InvalidOperationException(
+                    $"{kit.ScriptPath} quantises its faces' depth and its marks' by two numbers; the port reads one.");
+            return new RigPaint9.Tolerance
+            {
+                Area = SameLiteral9(kit, source, @"if\(Math\.abs\(area\)<([0-9.eE+-]+)\)\s*continue;",
+                                    "the triangle's area test 'if(Math.abs(area)<<area>) continue;'"),
+                Inside = SameLiteral9(kit, source,
+                                      @"if\(w0<-([0-9.eE+-]+)\|\|w1<-([0-9.eE+-]+)\|\|w2<-([0-9.eE+-]+)\)\s*continue",
+                                      "the pixel's inside test 'if(w0<-<inside>||w1<-<inside>||w2<-<inside>) continue'"),
+                DepthScale = depth,
+                TieDepth = SameLiteral9(kit, source,
+                                        @"dep\[j\]<sd-([0-9.eE+-]+) \|\| \(Math\.abs\(dep\[j\]-sd\)<=([0-9.eE+-]+) &&",
+                                        "the keyline's depth tie 'dep[j]<sd-<tie> || (Math.abs(dep[j]-sd)<=<tie> &&'"),
+                ShadeScale = SameLiteral9(kit, source,
+                                          @"SHADING\.form\*\((?:toward|tw)-SHADING\.formMid\)\)\*([0-9.eE+-]+)\)/([0-9.eE+-]+)",
+                                          "the shade's rounding '…SHADING.form*(toward-SHADING.formMid))*<scale>)/<scale>'"),
+            };
+        }
+
+        /// <summary>How the def indexes the dither matrix, in the words rig 10.3's <c>DITHER.index</c>
+        /// uses: [x, y], x the cell column (<see cref="RigMeshData.Bayer"/>, and the shader's
+        /// <c>_Bayer</c>, whose row is x).</summary>
+        const string Bayer9Index = "bayer4[x & 3][y & 3], x the cell column, y the cell row";
+
+        /// <summary>
+        /// The 4 × 4 dither thresholds a def carries (<see cref="RigMeshData.Bayer"/>, [x, y]): rig
+        /// 10.3's <c>DITHER.bayer4</c> under its own <c>threshold</c> rule (both numbers of
+        /// <c>(m + 0.5) / 16</c> read off the rule) and its <c>index</c> (<see cref="Bayer9Index"/>),
+        /// read in V8; rig 9's canonical matrix, since 9.2 exports none. Rig 10 never dithers
+        /// (<c>DITHER.used</c> is false, and the v9 tone rule rounds and never reads the matrix), so a
+        /// rig that says it does is refused: the def would draw it undithered.
+        /// </summary>
+        public static double[,] Bayer9(IRigScriptHost host)
+        {
+            Load9(host);
+            CharacterRigKit kit = KitOf(host);
+            var bayer = new double[4, 4];
+            if (!kit.ExportsNumbers)
+            {
+                for (int x = 0; x < 4; x++)
+                    for (int y = 0; y < 4; y++)
+                        bayer[x, y] = (RigMeshSymbols.CanonicalBayer[x, y] + 0.5) / 16.0;
+                return bayer;
+            }
+            string[] p = host.EvaluateString(
+                "(function(){var D=" + kit.GlobalName + ".DITHER;if(!D||typeof D!=='object')return 'none';" +
+                "var b=D.bayer4,ok=Array.isArray(b)&&b.length===4&&b.every(function(r){return Array.isArray(r)&&" +
+                "r.length===4&&r.every(function(m){return typeof m==='number'&&isFinite(m);});});" +
+                "return [String(D.used),ok?b.map(function(r){return r.join(',');}).join(';'):'',String(D.index)," +
+                "String(D.threshold)].join('|');})()").Split('|');
+            if (p.Length == 1 && p[0] == "none")
+                throw new InvalidOperationException($"{kit.Title} exports no DITHER, and {kit} should.");
+            if (p.Length != 4)
+                throw new InvalidOperationException($"{kit.Title}'s DITHER read as {p.Length} fields, not 4.");
+            if (p[0] != "false")
+                throw new InvalidOperationException(
+                    $"{kit.Title}'s DITHER.used is {p[0]}. The v9 tone rule rounds every tone and never dithers, so " +
+                    "a def could not draw what the rig does.");
+            if (p[1].Length == 0)
+                throw new InvalidOperationException($"{kit.Title}'s DITHER.bayer4 is not 4 x 4 numbers.");
+            if (p[2] != Bayer9Index)
+                throw new InvalidOperationException(
+                    $"{kit.Title}'s DITHER.index reads '{p[2]}', and the def indexes the matrix as '{Bayer9Index}'. " +
+                    "Re-read it before baking.");
+            Match t = Regex.Match(p[3], @"^\(m \+ ([0-9.]+)\) / ([0-9]+)$");
+            if (!t.Success)
+                throw new InvalidOperationException(
+                    $"{kit.Title}'s DITHER.threshold reads '{p[3]}', not '(m + <offset>) / <divisor>'. Re-read it before baking.");
+            double offset = Finite9(t.Groups[1].Value, $"{kit.Title}'s DITHER.threshold offset");
+            double divisor = Finite9(t.Groups[2].Value, $"{kit.Title}'s DITHER.threshold divisor");
+            if (!(divisor > 0))
+                throw new InvalidOperationException($"{kit.Title}'s DITHER.threshold divides by {divisor}.");
+            string[] rows = p[1].Split(';');
+            for (int x = 0; x < 4; x++)
+            {
+                string[] cells = rows[x].Split(',');
+                for (int y = 0; y < 4; y++)
+                    bayer[x, y] = (Finite9(cells[y], $"{kit.Title}'s DITHER.bayer4[{x}][{y}]") + offset) / divisor;
+            }
+            return bayer;
         }
 
         /// <summary>True when rig 9 declares its head snap (<c>SHADING.headSnap</c>, which paintSolved
@@ -1129,7 +1384,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// A <see cref="RigMeshData"/> of rig 9's faces, for the mesh builder (the bind mesh) and
         /// for the reference rasterizer (the turntable sign's oracle). It carries rig 9's cell,
         /// pivot, scale and elevation, its screen key light, gain 1 and bias 0 (each material
-        /// carries its own) and the canonical dither, since rig 9 exports none.
+        /// carries its own) and the rig's dither (<see cref="Bayer9"/>: rig 10.3's <c>DITHER</c>, or the
+        /// canonical matrix for rig 9, which exports none).
         /// </summary>
         public static RigMeshData NewData9(IRigScriptHost host, string preset, string label,
                                            string facesJs, List<RigMaterial9> materials)
@@ -1150,11 +1406,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 Bias = 0.0,
                 LightN = V9Shading3(host, "key"),
                 Keyline = ParseHex9(host.EvaluateString($"String({g}.SHADING.keyline)"), "SHADING.keyline"),
-                BayerWasExported = false,
+                BayerWasExported = KitOf(host).ExportsNumbers,
+                Bayer = Bayer9(host),
             };
-            for (int x = 0; x < 4; x++)
-                for (int y = 0; y < 4; y++)
-                    data.Bayer[x, y] = (RigMeshSymbols.CanonicalBayer[x, y] + 0.5) / 16.0;
             foreach (RigMaterial9 m in materials) data.Materials.Add(m.ToRigMaterial());
             data.Faces.AddRange(ReadFaces9(host, facesJs, materials, $"{label} ({preset})", preset));
             return data;

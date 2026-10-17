@@ -31,6 +31,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para><b>Every bound is DERIVED from <see cref="NineMileCreekMainland"/> and from the shop
     /// contract</b>, never copied out of either — the file-wide convention in this region's tests, and
     /// what makes this a check rather than a second copy of the plan.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> The builder still places the shops on the plan's analytic ground
+    /// (<c>MakeCreekTerrain</c>, through <c>NineMileCreekBuilder.ConfigureNineMileCreekTerrain</c>), and the claims
+    /// they are checked against are the plan's. The scene keeps them where the builder puts them, on the third
+    /// issue's made ground, so <see cref="NeitherShopFloods"/> asks G3
+    /// (<see cref="NineMileCreekLiveGround.Plan"/>), the ground the scene stands them on.</para>
     /// </summary>
     public class NineMileCreekShopsTests
     {
@@ -84,6 +90,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para>It is not one of the plan's own claims; it is the one B2 added, because the first fish
         /// market site this slice tried sat squarely across it — the player would have stepped off the
         /// quay into a wall. Half-width below.</para>
+        ///
+        /// <para>⚠ The plan's dock since NMC H2. The scene's walk ashore starts at
+        /// <see cref="NineMileCreekGroundPlan.DisembarkPos"/> and meets the final Wharf Road at its end on the
+        /// turning pad; it passes further from both shops than this one.</para>
         /// </summary>
         static (Vector2 From, Vector2 To) WalkAshore()
         {
@@ -390,12 +400,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// Neither shop floods. Checked against the AUTHORED TERRAIN rather than the constants (#345's
         /// lesson) — and it bites harder here than on the island, because this yard is MADE GROUND on a
-        /// shoal: a site a few metres out is not a damp building, it is a building in the basin.
+        /// shoal: a site a few metres out is not a damp building, it is a building in the basin. On G3 since
+        /// NMC H2: the scene's ground under the sites the scene keeps.
         /// </summary>
         [Test]
         public void NeitherShopFloods()
         {
-            var terrain = MakeCreekTerrain();
+            ITidalTerrain terrain = NineMileCreekLiveGround.Plan;
             float springHigh = NineMileCreekMainland.SpringHighWater;
 
             foreach (var site in Sites)

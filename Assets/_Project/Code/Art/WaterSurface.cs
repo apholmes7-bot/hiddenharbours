@@ -114,27 +114,11 @@ namespace HiddenHarbours.Art
                  "moving value is a visible staircase.")]
         [Min(0.5f)] [SerializeField] private float _refreshHz = 8f;
 
-        [Header("Flow momentum (the water has MASS — rule 6)")]
-        [Tooltip("Response time (seconds) for the VISUAL surface motion to ease toward the live sim flow. The " +
-                 "sim's wind/current directions WANDER over time; rather than the surface SNAPPING to a new " +
-                 "heading the instant the force shifts, the pushed flow/wind vectors are exponentially smoothed " +
-                 "toward the live sim with this time constant — so the surface decelerates through a heading " +
-                 "change and accelerates out of it (momentum). Heavier (larger) = more sluggish inertia; lighter " +
-                 "(smaller) = livelier, snappier. Frame-rate independent. PRESENTATION ONLY — the boat physics " +
-                 "still read the real EnvironmentSample directly; this lags only what the player SEES, and saves " +
-                 "nothing (rule 5). 0 = no smoothing (instant snap, the old behaviour).")]
+        [Header("Current momentum")]
+        [Tooltip("Response time in seconds for decorative current motion. Wind uses WaveField's short memory window.")]
         [Min(0f)] [SerializeField] private float _flowResponseTime = 3f;
 
-        [Header("Transition continuity (the sim SAMPLE steps; the SURFACE must not — rule 6)")]
-        [Tooltip("Response time (seconds) for the drawn CHOPPINESS (_Chop) to ease toward the sampled " +
-                 "sea-state. _Chop is not just a look dial: it scales every band's spatial FREQUENCY " +
-                 "(_BandScaleResponse) and, through the dispersion relation, every band's scroll SPEED, so " +
-                 "a stepped _Chop translates the whole pattern by an amount proportional to distance from " +
-                 "the world origin — the 'stuttery on transitions' defect. Keep it near the wave field's " +
-                 "own parameter smoothing (WaveFieldAnimatorSettings, 1.5 s) so the drawn bands and the " +
-                 "field the hull rides change character together. Frame-rate independent; presentation " +
-                 "only (rule 5). 0 = no easing (the old, stepping behaviour).")]
-        [Min(0f)] [SerializeField] private float _chopResponseTime = 2f;
+        [Header("Transition continuity")]
         [Tooltip("Response time (seconds) for the drawn WATER LEVEL (_WaterLevel) to ease toward the " +
                  "sampled tide. The tide moves at most ~3.5 cm/s at peak spring, so a sample-and-hold push " +
                  "marched the waterline in visible jerks across near-flat sand (millimetres of level become " +
@@ -382,6 +366,9 @@ namespace HiddenHarbours.Art
             "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_ReflectionChopScatter",
             "_ReflectionWindScatter", "_ReflectionSkyTint", "_ReflectionSmear", "_ReflectionSunStreak",
             "_ReflectionSunSharp",
+            // the wake's mid stop (W4-1, design 3A): how much brighter than its water churned water reads,
+            // and how far it whitens toward the foam — a look per mood (a fog can hush it), never physics.
+            "_WakeBodyLift", "_WakeBodyWhiten",
         };
         private static readonly string[] MoodColorNames =
         {
@@ -569,6 +556,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void PublishSeaLevel(float waterLevelMeters)
         {
+            FoamInjectionRegistry.PublishTransportSeaLevel(waterLevelMeters, true);
             float freqScale = 1f;
             float exaggeration = 1f;
             if (DisplacedSea.TryGet(out DisplacedSeaState sea))
@@ -590,7 +578,11 @@ namespace HiddenHarbours.Art
         }
 
         private static void PublishSeaLevelUnset()
-            => Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
+        {
+            Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
+            FoamInjectionRegistry.PublishTransportSeaLevel(0, false);
+            FoamInjectionRegistry.PublishTransportStrengths(Vector3.zero);
+        }
 
         private void OnDestroy()
         {
@@ -776,6 +768,8 @@ namespace HiddenHarbours.Art
             //    ⚠️ The GLOBAL blend, without FoamDriftDir()'s per-position shoreward bias: a rigid
             //    buffer scroll is uniform by construction and cannot carry a position-dependent term.
             Material live = _renderer.sharedMaterial;
+            // Owner transport policy, not a weather-eased mood. Absent material means exact passthrough.
+            FoamInjectionRegistry.PublishTransportStrengths(FoamTransport.ReadStrengths(live));
             if (live != null)
             {
                 float wakeFoamStrength = live.HasProperty(IdWakeFoamStrength)
@@ -851,7 +845,8 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// Push the four ADR 0015 palette anchors onto the Core <see cref="SeaPalette"/> seam as they stand
-        /// after this frame's mood blend.
+        /// after this frame's mood blend — and, since W4-1 (design 3A), the wake's two dials and the water
+        /// body (<see cref="WaterBody"/>) the aged wake ends on.
         ///
         /// <para>Each anchor is read from the property BLOCK when the blend wrote one there and from the
         /// shared material otherwise — which is the honest reading of "what is this surface drawing with",
@@ -869,7 +864,63 @@ namespace HiddenHarbours.Art
                 EffectivePaletteColor(mat, PaletteDeepId),
                 EffectivePaletteColor(mat, PaletteMidId),
                 EffectivePaletteColor(mat, PaletteShallowId),
-                EffectivePaletteColor(mat, PaletteFoamId)));
+                EffectivePaletteColor(mat, PaletteFoamId),
+                EffectiveFloat(mat, WakeBodyLiftId, 1f),
+                EffectiveFloat(mat, WakeBodyWhitenId, 0f),
+                WaterBody(mat)));
+        }
+
+        /// <summary>
+        /// THE WATER ITSELF, as this surface draws it before any light layer (W4-1, design 3A): the depth
+        /// ramp or the two-colour lerp, the depth range and the deep-blue pull, each at the value the GPU
+        /// will see. An aged wake sprite ends on this at its own depth. The band in the shader ends on the
+        /// LIT water instead (<c>col.rgb</c> at its own composite; W4-1 C2): the reflection, the spec and the
+        /// sky are GPU-only, so the sprites keep this water and reach the lit sea by their alpha fade.
+        ///
+        /// <para>The ramp's texels are read ONCE per ramp texture (<c>DepthRamp.png</c> is imported
+        /// readable for exactly this: 256×8 RGBA, 8 KB of CPU memory, no GPU readback), then shared by
+        /// reference every publish. A ramp that cannot be read publishes no water at all, so the sprites
+        /// keep ending on the mid anchor as they did before 3A, and it is said once in the console.</para>
+        /// </summary>
+        private SeaWaterBody WaterBody(Material mat)
+        {
+            Color32[] ramp = null;
+            if (mat.IsKeywordEnabled("_USE_DEPTHRAMP"))
+            {
+                ramp = DepthRampRow(mat.HasProperty(DepthRampId) ? mat.GetTexture(DepthRampId) : null);
+                if (ramp == null) return default;
+            }
+            return new SeaWaterBody(ramp,
+                EffectivePaletteColor(mat, ShallowColorId), EffectivePaletteColor(mat, DeepColorId),
+                EffectiveFloat(mat, ShallowDepthId, 0f), EffectiveFloat(mat, DeepDepthId, 1f),
+                EffectiveFloat(mat, DepthBandsId, 0f),
+                EffectivePaletteColor(mat, DeepBlueColorId),
+                EffectiveFloat(mat, DeepBlueStartId, 0f), EffectiveFloat(mat, DeepBlueStrengthId, 0f));
+        }
+
+        /// <summary>The row of the depth ramp the shader samples (v = 0.5, point: row ⌊h/2⌋), shallow end
+        /// first — read when the ramp texture changes, never per tick. Null when it cannot be read.</summary>
+        private Color32[] DepthRampRow(Texture texture)
+        {
+            if (ReferenceEquals(texture, _depthRampSource)) return _depthRampRow;
+            _depthRampSource = texture;
+            _depthRampRow = null;
+
+            var tex = texture as Texture2D;
+            if (tex != null && tex.isReadable && tex.width > 0 && tex.height > 0)
+            {
+                Color32[] all = tex.GetPixels32();
+                int row = Mathf.Min(tex.height / 2, tex.height - 1);
+                _depthRampRow = new Color32[tex.width];
+                System.Array.Copy(all, row * tex.width, _depthRampRow, 0, tex.width);
+            }
+            else if (texture != null)
+            {
+                Debug.LogWarning($"[WaterSurface] the depth ramp '{texture.name}' is not readable, so wake " +
+                                 "sprites cannot end on the water they ride on and keep ending on the mid " +
+                                 "anchor (W4-1). Tick Read/Write on its import.", this);
+            }
+            return _depthRampRow;
         }
 
         /// <summary>The value the GPU will actually see for one colour property: the MPB override where one
@@ -879,6 +930,30 @@ namespace HiddenHarbours.Art
             if (_mpb != null && _mpb.HasColor(id)) return _mpb.GetColor(id);
             return mat.HasProperty(id) ? mat.GetColor(id) : Color.white;
         }
+
+        /// <summary>The float twin of <see cref="EffectivePaletteColor"/>: the MPB value where the mood blend
+        /// wrote one, else the shared material's; <paramref name="fallback"/> if the shader has no such
+        /// property.</summary>
+        private float EffectiveFloat(Material mat, int id, float fallback)
+        {
+            if (_mpb != null && _mpb.HasFloat(id)) return _mpb.GetFloat(id);
+            return mat.HasProperty(id) ? mat.GetFloat(id) : fallback;
+        }
+
+        // W4-1 (design 3A): the wake's two dials and the water body's inputs, resolved once.
+        private static readonly int WakeBodyLiftId     = Shader.PropertyToID("_WakeBodyLift");
+        private static readonly int WakeBodyWhitenId   = Shader.PropertyToID("_WakeBodyWhiten");
+        private static readonly int DepthRampId        = Shader.PropertyToID("_DepthRamp");
+        private static readonly int ShallowColorId     = Shader.PropertyToID("_ShallowColor");
+        private static readonly int DeepColorId        = Shader.PropertyToID("_DeepColor");
+        private static readonly int ShallowDepthId     = Shader.PropertyToID("_ShallowDepth");
+        private static readonly int DeepDepthId        = Shader.PropertyToID("_DeepDepth");
+        private static readonly int DepthBandsId       = Shader.PropertyToID("_DepthBands");
+        private static readonly int DeepBlueColorId    = Shader.PropertyToID("_DeepBlueColor");
+        private static readonly int DeepBlueStartId    = Shader.PropertyToID("_DeepBlueStart");
+        private static readonly int DeepBlueStrengthId = Shader.PropertyToID("_DeepBlueStrength");
+        private Texture _depthRampSource;    // the ramp texture _depthRampRow was read from
+        private Color32[] _depthRampRow;     // its sampled row, shallow first (null = unreadable / none)
 
         // The four ADR 0015 anchor ids, resolved once. Deliberately independent of the MoodColorNames
         // array: the palette must publish whether or not the weather-mood blend is switched on.
@@ -938,6 +1013,14 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void EaseTowardTargets(float dt)
         {
+            // Use the short trains' window at the same clock, including between slow weather ticks.
+            if (GameServices.Environment is IWaveWindSource history)
+            {
+                var field = GameServices.WaveField;
+                var wind = WaveMemory.ShortWind(history, WaveFieldAnimator.GameTimeSeconds, in field);
+                _targetWind = wind.Wind;
+                _targetChop = Choppiness(wind.SeaState01);
+            }
             bool snap = dt <= 0f || !_flowInitialized;
             if (snap)
             {
@@ -950,8 +1033,8 @@ namespace HiddenHarbours.Art
             else
             {
                 _smoothedCurrent = SmoothVectorToward(_smoothedCurrent, _targetCurrent, _flowResponseTime, dt);
-                _smoothedWind    = SmoothVectorToward(_smoothedWind,    _targetWind,    _flowResponseTime, dt);
-                _easedChop       = SmoothScalarToward(_easedChop,       _targetChop,    _chopResponseTime, dt);
+                _smoothedWind = _targetWind;
+                _easedChop = _targetChop;
                 _easedWaterLevel = SmoothScalarToward(_easedWaterLevel, _targetWaterLevel,
                                                       _waterLevelResponseTime, dt);
             }

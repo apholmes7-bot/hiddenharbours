@@ -182,14 +182,13 @@ Shader "HiddenHarbours/IsoFacet"
             // sisters mostly share a def so the id in the tag would match on all of them. Same class
             // as the deck-occupant properties beside it, and set from the same ApplyPose write.
             float  _HHLevelShown;
-            // THE LID (coordinator ruling 2026-08-27): the level whose faces are the ceiling of the
-            // one the occupant is inside, and which therefore comes off with it. 0 = none.
-            //
-            // ONE HOP IS ENFORCED BY THE SHAPE OF THIS DATA, not by a rule anybody has to remember:
-            // there is one lid uniform, so a chain simply cannot be expressed here. The bake refuses
-            // a lid that has a lid, and a level carries one lid field, so the same law holds in all
-            // three places it could be broken.
-            float  _HHLevelLid;
+            // The lift set removes whole levels; shown roles select faces on the occupied level.
+            // The 31 role masks select further faces by level, packed in low-16/high-15 halves.
+            // ADR 0048 section 11.1 ends the one-hop limit for switched hulls with this lift set.
+            // Legacy lids still enter as one-bit masks from the bake.
+            uint _HHLiftLevels;
+            uint _HHShownRoles;
+            float4 _HHRoleLiftMasks[31];
 
             // ⭐ THE INTERIOR'S OWN PALETTE, AND WHY IT IS A SECOND TABLE RATHER THAN A WIDER ONE.
             //
@@ -269,7 +268,7 @@ Shader "HiddenHarbours/IsoFacet"
                 // x = the face's LEVEL id, from her rig's own geometry().ids (0 = hull, the
                 // exterior silhouette, never cut). y = 1 on emitted INTERIOR geometry, 0 on
                 // the hull's own faces. Absent on every hull baked before the cutaway kit.
-                float2 levelTag   : TEXCOORD1;
+                float3 levelTag   : TEXCOORD1;
                 // THE ROOM'S SURFACE. xy = generator id + period, flat per face; zw = the rig's
                 // own per-vertex uv, which paint() interpolates before calling the generator.
                 // All zero on a hull with no room, and on every hull face of a hull that has one.
@@ -305,7 +304,7 @@ Shader "HiddenHarbours/IsoFacet"
 #ifdef HH_LEVEL_GATE
                 // xy = the level tag, z = 1 when the camera is rendering this
                 // face's FRONT (decoded from the stored normal exactly as vertGuard does).
-                nointerpolation float3 lvl : TEXCOORD3;
+                nointerpolation float4 lvl : TEXCOORD3;
                 // xy flat (generator + period), zw INTERPOLATED — the uv has to vary across the
                 // face or the pattern would be one flat value per facet.
                 nointerpolation float2 texKp : TEXCOORD4;
@@ -354,7 +353,7 @@ Shader "HiddenHarbours/IsoFacet"
 #endif
                 o.mat  = v.attrs.x;
 #ifdef HH_LEVEL_GATE
-                o.lvl  = float3(v.levelTag, dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0);
+                o.lvl  = float4(v.levelTag.xy, dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0, v.levelTag.z);
                 o.texKp = v.texAttr.xy;
                 o.texUv = v.texAttr.zw;
 #endif
@@ -536,21 +535,25 @@ Shader "HiddenHarbours/IsoFacet"
                 return (fu < 0.030 || fv < 0.030) ? -1.0 : 0.0;
             }
 
-            bool HHLevelDiscards(float3 lvl)
+            bool HHLevelDiscards(float4 lvl)
             {
                 bool isInterior = lvl.y > 0.5;
-                if (_HHLevelShown < 0.5) return isInterior;
                 bool isShown = abs(lvl.x - _HHLevelShown) < 0.5;
 
                 // INTERIOR geometry tests the SHOWN level only. A lid is a thing that comes OFF; it
                 // is not a second room you are also standing in, and drawing its fit-out because you
                 // are under it would put two rooms in one hull.
-                if (isInterior) return !isShown || lvl.z < 0.5;
+                if (isInterior) return _HHLevelShown < 0.5 || !isShown || lvl.z < 0.5;
 
                 // HULL geometry loses the level you are inside AND its declared lid. Two compares,
                 // no loop, no chain.
-                bool isLid = _HHLevelLid >= 0.5 && abs(lvl.x - _HHLevelLid) < 0.5;
-                return isShown || isLid;
+                uint levelBit = 1u << (uint)max(0.0, lvl.x);
+                bool lifted = (_HHLiftLevels & levelBit) != 0;
+                bool role = lvl.w < 0.5 || (_HHShownRoles & (1u << (uint)(lvl.w - 1.0))) != 0;
+                float2 halves = _HHRoleLiftMasks[(uint)clamp(lvl.x, 0.0, 30.0)].xy;
+                uint extra = (uint)halves.x | ((uint)halves.y << 16);
+                bool roleLift = extra != 0 && (lvl.w < 0.5 || (extra & (1u << (uint)max(0.0, lvl.w - 1.0))) != 0);
+                return lifted || roleLift || (_HHLevelShown >= 0.5 && isShown && role);
             }
 #endif
 
@@ -678,7 +681,7 @@ Shader "HiddenHarbours/IsoFacet"
                 float4 positionCS : SV_POSITION;
                 nointerpolation float interior : TEXCOORD0;
 #ifdef HH_LEVEL_GATE
-                nointerpolation float3 lvl : TEXCOORD1;   // see HHLevelDiscards
+                nointerpolation float4 lvl : TEXCOORD1;   // see HHLevelDiscards
 #endif
             };
 

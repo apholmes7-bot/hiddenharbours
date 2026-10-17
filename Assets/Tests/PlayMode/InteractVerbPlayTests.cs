@@ -226,7 +226,10 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator WithNothingRegistered_TheInteractKeyDoesExactlyWhatItAlwaysDid()
         {
-            Assert.AreEqual(0, Interactables.Count, "the registry starts empty, as a region with no fixtures does");
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
+                "the registry starts empty, as a region with no fixtures does; the hull's own filler cap is registered too since #936");
             yield return null;
 
             // On foot, in reach → board (onto the deck).
@@ -277,7 +280,10 @@ namespace HiddenHarbours.Tests.PlayMode
             var spot = RealSeawaterSpot(AshorePos);
             yield return null;
 
-            Assert.AreEqual(1, Interactables.Count, "it registered itself (OnEnable), with no installer");
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank, spot }, Interactables.Active,
+                "it registered itself (OnEnable), with no installer; the hull's own filler cap is registered too since #936");
             Assert.AreEqual("fixture.st_peters.wet_bucket", spot.Id);
             Assert.AreEqual(InteractContext.OnFoot, spot.Contexts, "on foot only — what StallReach's gate was");
             Assert.IsFalse(spot.RequiresFacing, "omnidirectional, as the pre-verb proximity behaviour was");
@@ -311,13 +317,17 @@ namespace HiddenHarbours.Tests.PlayMode
             // something that is no longer loaded.
             spot.enabled = false;
             yield return null;
-            Assert.AreEqual(0, Interactables.Count, "relinquished on disable, like every other Core registry");
+            var tank = _boat.GetComponent<BoatFuelTank>();
+            Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
+                "relinquished on disable, like every other Core registry; the hull's own filler cap is registered too since #936");
             Assert.IsFalse(_switcher.BeginInteract());
             Assert.AreEqual(1, _performed.Count, "still just the one");
 
             spot.enabled = true;
             yield return null;
-            Assert.AreEqual(1, Interactables.Count, "…and it comes back with the component");
+            CollectionAssert.AreEquivalent(new IInteractable[] { tank, spot }, Interactables.Active,
+                "…and it comes back with the component; the hull's own filler cap is registered too since #936");
         }
 
         [UnityTest]

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a214f70d740cd7fa1ba3fc6095fc8d8, type: 3}
+  m_Name: Pond_AlderPlunge
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PondDef
+  Id: pond.stp_alder_plunge
+  DisplayName: Alder Fall pool
+  Kind: plunge_pool
+  Centre: {x: 106, y: 62.85}
+  Radii: {x: 2.05, y: 1.6}
+  RotationDeg: 6
+  Surface: 2.05
+  Bed: 0.95
+  Basin: {x: 0, y: 0}
+  Outlet: {fileID: 11400000, guid: 035776fbedd76b94736f4e5117dfff21, type: 2}
+  Why: The plunge pool under the Alder Fall (alderFall.js PL). It spills down its chute into the Alder Run.

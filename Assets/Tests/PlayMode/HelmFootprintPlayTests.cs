@@ -92,7 +92,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Tiller), "premise: the tiller's card");
             Rect tiller = HelmOverlayLayout.CardRect(false, TillerRigRender.W, TillerRigRender.H,
                                                      GameServices.HelmOverlay, Screen.width, Screen.height);
-            Assert.AreEqual(HelmOverlayHost.FootprintOf(tiller, GameServices.BoatUiWindowing.TitleBarPx),
+            // 2026-10-07: the helm's title strip follows the HUD reference factor too.
+            float titleBarPx = GameServices.BoatUiWindowing.TitleBarPx
+                             * Mathf.Sqrt((Screen.width / 1280f) * (Screen.height / 720f));
+            Assert.AreEqual(HelmOverlayHost.FootprintOf(tiller, titleBarPx),
                             HelmFootprint.Current,
                             "⭐ the seam says the tiller's card: its window, title strip included");
             AssertEveryOverlayStandsClear("the tiller's card", toast, note, popup);
@@ -106,7 +109,7 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash), "premise: the dash");
             Assert.That(HelmOverlayHost.TryDashCard(out Rect dash, out _), Is.True, "premise: the dash draws");
-            Assert.AreEqual(HelmOverlayHost.FootprintOf(dash, GameServices.BoatUiWindowing.TitleBarPx),
+            Assert.AreEqual(HelmOverlayHost.FootprintOf(dash, titleBarPx),
                             HelmFootprint.Current, "⭐ the seam says the dash, wherever the window put it");
             Assert.AreEqual(HelmFootprintKind.Card, HelmFootprint.Current.Kind, "a card, not a band");
             AssertEveryOverlayStandsClear("the dash", toast, note, popup);

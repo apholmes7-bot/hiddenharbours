@@ -57,7 +57,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 162
-        height: 269
+        width: 283
+        height: 277
       alignment: 9
-      pivot: {x: 0.5, y: 0.029739777}
+      pivot: {x: 0.49469966, y: 0.028880866}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: WhiteBirch_mature_summer_mask_v1
       rect:
         serializedVersion: 2
-        x: 162
+        x: 283
         y: 0
-        width: 162
-        height: 269
+        width: 283
+        height: 277
       alignment: 9
-      pivot: {x: 0.5, y: 0.029739777}
+      pivot: {x: 0.49469966, y: 0.028880866}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: WhiteBirch_mature_summer_mask_v2
       rect:
         serializedVersion: 2
-        x: 324
+        x: 566
         y: 0
-        width: 162
-        height: 269
+        width: 283
+        height: 277
       alignment: 9
-      pivot: {x: 0.5, y: 0.029739777}
+      pivot: {x: 0.49469966, y: 0.028880866}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: WhiteBirch_mature_summer_mask_v3
       rect:
         serializedVersion: 2
-        x: 486
+        x: 849
         y: 0
-        width: 162
-        height: 269
+        width: 283
+        height: 277
       alignment: 9
-      pivot: {x: 0.5, y: 0.029739777}
+      pivot: {x: 0.49469966, y: 0.028880866}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

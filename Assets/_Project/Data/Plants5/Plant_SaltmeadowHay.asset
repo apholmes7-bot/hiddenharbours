@@ -1,0 +1,3394 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5fdf60bbb8c79ed358d9a1ae8a9a783, type: 3}
+  m_Name: Plant_SaltmeadowHay
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PlantSpeciesDef
+  Id: shoreplant.saltmeadow_hay
+  SpeciesKey: SaltmeadowHay
+  Family: shore
+  Habitat: highmarsh
+  Code: 29
+  StandingHeightM: 0.75
+  MinElevation: 0.85
+  MaxElevation: 2.4
+  TideLadder:
+  - -0.85
+  - 0
+  - 0.5
+  - 1
+  - 2
+  Pages:
+  - Albedo: {fileID: 2800000, guid: ede2e5223c0937641ad118049c22e61a, type: 3}
+    Normal: {fileID: 2800000, guid: 0b42be1f088b97643b7de9c948fda985, type: 3}
+    Light: {fileID: 2800000, guid: 2d386b7a9ffc0444d99143a58a7c45c1, type: 3}
+    Detail: {fileID: 2800000, guid: e9342706b9036aa4096d97256a635ddd, type: 3}
+  Cells:
+  - Stage: 2
+    Season: 0
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 946
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.09170416
+  - Stage: 2
+    Season: 0
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 987
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.09170416
+  - Stage: 2
+    Season: 0
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1028
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.09170416
+  - Stage: 2
+    Season: 0
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1069
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.09170416
+  - Stage: 2
+    Season: 0
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1110
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.09170416
+  - Stage: 2
+    Season: 0
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 514
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.08853506
+  - Stage: 2
+    Season: 0
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 552
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.08853506
+  - Stage: 2
+    Season: 0
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 590
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.08853506
+  - Stage: 2
+    Season: 0
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 628
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.08853506
+  - Stage: 2
+    Season: 0
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 666
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.08853506
+  - Stage: 2
+    Season: 0
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1084
+      y: 1
+      width: 35
+      height: 27
+    Pivot: {x: 17, y: 13}
+    HeightM: 0.09427753
+  - Stage: 2
+    Season: 0
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1121
+      y: 1
+      width: 35
+      height: 27
+    Pivot: {x: 17, y: 13}
+    HeightM: 0.09427753
+  - Stage: 2
+    Season: 0
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1158
+      y: 1
+      width: 35
+      height: 27
+    Pivot: {x: 17, y: 13}
+    HeightM: 0.09427753
+  - Stage: 2
+    Season: 0
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1195
+      y: 1
+      width: 35
+      height: 27
+    Pivot: {x: 17, y: 13}
+    HeightM: 0.09427753
+  - Stage: 2
+    Season: 0
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1232
+      y: 1
+      width: 35
+      height: 27
+    Pivot: {x: 17, y: 13}
+    HeightM: 0.09427753
+  - Stage: 2
+    Season: 0
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 704
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.10650618
+  - Stage: 2
+    Season: 0
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 742
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.10650618
+  - Stage: 2
+    Season: 0
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 780
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.10650618
+  - Stage: 2
+    Season: 0
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 818
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.10650618
+  - Stage: 2
+    Season: 0
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 856
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.10650618
+  - Stage: 2
+    Season: 1
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1148
+      y: 62
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 1
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1193
+      y: 62
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 1
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1238
+      y: 62
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 1
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1283
+      y: 62
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 1
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1328
+      y: 62
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 1
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1151
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 1
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1192
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 1
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1233
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 1
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1274
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 1
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1315
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 1
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 136
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 1
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 175
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 1
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 214
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 1
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 253
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 1
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 292
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 1
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 526
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 1
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 568
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 1
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 610
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 1
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 652
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 1
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 694
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 2
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1373
+      y: 62
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 2
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1418
+      y: 62
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 2
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 30
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 2
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 46
+      y: 30
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 2
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 91
+      y: 30
+      width: 43
+      height: 28
+    Pivot: {x: 25, y: 14}
+    HeightM: 0.14790992
+  - Stage: 2
+    Season: 2
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1356
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 2
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1397
+      y: 31
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 2
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 1
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 2
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 42
+      y: 1
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 2
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 83
+      y: 1
+      width: 39
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.15714352
+  - Stage: 2
+    Season: 2
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 331
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 2
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 370
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 2
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 409
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 2
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 448
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 2
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 487
+      y: 30
+      width: 37
+      height: 28
+    Pivot: {x: 18, y: 14}
+    HeightM: 0.16813089
+  - Stage: 2
+    Season: 2
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 736
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 2
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 778
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 2
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 820
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 2
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 862
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 2
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 904
+      y: 31
+      width: 40
+      height: 27
+    Pivot: {x: 21, y: 13}
+    HeightM: 0.18213713
+  - Stage: 2
+    Season: 3
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 124
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 20, y: 13}
+    HeightM: 0.0627
+  - Stage: 2
+    Season: 3
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 163
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 20, y: 13}
+    HeightM: 0.0627
+  - Stage: 2
+    Season: 3
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 202
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 20, y: 13}
+    HeightM: 0.0627
+  - Stage: 2
+    Season: 3
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 241
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 20, y: 13}
+    HeightM: 0.0627
+  - Stage: 2
+    Season: 3
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 280
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 20, y: 13}
+    HeightM: 0.0627
+  - Stage: 2
+    Season: 3
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1269
+      y: 1
+      width: 33
+      height: 27
+    Pivot: {x: 16, y: 13}
+    HeightM: 0.06679417
+  - Stage: 2
+    Season: 3
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1304
+      y: 1
+      width: 33
+      height: 27
+    Pivot: {x: 16, y: 13}
+    HeightM: 0.06679417
+  - Stage: 2
+    Season: 3
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1339
+      y: 1
+      width: 33
+      height: 27
+    Pivot: {x: 16, y: 13}
+    HeightM: 0.06679417
+  - Stage: 2
+    Season: 3
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1374
+      y: 1
+      width: 33
+      height: 27
+    Pivot: {x: 16, y: 13}
+    HeightM: 0.06679417
+  - Stage: 2
+    Season: 3
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1409
+      y: 1
+      width: 33
+      height: 27
+    Pivot: {x: 16, y: 13}
+    HeightM: 0.06679417
+  - Stage: 2
+    Season: 3
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 894
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.09939823
+  - Stage: 2
+    Season: 3
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 932
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.09939823
+  - Stage: 2
+    Season: 3
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 970
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.09939823
+  - Stage: 2
+    Season: 3
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1008
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.09939823
+  - Stage: 2
+    Season: 3
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1046
+      y: 1
+      width: 36
+      height: 27
+    Pivot: {x: 18, y: 13}
+    HeightM: 0.09939823
+  - Stage: 2
+    Season: 3
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 319
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.107106954
+  - Stage: 2
+    Season: 3
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 358
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.107106954
+  - Stage: 2
+    Season: 3
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 397
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.107106954
+  - Stage: 2
+    Season: 3
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 436
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.107106954
+  - Stage: 2
+    Season: 3
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 475
+      y: 1
+      width: 37
+      height: 27
+    Pivot: {x: 19, y: 13}
+    HeightM: 0.107106954
+  - Stage: 1
+    Season: 0
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1031
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.15997425
+  - Stage: 1
+    Season: 0
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1078
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.15997425
+  - Stage: 1
+    Season: 0
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1125
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.15997425
+  - Stage: 1
+    Season: 0
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1172
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.15997425
+  - Stage: 1
+    Season: 0
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1219
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.15997425
+  - Stage: 1
+    Season: 0
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 723
+      y: 60
+      width: 41
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.16238163
+  - Stage: 1
+    Season: 0
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 766
+      y: 60
+      width: 41
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.16238163
+  - Stage: 1
+    Season: 0
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 809
+      y: 60
+      width: 41
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.16238163
+  - Stage: 1
+    Season: 0
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 852
+      y: 60
+      width: 41
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.16238163
+  - Stage: 1
+    Season: 0
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 895
+      y: 60
+      width: 41
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.16238163
+  - Stage: 1
+    Season: 0
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 938
+      y: 60
+      width: 40
+      height: 30
+    Pivot: {x: 20, y: 14}
+    HeightM: 0.17373525
+  - Stage: 1
+    Season: 0
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 980
+      y: 60
+      width: 40
+      height: 30
+    Pivot: {x: 20, y: 14}
+    HeightM: 0.17373525
+  - Stage: 1
+    Season: 0
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1022
+      y: 60
+      width: 40
+      height: 30
+    Pivot: {x: 20, y: 14}
+    HeightM: 0.17373525
+  - Stage: 1
+    Season: 0
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1064
+      y: 60
+      width: 40
+      height: 30
+    Pivot: {x: 20, y: 14}
+    HeightM: 0.17373525
+  - Stage: 1
+    Season: 0
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1106
+      y: 60
+      width: 40
+      height: 30
+    Pivot: {x: 20, y: 14}
+    HeightM: 0.17373525
+  - Stage: 1
+    Season: 0
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 503
+      y: 60
+      width: 42
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.18820836
+  - Stage: 1
+    Season: 0
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 547
+      y: 60
+      width: 42
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.18820836
+  - Stage: 1
+    Season: 0
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 591
+      y: 60
+      width: 42
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.18820836
+  - Stage: 1
+    Season: 0
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 635
+      y: 60
+      width: 42
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.18820836
+  - Stage: 1
+    Season: 0
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 679
+      y: 60
+      width: 42
+      height: 30
+    Pivot: {x: 22, y: 14}
+    HeightM: 0.18820836
+  - Stage: 1
+    Season: 1
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 918
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 1
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 975
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 1
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1032
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 1
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1089
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 1
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1146
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 1
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 301
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 1
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 353
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 1
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 405
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 1
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 457
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 1
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 509
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 1
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 313
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 1
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 360
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 1
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 407
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 1
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 454
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 1
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 501
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 1
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1273
+      y: 128
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 1
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1323
+      y: 128
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 1
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1373
+      y: 128
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 1
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1423
+      y: 128
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 1
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 92
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 2
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1203
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 2
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1260
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 2
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1317
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 2
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1374
+      y: 164
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 2
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 127
+      width: 55
+      height: 34
+    Pivot: {x: 34, y: 18}
+    HeightM: 0.26916468
+  - Stage: 1
+    Season: 2
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 561
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 2
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 613
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 2
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 665
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 2
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 717
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 2
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 769
+      y: 93
+      width: 50
+      height: 32
+    Pivot: {x: 29, y: 16}
+    HeightM: 0.27485165
+  - Stage: 1
+    Season: 2
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 548
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 2
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 595
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 2
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 642
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 2
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 689
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 2
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 736
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 24, y: 18}
+    HeightM: 0.29470423
+  - Stage: 1
+    Season: 2
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 51
+      y: 92
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 2
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 101
+      y: 92
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 2
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 151
+      y: 92
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 2
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 201
+      y: 92
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 2
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 251
+      y: 92
+      width: 48
+      height: 33
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.324905
+  - Stage: 1
+    Season: 3
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1266
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.10774606
+  - Stage: 1
+    Season: 3
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1313
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.10774606
+  - Stage: 1
+    Season: 3
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1360
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.10774606
+  - Stage: 1
+    Season: 3
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1407
+      y: 95
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.10774606
+  - Stage: 1
+    Season: 3
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 60
+      width: 45
+      height: 30
+    Pivot: {x: 26, y: 14}
+    HeightM: 0.10774606
+  - Stage: 1
+    Season: 3
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 821
+      y: 94
+      width: 40
+      height: 31
+    Pivot: {x: 21, y: 15}
+    HeightM: 0.12329985
+  - Stage: 1
+    Season: 3
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 863
+      y: 94
+      width: 40
+      height: 31
+    Pivot: {x: 21, y: 15}
+    HeightM: 0.12329985
+  - Stage: 1
+    Season: 3
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 905
+      y: 94
+      width: 40
+      height: 31
+    Pivot: {x: 21, y: 15}
+    HeightM: 0.12329985
+  - Stage: 1
+    Season: 3
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 947
+      y: 94
+      width: 40
+      height: 31
+    Pivot: {x: 21, y: 15}
+    HeightM: 0.12329985
+  - Stage: 1
+    Season: 3
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 989
+      y: 94
+      width: 40
+      height: 31
+    Pivot: {x: 21, y: 15}
+    HeightM: 0.12329985
+  - Stage: 1
+    Season: 3
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 278
+      y: 60
+      width: 43
+      height: 30
+    Pivot: {x: 23, y: 14}
+    HeightM: 0.19230933
+  - Stage: 1
+    Season: 3
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 323
+      y: 60
+      width: 43
+      height: 30
+    Pivot: {x: 23, y: 14}
+    HeightM: 0.19230933
+  - Stage: 1
+    Season: 3
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 368
+      y: 60
+      width: 43
+      height: 30
+    Pivot: {x: 23, y: 14}
+    HeightM: 0.19230933
+  - Stage: 1
+    Season: 3
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 413
+      y: 60
+      width: 43
+      height: 30
+    Pivot: {x: 23, y: 14}
+    HeightM: 0.19230933
+  - Stage: 1
+    Season: 3
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 458
+      y: 60
+      width: 43
+      height: 30
+    Pivot: {x: 23, y: 14}
+    HeightM: 0.19230933
+  - Stage: 1
+    Season: 3
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 48
+      y: 60
+      width: 44
+      height: 30
+    Pivot: {x: 24, y: 14}
+    HeightM: 0.2007255
+  - Stage: 1
+    Season: 3
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 94
+      y: 60
+      width: 44
+      height: 30
+    Pivot: {x: 24, y: 14}
+    HeightM: 0.2007255
+  - Stage: 1
+    Season: 3
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 140
+      y: 60
+      width: 44
+      height: 30
+    Pivot: {x: 24, y: 14}
+    HeightM: 0.2007255
+  - Stage: 1
+    Season: 3
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 186
+      y: 60
+      width: 44
+      height: 30
+    Pivot: {x: 24, y: 14}
+    HeightM: 0.2007255
+  - Stage: 1
+    Season: 3
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 232
+      y: 60
+      width: 44
+      height: 30
+    Pivot: {x: 24, y: 14}
+    HeightM: 0.2007255
+  - Stage: 0
+    Season: 0
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 113
+      y: 163
+      width: 53
+      height: 35
+    Pivot: {x: 32, y: 18}
+    HeightM: 0.23449498
+  - Stage: 0
+    Season: 0
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 168
+      y: 163
+      width: 53
+      height: 35
+    Pivot: {x: 32, y: 18}
+    HeightM: 0.23449498
+  - Stage: 0
+    Season: 0
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 223
+      y: 163
+      width: 53
+      height: 35
+    Pivot: {x: 32, y: 18}
+    HeightM: 0.23449498
+  - Stage: 0
+    Season: 0
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 278
+      y: 163
+      width: 53
+      height: 35
+    Pivot: {x: 32, y: 18}
+    HeightM: 0.23449498
+  - Stage: 0
+    Season: 0
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 333
+      y: 163
+      width: 53
+      height: 35
+    Pivot: {x: 32, y: 18}
+    HeightM: 0.23449498
+  - Stage: 0
+    Season: 0
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1018
+      y: 128
+      width: 49
+      height: 33
+    Pivot: {x: 28, y: 16}
+    HeightM: 0.24073991
+  - Stage: 0
+    Season: 0
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1069
+      y: 128
+      width: 49
+      height: 33
+    Pivot: {x: 28, y: 16}
+    HeightM: 0.24073991
+  - Stage: 0
+    Season: 0
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1120
+      y: 128
+      width: 49
+      height: 33
+    Pivot: {x: 28, y: 16}
+    HeightM: 0.24073991
+  - Stage: 0
+    Season: 0
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1171
+      y: 128
+      width: 49
+      height: 33
+    Pivot: {x: 28, y: 16}
+    HeightM: 0.24073991
+  - Stage: 0
+    Season: 0
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1222
+      y: 128
+      width: 49
+      height: 33
+    Pivot: {x: 28, y: 16}
+    HeightM: 0.24073991
+  - Stage: 0
+    Season: 0
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 783
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 23, y: 17}
+    HeightM: 0.2580033
+  - Stage: 0
+    Season: 0
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 830
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 23, y: 17}
+    HeightM: 0.2580033
+  - Stage: 0
+    Season: 0
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 877
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 23, y: 17}
+    HeightM: 0.2580033
+  - Stage: 0
+    Season: 0
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 924
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 23, y: 17}
+    HeightM: 0.2580033
+  - Stage: 0
+    Season: 0
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 971
+      y: 127
+      width: 45
+      height: 34
+    Pivot: {x: 23, y: 17}
+    HeightM: 0.2580033
+  - Stage: 0
+    Season: 0
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 58
+      y: 127
+      width: 49
+      height: 34
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.28364566
+  - Stage: 0
+    Season: 0
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 109
+      y: 127
+      width: 49
+      height: 34
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.28364566
+  - Stage: 0
+    Season: 0
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 160
+      y: 127
+      width: 49
+      height: 34
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.28364566
+  - Stage: 0
+    Season: 0
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 211
+      y: 127
+      width: 49
+      height: 34
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.28364566
+  - Stage: 0
+    Season: 0
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 262
+      y: 127
+      width: 49
+      height: 34
+    Pivot: {x: 27, y: 17}
+    HeightM: 0.28364566
+  - Stage: 0
+    Season: 1
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 1
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 67
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 1
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 133
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 1
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 199
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 1
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 265
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 1
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 428
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 1
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 490
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 1
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 552
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 1
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 614
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 1
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 676
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 1
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 661
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 1
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 718
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 1
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 775
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 1
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 832
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 1
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 889
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 1
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1231
+      y: 243
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 1
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1292
+      y: 243
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 1
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1353
+      y: 243
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 1
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 200
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 1
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 62
+      y: 200
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 2
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 331
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 2
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 397
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 2
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 463
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 2
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 529
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 2
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 595
+      y: 241
+      width: 64
+      height: 41
+    Pivot: {x: 41, y: 24}
+    HeightM: 0.39227924
+  - Stage: 0
+    Season: 2
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 738
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 2
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 800
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 2
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 862
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 2
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 924
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 2
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 986
+      y: 201
+      width: 60
+      height: 38
+    Pivot: {x: 37, y: 21}
+    HeightM: 0.4008738
+  - Stage: 0
+    Season: 2
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 946
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 2
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1003
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 2
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1060
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 2
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1117
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 2
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1174
+      y: 242
+      width: 55
+      height: 40
+    Pivot: {x: 31, y: 23}
+    HeightM: 0.4302083
+  - Stage: 0
+    Season: 2
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 123
+      y: 200
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 2
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 184
+      y: 200
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 2
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 245
+      y: 200
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 2
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 306
+      y: 200
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 2
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 367
+      y: 200
+      width: 59
+      height: 39
+    Pivot: {x: 34, y: 22}
+    HeightM: 0.47595876
+  - Stage: 0
+    Season: 3
+    Variant: 0
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1303
+      y: 204
+      width: 54
+      height: 35
+    Pivot: {x: 33, y: 18}
+    HeightM: 0.19666557
+  - Stage: 0
+    Season: 3
+    Variant: 0
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1359
+      y: 204
+      width: 54
+      height: 35
+    Pivot: {x: 33, y: 18}
+    HeightM: 0.19666557
+  - Stage: 0
+    Season: 3
+    Variant: 0
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1415
+      y: 204
+      width: 54
+      height: 35
+    Pivot: {x: 33, y: 18}
+    HeightM: 0.19666557
+  - Stage: 0
+    Season: 3
+    Variant: 0
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1
+      y: 163
+      width: 54
+      height: 35
+    Pivot: {x: 33, y: 18}
+    HeightM: 0.19666557
+  - Stage: 0
+    Season: 3
+    Variant: 0
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 57
+      y: 163
+      width: 54
+      height: 35
+    Pivot: {x: 33, y: 18}
+    HeightM: 0.19666557
+  - Stage: 0
+    Season: 3
+    Variant: 1
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1048
+      y: 203
+      width: 49
+      height: 36
+    Pivot: {x: 27, y: 19}
+    HeightM: 0.25984907
+  - Stage: 0
+    Season: 3
+    Variant: 1
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1099
+      y: 203
+      width: 49
+      height: 36
+    Pivot: {x: 27, y: 19}
+    HeightM: 0.25984907
+  - Stage: 0
+    Season: 3
+    Variant: 1
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1150
+      y: 203
+      width: 49
+      height: 36
+    Pivot: {x: 27, y: 19}
+    HeightM: 0.25984907
+  - Stage: 0
+    Season: 3
+    Variant: 1
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1201
+      y: 203
+      width: 49
+      height: 36
+    Pivot: {x: 27, y: 19}
+    HeightM: 0.25984907
+  - Stage: 0
+    Season: 3
+    Variant: 1
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 1252
+      y: 203
+      width: 49
+      height: 36
+    Pivot: {x: 27, y: 19}
+    HeightM: 0.25984907
+  - Stage: 0
+    Season: 3
+    Variant: 2
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 388
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.29042512
+  - Stage: 0
+    Season: 3
+    Variant: 2
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 441
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.29042512
+  - Stage: 0
+    Season: 3
+    Variant: 2
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 494
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.29042512
+  - Stage: 0
+    Season: 3
+    Variant: 2
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 547
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.29042512
+  - Stage: 0
+    Season: 3
+    Variant: 2
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 600
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.29042512
+  - Stage: 0
+    Season: 3
+    Variant: 3
+    Tide: 0
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 653
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.2944066
+  - Stage: 0
+    Season: 3
+    Variant: 3
+    Tide: 1
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 706
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.2944066
+  - Stage: 0
+    Season: 3
+    Variant: 3
+    Tide: 2
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 759
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.2944066
+  - Stage: 0
+    Season: 3
+    Variant: 3
+    Tide: 3
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 812
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.2944066
+  - Stage: 0
+    Season: 3
+    Variant: 3
+    Tide: 4
+    Page: 0
+    Dormant: 0
+    Rect:
+      serializedVersion: 2
+      x: 865
+      y: 163
+      width: 51
+      height: 35
+    Pivot: {x: 29, y: 18}
+    HeightM: 0.2944066

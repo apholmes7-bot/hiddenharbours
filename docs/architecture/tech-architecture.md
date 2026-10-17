@@ -53,9 +53,21 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 
 ## 3. Core services (the spine)
 
+**Helm switches (2026-10-07):** `BoatAnchor` answers `IVesselWay` on the physics root and
+pushes `IVesselWayListener` when its derived lamp regime changes. Holding uses the existing
+`VesselWay.Moored`; stowed or dragging uses `UnderWay`. If a `MooredBoat` also lives on that
+root, both providers return the same combined answer: a declared berth or a holding anchor wins.
+Rebuilt lamps read that answer immediately; no way state is saved. `DeckIceBox` registers an
+`IInteractable` on the player's own deck, at the new `InteractPriority.DeckStorage` rung (-10),
+below doors (`Fixture`) and fuel work (`ToolTarget`). Both the box and the fuel tank register with
+`Interactables` on enable and relinquish that registration on disable; priority only applies to
+registered candidates. The switcher's helm-first ladder is unchanged.
+The lid consumes the shared interact verb (ADR 0043); its old L read is removed. The dev I ice
+scaffold remains as-is pending the input lane's PR 1; no binding or key is added.
+
 | Service | Responsibility | Notes / determinism |
 |---------|----------------|---------------------|
-| **EventBus** | Decoupled pub/sub between modules (`FishCaught`, `FishingStateChanged`, `TideChanged`, `BoatGrounded`, `DayStarted`, `MarketTick`). | Typed events; no module references another's classes. |
+| **EventBus** | Typed, synchronous, main-thread notifications between modules; events are notifications, not transactions. A handler failure is logged once and later handlers and the publisher continue, without rethrowing. A request still needs its own explicit outcome. | Ordered, flattened snapshots preserve delegate removal and reentrancy semantics. Successful Publish allocates zero bus bytes after initialization; subscription changes and fault logging may allocate. Unexpected exception logs fail tests; injected faults require exact `LogAssert.Expect`, never ignored failures. [ADR 0052](../adr/0052-event-handler-isolation.md). |
 | **TimeService** | The 24h clock, day/week/season/year, time scale, sleep/wait. `gameTime` is a `double` (in-game seconds). | The master clock everything derives from. |
 | **EnvironmentService** | Computes **tide, wind, weather, sea state, visibility** from `(worldSeed, gameTime, region)`. Emits an `EnvironmentSample` per region per tick. | **Deterministic** → not saved, recomputed. (`design/time-tides-weather.md`) |
 | **RegionService** | Additive load/unload of region scenes, the `MapGraph`, travel/transit, fog-of-war reveal state. | Reveal state is saved; geometry is authored. |
@@ -65,6 +77,16 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 | **InputService** | Translates raw input → **intents** (`MoveIntent`, `ThrottleIntent`, `InteractIntent`, `SetHeadingIntent`). | Platform-swappable. **Landed 2026-09-02 as ADR 0043:** per-mode intent structs in Core (`WalkIntents`, `DeckIntents`, `DriveDemand`; `HelmIntents` in PR 1), one `IControlIntentSource<T>` read per mode per frame, bindings as data in `Data/Input/HiddenHarbours.inputactions`. |
 | **SaveService** | Versioned save/load, autosave, app-suspend safety. | See §6. |
 | **AudioDirector** | Adaptive ambient/music/SFX driven by region + EnvironmentSample. | (`design/art-and-audio-bible.md`) |
+
+### Authored gull perches (O3 wave 1b)
+
+Core's `IGullPerch` offers a stable id, ground point, screen point and host sort line.
+`GullPerches` holds scene-lifetime offers and exclusive reservations in stable id order.
+World's `GullPerch` registers on enable and unregisters on disable; it has no per-frame callback.
+Art's `GullFlock` claims an offer on its existing decision tick and uses its landing and departure
+states, releasing the reservation on departure, timeout, disable or host removal. The modules
+reference Core only. Neither offers nor reservations are saved. See
+[`wave-1b-placement.md`](../design/st-peters-key-scenes/wave-1b-placement.md) for the placement ruling.
 
 ## 4. The Environment → Boat force contract (P1, the signature loop)
 
@@ -257,6 +279,20 @@ by the framing on screen, added with the look-ahead ahead of the feel, the snap 
 never for a card. Change-detected, so a quiet frame is a struct compare. Presentation state: unsaved
 (rule 5), nothing published headless, so every reader stands where it did.
 
+
+### Wave wind history (ADR 0018, Stage A, 2026-10-13)
+
+Core's additive `IWaveWindSource.WaveWindAt(double gameTimeSeconds)` returns a
+`WaveWindSample` with wind vector and continuous sea state for any past world time,
+including negative times at startup. `EnvironmentService` evaluates the active region's
+wind law and dev override through this seam. `WaveMemory` averages fixed world-grid taps
+in wavelength bands; `WaveFieldAnimator` bakes travel at the clock without frame history.
+The bridge publishes one payload through `SharedWaveField` to both riders and seakeeping;
+published trains are sampled at time zero. Before publication consumers evaluate the
+same wind memory at the clock. `WaterSurface` uses the short band's wind for decorative
+wind and chop. Settings live solely in `GameConfig.WaveField`; nothing is saved. See
+ADR 0018's dated amendment for windows, causality, fallback and future-stage boundaries.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
@@ -378,6 +414,26 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
     characters; "editor" where no build was made), which is §7.8's exit criterion: a playtest report that
     cannot be pinned to a build is worth very little. Moving the CAMERA to a composed title framing is a
     separate, App-lane question — the UI assembly reaches Core only, by design.
+- **The player's save is never clobbered.** The one slot is `persistentDataPath/savegame.json`, which
+  every checkout on a machine shares (the path is keyed on company and product, not on the folder). Two
+  guarantees protect it.
+  - **No test touches it.** `SaveService` opens `SaveStore.ActivePath`. That is the player's save, except
+    under the editor's test runner, where each PlayMode run gets a file of its own:
+    `<project>/Temp/TestRunSaves/<guid>/savegame.json`, which starts absent, so every run begins on a new game
+    as CI always has. The PlayMode tests' run hook (`Tests.PlayMode.TestRunSave`, an assembly-level
+    `PrebuildSetupWithTestData`) sets it before the runner enters play mode. It is handed over in a process
+    environment variable (`SaveStore.TestRunSaveVariable`) because the service reads in `Awake` at
+    BeforeSceneLoad, before any test or run callback exists, and entering play mode reloads the domain, so no
+    static set beforehand would survive. The service keeps the path it opened, so the quit write as the runner
+    leaves play mode lands in the run's file too. The hook disarms when the editor is back in edit mode, a
+    cancelled run included, and again in the runner's cleanup. A built player compiles the branch out. Pinned
+    by `SaveNeverClobberedPlayTests`, which drives every write path of the live service and is not
+    GPU-gated, and by `SaveNeverClobberedTests`.
+  - **A New Game keeps the game it erases.** Before `BeginNewGame` replaces the file, and before the first
+    write over a save that existed but could not be read, `SaveStore.KeepReplaced` copies it, byte for byte,
+    to `savegame.kept-1.json` beside it. Older copies move up one, and the one past
+    `SaveStore.KeptGameCount` (3) is dropped. Every other write is unchanged. There is no in-game undo:
+    recovery is by hand, renaming a kept copy back to `savegame.json`.
 
 ## 7. Tick & performance model
 

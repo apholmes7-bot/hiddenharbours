@@ -1,0 +1,341 @@
+fileFormatVersion: 2
+guid: d95d59e679ce8d245b40a5c9f55b946d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3397261264046447175
+    second: Village_stPetersNetShed_0
+  - first:
+      213: 2362757395846206135
+    second: Village_stPetersNetShed_1
+  - first:
+      213: -2296807987276317152
+    second: Village_stPetersNetShed_2
+  - first:
+      213: -976184576781051477
+    second: Village_stPetersNetShed_3
+  - first:
+      213: 90401804757531322
+    second: Village_stPetersNetShed_4
+  - first:
+      213: -4392830688222821014
+    second: Village_stPetersNetShed_5
+  - first:
+      213: 6670218951051942015
+    second: Village_stPetersNetShed_6
+  - first:
+      213: 8951527180972630603
+    second: Village_stPetersNetShed_7
+  - first:
+      213: -4844367360398632244
+    second: Village_stPetersNetShed_8
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 305
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6493415c6a6c35e4ca5e0d831ed516ed
+      internalID: 1966131125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d1
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 305
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d1ffa33251c55441ab470c276141840
+      internalID: -1261449772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d2
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 305
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0866d0d615b13c4e81f8e7c1c976d3a
+      internalID: -319775677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d3
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 305
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 144fd5a00ea22d343a2fa4e7a0c52410
+      internalID: 1288130920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d4
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 305
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb8a4e089cb22454bb502094ef2adfcc
+      internalID: 600872076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d5
+      rect:
+        serializedVersion: 2
+        x: 1500
+        y: 305
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a09530b0e94c2244196295738fcc5d5c
+      internalID: -461320799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bf715e01f652e344a91aed3758fd609
+      internalID: -550020413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetShed_d7
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 0
+        width: 300
+        height: 305
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180328}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e52665e7efe1d0b44bb90578d5f22c75
+      internalID: -1303946207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 39ea7d143a0de86419849ff6d122e2dd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_stPetersNetShed_d0: 1966131125
+      Village_stPetersNetShed_d1: -1261449772
+      Village_stPetersNetShed_d2: -319775677
+      Village_stPetersNetShed_d3: 1288130920
+      Village_stPetersNetShed_d4: 600872076
+      Village_stPetersNetShed_d5: -461320799
+      Village_stPetersNetShed_d6: -550020413
+      Village_stPetersNetShed_d7: -1303946207
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

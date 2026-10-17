@@ -73,6 +73,7 @@ namespace HiddenHarbours.Art
             public double NextDecisionMilliseconds;
             public double AlightDeadlineMilliseconds;
             public double RockPhase;
+            public IGullPerch Perch;
 
             /// <summary>The water arrival this bird has already burst for, or −1. One splash publishes
             /// ONE <see cref="GullSplashed"/>: the burst frame is on screen for several ticks and the
@@ -132,6 +133,18 @@ namespace HiddenHarbours.Art
         }
 
         private void OnEnable() { _tickTimer = 0f; _pendingSeconds = 0f; }
+
+        private void OnDisable()
+        {
+            if (_birds == null) return;
+            foreach (Bird bird in _birds) ReleasePerch(bird);
+        }
+
+        static void ReleasePerch(Bird bird)
+        {
+            GullPerches.Release(bird.Perch, bird);
+            bird.Perch = null;
+        }
 
         private void BuildFlock()
         {
@@ -345,12 +358,21 @@ namespace HiddenHarbours.Art
         {
             SeagullSurface on = _behaviour.SurfaceOf(b.Sim.State);
 
+            if (b.Perch != null && !GullPerches.IsClaimedBy(b.Perch, b))
+            {
+                b.Perch = null;
+                b.Sim.IntentState = -1;
+                b.Sim.FlockBound = true;
+                return;
+            }
+
             // A bird the camera has walked away from is off-screen by definition; put it back on the
             // wheel there rather than leaving it standing in a field nobody can see.
             if (on != SeagullSurface.None && OutsideWorkingArea(b, centre))
             {
                 b.Sim.FlockBound = true;
                 b.Sim.IntentState = -1;
+                ReleasePerch(b);
                 settled--;
                 return;
             }
@@ -363,6 +385,7 @@ namespace HiddenHarbours.Art
                 {
                     b.Sim.IntentState = -1;
                     b.Sim.FlockBound = true;
+                    ReleasePerch(b);
                 }
                 return;
             }
@@ -389,6 +412,16 @@ namespace HiddenHarbours.Art
             if (on != SeagullSurface.None)
             {
                 if (roosting) { RoostDown(b); return; }
+                // A perch is a point, not a walking surface. Leave it after a settle window.
+                if (b.Perch != null)
+                {
+                    if (SeagullStateMachine.CommandDepart(ref b.Sim, _behaviour))
+                    {
+                        ReleasePerch(b);
+                        settled--;
+                    }
+                    return;
+                }
                 if (settled > wanted && SeagullStateMachine.CommandDepart(ref b.Sim, _behaviour))
                 {
                     settled--;
@@ -455,6 +488,18 @@ namespace HiddenHarbours.Art
         /// </summary>
         private bool TryPutDown(Bird b, Vector2 centre, double windHeading)
         {
+            if (GullPerches.TryClaim(centre, _config.AreaHalfSize, b, out IGullPerch perch))
+            {
+                Vector2 target = perch.ScreenPoint;
+                if (SeagullStateMachine.CommandAlight(ref b.Sim, _behaviour.IndexOf(SeagullStates.Land),
+                                                      target.x, target.y, windHeading, _behaviour))
+                {
+                    b.Perch = perch;
+                    b.AlightDeadlineMilliseconds = _simMilliseconds + _behaviour.Flock.SettleAfterSeconds * 1000.0;
+                    return true;
+                }
+                GullPerches.Release(perch, b);
+            }
             double u = _decisions.Next();
             double v = _decisions.Next();
             var spot = new Vector2(
@@ -655,7 +700,7 @@ namespace HiddenHarbours.Art
             bool sky = b.Sim.AltitudeMetres >= _behaviour.Flock.AltitudeMinMetres;
             b.Renderer.sortingOrder = sky
                 ? SortingBands.AboveDecor
-                : YSortSprite.OrderFor(pivot.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                : YSortSprite.OrderFor(b.Perch?.SortY ?? pivot.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                                        SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
             Color col = _config.Color * tint;

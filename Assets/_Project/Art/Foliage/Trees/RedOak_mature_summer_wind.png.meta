@@ -1,0 +1,294 @@
+fileFormatVersion: 2
+guid: 263742ae602e14c45b806152f911df4d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4424786896991635603
+    second: RedOak_mature_summer_wind_0
+  - first:
+      213: -1148455191189811141
+    second: RedOak_mature_summer_wind_1
+  - first:
+      213: -1607021408511619360
+    second: RedOak_mature_summer_wind_2
+  - first:
+      213: -4223212484380305558
+    second: RedOak_mature_summer_wind_3
+  - first:
+      213: 4925409742033480309
+    second: RedOak_mature_summer_wind_4
+  - first:
+      213: 8549901122164030189
+    second: RedOak_mature_summer_wind_5
+  - first:
+      213: -8547551098051692488
+    second: RedOak_mature_summer_wind_6
+  - first:
+      213: 8789523767553539679
+    second: RedOak_mature_summer_wind_7
+  - first:
+      213: -7790566898822201349
+    second: RedOak_mature_summer_wind_8
+  - first:
+      213: -7091649020218000898
+    second: RedOak_mature_summer_wind_9
+  - first:
+      213: -8806580339968506899
+    second: RedOak_mature_summer_wind_10
+  - first:
+      213: -7129879317760004222
+    second: RedOak_mature_summer_wind_11
+  - first:
+      213: 7018334173571401340
+    second: RedOak_mature_summer_wind_12
+  - first:
+      213: 2884120343478808308
+    second: RedOak_mature_summer_wind_13
+  - first:
+      213: 3151708325704228777
+    second: RedOak_mature_summer_wind_14
+  - first:
+      213: 3112234353852911707
+    second: RedOak_mature_summer_wind_15
+  - first:
+      213: -9171785389033099048
+    second: RedOak_mature_summer_wind_16
+  - first:
+      213: -960537759347453893
+    second: RedOak_mature_summer_wind_17
+  - first:
+      213: 7530325126928680404
+    second: RedOak_mature_summer_wind_18
+  - first:
+      213: 1505876776441062246
+    second: RedOak_mature_summer_wind_19
+  - first:
+      213: -6055590876298867264
+    second: RedOak_mature_summer_wind_20
+  - first:
+      213: -8429849614189432053
+    second: RedOak_mature_summer_wind_21
+  - first:
+      213: 2422438409160329003
+    second: RedOak_mature_summer_wind_22
+  - first:
+      213: -5604902864828657511
+    second: RedOak_mature_summer_wind_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: RedOak_mature_summer_wind_v0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 407
+        height: 347
+      alignment: 9
+      pivot: {x: 0.4963145, y: 0.034582134}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3f2fb79507d6cb46bf9bbcb92594ac4
+      internalID: 819842747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOak_mature_summer_wind_v1
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 0
+        width: 407
+        height: 347
+      alignment: 9
+      pivot: {x: 0.4963145, y: 0.034582134}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00e6a99715c283640863f7fd47bafd2e
+      internalID: -564127091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOak_mature_summer_wind_v2
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 0
+        width: 407
+        height: 347
+      alignment: 9
+      pivot: {x: 0.4963145, y: 0.034582134}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1e48c922321d534eaf3fc46d2bffdf6
+      internalID: 822107200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RedOak_mature_summer_wind_v3
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 0
+        width: 407
+        height: 347
+      alignment: 9
+      pivot: {x: 0.4963145, y: 0.034582134}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9d4935b4405e794eb89d8e123551b26
+      internalID: 1416577190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 29b53906265d2e1448a877eecc17fa10
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      RedOak_mature_summer_wind_v0: 819842747
+      RedOak_mature_summer_wind_v1: -564127091
+      RedOak_mature_summer_wind_v2: 822107200
+      RedOak_mature_summer_wind_v3: 1416577190
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

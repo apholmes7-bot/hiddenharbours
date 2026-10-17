@@ -252,7 +252,7 @@ namespace HiddenHarbours.Tests.RigBaking
         const string StPetersScene = "Assets/_Project/Scenes/StPeters.unity";
 
         /// <summary>The kit's builds drawn by pass 2, in key order: the four placed wharf buildings.</summary>
-        static VillageBuildingKit.Build[] PassTwoBuilds() => VillageBuildingKit.AllBuilds
+        static VillageBuildingKit.Build[] PassTwoBuilds() => VillageBuildingKit.LifecycleSet
             .Where(b => b.RigKey == "wharfBuilding2").OrderBy(b => b.Key, StringComparer.Ordinal).ToArray();
 
         [Test]

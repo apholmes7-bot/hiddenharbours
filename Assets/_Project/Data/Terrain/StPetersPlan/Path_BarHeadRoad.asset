@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_BarHeadRoad
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_bar_head_road
+  DisplayName: 'Bar-head road'
+  Kind: 1
+  Width: 1.5
+  Points: []
+  LineSource: StPetersStarterSplat.VillageToBarHeadPath
+  JoinPoints:
+  - {x: -40, y: 1.6}
+  - {x: -44, y: 0.7}
+  - {x: -47.5, y: 0.4}
+  - {x: -51, y: 0.3}
+  - {x: -54.5, y: 0.1}
+  - {x: -58, y: -0.1}
+  - {x: -61.5, y: 0}
+  Material: path
+  Weight: 1
+  Label: road
+  Ruts: 1
+  SourceId: path.stp_bar_head_road
+  Frozen: 0
+  PaintOnly: 0
+  Why: 'StPetersStarterSplat.VillageToBarHeadPath; NPC lanes follow it'

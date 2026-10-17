@@ -48,6 +48,10 @@ namespace HiddenHarbours.Boats
                  "one big buy can't stop the clock for days). 0 = this container can't take ice at all.")]
         public int MaxIceUnits = 4;
 
+        [Min(0f)]
+        [Tooltip("Reach from the pictured container at which the deck interact verb can work its lid.")]
+        public float LidReachMeters = 1.2f;
+
         [Header("Fill states (owner canon, 'important': the sprite VISIBLY changes with contents)")]
         [Tooltip("The painted fill states, ordered EMPTY first → BRIM-FULL last (any count ≥ 2). The " +
                  "presenter maps hold fullness onto them: the FIRST sprite is pinned to an empty hold, " +

@@ -1,0 +1,429 @@
+fileFormatVersion: 2
+guid: c0e745ec098338740bda137d108d1800
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7477720956121662647
+    second: WhiteBirch_mature_winter_wind_0
+  - first:
+      213: -2445265461947544355
+    second: WhiteBirch_mature_winter_wind_1
+  - first:
+      213: -9011522621871014963
+    second: WhiteBirch_mature_winter_wind_2
+  - first:
+      213: -5336875372151604085
+    second: WhiteBirch_mature_winter_wind_3
+  - first:
+      213: -5288374479543909489
+    second: WhiteBirch_mature_winter_wind_4
+  - first:
+      213: 5564698113276414476
+    second: WhiteBirch_mature_winter_wind_5
+  - first:
+      213: -7949213232371325509
+    second: WhiteBirch_mature_winter_wind_6
+  - first:
+      213: 7163935424162936408
+    second: WhiteBirch_mature_winter_wind_7
+  - first:
+      213: 1891748852853042873
+    second: WhiteBirch_mature_winter_wind_8
+  - first:
+      213: -2050114115007921053
+    second: WhiteBirch_mature_winter_wind_9
+  - first:
+      213: 2672521882649286347
+    second: WhiteBirch_mature_winter_wind_10
+  - first:
+      213: -1147245433406406262
+    second: WhiteBirch_mature_winter_wind_11
+  - first:
+      213: -6460307093583357448
+    second: WhiteBirch_mature_winter_wind_12
+  - first:
+      213: 6951234762185971431
+    second: WhiteBirch_mature_winter_wind_13
+  - first:
+      213: -991009962778488915
+    second: WhiteBirch_mature_winter_wind_14
+  - first:
+      213: -8153793844258167913
+    second: WhiteBirch_mature_winter_wind_15
+  - first:
+      213: -2855163096724604355
+    second: WhiteBirch_mature_winter_wind_16
+  - first:
+      213: -2776889698527034598
+    second: WhiteBirch_mature_winter_wind_17
+  - first:
+      213: -761856774484388143
+    second: WhiteBirch_mature_winter_wind_18
+  - first:
+      213: 1892287483267683199
+    second: WhiteBirch_mature_winter_wind_19
+  - first:
+      213: -4484037460676995350
+    second: WhiteBirch_mature_winter_wind_20
+  - first:
+      213: -5772200908019306859
+    second: WhiteBirch_mature_winter_wind_21
+  - first:
+      213: 6278431465729372941
+    second: WhiteBirch_mature_winter_wind_22
+  - first:
+      213: 9080136769948783788
+    second: WhiteBirch_mature_winter_wind_23
+  - first:
+      213: -1001436050814165758
+    second: WhiteBirch_mature_winter_wind_24
+  - first:
+      213: -4938968764257999890
+    second: WhiteBirch_mature_winter_wind_25
+  - first:
+      213: 5149057515585490402
+    second: WhiteBirch_mature_winter_wind_26
+  - first:
+      213: -3453797598600896973
+    second: WhiteBirch_mature_winter_wind_27
+  - first:
+      213: -1900482511067390442
+    second: WhiteBirch_mature_winter_wind_28
+  - first:
+      213: 8806474952431033494
+    second: WhiteBirch_mature_winter_wind_29
+  - first:
+      213: 5196483972656845141
+    second: WhiteBirch_mature_winter_wind_30
+  - first:
+      213: -4174136333599616080
+    second: WhiteBirch_mature_winter_wind_31
+  - first:
+      213: 1845601835729855137
+    second: WhiteBirch_mature_winter_wind_32
+  - first:
+      213: 8168425820508187359
+    second: WhiteBirch_mature_winter_wind_33
+  - first:
+      213: -2981990987280622519
+    second: WhiteBirch_mature_winter_wind_34
+  - first:
+      213: -6056427787575399888
+    second: WhiteBirch_mature_winter_wind_35
+  - first:
+      213: 543509077755154233
+    second: WhiteBirch_mature_winter_wind_36
+  - first:
+      213: -2796798371740089792
+    second: WhiteBirch_mature_winter_wind_37
+  - first:
+      213: -4765989461093133685
+    second: WhiteBirch_mature_winter_wind_38
+  - first:
+      213: -7993623498295896938
+    second: WhiteBirch_mature_winter_wind_39
+  - first:
+      213: 7134792579545334052
+    second: WhiteBirch_mature_winter_wind_40
+  - first:
+      213: 8998853953113264292
+    second: WhiteBirch_mature_winter_wind_41
+  - first:
+      213: -5803117530619254157
+    second: WhiteBirch_mature_winter_wind_42
+  - first:
+      213: 8066070729070524936
+    second: WhiteBirch_mature_winter_wind_43
+  - first:
+      213: -6950792819413140841
+    second: WhiteBirch_mature_winter_wind_44
+  - first:
+      213: -7710729317538411819
+    second: WhiteBirch_mature_winter_wind_45
+  - first:
+      213: -7132560629559010954
+    second: WhiteBirch_mature_winter_wind_46
+  - first:
+      213: 5889008210304422405
+    second: WhiteBirch_mature_winter_wind_47
+  - first:
+      213: -619221992780625192
+    second: WhiteBirch_mature_winter_wind_48
+  - first:
+      213: 5601287116850064904
+    second: WhiteBirch_mature_winter_wind_49
+  - first:
+      213: -1233936225274746458
+    second: WhiteBirch_mature_winter_wind_50
+  - first:
+      213: 6137264592962247420
+    second: WhiteBirch_mature_winter_wind_51
+  - first:
+      213: -3381592760261093943
+    second: WhiteBirch_mature_winter_wind_52
+  - first:
+      213: 9058636434176480194
+    second: WhiteBirch_mature_winter_wind_53
+  - first:
+      213: -8550812423613409635
+    second: WhiteBirch_mature_winter_wind_54
+  - first:
+      213: 5147634881240201436
+    second: WhiteBirch_mature_winter_wind_55
+  - first:
+      213: 3707280730736840316
+    second: WhiteBirch_mature_winter_wind_56
+  - first:
+      213: 5637923097361133617
+    second: WhiteBirch_mature_winter_wind_57
+  - first:
+      213: -1791198894758375646
+    second: WhiteBirch_mature_winter_wind_58
+  - first:
+      213: -2374179477036180998
+    second: WhiteBirch_mature_winter_wind_59
+  - first:
+      213: 4520801598900325626
+    second: WhiteBirch_mature_winter_wind_60
+  - first:
+      213: -8293269286198212971
+    second: WhiteBirch_mature_winter_wind_61
+  - first:
+      213: -8937399658837912975
+    second: WhiteBirch_mature_winter_wind_62
+  - first:
+      213: -3665346971679919527
+    second: WhiteBirch_mature_winter_wind_63
+  - first:
+      213: -4600519219338597962
+    second: WhiteBirch_mature_winter_wind_64
+  - first:
+      213: 1419801371850335882
+    second: WhiteBirch_mature_winter_wind_65
+  - first:
+      213: -5327275677929175040
+    second: WhiteBirch_mature_winter_wind_66
+  - first:
+      213: 4461048516741233869
+    second: WhiteBirch_mature_winter_wind_67
+  - first:
+      213: 4684625058898645905
+    second: WhiteBirch_mature_winter_wind_68
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WhiteBirch_mature_winter_wind_v0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 283
+        height: 277
+      alignment: 9
+      pivot: {x: 0.49469966, y: 0.028880866}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 161b13c0ca75df344b8a9cc8e4cd7d86
+      internalID: -1147203221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhiteBirch_mature_winter_wind_v1
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 0
+        width: 283
+        height: 277
+      alignment: 9
+      pivot: {x: 0.49469966, y: 0.028880866}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce827185e0bdf5643a6681d3d0b6b278
+      internalID: 1964471128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhiteBirch_mature_winter_wind_v2
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 0
+        width: 283
+        height: 277
+      alignment: 9
+      pivot: {x: 0.49469966, y: 0.028880866}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bdc226623aca6e47a4f40e64c27b1ff
+      internalID: -344838588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhiteBirch_mature_winter_wind_v3
+      rect:
+        serializedVersion: 2
+        x: 849
+        y: 0
+        width: 283
+        height: 277
+      alignment: 9
+      pivot: {x: 0.49469966, y: 0.028880866}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a3b8845a21da3740935caabecf43345
+      internalID: 1713721486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 22522aa7a605fb64ca22e7a72077e390
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WhiteBirch_mature_winter_wind_v0: -1147203221
+      WhiteBirch_mature_winter_wind_v1: 1964471128
+      WhiteBirch_mature_winter_wind_v2: -344838588
+      WhiteBirch_mature_winter_wind_v3: 1713721486
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

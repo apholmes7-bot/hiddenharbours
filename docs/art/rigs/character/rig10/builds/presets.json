@@ -2,9 +2,9 @@
  "schema": "hidden-harbours/character-builds@2",
  "rig": "characterIsoRig10.js",
  "exportSymbol": "CharacterIso10",
- "derivedFromRigSha256": "cbd50b54001d504d711a6a2e96ea01b1843a12e8b30665c9002e6ce45a7ed814",
- "posesDerivedFromRigSha256": "89c7c902d3575e9ea905aade6c43a26c91bc29653467f62fdd80fb9e2713f820",
- "revision": "10.2",
+ "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+ "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+ "revision": "10.3",
  "authoring": "Generated from CharacterIso10.normBuild() for every CAST key. Do not hand-edit.",
  "storage": "a player build: localStorage['hh.player.build.v10'] = normBuild() + name; store buildKey(build)",
  "fields": [

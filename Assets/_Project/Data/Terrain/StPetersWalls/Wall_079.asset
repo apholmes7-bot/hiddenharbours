@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_079
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_079
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: SW
+  Batter: ramp
+  Brow:
+  - {x: 177.6556, y: 41.351864}
+  - {x: 177.91595, y: 41.230602}
+  - {x: 178.26143, y: 41.226307}
+  - {x: 178.5601, y: 41.187267}
+  - {x: 178.84834, y: 41.15293}
+  - {x: 178.99179, y: 40.923317}
+  - {x: 179.18294, y: 40.778683}
+  Toe:
+  - {x: 174.95956, y: 38.26295}
+  - {x: 175.24205, y: 37.927155}
+  - {x: 175.7462, y: 37.73867}
+  - {x: 176.01851, y: 37.293327}
+  - {x: 176.49474, y: 37.258965}
+  - {x: 176.76239, y: 37.188046}
+  - {x: 176.86203, y: 36.98186}
+  DropMetres:
+  - 6.00876
+  - 6.3294177
+  - 6.582123
+  - 6.926737
+  - 6.903565
+  - 6.7618175
+  - 6.8522196
+  ToeElevations:
+  - 4.534431
+  - 4.223521
+  - 4.0836096
+  - 3.782549
+  - 3.8565617
+  - 3.8842292
+  - 3.7786677
+  Stations:
+  - 55
+  - 56
+  - 57
+  - 58
+  - 59
+  - 60
+  - 61
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'SW ramp: worn (copies 076)'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 55 to 61; the ring''s own PR builds it.'

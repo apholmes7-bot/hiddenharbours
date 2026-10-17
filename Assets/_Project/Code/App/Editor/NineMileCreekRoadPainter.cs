@@ -70,7 +70,7 @@ namespace HiddenHarbours.App.Editor
             NineMileCreekRoads.Paving paving;
             try
             {
-                paving = NineMileCreekRoads.Pave(terrain);
+                paving = NineMileCreekGroundPlan.Pave(terrain);
             }
             catch (System.Exception e)
             {
@@ -135,6 +135,14 @@ namespace HiddenHarbours.App.Editor
 
             Write(topMap, tops);
             Write(skirtMap, skirts);
+
+            // Route 91 crosses the town river on a supported deck (NMC H4): the on-foot sim stands on it
+            // rather than in the river, and the paving's dry rule exempted exactly this footprint.
+            var bridge = new GameObject(NineMileCreekGroundPlan.BridgeName);
+            bridge.transform.SetParent(root.transform, worldPositionStays: false);
+            bridge.transform.localPosition = NineMileCreekGroundPlan.BridgeDeck.center;
+            bridge.AddComponent<HiddenHarbours.World.StandablePlatform>().Configure(NineMileCreekGroundPlan.BridgeId,
+                NineMileCreekGroundPlan.BridgeDeck, NineMileCreekGroundPlan.BridgeDeckElevation);
 
             Report(result);
             return result;

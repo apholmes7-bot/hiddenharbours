@@ -21,9 +21,11 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <i>that</i> hose and not the one four metres along, and that the press actually pours.
     ///
     /// <para><b>The pumps here are the SHIPPED ones.</b> The fixture runs
-    /// <see cref="NineMileCreekStation.Place"/> against the region's own terrain rather than standing a
-    /// hand-made pump somewhere convenient — so a siting change moves this test with it, and a pump that
-    /// only works at the origin cannot pass.</para>
+    /// <see cref="NineMileCreekStation.Place"/> against the builder's analytic ground (the premise the
+    /// builder still places the station on) rather than standing a hand-made pump somewhere convenient —
+    /// so a siting change moves this test with it, and a pump that only works at the origin cannot pass.
+    /// ⚠ Since NMC H2 the scene stands on G3 and the station moves onto it in a later wave: this proves
+    /// the shipped placement's seam, not the activated scene's ground.</para>
     ///
     /// <para><b>⚠️ No virtual key presses.</b> A synthesised keystroke is undeliverable in this harness.
     /// The offer is read straight off <see cref="InteractResolver"/>, which is the same total order the

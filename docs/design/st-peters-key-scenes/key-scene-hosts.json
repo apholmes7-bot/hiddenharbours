@@ -1,0 +1,23 @@
+{
+  "schema": "hidden-harbours/key-scene-hosts@2",
+  "about": "The two rows stand by the owner's word of 10-07 18:00:14Z (O3 amendment 2, 4.4), until CD's next send-back agrees. All other second-issue mounts read CD's host and anchor ids. keepZ is the ruled height in metres.",
+  "hosts": [
+    {
+      "piece": "gull.stp_gp_mud",
+      "mount": "rock.stp_gp_erratic_02’s top (the erratic at its point, its base +0.02), +1.02",
+      "standsOn": "mount",
+      "host": "rock.stp_gp_erratic_02",
+      "anchor": "perch",
+      "answer": "the Art desk 6.3: it sits on the erratic at its point (pxRockIso3, its base +0.02), rock.stp_gp_erratic_02 through the id map."
+    },
+    {
+      "piece": "gull.stp_gp_reef",
+      "mount": "on the reef ledge’s own ground: no piece stands within 3 m",
+      "standsOn": "ground",
+      "host": "",
+      "anchor": "",
+      "answer": "the Art desk 6.3: no piece stands within 3 m; it stands 0.12 m over the reef ledge's own ground, with no host, as the NE bar's three gulls do.",
+      "keepZ": 0.11
+    }
+  ]
+}

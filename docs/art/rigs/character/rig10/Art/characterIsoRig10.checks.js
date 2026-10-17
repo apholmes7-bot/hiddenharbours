@@ -2,7 +2,10 @@
    stays live; node / a sandbox can run it to the end. A check returns { pass, value, detail, rows? }.
    `gate:false` checks report and never fail the run (they measure a contract the rig cannot meet by itself).
    9.2: hair, gaze and look are new; contacts gates the saddle family at CONTRACT.saddleFit; budget reports (gate:false).
-   10.1: hair reads y at 1/kH (the hairline is cut before the head's scale); face lets a group the rig declares empty (FACE_EMPTY) draw nothing. */
+   10.1: hair reads y at 1/kH (the hairline is cut before the head's scale); face lets a group the rig declares empty (FACE_EMPTY) draw nothing.
+   10.3: residuals print with toFixed(7), as the builds do, so every engine prints the same report; the 1e-6 gates read TOL.gate_m; cell gates
+   swim, sleep and tread on every build and reports cloth from the cloth's own pixels; look gates the aim at AIM.bar_deg; budget counts
+   clip bytes at 7 decimals; the texts are the 10.x body's. */
 (function (root) {
   'use strict';
   const C8 = root.CharacterIso10;
@@ -11,7 +14,8 @@
   const mV=(R,v)=>[R[0]*v[0]+R[3]*v[1]+R[6]*v[2], R[1]*v[0]+R[4]*v[1]+R[7]*v[2], R[2]*v[0]+R[5]*v[1]+R[8]*v[2]];
   const mM=(A,B)=>{ const o=new Array(9); for(let c=0;c<3;c++){ const v=mV(A,[B[c*3],B[c*3+1],B[c*3+2]]); o[c*3]=v[0]; o[c*3+1]=v[1]; o[c*3+2]=v[2]; } return o; };
   const mdiff=(A,B)=>{ let m=0; for(let i=0;i<9;i++) m=Math.max(m,Math.abs(A[i]-B[i])); return m; };
-  const e=(x)=>x===0 ? '0' : x.toExponential(2);
+  const e=(x)=>x.toFixed(7), GATE=C8.TOL ? C8.TOL.gate_m : 1e-6, R7=C8.R7 || ((k,v)=>typeof v==='number' ? +v.toFixed(7) : v);
+  let FISH=null; const fisherH=()=>{ if(!FISH){ const F=C8.buildOf('fisher'), S=C8.evalClip('idle',0,F); FISH={ want:(F.D.headZ+F.D.crown[2]).toFixed(3), idle:C8.pinsOf(Object.assign(S,{ B:F })).head[2].toFixed(3) }; } return FISH; };
   function frames(){ const o=[]; for(const n of C8.clipNames()){ const cd=C8.clipDef(n), A=C8.ANIMS[cd.anim]; for(let k=0;k<A.frames;k++) o.push({ n, cd, k, u:C8.uOf(cd.anim,k) }); } return o; }
   /* the bind mesh skinned by a set of world frames — every face, groups included */
   function skin(B, W){ const M=W.map((w,i)=>({ R:w.R, t:sub(w.p, mV(w.R, B.sk.bones[i].p)) })), out=[];
@@ -92,7 +96,7 @@
         for(const tr of cl.tracks){ const L=B.sk.bones.map(b=>{ const x=tr.bones[b.id]; return { p:x.pos, R:C8.matOf(x.rot) }; });
           const d=maxDelta(skin(B, worldsFromLocals(B,L)), skin(B, C8.evalClip(name,C8.uOf(cd.anim,tr.frame),B).W)); if(d>worst){ worst=d; at=name+' f'+tr.frame; } n++; }
         yield n; }
-      return { pass:worst<1e-6, value:e(worst)+' m', detail:n+' frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver\'s own worlds. Worst '+e(worst)+' m'+(at?' at '+at:'')+'; gate 1e-6 m.' }; } },
+      return { pass:worst<GATE, value:e(worst)+' m', detail:n+' frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver\'s own worlds. Worst '+e(worst)+' m'+(at?' at '+at:'')+'; gate '+GATE+' m.' }; } },
     { id:'continuity', title:'Quaternion tracks stay in one hemisphere frame to frame', *run(B){
       let flips=0, worst=0, at='';
       for(const name of C8.clipNames()){ const cl=C8.clip(name,B.key);
@@ -111,13 +115,13 @@
           exp=Math.max(exp, maxDelta(skin(B,worldsFromLocals(B,L)), skin(B,S1.W))); n++; }
         if(n%80===0) yield n; }
       const T=C8.rockTable();
-      return { pass:other<1e-12 && tabl<1e-12 && exp<1e-6 && touched.size<=3, value:touched.size+' of '+B.sk.bones.length+' bones',
+      return { pass:other<1e-12 && tabl<1e-12 && exp<GATE && touched.size<=3, value:touched.size+' of '+B.sk.bones.length+' bones',
         detail:n+' rocked frames (every clip, every frame, four sea states). Bones touched: '+[...touched].join(', ')+'. Every other bone unchanged to '+e(other)+'. Deltas equal the table (keyed on the rock alone) to '+e(tabl)+'; clip + table through quaternions skins to the rocked solve within '+e(exp)+' m. Table: '+T.rows.length+' rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock.' }; } },
     { id:'loops', title:'Loops close: u = 1 is u = 0, the ladder included (it is body-anchored)', *run(B){
       let worst=0, at='', n=0;
       for(const name of C8.clipNames()){ const cd=C8.clipDef(name), A=C8.ANIMS[cd.anim]; if(A.oneShot) continue;
         const d=maxDelta(skin(B,C8.evalClip(name,0,B).W), skin(B,C8.evalClip(name,1,B).W)); if(d>worst){ worst=d; at=name; } n++; yield n; }
-      return { pass:worst<1e-6, value:e(worst)+' m', detail:n+' looping clips. Worst seam '+e(worst)+' m'+(at?' ('+at+')':'')+'.' }; } },
+      return { pass:worst<GATE, value:e(worst)+' m', detail:n+' looping clips. Worst seam '+e(worst)+' m'+(at?' ('+at+')':'')+'.' }; } },
     { id:'handoffs', title:'One-shots meet the clips they hand to, to the micron', *run(B){
       const rz=C8.CONTRACT.railZ.def, rx=-C8.CONTRACT.reachX, S=(n,u,o)=>skin(B,C8.evalClip(n,u,B,o).W), last=(n)=>C8.uOf(n,C8.ANIMS[n].frames-1), rows=[];
       const idle=S('idle',0), astr=S('astride',0), bench=S('astride',0,{ saddle:{ bench:true } });
@@ -129,7 +133,7 @@
       t('mountCab last = astride(bench) f0', S('mountCab',1), bench); t('mountCabDown f0 = astride(bench) f0', S('mountCabDown',0), bench);
       t('reach last = idle', S('reach',1), idle); yield 1;
       const worst=rows.reduce((m,r)=>Math.max(m,r.d),0);
-      return { pass:worst<1e-6, value:e(worst)+' m', detail:rows.map(r=>r.label+' '+e(r.d)).join(' · ') }; } },
+      return { pass:worst<GATE, value:e(worst)+' m', detail:rows.map(r=>r.label+' '+e(r.d)).join(' · ') }; } },
     { id:'contacts', title:'Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets', *run(B){
       let skate=0, skAt='', below=0, blAt='', cloth=0, clAt='', n=0; const short={}; const ix=B.sk.ix;
       for(const name of ['walk','run']){ const A=C8.ANIMS[name], v=C8.evalClip(name,0,B).I.meta.speed;
@@ -171,20 +175,24 @@
         for(let k=0;k<A.frames;k++){ const V=skin(B,C8.evalClip(name,C8.uOf(name,k),B,fitO).W); if(prev){ const d=mvd(prev,V)[0]; if(d>mt){ mt=d; mtA=name+' f'+(k-1)+'→'+k; } } prev=V; } }
       if(!small(B) && mt>worst){ worst=mt; at=mtA+' at the fitted saddle'; }
       return { pass:worst<=gate, value:worst.toFixed(3)+' m', detail:'Largest single-frame vertex move '+worst.toFixed(3)+' m ('+at+'), gate '+gate.toFixed(3)+' m (0.35 m on the Fisher, scaled by this build\'s limb length and shoulder width).'+(cl>0?' Cloth (skirt, apron) reported: '+cl.toFixed(3)+' m ('+clA+').':'')+' The mounts at the fitted saddle: '+mt.toFixed(3)+' m ('+mtA+')'+(small(B)?', reported on a build smaller than the Fisher':'')+'.'+(tr>0?' Reported: the mounts at the default saddle'+(small(B)?' and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher':'')+', '+tr.toFixed(3)+' m ('+trA+').':'')+' Every loop wrap is checked except the four segments the table lists as loops but the game chains in order ('+Object.keys(C8.SEGMENTS).join(', ')+'). Reported, not gated, because the shipped frame count sets the pace: reach '+fast.reach.toFixed(3)+' m (280 ms from the hand opening at the ground to the idle it hands to), boardDown '+fast.boardDown.toFixed(3)+' m (a 0.55 m drop in six frames, 570 ms).' }; } },
-    { id:'cell', title:'Every frame fits the 64 × 92 cell at every facing, keyline included, 1 px spare', *run(B){
-      let tight=99, at='', n=0, lyT=99, lyA='', clT=99, clA=''; const skip={ mountUp:1, mountDown:1, mountCab:1, mountCabDown:1 }, LYING={ swim:1, sleep:1, tread:1 }, tall=B.D.heightM>1.545;
+    { id:'cell', title:'Every frame fits the '+C8.W+' × '+C8.H+' cell at every facing, keyline included, 1 px spare', *run(B){
+      let tight=99, at='', n=0, lyT=99, lyA='', clT=99, clA=''; const skip={ mountUp:1, mountDown:1, mountCab:1, mountCabDown:1 }, LYING={ swim:1, sleep:1, tread:1 };
       for(const F of frames()){ if(skip[F.cd.anim]) continue; const S=C8.evalClip(F.n,F.u,B);
-        for(let d=0;d<8;d++){ const R=C8.paintSolved(S,B,{ dir:d, keyline:false, edges:false }); let x0=R.W, x1=-1, y0=R.H, y1=-1, X0=R.W, X1=-1, Y0=R.H, Y1=-1;
-          /* a skirt or apron is rigid on the pelvis, so in a crouch it can swing past the cell edge; those pixels (and the keyline they own) are reported, not gated */
-          const own=(x,y)=>{ const f=R.face[y*R.W+x]; return f>=0 && !CLOTH[R.faces[f].part]; };
-          /* coverage only: the keyline is exactly the empty pixels with a covered 4-neighbour, so it is read off the coverage (the same pixels the drawn keyline has) */
-          const cv=(x,y)=>x>=0 && y>=0 && x<R.W && y<R.H && R.face[y*R.W+x]>=0, drawn=(x,y)=>cv(x,y) || cv(x,y-1) || cv(x+1,y) || cv(x-1,y) || cv(x,y+1);
-          for(let y=0;y<R.H;y++) for(let x=0;x<R.W;x++) if(drawn(x,y)){ if(x<X0) X0=x; if(x>X1) X1=x; if(y<Y0) Y0=y; if(y>Y1) Y1=y;
-            if(own(x,y) || (R.face[y*R.W+x]<0 && ((x>0&&own(x-1,y))||(x+1<R.W&&own(x+1,y))||(y>0&&own(x,y-1))||(y+1<R.H&&own(x,y+1))))){ if(x<x0) x0=x; if(x>x1) x1=x; if(y<y0) y0=y; if(y>y1) y1=y; } }
-          const mc=Math.min(X0, R.W-1-X1, Y0, R.H-1-Y1); if(mc<clT){ clT=mc; clA=F.n+' f'+F.k+' '+C8.order[d]; }
-          const m=Math.min(x0, R.W-1-x1, y0, R.H-1-y1); if(LYING[F.cd.anim] && tall){ if(m<lyT){ lyT=m; lyA=F.n+' f'+F.k+' '+C8.order[d]; } } else if(m<tight){ tight=m; at=F.n+' f'+F.k+' '+C8.order[d]; } n++; }
+        for(let d=0;d<8;d++){ const R=C8.paintSolved(S,B,{ dir:d, keyline:false, edges:false }), Wd=R.W, Hd=R.H, fc=R.face, a=[Wd,-1,Hd,-1], c=[Wd,-1,Hd,-1];
+          /* a skirt or apron is rigid on the pelvis, so in a crouch it can swing past the cell edge: its pixels (and the keyline ring they own) are
+             reported from the cloth's own pixels, not gated. The keyline ring is the empty pixels with a covered 4-neighbour: it reaches one
+             pixel past a side of the box exactly where a pixel on that side has an empty neighbour beyond it. */
+          for(let y=0;y<Hd;y++) for(let x=0;x<Wd;x++){ const f=fc[y*Wd+x]; if(f<0) continue; const q=CLOTH[R.faces[f].part]?c:a; if(x<q[0]) q[0]=x; if(x>q[1]) q[1]=x; if(y<q[2]) q[2]=y; if(y>q[3]) q[3]=y; }
+          const spare=(q,cl)=>{ if(q[1]<0) return 99; const is=(x,y)=>{ const f=fc[y*Wd+x]; return f>=0 && !!CLOTH[R.faces[f].part]===cl; }, empty=(x,y)=>fc[y*Wd+x]<0; let x0=q[0], x1=q[1], y0=q[2], y1=q[3];
+            if(x0>0) for(let y=q[2];y<=q[3];y++) if(is(q[0],y) && empty(q[0]-1,y)){ x0--; break; }
+            if(x1<Wd-1) for(let y=q[2];y<=q[3];y++) if(is(q[1],y) && empty(q[1]+1,y)){ x1++; break; }
+            if(y0>0) for(let x=q[0];x<=q[1];x++) if(is(x,q[2]) && empty(x,q[2]-1)){ y0--; break; }
+            if(y1<Hd-1) for(let x=q[0];x<=q[1];x++) if(is(x,q[3]) && empty(x,q[3]+1)){ y1++; break; }
+            return Math.min(x0, Wd-1-x1, y0, Hd-1-y1); };
+          const m=spare(a,false); if(m<tight){ tight=m; at=F.n+' f'+F.k+' '+C8.order[d]; } if(LYING[F.cd.anim] && m<lyT){ lyT=m; lyA=F.n+' f'+F.k+' '+C8.order[d]; }
+          const mc=spare(c,true); if(mc<clT){ clT=mc; clA=F.n+' f'+F.k+' '+C8.order[d]; } n++; }
         if(n%160===0) yield n; }
-      return { pass:tight>=1, value:tight+' px spare', detail:n+' renders. Tightest: '+tight+' px ('+at+').'+(clT<1?' Reported, not gated: cloth (skirt, apron) reaches the cell edge in '+clA+'; it folds in the engine.':'')+(lyT<99?' Reported, not gated: swim, sleep and tread on a build taller than the Fisher, tightest '+lyT+' px ('+lyA+'); at 0 px the body reaches the cell edge.':'')+' The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.' }; } },
+      return { pass:tight>=1, value:tight+' px spare', detail:n+' renders. Tightest: '+tight+' px ('+at+'). Swim, sleep and tread, gated with the rest on every build: '+lyT+' px ('+lyA+').'+(clT<1?' Reported, not gated: cloth (skirt, apron) reaches the cell edge in '+clA+'; it folds in the engine.':'')+' The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one.' }; } },
     { id:'face', title:'The face resolves at 32 px/m: two eyes in front views, one in profile, none from behind', *run(B){
       const S=C8.evalClip('idle',0,B), rows=[]; let ok=true;
       const count=(R, test)=>{ let l=0, r=0; for(let i=0;i<R.face.length;i++){ const fi=R.face[i]; if(fi<0) continue; const f=R.faces[fi]; if(test(f)){ if((f.side||f.bx)<0) l++; else r++; } } return [l,r]; };
@@ -223,19 +231,19 @@
         rows.push({ label:yaw+'°', value:'left '+sh(P.open,P.left)+' · right '+sh(P.open,P.right), note:'pupil px '+P.open.length+' / '+P.left.length+' / '+P.right.length, ok:good }); }
       yield 1;
       return { pass:ok, value:shown+' facings', detail:'At 32 px/m, idle f0, 16 facings: the pupil (the ink and iris pixels) of eyes.left and of eyes.right against eyes.open, screen x of the pupils\' centre ("hidden" where the only eye shown turns away in profile). Where two eyes show, eyes.left and eyes.right each move the pupils; where one eye shows in profile the two read apart (toward the camera the pupil stays, away it turns white).', rows }; } },
-    { id:'look', title:'Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands', *run(B){
+    { id:'look', title:'Look-at: the head turned to every limit opens no gap in the hair, hood or collar; the aim lands within AIM.bar_deg', *run(B){
       const HL=C8.hairline(B.key), cache={}, hooded=B.b.hat==='hood'; let scalp=0, sAt='', hood=0, hAt='', gap=0, gAt='', n=0;
       for(const clip of ['idle','walk']) for(let k=0;k<16;k++){ const frame=clip==='walk'?2:0, R0=C8.render({ clip, frame, yaw:k*22.5, build:B.key, keyline:false, edges:false }), neck0=hooded?partPx(R0,'neck'):0, g0=neckGaps(R0);
         for(const [y,p] of LIMITS){ const R=C8.render({ clip, frame, yaw:k*22.5, build:B.key, look:{ yaw:y, pitch:p }, keyline:false, edges:false }), c=skullCount(R,B,HL,cache), nk=hooded?partPx(R,'neck')-neck0:0, gg=neckGaps(R)-g0, lab=clip+' at '+(k*22.5)+'° turned '+y+'/'+p; n++;
           if(c.hair>scalp){ scalp=c.hair; sAt=lab; } if(nk>hood){ hood=nk; hAt=lab; } if(gg>gap){ gap=gg; gAt=lab; } }
         yield n; }
-      const S=C8.evalClip('idle',0,B), ix=B.sk.ix; let aim=0, aAt='', inside=0;
+      const S=C8.evalClip(C8.AIM.clip,C8.AIM.frame,B), ix=B.sk.ix; let aim=0, aAt='', inside=0; const AB=C8.AIM.bar_deg, AD=C8.AIM.distance_m;
       const W0=S.W, e0=add(W0[ix.head].p, mV(W0[ix.head].R, B.D.headMid));
-      for(const bear of [-50,-30,-15,0,15,30,50]) for(const dz of [-0.35,0,0.25]){ const T=[e0[0]+2*Math.sin(bear*Math.PI/180), e0[1]+2*Math.cos(bear*Math.PI/180), e0[2]+dz], L=C8.lookAt(S,T,1);
+      for(const bear of C8.AIM.bearings_deg) for(const dz of C8.AIM.dz_m){ const T=[e0[0]+AD*Math.sin(bear*Math.PI/180), e0[1]+AD*Math.cos(bear*Math.PI/180), e0[2]+dz], L=C8.lookAt(S,T,C8.AIM.share);
         if(Math.abs(L.need.yaw)>C8.LOOK.yaw[1] || L.need.pitch<C8.LOOK.pitch[0] || L.need.pitch>C8.LOOK.pitch[1]) continue; inside++;
-        const S2=C8.evalClip('idle',0,B,null,null,{ yaw:L.yaw, pitch:L.pitch }), Wh=S2.W[ix.head], f=mV(Wh.R,[0,1,0]), ep=add(Wh.p, mV(Wh.R,B.D.headMid)), d=sub(T,ep), dl=Math.hypot(...d), a=Math.acos(Math.max(-1,Math.min(1,(f[0]*d[0]+f[1]*d[1]+f[2]*d[2])/dl)))*180/Math.PI;
+        const S2=C8.evalClip(C8.AIM.clip,C8.AIM.frame,B,null,null,{ yaw:L.yaw, pitch:L.pitch }), Wh=S2.W[ix.head], f=mV(Wh.R,[0,1,0]), ep=add(Wh.p, mV(Wh.R,B.D.headMid)), d=sub(T,ep), dl=Math.hypot(...d), a=Math.acos(Math.max(-1,Math.min(1,(f[0]*d[0]+f[1]*d[1]+f[2]*d[2])/dl)))*180/Math.PI;
         if(a>aim){ aim=a; aAt='bearing '+bear+'°, '+(dz>=0?'+':'')+dz+' m'; } }
-      return { pass:scalp===0 && hood===0 && gap===0, value:gap+' px', detail:n+' renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±'+C8.LOOK.yaw[1]+', pitch '+C8.LOOK.pitch.join(' / ')+' and the four corners; neck '+C8.LOOK.split.neck+', head '+C8.LOOK.split.head+'). Scalp inside the hair region: '+scalp+' px'+(sAt?' ('+sAt+')':'')+'. '+(hooded?'Neck showing through the hood beyond the unturned pose: '+hood+' px'+(hAt?' ('+hAt+')':'')+'. ':'')+'See-through at the neck, collar or hood beyond the unturned pose: '+gap+' px'+(gAt?' ('+gAt+')':'')+'. Aim (share 1): for '+inside+' targets 2 m away inside the limits, lookAt() then the turn points the head\'s +y within '+aim.toFixed(2)+'° of the target'+(aAt?' (worst at '+aAt+')':'')+'.' }; } },
+      return { pass:scalp===0 && hood===0 && gap===0 && aim<=AB, value:gap+' px', detail:n+' renders: idle f0 and walk f2 at 16 facings, the head turned to each limit (yaw ±'+C8.LOOK.yaw[1]+', pitch '+C8.LOOK.pitch.join(' / ')+' and the four corners; neck '+C8.LOOK.split.neck+', head '+C8.LOOK.split.head+'). Scalp inside the hair region: '+scalp+' px'+(sAt?' ('+sAt+')':'')+'. '+(hooded?'Neck showing through the hood beyond the unturned pose: '+hood+' px'+(hAt?' ('+hAt+')':'')+'. ':'')+'See-through at the neck, collar or hood beyond the unturned pose: '+gap+' px'+(gAt?' ('+gAt+')':'')+'. Aim (share '+C8.AIM.share+'): for '+inside+' targets '+AD+' m away inside the limits, lookAt() then the turn points the head\'s +y within '+aim.toFixed(2)+'° of the target'+(aAt?' (worst at '+aAt+')':'')+'; bar '+AB+'° (AIM.bar_deg).' }; } },
     { id:'tones', title:'Tone discipline: each material lights at most four ramp steps in a frame (the contour step aside)', *run(B){
       let worst=0, at='', n=0;
       for(const name of ['idle','walk','run','hold','cast','dig','haul','ladderDown','lift','swim','sleep','drive','astride']){ const A=C8.ANIMS[C8.clipDef(name).anim];
@@ -253,7 +261,7 @@
       for(let y=0;y<S2.H;y++) for(let x=0;x<S2.W/2;x++){ const a=(y*S2.W+x)*4, b=(y*S2.W+(S2.W-1-x))*4; for(let c=0;c<3;c++) if(S2.rgba[a+c]!==S2.rgba[b+c]){ asym++; break; } }
       yield 1;
       return { pass:diff===0 && asym===0, value:diff+' px differ', detail:'E against W mirrored: '+diff+' px differ. S against itself mirrored (head snap off — an odd-width head cannot sit on a pixel centre and be centred on the pivot seam at once): '+asym+' px. An upper-left key cannot pass this; the key is '+C8.SHADING.key.map(x=>x.toFixed(3)).join(', ')+' (right, up, toward camera) — the fleet key without its left component.' }; } },
-    { id:'budget', title:'Budget against rig 7 (reported: over 1,000 tris is allowed)', gate:false, *run(B){ const s=C8.sizes(B.key), clipsKB=Math.round(JSON.stringify(C8.clips(B.key)).length/1024); yield 1;
+    { id:'budget', title:'Budget against rig 7 (reported: over 1,000 tris is allowed)', gate:false, *run(B){ const s=C8.sizes(B.key), clipsKB=Math.round(JSON.stringify(C8.clips(B.key), R7).length/1024); yield 1;
       return { pass:s.tris<=1000 && s.bones<=32, value:s.tris+' tris', detail:s.tris+' tris ('+s.faces+' faces) against rig 7\'s 1,570 · '+s.bones+' bones against 45 · '+s.clipCount+' clips, '+s.frames+' frames, '+clipsKB+' KB of clip JSON against 2,155 KB for 35 · bind mesh '+Math.round(s.bindBytes/1024)+' KB against 235 KB.' }; } },
     { id:'sidecar', title:'Gameplay sidecar: every clip, every frame, the sections its mount needs', *run(B){
       const G=C8.gameplay(B.key); yield 1; const need={ rod:'tool', shovel:'tool', knife:'work', ladder:'ladder', warp:'work', bench:'work', load:'work', water:'water', bed:'bed', wheel:'wheel', rest:'rest', saddle:'saddle' };
@@ -265,7 +273,7 @@
       const sp=(n)=>G.clips[n].speed_mps, kl=C8.kOf(B.D).l; const speedsOk=Math.abs(sp('walk')-0.727*kl)<=0.0006 && Math.abs(sp('run')-2.0*kl)<=0.0006 && G.clips.ladderDown.pins[0].ladder.rate===0.545;
       return { pass:!miss.length && speedsOk, value:Object.keys(G.clips).length+' clips · '+frames+' frames', detail:'Schema '+G.schema+'. Walk '+sp('walk')+' m/s, run '+sp('run')+' m/s, ladder '+G.clips.ladderDown.pins[0].ladder.rate+' m/s (the Fisher 0.727 and 2.0, scaled by this build\'s leg length '+kl.toFixed(3)+'; ladder 0.545). '+(miss.length?'Missing: '+miss.slice(0,8).join(', '):'No section missing.') }; } },
     { id:'heights', title:'World heights: the crown in idle is the build\'s designed height', *run(B){ const S=C8.evalClip('idle',0,B), P=C8.pinsOf(Object.assign(S,{ B })); yield 1;
-      const want=B.D.headZ+B.D.crown[2]; return { pass:Math.abs(P.head[2]-want)<=0.02, value:P.head[2].toFixed(3)+' m', detail:'Crown in idle '+P.head[2].toFixed(3)+' m against the build\'s '+want.toFixed(3)+' m ('+B.b.age+', height step '+(B.b.height>0?'+':'')+B.b.height+'; the Fisher is 1.522, rig 7 1.523). Hip joint '+(B.D.hipZ).toFixed(3)+' (rig 7 0.587). Palms at rest '+P.handL[2].toFixed(3)+' m. Legs '+(B.D.thigh+B.D.shin).toFixed(3)+' m hip to ankle (rig 7 0.541), arms '+(B.D.upper+B.D.fore+B.D.palmLen).toFixed(3)+' m shoulder to palm.' }; } } ];
+      const want=B.D.headZ+B.D.crown[2], FH=fisherH(); return { pass:Math.abs(P.head[2]-want)<=0.02, value:P.head[2].toFixed(3)+' m', detail:'Crown in idle '+P.head[2].toFixed(3)+' m against the build\'s '+want.toFixed(3)+' m ('+B.b.age+', height step '+(B.b.height>0?'+':'')+B.b.height+'; the Fisher '+FH.want+' designed, '+FH.idle+' in idle; rig 7\'s 1.523). Hip joint '+(B.D.hipZ).toFixed(3)+' (rig 7 0.587). Palms at rest '+P.handL[2].toFixed(3)+' m. Legs '+(B.D.thigh+B.D.shin).toFixed(3)+' m hip to ankle (rig 7 0.541), arms '+(B.D.upper+B.D.fore+B.D.palmLen).toFixed(3)+' m shoulder to palm.' }; } } ];
 
   function runAll(build, onRow){ const B=C8.buildOf(build), out=[];
     for(const c of CHECKS){ const t0=Date.now(), it=c.run(B); let r=it.next(); while(!r.done) r=it.next(); const row=Object.assign({ id:c.id, title:c.title, ms:Date.now()-t0 }, r.value, { gate:c.gate!==false }); out.push(row); if(onRow) onRow(row); }

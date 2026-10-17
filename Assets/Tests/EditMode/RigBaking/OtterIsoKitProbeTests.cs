@@ -296,7 +296,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// ⚠️ <b><c>tracks:true</c> is a DIFFERENT BUILD, not a pose</b> — the face count changes
-        /// 1296 → 1224. A bake that treated it as a pose axis would compare face lists of different
+        /// 1399 → 1327. A bake that treated it as a pose axis would compare face lists of different
         /// lengths and either crash or, worse, mis-assign geometry by index.
         /// </summary>
         [Test]
@@ -304,9 +304,9 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             using IRigScriptHost host = BuilderHost();
 
-            Assert.That(host.EvaluateNumber("__faces({}).length"), Is.EqualTo(1296d),
+            Assert.That(host.EvaluateNumber("__faces({}).length"), Is.EqualTo(1399d),
                 "her wheeled face count changed.");
-            Assert.That(host.EvaluateNumber("__faces({tracks:true}).length"), Is.EqualTo(1224d),
+            Assert.That(host.EvaluateNumber("__faces({tracks:true}).length"), Is.EqualTo(1327d),
                 "her tracked face count changed.");
         }
 

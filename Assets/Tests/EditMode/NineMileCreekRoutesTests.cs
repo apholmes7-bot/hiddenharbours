@@ -39,23 +39,20 @@ namespace HiddenHarbours.Tests.EditMode
         private const float ChandlerOut = 9.2f, ChandlerBack = 10.5f;
         private const float OutboardOut = 14.3f, OutboardBack = 16.1f;
 
-        private GameObject _terrainGo;
-        private MainlandTidalTerrain _terrain;
+        private ITidalTerrain _terrain;
         private NineMileCreekRoads.Paving _paving;
 
         [SetUp]
         public void SetUp()
         {
-            _terrainGo = new GameObject("NineMileCreekMainland_RoutesTest");
-            _terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
-            _paving = NineMileCreekRoads.Pave(_terrain);
+            // The scene's ground and step 06's paving over it (NMC H2).
+            _terrain = NineMileCreekLiveGround.Plan;
+            _paving = NineMileCreekGroundPlan.Pave(_terrain);
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_terrainGo != null) Object.DestroyImmediate(_terrainGo);
             GameServices.Reset();
         }
 
@@ -88,18 +85,18 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         private static VehicleTripPlan ChandlersRun() => Built(
-            NineMileCreekTrips.ToTheForecourt(NineMileCreekMainland.ThroughRoad,
+            NineMileCreekTrips.ToTheForecourt(NineMileCreekTrips.ThroughRoad,
                                               NineMileCreekTrips.ChandleryPost()),
-            NineMileCreekTrips.FromTheForecourt(NineMileCreekMainland.ThroughRoad,
+            NineMileCreekTrips.FromTheForecourt(NineMileCreekTrips.ThroughRoad,
                                                 NineMileCreekTrips.ChandleryPost()),
             NineMileCreekTrips.ChandleryPost(),
             (NineMileCreekTrips.ChandleryBay() - NineMileCreekTrips.ChandleryPost()).normalized,
             ChandlerOut, ChandlerBack, "the chandler");
 
         private static VehicleTripPlan OutboardMansRun() => Built(
-            NineMileCreekTrips.ToTheForecourt(NineMileCreekMainland.WharfRoad,
+            NineMileCreekTrips.ToTheForecourt(NineMileCreekTrips.WharfRoad,
                                               NineMileCreekTrips.DoryYardPost()),
-            NineMileCreekTrips.FromTheForecourt(NineMileCreekMainland.WharfRoad,
+            NineMileCreekTrips.FromTheForecourt(NineMileCreekTrips.WharfRoad,
                                                 NineMileCreekTrips.DoryYardPost()),
             NineMileCreekTrips.DoryYardPost(),
             (NineMileCreekTrips.DoryYardBay() - NineMileCreekTrips.DoryYardPost()).normalized,
@@ -413,11 +410,11 @@ namespace HiddenHarbours.Tests.EditMode
         private static IEnumerable<(string, Vector2, Vector2[])> Bays()
         {
             yield return ("the chandler's van", NineMileCreekTrips.ChandleryBay(),
-                          NineMileCreekMainland.ThroughRoad);
+                          NineMileCreekTrips.ThroughRoad);
             yield return ("the outboard man's box", NineMileCreekTrips.DoryYardBay(),
-                          NineMileCreekMainland.WharfRoad);
+                          NineMileCreekTrips.WharfRoad);
             yield return ("a machine at the pumps", NineMileCreekTrips.ForecourtBay(),
-                          NineMileCreekMainland.ThroughRoad);
+                          NineMileCreekTrips.ThroughRoad);
         }
 
         /// <summary>Every minute of the game day, as an hour value.</summary>
@@ -427,15 +424,19 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>How far a point is from the nearest published carriageway, in metres. The three the
-        /// region actually publishes — a footpath is not a road a truck may be beside.</summary>
+        /// region actually publishes — a footpath is not a road a truck may be beside — on the lines the
+        /// scene paves (NMC H2), and Wharf Road's turning circle, all of it carriageway: measured from its
+        /// rim as if that were a carriageway's edge.</summary>
         private static float ToNearestRoad(Vector2 at)
         {
             float best = float.MaxValue;
-            foreach (Vector2[] road in new[] { NineMileCreekMainland.WharfRoad,
-                                               NineMileCreekMainland.ThroughRoad,
+            foreach (Vector2[] road in new[] { NineMileCreekTrips.WharfRoad,
+                                               NineMileCreekTrips.ThroughRoad,
                                                NineMileCreekMainland.BarRoad })
                 best = Mathf.Min(best, RouteFollowMath.OffCentreLineMetres(road, 0, road.Length, at));
-            return best;
+            float toPadRim = Vector2.Distance(at, NineMileCreekGroundPlan.TurningPadCentre)
+                             - NineMileCreekGroundPlan.TurningPadRadius;
+            return Mathf.Min(best, Mathf.Max(0f, toPadRim) + NineMileCreekRoads.CarriagewayHalfWidthMetres);
         }
 
         /// <summary>

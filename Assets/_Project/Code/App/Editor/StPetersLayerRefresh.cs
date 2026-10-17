@@ -412,6 +412,14 @@ namespace HiddenHarbours.App.Editor
                 Step = step; Root = root; RootGameObject = rootGameObject;
             }
 
+            /// <summary>
+            /// The document this patch's new documents follow, or 0 to put them just before SceneRoots, as the
+            /// hand-written tail does. A step whose root is not the file's last block names its root's own last
+            /// document, so a block another step wrote after it keeps its place (terrain PR 5w: the walls' new chunks
+            /// go in with the walls, and the key scenes stay the last block, as their own step writes them).
+            /// </summary>
+            public long AddAfter { get; internal set; }
+
             public IReadOnlyList<Op> Ops => _ops;
             public IReadOnlyList<Change> Changes => _changes;
             public bool IsEmpty => _ops.Count == 0;
@@ -469,19 +477,29 @@ namespace HiddenHarbours.App.Editor
                     }
                 }
 
-                // New documents go in just before SceneRoots, as the hand-written tail already does.
-                int rootsAt = -1;
-                for (int i = 0; i < scene.Docs.Count; i++)
-                    if (scene.Docs[i].ClassId == SceneRootsClass) rootsAt = i;
+                // New documents go in just after AddAfter when the step names one, else just before SceneRoots, as
+                // the hand-written tail already does.
+                int at = -1;
+                if (AddAfter != 0 && added.Count > 0)
+                {
+                    for (int i = 0; i < scene.Docs.Count && at < 0; i++)
+                        if (scene.Docs[i].FileId == AddAfter) at = i + 1;
+                    if (at < 0)
+                        throw new Refusal($"{Step}: the document its new documents follow (&{AddAfter}) is not in the scene. " +
+                                          "The scene changed after the patch was planned: re-plan it.");
+                }
+                else
+                    for (int i = 0; i < scene.Docs.Count; i++)
+                        if (scene.Docs[i].ClassId == SceneRootsClass) at = i;
                 var docs = new List<Doc>(scene.Docs.Count + added.Count);
                 for (int i = 0; i < scene.Docs.Count; i++)
                 {
-                    if (i == rootsAt) docs.AddRange(added);
+                    if (i == at) docs.AddRange(added);
                     Doc d = scene.Docs[i];
                     if (removed.Contains(d.FileId)) continue;
                     docs.Add(replaced.TryGetValue(d.FileId, out Doc r) ? r : d);
                 }
-                if (rootsAt < 0) docs.AddRange(added);
+                if (at < 0 || at == scene.Docs.Count) docs.AddRange(added);
                 return new SceneYaml(scene.Preamble, docs);
             }
 
@@ -590,6 +608,7 @@ namespace HiddenHarbours.App.Editor
                 sb.Append("step: ").Append(Q(Step)).Append('\n');
                 sb.Append("root: ").Append(Q(Root)).Append('\n');
                 sb.Append("rootGameObject: ").Append(RootGameObject.ToString(CultureInfo.InvariantCulture)).Append('\n');
+                if (AddAfter != 0) sb.Append("addAfter: ").Append(AddAfter.ToString(CultureInfo.InvariantCulture)).Append('\n');
                 sb.Append("differences:").Append(_changes.Count == 0 ? " []\n" : "\n");
                 foreach (Change c in _changes) sb.Append("- ").Append(Q(c.ToString())).Append('\n');
                 foreach (OpKind kind in new[] { OpKind.Delete, OpKind.Edit, OpKind.Add })
@@ -1783,44 +1802,82 @@ namespace HiddenHarbours.App.Editor
         {
             try
             {
-                for (int i = 0; i < SceneManager.sceneCount; i++)
-                    if (apply && string.Equals(SceneManager.GetSceneAt(i).path, ScenePath, StringComparison.Ordinal))
-                        throw new Refusal("StPeters is open in the editor. Close it first: an open scene would overwrite the file on its next save.");
-
-                string text = File.ReadAllText(ScenePath);
-                SceneYaml scene = SceneYaml.Parse(text);
-                var terrainGo = new GameObject("StPetersLayerRefresh_Terrain") { hideFlags = HideFlags.HideAndDontSave };
-                List<LayerPatch> patches;
-                try
-                {
-                    var terrain = terrainGo.AddComponent<TidalTerrain>();
-                    StPetersBuilder.ConfigureTidalTerrain(terrain);
-                    patches = PlanAll(scene, terrain, new EditorShoreRockSprites(), LoadStPetersShoreRockDefs(), new EditorNavMarkAssets());
-                }
-                finally
-                {
-                    UnityEngine.Object.DestroyImmediate(terrainGo);
-                }
-
-                Directory.CreateDirectory(PatchFolder);
-                var utf8 = new UTF8Encoding(false);
-                foreach (LayerPatch p in patches)
-                    File.WriteAllText(Path.Combine(PatchFolder, p.Step + ".patch.yaml"), p.ToYaml(), utf8);
-                string summary = string.Join("\n", patches.Select(p => p.Summary()));
-
-                if (apply)
-                {
-                    string result = text;
-                    foreach (LayerPatch p in patches) result = p.ApplyTo(result);
-                    if (result != text) File.WriteAllText(ScenePath, result, utf8);
-                    Debug.Log($"[StPetersLayerRefresh] applied to {ScenePath} (patches in {PatchFolder}):\n{summary}");
-                }
-                else Debug.Log($"[StPetersLayerRefresh] dry run, nothing written to the scene (patches in {PatchFolder}):\n{summary}");
+                RunOnThePlanGround(apply);
             }
             catch (Refusal r)
             {
                 Debug.LogError(r.Message);
             }
+        }
+
+        // =====================================================================================
+        //  terrain PR 5 B: the three steps over the terrain plan's ground
+        // =====================================================================================
+
+        /// <summary>The terrain plan's ground as the steps' <see cref="ITidalTerrain"/>: the committed seabed
+        /// map's decoded field (<see cref="PaintedHeightMap.Field"/>, the R16 map the plan writes), which is what
+        /// a <see cref="PaintedTidalTerrain"/> reads, without one's registration (no GameServices, no still
+        /// water).</summary>
+        public sealed class PlanGround : ITidalTerrain
+        {
+            readonly PaintedHeightField _field;
+
+            public PlanGround(PaintedHeightField field) =>
+                _field = field ?? throw new ArgumentNullException(nameof(field));
+
+            public float ElevationAt(Vector2 worldPos) => _field.ElevationAt(worldPos);
+        }
+
+        /// <summary>The dry run over the plan's ground, for <c>-executeMethod</c>: a refusal fails the run instead
+        /// of logging.</summary>
+        public static void WritePatchesOnThePlanGroundBatch() => RunOnThePlanGround(apply: false);
+
+        /// <summary>The apply over the plan's ground, for <c>-executeMethod</c>, the menu's own path.</summary>
+        public static void ApplyPatchesOnThePlanGroundBatch() => RunOnThePlanGround(apply: true);
+
+        /// <summary>
+        /// Plan the three steps against the scene FILE over the terrain plan's ground, write the patches to
+        /// <see cref="PatchFolder"/>, and apply them only when asked, with the scene closed.
+        ///
+        /// <para>Since terrain PR 5 B the island the scene draws is the plan's (the seabed map at
+        /// <see cref="StPetersTerrainPlan.SeabedPath"/>: the sea and the splat read it), so the rocks, the clam
+        /// holes and the marks are placed on it, and the menu takes this path too: on the analytic ground it would
+        /// put back what the plan's coast moved. The builder's own placements still read the analytic terrain
+        /// until the painted terrain is adopted (the next PR), so the tests that hold these steps to the builder
+        /// pass the analytic terrain in themselves.</para>
+        /// </summary>
+        public static List<LayerPatch> RunOnThePlanGround(bool apply)
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+                if (apply && string.Equals(SceneManager.GetSceneAt(i).path, ScenePath, StringComparison.Ordinal))
+                    throw new Refusal("StPeters is open in the editor. Close it first: an open scene would overwrite the file on its next save.");
+
+            var seabed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(StPetersTerrainPlan.SeabedPath);
+            if (seabed == null || seabed.HeightTexture == null)
+                throw new Refusal("No seabed map at " + StPetersTerrainPlan.SeabedPath + ": write the terrain plan's maps first.");
+            seabed.Rebuild();   // decode the committed bytes now, not a field cached before the last write
+            var ground = new PlanGround(seabed.Field);
+
+            string text = File.ReadAllText(ScenePath);
+            SceneYaml scene = SceneYaml.Parse(text);
+            List<LayerPatch> patches = PlanAll(scene, ground, new EditorShoreRockSprites(), LoadStPetersShoreRockDefs(), new EditorNavMarkAssets());
+
+            Directory.CreateDirectory(PatchFolder);
+            var utf8 = new UTF8Encoding(false);
+            foreach (LayerPatch p in patches)
+                File.WriteAllText(Path.Combine(PatchFolder, p.Step + ".patch.yaml"), p.ToYaml(), utf8);
+            string summary = string.Join("\n", patches.Select(p => p.Summary()));
+            string over = $"over the plan's ground ({StPetersTerrainPlan.SeabedPath}, {F(seabed.MinElevation)} to {F(seabed.MaxElevation)})";
+
+            if (apply)
+            {
+                string result = text;
+                foreach (LayerPatch p in patches) result = p.ApplyTo(result);
+                if (result != text) File.WriteAllText(ScenePath, result, utf8);
+                Debug.Log($"[StPetersLayerRefresh] applied to {ScenePath} {over} (patches in {PatchFolder}):\n{summary}");
+            }
+            else Debug.Log($"[StPetersLayerRefresh] dry run {over}, nothing written to the scene (patches in {PatchFolder}):\n{summary}");
+            return patches;
         }
     }
 }

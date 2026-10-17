@@ -19,7 +19,9 @@ namespace HiddenHarbours.App.Editor
     /// three in <see cref="PlanAll"/> that uses their <see cref="LayerPatch"/> and its <see cref="LayerPatch.Seal"/>.
     ///
     /// <para><b>What it writes.</b> Every piece the St Peters <see cref="KeySceneDef"/>s place today, under
-    /// its own root (<see cref="KeyScenesRootName"/>), one group per key scene, as whole YAML documents. Each
+    /// its own root (<see cref="KeyScenesRootName"/>), one group per placed key scene, as whole YAML documents.
+    /// A scene comes in unplaced, as data, until its wave turns it on (<see cref="KeySceneDef.Placed"/>); a
+    /// piece that other code places, or that rides the tide, is never placed here (<see cref="Places"/>). Each
     /// piece gets a sprite renderer showing its cell for CD's facing; the sort its Def asks for (a
     /// <c>raised</c> piece is y-sorted by a <see cref="YSortSprite"/>, a <c>floor</c> piece sits at
     /// <see cref="SortingBands.DecorFloor"/>, under every figure); its walk-blocking polygons; and no light.
@@ -32,7 +34,7 @@ namespace HiddenHarbours.App.Editor
     /// documents where it left them and writes nothing. The root is new the first time, so the patch's one
     /// document outside it is the scene's SceneRoots list, which the root joins by one named edit
     /// (<see cref="LayerPatch.Seal"/> holds it to exactly that). Heights are a record in the data, held to the
-    /// game's height source by the z table test; nothing here draws with them.</para>
+    /// game's height source by the z table test; only mounts draw their rise above the host ground.</para>
     /// </summary>
     public static partial class StPetersLayerRefresh
     {
@@ -151,6 +153,8 @@ namespace HiddenHarbours.App.Editor
             public bool TurnsWithWind;
             public ObjRef Def;
             public string LeftOut = "";
+            public bool IsPerch;
+            public Vector2 GroundPoint;
         }
 
         /// <summary>The compass heading (N = 0, clockwise) a kit's dir faces: the kits' dirs turn
@@ -224,8 +228,9 @@ namespace HiddenHarbours.App.Editor
             return walls;
         }
 
-        /// <summary>Every piece St Peters' key scenes place today, resolved, in scene then CD order.
-        /// Refuses what the step cannot place truly rather than placing it wrong.</summary>
+        /// <summary>Every piece St Peters' key scenes place today, resolved, in scene then CD order: of each
+        /// placed scene (<see cref="KeySceneDef.Placed"/>), the pieces <see cref="Places"/> takes. A scene that
+        /// is not placed is data only. Refuses what the step cannot place truly rather than placing it wrong.</summary>
         public static List<KeyScenePlacement> PlaceKeyScenes(IReadOnlyList<KeySceneDef> keyScenes, IKeySceneAssets assets)
         {
             if (keyScenes == null || keyScenes.Count == 0) throw new Refusal($"{KeyScenesStep}: no key scenes to place.");
@@ -236,10 +241,14 @@ namespace HiddenHarbours.App.Editor
             {
                 if (ks == null) throw new Refusal($"{KeyScenesStep}: an empty key scene.");
                 if (!sceneIds.Add(Plain(ks.Id))) throw new Refusal($"{KeyScenesStep}: two key scenes are '{ks.Id}'.");
+                if (!ks.Placed) continue;
+                if (ks.PlacementIds != null && (ks.PlacementIds.Distinct().Count() != ks.PlacementIds.Length ||
+                    ks.PlacementIds.Any(id => !ks.Pieces.Any(p => p != null && p.Id == id))))
+                    throw new Refusal($"{ks.Id}: the wave selection has a duplicate or unknown id.");
                 foreach (KeyScenePiece p in ks.Pieces ?? Array.Empty<KeyScenePiece>())
                 {
                     if (p == null) throw new Refusal($"{KeyScenesStep}: '{ks.Id}' holds an empty piece.");
-                    if (p.Variants == null || !p.Variants.Contains(KeySceneDef.Today)) continue;
+                    if (!Places(ks, p)) continue;
                     if (!pieceIds.Add(Plain(p.Id))) throw new Refusal($"{KeyScenesStep}: '{p.Id}' is placed twice.");
                     placed.Add(Place(ks.Id, p, assets));
                 }
@@ -247,9 +256,24 @@ namespace HiddenHarbours.App.Editor
             return placed;
         }
 
+        /// <summary>Whether the step places a piece of a placed scene: it stands in today's variant, no other
+        /// code places it (<see cref="KeyScenePiece.Owner"/>, so it is never placed twice), and it does not ride
+        /// the tide (<see cref="KeySceneDef.StandsOnWater"/>). The rest is kept as data.</summary>
+        static bool Places(KeyScenePiece p) =>
+            p.Variants != null && p.Variants.Contains(KeySceneDef.Today) && string.IsNullOrEmpty(p.Owner) &&
+            p.StandsOn != KeySceneDef.StandsOnWater;
+
+        public static bool Places(KeySceneDef scene, KeyScenePiece p) => scene.Placed && Places(p) &&
+            (scene.PlacementIds == null || scene.PlacementIds.Length == 0 || scene.PlacementIds.Contains(p.Id));
+
         static KeyScenePlacement Place(string scene, KeyScenePiece p, IKeySceneAssets assets)
         {
             string what = $"{KeyScenesStep}: '{p.Id}' ({p.Kit} {p.Piece})";
+            if (p.Kind == KeySceneDef.KindGull || p.Kind == KeySceneDef.KindBuilding)
+                return PlaceWavePiece(scene, p, assets);
+            if (p.StandsOn == KeySceneDef.StandsOnMount && p.MountAnchor != "door")
+                throw new Refusal($"{what}: it stands on a host ('{p.MountHost}' at '{p.MountAnchor}'). A piece on a host stands on " +
+                                  "the host's picture (ADR 0042), which this step does not place.");
             var at = new KeyScenePlacement
             {
                 Scene = scene, Id = p.Id, Kit = p.Kit, Piece = p.Piece, At = p.At, Material = assets.SpriteMaterial,
@@ -261,13 +285,20 @@ namespace HiddenHarbours.App.Editor
                     if (!assets.TrySetPiece(p.Piece, out KeySceneSetPiece sp) || sp == null)
                         throw new Refusal($"{what}: the kit has no SetPieceDef '{p.Piece}'.");
                     if (sp.Id != p.Id) throw new Refusal($"{what}: its SetPieceDef is '{sp.Id}'; a set piece is placed under its Def's id.");
-                    if (sp.Mount != GroundMount)
+                    if (sp.Mount != GroundMount && p.MountAnchor != "door")
                         throw new Refusal($"{what}: mounted on '{sp.Mount}'. A mounted piece stands on its mount's picture (ADR 0042), which this step does not place.");
                     if (sp.Frames == null || sp.Frames.Length != SetPieceDef.Facings)
                         throw new Refusal($"{what}: {sp.Frames?.Length ?? 0} frames; a set piece bakes {SetPieceDef.Facings}.");
                     int frame = SetPieceDef.FrameForRigDir(p.Dir);
                     at.Sprite = sp.Frames[frame];
                     at.Cell = $"frame {frame} (dir {SetPieceDef.RigDirForFrame(frame)})";
+                    if (p.StandsOn == KeySceneDef.StandsOnMount)
+                    {
+                        if (!(assets is IKeySceneWaveAssets wave) || !wave.TryMount(p, out Vector2 screen, out float sortY))
+                            throw new Refusal($"{what}: its host is absent or its anchor is unknown.");
+                        at.At = screen;
+                        at.SortYOffset = sortY - screen.y;
+                    }
                     if (sp.Layer == FloorLayer) at.Floor = true;
                     else if (sp.Layer != RaisedLayer) throw new Refusal($"{what}: layer '{sp.Layer}'; the step knows '{RaisedLayer}' and '{FloorLayer}'.");
                     at.Walls = WallsOf(sp.Colliders, frame, what);
@@ -316,8 +347,8 @@ namespace HiddenHarbours.App.Editor
             if (at.Floor) at.SortingOrder = SortingBands.DecorFloor;
             else
             {
-                at.SortYOffset = SortYOffsetFor(p);
-                at.SortingOrder = YSortSprite.OrderFor(p.At.y + at.SortYOffset, SortingBands.DecorBase,
+                if (p.StandsOn != KeySceneDef.StandsOnMount) at.SortYOffset = SortYOffsetFor(p);
+                at.SortingOrder = YSortSprite.OrderFor(at.At.y + at.SortYOffset, SortingBands.DecorBase,
                                                        SortingBands.OrdersPerMetre, SortingBands.DecorFloor, SortingBands.DecorCeiling);
             }
             return at;
@@ -329,7 +360,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// The key scenes' pieces as one patch to the <see cref="KeyScenesRootName"/> root: the root, one
-        /// group per key scene, and every piece the scenes place today, as whole documents. What already
+        /// group per placed key scene, and every piece the scenes place today, as whole documents. What already
         /// stands as written is left alone; what changed is edited, what is gone deleted, each by name; a
         /// new root joins the scene's SceneRoots list. Sealed before it is returned.
         /// </summary>
@@ -348,7 +379,7 @@ namespace HiddenHarbours.App.Editor
 
             var want = new List<Wanted>();
             var groupTrs = new List<long>();
-            foreach (KeySceneDef ks in keyScenes)
+            foreach (KeySceneDef ks in keyScenes.Where(k => k.Placed))
             {
                 long gGo = ids.Next(KeyOf(ks.Id, "GameObject")), gTr = ids.Next(KeyOf(ks.Id, "Transform"));
                 var pieceTrs = new List<long>();
@@ -356,6 +387,21 @@ namespace HiddenHarbours.App.Editor
                 foreach (KeyScenePlacement p in pieces.Where(x => x.Scene == ks.Id))
                 {
                     long go = ids.Next(KeyOf(ks.Id, p.Id, "GameObject")), tr = ids.Next(KeyOf(ks.Id, p.Id, "Transform"));
+                    if (p.IsPerch)
+                    {
+                        long perch = ids.Next(KeyOf(ks.Id, p.Id, "GullPerch"));
+                        var script = ((IKeySceneWaveAssets)assets).Perch;
+                        pieceDocs.Add(Want(GameObjectYaml(go, p.Id, new[] { tr, perch }), p.Id, "GameObject"));
+                        pieceDocs.Add(Want(TransformYaml(tr, go, p.At, new List<long>(), gTr), p.Id, "Transform"));
+                        pieceDocs.Add(Want(MonoBehaviourYaml(perch, go, script, new[]
+                        {
+                            "  _id: " + Plain(p.Id),
+                            "  _groundPoint: " + "{x: " + F(p.GroundPoint.x) + ", y: " + F(p.GroundPoint.y) + "}",
+                            "  _sortY: " + F(p.At.y + p.SortYOffset),
+                        }), p.Id, "GullPerch"));
+                        pieceTrs.Add(tr);
+                        continue;
+                    }
                     long sr = ids.Next(KeyOf(ks.Id, p.Id, "SpriteRenderer"));
                     long sort = p.Floor ? 0 : ids.Next(KeyOf(ks.Id, p.Id, "YSortSprite"));
                     long walls = p.Walls.Count == 0 ? 0 : ids.Next(KeyOf(ks.Id, p.Id, "PolygonCollider2D"));
@@ -630,7 +676,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The kits' art through the AssetDatabase: the iso packs as Nine Mile Creek's dressing reads
         /// them, the set pieces by their Defs, the scripts by their MonoScripts.</summary>
-        public sealed class EditorKeySceneAssets : IKeySceneAssets
+        public sealed partial class EditorKeySceneAssets : IKeySceneAssets, IKeySceneWaveAssets
         {
             ObjRef? _spriteMaterial, _faceMaterial;
             ScriptRef? _sorter, _waterline, _vane;
@@ -750,7 +796,18 @@ namespace HiddenHarbours.App.Editor
                     throw new Refusal("StPeters is open in the editor. Close it first: an open scene would overwrite the file on its next save.");
 
             string text = File.ReadAllText(ScenePath);
-            LayerPatch patch = KeyScenePieces(SceneYaml.Parse(text), LoadStPetersKeyScenes(), new EditorKeySceneAssets());
+            var scene = SceneYaml.Parse(text);
+            var keyScenes = LoadStPetersKeyScenes();
+            var assets = new EditorKeySceneAssets();
+            var grass = CommittedGrassSites(scene);
+            foreach (var ks in keyScenes)
+            foreach (var p in ks.Pieces.Where(p => Places(ks, p) && p.Kind == KeySceneDef.KindBuilding))
+            {
+                if (!assets.TryBuilding(p, out _, out Vector2 footprint)) throw new Refusal($"{p.Id}: no baked building.");
+                int count = GrassInsideBuilding(grass, p.At, footprint, p.Dir);
+                if (count != 0) throw new Refusal($"{p.Id}: {count} committed grass sites inside its footprint. Defer it or refresh the grass field in its own step.");
+            }
+            LayerPatch patch = KeyScenePieces(scene, keyScenes, assets);
 
             Directory.CreateDirectory(PatchFolder);
             var utf8 = new UTF8Encoding(false);

@@ -293,6 +293,47 @@ namespace HiddenHarbours.Tests.PlayMode
         /// exactly rather than approximately, and it casts no ground-contact disc — that darkened patch
         /// belongs to a thing with mass overhead, not to a gull three metres up.
         /// </summary>
+        sealed class OfferedPerch : IGullPerch
+        {
+            public string Id => "test.wave1b.perch";
+            public Vector2 GroundPoint => Vector2.zero;
+            public Vector2 ScreenPoint => new Vector2(0f, 3f);
+            public float SortY => 0f;
+        }
+
+        [Test]
+        public void AnOfferedPerch_IsLandedOnAndLeft_ByTheFlocksOwnDecisions()
+        {
+            var perch = new OfferedPerch();
+            GullPerches.Register(perch);
+            try
+            {
+                GullFlock flock = NewFlock("PerchingFlock");
+                int landed = -1;
+                for (int tick = 0; tick < PatienceTicks * 3 && landed < 0; tick++)
+                {
+                    Step(flock, 1);
+                    for (int bird = 0; bird < flock.BirdCount; bird++)
+                    {
+                        var state = flock.BirdState(bird);
+                        if (Id(flock, bird) == SeagullStates.Stand &&
+                            Vector2.Distance(new Vector2((float)state.X, (float)state.Y), perch.ScreenPoint) < 0.01f)
+                        { landed = bird; break; }
+                    }
+                }
+                Assert.GreaterOrEqual(landed, 0, "No bird reached the offered screen point.");
+                Assert.That(Lift(flock, landed), Is.EqualTo(0f).Within(0.01f));
+                bool left = false;
+                for (int tick = 0; tick < PatienceTicks && !left; tick++)
+                {
+                    Step(flock, 1);
+                    left = flock.Behaviour.SurfaceOf(flock.BirdState(landed).State) == SeagullSurface.None;
+                }
+                Assert.IsTrue(left, "A daytime perch must be left after the settle window.");
+            }
+            finally { GullPerches.Unregister(perch); }
+        }
+
         [Test]
         public void TheFlockInstallsItselfAndGivesEveryBirdItsOwnShadow()
         {

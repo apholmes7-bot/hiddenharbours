@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_067
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_067
+  Status: 1
+  SplitFrom: 
+  Follows: wall.stp_250
+  Rock: sandstone
+  Class: 5
+  Aspect: SW
+  Batter: ramp
+  Brow:
+  - {x: -32.23934, y: -38.291985}
+  - {x: -32.28939, y: -37.973152}
+  - {x: -32.4745, y: -37.800743}
+  - {x: -32.761833, y: -37.737}
+  - {x: -32.774372, y: -37.381474}
+  - {x: -32.78519, y: -37.02645}
+  Toe:
+  - {x: -34.37527, y: -40.607216}
+  - {x: -34.568726, y: -40.428177}
+  - {x: -34.727497, y: -40.211964}
+  - {x: -34.81701, y: -39.922462}
+  - {x: -35.008408, y: -39.741894}
+  - {x: -35.19927, y: -39.56066}
+  DropMetres:
+  - 7.2901444
+  - 7.3770275
+  - 7.4325294
+  - 7.2496023
+  - 7.2980175
+  - 7.44204
+  ToeElevations:
+  - -1.4781471
+  - -1.4870638
+  - -1.5509416
+  - -1.4212657
+  - -1.4587513
+  - -1.551323
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 2.1648617
+  - 3.0754623
+  - 3.0581443
+  - 2.3468
+  - 3.4847677
+  - 4.489788
+  ToePass9:
+  - -1.6499428
+  - -1.6499428
+  - -1.6499428
+  - -1.6501638
+  - -1.6519576
+  - -1.6728281
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 67
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Re-lined on the import: stations k0-k9. The list''s row 067 (West Ledges): re-lined. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k5.'

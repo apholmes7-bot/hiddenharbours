@@ -20,16 +20,17 @@ namespace HiddenHarbours.Tests.UI.EditMode
         [Test]
         public void CardRect_Small_SitsBottomCentre_AtSmallScale()
         {
+            // 2026-10-07: card dimensions and margin follow the HUD's 1.5 factor at 1080p.
             // The owner's placement ruling (2026-08-03): "the placement of the ui to be centred at
             // the bottom" — replacing the S1 bottom-right placeholder.
             HelmOverlaySettings s = Cfg;
             Rect r = HelmOverlayLayout.CardRect(false, LeverRigGeometry.W, LeverRigGeometry.H,
                                                 in s, ScreenW, ScreenH);
-            Assert.That(r.width, Is.EqualTo(LeverRigGeometry.W * s.SmallScale).Within(1e-3f));
-            Assert.That(r.height, Is.EqualTo(LeverRigGeometry.H * s.SmallScale).Within(1e-3f));
+            Assert.That(r.width, Is.EqualTo(LeverRigGeometry.W * s.SmallScale * 1.5f).Within(1e-3f));
+            Assert.That(r.height, Is.EqualTo(LeverRigGeometry.H * s.SmallScale * 1.5f).Within(1e-3f));
             Assert.That(r.center.x, Is.EqualTo(ScreenW * s.SmallCenterX01).Within(1e-3f), "centred");
             Assert.That(s.SmallCenterX01, Is.EqualTo(0.5f), "the default IS bottom-centre");
-            Assert.That(r.yMin, Is.EqualTo(s.MarginY).Within(1e-3f), "bottom margin");
+            Assert.That(r.yMin, Is.EqualTo(s.MarginY * 1.5f).Within(1e-3f), "bottom margin");
         }
 
         [Test]
@@ -38,10 +39,10 @@ namespace HiddenHarbours.Tests.UI.EditMode
             HelmOverlaySettings s = Cfg;
             Rect r = HelmOverlayLayout.CardRect(true, TillerRigRender.W, TillerRigRender.H,
                                                 in s, ScreenW, ScreenH);
-            Assert.That(r.width, Is.EqualTo(TillerRigRender.W * s.FocusScale).Within(1e-3f),
+            Assert.That(r.width, Is.EqualTo(TillerRigRender.W * s.FocusScale * 1.5f).Within(1e-3f),
                         "the enlargement IS the focus state — controls become properly clickable");
             Assert.That(r.center.x, Is.EqualTo(ScreenW * s.FocusCenterX01).Within(1e-3f));
-            Assert.That(r.yMin, Is.EqualTo(s.MarginY).Within(1e-3f),
+            Assert.That(r.yMin, Is.EqualTo(s.MarginY * 1.5f).Within(1e-3f),
                         "focused anchors to the bottom too — the helm rises from the dash");
         }
 

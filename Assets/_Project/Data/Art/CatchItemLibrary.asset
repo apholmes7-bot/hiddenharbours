@@ -38,6 +38,7 @@ MonoBehaviour:
     - {fileID: 1844000205, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
   - Kind: cod
     Variants:
     - {fileID: -2137819845, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
@@ -63,6 +64,7 @@ MonoBehaviour:
     - {fileID: -1872140467, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
   - Kind: flounder
     Variants:
     - {fileID: 10148047, guid: 46c2619bce74db745a8dd5c09af71589, type: 3}
@@ -88,6 +90,7 @@ MonoBehaviour:
     - {fileID: 1078626344, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
   - Kind: haddock
     Variants:
     - {fileID: 215540679, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
@@ -113,6 +116,7 @@ MonoBehaviour:
     - {fileID: 274749164, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
   - Kind: herring
     Variants:
     - {fileID: 1529871688, guid: 57c8659b67a50e1459b6c4f7f767e601, type: 3}
@@ -138,6 +142,7 @@ MonoBehaviour:
     - {fileID: 289850681, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
   - Kind: mackerel
     Variants:
     - {fileID: 287460093, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
@@ -163,6 +168,7 @@ MonoBehaviour:
     - {fileID: -1140674986, guid: c126921156f46cf468a964035712d532, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
   - Kind: pollock
     Variants:
     - {fileID: -2106970796, guid: 09413df64d4029845b4049ca288fb002, type: 3}
@@ -188,6 +194,7 @@ MonoBehaviour:
     - {fileID: 1606076144, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
   - Kind: clam
     Variants:
     - {fileID: -591464610, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
@@ -199,6 +206,7 @@ MonoBehaviour:
     - {fileID: 642901098, guid: 41ebc4a4146cf7c4ea4338238b7925e7, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 0}
   - Kind: crab
     Variants:
     - {fileID: -909582081, guid: 3d119cd01366379488ca5f9b1bfd2906, type: 3}
@@ -224,6 +232,7 @@ MonoBehaviour:
     - {fileID: -1055340020, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 0}
   - Kind: lobster
     Variants:
     - {fileID: -1296597542, guid: bf2eca950dfca1f45b25067a71473aef, type: 3}
@@ -249,6 +258,7 @@ MonoBehaviour:
     - {fileID: -2140742918, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 0}
   - Kind: mussel
     Variants:
     - {fileID: -2103132598, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
@@ -260,6 +270,7 @@ MonoBehaviour:
     - {fileID: -39917994, guid: 98f48a7ae105e2644812ab8918360797, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 0}
   - Kind: oyster
     Variants:
     - {fileID: -1376756797, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
@@ -271,6 +282,7 @@ MonoBehaviour:
     - {fileID: -350328097, guid: 1c2136947e9e01449853b8e4afa468ea, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 0}
   - Kind: periwinkle
     Variants:
     - {fileID: 156112072, guid: 8b6cd73a141fb2f4293aa2ca5961b1db, type: 3}
@@ -282,6 +294,7 @@ MonoBehaviour:
     - {fileID: -432732285, guid: b76ed376f8128e744819b5b8da52b29f, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 0}
   - Kind: scallop
     Variants:
     - {fileID: -1760578941, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
@@ -293,9 +306,12 @@ MonoBehaviour:
     - {fileID: -2127248993, guid: 60a768c643921664fbb7bcf5adccb136, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
+    HeldMesh: {fileID: 0}
   _species:
   - SpeciesId: fish.atlantic_cod
     Kind: cod
+  - SpeciesId: fish.atlantic_herring
+    Kind: herring
   - SpeciesId: fish.haddock
     Kind: haddock
   - SpeciesId: fish.lobster
@@ -308,4 +324,165 @@ MonoBehaviour:
     Kind: crab
   - SpeciesId: fish.soft_shell_clam
     Kind: clam
+  - SpeciesId: fish.striped_bass
+    Kind: bass
+  - SpeciesId: fish.winter_flounder
+    Kind: flounder
   _fallbackKind: cod
+  _bucketMeshes:
+  - TierId: pail
+    Band: 4
+    Group: crust
+    Mesh: {fileID: 11400000, guid: 4993352241b786d418a1925913434d11, type: 2}
+  - TierId: pail
+    Band: 4
+    Group: fish
+    Mesh: {fileID: 11400000, guid: 10bacd46e5ee92e4ba17133e86515a1b, type: 2}
+  - TierId: pail
+    Band: 4
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 034aa37077f81bf45ae9840810d9f132, type: 2}
+  - TierId: pail
+    Band: 0
+    Group: 
+    Mesh: {fileID: 11400000, guid: 28d1da21e71270745a83ca5b0d3457fa, type: 2}
+  - TierId: pail
+    Band: 1
+    Group: crust
+    Mesh: {fileID: 11400000, guid: fffa5e609dc81054eb33f23bb28803bc, type: 2}
+  - TierId: pail
+    Band: 1
+    Group: fish
+    Mesh: {fileID: 11400000, guid: 2e6797ce03ad93d44be2c6906a87a077, type: 2}
+  - TierId: pail
+    Band: 1
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 581865dc96d421045bdcb85d7d5fc98b, type: 2}
+  - TierId: pail
+    Band: 3
+    Group: crust
+    Mesh: {fileID: 11400000, guid: b43fb2d3213c32249b4666f9c10a3ce7, type: 2}
+  - TierId: pail
+    Band: 3
+    Group: fish
+    Mesh: {fileID: 11400000, guid: 980c2ddb04a160c4da25ab0c30b35a98, type: 2}
+  - TierId: pail
+    Band: 3
+    Group: shell
+    Mesh: {fileID: 11400000, guid: d2aa1a994c6e8b04b9f026850e96a515, type: 2}
+  - TierId: pail
+    Band: 2
+    Group: crust
+    Mesh: {fileID: 11400000, guid: ffa0acce0061c56448d481cc89ab7411, type: 2}
+  - TierId: pail
+    Band: 2
+    Group: fish
+    Mesh: {fileID: 11400000, guid: faf3a036f1bc8e24d9e4d723203105cd, type: 2}
+  - TierId: pail
+    Band: 2
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 390bd1d6e3d71a948b197243fafbe0ff, type: 2}
+  - TierId: tote
+    Band: 4
+    Group: crust
+    Mesh: {fileID: 11400000, guid: dba896aa603767e4d9145a8fb1e2c195, type: 2}
+  - TierId: tote
+    Band: 4
+    Group: fish
+    Mesh: {fileID: 11400000, guid: 9b491807fc3e13847a15250ff11f92f1, type: 2}
+  - TierId: tote
+    Band: 4
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 68708e4d5fec19145b29ce2e856f1e6e, type: 2}
+  - TierId: tote
+    Band: 0
+    Group: 
+    Mesh: {fileID: 11400000, guid: bd49a093ec25fae458c768855ba75890, type: 2}
+  - TierId: tote
+    Band: 1
+    Group: crust
+    Mesh: {fileID: 11400000, guid: 28fa2e0b7bd7d874d800d057bf4f9eb1, type: 2}
+  - TierId: tote
+    Band: 1
+    Group: fish
+    Mesh: {fileID: 11400000, guid: c9855f30bd16360409d66cc581835f92, type: 2}
+  - TierId: tote
+    Band: 1
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 0a6a4fb6c042bfe4f8a196bba70b76fb, type: 2}
+  - TierId: tote
+    Band: 3
+    Group: crust
+    Mesh: {fileID: 11400000, guid: abfb23b633f81d74a80b4770492e1543, type: 2}
+  - TierId: tote
+    Band: 3
+    Group: fish
+    Mesh: {fileID: 11400000, guid: 0affc9cfc4055884ea45cf4f1337e906, type: 2}
+  - TierId: tote
+    Band: 3
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 2389481ccf1918547a53231c4696a338, type: 2}
+  - TierId: tote
+    Band: 2
+    Group: crust
+    Mesh: {fileID: 11400000, guid: 81dc37c06e4344d45bdbb52caa0e8830, type: 2}
+  - TierId: tote
+    Band: 2
+    Group: fish
+    Mesh: {fileID: 11400000, guid: f77f38d07e7dbe141b942dbebdaf3ab9, type: 2}
+  - TierId: tote
+    Band: 2
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 99f91a1e89004de44a824e1a5cf49cb5, type: 2}
+  - TierId: tray
+    Band: 4
+    Group: crust
+    Mesh: {fileID: 11400000, guid: 7c1dd8556ec7a4f42840b8627bf6dab3, type: 2}
+  - TierId: tray
+    Band: 4
+    Group: fish
+    Mesh: {fileID: 11400000, guid: bf1a832fe71e8464bb9883f74715bc50, type: 2}
+  - TierId: tray
+    Band: 4
+    Group: shell
+    Mesh: {fileID: 11400000, guid: f1c6628ca504bfd4f931f81727e189bf, type: 2}
+  - TierId: tray
+    Band: 0
+    Group: 
+    Mesh: {fileID: 11400000, guid: 96680e6d03095b84c877d7831841910f, type: 2}
+  - TierId: tray
+    Band: 1
+    Group: crust
+    Mesh: {fileID: 11400000, guid: 291e971d7a0bab848a3a79b499344a80, type: 2}
+  - TierId: tray
+    Band: 1
+    Group: fish
+    Mesh: {fileID: 11400000, guid: 152168a47478dd54292fa9db36f50247, type: 2}
+  - TierId: tray
+    Band: 1
+    Group: shell
+    Mesh: {fileID: 11400000, guid: a4c0f4e5572908645967109ab3b53993, type: 2}
+  - TierId: tray
+    Band: 3
+    Group: crust
+    Mesh: {fileID: 11400000, guid: 3b2f7b563618a4744b1191f36ebb305f, type: 2}
+  - TierId: tray
+    Band: 3
+    Group: fish
+    Mesh: {fileID: 11400000, guid: ef8e9f6f478cf5c4ebe986a223e709f1, type: 2}
+  - TierId: tray
+    Band: 3
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 5caa651f33562c14696c7a843eb94997, type: 2}
+  - TierId: tray
+    Band: 2
+    Group: crust
+    Mesh: {fileID: 11400000, guid: e8539ee45e5224d47954f3db08af9f62, type: 2}
+  - TierId: tray
+    Band: 2
+    Group: fish
+    Mesh: {fileID: 11400000, guid: a0bc75e3a5fead1419168af4d4db74f0, type: 2}
+  - TierId: tray
+    Band: 2
+    Group: shell
+    Mesh: {fileID: 11400000, guid: 20dc9ea97296b314e9f56e222a0a7fff, type: 2}

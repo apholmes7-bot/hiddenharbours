@@ -105,14 +105,17 @@ namespace HiddenHarbours.Art.Editor
 
         /// <summary>
         /// Channel suffixes that mean the PNG holds NUMBERS rather than colour: a light/relief mask,
-        /// a view-space normal, a seat decal's material-blend channel, or a house's emitter sheet
-        /// (one byte a texel: a glow level and its source, drop 14). They are matched on the
-        /// file's stem, not its folder, because the kits interleave them with their albedo sheets.
+        /// a view-space normal, a seat decal's material-blend channel, a house's emitter sheet
+        /// (one byte a texel: a glow level and its source, drop 14), or the tree kit's pass-4
+        /// wind, phase and snow maps (packed leaf offsets and class bits, and the cover byte at
+        /// which a pixel turns to snow). They are matched on the file's stem, not its folder,
+        /// because the kits interleave them with their albedo sheets.
         ///
         /// <para>⚠ This is not a guess about what the file contains — every sheet carrying one of
         /// these suffixes in this repo is produced by a rig export that documents its channels
-        /// (tree kit, Rock Px kit and the village houses today). A colour sheet must not be named
-        /// <c>*_mask.png</c>, which is also true for every other reason.</para>
+        /// (tree kit, Rock Px kit and the village houses today). A colour sheet must not be named <c>*_mask.png</c>,
+        /// which is also true for every other reason — nor <c>*_snow.png</c>: a snowy PICTURE is a
+        /// season, named the way the tree kit names its winter albedo (<c>*_winter.png</c>).</para>
         /// </summary>
         public static bool IsDataChannel(string path)
         {
@@ -121,7 +124,10 @@ namespace HiddenHarbours.Art.Editor
             return stem.EndsWith("_mask", StringComparison.Ordinal)
                 || stem.EndsWith("_normal", StringComparison.Ordinal)
                 || stem.EndsWith("_blend", StringComparison.Ordinal)
-                || stem.EndsWith("_emit", StringComparison.Ordinal);
+                || stem.EndsWith("_emit", StringComparison.Ordinal)
+                || stem.EndsWith("_wind", StringComparison.Ordinal)
+                || stem.EndsWith("_phase", StringComparison.Ordinal)
+                || stem.EndsWith("_snow", StringComparison.Ordinal);
         }
 
         /// <summary>Tiling textures (animated water, parallax bands) wrap with Repeat.</summary>

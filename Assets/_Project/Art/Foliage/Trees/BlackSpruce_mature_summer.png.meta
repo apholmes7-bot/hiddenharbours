@@ -57,7 +57,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 73
-        height: 179
+        width: 129
+        height: 182
       alignment: 9
-      pivot: {x: 0.49315068, y: 0.039106146}
+      pivot: {x: 0.49612403, y: 0.03846154}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: BlackSpruce_mature_summer_v1
       rect:
         serializedVersion: 2
-        x: 73
+        x: 129
         y: 0
-        width: 73
-        height: 179
+        width: 129
+        height: 182
       alignment: 9
-      pivot: {x: 0.49315068, y: 0.039106146}
+      pivot: {x: 0.49612403, y: 0.03846154}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: BlackSpruce_mature_summer_v2
       rect:
         serializedVersion: 2
-        x: 146
+        x: 258
         y: 0
-        width: 73
-        height: 179
+        width: 129
+        height: 182
       alignment: 9
-      pivot: {x: 0.49315068, y: 0.039106146}
+      pivot: {x: 0.49612403, y: 0.03846154}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: BlackSpruce_mature_summer_v3
       rect:
         serializedVersion: 2
-        x: 219
+        x: 387
         y: 0
-        width: 73
-        height: 179
+        width: 129
+        height: 182
       alignment: 9
-      pivot: {x: 0.49315068, y: 0.039106146}
+      pivot: {x: 0.49612403, y: 0.03846154}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

@@ -231,14 +231,17 @@ globalThis.__hh9a = (function (C) {
     var st = { n: 0, w: 0, at: '', p: [] }; cmp(JSON.parse(JSON.stringify(o)), want, tol, p, st);
     return [st.n, st.w, st.at].concat(st.p).join('\n'); }
   // layout 9: two-space JSON, the sha pair after exportSymbol. layout 10: one line, the sha pair first.
-  function gameplay(p, rig, poses, layout) { var o = C.gameplay(p), r = {};
+  // round: the kit writes every number through the rig's own R7 (rig 10 since 10.3); a rig without one throws.
+  function gameplay(p, rig, poses, layout, round) { var o = C.gameplay(p), r = {}, R = null;
+    if (round) { R = C.R7;
+      if (typeof R !== 'function') throw new Error(C.rig + ' ' + C.revision + ' exports no R7, which its kit writes every gameplay file through'); }
     if (layout === 10) {
       r = { derivedFromRigSha256: rig, posesDerivedFromRigSha256: poses };
       Object.keys(o).forEach(function (k) { if (k !== 'derivedFromRigSha256' && k !== 'posesDerivedFromRigSha256') r[k] = o[k]; });
-      return JSON.stringify(r); }
+      return JSON.stringify(r, R); }
     Object.keys(o).forEach(function (k) { if (k === 'derivedFromRigSha256' || k === 'posesDerivedFromRigSha256') return; r[k] = o[k];
       if (k === 'exportSymbol') { r.derivedFromRigSha256 = rig; r.posesDerivedFromRigSha256 = poses; } });
-    return JSON.stringify(r, null, 2); }
+    return JSON.stringify(r, R, 2); }
   function strip(p, clip, dir, n) { var W = C.W * n, H = C.H, out = new Uint8Array(W * H * 4);
     for (var k = 0; k < n; k++) { var R = C.render({ clip: clip, frame: k, dir: dir, build: p });
       for (var y = 0; y < H; y++) for (var x = 0; x < C.W; x++) { var a = (y * C.W + x) * 4, d = (y * W + k * C.W + x) * 4;
@@ -416,7 +419,9 @@ globalThis.__hh9a = (function (C) {
         /// <summary>The gameplay sidecar the rig writes today for <paramref name="preset"/>
         /// against the committed one, byte for byte. Null when they are identical, else the
         /// first line that differs (rig 10 writes each sidecar on one line: the stretch around
-        /// the first character that differs).</summary>
+        /// the first character that differs). A kit that exports its numbers (rig 10.3) writes
+        /// every number through the rig's own <c>R7</c>, so the rig's sidecar is printed through
+        /// it too; a rig that exports no <c>R7</c> throws.</summary>
         public static string GameplaySidecarDiff9(IRigScriptHost host, string kitRoot, string preset)
         {
             Install9Audit(host);
@@ -425,8 +430,9 @@ globalThis.__hh9a = (function (C) {
             var (rig, poses) = KitShas9(kitRoot, kit);
             string file = kit.GameplayFile(preset);
             string want = ReadKitText9(kitRoot, file);
+            string round = kit.ExportsNumbers ? "true" : "false";
             string got = host.EvaluateString(
-                $"globalThis.__hh9a.gameplay({Js(preset)},{Js(rig)},{Js(poses)},{Layout9(host)})");
+                $"globalThis.__hh9a.gameplay({Js(preset)},{Js(rig)},{Js(poses)},{Layout9(host)},{round})");
             if (string.Equals(got, want, StringComparison.Ordinal)) return null;
             string[] a = Lines9(got), b = Lines9(want);
             for (int i = 0; i < Math.Max(a.Length, b.Length); i++)
@@ -450,14 +456,13 @@ globalThis.__hh9a = (function (C) {
         /// <summary>Every 1x strip the manifest lists, rendered by the rig today, hashed as RGBA
         /// against the manifest's <c>rgbaSha256</c>, after the manifest's own source hashes are
         /// checked against the rig and pose library in the kit. Returns one line per miss. Rig 9
-        /// only: rig 10's manifest lists its strips without hashes (the intake's harness held them
-        /// to the rig at landing, INTAKE.md).</summary>
+        /// only: rig 10's strips are drawn by its kit's own plan (<see cref="RenderMisses10"/>).</summary>
         public static List<string> RenderMisses9(IRigScriptHost host, string kitRoot, out int strips)
         {
             Install9Audit(host);
             if (KitOf(host).FaceMarks)
                 throw new InvalidOperationException(
-                    $"{KitOf(host).Title}'s render manifest lists its strips without RGBA hashes, so there is nothing to hold them to here.");
+                    $"{KitOf(host).Title}'s strips are drawn by its kit's own plan: see {nameof(RenderMisses10)}.");
             var misses = new List<string>();
             var (rig, poses) = KitShas9(kitRoot);
             host.Execute($"globalThis.__hh9man=({ReadKitText9(kitRoot, V9ManifestFile)});");
@@ -486,6 +491,83 @@ globalThis.__hh9a = (function (C) {
             return misses;
         }
 
+        /// <summary>Rig 10.3's kit's own plan of every file it writes (<c>renderPlan</c> among them):
+        /// plain JavaScript with no packages, which a page loads as <c>window.HHKit</c>.</summary>
+        public const string V10PlanFile = "tools/kit.js";
+
+        /// <summary>
+        /// Rig 10.3 on: every 1x strip the render manifest lists (idle at the 8 facings, the walk at S,
+        /// the blink and the look, for every build in the rig's <c>CAST</c>), drawn by the rig today
+        /// through the kit's own plan (<see cref="V10PlanFile"/>'s <c>renderPlan</c>, loaded beside the
+        /// rig) and hashed as RGBA against the manifest's <c>rgbaSha256</c>, after the manifest's own
+        /// source hashes are checked against the rig and pose library in the kit. Returns one line per
+        /// miss; a strip the plan draws that the manifest does not list, or the other way, is a miss.
+        /// <paramref name="planned"/> counts the plan's 1x strips, <paramref name="strips"/> those drawn
+        /// and hashed. The 4x strips and the cast sheet are the same cells scaled by the kit, which its
+        /// own checker holds on Node; they are not drawn again here.
+        /// </summary>
+        public static List<string> RenderMisses10(IRigScriptHost host, string kitRoot, out int strips, out int planned)
+        {
+            Load9(host);
+            CharacterRigKit kit = KitOf(host);
+            if (!kit.FaceMarks)
+                throw new InvalidOperationException($"{kit.Title}'s kit has no plan: see {nameof(RenderMisses9)}.");
+            var misses = new List<string>();
+            var (rig, poses) = KitShas9(kitRoot, kit);
+            host.Execute($"globalThis.__hh10man=({ReadKitText9(kitRoot, V9ManifestFile)});");
+            try
+            {
+                host.Execute(ReadKitText9(kitRoot, V10PlanFile));
+                string mRig = host.EvaluateString("String(globalThis.__hh10man.derivedFromRigSha256)");
+                string mPoses = host.EvaluateString("String(globalThis.__hh10man.posesDerivedFromRigSha256)");
+                if (mRig != rig || mPoses != poses)
+                    misses.Add($"the manifest was rendered from rig {mRig} / poses {mPoses}; the kit holds {rig} / {poses}");
+                host.Execute($"globalThis.__hh10plan=globalThis.HHKit.renderPlan({kit.GlobalName})" +
+                             ".filter(function(p){return p.scale===1;});");
+                planned = (int)host.EvaluateNumber("globalThis.__hh10plan.length");
+                var listed = new Dictionary<string, string[]>(StringComparer.Ordinal);
+                foreach (string row in Lines9(host.EvaluateString(
+                    "globalThis.__hh10man.images.filter(function(i){return i.scale===1;}).map(function(i){" +
+                    "return [i.file,i.width+'x'+i.height,i.rgbaSha256].join('|');}).join('\\n')")))
+                {
+                    string[] c = row.Split('|');
+                    if (c.Length != 3) { misses.Add($"manifest row '{row}' has {c.Length} fields"); continue; }
+                    listed[c[0]] = c;
+                }
+                strips = 0;
+                for (int i = 0; i < planned; i++)
+                {
+                    string at = $"globalThis.__hh10plan[{i.ToString(CultureInfo.InvariantCulture)}]";
+                    string file = host.EvaluateString($"String({at}.file)");
+                    if (!listed.TryGetValue(file, out string[] c))
+                    {
+                        misses.Add($"{file}: the kit's plan draws it; the manifest does not list it");
+                        continue;
+                    }
+                    listed.Remove(file);
+                    string size = host.EvaluateString(
+                        $"(function(g){{globalThis.__hh10img=g;return g.W+'x'+g.H;}})({at}.make())");
+                    byte[] rgba = host.EvaluateBytes("globalThis.__hh10img.rgba");
+                    strips++;
+                    if (size != c[1])
+                    {
+                        misses.Add($"{file}: the rig draws {size}, the manifest says {c[1]}");
+                        continue;
+                    }
+                    string sha = Sha256Hex9(rgba);
+                    if (sha != c[2]) misses.Add($"{file}: the rig renders {sha}, the manifest says {c[2]}");
+                }
+                foreach (string file in listed.Keys)
+                    misses.Add($"{file}: the manifest lists it; the kit's plan does not draw it");
+            }
+            finally
+            {
+                host.Execute("delete globalThis.__hh10man; delete globalThis.__hh10plan; delete globalThis.__hh10img; " +
+                             "delete globalThis.HHKit;");
+            }
+            return misses;
+        }
+
         /// <summary><c>runChecks(preset)</c> today against the committed golden report: every
         /// row's pass and value, the gate flags and the gated totals. Needs
         /// <see cref="Load9Checks"/>. Returns one line per difference.</summary>
@@ -496,7 +578,8 @@ globalThis.__hh9a = (function (C) {
         /// <summary>
         /// <see cref="GoldenDrift9(IRigScriptHost, string, string, out int, out int)"/>, counting the rows
         /// <paramref name="reprinted"/>: a value the rig prints with the report's text and every number
-        /// within <see cref="V9Tolerance"/> of the report's, but not character for character. A residual
+        /// within the rig's gate tolerance of the report's (<see cref="GateTolerance9"/>: rig 10.3's
+        /// <c>TOL.gate_m</c>, rig 9's <see cref="V9Tolerance"/>), but not character for character. A residual
         /// near 1e-16 m prints differently from one JS engine to the next (rig 10's report was written
         /// on Node 24; the game reads the rig in ClearScript's V8), and the rig's own checks hold such
         /// numbers to that gate. The pass and gate flags are held exactly; a reprinted row is not a move.
@@ -509,7 +592,7 @@ globalThis.__hh9a = (function (C) {
             host.Execute($"globalThis.__hh9gold=({ReadKitText9(kitRoot, V9GoldenFile)});");
             try
             {
-                string tol = V9Tolerance.ToString("R", CultureInfo.InvariantCulture);
+                string tol = GateTolerance9(host).ToString("R", CultureInfo.InvariantCulture);
                 string[] f = Lines9(host.EvaluateString(
                     $"globalThis.__hh9a.golden({Js(preset)},globalThis.__hh9gold,{tol})"));
                 passed = Int9(f[0], At9);

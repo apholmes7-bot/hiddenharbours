@@ -162,14 +162,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Animator.Sample gives the hull. Ticked over a long, uneven frame sequence so the
             // accumulated (double, wrapped) phase is exercised well past a trivial t.
             var fieldSettings = WaveFieldSettings.Default;
-            var animatorSettings = WaveFieldAnimatorSettings.Default;
+            fieldSettings.SpectrumBlend = 0.65f;
+            fieldSettings.HeightFromFetch = true;
+            fieldSettings.SeaFetchKilometres = 25f;
             var animator = new WaveFieldAnimator();
-            var wind = new Vector2(5f, 2f);
-
+            var wind = new TurningWind();
             float[] frameDts = { 0.016f, 0.033f, 0.008f, 0.1f, 0.016f };
             for (int frame = 0; frame < 5000; frame++)
-                animator.Tick(frameDts[frame % frameDts.Length], _tickClock += frameDts[frame % frameDts.Length], wind, 0.6f,
-                              in fieldSettings, in animatorSettings);
+                animator.Tick(_tickClock += frameDts[frame % frameDts.Length], wind, in fieldSettings);
 
             WaveTrains eased = animator.Current;
             PackedWaveField field = WaveFieldBridge.Pack(in eased);
@@ -193,6 +193,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.GreaterOrEqual(field.Phase(i), 0f, $"slot {i} phase wrapped ≥ 0 after a long session");
                 Assert.LessOrEqual(field.Phase(i), 2f * Mathf.PI + 1e-4f,
                     $"slot {i} phase wrapped ≤ 2π after a long session");
+            }
+        }
+
+        private sealed class TurningWind : IWaveWindSource
+        {
+            public WaveWindSample WaveWindAt(double time)
+            {
+                float angle = 0.3f * Mathf.Sin((float)(time / 75.0));
+                float speed = 5f + 2f * Mathf.Cos((float)(time / 100.0));
+                return new WaveWindSample(new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * speed,
+                    speed / 14f);
             }
         }
 

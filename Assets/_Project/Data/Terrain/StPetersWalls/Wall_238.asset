@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_238
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_238
+  Status: 1
+  SplitFrom: wall.stp_035
+  Follows: wall.stp_157
+  Rock: sandstone
+  Class: 5
+  Aspect: S
+  Batter: steep
+  Brow:
+  - {x: 112.537346, y: -65.30088}
+  - {x: 112.28263, y: -65.30587}
+  - {x: 112.017296, y: -65.26164}
+  - {x: 111.76276, y: -65.26589}
+  - {x: 111.40291, y: -64.781006}
+  - {x: 111.13868, y: -64.73548}
+  Toe:
+  - {x: 112.97187, y: -67.26408}
+  - {x: 112.71213, y: -67.25921}
+  - {x: 112.44411, y: -67.21557}
+  - {x: 112.11061, y: -66.869}
+  - {x: 111.82432, y: -66.73611}
+  - {x: 111.523026, y: -66.5306}
+  DropMetres:
+  - 7.534217
+  - 7.577878
+  - 7.543098
+  - 7.4691854
+  - 7.558451
+  - 7.360619
+  ToeElevations:
+  - -1.5841928
+  - -1.6487591
+  - -1.6147326
+  - -1.621572
+  - -1.6046251
+  - -1.3769668
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 5.9464273
+  - 5.961109
+  - 5.9948764
+  - 5.9967327
+  - 5.999954
+  - 5.999954
+  ToePass9:
+  - -1.647402
+  - -1.6372428
+  - -1.4574194
+  - 0.08793189
+  - 1.0088831
+  - 2.6030302
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 35
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Cut from 035 at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k5. The list''s row 035 (East Ledges): re-lined.'
