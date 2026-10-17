@@ -48,8 +48,25 @@ namespace HiddenHarbours.Tests.Audio
         private static object Field(object owner, string name) =>
             owner.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(owner);
 
-        private static AudioClipSetDef PublicSet() => Resources.Load<AudioClipSetDef>(AudioClipSets.PublicSetName);
-        private static AudioClipSetDef PrivateSet() => Resources.Load<AudioClipSetDef>(AudioClipSets.PrivateSetName);
+        // The names the docs give, written out here: a test that loaded by the code's own constants would
+        // follow a misspelt name and pass on a pack that never applied.
+        private static AudioClipSetDef PublicSet() => Resources.Load<AudioClipSetDef>("AudioClipSet");
+
+        private static AudioClipSetDef PrivateSet()
+        {
+            var set = Resources.Load<AudioClipSetDef>("AudioClipSetPrivate");
+#if UNITY_EDITOR
+            // In the editor the folder can be seen: an installed pack whose set does not load is a failure,
+            // not "no pack".
+            bool installed = System.IO.File.Exists(System.IO.Path.Combine(
+                Application.dataPath, "_Project/Audio/Private/Resources/AudioClipSetPrivate.asset"));
+            Assert.AreEqual(installed, set != null,
+                installed ? "The private pack is installed, so AudioClipSetPrivate must load by name."
+                          : "No private pack is installed, yet a set loads as AudioClipSetPrivate.");
+            Debug.Log("[Audio test] private sound pack installed: " + (installed ? "yes" : "no"));
+#endif
+            return set;
+        }
 
         private static AudioClip[] NonNull(AudioClip[] songs) =>
             songs == null ? new AudioClip[0] : songs.Where(s => s != null).ToArray();

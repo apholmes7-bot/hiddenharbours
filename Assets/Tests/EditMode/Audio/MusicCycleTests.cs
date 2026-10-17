@@ -105,9 +105,10 @@ namespace HiddenHarbours.Tests.Audio
         [Test]
         public void PublicSet_HasNoSongs_SoTheBusIsSilentWithoutThePack()
         {
-            var publicSet = Resources.Load<AudioClipSetDef>(AudioClipSets.PublicSetName);
+            var publicSet = Resources.Load<AudioClipSetDef>("AudioClipSet");
             Assert.IsNotNull(publicSet, "The public clip set must load by name, as both players load it.");
-            Assert.AreEqual(0, AudioClipSets.SongsOf(publicSet).Length,
+            Assert.IsNotNull(publicSet.Songs);
+            CollectionAssert.IsEmpty(publicSet.Songs,
                 "Songs live in the private sound pack: the public set ships none, so a fresh clone's music bus " +
                 "is silent exactly as before.");
             Assert.IsNull(MusicCycle.For(publicSet).Tick(false, Frame));

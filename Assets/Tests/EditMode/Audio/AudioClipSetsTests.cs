@@ -41,8 +41,11 @@ namespace HiddenHarbours.Tests.Audio
         [Test]
         public void NoPrivateSet_EffectiveSetIsThePublicSet_SlotBySlot()
         {
-            var publicSet = Resources.Load<AudioClipSetDef>(AudioClipSets.PublicSetName);
+            var publicSet = Resources.Load<AudioClipSetDef>("AudioClipSet");
             Assert.IsNotNull(publicSet, "The public clip set must load by name, as both players load it.");
+            Assert.AreEqual("AudioClipSet", AudioClipSets.PublicSetName, "the name the players load");
+            Assert.AreEqual("AudioClipSetPrivate", AudioClipSets.PrivateSetName,
+                "the name the installer writes and docs/audio/private-sound-pack.md gives");
 
             var result = AudioClipSets.Overlay(publicSet, null, out int overridden);
 
