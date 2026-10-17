@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 14;
+        public const int CurrentVersion = 15;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -300,6 +300,25 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 14;
             }
 
+            // v14 -> v15: THE PLAYER'S OWN BUILD (character PR 2b, ADR 0051). One new field, the recipe;
+            // nothing existing is reinterpreted.
+            //
+            // ⭐ THE EMPTY RECIPE IS THE WHOLE MIGRATION. An empty recipe draws the body as baked, which is
+            // exactly what a v14 save's player looked like: the mesh figure never read a recipe because
+            // there was none.
+            //
+            // ⚠ WornOutfitId IS RESOLVED, NOT MOVED. It names a wardrobe preset that recolours the SPRITE
+            // layer (PlayerOutfitVisual); the mesh never drew it, so copying it into the recipe's outfit
+            // and shirt keys would CHANGE how an old save looks rather than keep it. It stays where it is,
+            // read by the same code as before. And no recipe is healed against shipped content here: the
+            // builder refuses a stale key out loud at the point of use (the v12->v13 reasoning), which is
+            // where a refusal can be logged without rewriting the player's file.
+            if (data.SchemaVersion < 15)
+            {
+                data.PlayerRecipe ??= new CharacterRecipe();
+                data.SchemaVersion = 15;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -325,6 +344,8 @@ namespace HiddenHarbours.Core
             data.ActiveHullId ??= "";
             data.WornOutfitId ??= "";
             data.RestRegion ??= "";
+            data.PlayerRecipe ??= new CharacterRecipe();
+            data.PlayerRecipe.Heal();    // a field JsonUtility left null reads as "the preset's own"
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing

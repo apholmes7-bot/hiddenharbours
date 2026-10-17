@@ -205,6 +205,21 @@ namespace HiddenHarbours.Core
         public static ISaveService Save { get; set; }
 
         /// <summary>
+        /// The player's look (character PR 2b, ADR 0051): the seam a picker previews and keeps a
+        /// <see cref="CharacterRecipe"/> through, over <see cref="Save"/> and the shipped builder. Never
+        /// null: nothing has to wire it, so a default <see cref="PlayerAppearance"/> is made on first read;
+        /// a test assigns its own. Cleared by <see cref="Reset"/>, so an open preview never outlives the
+        /// session that opened it (enter-play-mode options keep statics alive between plays).
+        /// </summary>
+        public static IPlayerAppearance Appearance
+        {
+            get => _appearance ??= new PlayerAppearance();
+            set => _appearance = value;
+        }
+
+        private static IPlayerAppearance _appearance;
+
+        /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
         /// (St Peters falling tide; the future water depth-gradient shader). The <b>world</b> registers
         /// its terrain here when a region scene loads; <b>gameplay</b>/UI resolve elevation through this
@@ -1037,6 +1052,7 @@ namespace HiddenHarbours.Core
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             Save = null;
+            Appearance = null;           // → a fresh default on next read; drops any open preview
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
