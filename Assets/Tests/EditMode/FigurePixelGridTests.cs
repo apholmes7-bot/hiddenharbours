@@ -11,7 +11,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// The lattice of the figure pixel look (route 1, <see cref="FigurePixelGrid"/>, behind
     /// <see cref="GameConfig.FigurePixelTarget"/>; docs/design/figure-pixel-target.md): the figure
-    /// target's size at every ladder step and the screen's own size where no step magnifies, texel edges
+    /// target's size at every ladder step, the art pixels kept between steps (a feel effect), and the
+    /// screen's own size where no step magnifies, texel edges
     /// on whole art pixels in the world, a composite that moves by whole screen pixels, the ashore snap
     /// inert until a camera publishes a grid, and planning a frame allocating nothing (rule 7).
     ///
@@ -92,13 +93,61 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void AFramingBetweenSteps_StaysNative_AndFloatNoiseOnAStep_Plans()
+        public void AFramingBetweenSteps_KeepsTheArtPixels_AndFloatNoiseOnAStep_Plans()
         {
-            foreach (double magnification in new[] { 1d, 1.5d, 2.5d, 3.01d, 4.75d, 7.98d })
+            // The owner's playtest with the switch ON: at the helm the feel's speed pull-back pauses the
+            // PixelPerfectCamera and holds the zoom between two steps for as long as she drives fast, and
+            // the figures dropped to the screen's own size for all of it. The shipped feel at every step
+            // (the catch push-in's 8%, the pull-back half way and in full: 15% and the sea's 5%), through
+            // the camera's own matrices as the target plans it, its texel edges on the world's art pixels.
+            foreach (var (w, h) in Screens)
+            {
+                for (int step = 2; step <= CameraZoomPolicy.MaxStep; step++)
+                {
+                    foreach (double zoom in new[] { 0.92d, 1.1d, 1.2d })
+                    {
+                        string what = $"{w}x{h} step {step} zoom x{zoom}";
+                        Matrix4x4 view = View(3.3f + step, -7.1f - step);
+                        Matrix4x4 projection = Ortho(w, h, Texel / step * zoom, 0.37d, -0.21d);
+                        Assert.IsTrue(FigurePixelGrid.TryPlanCamera(w, h, view, projection, out FigurePixelPlan plan),
+                                      $"{what}: between steps the figures keep their art pixels, not the screen's own size");
+                        AssertBetweenSteps(w, h, step / zoom, plan, what);
+                        Matrix4x4 low = FigurePixelGrid.TargetProjection(projection, view, in plan);
+                        foreach (int k in new[] { 0, 1, plan.Width / 2, plan.Width })
+                        {
+                            double world = (-1d + 2d * k / plan.Width - low.m03) / low.m00 - view.m03;
+                            Assert.AreEqual((plan.OriginTexelX + k) * Texel, world, 1e-3d * Texel,
+                                            $"{what}: texel column edge {k} is not on the world's art lattice");
+                        }
+                        foreach (int k in new[] { 0, 1, plan.Height / 2, plan.Height })
+                        {
+                            double world = (-1d + 2d * k / plan.Height - low.m13) / low.m11 - view.m13;
+                            Assert.AreEqual((plan.OriginTexelY + k) * Texel, world, 1e-3d * Texel,
+                                            $"{what}: texel row edge {k} is not on the world's art lattice");
+                        }
+                    }
+                }
+            }
+
+            // Framings nowhere near a step, anywhere in the world.
+            foreach (double magnification in new[] { 1.01d, 1.5d, 2.5d, 3.01d, 4.75d, 7.98d })
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    double left = -13.7d + i * 0.4127d, bottom = 8.9d - i * 0.2931d;
+                    string what = $"magnification {magnification} at ({left}, {bottom})";
+                    Assert.IsTrue(FigurePixelGrid.TryPlan(1920, 1080, left, bottom, Texel / magnification, out FigurePixelPlan plan),
+                                  $"{what}: between steps the figures keep their art pixels");
+                    AssertBetweenSteps(1920, 1080, magnification, plan, what);
+                }
+            }
+
+            // Step 1, float noise either side of it, and a downscale: a screen pixel already covers an art pixel or more.
+            foreach (double magnification in new[] { 1d, 1d + 1e-4d, 1d - 1e-4d, 0.75d, 0.5d })
             {
                 string what = $"magnification {magnification}";
                 Assert.IsFalse(FigurePixelGrid.TryPlan(1920, 1080, 0d, 0d, Texel / magnification, out FigurePixelPlan plan),
-                               $"{what}: no whole block size, so the camera's own size (a feel effect mid-zoom)");
+                               $"{what}: nothing to draw small, so the camera's own size");
                 AssertNative(plan, 1920, 1080, what);
             }
 
@@ -245,23 +294,25 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        private static void AssertAxis(int screen, int size, int m, Func<int, int> texelOf, Func<int, int> sampleOf,
+        private static void AssertAxis(int screen, int size, double m, Func<int, int> texelOf, Func<int, int> sampleOf,
                                        string what)
         {
             int first = texelOf(0), last = texelOf(screen - 1);
             Assert.GreaterOrEqual(first, Guard, $"{what}: pixel 0 reads a guard texel");
             Assert.Less(last, size - Guard, $"{what}: the last pixel reads a guard texel");
+            int narrow = (int)Math.Floor(m), wide = (int)Math.Ceiling(m);   // on a step, both are m
             int run = 0, previous = first;
             for (int px = 0; px < screen; px++)
             {
                 int t = texelOf(px);
                 if (t == previous) { run++; continue; }
                 Assert.AreEqual(previous + 1, t, $"{what}: the texels step by one at pixel {px}");
-                if (previous != first) Assert.AreEqual(m, run, $"{what}: texel {previous} covers {run} pixels, not {m}");
+                if (previous != first && (run < narrow || run > wide))
+                    Assert.Fail($"{what}: texel {previous} covers {run} pixels, not {m}");
                 previous = t;
                 run = 1;
             }
-            Assert.LessOrEqual(run, m, $"{what}: the last block is longer than {m}");
+            Assert.LessOrEqual(run, wide, $"{what}: the last block is longer than {m}");
             for (int t = first; t <= last; t++)
                 Assert.AreEqual(t, texelOf(sampleOf(t)), $"{what}: texel {t}'s depth sample is not inside its own block");
         }
@@ -453,6 +504,24 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(Math.Max(0, w), plan.Width, $"{what}: the screen's own width");
             Assert.AreEqual(Math.Max(0, h), plan.Height, $"{what}: the screen's own height");
             Assert.AreEqual(Vector4.zero, plan.PixelMap, $"{what}: a zero map is the overlays' untouched path");
+        }
+
+        /// <summary>A framing between steps: active at the camera's own magnification, the size of the whole
+        /// step at or below it (a feel effect easing between two steps resizes nothing until it crosses one),
+        /// the shaders' map, and every screen pixel reading an interior texel in blocks of floor(m) or ceil(m).</summary>
+        private static void AssertBetweenSteps(int w, int h, double expected, FigurePixelPlan plan, string what)
+        {
+            double m = plan.Magnification;
+            Assert.IsTrue(plan.Active, $"{what}: active");
+            Assert.AreEqual(expected, m, 1e-5d * expected, $"{what}: the camera's own magnification");
+            int below = (int)Math.Floor(m);
+            Assert.AreEqual((w + below - 1) / below + 2 * Guard + 1, plan.Width,
+                            $"{what}: the width of step {below}, the whole step at or below");
+            Assert.AreEqual((h + below - 1) / below + 2 * Guard + 1, plan.Height, $"{what}: the height of step {below}");
+            Assert.AreEqual(new Vector4(plan.OffsetX, plan.OffsetY, 1f / (float)m, (float)m), plan.PixelMap,
+                            $"{what}: the shaders' map is (offset x, offset y, 1/m, m)");
+            AssertAxis(w, plan.Width, m, plan.TexelOfScreenX, plan.SampleScreenX, what + " x");
+            AssertAxis(h, plan.Height, m, plan.TexelOfScreenY, plan.SampleScreenY, what + " y");
         }
 
         private static void AssertNativeCamera(int w, int h, Matrix4x4 view, Matrix4x4 projection, string what)

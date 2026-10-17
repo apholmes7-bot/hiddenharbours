@@ -20,13 +20,18 @@ namespace HiddenHarbours.Core
     ///   camera never slides the art under the figure.</item>
     ///   <item><b>The composite moves by whole screen pixels only.</b> Where the lattice falls inside
     ///   a screen pixel is rounded once, to the nearest whole pixel; each screen pixel then reads the
-    ///   texel <c>floor((pixel − offset) / m)</c>, which is a block of exactly m×m pixels.</item>
-    ///   <item><b>The size does not depend on where the camera is</b>: <c>ceil(screen/m)</c> plus a
-    ///   guard texel each side plus one for the floor, so panning never reallocates.</item>
-    ///   <item><b>Only a whole magnification of 2 or more is planned.</b> Step 1 already draws one
-    ///   screen pixel per art pixel, a downscale step draws fewer, and a framing between steps (a
-    ///   feel effect mid-zoom) has no whole block size: all of those keep the camera's own size and
-    ///   draw exactly as the switch-OFF build does.</item>
+    ///   texel under its centre, <c>floor((pixel + ½ − offset) / m)</c>: on a ladder step, a block of
+    ///   exactly m×m pixels.</item>
+    ///   <item><b>The size does not depend on where the camera is</b>: <c>ceil(screen/s)</c> plus a
+    ///   guard texel each side plus one for the floor, s the whole step at or below m, so panning never
+    ///   reallocates, nor does a zoom easing between two steps until it crosses one.</item>
+    ///   <item><b>Every magnification above 1 is planned.</b> A framing between steps (CameraFollow's
+    ///   feel: the push-in, the shake, the speed pull-back held while she drives fast, a framing's ease;
+    ///   the PixelPerfectCamera paused for all of them) keeps the art pixels at the camera's own m, in
+    ///   blocks of floor(m) and ceil(m) pixels as the world's own sprites draw in those frames (the
+    ///   design note's off-ladder rule). Step 1 already draws one screen pixel per art pixel and a
+    ///   downscale step draws fewer: both keep the camera's own size and draw exactly as the switch-OFF
+    ///   build does.</item>
     /// </list>
     ///
     /// <para>Presentation only (rule 5): nothing here reads or writes a simulated body.</para>
@@ -44,12 +49,15 @@ namespace HiddenHarbours.Core
         /// still has the neighbours the resolve's depth-edge and ink rules read.</summary>
         public const int GuardTexels = 1;
 
-        /// <summary>How near a whole number the magnification must be, relative to it. The ladder's
-        /// steps land within float noise of a whole number; a framing mid-effect lands nowhere near.</summary>
+        /// <summary>How near a whole number the magnification must be, relative to it, to be that ladder
+        /// step and draw its exact m×m blocks. The ladder's steps land within float noise of a whole
+        /// number; a framing mid-effect lands nowhere near, and draws at its own m.</summary>
         public const double MagnificationTolerance = 1e-3;
 
         /// <summary>Added before the composite offset is floored, so a residual sitting a hair either
-        /// side of a half pixel rounds the same way every frame instead of flickering.</summary>
+        /// side of a half pixel rounds the same way every frame instead of flickering. On a ladder step
+        /// only: between steps the offset rounds half up exactly, which keeps pixel 0's centre in texel
+        /// <see cref="GuardTexels"/> or beyond at any m.</summary>
         public const double OffsetRoundingBias = 1e-3;
 
         /// <summary>How far from the identity the camera's rotation may be, and how far from a pure
@@ -58,7 +66,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// The plan for one camera frame, from the visible world rectangle. Inactive (the camera's own
-        /// size, no composite) unless one screen pixel is a whole 1/m of an art pixel with m ≥ 2.
+        /// size, no composite) where one screen pixel covers a whole art pixel or more (step 1, every
+        /// downscale); otherwise active at m screen pixels per art pixel: the step's whole m on the
+        /// ladder, the camera's own between steps.
         /// </summary>
         /// <param name="screenWidth">Camera target width, screen pixels.</param>
         /// <param name="screenHeight">Camera target height, screen pixels.</param>
@@ -76,13 +86,18 @@ namespace HiddenHarbours.Core
 
             double magnification = ArtTexelMetres / worldUnitsPerPixel;
             double whole = Math.Round(magnification);
-            if (whole < 2d || whole > ushort.MaxValue) return false;   // step 1 and every downscale stay native
-            if (Math.Abs(magnification - whole) > MagnificationTolerance * whole) return false;
-            int m = (int)whole;
+            bool onAStep = Math.Abs(magnification - whole) <= MagnificationTolerance * whole;
+            if (onAStep) magnification = whole;                         // float noise on a step: that step
+            // Step 1 and every downscale stay native: a screen pixel already covers an art pixel or more.
+            if (!(magnification > 1d) || magnification > ushort.MaxValue) return false;
 
-            Axis(screenWidth, worldLeft, m, out long originX, out int offsetX, out int width);
-            Axis(screenHeight, worldBottom, m, out long originY, out int offsetY, out int height);
-            plan = new FigurePixelPlan(true, m, width, height, originX, originY, offsetX, offsetY);
+            // Between steps the target keeps the size of the whole step below, and the offset rounds
+            // without the step's bias (OffsetRoundingBias). On a step, sizeStep is m itself.
+            int sizeStep = (int)Math.Floor(magnification);
+            double bias = onAStep ? OffsetRoundingBias : 0d;
+            Axis(screenWidth, worldLeft, magnification, sizeStep, bias, out long originX, out int offsetX, out int width);
+            Axis(screenHeight, worldBottom, magnification, sizeStep, bias, out long originY, out int offsetY, out int height);
+            plan = new FigurePixelPlan(true, magnification, width, height, originX, originY, offsetX, offsetY);
             return true;
         }
 
@@ -144,13 +159,14 @@ namespace HiddenHarbours.Core
         public static Vector3 SnapDrawnRoot(Vector3 root, bool on, float worldUnitsPerRenderedPixel)
             => on && worldUnitsPerRenderedPixel > 0f ? PixelGrid.Snap(root, (float)ArtTexelMetres) : root;
 
-        private static void Axis(int screen, double worldMin, int m, out long origin, out int offset, out int size)
+        private static void Axis(int screen, double worldMin, double m, int sizeStep, double bias,
+                                 out long origin, out int offset, out int size)
         {
             double edge = worldMin / ArtTexelMetres;                 // the screen's edge, in texels
             origin = (long)Math.Floor(edge) - GuardTexels;
             double offsetPixels = ((double)origin - edge) * m;      // texel 0's edge, screen pixels from pixel 0
-            offset = (int)Math.Floor(offsetPixels + 0.5d + OffsetRoundingBias);
-            size = (screen + m - 1) / m + 2 * GuardTexels + 1;
+            offset = (int)Math.Floor(offsetPixels + 0.5d + bias);
+            size = (screen + sizeStep - 1) / sizeStep + 2 * GuardTexels + 1;
         }
 
         private static bool Near(float value, float target) => Math.Abs(value - target) <= CameraTolerance;
@@ -166,8 +182,9 @@ namespace HiddenHarbours.Core
     {
         /// <summary>True when the figures draw at art-pixel size this frame.</summary>
         public readonly bool Active;
-        /// <summary>Screen pixels per art pixel, each way. 1 while inactive.</summary>
-        public readonly int Magnification;
+        /// <summary>Screen pixels per art pixel, each way: the step's whole m on the ladder, the camera's
+        /// own between steps (blocks of floor(m) and ceil(m) pixels). 1 while inactive.</summary>
+        public readonly double Magnification;
         /// <summary>Target size in texels; the camera's own size while inactive.</summary>
         public readonly int Width, Height;
         /// <summary>World position of texel 0's lower-left corner, in whole art pixels.</summary>
@@ -175,7 +192,7 @@ namespace HiddenHarbours.Core
         /// <summary>Screen pixel at which texel 0's lower-left corner lands (whole pixels; negative).</summary>
         public readonly int OffsetX, OffsetY;
 
-        public FigurePixelPlan(bool active, int magnification, int width, int height,
+        public FigurePixelPlan(bool active, double magnification, int width, int height,
                                long originTexelX, long originTexelY, int offsetX, int offsetY)
         {
             Active = active;
@@ -195,25 +212,24 @@ namespace HiddenHarbours.Core
         /// <summary>The shaders' map, <c>(offsetX, offsetY, 1/m, m)</c>. Zero while inactive: w = 0 is
         /// what every reader takes for "no figure target this frame".</summary>
         public Vector4 PixelMap => Active
-            ? new Vector4(OffsetX, OffsetY, 1f / Magnification, Magnification)
+            ? new Vector4(OffsetX, OffsetY, 1f / (float)Magnification, (float)Magnification)
             : Vector4.zero;
 
-        /// <summary>The texel column a screen pixel column reads (the overlay's lookup).</summary>
-        public int TexelOfScreenX(int pixel) => FloorDiv(pixel - OffsetX, Magnification);
+        /// <summary>The texel column a screen pixel column reads (the overlay's lookup): the one under the
+        /// pixel's centre, on a step exactly <c>floor((pixel − offset) / m)</c>.</summary>
+        public int TexelOfScreenX(int pixel) => TexelUnder(pixel - OffsetX);
 
         /// <summary>The texel row a screen pixel row reads.</summary>
-        public int TexelOfScreenY(int pixel) => FloorDiv(pixel - OffsetY, Magnification);
+        public int TexelOfScreenY(int pixel) => TexelUnder(pixel - OffsetY);
 
         /// <summary>The screen pixel column a texel samples the scene's depth at: the one under its centre.</summary>
-        public int SampleScreenX(int texel) => OffsetX + texel * Magnification + Magnification / 2;
+        public int SampleScreenX(int texel) => OffsetX + PixelUnderCentre(texel);
 
         /// <summary>The screen pixel row a texel samples the scene's depth at.</summary>
-        public int SampleScreenY(int texel) => OffsetY + texel * Magnification + Magnification / 2;
+        public int SampleScreenY(int texel) => OffsetY + PixelUnderCentre(texel);
 
-        private static int FloorDiv(int a, int b)
-        {
-            int q = a / b;
-            return (a % b != 0 && (a < 0) != (b < 0)) ? q - 1 : q;
-        }
+        private int TexelUnder(int fromOffset) => (int)Math.Floor((fromOffset + 0.5d) / Magnification);
+
+        private int PixelUnderCentre(int texel) => (int)Math.Floor((texel + 0.5d) * Magnification);
     }
 }
