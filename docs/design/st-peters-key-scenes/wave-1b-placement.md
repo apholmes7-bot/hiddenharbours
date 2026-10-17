@@ -10,12 +10,12 @@ Core owns `IGullPerch` and the scene-lifetime `GullPerches` offers/reservations.
 
 A mount retains its authored ground point and absolute height. Its screen point adds only the rise above the host's ground, using the shared bake height scale. The cannery perches retain their own numbers; the cannery host supplies their sort line, not a replacement coordinate. Visual agreement with the sidecar's ridge pixel remains an explicit plate acceptance check. A free-standing building remains at its authored world XY. Its collider rotates the kit's ground footprint then projects local depth by sin(40 degrees), following ADR 0042. The grass guard applies the inverse projection to the committed field's actual sites.
 
-The four builds extend `VillageBuildingKit` with preset option overrides, carried in the bake contract. Albedo-only baking uses the existing menu entry. A build cannot place without a baked and sliced catalog sprite. The east-end import checks the exact ruled source SHA-256 and reads all twenty-one heights from the committed painted ground.
+The four builds extend `VillageBuildingKit` with preset option overrides, carried in the bake contract. Albedo-only baking uses the existing menu entry. A build cannot place without a baked and sliced catalog sprite. The east-end import pins both second-issue files: `scenes/lookpass.stp_east_end/scene.json` (SHA-256 `ff311bcbcdad346c0b92795a5e28b38297404565015be2f1659259613738bf43`) and `scenes/keyscene.stp_landing/scene.json` (SHA-256 `2d8bde76678511edfa188d3d5df58410dae14da69c862e1f7121a19c6778bb09`). It joins the east end's seventeen and the bait store's four by id, retains the committed order, and reads all twenty-one heights from the committed painted ground. [Amendment 2](second-issue.md) records the mounts, exceptions and later Alder Fall masters.
 
 ## Deferred work
 
 - Ice house, its wood and its barrow: wait for grass-field refresh. That refresh belongs to one StPetersLayerRefresh root patch, never Build(). Owner decision remains open.
-- `path.stp_loft_spur`, 0.9 m: the next St Peters ground PR.
+- `path.stp_loft_spur`, 0.9 m: laid by #935 at (186.3, 15.9), (184.8, 19.2), (183.9, 20.9).
 - Other scenes' kits, lights, wildlife, seasonal/tidal variants and restored cannery gameplay remain in their assigned waves.
 - Art desk routing: Alder Fall intake route, ownership of pass 2's other seventeen takes, and CD adoption of the committed seventy-id map remain the handoff's asks.
 

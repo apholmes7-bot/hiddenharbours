@@ -165,7 +165,7 @@ async function jsonGroup(){
   try{
     const [a,b,c]=await Promise.all([
       fetch('atvPack.contract.json').then(r=>r.json()),
-      fetch('atvIsoRig.atvPack.gameplay.json').then(r=>r.json()),
+      fetch('../gameplay/vehicles/atvIsoRig.atvPack.gameplay.json').then(r=>r.json()),
       fetch('atvIsoRig.js').then(r=>r.text())]);
     contract=a; sidecar=b; srcTxt=c;
   }catch(e){ blocked=true; }

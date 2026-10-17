@@ -21,9 +21,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class NineMileCreekShoreTests
     {
-        /// <summary>The terrain exactly as the scene carries it — built through the builder's own
-        /// <see cref="NineMileCreekMainland.ConfigureTerrain"/>, so a test can never assert a coast the
-        /// scene does not have.</summary>
+        /// <summary>The plan's analytic ground, built through the builder's own
+        /// <see cref="NineMileCreekMainland.ConfigureTerrain"/>: the ground the shore pass still plants on.
+        /// ⚠ Since NMC H2 the scene's ground is G3 (<see cref="NineMileCreekLiveGround.Plan"/>); the pass moves
+        /// onto G3's shore mask (<see cref="NineMileCreekGroundMasks"/>) in a later wave, so these tests hold the
+        /// plan's planting and none claims G3's coast.</summary>
         private static MainlandTidalTerrain MakeTerrain(out GameObject host)
         {
             host = new GameObject("NMCShoreTestTerrain");

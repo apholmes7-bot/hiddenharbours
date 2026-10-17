@@ -68,7 +68,11 @@ namespace HiddenHarbours.World
         public byte[] KeyOwner;
         public readonly List<string> KeyOwners = new List<string> { "" };
 
-        /// <summary>The still-water surface (m; NaN = none).</summary>
+        /// <summary>
+        /// Published still-water surface (m; NaN = none). The final map includes one texel of dry
+        /// filtering support. A nonempty code is not proof of water: physical wetness is Still &gt; E.
+        /// Intermediate Part1/Crossing snapshots retain their physical-water arrays.
+        /// </summary>
         public double[] Still;
 
         /// <summary>The ground zone per cell (TerrainPlanZones; every cell is painted).</summary>

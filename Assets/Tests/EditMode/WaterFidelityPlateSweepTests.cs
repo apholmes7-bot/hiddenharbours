@@ -3528,12 +3528,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var terrainGo = new GameObject("TidalTerrain");
             _built.Add(terrainGo);
-            var terrain = terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
+            // The scene's own ground (NMC H2): G3, the map the region's sea draws and its hulls sail on.
             // ⚠ Registered by hand: the terrain components are not [ExecuteAlways], so OnEnable never fires
             // in edit mode and the accessor stays null — whereupon WaterSurface bakes a flat height field
             // and the sea draws opaque over everything. Cost the #680 pass a capture.
-            GameServices.TidalTerrain = terrain;
+            var terrain = NineMileCreekLiveGround.Register(terrainGo);
 
             var region = AssetDatabase.LoadAssetAtPath<RegionDef>(WaterSceneTemplate.RegionAssetPathFor("NineMileCreek"));
             Assert.IsNotNull(region, "Data/Regions/NineMileCreek.asset must exist to size the ground");
@@ -3546,7 +3545,8 @@ namespace HiddenHarbours.Tests.EditMode
                                                 NineMileCreekBuilder.NineMileCreekHeightResolution,
                                                 NineMileCreekBuilder.NineMileCreekHeightMin,
                                                 NineMileCreekBuilder.NineMileCreekHeightMax,
-                                                terrain.MaxShoreGradient());
+                                                NineMileCreekLiveGround.PremiseShoreGradient());
+            NineMileCreekLiveGround.DrawUnder(sea, terrain);   // the sea draws G3, as the builder wires it
             return new Stage
             {
                 Terrain = terrain, SeaGo = sea,

@@ -23,6 +23,10 @@ namespace HiddenHarbours.Tests.EditMode
     /// parks in stays FLOATABLE at the lowest, and each region has a genuinely INTERTIDAL band — the
     /// converged, visibly moving shoreline. Plus the cove logic-tree wiring (terrain + WaterSurface Sea
     /// under the --LOGIC-- root, terrain enabling BEFORE the sea).
+    ///
+    /// <para><b>NMC H2:</b> Nine Mile Creek's scene stands on G3, the painted third issue, so its cases probe that
+    /// ground (<see cref="NineMileCreekLiveGround"/>) at the sites the scene uses. The plan's town lots and winch
+    /// are a later wave's placements and keep the plan's own terrain, in a case that says so.</para>
     /// </summary>
     public class ShorelineConvergenceTests
     {
@@ -144,32 +148,57 @@ namespace HiddenHarbours.Tests.EditMode
         //  NINE MILE CREEK
         // =====================================================================================
 
+        /// <summary>With <see cref="NineMileCreek_TheTownAndTheWinch_StandOnThePlansFills_ALaterWavesPremise"/>, replaces
+        /// <c>NineMileCreek_TheQuayAndTheTown_AlwaysExposed_EvenAtHighWater</c> (NMC H2): the quay and its trade are
+        /// held on the ground the scene stands on.</summary>
         [Test]
-        public void NineMileCreek_TheQuayAndTheTown_AlwaysExposed_EvenAtHighWater()
+        public void NineMileCreek_TheQuayAndItsTrade_AlwaysExposed_EvenAtHighWater()
+        {
+            ITidalTerrain t = NineMileCreekLiveGround.Plan;
+            Rect north = NineMileCreekGroundPlan.NorthCap, crane = NineMileCreekGroundPlan.CraneCap;
+
+            // Everywhere the player stands and everywhere a vendor does — derived from the plan, so
+            // moving a lot re-checks it rather than leaving a stale literal behind.
+            var dry = new List<Vector2>
+            {
+                (Vector2)NineMileCreekBuilder.DisembarkPos,   // the quay you step onto
+                (Vector2)NineMileCreekBuilder.FishBuyerPos,   // the till on the spit
+                (Vector2)NineMileCreekBuilder.DoryYardPos,    // the hard the dory is sold off
+                new Vector2(north.center.x, north.yMax + 1f), // the north quay, behind its face
+                new Vector2(crane.center.x, crane.yMax + 1f), // the crane apron, behind its face
+            };
+            dry.AddRange(NineMileCreekMainland.ShantyRow.Select(v => (Vector2)v));
+
+            foreach (var p in dry)
+            {
+                float e = t.ElevationAt(p);
+                Assert.IsTrue(TidalExposure.IsExposed(HighWater, e),
+                    $"Nine Mile Creek's ground at {p} stands at {e:0.00} m and must stay walkable at " +
+                    $"the highest water ({HighWater:0.00} m)");
+            }
+        }
+
+        /// <summary>The plan's town lots and its winch and unloading apron on the plan's own terrain: a PREMISE the
+        /// later waves still author on, not the scene's ground. On G3 the north house's lot lies in the creek's still
+        /// water and the winch and apron sites in the dredged basin; the waves that place them on G3 move this.</summary>
+        [Test]
+        public void NineMileCreek_TheTownAndTheWinch_StandOnThePlansFills_ALaterWavesPremise()
         {
             var t = MakeNineMileCreek(out var go);
             try
             {
-                // Everywhere the player stands and everywhere a vendor does — derived from the plan, so
-                // moving a lot re-checks it rather than leaving a stale literal behind.
                 var dry = new List<Vector2>
                 {
-                    (Vector2)NineMileCreekBuilder.DisembarkPos,   // the quay you step onto
-                    (Vector2)NineMileCreekBuilder.FishBuyerPos,   // the till on the spit
-                    (Vector2)NineMileCreekBuilder.DoryYardPos,    // the hard the dory is sold off
-                    NineMileCreekWharf.DeckFootprint().center,
-                    NineMileCreekWharf.ApronFootprint().center,
                     (Vector2)NineMileCreekMainland.WinchPos,
                     (Vector2)NineMileCreekMainland.UnloadApronPos,
                 };
                 dry.AddRange(NineMileCreekMainland.TownLots.Select(v => (Vector2)v));
-                dry.AddRange(NineMileCreekMainland.ShantyRow.Select(v => (Vector2)v));
 
                 foreach (var p in dry)
                 {
                     float e = t.ElevationAt(p);
                     Assert.IsTrue(TidalExposure.IsExposed(HighWater, e),
-                        $"Nine Mile Creek's ground at {p} stands at {e:0.00} m and must stay walkable at " +
+                        $"the plan's ground at {p} stands at {e:0.00} m and must stay walkable at " +
                         $"the highest water ({HighWater:0.00} m)");
                 }
             }
@@ -195,8 +224,10 @@ namespace HiddenHarbours.Tests.EditMode
             // the fairway is. Nothing new gets in; the fleet that was already here simply stops sitting
             // on the mud. The drying that IS the region's teeth is asserted on the flats, in
             // NineMileCreekChannelTests and NineMileCreekWharfTests.
-            var t = MakeNineMileCreek(out var go);
-            try
+            //
+            // NMC H2: probed on G3, whose basin is painted to the berths' depth from wall to wall, so the flats
+            // that still bare are its undredged corners: the south-west one off the old beach is probed here.
+            ITidalTerrain t = NineMileCreekLiveGround.Plan;
             {
                 float bed = t.ElevationAt(NineMileCreekBuilder.ArrivalPos);
                 Assert.GreaterOrEqual(
@@ -205,22 +236,21 @@ namespace HiddenHarbours.Tests.EditMode
                     "the berth must hold the water the deepest resident needs to lie in it at dead low " +
                     "spring — the 2026-09-04 ruling");
                 Assert.Greater(bed, NineMileCreekMainland.BayFloorElevation,
-                    "…and it must not have been cut to the open bay's own floor: the trench is a berth " +
-                    "pocket, not a dredged harbour");
+                    "…and it must not have been cut to the open bay's own floor: the basin is a harbour, " +
+                    "not the open bay");
 
                 Assert.Greater(TidalExposure.WaterDepth(HighWater, bed), 1.3f,
                     "a lobster boat must float here on the flood, or the region's ceiling hull has no home");
                 Assert.LessOrEqual(
-                    TidalExposure.WaterDepth(LowWater, t.ElevationAt(new Vector2(120f, 56f))), 0f,
+                    TidalExposure.WaterDepth(LowWater, t.ElevationAt(new Vector2(58f, 16f))), 0f,
                     "…and the harbour FLATS must still bare at spring low. If nothing dries, this region " +
-                    "has quietly become the dredged harbour it stopped being — the berths are cut now, " +
-                    "the basin either side of the lane is not");
+                    "has quietly become the dredged harbour it stopped being — the basin is cut now, " +
+                    "its corners are not");
 
                 Assert.AreEqual(NineMileCreekBuilder.NineMileCreekDeepElevation,
                     t.ElevationAt(NineMileCreekBuilder.ToCovePassagePos), 1e-3f,
                     "…while the open bay you sail home across is the deep floor, and never gates anyone");
             }
-            finally { Object.DestroyImmediate(go); }
         }
 
         [Test]
@@ -228,9 +258,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // THE CONVERGENCE ASSERTION for this region. The old one probed a 3 m sand strip beside a
             // quay; the mainland's moving shoreline is the CROSSING — 305 m of bar that covers at high
-            // water and bares at low, which is the whole reason the region exists.
-            var t = MakeNineMileCreek(out var go);
-            try
+            // water and bares at low, which is the whole reason the region exists. (NMC H2: on G3.)
+            ITidalTerrain t = NineMileCreekLiveGround.Plan;
             {
                 Vector2 midBar = Vector2.Lerp(NineMileCreekMainland.BarFrom, NineMileCreekMainland.BarTo, 0.7f);
                 float e = t.ElevationAt(midBar);
@@ -240,17 +269,18 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsTrue(TidalExposure.IsExposed(LowWater, e),
                     "at low water the same ground bares — you can walk to the island, if you watch the water");
             }
-            finally { Object.DestroyImmediate(go); }
         }
 
         [Test]
         public void BothTerrains_AreDeterministic_NoRng()
         {
+            // NMC H2: Nine Mile Creek's is the scene's own component on G3.
             var cove = MakeCove(out var coveGo);
-            var gw = MakeNineMileCreek(out var gwGo);
+            var gwGo = new GameObject("NineMileCreekTerrain_Test");
+            var gw = NineMileCreekLiveGround.AddTo(gwGo);
             try
             {
-                var p = new Vector2(63.1f, 86.4f);   // in the creek's basin, and in the cove's open water
+                var p = new Vector2(63.1f, 86.4f);   // in the cove's open water, and on the creek's crane apron (G3)
                 float c0 = cove.ElevationAt(p);
                 float g0 = gw.ElevationAt(p);
                 for (int i = 0; i < 8; i++)

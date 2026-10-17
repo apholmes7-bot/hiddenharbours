@@ -126,8 +126,6 @@
 
   // ---- textures ----
   function wearTex(w){ return (u,v)=>{ if(w>0.03 && hash2(Math.floor(u*6.5)|0, Math.floor(v*6.5)|0) < w*0.10) return -1; return 0; }; }
-  function ventTex(){ const p=0.075; return (u,v)=>{ if(v<1.00||v>1.26||u<-0.24||u>0.24) return 0;
-    const f=((v%p)+p)%p; return f<0.032?-2:0; }; }
   function meshTex(){ const p=0.062; return (u,v)=>{ const f=((u%p)+p)%p; return f<0.028?-2:0; }; }
   function lugTex(phase){ const c=0.155; return (u,v)=>{ const f=(((u+phase)%c)+c)%c; return f<c*0.46?-1:0; }; }
 
@@ -275,7 +273,7 @@
     const a=s.hatch*52*DEG, ca=Math.cos(a), sa=Math.sin(a);
     const hy0=G.hatchY[0]-0.02, hy1=G.hatchY[1];
     part(out,(T)=>{
-      const ys=[hy0,1.02,1.14,1.26,hy1], vent=ventTex();
+      const ys=[hy0,1.02,1.14,1.26,hy1], vent=wearTex(s.weather);
       for(let i=0;i+1<ys.length;i++){
         const y0=ys[i], y1=ys[i+1], z0=crownAt(y0)+0.012, z1=crownAt(y1)+0.012;
         quad(T,[-G.hatchHW,y0,z0],[G.hatchHW,y0,z0],[G.hatchHW,y1,z1],[-G.hatchHW,y1,z1],'paint',0.36,0,
@@ -284,6 +282,15 @@
       }
       wallX(T, G.hatchHW, hy0,hy1, crownAt(1.12)-0.02, crownAt(1.12)+0.012,'paint',0.14,+1);
       wallX(T,-G.hatchHW, hy0,hy1, crownAt(1.12)-0.02, crownAt(1.12)+0.012,'paint',-0.46,-1);
+      // Real recessed-looking louvres: the mesh extractor cannot carry ventTex.
+      for(const y of [1.04,1.13,1.22]){
+        const z=crownAt(y)+0.017;
+        slab(T,[[-0.21,y-0.018],[0.21,y-0.018],[0.21,y+0.018],[-0.21,y+0.018]],z,'mesh',-0.35);
+        bar(T,[-0.21,y+0.022,z],[0.21,y+0.022,z],0.009,'paint',0.25);
+      }
+      // Hinges and latch ride the lid, including the fully open pose.
+      for(const x of [-0.23,0.23]) boxAt(T,x-0.035,x+0.035,hy0+0.025,hy0+0.095,crownAt(hy0)+0.016,crownAt(hy0)+0.035,'galv',-0.2);
+      boxAt(T,-0.055,0.055,hy1-0.09,hy1-0.025,crownAt(hy1)+0.018,crownAt(hy1)+0.042,'iron',0);
     }, (p)=>rotX(p, hy0, crownAt(hy0)+0.012, ca, sa));
   }
 
@@ -303,15 +310,29 @@
     }
   }
 
+  // Moulded upholstery, kept inside the original seat envelope / rider anchors.
+  function cushion(out,x0,x1,y0,y1,z0,z1){
+    const bevel=0.035;
+    boxAt(out,x0,x1,y0,y1,z0,z1-bevel,'cloth',-0.3,true);
+    const rim=[[x0,y0,z1-bevel],[x1,y0,z1-bevel],[x1,y1,z1-bevel],[x0,y1,z1-bevel]];
+    const top=[[x0+bevel,y0+bevel,z1],[x1-bevel,y0+bevel,z1],[x1-bevel,y1-bevel,z1],[x0+bevel,y1-bevel,z1]];
+    for(let i=0;i<4;i++){const j=(i+1)%4;quad(out,rim[i],rim[j],top[j],top[i],'cloth',0.08);}
+    out.push(F(top,'cloth',-0.06));
+  }
+
   function buildSeats(out,s){
     // front bench, on a moulded pedestal off the tub floor
     boxAt(out, -0.44,0.44, 0.14, 0.34, G.floorZ, 0.60, 'liner', -0.20);
-    boxAt(out, -0.47,0.47, 0.14, 0.58, 0.60, 0.76, 'cloth', -0.30);
-    boxAt(out, -0.47,0.47, 0.00, 0.16, 0.76, 1.16, 'cloth', -0.40);
+    cushion(out, -0.47,0.47, 0.14, 0.58, 0.60, 0.76);
+    cushion(out, -0.47,0.47, 0.00, 0.16, 0.76, 1.16);
     // aft bench, raised on the engine/tank box that closes the back of the tub
     boxAt(out, -0.50,0.50, -1.10,-0.58, G.floorZ, 0.74, 'liner', -0.15);
-    boxAt(out, -0.49,0.49, -1.00,-0.60, 0.74, 0.90, 'cloth', -0.28);
-    boxAt(out, -0.49,0.49, -1.10,-0.98, 0.90, 1.28, 'cloth', -0.38);
+    cushion(out, -0.49,0.49, -1.00,-0.60, 0.74, 0.90);
+    cushion(out, -0.49,0.49, -1.10,-0.98, 0.90, 1.28);
+    for(const x of [-0.16,0.16]){
+      wallY(out,0.161,x-0.009,x+0.009,0.80,1.09,'cloth',-0.85,1);
+      wallY(out,-0.979,x-0.009,x+0.009,0.94,1.21,'cloth',-0.85,1);
+    }
     for(const sx of [-1,1]) bar(out,[sx*0.44,-1.04,0.74],[sx*0.44,-1.04,0.90],0.022,'iron',-0.3);
   }
 
@@ -321,6 +342,11 @@
     tube(out, [-0.30,0.66,1.03],[0.30,0.66,1.03], 0.028, 8, 'iron', 0.05);
     for(const sx of [-1,1]) tube(out,[sx*0.20,0.66,1.03],[sx*0.30,0.66,1.03],0.038,8,'rubber',-0.15);
     boxAt(out, -0.13,0.13, 0.63, 0.70, 0.94, 1.00, 'dash', 0.1, false);
+    // Instrument dial and a visible needle, using existing material ramps.
+    tube(out,[-0.075,0.655,1.001],[-0.075,0.655,1.012],0.042,8,'galv',-0.1);
+    tube(out,[-0.075,0.655,1.013],[-0.075,0.655,1.016],0.032,8,'dash',-0.5);
+    bar(out,[-0.078,0.643,1.02],[-0.065,0.675,1.02],0.007,'galv',0.15);
+    boxAt(out,0.045,0.09,0.64,0.68,1.002,1.014,'lensA',-0.1);
     if(s.screen){
       quad(out,[0.42,0.80,0.88],[-0.42,0.80,0.88],[-0.40,0.70,1.36],[0.40,0.70,1.36],'glass',-0.12);
       for(const sx of [-1,1]) bar(out,[sx*0.42,0.80,0.88],[sx*0.40,0.70,1.36],0.022,'galv',0.1);
@@ -342,6 +368,9 @@
   }
 
   function buildFittings(out,s){
+    const fillerZ=crownAt(-1.28)+0.012;
+    tube(out,[0.31,-1.28,fillerZ],[0.31,-1.28,fillerZ+0.018],0.048,8,'iron',0.05);
+    bar(out,[0.28,-1.28,fillerZ+0.024],[0.34,-1.28,fillerZ+0.024],0.009,'galv',0.05);
     // headlamps set into the bow face, just under the deck edge
     for(const sx of [-1,1]){
       tube(out,[sx*0.30,1.28,0.74],[sx*0.30,1.60,0.74],0.095,10, s.night?'glow':'head', 0.30, true);

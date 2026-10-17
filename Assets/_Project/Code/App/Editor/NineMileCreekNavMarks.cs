@@ -17,13 +17,13 @@ namespace HiddenHarbours.App.Editor
     /// on ground that bares is REFUSED rather than nudged. Sail them and move the waypoints; every
     /// mark on a route follows it.</para>
     ///
-    /// <para><b>⚠ THIS HARBOUR DRIES, AND THAT IS WHY THERE ARE NO BUOYS IN IT.</b> The ruled gate is
-    /// a shoal at <see cref="NineMileCreekMainland.BasinBedElevation"/> (−1.6 m) under a ±2.2 m tide,
-    /// so the basin bares by 0.6 m at spring low — the region's own note says a working wharf on this
-    /// coast should. A floating mark cannot stand there. So the laterals mark the APPROACH, which is
-    /// where a skipper needs them anyway, and the plan reports every refusal on every build. If the
-    /// owner wants the inner channel marked, the answer is a perch or a withy — a mark on a POLE, in
-    /// ground that dries — and that is an art ask, not something to improvise out of a floating can.</para>
+    /// <para><b>⭐ THE MARKS FOLLOW THE MOUTH.</b> On the third-issue ground (G3) the basin is dredged
+    /// (−4.3 to −4.5 m) and the way in is the mouth between the two source arms' ends, about x 122 to
+    /// 154 at y −8 to 4. The entrance comes in from the landfall to the design boat's own approach
+    /// TRACK, runs up it into that mouth, and ends there: inside is the basin the quay works from, not
+    /// a channel. The analytic harbour's two cardinals guarded a breakwater head and a shoal that G3
+    /// does not have where they stood, so both are retired (<see cref="RetiredIds"/>).
+    /// <c>09-nav-marks-g3</c> re-places the committed scene's marks from this same plan.</para>
     ///
     /// <para><b>⚠ NO MOORING BUOYS IN v1, deliberately.</b> The handoff says "moorings where the wharf
     /// plan already says moorings", and the wharf plan says <i>berths</i>: fourteen of them alongside
@@ -73,34 +73,34 @@ namespace HiddenHarbours.App.Editor
         // =================================================================================================
 
         /// <summary>
-        /// <b>The entrance</b> — in from the deep bay, round the crib breakwater's head, and into the
-        /// basin. This is the fleet's own approach: the sixteen boats in the photographs come home this
-        /// way, so the channel is not invented, it is the line they already sail.
+        /// <b>The entrance</b> — in from the deep bay to the seaward end of the design boat's TRACK, then
+        /// north up the TRACK into the mouth between the arms' ends. The last leg is the TRACK's own line,
+        /// so the marks stand either side of the water the design boat is proved to float in.
         ///
-        /// <para>The claim is the region's ruled gate, stated as a claim so a test can check it: the
-        /// <b>lobster boat</b> (1.30 m, the owner's stated ceiling for the starter world) at MEAN water.
-        /// The basin bed is −1.6 m, so the fairway carries her with 0.30 m under the keel — tight, which
-        /// is what a 1.6 m gate MEANS. Raise the shoal and the content test fails by name.</para>
+        /// <para>The claim is the design boat's, stated as a claim so a test can check it: the
+        /// <b>Cape Islander</b> (1.40 m) at <b>SPRING LOW</b>, with the 0.5 m under the keel her TRACK is
+        /// bound to. That is the dredge's own arithmetic (−2.2 − 1.4 − 0.5 = −4.1 m), so a bed raised
+        /// above it anywhere along the fairway fails the content test by name.</para>
         /// </summary>
         public static NavChannel Entrance => new NavChannel
         {
             Id = "channel.nmc_entrance",
             DisplayName = "Nine Mile Creek entrance",
-            // ⭐ SEAWARD → HARBOUR. Reverse this list and every buoy on it changes hands.
+            // ⭐ SEAWARD → HARBOUR. Reverse this list and every buoy on it changes hands. Proposals for
+            // the owner's sail, like every route here.
             Waypoints = new[]
             {
                 new Vector2(274f, -20f),   // the landfall, out in the −6 m bay
-                new Vector2(216f,  20f),   // the turn, clear east of the breakwater head
-                new Vector2(204f,  50f),   // the entrance, abeam the head
-                new Vector2(182f,  62f),   // into the basin — inside here it dries; see the class note
+                new Vector2(137f, -45f),   // the TRACK's seaward end: the turn north
+                new Vector2(137f,  -4f),   // the mouth, between the arms' ends; inside is the basin
             },
             HalfWidthMetres = 12f,
             SearchHalfWidthMetres = 18f,
             SizeId = "s18",                // 1.75 m, the kit's working default: a bay approach, not a creek
             LitLandfall = true,            // only the outermost pair — a lit mark every 40 m is a runway
-            DeclaredDraughtMetres = 1.30f, // the lobster boat, the ruled ceiling
-            NavigableTideFraction = 0f,    // …at MEAN water. A fraction, never a metre (the 2026-08-01 lesson)
-            KeelClearanceMetres = 0.2f,
+            DeclaredDraughtMetres = 1.40f, // the Cape Islander, the design boat
+            NavigableTideFraction = -1f,   // …at SPRING LOW. A fraction, never a metre (the 2026-08-01 lesson)
+            KeelClearanceMetres = 0.5f,    // the TRACK's bound
         };
 
         /// <summary>
@@ -178,36 +178,27 @@ namespace HiddenHarbours.App.Editor
         // =================================================================================================
 
         /// <summary>
-        /// The cardinals, and they are two because the harbour has two corners a stranger can hurt
-        /// herself on — both of them the same danger, the shoal the wharf is built out onto.
+        /// The cardinals: <b>none on G3.</b> The analytic harbour had two, both on the shoal its wharf
+        /// was built out onto: the crib breakwater's head at (206, 38) and the shoal's north-east corner
+        /// at (200, 104). On the third-issue ground the first would stand at −0.37 m against the new east
+        /// arm's toe and the second on the north deck (+3.6 m), so neither marks a danger where it
+        /// stands. Their ids are <see cref="RetiredIds"/>.
         ///
         /// <para><b>Nothing here is trusted.</b> <see cref="NavMarkPlan"/> probes the seabed either
-        /// side of each mark and REFUSES any whose safe quadrant is not actually the deeper one, so a
-        /// quadrant cannot survive a re-site of the thing it guards.</para>
+        /// side of any cardinal authored here and REFUSES one whose safe quadrant is not actually the
+        /// deeper one, so a danger the owner adds later is checked the same way.</para>
         /// </summary>
-        public static IReadOnlyList<NavCardinal> Cardinals => new[]
+        public static IReadOnlyList<NavCardinal> Cardinals => System.Array.Empty<NavCardinal>();
+
+        /// <summary>
+        /// <b>RETIRED, AND RESERVED.</b> The analytic harbour's two cardinals. Their marks stand down in
+        /// the scene, inactive and on their ids (<c>09-nav-marks-g3</c>); no other mark ever takes one of
+        /// these ids, and the step refuses a plan that names one.
+        /// </summary>
+        public static readonly IReadOnlyList<string> RetiredIds = new[]
         {
-            // The crib breakwater's head. You round it to the EAST — inside it is the arm itself,
-            // standing 3.4 m proud and dry at every tide.
-            new NavCardinal
-            {
-                Id = "mark.nmc_breakwater_head",
-                DisplayName = "Breakwater head",
-                Quadrant = NavCardinalQuadrant.East,
-                At = new Vector2(206f, 38f),
-                SizeId = "s12",
-                ProbeMetres = 24f,
-            },
-            // The harbour shoal's north-east corner, for anyone coming down the coast from the north.
-            new NavCardinal
-            {
-                Id = "mark.nmc_shoal_northeast",
-                DisplayName = "Harbour shoal, north-east corner",
-                Quadrant = NavCardinalQuadrant.North,
-                At = new Vector2(200f, 104f),
-                SizeId = "s12",
-                ProbeMetres = 24f,
-            },
+            "mark.nmc_breakwater_head",
+            "mark.nmc_shoal_northeast",
         };
 
         // =================================================================================================
@@ -217,10 +208,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// The plan for this region against a terrain — the seam an EditMode test reads.
         ///
-        /// <para>⚠ It takes the <see cref="ITidalTerrain"/> INTERFACE, not the
-        /// mainland class, so whatever elevation source the region ends up standing on — the analytic
-        /// coast today, a <c>PaintedTidalTerrain</c> the day the owner adopts his paint — is the one
-        /// the marks are derived from. Binding to the concrete class is how "paint = sail" quietly
+        /// <para>⚠ It takes the <see cref="ITidalTerrain"/> INTERFACE, not a concrete class, so the
+        /// elevation source the region stands on — the painted G3 ground since PR 2 — is the one the
+        /// marks are derived from. Binding to the concrete class is how "paint = sail" quietly
         /// becomes "paint = sail, except the buoys".</para>
         /// </summary>
         public static NavMarkPlanResult Plan(ITidalTerrain terrain) =>

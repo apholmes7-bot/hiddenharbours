@@ -130,10 +130,13 @@ namespace HiddenHarbours.Tests.RigBaking
             FileAssert.Exists(Full("docs/art/rigs/atv-pack/README.md"));
             FileAssert.Exists(Full("docs/art/rigs/atv-pack/SHA256SUMS.txt"));
 
+            // 22 from the drop, and OtterAtv_review.png from the Otter and ATV polish pass (#847).
+            FileAssert.Exists(Full("docs/art/rigs/atv-pack/reference/OtterAtv_review.png"));
             Assert.That(Directory.GetFiles(Full("docs/art/rigs/atv-pack/reference"), "*.png").Length,
-                Is.EqualTo(22),
-                "the drop ships 22 reference sheets. They are REFERENCE only — these three bake as " +
-                "mesh — but a kit that lost half its sheets lost half its evidence.");
+                Is.EqualTo(23),
+                "the kit ships 23 reference sheets — the drop's 22 and the polish pass's " +
+                "OtterAtv_review.png. They are REFERENCE only — these three bake as mesh — but a kit " +
+                "that lost half its sheets lost half its evidence.");
         }
 
         /// <summary>
@@ -232,7 +235,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// ⚠️⚠️ <b>THE BIKE'S BODY IS THE RIDDEN STATE.</b> Her rest pose carries <c>stand:0</c>, and
-        /// the two states are genuinely different machines: 497 faces against 502, and 1204 pixels
+        /// the two states are genuinely different machines: 568 faces against 573, and 1218 pixels
         /// apart at SE. A bake from the rig's own default would have produced a bike leaned 12° onto
         /// a stand, permanently, and nothing downstream would have said a word.
         /// </summary>
@@ -245,10 +248,10 @@ namespace HiddenHarbours.Tests.RigBaking
             StringAssert.Contains("stand:0", v.Extraction.ViewOptions);
 
             using IRigScriptHost host = Host("enduro250");
-            Assert.That(host.EvaluateNumber($"__faces({{}}).length"), Is.EqualTo(497d),
+            Assert.That(host.EvaluateNumber($"__faces({{}}).length"), Is.EqualTo(568d),
                 "the ridden bike's face count moved.");
             Assert.That(host.EvaluateNumber($"{Global}.build({Global}.resolve({{body:'dirtbike'}})).length"),
-                Is.EqualTo(502d),
+                Is.EqualTo(573d),
                 "the PARKED bike's face count moved. The five extra faces are her deployed stand.");
 
             Assert.That(host.EvaluateNumber($"{Global}.dims({{body:'dirtbike'}}).leanDeg"),
@@ -628,6 +631,76 @@ namespace HiddenHarbours.Tests.RigBaking
                         $"'{f.Slot}' is not an AxisSteer fitting but carries a steer axis. Zero on " +
                         "everything else is what keeps every previously-baked vehicle untouched.");
                 }
+            }
+        }
+
+        /// <summary>The pack preset each machine wears, as (fleet key, preset name).</summary>
+        public static readonly string[][] Paints =
+        {
+            new[] { "enduro250", "enduro" },
+            new[] { "trike200", "beachTrike" },
+            new[] { "utilityQuad", "wharfQuad" },
+        };
+
+        static string Hex(HullMeshDef.Ramp ramp) =>
+            string.Join(",", ramp.Colors.Select(c => $"#{c.r:x2}{c.g:x2}{c.b:x2}"));
+
+        /// <summary>
+        /// ⭐ <b>EACH MACHINE WEARS HER PACK'S PAINT</b> (owner's ruling, 2026-10-14): the enduro
+        /// teal, the trike gold, the quad sage — the presets the pack itself ships for each body.
+        /// The rig's default is RED, and every ATV baked before the ruling wore it.
+        ///
+        /// <para>Read off the BAKED assets, the body and every fitting, against the rig's own table at
+        /// that paint. The fittings are asserted too because each carries the machine's whole ramp
+        /// table, and the forks and the bars are painted panels: a body re-baked over fittings from
+        /// an older bake is a teal bike with red forks. The paint id is held against the rig's
+        /// <c>BODY</c> table first, because an unknown one falls back to red as silently as an
+        /// unknown body falls back to the quad.</para>
+        ///
+        /// <para>The paint ramp is index 0 by the order law
+        /// <see cref="TheRampTableIsTheUnionOverEveryBody_AndFitsTheShader"/> holds.</para>
+        /// </summary>
+        [Test]
+        public void EachAtvBakedInHerPacksPaint([ValueSource(nameof(Paints))] string[] pair)
+        {
+            VehicleRigFleet.Vehicle v = VehicleRigFleet.Get(pair[0]);
+            using IRigScriptHost host = Host(pair[0]);
+
+            Assert.That(host.EvaluateString($"{Global}.PRESETS.{pair[1]}.body"), Is.EqualTo(v.Pick),
+                $"the pack's '{pair[1]}' preset is no longer the {v.Pick}.");
+            string paint = host.EvaluateString($"{Global}.PRESETS.{pair[1]}.paint");
+            Assert.That(host.EvaluateBool(
+                    $"Object.prototype.hasOwnProperty.call({Global}.BODY,'{paint}')"), Is.True,
+                $"'{paint}' is not in the rig's BODY table, so it would bake RED without a word.");
+            StringAssert.Contains($"paint:'{paint}'", v.Extraction.ViewOptions,
+                "her view options carry no paint, or another one. They are the bag the reconstructed " +
+                "MATS and the parity test's truth render both read.");
+
+            string want = host.EvaluateString(
+                $"{Global}.makeMats({Global}.resolve({{paint:'{paint}'}})).paint.ramp.join(',')");
+            string red = host.EvaluateString(
+                $"{Global}.makeMats({Global}.resolve({{}})).paint.ramp.join(',')");
+            Assert.That(want, Is.Not.EqualTo(red),
+                $"'{paint}' reads the same as the default red, so the checks below prove nothing.");
+
+            const string Rebake = " Re-run Hidden Harbours ▸ Dev ▸ 3D Hulls ▸ Bake ALL road-vehicle meshes.";
+            VehicleMeshDef def = LoadMesh(pair[0]);
+            Assert.That(def.Ramps, Is.Not.Empty, $"'{pair[0]}' baked no ramps.");
+            string body = Hex(def.Ramps[0]);
+            Assert.That(body, Is.EqualTo(want),
+                $"'{pair[0]}' baked her body in " +
+                (body == red ? "the rig's default RED" : "a paint that is not hers") +
+                $", not {paint}." + Rebake);
+
+            foreach (VehicleFitment f in def.Wheels)
+            {
+                Assert.That(f.Prop, Is.Not.Null, $"'{f.Slot}' baked no mesh.");
+                Assert.That(f.Prop.Ramps, Is.Not.Empty, $"'{pair[0]}' {f.Slot} baked no ramps.");
+                string fitting = Hex(f.Prop.Ramps[0]);
+                Assert.That(fitting, Is.EqualTo(want),
+                    $"'{pair[0]}' {f.Slot} is in " +
+                    (fitting == red ? "the rig's default RED" : "a paint that is not hers") +
+                    $", not {paint}: a fitting from an older bake under a re-baked body." + Rebake);
             }
         }
 

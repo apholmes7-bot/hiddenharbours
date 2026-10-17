@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_alder_fall
   DisplayName: The Alder Fall
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_alder_fall/scene.json,
-    32326 bytes, sha256 cfdf7ca09bd48835ab3a0f2c9c9780f8a9c5ae8a974b81377fa89f93b79b7b1e
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_alder_fall/scene.json,
+    38349 bytes, sha256 4fe2103714b9f8f0148f131a7062f8bb6446aefd6dd4f55d2b4ece55f1834304
   Placed: 0
   Pieces:
   - Id: fall.stp_alder_fall
@@ -26,7 +26,7 @@ MonoBehaviour:
     Piece: fallfx
     State: 
     At: {x: 106.22, y: 61.32}
-    Z: 2.05
+    Z: 2.062
     StandsOn: mount
     MountHost: pond.stp_alder_plunge
     MountAnchor: surface

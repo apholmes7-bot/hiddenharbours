@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_whelps_lookout
   DisplayName: "The Whelps from the South Arm\u2019s brow"
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_whelps_lookout/scene.json,
-    51709 bytes, sha256 6da6a6029654821458c47d2702c855b6c013b16148a14e9671d9a8b5097225f4
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_whelps_lookout/scene.json,
+    53824 bytes, sha256 fc8687ee9d34247dcda961fb02c94981c860685d4c495d832af9cdda915c0d4a
   Placed: 1
   Pieces:
   - Id: prop.stp_whelps_lookout_bench

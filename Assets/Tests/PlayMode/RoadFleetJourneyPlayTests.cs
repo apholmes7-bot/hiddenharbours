@@ -30,8 +30,8 @@ namespace HiddenHarbours.Tests.PlayMode
     /// through <see cref="IDriveInputSource"/>, read every frame, handed to the seat, integrated by the
     /// machine. A <see cref="HeldDriveInput"/> is the scripted driver; nothing here touches a controller.</para>
     ///
-    /// <para><b>The world is the REAL one:</b> the region's own tidal terrain
-    /// (<see cref="NineMileCreekMainland.ConfigureTerrain"/>) registered in Core, so the grounding gate
+    /// <para><b>The world is the REAL one:</b> the region's own tidal terrain (since NMC H2 the scene's G3
+    /// ground, <see cref="NineMileCreekBuilder.LoadGround"/>) registered in Core, so the grounding gate
     /// and the exit-afloat rule are live rather than self-disabled, and the builders' own
     /// <c>Place()</c> calls stand every machine where the owner's Build click stands them. ⚠️ Nothing
     /// here is in HIS scene until that click (paint passes are not idempotent) — this proves the built
@@ -94,7 +94,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private const float BobtailMetres = 10f;
         private const float ClearOfTheTrailerMetres = 15f;
         private const float MinimumPullOutMetres = 10f;
-        private const float OtterReverseMetres = 12f;
+        private const float OtterDriveMetres = 12f;
         private const int MaxStepsPerLeg = 3000;       // 60 s of physics — fails loudly, never hangs
         private const int MaxStepsToStop = 400;
         private const int MaxStepsForTheCrank = 600;   // 12 s; the published crank is 2.4 s
@@ -103,7 +103,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string PupMesh = "Assets/_Project/Data/Vehicles/Meshes/TrailerReefer28VehicleMesh.asset";
 
         private readonly List<Object> _spawned = new();
-        private MainlandTidalTerrain _terrain;
+        private PaintedTidalTerrain _terrain;
         private ControlSwitcher _switcher;
         private PlayerWalkController _walk;
         private GameObject _playerGo;
@@ -124,14 +124,18 @@ namespace HiddenHarbours.Tests.PlayMode
 
             GameServices.Environment = new StillWater();
 
-            // The region's own ground, registered into Core by its enable hook — the SAME terrain the
-            // EditMode yard tests measure the apron against, so "dry" here means what it means there.
+            // The region's own ground, registered into Core by its enable hook. Since NMC H2 that is the
+            // scene's G3 map, enabled with its map as the scene loads it, so "dry" here is the scene's dry.
+            // (The EditMode yard tests still measure the apron on the plan's analytic premise, a later
+            // wave's.)
             var terrainGo = new GameObject("NineMileCreekMainland_Journey");
             _spawned.Add(terrainGo);
-            _terrain = terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
+            terrainGo.SetActive(false);
+            _terrain = terrainGo.AddComponent<PaintedTidalTerrain>();
+            _terrain.Map = NineMileCreekBuilder.LoadGround();
+            terrainGo.SetActive(true);
             Assert.That(GameServices.TidalTerrain, Is.SameAs(_terrain),
-                "the mainland terrain did not register itself — the grounding gate would be OFF and " +
+                "the region's ground did not register itself — the grounding gate would be OFF and " +
                 "every dry-ground claim below vacuous.");
 
             // One listener, or Unity logs "no audio listeners" on every frame of every drive.
@@ -212,12 +216,13 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// The Otter is staged pointing down the boat ramp, so "drive her on land" is BACKING up the
-        /// shore: astern is always allowed, the ground behind her is the plateau, and she must never
-        /// float on the way. The machine that swims is the one whose land journey is the reverse gear.
+        /// The Otter is parked facing inland (G3 has no boat ramp, and the owner's ruling of 2026-10-15
+        /// parks her safe for now), so "drive her on land" is straight ahead up the yard: dry ground
+        /// ahead of her nose (NineMileCreekOtterLandingTests holds 20 m of it), and she must never float
+        /// on the way.
         /// </summary>
         [UnityTest]
-        public IEnumerator TheOtterBacksUpTheShoreAndStaysOnLand()
+        public IEnumerator TheOtterDrivesUpTheYardAndStaysOnLand()
         {
             var world = new List<GameObject>();
             yield return StandTheWorld(world);
@@ -235,12 +240,12 @@ namespace HiddenHarbours.Tests.PlayMode
             bool floated = false;
             float from = ctl.OdometerMeters;
             int steps = 0;
-            _held.Set(-1f, 0f, false);
-            while (from - ctl.OdometerMeters < OtterReverseMetres)
+            _held.Set(1f, 0f, false);
+            while (ctl.OdometerMeters - from < OtterDriveMetres)
             {
                 Assert.That(steps++, Is.LessThan(MaxStepsPerLeg),
-                    $"{who}: {MaxStepsPerLeg} physics steps astern and she has backed only " +
-                    $"{from - ctl.OdometerMeters:0.##} m — the seam is not carrying the demand.");
+                    $"{who}: {MaxStepsPerLeg} physics steps ahead and she has driven only " +
+                    $"{ctl.OdometerMeters - from:0.##} m — the seam is not carrying the demand.");
                 yield return new WaitForFixedUpdate();
                 SampleTheGroundUnder(go);
                 floated |= ctl.IsAfloat;
@@ -249,8 +254,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.That(Vector2.Distance(startedAt, go.transform.position),
                 Is.GreaterThanOrEqualTo(MinimumPullOutMetres),
-                $"{who}: backed {OtterReverseMetres} m of odometer and moved under {MinimumPullOutMetres} m.");
-            Assert.That(floated, Is.False, $"{who}: she floated while backing up the shore.");
+                $"{who}: drove {OtterDriveMetres} m of odometer and moved under {MinimumPullOutMetres} m.");
+            Assert.That(floated, Is.False, $"{who}: she floated while driving up the yard.");
             Assert.That(_held.Reads, Is.GreaterThan(0), "the switcher never asked the source.");
             Assert.That(_wetSamples, Is.EqualTo(0),
                 $"{who}: {_wetSamples} physics steps stood on drowned ground, the first at {_firstWetSample}.");

@@ -23,6 +23,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// the float, and off the boat ramp. So each "is walled" claim below has a matching "is NOT walled"
     /// claim beside it, and several of the assertions exist purely so that a plan which walls the whole
     /// world cannot pass.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> These are the builder's walls (<c>NineMileCreekWalls.Runs</c>), on
+    /// the plan's analytic ground and the plan's wharf. The scene's quay is the third issue's: step 05 re-lines
+    /// its walls along the crane and north faces with the gangway's opening
+    /// (<see cref="NineMileCreekGroundSteps.QuayRuns"/>), and <c>NineMileCreekSceneQuayTests</c> holds them.
+    /// None of these tests claims the scene's walls.</para>
     /// </summary>
     public class NineMileCreekWallsTests
     {

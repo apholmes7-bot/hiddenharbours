@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_gap_bridge
   DisplayName: "The Gap Brook\u2019s plank bridge"
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_gap_bridge/scene.json,
-    18372 bytes, sha256 f8a2c1a73d422b54ede4fa2967b314388cf7a1d4ebd05352d5f05f5d780e2a89
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_gap_bridge/scene.json,
+    18913 bytes, sha256 33d72e01a23011f8b22fc013543c83c71c1e96a6184724a97c2e5c3d7f0fc4a6
   Placed: 0
   Pieces:
   - Id: structure.stp_gap_bridge

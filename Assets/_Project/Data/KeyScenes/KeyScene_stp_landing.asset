@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_landing
   DisplayName: The Landing
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_landing/scene.json,
-    19211 bytes, sha256 0ec0da53ccf7f2a55a2f40697fa7fe6ec26e809c3ef4ed63a1ac6f1be5cdebd4
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_landing/scene.json,
+    25754 bytes, sha256 2d8bde76678511edfa188d3d5df58410dae14da69c862e1f7121a19c6778bb09
   Placed: 1
   Pieces:
   - Id: prop.stp_slip_tide_board

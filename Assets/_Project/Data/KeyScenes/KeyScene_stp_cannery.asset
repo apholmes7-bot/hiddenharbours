@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_cannery
   DisplayName: The cannery
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_cannery/scene.json,
-    18018 bytes, sha256 e803abdb2a08f971140e0e7b9e9d6822a53f645dc7ccf6dcd99e3c7a60ec2f71
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_cannery/scene.json,
+    19582 bytes, sha256 ffd309881aebc4f7fa8773c49d1d479056b28f970188936b1507d3239462951a
   Placed: 1
   Pieces:
   - Id: structure.stp_cannery

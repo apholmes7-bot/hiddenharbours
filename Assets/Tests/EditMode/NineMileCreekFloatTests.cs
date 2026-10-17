@@ -26,6 +26,13 @@ namespace HiddenHarbours.Tests.EditMode
     ///
     /// <para>The mechanism itself — deck = tide, grounding, the brow's lerp, the constant drop at a float
     /// cleat — is <c>FloatingPlatformTests</c>' subject. This file is about THIS harbour.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> The scene's float keeps the builder's footprint and takes its bed
+    /// from G3 (step 05, <see cref="NineMileCreekGroundSteps"/>), so the bed and the water she floats in are
+    /// asserted on G3 (<see cref="NineMileCreekLiveGround.Plan"/>): the third issue's dredged basin. The builder
+    /// still builds the float, its brow and its apron on the plan's analytic ground, so the brow and apron tests
+    /// stand that ground up (<c>Plan</c>), each says so, and none claims the scene, whose brow step 05 runs from the
+    /// third issue's north face (<see cref="NineMileCreekGroundPlan.GangwayShoreEnd"/>) to the float.</para>
     /// </summary>
     public class NineMileCreekFloatTests
     {
@@ -128,7 +135,8 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         private GameObject _go;
-        private MainlandTidalTerrain _terrain;
+        private ITidalTerrain _ground;            // G3: the ground the scene's float takes its bed from (step 05)
+        private MainlandTidalTerrain _plan;       // the plan's analytic ground, stood up only by the builder's tests
 
         private static float SpringLow => NineMileCreekMainland.SpringLowWater;     // −2.2
         private static float SpringHigh => NineMileCreekMainland.SpringHighWater;   //  2.2
@@ -150,15 +158,15 @@ namespace HiddenHarbours.Tests.EditMode
             DestroyAnyWharf();
             StandableSurfaces.Clear();
             MooringCleats.Clear();
-            _go = new GameObject("NineMileCreekFloat_Test");
-            _terrain = _go.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
+            _ground = NineMileCreekLiveGround.Plan;
         }
 
         [TearDown]
         public void TearDown()
         {
             if (_go != null) Object.DestroyImmediate(_go);
+            _go = null;
+            _plan = null;
             DestroyAnyWharf();
             StandableSurfaces.Clear();
             MooringCleats.Clear();
@@ -177,7 +185,20 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        private float Elev(Vector2 p) => _terrain.ElevationAt(p);
+        /// <summary>The plan's analytic ground: what the builder still builds the float, its brow and its apron on.</summary>
+        private MainlandTidalTerrain Plan
+        {
+            get
+            {
+                if (_plan != null) return _plan;
+                _go = new GameObject("NineMileCreekFloat_Test");
+                _plan = _go.AddComponent<MainlandTidalTerrain>();
+                NineMileCreekMainland.ConfigureTerrain(_plan);
+                return _plan;
+            }
+        }
+
+        private float Elev(Vector2 p) => _ground.ElevationAt(p);
 
         private static string RigSource() => File.ReadAllText(Path.Combine(
             Application.dataPath, "..", "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js"));
@@ -240,12 +261,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// The bed she grounds on is the SHALLOWEST ground under her, not the middle. Asserted against an
         /// independent finer walk of the same footprint, so the builder's sampling cannot quietly miss a
-        /// high spot under one edge and float her through it.
+        /// high spot under one edge and float her through it. On G3 since NMC H2: this is the walk step 05
+        /// runs for the scene's float bed.
         /// </summary>
         [Test]
         public void TheBedIsMeasuredAsTheShallowestPointUnderHer_NotTheCentreLine()
         {
-            float measured = NineMileCreekWharf.FloatBedElevationFrom(_terrain);
+            float measured = NineMileCreekWharf.FloatBedElevationFrom(_ground);
             Rect box = NineMileCreekWharf.FloatFootprint();
 
             float finest = float.NegativeInfinity;
@@ -255,10 +277,10 @@ namespace HiddenHarbours.Tests.EditMode
 
             // The coarse grid's samples are a SUBSET of the fine one's (1.0 is a whole number of 0.25s
             // and of 0.2s, and both walks pin their last row and column onto the edges), so the builder
-            // can only ever under-report. What matters is by how much: the shallowest point under this
-            // float is a CORNER, which both walks land on exactly, so the honest expectation is nothing
-            // at all — and the tolerance is there for the day the lane moves and the maximum slides into
-            // the interior, where a metre of step could genuinely miss something.
+            // can only ever under-report. What matters is by how much. On the plan's ground the shallowest
+            // point under this float was a CORNER, which both walks land on exactly. On G3 (NMC H2) it lies
+            // inside the footprint, and the builder's metre walk read 3 mm deeper than the fine one when it
+            // was measured: the case the tolerance is for, where a metre of step could genuinely miss something.
             Assert.That(measured, Is.LessThanOrEqualTo(finest + 1e-3f),
                 "a subset of samples cannot find higher ground than the superset — check the walk");
             Assert.That(measured, Is.GreaterThanOrEqualTo(finest - 0.05f),
@@ -275,12 +297,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// ⭐ <b>THE HEADLINE: she floats at dead low spring, and this is by how much.</b> S1 cut the lane
         /// for the fleet's draughts; the float is the one thing on it that cannot move out of the way, and
         /// a dock aground for part of every big tide would tilt, part its gangway from its abutment, and
-        /// be the least cozy thing on this coast.
+        /// be the least cozy thing on this coast. On G3 since NMC H2: the scene's float takes its bed from it
+        /// (step 05).
         /// </summary>
         [Test]
         public void SheFloatsAtDeadLowSpring_WithTheMarginStated()
         {
-            float bed = NineMileCreekWharf.FloatBedElevationFrom(_terrain);
+            float bed = NineMileCreekWharf.FloatBedElevationFrom(_ground);
             float depth = SpringLow - bed;
 
             Assert.That(FloatingPlatform.IsAground(SpringLow, bed, Draught), Is.False,
@@ -294,7 +317,8 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>…and the lane really is what does it. Under the float the bed is BELOW the −1.6 m
-        /// shoal everywhere, which is only true because the channel was routed through her.</summary>
+        /// shoal everywhere, which is only true because the channel was routed through her. On G3 since NMC H2
+        /// it is the third issue's dredged basin that does it; the claim and its counterfactual stand.</summary>
         [Test]
         public void TheChannelIsWhatFloatsHer_TheShoalAloneWouldNot()
         {
@@ -313,14 +337,17 @@ namespace HiddenHarbours.Tests.EditMode
                 "measuring nothing and the channel was not needed to float her");
         }
 
-        /// <summary>Her deck swings the region's whole range, and never touches the apron at the top of
+        /// <summary>⚠ The plan's authoring since NMC H2, on the premise: the builder's float against the builder's
+        /// apron. Her deck swings the region's whole range, and never touches the apron at the top of
         /// it: at spring high she is still 0.40 m BELOW the quay, so you always step DOWN onto the brow.
         /// That is the rig's clearance-versus-freeboard relation, and a float that rose past its own
-        /// abutment would push the brow up at the wrong end.</summary>
+        /// abutment would push the brow up at the wrong end. The scene's brow hangs off the third issue's
+        /// north face, whose deck stands 0.4 m higher (<see cref="NineMileCreekGroundPlan.DeckElevation"/>), so
+        /// its step down at spring high is 0.8 m: <c>NineMileCreekSceneQuayTests</c> holds the scene's numbers.</summary>
         [Test]
         public void HerDeckSwingsTheWholeRange_AndNeverRisesPastTheQuayItHangsOff()
         {
-            float bed = NineMileCreekWharf.FloatBedElevationFrom(_terrain);
+            float bed = NineMileCreekWharf.FloatBedElevationFrom(Plan);
             float low = FloatingPlatform.DeckElevation(SpringLow, bed, Draught, Freeboard);
             float high = FloatingPlatform.DeckElevation(SpringHigh, bed, Draught, Freeboard);
 
@@ -328,7 +355,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "a float that is never aground swings exactly the tide's range — 4.4 m here");
             Assert.That(low, Is.EqualTo(SpringLow + Freeboard).Within(1e-3f));
 
-            float apron = NineMileCreekWharf.ApronElevationFrom(_terrain);
+            float apron = NineMileCreekWharf.ApronElevationFrom(Plan);
             Assert.That(high, Is.LessThan(apron),
                 $"at spring high her deck is {high:0.00} m against the apron's {apron:0.00} m — a float " +
                 "that rode above its own abutment would hinge the brow upward");
@@ -342,8 +369,11 @@ namespace HiddenHarbours.Tests.EditMode
         //  3. THE BROW, AND WHERE EVERYTHING SITS
         // =============================================================================================
 
-        /// <summary>The brow spans the actual gap: its hinge is ON the apron and its landing is ON the
-        /// float, so there is no stretch of water at either end that is neither.</summary>
+        /// <summary>⚠ The plan's authoring since NMC H2: the builder's brow, from the apron's east face. The
+        /// brow spans the actual gap: its hinge is ON the apron and its landing is ON the
+        /// float, so there is no stretch of water at either end that is neither. The scene's brow runs from
+        /// <see cref="NineMileCreekGroundPlan.GangwayShoreEnd"/> to <see cref="NineMileCreekGroundPlan.GangwayFloatEnd"/>
+        /// (step 05): <c>NineMileCreekSceneQuayTests</c>.</summary>
         [Test]
         public void TheBrowHingesOnTheApronAndLandsOnTheFloat()
         {
@@ -362,6 +392,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <c>(tideRange + freeboard + 0.9) × 2.4</c> = 13.68 m for this coast; the geography leaves 12.
         /// So the walk down is steeper than the kit's own rule — reported here rather than fixed, because
         /// lengthening it means moving the float east and S1's meander is pinned to the run's present ends.
+        ///
+        /// <para>⚠ The plan's authoring since NMC H2, on the premise: the builder's 12 m brow. The scene's brow
+        /// (step 05) runs 15.3 m from the third issue's north face, longer than the rig's own rule and past its
+        /// 14 m clamp; it is not drawn, and <c>NineMileCreekSceneQuayTests</c> holds its numbers.</para>
         /// </summary>
         [Test]
         public void TheBrowIsShorterThanTheRigsOwnRule_AndTheCostIsStated()
@@ -378,8 +412,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "…but it must stay inside the rig's hard 3–14 m clamp, or the kit cannot draw it at all");
 
             // The honest consequence, in the units a person feels: 1 : 2.5 at the bottom of the tide.
-            float bed = NineMileCreekWharf.FloatBedElevationFrom(_terrain);
-            float drop = NineMileCreekWharf.ApronElevationFrom(_terrain)
+            float bed = NineMileCreekWharf.FloatBedElevationFrom(Plan);
+            float drop = NineMileCreekWharf.ApronElevationFrom(Plan)
                        - FloatingPlatform.DeckElevation(SpringLow, bed, Draught, Freeboard);
             Assert.That(drop / authored, Is.EqualTo(0.4f).Within(0.01f),
                 $"the brow falls {drop:0.00} m over {authored:0.0} m at dead low spring");
@@ -400,7 +434,9 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>⭐ <b>THE RULED GATE IS STILL UNTOUCHED.</b> S1's whole discipline was that the lane is
         /// cut PAST the berths, not through them; the float must not quietly re-open that question by
-        /// overlapping the berth line, the dock zone or the slipway.</summary>
+        /// overlapping the berth line, the dock zone or the slipway. ⚠ The builder's berths and dock zone
+        /// since NMC H2 (the plan's): the scene's lie along the third issue's north face, north of her
+        /// (<see cref="NineMileCreekGroundSteps.WallBerth"/>, <see cref="NineMileCreekBuilder.DockZonePos"/>).</summary>
         [Test]
         public void TheFloatDoesNotReachTheBerthsTheDockZoneOrTheSlipway()
         {
