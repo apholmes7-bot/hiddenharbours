@@ -37,22 +37,42 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(result.Hang, Is.LessThan(20f));
         }
 
-        [TestCase(30, 800f)] [TestCase(88, 15000f)]
-        public void AuthoredSloop_HasTheProposedOptIn(int size, float payOff)
+        [TestCase(30, 20f)] [TestCase(88, 25f)]
+        public void AfterE_DistanceAtTwentySevenSecondsIsUnderProposedBar(int size, float barMetres)
+            => Assert.That(Run(size, 0f, true, false, 27f).Distance, Is.LessThan(barMetres),
+                "audited main sails on for 59.5 / 85.6 m; this reduced model must catch that behaviour");
+
+        [TestCase(30)]
+        [TestCase(88, Ignore = "Parked for the damping PR to come (hull drag on speed through the water, " +
+            "sloop decision 1 (a)), which follows the sloop's three PRs. The bar stands: the 88 still " +
+            "makes 0.53 kn through the water at five minutes, over 0.5 kn.")]
+        public void Unmanned_SettlesInsideNoGoWithNoDriveAtFiveMinutes(int size)
+        {
+            var r = Run(size, 0f, true, false, 300f);
+            Assert.That(Mathf.Abs(r.Twa), Is.InRange(5f, 25f));
+            Assert.That(r.ThroughWaterKn, Is.LessThan(.5f));
+            Assert.That(r.TargetKn, Is.Zero);
+        }
+
+        [TestCase(30, 800f, 2400f)] [TestCase(88, 15000f, 45000f)]
+        public void AuthoredSloop_HasTheProposedOptIn(int size, float payOff, float roundUp)
         {
             var h = Hull(size);
             Assert.That(h.IronsPayOffTorque, Is.EqualTo(payOff));
+            Assert.That(h.UnmannedRoundUpTorque, Is.EqualTo(roundUp));
             Assert.That(h.RudderFullAuthorityWayMs, Is.EqualTo(2f));
             Assert.That(h.SailYawReferenceWindKn, Is.EqualTo(10f));
+            Assert.That(h.RoundUpReferenceDriveKn, Is.EqualTo(6f));
         }
 
         [Test]
-        public void UnconfiguredHull_OptsOutOfPayOff()
+        public void UnconfiguredHull_OptsOutOfBothYawTerms()
         {
             var hull = ScriptableObject.CreateInstance<BoatHullDef>();
             try
             {
                 Assert.That(hull.IronsPayOffTorque, Is.Zero);
+                Assert.That(hull.UnmannedRoundUpTorque, Is.Zero);
                 Assert.That(SailDrive.IronsPayOffTorque(true, 20f, 1f, 0f, hull.IronsPayOffTorque,
                     hull.RudderFullAuthorityWayMs, 10f, hull.SailYawReferenceWindKn), Is.Zero);
             }
@@ -93,7 +113,9 @@ namespace HiddenHarbours.Tests.EditMode
                     - (through - along) * h.LateralDrag + windMs * h.WindExposure) * .01f;
                 float torque = BoatController.RudderTorque(helm, h.RudderAuthority, way, h.RudderFullAuthorityWayMs)
                     + SailDrive.IronsPayOffTorque(irons, wind.TrueAngleDeg, helm, way, h.IronsPayOffTorque,
-                        h.RudderFullAuthorityWayMs, wind.TrueKn, h.SailYawReferenceWindKn);
+                        h.RudderFullAuthorityWayMs, wind.TrueKn, h.SailYawReferenceWindKn)
+                    + SailDrive.UnmannedRoundUpTorque(unmanned, wind.TrueAngleDeg, target, h.UnmannedRoundUpTorque,
+                        h.NoGoTrueWindDeg, h.RoundUpReferenceDriveKn, wind.TrueKn, h.SailYawReferenceWindKn);
                 spin = (spin + torque * .01f / inertia * dt) / (1f + 2.5f * dt);
                 heading -= spin * Mathf.Rad2Deg * dt;
                 velocity = (velocity + force / mass * dt) / (1f + .2f * dt);

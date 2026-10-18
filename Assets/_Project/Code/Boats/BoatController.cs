@@ -607,17 +607,20 @@ namespace HiddenHarbours.Boats
         /// instead. It runs the exact same force pass the manned helm runs — hull drag against the
         /// current (she SETS with the tide), wind shove, the seakeeping push + yaw (the weathervane the
         /// deck angler fights against), grounding/shallows — just with the controls at rest
-        /// (<see cref="Stop(bool)"/> zeroed them when the helm was left), so propulsion contributes nothing.
+        /// (<see cref="Stop(bool)"/> zeroed them when the helm was left). Oar/motor propulsion is zero;
+        /// sail propulsion remains live, with the hull's optional windward round-up opposing its pay-off.
         /// One force model, never a parallel drift copy. No-op while enabled (FixedUpdate already runs
         /// the pass — never double-integrate) and before a hull is wired.
         /// </summary>
         public void TickUnmannedDrift()
         {
             if (enabled) return;   // manned — the normal FixedUpdate owns the pass this tick
-            StepPhysics();
+            StepPhysicsForHelm(unmanned: true);
         }
 
-        private void StepPhysics()
+        private void StepPhysics() => StepPhysicsForHelm(unmanned: false);
+
+        private void StepPhysicsForHelm(bool unmanned)
         {
             // The surf under her is re-solved from scratch every tick (rule 5 — nothing accumulates), so
             // clear it FIRST: a tick that never reaches the seakeeping pass (no hull, no body, the policy
@@ -658,7 +661,7 @@ namespace HiddenHarbours.Boats
             // declared Sail with no polar is not sailable, and falling through to her auxiliary is a
             // better answer than sitting still with no explanation.
             if (_hull.HasSailPlan)
-                ApplySailDrive(fwd, vel, env);
+                ApplySailDrive(fwd, vel, env, unmanned);
             else if (UsesEngineHelm(_hull.Propulsion))
                 ApplyEngineDrive(fwd, vel, env);
             else
@@ -804,7 +807,7 @@ namespace HiddenHarbours.Boats
         /// negative branch here and none is wanted; a sloop backing out of a berth is her AUXILIARY,
         /// which is the engine seam, untouched.</para>
         /// </summary>
-        private void ApplySailDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        private void ApplySailDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env, bool unmanned)
         {
             // The wind she is actually in — true for the physics, apparent for the picture. One wind:
             // this reads the sim's WindVector and Core's own apparent maths, and adds neither.
@@ -840,7 +843,10 @@ namespace HiddenHarbours.Boats
             float rudder = RudderTorque(_steer, _hull.RudderAuthority, way, _hull.RudderFullAuthorityWayMs);
             float payOff = SailDrive.IronsPayOffTorque(DrawnInIrons, wind.TrueAngleDeg, _steer, way,
                 _hull.IronsPayOffTorque, _hull.RudderFullAuthorityWayMs, wind.TrueKn, _hull.SailYawReferenceWindKn);
-            _rb.AddTorque((rudder + payOff) * RudderFeelScale);
+            float roundUp = SailDrive.UnmannedRoundUpTorque(unmanned, wind.TrueAngleDeg, targetKn,
+                _hull.UnmannedRoundUpTorque, _hull.NoGoTrueWindDeg, _hull.RoundUpReferenceDriveKn,
+                wind.TrueKn, _hull.SailYawReferenceWindKn);
+            _rb.AddTorque((rudder + payOff + roundUp) * RudderFeelScale);
         }
 
         /// <summary>
