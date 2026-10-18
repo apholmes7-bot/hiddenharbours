@@ -12,7 +12,7 @@ namespace HiddenHarbours.Art
 {
     /// <summary>
     /// <b>Route 1 of the figure pixel look</b> (<c>docs/design/figure-pixel-target.md</c> §3, behind
-    /// <see cref="GameConfig.FigurePixelTarget"/>, ship default OFF): the mesh figures drawn into a
+    /// <see cref="GameConfig.FigurePixelTarget"/>, ship default ON): the mesh figures drawn into a
     /// target of their own at one texel per art pixel, then laid back over the screen with hard edges.
     ///
     /// <para><b>Which renderers are figures.</b> A figure's own facet material is moved to

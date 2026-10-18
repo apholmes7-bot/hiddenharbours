@@ -721,12 +721,12 @@ namespace HiddenHarbours.Core
         public bool MeshFigureKeyline = DefaultMeshFigureKeyline;
 
         /// <summary>
-        /// Ship default for <see cref="FigurePixelTarget"/> — <b>OFF</b> (the figure pixel look,
-        /// route 1 of <c>docs/design/figure-pixel-target.md</c>). OFF is today's picture, byte for
-        /// byte: no figure changes queue, no pass is recorded and no overlay reads the figure
-        /// target. Turning it ON is the owner's call.
+        /// Ship default for <see cref="FigurePixelTarget"/> — <b>ON</b>, by the owner's ruling of
+        /// 10-18 (D5: "pixel switch ships on"): the figure pixel look, route 1 of
+        /// <c>docs/design/figure-pixel-target.md</c>. OFF is the picture before the look, byte for
+        /// byte: no figure changes queue, no pass is recorded and no overlay reads the figure target.
         /// </summary>
-        public const bool DefaultFigurePixelTarget = false;
+        public const bool DefaultFigurePixelTarget = true;
 
         /// <summary>
         /// Ship default for <see cref="FigureHeadingSteps"/> — <b>0, smooth</b>, by the owner's
@@ -741,7 +741,7 @@ namespace HiddenHarbours.Core
                  "(1/32 m), enlarged with hard edges at the whole zoom steps (x2 and up), so the " +
                  "player and the cast read like the drawn art and still turn as meshes. Boats are " +
                  "unchanged. Where a nearer hull or wheelhouse covers a figure, that edge is drawn " +
-                 "at the same art-pixel size. OFF is exactly today's picture. Read live.")]
+                 "at the same art-pixel size. OFF is exactly the picture before the look. Read live.")]
         public bool FigurePixelTarget = DefaultFigurePixelTarget;
 
         [Tooltip("With the pixel look ON: how many facings a figure turns through. 0 is smooth " +

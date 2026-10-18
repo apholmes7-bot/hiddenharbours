@@ -1,6 +1,6 @@
 // HiddenHarboursFigurePixelTarget.shader — the small passes of the figure pixel look's route 1
 // (docs/design/figure-pixel-target.md §3; IsoFacetFigureTarget records them, GameConfig
-// .FigurePixelTarget switches them, ship default OFF — with the switch OFF nothing binds this shader).
+// .FigurePixelTarget switches them, ship default ON — with the switch OFF nothing binds this shader).
 //
 // The figures' own target holds one texel per art pixel (1/32 m); a texel covers m × m screen pixels,
 // laid out by _HHFigurePixelMap = (offset x, offset y, 1/m, m) — screen pixel = offset + texel × m.

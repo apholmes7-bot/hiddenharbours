@@ -433,7 +433,9 @@ namespace HiddenHarbours.Tests.EditMode
                 AssertSameBits(root, SnapThroughServices(root), "OFF with a grid");
 
                 GameServices.Config = null;
-                AssertSameBits(root, SnapThroughServices(root), "no config: the code default, OFF");
+                drawn = SnapThroughServices(root);
+                Assert.AreEqual(Mathf.Round(root.x * Ppu) / Ppu, drawn.x, 0f, "no config: the code default, ON: x on the lattice");
+                Assert.AreEqual(Mathf.Round(root.y * Ppu) / Ppu, drawn.y, 0f, "no config: the code default, ON: y on the lattice");
             }
             finally
             {

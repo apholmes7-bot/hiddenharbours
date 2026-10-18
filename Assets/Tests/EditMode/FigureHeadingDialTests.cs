@@ -118,7 +118,7 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 GameServices.Config = null;
-                Assert.AreEqual(0, FigureHeadingDial.LiveSteps, "no config: the code defaults, OFF and 0");
+                Assert.AreEqual(0, FigureHeadingDial.LiveSteps, "no config: the code defaults, ON and 0 (smooth)");
 
                 GameServices.Config = config;
                 config.FigurePixelTarget = false;

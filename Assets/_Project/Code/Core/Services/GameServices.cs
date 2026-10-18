@@ -920,8 +920,9 @@ namespace HiddenHarbours.Core
             Config != null ? Config.MeshFigureKeyline : GameConfig.DefaultMeshFigureKeyline;
 
         /// <summary>Are the mesh figures drawn at the art's own pixel size (the figure pixel look,
-        /// route 1)? Falls back to <see cref="GameConfig.DefaultFigurePixelTarget"/> (OFF). Read every
-        /// frame by the figure renderers and the hull feature; OFF is today's picture, byte for byte.
+        /// route 1)? Falls back to <see cref="GameConfig.DefaultFigurePixelTarget"/> (ON). Read every
+        /// frame by the figure renderers and the hull feature; OFF is the picture before the look,
+        /// byte for byte.
         /// FLAG lead-architect: new Core contract (the figure pixel look's switch).</summary>
         public static bool FigurePixelTarget =>
             Config != null ? Config.FigurePixelTarget : GameConfig.DefaultFigurePixelTarget;

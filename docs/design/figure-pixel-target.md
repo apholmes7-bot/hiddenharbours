@@ -325,7 +325,7 @@ Proposed flat fields, owned in shape by lead-architect:
 
 | Field | Explicit code default | Meaning |
 |---|---|---|
-| `FigurePixelTarget` | `DefaultFigurePixelTarget = false` | Ship OFF. Gate the entire new drawing/snap/heading path; OFF must remain byte-identical. |
+| `FigurePixelTarget` | `DefaultFigurePixelTarget = true` | Ship ON (the owner's D5, 10-18). Gate the entire new drawing/snap/heading path; OFF must remain byte-identical. |
 | `FigureHeadingSteps` | `DefaultFigureHeadingSteps = 0` provisionally, pending D2 | 0 = continuous; positive N = N equally spaced world compass headings. Quantize before applying the def's measured azimuth sign; aboard convert quantized world heading back through the continuous hull heading. Never quantize hull/simulation. |
 
 Initialize fields from named constants and use the same constants when GameServices
@@ -403,5 +403,5 @@ push or PR occurred in Phase A. The Node checks above are the only executed test
 D1 now: figures first, boats later? Recommended **yes**, route 1, with route 2 only as
 the disposable Phase B probe. The owner and seat must settle this and grant a slot.
 D2 later: heading default, lean 0 smooth. D3 later: eye-led closeness; numbers inform.
-D4 later: art-pixel or fine hull edge at occlusion. D5 at PR: switch ships OFF, owner
-rules ON and merges. No action or wait is armed at this stop.
+D4 later: art-pixel or fine hull edge at occlusion. D5 at PR: the switch ships ON, by
+the owner's ruling of 10-18; the merge is the owner's. No action or wait is armed at this stop.

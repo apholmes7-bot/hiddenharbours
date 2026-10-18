@@ -1114,7 +1114,7 @@ namespace HiddenHarbours.Art
                     }
                 }
 
-                // ---- the figure pixel look (route 1; GameConfig.FigurePixelTarget, ship OFF) ---------
+                // ---- the figure pixel look (route 1; GameConfig.FigurePixelTarget, ship ON) ----------
                 // OFF, or a frame it cannot plan, records nothing and leaves everything below as it
                 // was. ON, the figures draw into their own art-pixel target here (after the water,
                 // whose depth hides them) and the facet list below leaves them out.

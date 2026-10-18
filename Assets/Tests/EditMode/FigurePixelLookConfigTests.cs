@@ -14,12 +14,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// The figure pixel look's two tunables (<see cref="GameConfig.FigurePixelTarget"/>,
     /// <see cref="GameConfig.FigureHeadingSteps"/>): the shipped asset carries both at their ship values
-    /// (OFF; 0, smooth), each code default is the value a key the asset LACKS loads as, and
-    /// <see cref="GameServices"/> reads the defaults with no config and validates a negative dial to 0.
+    /// (ON, the owner's D5 of 10-18; 0, smooth), each code default is the value a key the asset LACKS
+    /// loads as, and <see cref="GameServices"/> reads the defaults with no config and validates a
+    /// negative dial to 0.
     ///
     /// <para>The absent-key case loads the REAL serialized asset with the keys taken out, not a fresh
     /// instance: a copy with a moved sentinel proves the file was the thing read, and a control copy with
-    /// both keys set proves the loader reads them when they are there.</para>
+    /// both keys set away from their defaults proves the loader reads them when they are there. With the
+    /// switch's default ON it is no longer the type's zero, so that case now decides what a root key the
+    /// file lacks loads as: the field initialiser, which <c>BoatHullPresenterSeamTests</c> measured
+    /// standing on a root key, and not the type's zero of <c>GameConfigAssetCoverageTests</c>' trap.</para>
     /// </summary>
     public class FigurePixelLookConfigTests
     {
@@ -33,18 +37,19 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheShippedAsset_CarriesBothKeys_AtTheirShipValues()
         {
             string yaml = File.ReadAllText(ConfigAssetPath);
-            Assert.AreEqual("0", RootValue(yaml, SwitchKey), "the switch ships OFF (turning it on is the owner's D5)");
+            Assert.AreEqual("1", RootValue(yaml, SwitchKey), "the switch ships ON (the owner's D5 of 10-18)");
             Assert.AreEqual("0", RootValue(yaml, StepsKey), "the dial ships at 0, smooth (the owner's D2 of 10-15)");
         }
 
         [Test]
-        public void TheCodeDefaults_AreOffAndSmooth_AndTheTypesOwnZero()
+        public void TheCodeDefaults_AreOnAndSmooth_AndOnlyTheDialIsTheTypesZero()
         {
-            Assert.IsFalse(GameConfig.DefaultFigurePixelTarget, "the switch's code default is OFF");
+            Assert.IsTrue(GameConfig.DefaultFigurePixelTarget, "the switch's code default is ON (the owner's D5 of 10-18)");
             Assert.AreEqual(0, GameConfig.DefaultFigureHeadingSteps, "the dial's code default is 0, smooth");
-            // A key the asset lacks loads as the C# type default (GameConfigAssetCoverageTests); each code
-            // default IS that value, so an asset written before these fields reads exactly the defaults.
-            Assert.AreEqual(default(bool), GameConfig.DefaultFigurePixelTarget, "the switch's default is the type's zero");
+            // The dial's default is the type's zero, so an asset without its key reads 0 whichever value a
+            // missing key loads as. The switch's is not: an asset without its key reads ON only while the
+            // loader leaves the field initialiser standing, which the absent-key case below pins.
+            Assert.AreNotEqual(default(bool), GameConfig.DefaultFigurePixelTarget, "the switch's default is not the type's zero");
             Assert.AreEqual(default(int), GameConfig.DefaultFigureHeadingSteps, "the dial's default is the type's zero");
 
             var fresh = ScriptableObject.CreateInstance<GameConfig>();
@@ -65,26 +70,28 @@ namespace HiddenHarbours.Tests.EditMode
             string yaml = File.ReadAllText(ConfigAssetPath);
             string marked = SetRoot(yaml, SentinelKey, Sentinel.ToString(System.Globalization.CultureInfo.InvariantCulture));
             string absent = Strip(Strip(marked, SwitchKey), StepsKey);
-            string present = SetRoot(SetRoot(marked, SwitchKey, "1"), StepsKey, "16");
+            string present = SetRoot(SetRoot(marked, SwitchKey, "0"), StepsKey, "16");
 
             var loaded = new List<Object>();
             try
             {
-                GameConfig control = LoadCopy(present, "the control copy (both keys set)", loaded);
+                GameConfig control = LoadCopy(present, "the control copy (both keys set away from their defaults)", loaded);
                 Assert.AreEqual(Sentinel, control.SecondsPerDay, 0f, "the control copy: its sentinel, so the file was read");
-                Assert.IsTrue(control.FigurePixelTarget, "the control copy: the loader reads the switch when it is there");
+                Assert.IsFalse(control.FigurePixelTarget,
+                               "the control copy: the loader reads the switch when it is there (an explicit 0 over the ON initialiser)");
                 Assert.AreEqual(16, control.FigureHeadingSteps, "the control copy: the loader reads the dial when it is there");
 
-                GameConfig explicitZero = LoadCopy(marked, "the shipped copy (both keys at 0)", loaded);
-                Assert.AreEqual(Sentinel, explicitZero.SecondsPerDay, 0f, "the shipped copy: its sentinel");
-                Assert.IsFalse(explicitZero.FigurePixelTarget, "the shipped copy: an explicit 0 reads OFF");
-                Assert.AreEqual(0, explicitZero.FigureHeadingSteps, "the shipped copy: an explicit 0 reads 0");
+                GameConfig shipped = LoadCopy(marked, "the shipped copy (switch 1, dial 0)", loaded);
+                Assert.AreEqual(Sentinel, shipped.SecondsPerDay, 0f, "the shipped copy: its sentinel");
+                Assert.IsTrue(shipped.FigurePixelTarget, "the shipped copy: an explicit 1 reads ON");
+                Assert.AreEqual(0, shipped.FigureHeadingSteps, "the shipped copy: an explicit 0 reads 0");
 
                 GameConfig missing = LoadCopy(absent, "the copy with both keys absent", loaded);
                 Assert.AreEqual(Sentinel, missing.SecondsPerDay, 0f,
                                 "the absent copy: its sentinel, so this is the file and not a fresh instance");
                 Assert.AreEqual(GameConfig.DefaultFigurePixelTarget, missing.FigurePixelTarget,
-                                "the absent copy: a missing switch loads as the code default");
+                                "the absent copy: a missing switch loads as the code default, ON (the field " +
+                                "initialiser stands), not as the type's zero");
                 Assert.AreEqual(GameConfig.DefaultFigureHeadingSteps, missing.FigureHeadingSteps,
                                 "the absent copy: a missing dial loads as the code default");
             }

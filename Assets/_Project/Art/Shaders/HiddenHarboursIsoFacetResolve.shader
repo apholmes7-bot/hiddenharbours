@@ -37,7 +37,7 @@
 // exactly the program above, byte for byte. With the flood on, a pixel the flood gives to a hull
 // keeps the hull's keyline; only a pixel it gives to an inked figure takes the figure's ink.
 //
-// ⭐ THE FIGURE PIXEL LOOK (route 1; GameConfig.FigurePixelTarget, ship OFF; IsoFacetFigureTarget).
+// ⭐ THE FIGURE PIXEL LOOK (route 1; GameConfig.FigurePixelTarget, ship ON; IsoFacetFigureTarget).
 // ON, the figures leave this pass's facet list for a target of their own at one texel per art
 // pixel, so a deck pixel beside one would lose her as its rule-1 neighbour, and with her the
 // hull's contour against her. While _HHFigureNeighbours is up — a GLOBAL the hull feature raises
