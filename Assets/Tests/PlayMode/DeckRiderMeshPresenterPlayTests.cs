@@ -506,6 +506,19 @@ namespace HiddenHarbours.Tests.PlayMode
             return mf.sharedMesh.vertices;
         }
 
+        /// <summary>The material her ashore figure's drawn child draws with: the one the figure pixel look moves
+        /// into its queue. Ashore the child hangs under the figure's AshoreFrame.</summary>
+        private static Material FacetMaterial(IsoCharacterFigureRenderer figure)
+        {
+            Assert.IsNotNull(figure, "the figure has not been built");
+            Transform child = figure.transform.Find("AshoreFrame/FacetFigure");
+            Assert.IsNotNull(child, "harness: ashore the drawn child hangs under the figure's AshoreFrame");
+            var mr = child.GetComponent<MeshRenderer>();
+            Assert.IsNotNull(mr, "the drawn child carries the MeshRenderer");
+            Assert.IsNotNull(mr.sharedMaterial, "the drawn child draws with a material");
+            return mr.sharedMaterial;
+        }
+
         private static void AssertSamePose(Vector3[] a, Vector3[] b, string what)
         {
             Assert.AreEqual(a.Length, b.Length, what + " — vertex counts differ");
@@ -1243,6 +1256,67 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return null;
                 AssertDrawnBy(rig, AshoreMesh, "loaded ashore, frame " + f);
             }
+        }
+
+        [UnityTest]
+        public IEnumerator SteppingOff_HandsHerToThePixelTarget_OnTheCall()
+        {
+            // The figure pixel look draws a figure in art pixels only once she is handed in: her facet material
+            // in the figure queue and the frame marked live (IsoFacetFigureTarget.Sync). Her LateUpdate does that
+            // every frame, but the step-off shows her inside SetMode, and a capture on the call or a presenter's
+            // later pose comes before that LateUpdate: unless the call hands her in, that frame draws her at full
+            // size. She boards before she ever stood ashore, so the step-off BUILDS her ashore figure, a new
+            // material at its shader's queue with no earlier frame to lean on. The look OFF goes first, so a red
+            // ON arm cannot hide it: OFF hands nothing in, on the call or after.
+            yield return null;
+
+            Rig off = NewAshoreRig();
+            off.Config.FigurePixelTarget = false;
+            yield return Board(off);
+            Assert.IsNull(off.Presenter.AshoreFigure,
+                "harness, OFF: she boarded before she ever stood ashore, so the step-off builds her ashore figure");
+            IsoFacetFigureTarget.ResetLive();
+            off.Rider.SetMode(ControlMode.OnFoot, null);
+            AssertDrawnBy(off, AshoreMesh, "OFF, on the call that lands her");
+            Material offFacet = FacetMaterial(off.Presenter.AshoreFigure);
+            int own = offFacet.shader.renderQueue;
+            Assert.AreNotEqual(IsoFacetFigureTarget.FigureRenderQueue, own,
+                "harness: the facet shader's own queue is not the figure queue, so a reading can tell them apart");
+            bool offLiveOnCall = IsoFacetFigureTarget.FiguresLive;
+            int offQueueOnCall = offFacet.renderQueue;
+            yield return null;
+            bool offLiveAfter = IsoFacetFigureTarget.FiguresLive;
+            int offQueueAfter = offFacet.renderQueue;
+            string offRead = $" (on the call: live {offLiveOnCall}, queue {offQueueOnCall}; a frame later: " +
+                             $"live {offLiveAfter}, queue {offQueueAfter}; the shader's own {own})";
+            Assert.IsTrue(!offLiveOnCall && offQueueOnCall == own && !offLiveAfter && offQueueAfter == own,
+                "OFF: the look hands nothing in, on the call or after: no live frame, her facet at its shader's " +
+                "own queue" + offRead);
+
+            TearDown();
+            SetUp();
+            Rig on = NewAshoreRig();
+            on.Config.FigurePixelTarget = true;
+            yield return Board(on);
+            Assert.IsNull(on.Presenter.AshoreFigure,
+                "harness, ON: she boarded before she ever stood ashore, so the step-off builds her ashore figure");
+            IsoFacetFigureTarget.ResetLive();
+            on.Rider.SetMode(ControlMode.OnFoot, null);
+            AssertDrawnBy(on, AshoreMesh, "ON, on the call that lands her");
+            Material onFacet = FacetMaterial(on.Presenter.AshoreFigure);
+            bool liveOnCall = IsoFacetFigureTarget.FiguresLive;
+            int queueOnCall = onFacet.renderQueue;
+            yield return null;
+            bool liveAfter = IsoFacetFigureTarget.FiguresLive;
+            int queueAfter = onFacet.renderQueue;
+            int figureQueue = IsoFacetFigureTarget.FigureRenderQueue;
+            string onRead = $" (on the call: live {liveOnCall}, queue {queueOnCall}; a frame later: " +
+                            $"live {liveAfter}, queue {queueAfter}; the figure queue {figureQueue})";
+            Assert.IsTrue(liveAfter && queueAfter == figureQueue,
+                "harness, ON: a frame later her own LateUpdate has handed her in" + onRead);
+            Assert.IsTrue(liveOnCall && queueOnCall == figureQueue,
+                "ON: the call that lands her hands her to the pixel target, the frame live and her facet in the " +
+                "figure queue, as her LateUpdate does a frame later" + onRead);
         }
 
         [UnityTest]

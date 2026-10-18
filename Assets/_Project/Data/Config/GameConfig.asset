@@ -308,6 +308,8 @@ MonoBehaviour:
   CharacterLookRadiusMetres: 5
   CharacterLookTargetHeightMetres: 1.63
   MeshFigureKeyline: 1
+  FigurePixelTarget: 1
+  FigureHeadingSteps: 0
   MeshCharacter: 1
   MeshCharacterAshore: 1
   MeshCast: 1
