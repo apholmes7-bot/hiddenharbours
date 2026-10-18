@@ -39,9 +39,12 @@ namespace HiddenHarbours.App.Editor
         const string VisualsFolder = "Assets/_Project/Data/Characters";
         const string DataNpcs = "Assets/_Project/Data/NPCs";
 
-        /// <summary>One baked preset → one build asset. Mirrors the bake menu's cast.</summary>
+        /// <summary>One baked preset → one build asset. Mirrors the bake menu's cast, and the player's
+        /// own body: <c>char_build.fisher</c> is the builder's default (character PR 2b, ADR 0051),
+        /// worn by nobody in the cast mapping below.</summary>
         public static readonly (string preset, string stem)[] Presets =
         {
+            ("fisher", "Fisher"),
             ("ginny", "Ginny"), ("skipper", "Skipper"), ("nan", "Nan"),
             ("deckboss", "DeckBoss"), ("packer", "Packer"), ("cutter", "Cutter"),
             ("hand", "Hand"), ("boy", "Boy"), ("girl", "Girl"),

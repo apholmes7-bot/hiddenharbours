@@ -134,6 +134,13 @@ namespace HiddenHarbours.Player
         private CharacterClipPlayer _clipPlayer;
         private PlayerWalkController _walk;
 
+        // Character PR 2b: her look (ADR 0051). The body her recipe resolved to and the colours of each
+        // of its materials, or both null for the body as baked; the builder's tables, loaded once.
+        private CharacterSkinDef _lookSkin;
+        private Color32[][] _lookColours;
+        private CharacterBuilderDef _builder;
+        private bool _builderLoaded;
+
         // ---------------------------------------------------------------- published
 
         /// <inheritdoc/>
@@ -147,7 +154,8 @@ namespace HiddenHarbours.Player
         /// <summary>The facet hull she is riding, or null.</summary>
         public IsoFacetHullRenderer Hull => _hull;
 
-        /// <summary>The def actually in use aboard — the serialized one, or the character art def's.</summary>
+        /// <summary>The def actually in use aboard — the serialized one, her recipe's, or the character
+        /// art def's.</summary>
         public CharacterSkinDef Skin => _configured;
 
         /// <summary>The ABOARD figure's clip key drawn this frame, or null. Ashore, read
@@ -221,10 +229,15 @@ namespace HiddenHarbours.Player
             // Register with the rider rather than have the rider find us: the rider owns the sprite
             // and must keep working with no figure at all, so the dependency only ever points this way.
             if (_rider != null) _rider.SetFigureOverride(this);
+            EventBus.Subscribe<PlayerAppearanceChanged>(OnAppearanceChanged);
+            EventBus.Subscribe<PlayerAppearancePreviewRequested>(OnAppearancePreviewRequested);
+            ApplyLook(GameServices.Appearance.Showing);
         }
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<PlayerAppearanceChanged>(OnAppearanceChanged);
+            EventBus.Unsubscribe<PlayerAppearancePreviewRequested>(OnAppearancePreviewRequested);
             if (_rider != null) _rider.SetFigureOverride(null);
             DrawsInsteadOfSprite = false;
             NotDrawingReason = "presenter disabled";
@@ -601,6 +614,7 @@ namespace HiddenHarbours.Player
         private CharacterSkinDef ResolveSkin(ICharacterFigureStand stand)
         {
             if (_skin != null) return _skin;
+            if (_lookSkin != null) return _lookSkin;    // her recipe's body (PR 2b): a preset's baked def
             IsoCharacterSprite character = stand.FigureCharacter;
             CharacterVisualDef visual = character != null ? character.Visual : null;
             return visual != null ? visual.Skin : null;
@@ -662,6 +676,7 @@ namespace HiddenHarbours.Player
             // the parent chain, and a figure configured while unparented would carry no hull id.
             _figure = go.AddComponent<IsoCharacterFigureRenderer>();
             _figure.Configure(skin);
+            Paint(_figure, skin);
             _figure.Visible = false;
             _stateKey = null;
             return _figure.IsConfigured;
@@ -684,10 +699,72 @@ namespace HiddenHarbours.Player
             go.transform.SetParent(body.transform, false);
             _ashoreFigure = go.AddComponent<IsoCharacterFigureRenderer>();
             _ashoreFigure.Configure(skin);
+            Paint(_ashoreFigure, skin);
             _ashoreFigure.Visible = false;
             _ashoreConfigured = skin;
             _ashoreStateKey = null;
             return _ashoreFigure.IsConfigured;
+        }
+
+        // ---------------------------------------------------------------- her look (character PR 2b)
+
+        /// <summary>The body her recipe resolved to, or null while she is drawn as baked.</summary>
+        public CharacterSkinDef LookSkin => _lookSkin;
+
+        /// <summary>Why her last recipe was not drawn, in the builder's words, or null.</summary>
+        public string LookRefusal { get; private set; }
+
+        private void OnAppearanceChanged(PlayerAppearanceChanged e) => ApplyLook(e.Recipe);
+
+        /// <summary>The same path as a kept recipe, on purpose (the <c>PlayerOutfitVisual</c>
+        /// reasoning): a preview gets the same resolution and the same refusals as the real thing, and
+        /// the cancel arrives by the same route with the committed recipe.</summary>
+        private void OnAppearancePreviewRequested(PlayerAppearancePreviewRequested e) => ApplyLook(e.Recipe);
+
+        /// <summary>
+        /// <b>Resolve her recipe and paint both figures from it.</b> The builder answers with a preset's
+        /// baked body and the colours of its materials; nothing about where she stands, how she is
+        /// posed or how tall she is changes here — the next pose resolves the body through
+        /// <see cref="ResolveSkin"/> and places it by the same rules as every other def. An empty recipe
+        /// is the body as baked. A refused one is drawn as baked and said out loud; the save is never
+        /// touched from here.
+        /// </summary>
+        private void ApplyLook(CharacterRecipe recipe)
+        {
+            _lookSkin = null;
+            _lookColours = null;
+            LookRefusal = null;
+            if (recipe != null && !recipe.IsEmpty)
+            {
+                if (!_builderLoaded)
+                {
+                    _builder = CharacterBuilderDef.LoadShipped();
+                    _builderLoaded = true;
+                }
+                if (CharacterBuilder.TryBuild(_builder, recipe, CharacterAudience.Player,
+                                              out CharacterLook look, out string refusal))
+                {
+                    _lookSkin = look.Skin;
+                    _lookColours = look.Colours;
+                }
+                else
+                {
+                    LookRefusal = refusal;
+                    Debug.LogError($"[DeckRiderMeshPresenter] Refusing the player's recipe ({recipe}): {refusal} " +
+                                   "Drawing her as baked; the save is untouched.", this);
+                }
+            }
+            Paint(_figure, _configured);
+            Paint(_ashoreFigure, _ashoreConfigured);
+        }
+
+        /// <summary>The look's colours on a figure built from the look's body; the def's own on any
+        /// other (the next pose rebuilds it from the look's body).</summary>
+        private void Paint(IsoCharacterFigureRenderer figure, CharacterSkinDef configured)
+        {
+            if (figure == null || !figure.IsConfigured) return;
+            if (_lookColours != null && configured == _lookSkin) figure.Recolour(_lookColours);
+            else figure.ResetColours();
         }
 
         /// <summary>

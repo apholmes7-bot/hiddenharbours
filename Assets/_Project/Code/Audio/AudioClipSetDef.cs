@@ -22,6 +22,12 @@ namespace HiddenHarbours.Audio
     /// <para><b>Every clip here is redistributed.</b> The repository is public, so a file in one of these
     /// slots must carry a licence that permits it — CC0, or CC-BY with the attribution recorded. The
     /// ledger in <c>LICENSES.md</c> has one row per file and is part of the definition of done.</para>
+    ///
+    /// <para><b>The music bus is not a slot.</b> <see cref="Songs"/> is the song cycle the director plays
+    /// one after another, <see cref="SongGapSeconds"/> apart (<see cref="MusicCycle"/>). Songs run minutes
+    /// and are stereo, so they sit outside the slots' mono, length and byte bars. The public set carries
+    /// none and its bus stays silent; the owner's private sound pack fills its own set's list
+    /// (<see cref="AudioClipSets"/>).</para>
     /// </summary>
     [CreateAssetMenu(fileName = "AudioClipSet", menuName = "Hidden Harbours/Audio/Clip Set")]
     public sealed class AudioClipSetDef : ScriptableObject
@@ -121,5 +127,16 @@ namespace HiddenHarbours.Audio
 
         [Tooltip("A distant fog signal, sounded on the deterministic game-clock schedule in thick fog.")]
         public AudioClip Foghorn;
+
+        // ---- AudioDirector: the music bus (not a slot) --------------------------------------
+
+        [Header("Director — music")]
+        [Tooltip("The song cycle: each song plays through once, then the gap, then the next, wrapping after " +
+                 "the last. Empty here, so the bus is silent; the private sound pack's set fills its own list.")]
+        public AudioClip[] Songs = new AudioClip[0];
+
+        [Tooltip("Seconds of silence between one song's end and the next song's start. The public set's " +
+                 "value is the one played, with or without the private pack.")]
+        [Min(0f)] public float SongGapSeconds = 4f;
     }
 }

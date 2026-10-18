@@ -111,7 +111,7 @@ namespace HiddenHarbours.Audio
         /// </summary>
         private void ApplyClipSet()
         {
-            var set = Resources.Load<AudioClipSetDef>("AudioClipSet");
+            var set = AudioClipSets.Effective();
             if (set == null) return;
 
             if (set.RodCreakLoop      != null) _rodCreakLoop      = set.RodCreakLoop;
