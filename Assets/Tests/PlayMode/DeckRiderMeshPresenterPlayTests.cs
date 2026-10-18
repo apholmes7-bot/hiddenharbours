@@ -506,13 +506,13 @@ namespace HiddenHarbours.Tests.PlayMode
             return mf.sharedMesh.vertices;
         }
 
-        /// <summary>The material her drawn child draws with: the one the figure pixel look moves into its
-        /// queue.</summary>
+        /// <summary>The material her ashore figure's drawn child draws with: the one the figure pixel look moves
+        /// into its queue. Ashore the child hangs under the figure's AshoreFrame.</summary>
         private static Material FacetMaterial(IsoCharacterFigureRenderer figure)
         {
             Assert.IsNotNull(figure, "the figure has not been built");
-            Transform child = figure.transform.Find("FacetFigure");
-            Assert.IsNotNull(child, "the figure's drawn child is named FacetFigure");
+            Transform child = figure.transform.Find("AshoreFrame/FacetFigure");
+            Assert.IsNotNull(child, "harness: ashore the drawn child hangs under the figure's AshoreFrame");
             var mr = child.GetComponent<MeshRenderer>();
             Assert.IsNotNull(mr, "the drawn child carries the MeshRenderer");
             Assert.IsNotNull(mr.sharedMaterial, "the drawn child draws with a material");
