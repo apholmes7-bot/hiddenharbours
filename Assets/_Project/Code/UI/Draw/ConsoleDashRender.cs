@@ -10,8 +10,9 @@ namespace HiddenHarbours.UI
     /// the dome compass (<see cref="CompassRigRender"/>), the wheel (the dash's own baked wheel is
     /// deliberately NOT ported — in game the wheel the player grabs is <see cref="WheelRigRender"/>,
     /// per console-wheel/README.md "the wheel the player grabs is its own rig"), and the lever
-    /// (<see cref="LeverRigRender"/>, composited last, on top). The compositor is
-    /// <c>HelmDashController</c>; geometry constants live in <see cref="HelmDashGeometry"/>.
+    /// (<see cref="LeverRigRender"/>, composited last, on top). The caller is
+    /// <see cref="HelmBandController"/>, which crops the band's greybox pieces from this raster
+    /// (H2); geometry constants live in <see cref="HelmDashGeometry"/>.
     ///
     /// <para><b>Paint scheme:</b> the JS asks <c>ConsoleIso.palette()</c> for the boat's colourway;
     /// without ConsoleIso loaded it falls back to the harbour-white fleet ramps
@@ -19,7 +20,7 @@ namespace HiddenHarbours.UI
     /// carries. Per-boat paint schemes ride with the ConsoleIso OKLCH mixer in a later slice.</para>
     ///
     /// <para><b>Perf (rule 7):</b> no allocation after the static ramps; the caller repaints only on
-    /// a state-key change (running/gear/rpm/fuel quantised — <c>HelmDashController</c>).</para>
+    /// a state-key change (running/gear/rpm/fuel quantised — <see cref="HelmBandController"/>).</para>
     /// </summary>
     public static class ConsoleDashRender
     {

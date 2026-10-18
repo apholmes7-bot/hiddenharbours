@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 705affcae831417704e895ac99de6acb, type: 3}
+  m_Name: BirdHaunt_stp_crossing_mussels
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.BirdHauntDef
+  Id: birdhaunt.stp_crossing_mussels
+  RegionId: region.st_peters
+  Kind: 3
+  Centre: {x: -233, y: 0}
+  HalfSize: {x: 14, y: 16}
+  RoostId: birdroost.stp_sisters
+  Sheltered: 0
+  BusyFromHour: 0
+  BusyToHour: 0
+  BusyBoost: 1
+  BusyOnFineDaysOnly: 0
+  MarketDayBoost: 1
+  HasTide: 1
+  TideOpensBelowMetres: -0.8
+  TideRampMetres: 0.8
+  HighWaterKeep: 0.35
+  MiddayLevel: 0.8
+  AfternoonLevel: 0.8
+  PerchIds: []
+  AwayHeading: {x: 0, y: 0}
+  Birds:
+  - SpeciesId: bird.herring_gull
+    Capacity: 12
+    Typical: 7
+    SeasonWeights:
+    - 0.9
+    - 1
+    - 1
+    - 0.7
+    Residents:
+    - 0
+    - 0
+    - 0
+    - 0
+    Room: 0

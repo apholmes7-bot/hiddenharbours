@@ -282,6 +282,22 @@ namespace HiddenHarbours.Boats
                  "she sails?' — without transcribing a number out of the sidecar.")]
         [Min(0f)] public float SpriteIronsApparentDeg = 25f;
 
+        [Tooltip("Slow pay-off while drawn in irons, design torque units. Zero leaves existing handling unchanged.")]
+        [Min(0f)] public float IronsPayOffTorque = 0f;
+
+        [Tooltip("Way (m/s) at full rudder authority; the irons assist fades to zero here.")]
+        [Min(0.01f)] public float RudderFullAuthorityWayMs = 2f;
+
+        [Tooltip("Wind (kn) at full sail yaw authority. Below it both yaw terms fade together; calm gives no yaw.")]
+        [Min(0.01f)] public float SailYawReferenceWindKn = 10f;
+
+        [Tooltip("Unmanned windward restoring torque at the no-go edge, design units. Zero disables round-up. " +
+                 "A wind-loaded floor keeps her luffing against pay-off; sail drive increases the torque.")]
+        [Min(0f)] public float UnmannedRoundUpTorque = 0f;
+
+        [Tooltip("Polar target speed (kn) at which unmanned round-up reaches twice its wind-loaded floor.")]
+        [Min(0.01f)] public float RoundUpReferenceDriveKn = 6f;
+
         /// <summary>True when this hull is driven by her sails and has a table to sail to. A hull
         /// declared <see cref="PropulsionType.Sail"/> with no polar is NOT sailable — she falls back
         /// to her auxiliary rather than sitting still with no explanation.</summary>

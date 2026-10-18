@@ -142,3 +142,12 @@ __pycache__/
 # downloads behind them are hundreds of MB and regenerable from the URLs in that
 # ledger, so they stay out of a public repository.
 /_inbox/
+
+# The PRIVATE SOUND PACK's copies (Hidden Harbours ▸ Audio ▸ Install Private Sound Pack).
+#
+# ⭐ DELIBERATELY NOT COMMITTED. These sounds are licensed to the owner alone, so they may never reach
+# this public repository. AudioClipSets lays Private/Resources/AudioClipSetPrivate over the public
+# clip set at boot; without this folder the public set plays exactly as it is and the music bus is
+# silent. AudioClipSetsTests guards both lines below (docs/audio/private-sound-pack.md).
+/[Aa]ssets/_Project/Audio/Private/
+/[Aa]ssets/_Project/Audio/Private.meta

@@ -76,6 +76,10 @@ Player/Input/InputBindings.cs       the asset (InputSystem.actions — project-w
                                     DeviceOf(control), ReportDevice(action)
 Player/Input/DeviceWalkIntentSource.cs   Walk map → WalkIntents, gated; static Map(...) is pure
 Player/Input/DeviceDeckIntentSource.cs   Deck map → DeckIntents, gated; static Map(...) is pure
+
+Core/Input/HudIntents.cs            HudIntents { HideAll }, HeldHudIntents, and HudInput (the device
+                                    source's slot: its reader is in UI, which cannot reference Player) — H2
+Player/Input/DeviceHudIntentSource.cs    Hud map → HudIntents, gated; static Map(...) is pure; installs itself
 ```
 
 - **A consumer takes its source through one `Configure…(IControlIntentSource<T>)`** (the
@@ -120,7 +124,23 @@ ships as a preloaded asset). **One map per control mode**, two control schemes: 
 | **Drive** | Throttle | Value/Axis | `1DAxis(whichSideWins=0)`: − = S ∨ ↓, + = W ∨ ↑ | `KeyboardDriveInputSource` (PR 1 re-homes it; byte-identical) |
 | | Steer | Value/Axis | `1DAxis`: **+ = A ∨ ←** (LEFT is +1, the rig's own sense, ADR 0035 §5), − = D ∨ → | as above |
 | | Brake | Button | Space | as above |
+| **Hud** (H2, 2026-10-17) | HideAll | Button | M | `BoatUiWindowInput` → `BoatUiWindows.ToggleHideAll`, in every control mode ✅ H2 |
 | **UI** | Navigate, Submit, Cancel, Point, Click, RightClick, MiddleClick, ScrollWheel | as Unity's UI map | the template's KeyboardMouse bindings, carried over verbatim | the `EventSystem` (`SellScreen` builds one with no explicit asset, so the module falls back to THIS map's `UI`); the tiered `Zoom` intent joins it in PR 2 |
+
+**The `Hud` map (H2, 2026-10-17).** M, the hide-all of the helm's UI, was the last key the HUD read off
+the keyboard (`BoatUiWindowInput`). It is a mode of its own, not a press in each mode's struct: the watch
+face shows ashore and the hide-all's restore is its recovery, so the press is the same on foot, on deck
+and at the helm, and the asset says it once. `HudIntents { HideAll }` is an edge, and the gates are
+applied in the device source as ruling 2 says: `ShellFlow.WorldInputBlocked`, and `HelmKeyCapture` while
+a text field owns the keys. The reader is in UI, which cannot reference Player, so
+`DeviceHudIntentSource` installs itself in Core's `HudInput` before the first scene and the reader takes
+it from there; `BoatUiWindowInput.ConfigureHudInput` hands the reader a scripted source
+(`HeldHudIntents`), and null restores the asset's. Pinned by
+`ControlIntentSourceTests.HideAll_IsM_InTheBindingsAsset` and
+`TheHudReadsTheAssetUntilHandedAnotherSource`. **The pad's rows stay PR 2's**, which has not landed (the
+Gamepad scheme is still empty): hold View hides all (ruled), and a tap of View raises the next fitted
+instrument in the band's order, then none (the Planner's proposal, under the owner's feel gate on PR 2).
+The burn-down after H2: 42 files → 40.
 
 **Why Digital (`mode=1`) and not the default DigitalNormalized.** The old read summed the keys and left
 a diagonal at (±1, ±1) for `PlayerWalkController.VelocityFor` to clamp. Mode 1 is that sum. (After the

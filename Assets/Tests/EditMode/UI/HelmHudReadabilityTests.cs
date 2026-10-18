@@ -57,56 +57,18 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         [Test]
-        public void CardBodiesAndMargins_FollowTheHudFactor_InBothStatesAtEverySize()
+        public void TheTillersCardAndMargin_FollowTheHudFactor_AtEverySize()
         {
+            // One state since H2: the focus and the dash card retired, so the tiller's card is the
+            // only helm card left, and the band (whole k) is HelmBandLayoutTests'.
             HelmOverlaySettings cfg = HelmOverlaySettings.Default;
             foreach (Vector2Int s in Screens)
-            foreach (bool focus in new[] { false, true })
             {
                 float k = Scale(s);
-                Rect tiller = HelmOverlayLayout.CardRect(focus, 120, 244, cfg, s.x, s.y);
-                Assert.That(tiller.width, Is.EqualTo((focus ? 240f : 120f) * k).Within(0.01f));
-                Assert.That(tiller.height, Is.EqualTo((focus ? 488f : 244f) * k).Within(0.01f));
-                Assert.That(tiller.y, Is.EqualTo(16f * k).Within(0.01f));
-                // Exercise the original overload: independently price its screen/band fit clamp.
-                Rect dash = HelmOverlayLayout.DashCardRect(focus, 600, 548, cfg, s.x, s.y, 220f * k);
-                float height = Math.Min((focus ? 822f : 274f) * k, s.y - 236f * k);
-                Assert.That(dash.height, Is.EqualTo(height).Within(0.01f));
-                Assert.That(dash.width, Is.EqualTo(height * 600f / 548f).Within(0.01f));
-                Assert.That(dash.y, Is.EqualTo(16f * k).Within(0.01f));
-            }
-        }
-
-        [Test]
-        public void FocusedDash_LeavesRoomForChromeAndLiftedHeading_AtEverySize()
-        {
-            var reserveMethod = typeof(HelmOverlayLayout).GetMethod("DashReservedTopPx");
-            var settingsMethod = typeof(HelmOverlayLayout).GetMethod("WindowSettings");
-            Assert.NotNull(reserveMethod, "the focused dash must reserve the lifted heading");
-            Assert.NotNull(settingsMethod, "the footprint and drawn chrome must use the HUD factor");
-            string host = File.ReadAllText("Assets/_Project/Code/UI/HelmOverlayHost.cs");
-            StringAssert.Contains("dashReserve, in windowCfg", host);
-            StringAssert.Contains("FootprintOf(dashCard, windowCfg.TitleBarPx)", host);
-            foreach (Vector2Int s in Screens)
-            {
-                float k = Scale(s);
-                var chrome = (BoatUiWindowSettings)settingsMethod.Invoke(null,
-                    new object[] { BoatUiWindowSettings.Default, (float)s.x, (float)s.y });
-                Assert.That(chrome.TitleBarPx, Is.EqualTo(18f * k).Within(0.01f));
-                Assert.That(chrome.ChromeButtonPx, Is.EqualTo(22f * k).Within(0.01f));
-                Assert.That(chrome.GripPx, Is.EqualTo(14f * k).Within(0.01f));
-                float reserve = (float)reserveMethod.Invoke(null, new object[] { (float)s.x, (float)s.y, 220f * k, chrome.TitleBarPx });
-                Rect dash = HelmOverlayLayout.DashCardRect(true, 600, 548, HelmOverlaySettings.Default, s.x, s.y, reserve);
-                Assert.That(dash.height, Is.EqualTo(s.y - 246f * k).Within(0.01f));
-                var covered = HelmOverlayHost.FootprintOf(dash, chrome.TitleBarPx);
-                var p = NavClusterPlacement.ClearOfTheDash;
-                float lift = HelmHudSuppression.NavClusterLiftRef(p, covered, s.x, s.y);
-                Rect nav = HelmHudSuppression.NavClusterScreenRect(p, s.x, s.y);
-                nav.y += lift * k;
-                Assert.That(nav.yMax, Is.LessThanOrEqualTo(s.y + 0.01f));
-                Assert.That(nav.yMin, Is.GreaterThanOrEqualTo(0f));
-                Assert.False(covered.Overlaps(new Rect(nav.x, nav.y + 0.01f, nav.width, nav.height - 0.02f)));
-                Assert.That(lift > 0f, Is.EqualTo(s.x != 3440), "UW remains beside; the four 16:9 sizes lift");
+                Rect tiller = HelmOverlayLayout.CardRect(120, 244, cfg, s.x, s.y);
+                Assert.That(tiller.width, Is.EqualTo(120f * k).Within(0.01f), $"{s}");
+                Assert.That(tiller.height, Is.EqualTo(244f * k).Within(0.01f), $"{s}");
+                Assert.That(tiller.y, Is.EqualTo(16f * k).Within(0.01f), $"{s}");
             }
         }
 
@@ -130,8 +92,18 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         [Test]
-        public void BuiltFishingHint_ClearsFocusedDashChrome_AtEverySize()
+        public void BuiltFishingHint_ClearsEveryRaisedCard_AtEverySize()
         {
+            // The focused dash and its title bar retired with H2. What can now rise toward the hint is
+            // a raised instrument card, which never reaches into the top band (Q1: B); the hint must
+            // stop clear above the tallest of them at every size, the plotter's max face included.
+            var natives = new[]
+            {
+                new Vector2Int(DepthRigRender.W, DepthRigRender.H), new Vector2Int(FishRigRender.W, FishRigRender.H),
+                new Vector2Int(RadarRigRender.W, RadarRigRender.H),
+                new Vector2Int(NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH),
+                new Vector2Int(NavRigGeometry.MaxW, NavRigGeometry.MaxH),
+            };
             var go = new GameObject("HelmFishingHintClearance");
             HudController hud = null;
             try
@@ -145,10 +117,13 @@ namespace HiddenHarbours.Tests.UI.EditMode
                 {
                     float k = Scale(s);
                     float bottom = s.y + (hint.rectTransform.anchoredPosition.y - hint.rectTransform.sizeDelta.y) * k;
-                    // Focused dash plus its title bar must stop below the whole hint box.
-                    float reserve = HelmOverlayLayout.DashReservedTopPx(s.x, s.y, 220f * k, 18f * k);
-                    Rect card = HelmOverlayLayout.DashCardRect(true, 600, 548, HelmOverlaySettings.Default, s.x, s.y, reserve);
-                    Assert.That(bottom, Is.GreaterThanOrEqualTo(card.yMax + 18f * k + 4f * k - 0.01f));
+                    // Every raised card must stop below the whole hint box, with air.
+                    foreach (Vector2Int n in natives)
+                    {
+                        Rect card = HelmBandLayout.RaisedCardRect(n.x, n.y, s.x, s.y, 220f * k);
+                        Assert.That(bottom, Is.GreaterThanOrEqualTo(card.yMax + 4f * k - 0.01f),
+                                    $"{s}: the raised {n.x}x{n.y} card reaches the fishing hint");
+                    }
                 }
             }
             finally

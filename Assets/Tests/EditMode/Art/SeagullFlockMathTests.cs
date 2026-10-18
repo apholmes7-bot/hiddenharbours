@@ -435,7 +435,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// <b>The clock lives in exactly one place.</b> The charter's rule for this drop: nothing in
         /// the sim path reads <c>Time.time</c>. <see cref="GullFlock"/> owns the only clock read in the
         /// system and hands a millisecond delta down as an argument — which is what lets a fixture step
-        /// a bird a thousand times inside one frame and get the same bird twice.
+        /// a bird a thousand times inside one frame and get the same bird twice. The gull schedule and
+        /// its roster are held to the same rule: they take the game time as an argument too, so where
+        /// a bird is can be worked out for any hour without a scene.
         ///
         /// <para>Comments are stripped before the scan, because these files' own documentation SAYS
         /// <c>Time.time</c> and <c>UnityEngine</c> while promising not to call either.
@@ -446,7 +448,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void NothingInTheSimPathReadsAClock()
         {
             foreach (string file in new[] { "SeagullFlockMath.cs", "SeagullBehaviour.cs",
-                                            "SeagullStateMachine.cs" })
+                                            "SeagullStateMachine.cs", "GullSchedule.cs",
+                                            "GullRoster.cs" })
             {
                 string code = CodeOf(file);
                 Assert.IsFalse(Regex.IsMatch(code, @"\bTime\s*\."),
@@ -458,7 +461,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.IsFalse(Regex.IsMatch(code, @"\bDateTime\b|\bStopwatch\b|\bTickCount\b"),
                                file + " reads a wall clock");
                 Assert.IsFalse(Regex.IsMatch(code, @"\bUnityEngine\b"),
-                               file + " pulled in UnityEngine — these three are engine-light so they " +
+                               file + " pulled in UnityEngine — these files are engine-light so they " +
                                "can be stepped without a scene, and ported without one");
             }
         }
