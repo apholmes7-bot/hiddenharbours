@@ -449,13 +449,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
     }
 
     /// <summary>
-    /// <b>A gull asked down comes down.</b> The flock asks a bird in the air to put down at its place
-    /// whenever her settle window comes due — and the departures that come before the window (getting
-    /// up to commute, off ground she has wandered from, or with a catch) leave it where it was, so it
-    /// can come due while she is still getting up.
-    /// These ask a bird down from every airborne state the flock can find her in, on the state table
-    /// built from the committed def as the repo holds it (read by <see cref="GullYaml"/>, in
-    /// GullScheduleTests.cs).
+    /// <b>A gull asked down comes down, and a paused flock waits.</b> The flock asks a bird in the air to
+    /// put down at its place whenever her settle window comes due — and the departures that come before
+    /// the window (getting up to commute, off ground she has wandered from, or with a catch) leave it
+    /// where it was, so it can come due while she is still getting up.
+    /// These ask a bird down from every airborne state the flock can find her in, and run a flock against
+    /// a paused clock, on the state table built from the committed def as the repo holds it (read by
+    /// <see cref="GullYaml"/>, in GullScheduleTests.cs).
     /// </summary>
     public class GullFlockDecisionTests
     {
@@ -474,7 +474,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             foreach ((string label, SeagullSimBird found) in BirdsInTheAir(table, slot))
             {
                 SeagullSimBird bird = found;
-                if (!GullFlock.CanBeAskedDown(table, bird.State)) { refused.Add(table.IdOf(bird.State)); continue; }
+                if (!GullFlock.CanBeAskedDown(table, bird)) { refused.Add(table.IdOf(bird.State)); continue; }
                 if (!SeagullStateMachine.CommandAlight(ref bird, land, 6.0, 0.0, 0.0, table))
                 {
                     failures.Add(label + ": the flock may ask her down but the table refuses the descent");
@@ -488,6 +488,153 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 if (refused.Contains(wheel))
                     failures.Add(wheel + " is never asked down: the wheel's own birds could not settle");
             GullAssert.None(failures, "a gull asked down hangs in the air");
+        }
+
+        /// <summary>
+        /// A gull back in the air rejoins her wheel over the regroup time, and is not asked down until she
+        /// has. Asked down on the way, she can start down from about a metre up, and her path to the spot
+        /// is paced by the height she loses: she covers it in a fraction of a second and zips there. Takes a
+        /// gull off the ground and asks, at every tick until she is back on her wheel, whether the flock may
+        /// ask her down: never, and then at once.
+        /// </summary>
+        [Test]
+        public void AGullAskedDownWhileSheRejoinsIsTurnedAway()
+        {
+            SeagullBehaviour table = Table();
+            var slot = WheelSlot(table);
+            var bird = new SeagullSimBird { IntentState = -1 };
+            SeagullStateMachine.Enter(ref bird, table.IndexOf(SeagullStates.Stand), table);
+            Assert.IsTrue(SeagullStateMachine.CommandDepart(ref bird, table), "a standing gull cannot take off");
+
+            var failures = new List<string>();
+            int limit = (int)Math.Ceiling(table.Flock.RegroupSeconds * TicksPerSecond) + TicksPerSecond;
+            for (int t = 1; t <= limit && !bird.FlockBound; t++)
+            {
+                Tick(table, ref bird, slot);
+                if (bird.FlockBound || !GullFlock.CanBeAskedDown(table, bird)) continue;
+                int ms = (int)Math.Round(t * 1000.0 / TicksPerSecond);
+                failures.Add(ms + " ms after she got up, still rejoining (" + table.IdOf(bird.State) + " at " +
+                             Metres(bird.AltitudeMetres) + ")");
+            }
+
+            Assert.IsTrue(bird.FlockBound, "she never rejoined her wheel");
+            Assert.IsTrue(GullFlock.CanBeAskedDown(table, bird), "back on her wheel, she is never asked down");
+            GullAssert.None(failures, "a gull still rejoining her wheel is asked down");
+        }
+
+        /// <summary>
+        /// A gull asked down is handed back to the wheel if she has not arrived by her deadline. A glider
+        /// stays in <c>glide</c> all the way down and sinks at 0.4 m/s: from high on the wheel her glide-in
+        /// alone outlasts a settle window, and a deadline of one window pops her back onto the wheel while
+        /// she is still coming down. Asks down every bird the flock would ask, at the bottom and the top of
+        /// the wheel's band, onto the ground and onto the water, and flies each of them down: every one
+        /// arrives before her deadline.
+        /// </summary>
+        [Test]
+        public void AGliderAskedDownFromHighIsNeverPoppedBack()
+        {
+            SeagullBehaviour table = Table();
+            var slot = WheelSlot(table);
+            var failures = new List<string>();
+            int descents = 0;
+
+            foreach ((string label, SeagullSimBird found) in BirdsInTheAir(table, slot))
+            {
+                if (!GullFlock.CanBeAskedDown(table, found)) continue;
+                foreach (string arrival in new[] { SeagullStates.Land, SeagullStates.Splash })
+                {
+                    SeagullSimBird bird = found;
+                    if (!SeagullStateMachine.CommandAlight(ref bird, table.IndexOf(arrival), 6.0, 0.0, 0.0, table))
+                    {
+                        failures.Add(label + ", down to " + arrival + ": the table refuses the descent");
+                        continue;
+                    }
+                    descents++;
+                    string popped = HandedBackBeforeSheArrives(table, ref bird, slot,
+                                                               GullFlock.AlightAllowanceMilliseconds(table, bird));
+                    if (popped != null) failures.Add(label + ", down to " + arrival + ": " + popped);
+                }
+            }
+
+            Assert.That(descents, Is.GreaterThan(0), "the flock would ask no bird down");
+            GullAssert.None(failures, "a gull asked down is handed back to the wheel before she arrives");
+        }
+
+        /// <summary>
+        /// The game's pause holds the whole flock. A commuter rides the game's clock, which a pause stops;
+        /// the wheel and every bird's flight run on the flock's own unscaled clock, which a pause alone does
+        /// not. Lays a flock out in every kind of flight — on her wheel, on a commute, rejoining her wheel
+        /// after a takeoff, gliding down from high, afloat — then pauses the game's clock and steps the
+        /// flock as <see cref="GullFlock.Tick"/> does for three seconds: no bird moves. Then lets the clock
+        /// run again, so the test cannot pass on birds that would not have moved anyway.
+        /// </summary>
+        [Test]
+        public void APausedFlockMovesNoBird()
+        {
+            SeagullBehaviour table = Table();
+            var clock = new PausableClock { TotalSeconds = 9.0 * 3600.0 };
+            var line = new GullRosterBird
+            {
+                Where = GullWhere.Commuting,
+                FromX = -40.0, FromY = 0.0, ToX = 40.0, ToY = 0.0,
+                DepartSeconds = clock.TotalSeconds,
+                FlightSeconds = 80.0 / GullConfig.Default.CommuteSpeedMetresPerSecond,
+            };
+
+            string[] labels =
+            {
+                "on her wheel", "on a commute", "rejoining her wheel after a takeoff", "gliding down from high",
+                "afloat",
+            };
+            const int commuter = 1;
+            var birds = new SeagullSimBird[labels.Length];
+            for (int i = 0; i < 2; i++)
+            {
+                birds[i] = new SeagullSimBird { IntentState = -1, FlockBound = true };
+                SeagullStateMachine.Enter(ref birds[i], table.IndexOf(SeagullStates.Fly), table);
+            }
+            birds[2] = new SeagullSimBird { IntentState = -1 };
+            SeagullStateMachine.Enter(ref birds[2], table.IndexOf(SeagullStates.Stand), table);
+            Assert.IsTrue(SeagullStateMachine.CommandDepart(ref birds[2], table), "a standing gull cannot take off");
+            birds[3] = new SeagullSimBird { IntentState = -1, FlockBound = true };
+            SeagullStateMachine.Enter(ref birds[3], table.IndexOf(SeagullStates.Glide), table);
+            birds[3].AltitudeMetres = table.Flock.AltitudeMaxMetres;
+            Assert.IsTrue(SeagullStateMachine.CommandAlight(ref birds[3], table.IndexOf(SeagullStates.Land),
+                                                            6.0, 0.0, 0.0, table), "a glider cannot be asked down");
+            birds[4] = new SeagullSimBird { IntentState = -1 };
+            SeagullStateMachine.Enter(ref birds[4], table.IndexOf(SeagullStates.Float), table);
+
+            var wheel = new SeagullFlockMath.SeagullFlockBird[birds.Length];
+            double flockMilliseconds = 0.0;
+            for (int t = 0; t < TicksPerSecond; t++)
+                FlockTick(table, clock, ref flockMilliseconds, birds, wheel, commuter, line);
+            var laidOut = (SeagullSimBird[])birds.Clone();
+
+            clock.IsPaused = true;
+            var failures = new List<string>();
+            var moved = new bool[birds.Length];
+            for (int t = 1; t <= 3 * TicksPerSecond; t++)
+            {
+                FlockTick(table, clock, ref flockMilliseconds, birds, wheel, commuter, line);
+                for (int i = 0; i < birds.Length; i++)
+                {
+                    if (moved[i] || SamePose(birds[i], laidOut[i])) continue;
+                    moved[i] = true;
+                    failures.Add(labels[i] + ": moved " + (int)Math.Round(t * 1000.0 / TicksPerSecond) +
+                                 " ms into the pause, " + Pose(table, laidOut[i]) + " to " + Pose(table, birds[i]));
+                }
+            }
+            GullAssert.None(failures, "a paused flock moves its birds");
+
+            clock.IsPaused = false;
+            for (int t = 0; t < TicksPerSecond; t++)
+                FlockTick(table, clock, ref flockMilliseconds, birds, wheel, commuter, line);
+            var still = new List<string>();
+            for (int i = 0; i < birds.Length; i++)
+                if (SamePose(birds[i], laidOut[i])) still.Add(labels[i]);
+            Assert.That(still, Is.Empty, "with the clock running again these never moved: the pause proves nothing for them");
+            Assert.IsFalse(GullFlock.HeldByThePause(new PausableClock { IsPaused = true }, pinned: true),
+                           "a pinned fixture keeps no game time, so no pause holds it");
         }
 
         /// <summary>
@@ -570,12 +717,88 @@ namespace HiddenHarbours.Tests.Art.EditMode
             SeagullStateMachine.TryAlight(ref bird, table);
         }
 
+        /// <summary>Flies a bird asked down until she arrives, and names where she is when her deadline
+        /// hands her back to the wheel first, as the flock's decision does; null when she arrives in time.</summary>
+        private static string HandedBackBeforeSheArrives(SeagullBehaviour table, ref SeagullSimBird bird,
+                                                         in SeagullFlockMath.SeagullFlockBird slot,
+                                                         double deadlineMilliseconds)
+        {
+            for (int t = 0; bird.IntentState >= 0; t++)
+            {
+                double elapsed = t * 1000.0 / TicksPerSecond;
+                if (!(elapsed < deadlineMilliseconds))
+                    return "handed back after " + Seconds(elapsed) + ", still coming down (" +
+                           table.IdOf(bird.State) + " at " + Metres(bird.AltitudeMetres) + ")";
+                Tick(table, ref bird, slot);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// One tick of a laid-out flock's flight, stepped as <see cref="GullFlock.Tick"/> steps it (less its
+        /// decisions, its breeze and its drawing): the game's clock runs on unless it is paused, and unless
+        /// the pause holds the flock its own clock runs on too, the wheel turns, the commuter's centre is
+        /// her point on her line at the game's time, and every bird takes her step and arrives.
+        /// </summary>
+        private static void FlockTick(SeagullBehaviour table, PausableClock clock, ref double flockMilliseconds,
+                                      SeagullSimBird[] birds, SeagullFlockMath.SeagullFlockBird[] wheel,
+                                      int commuter, GullRosterBird line)
+        {
+            const double tick = 1000.0 / TicksPerSecond;
+            clock.Run(tick / 1000.0);
+            if (GullFlock.HeldByThePause(clock, pinned: false)) return;
+
+            flockMilliseconds += tick;
+            GullConfig config = GullConfig.Default;
+            SeagullFlockMath.Flock(birds.Length, flockMilliseconds, config.Seed, config.WheelRadiusMetres,
+                                   table.FlockTuning, wheel);
+            for (int i = 0; i < birds.Length; i++)
+            {
+                double centreX = 0.0, centreY = 0.0;
+                if (i == commuter) line.PointAt(clock.TotalSeconds, out centreX, out centreY);
+                SeagullStateMachine.Step(ref birds[i], tick, table, in wheel[i], centreX, centreY);
+                SeagullStateMachine.TryAlight(ref birds[i], table);
+            }
+        }
+
+        /// <summary>Is she drawn as she was: the same spot, height, state and frame?</summary>
+        private static bool SamePose(in SeagullSimBird a, in SeagullSimBird b)
+            => a.X == b.X && a.Y == b.Y && a.AltitudeMetres == b.AltitudeMetres && a.State == b.State &&
+               a.Frame == b.Frame;
+
+        private static string Pose(SeagullBehaviour table, in SeagullSimBird bird)
+            => table.IdOf(bird.State) + " frame " + bird.Frame + " at (" +
+               bird.X.ToString("0.00", CultureInfo.InvariantCulture) + ", " +
+               bird.Y.ToString("0.00", CultureInfo.InvariantCulture) + "), " + Metres(bird.AltitudeMetres) + " up";
+
+        /// <summary>The game's clock as the flock reads it: its seconds, which stand still while it is
+        /// paused.</summary>
+        private sealed class PausableClock : IGameClock
+        {
+            public double TotalSeconds { get; set; }
+            public void Run(double seconds) { if (!IsPaused) TotalSeconds += seconds * TimeScale; }
+            public GameTime Now => new GameTime(TotalSeconds);
+            public Season Season => Season.EarlySpring;
+            public int Year => 1;
+            public int DayIndex => 0;
+            public int DayOfSeason => 1;
+            public Weekday Weekday => Weekday.Monday;
+            public bool IsMarketDay => false;
+            public float HourOfDay => 9f;
+            public float DayFraction => 9f / 24f;
+            public bool IsPaused { get; set; }
+            public float TimeScale { get; set; } = 1f;
+        }
+
         /// <summary>Her place on the wheel, at the bottom of its band: where a rising bird rejoins.</summary>
         private static SeagullFlockMath.SeagullFlockBird WheelSlot(SeagullBehaviour table)
             => new SeagullFlockMath.SeagullFlockBird(0.0, 0.0, table.Flock.AltitudeMinMetres, 0.0, 0,
                                                      SeagullFlockMath.SeagullFlockAnim.Fly, 0, 1.0);
 
         private static string Metres(double metres) => metres.ToString("0.00", CultureInfo.InvariantCulture) + " m";
+
+        private static string Seconds(double milliseconds)
+            => (milliseconds / 1000.0).ToString("0.0", CultureInfo.InvariantCulture) + " s";
 
         /// <summary>The state table, field by field as <see cref="SeagullVisualDef.Behaviour"/> builds it,
         /// from the committed asset and without the asset database.</summary>

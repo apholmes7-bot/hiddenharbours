@@ -379,9 +379,13 @@ namespace HiddenHarbours.Art
 
             if (!ViewRectWorld(out Rect view)) { HideAll(); return; }
 
+            // The game's pause holds the flock: once laid out, no bird is stepped, decides or is drawn
+            // anew until the clock runs again, so each keeps the pose she was last drawn in.
+            IGameClock clock = GameServices.Clock;
+            if (_refreshed && HeldByThePause(clock, _pinned)) return;
+
             _simMilliseconds += deltaMilliseconds;
 
-            IGameClock clock = GameServices.Clock;
             double now = _pinned || clock == null ? 0.0 : clock.TotalSeconds;
 
             // The schedule a few times a second: where every bird is, and which of them are drawn.
@@ -449,6 +453,16 @@ namespace HiddenHarbours.Art
                 Draw(b, tint, dayOpacity, seaState);
             }
         }
+
+        /// <summary>
+        /// Does the game's pause hold the flock? While the game's clock is paused (the title, the pause
+        /// menu, the tide page) a commuter, who rides it, stands still on her line, but the wheel and every
+        /// bird's flight run on the flock's own unscaled clock: held by nothing, the rest of the flock flies
+        /// on around her. The pause holds the whole flock, rather than a commuter being moved on a clock
+        /// the world does not keep (rule 5). A pinned fixture keeps no game time, so no pause holds it.
+        /// </summary>
+        internal static bool HeldByThePause(IGameClock clock, bool pinned)
+            => !pinned && clock != null && clock.IsPaused;
 
         /// <summary>
         /// A commuter's wheel sample: on its point (no offset), at the wheel's height and wing beat, on
@@ -1099,7 +1113,7 @@ namespace HiddenHarbours.Art
             }
 
             // A descent that never arrives (the spot went under the tide, the approach was blocked)
-            // gives up after one settle window and rejoins.
+            // gives up one settle window after it should have brought her down, and rejoins.
             if (b.Sim.IntentState >= 0)
             {
                 if (_simMilliseconds >= b.AlightDeadlineMilliseconds)
@@ -1157,22 +1171,41 @@ namespace HiddenHarbours.Art
             }
 
             if (_placeSettled[p] >= _placeWanted[p]) return;
-            // Still getting up (the departures above leave her window where it was) or already on her
-            // way down: not this window. By the next she is back on her wheel.
-            if (!CanBeAskedDown(_behaviour, b.Sim.State)) return;
+            // Still getting up or rejoining her wheel (the departures above leave her window where it
+            // was), or already on her way down: not this window. By the next she is back on her wheel.
+            if (!CanBeAskedDown(_behaviour, b.Sim)) return;
             if (TryPutDownAtPlace(b, windHeading)) _placeSettled[p]++;
         }
 
         /// <summary>
-        /// Can a bird in the air be asked down from this state? Only from the three the wheel flies —
-        /// <c>fly</c>, <c>glide</c>, <c>swoop</c> — the ones a commanded descent can start from.
-        /// <c>takeoff</c> has no edge to <c>swoop</c> or <c>land</c>: asked down while still getting
-        /// up, a gull keeps the intent with no state that loses height, chains into <c>fly</c> with her
-        /// rejoin cancelled, and hangs a metre up until the deadline hands her back to the wheel. One
-        /// already coming down (<c>land</c>, <c>splash</c>, <c>dive</c>) is not asked again.
+        /// Can a bird in the air be asked down? Only from the three states the wheel flies — <c>fly</c>,
+        /// <c>glide</c>, <c>swoop</c> — the ones a commanded descent can start from, and only once she is
+        /// back on her wheel. <c>takeoff</c> has no edge to <c>swoop</c> or <c>land</c>: asked down while
+        /// still getting up, a gull keeps the intent with no state that loses height, chains into
+        /// <c>fly</c> with her rejoin cancelled, and hangs a metre up until the deadline hands her back to
+        /// the wheel. Asked down while still rejoining after it, she can start down from about a metre
+        /// up, and her path to the spot is paced by the height she loses: she covers it in a fraction of a
+        /// second and zips there. One already coming down (<c>land</c>, <c>splash</c>, <c>dive</c>) is not
+        /// asked again.
         /// </summary>
-        internal static bool CanBeAskedDown(SeagullBehaviour behaviour, int state)
-            => behaviour != null && behaviour.IsFlockDriven(state);
+        internal static bool CanBeAskedDown(SeagullBehaviour behaviour, in SeagullSimBird bird)
+            => behaviour != null && behaviour.IsFlockDriven(bird.State) && bird.RejoinMilliseconds <= 0.0;
+
+        /// <summary>
+        /// How long a bird just asked down is given to arrive before the flock hands her back to the
+        /// wheel: the time her descent takes at the rate her state sinks, and one settle window on top.
+        /// A glider sinks at 0.4 m/s, so from high on the wheel her glide-in alone outlasts the window;
+        /// given only the window, she is handed back while still coming down and pops onto the wheel.
+        /// </summary>
+        internal static double AlightAllowanceMilliseconds(SeagullBehaviour behaviour, in SeagullSimBird bird)
+        {
+            double allowance = behaviour.Flock.SettleAfterSeconds * 1000.0;
+            if (bird.IntentState < 0) return allowance;
+            double sink = -behaviour.Row(bird.State).ClimbMetresPerSecond;
+            double drop = bird.AltitudeMetres - behaviour.EntryAltitude(bird.IntentState);
+            if (sink > 0.0 && drop > 0.0) allowance += drop / sink * 1000.0;
+            return allowance;
+        }
 
         /// <summary>At the roost: a gull stands and sleeps. Nothing else on a surface there.</summary>
         private void RoostDown(Bird b)
@@ -1236,7 +1269,7 @@ namespace HiddenHarbours.Art
                 {
                     b.Perch = perch;
                     _placePerched[p]++;
-                    b.AlightDeadlineMilliseconds = _simMilliseconds + SettleMilliseconds;
+                    b.AlightDeadlineMilliseconds = _simMilliseconds + AlightAllowanceMilliseconds(_behaviour, b.Sim);
                     return true;
                 }
                 GullPerches.Release(perch, b);
@@ -1269,7 +1302,7 @@ namespace HiddenHarbours.Art
                                                    windHeading, _behaviour))
                 return false;
 
-            b.AlightDeadlineMilliseconds = _simMilliseconds + SettleMilliseconds;
+            b.AlightDeadlineMilliseconds = _simMilliseconds + AlightAllowanceMilliseconds(_behaviour, b.Sim);
             return true;
         }
 
