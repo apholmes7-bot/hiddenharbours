@@ -111,6 +111,17 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > cleared (there is no honest place to invent), while a region or storey the loader merely cannot vouch
 > for is left alone and declined at the point of use.
 
+> **Save schema v15 (the player's own build, [ADR 0051](../adr/0051-building-a-person-without-js.md))** —
+> `SaveData` gained ONE field at v15: `PlayerRecipe`, a `CharacterRecipe` of rig keys (a build id, a fit
+> id and the rig's twenty fields, as strings). It is written only through `IPlayerAppearance.Commit`; a
+> preview never reaches it. **Keys, not colours**, for the `WornOutfitId` reason: a ramp the art
+> director retunes follows into every save. EMPTY is the body as baked, which is a new game and every
+> save older than v15, so the `v14→v15` step adds the empty recipe and nothing else. `WornOutfitId` (v12)
+> stays where it is, because it recolours the sprite layer, which the mesh never drew. No recipe is
+> healed against shipped content: the builder refuses a stale key out loud at the point of use (the
+> v13 reasoning). What a recipe resolves to, a baked body and its ramps, is recomputed from the
+> shipped tables and never stored.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
