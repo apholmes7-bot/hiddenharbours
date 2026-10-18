@@ -2,8 +2,9 @@
 
 - **Status: PROPOSED** (2026-10-07). Written by character PR 2b's lane
   (`feat/character-builder-rig10`, `lead-architect`) on rig 10.3. The owner accepts it by merging,
-  as the PR 2 charter's B1 says. Cells marked **⏳ Phase B** are filled from the PR's editor run
-  before it opens. The node numbers beside them are the forecast they are checked against.
+  as the PR 2 charter's B1 says. Cells marked **Phase B** were measured in the PR's editor run
+  (Unity 6000.5.0f1, batch mode, 2026-10-17). The node numbers beside them are the forecast they
+  were checked against.
 - **Date:** 2026-10-07
 - **Decision owner:** the owner, by merging. `lead-architect` owns what it adds to Core
   (`CharacterBuilder`, `CharacterRecipe`, `IPlayerAppearance`) and save version 15.
@@ -82,10 +83,10 @@ else a recipe can say is colour.
 | | A: a C# port of the build | B: pre-baked parts | C: baked bodies, recoloured (**chosen**) |
 |---|---|---|---|
 | **What runs per build** | The rig's whole build: body, skeleton and materials, plus every clip pose (53 clips, 438 frames). | An assembly of baked parts. | A lookup: a preset's baked def, and one ramp per material. |
-| **Build time** | Node, 548 bodies (the 30 named builds plus 518 seeded random ones), cold, after a warm-up: `buildOf` median 3.81 ms, p95 7.91, worst 11.32. With every clip: median 37.3 ms, p95 43.4, worst 67.2. Editor V8, ten presets × 3 cold: ⏳ Phase B (node forecast: `buildOf` median 4.04 ms, worst 13.21; `exportBuild` median 38.7 ms, worst 62.2). | Not measured, because there is nothing to assemble (below). | ⏳ Phase B: median, p95 and worst in µs, over 630 recipes × 5 rounds. Bounded: median under 1 ms. |
+| **Build time** | Node, 548 bodies (the 30 named builds plus 518 seeded random ones), cold, after a warm-up: `buildOf` median 3.81 ms, p95 7.91, worst 11.32. With every clip: median 37.3 ms, p95 43.4, worst 67.2. Editor V8, ten presets × 3 cold (Phase B): `buildOf` median 3.02 ms, p95 6.27, worst 9.17; with every clip, median 20.5 ms, p95 35.4, worst 43.7. Both are inside the node forecast (`buildOf` median 4.04 ms, worst 13.21; `exportBuild` median 38.7 ms, worst 62.2). | Not measured, because there is nothing to assemble (below). | 3,150 builds (630 recipes × 5 rounds), Phase B: median 6.4 µs, p95 8.8 µs, worst 39.9 µs. Bounded: median under 1 ms. |
 | **Memory per figure** | Per person: a bind mesh of 161 KiB JSON (median; 214 KiB worst) and 1.2 MiB of clip JSON. In all, 2,048 KiB per preset (median), 2,128 KiB worst. | Every body, baked. | The def's own. A recolour adds 3 RGBA32 ramp textures, at most 24 materials of the def's shades, in place of the figure's own. |
-| **GC per build** | The whole body. | n/a | The look only. Bounded under 4 KiB; ⏳ Phase B gives bytes per build and the gen-0 count. |
-| **Load for the cast** | A build per person at load: 10 × about 37 ms, cold. | n/a | None. The cast keeps its ten baked defs. The tables load once: 1,281 colours, 5,124 B. ⏳ Phase B gives the bytes on disk. |
+| **GC per build** | The whole body. | n/a | The look only: at most 24 ramps of at most 6 shades. Phase B: no gen-0 collection in 3,150 builds. Bytes per build are not measured: this editor's runtime keeps no per-thread allocation count (`GC.GetAllocatedBytesForCurrentThread` reads nothing), so the test reports its 4 KiB bound there instead of checking it. |
+| **Load for the cast** | A build per person at load: 10 × about 37 ms, cold, in node (about 21 ms in the editor's V8). | n/a | None. The cast keeps its ten baked defs. The tables load once: 1,281 colours, 5,124 B. On disk, the four baked assets are 100,964 B of YAML: the contract 72,615 B, the ramps 25,745 B, the catalog 1,501 B and the fit 1,103 B. |
 | **What has to be kept** | A second implementation of a 1,408-line rig, kept in step with every revision. | A part bake and an assembler. | A lift (editor) and a lookup (Core). |
 
 - **A** costs at least what the rig costs, because a port does the same work in another language.
@@ -213,9 +214,15 @@ beside the rig's own paint. The owner rules on that swap in the PR.
   EventBus events: `PlayerAppearancePreviewRequested` and `PlayerAppearanceChanged`.
   - A picker previews and commits through Core.
   - `DeckRiderMeshPresenter` (Player) answers. It asks the builder for the look and paints both of
-    her figures:
-    - aboard, which also carries her when she is mounted;
+    her mesh figures:
+    - aboard;
     - ashore.
+  - **The sprite is not recoloured.** Wherever the game draws her sprite, she keeps her baked look:
+    - mounted (an open machine's Drive);
+    - in every clip (the boarding vault, the ladders, the haul, the chop, the bench, sleep, swim);
+    - while wading.
+
+    The recipe reaches the mesh only. Recolouring the sprite layer is a follow-up, named in the PR.
   - Only `Commit` writes the save. A preview never reaches it.
   - A refused recipe is drawn as baked, and the refusal is logged. The drawing side never touches
     the save.
