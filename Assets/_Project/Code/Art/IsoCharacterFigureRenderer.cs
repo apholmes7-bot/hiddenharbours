@@ -120,6 +120,10 @@ namespace HiddenHarbours.Art
                 if (_meshRenderer != null) _meshRenderer.enabled = value;
                 if (_overlayRenderer != null) _overlayRenderer.enabled = value;
                 SyncInk();
+                // The pixel look's hand-in, on the call, as LateUpdate does it: a figure shown after her own
+                // LateUpdate (a presenter at order 100) or before it (a capture on the call) would otherwise draw
+                // one frame at full size. Play mode only, as LateUpdate is: edit mode hands nothing in.
+                if (Application.isPlaying && isActiveAndEnabled) IsoFacetFigureTarget.Sync(_facetMaterial, Visible);
             }
         }
 
