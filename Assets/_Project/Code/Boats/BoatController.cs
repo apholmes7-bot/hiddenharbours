@@ -406,8 +406,13 @@ namespace HiddenHarbours.Boats
         /// honest, recoverable feel; it is not zeroed by a grounding flag.
         /// </summary>
         public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec)
+            => RudderTorque(helm, rudderAuthority, wayMetersPerSec, 2f);
+
+        /// <summary>Sail hulls share their Def's full-way threshold with the irons assist.</summary>
+        public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec,
+                                        float fullAuthorityWayMs)
             => -Mathf.Clamp(helm, -1f, 1f) * rudderAuthority
-               * Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / 2f);
+               * (fullAuthorityWayMs > 0f ? Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / fullAuthorityWayMs) : 0f);
 
         /// <summary>
         /// Set per-oar rowing input (Propulsion = Oars). leftOar/rightOar in -1..1 (forward pull positive,
@@ -832,7 +837,10 @@ namespace HiddenHarbours.Boats
             // on cannot steer, under sail every bit as much as under power. In irons she loses steerage
             // exactly as she should, because the polar has taken her way off. ---
             float way = Vector2.Dot(vel - env.CurrentVector, fwd);
-            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way) * RudderFeelScale);
+            float rudder = RudderTorque(_steer, _hull.RudderAuthority, way, _hull.RudderFullAuthorityWayMs);
+            float payOff = SailDrive.IronsPayOffTorque(DrawnInIrons, wind.TrueAngleDeg, _steer, way,
+                _hull.IronsPayOffTorque, _hull.RudderFullAuthorityWayMs, wind.TrueKn, _hull.SailYawReferenceWindKn);
+            _rb.AddTorque((rudder + payOff) * RudderFeelScale);
         }
 
         /// <summary>
