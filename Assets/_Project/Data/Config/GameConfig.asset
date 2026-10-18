@@ -304,6 +304,8 @@ MonoBehaviour:
     EnvelopeBandStrength: 0.35
     DefaultOn: 1
   TerrainUnderwaterClip: 0
+  ShallowsFloor: 0
+  ShallowsFloorRefraction: 0.25
   HullKeylineFlood: 0
   HullMeshReflections: 0
   HullReflectionResolutionDivisor: 1

@@ -20,7 +20,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// it) is <c>ShallowsActivationTests</c>' moved premises.</para>
     ///
     /// <para><b>On the base</b> (b8710c59) ShallowsFloorMath, the clip flag, WriteGroundFloor and the
-    /// switch do not exist, so this file does not compile there. Against base-shaped copies of the sources
+    /// switches do not exist, so this file does not compile there. Against base-shaped copies of the sources
     /// the text tests fail at their first assert; the scene test passes there too, because it pins a premise
     /// the base already holds (one height frame per played region), which no scene change may break.</para>
     /// </summary>
@@ -35,6 +35,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const string IncludePath = "Assets/_Project/Art/Shaders/Include/TerrainSplatAlbedo.hlsl";
         private const string TerrainPath = "Assets/_Project/Art/Shaders/HiddenHarboursTerrainSplat.shader";
         private const string TerrainFrag = "half4 frag (Varyings i) : SV_Target";
+        private const string WaterSurfacePath = "Assets/_Project/Code/Art/WaterSurface.cs";
 
         // Script and asset guids, each from its own .meta (checked below, so a moved file fails here first).
         private const string WaterSurfaceGuid = "720419e734bb47b19ff0a4ce8281ed56";   // WaterSurface.cs.meta
@@ -211,6 +212,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// default and in the shipped asset (a GameConfig.asset lagging the code reads a bool's default,
         /// false, also off), no config wired reads OFF, and the shader's change sits wholly behind it.</summary>
         [TestCase("clip")]
+        [TestCase("floor")]
         public void SwitchOff_IsTodaysPixels_BitForBit(string step)
         {
             switch (step)
@@ -242,6 +244,42 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     string gated = Body(frag, gate);
                     string after = frag.Substring(gate.Length + 1 + gated.Length + 1);
                     StringAssert.StartsWith("float2wp=i.worldXY;", after, "nothing between the gate and the ground");
+                    break;
+                case "floor":
+                    // W4-4b ships OFF, pushed by the sea itself from its own config, beside the salience knobs.
+                    Assert.IsFalse(GameConfig.DefaultShallowsFloor);
+                    Assert.AreEqual("0", AssetKey("ShallowsFloor"));
+                    StringAssert.Contains("publicboolShallowsFloor=DefaultShallowsFloor;", Squash(Code(ConfigPath)));
+                    // The bend, read only while the floor is on: 0.25, about 1 - 1/1.33 (light entering sea
+                    // water from straight above). An asset lagging the code reads the initializer.
+                    Assert.AreEqual(0.25f, GameConfig.DefaultShallowsFloorRefraction);
+                    Assert.AreEqual("0.25", AssetKey("ShallowsFloorRefraction"));
+                    string sea = Squash(Code(WaterSurfacePath));
+                    StringAssert.Contains(
+                        "privatestaticreadonlyintIdShallowsFloor=Shader.PropertyToID(\"_ShallowsFloor\");", sea);
+                    StringAssert.Contains(
+                        "boolon=_config!=null?_config.ShallowsFloor:GameConfig.DefaultShallowsFloor;", sea,
+                        "no config wired reads the default, OFF");
+                    StringAssert.Contains("mpb.SetFloat(IdShallowsFloor,on?1f:0f);", sea);
+                    Assert.AreEqual(2, Count(sea, Regex.Escape("PushSalienceKnobs(_mpb);PushShallowsFloor(_mpb);")),
+                        "pushed with the salience knobs, in the edit-mode preview and in play");
+
+                    // OFF, the shader's floor is one [branch] around one assignment of the bed, between the
+                    // base's bands and its composite: the bed stays the bake's and the column is the base's.
+                    string water = Body(Code(WaterPath), WaterFrag);
+                    StringAssert.Contains(BedBand + "#ifdefined(HH_SHALLOWS_FLOOR)" + FloorGate + FloorCall + "#endif" +
+                                          BedLerp, Squash(water));
+                    Assert.AreEqual(1, Count(Squash(water), @"_ShallowsFloor(?![A-Za-z0-9_])"),
+                        "the switch is read once, at its gate");
+                    // The wave field's sample moved ahead of the composite (TheFloor_BendsByWholeGroundPixels)
+                    // is the same call on inputs the frag sets once, before it, and its outputs are written by
+                    // the call alone, so the move moves no pixel.
+                    foreach (string input in new[] { "worldXY", "waveFetchFactors", "waveFreqScale" })
+                        Assert.AreEqual(1, Count(water, @"(?<![A-Za-z0-9_.])" + input + @"(?:\.[xyzw]+)?\s*[-+*/]?=(?!=)"),
+                            input + " is set once");
+                    foreach (string output in new[] { "waveHeight", "waveSlope", "waveCrest", "wavePrimCos" })
+                        Assert.AreEqual(0, Count(water, @"(?<![A-Za-z0-9_.])" + output + @"(?:\.[xyzw]+)?\s*[-+*/]?=(?!=)"),
+                            output + " is written by the sample alone");
                     break;
                 default:
                     Assert.Fail("no switch named " + step);

@@ -558,6 +558,31 @@ namespace HiddenHarbours.Core
                  "included), never a waterline of the ground's own. Read per camera per frame.")]
         public bool TerrainUnderwaterClip = DefaultTerrainUnderwaterClip;
 
+        /// <summary>W4-4b's ship default — <b>OFF</b> until its plates are accepted. With it on, wherever the
+        /// sea composites its bed (a region with a seabed bake, under a mood with absorption) the bed is the
+        /// ground's own albedo, drawn by the terrain's include: darkened and blued with depth by the mood's
+        /// own absorption, lit by the caustics and graded, as the painted bed is.</summary>
+        public const bool DefaultShallowsFloor = false;
+
+        [Tooltip("Draw the ground's own textures as the floor of clear shallow water? ON: where the sea " +
+                 "composites its bed, the bed is the ground the terrain draws, wobbling a little with the " +
+                 "surface, darker and bluer with depth by the mood's absorption and lit by the caustics; " +
+                 "murky and stormy moods hide it as they hide the painted bed. OFF: the painted bed, as " +
+                 "before, bit for bit. Desktop only (a mobile build keeps the painted bed). Read every " +
+                 "water tick (~8 Hz).")]
+        public bool ShallowsFloor = DefaultShallowsFloor;
+
+        /// <summary>The floor's bend by default: about 1 − 1/1.33, the turn light takes entering sea water
+        /// from straight above, so a floor point d metres down is seen k × slope × d away.</summary>
+        public const float DefaultShallowsFloorRefraction = 0.25f;
+
+        [Tooltip("How far the surface's tilt moves the floor: a floor point is seen this fraction of " +
+                 "slope × depth away, rounded to whole ground pixels. 0.25 is about light entering sea " +
+                 "water from straight above; 0 holds the floor still under moving water; more " +
+                 "exaggerates the wobble.")]
+        [Range(0f, 1f)]
+        public float ShallowsFloorRefraction = DefaultShallowsFloorRefraction;
+
         /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
         /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
         /// consumers with no config wired (EditMode, a bare test rig) resolve the SAME style the shipped

@@ -27,9 +27,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const int RequestedResolution = 1520;
         private static readonly Vector4 Ratio = new Vector4(1f, 0.18f, 0.08f, 0f);
         // W4-4: the ground's floor on a sea's block (TerrainSplatSurface.WriteGroundFloor): the splats, the
-        // kit and its gate. Never water-material properties (the shader declares none of them).
+        // kit and its gate; and the sea's own floor switch and bend (WaterSurface, W4-4b). Never water-material
+        // properties (the shader declares each outside its Properties block).
         private static readonly string[] FloorNames =
-            { "_SplatA", "_SplatB", "_SplatC", "_SplatD", "_SplatE", "_SplatF", "_DetailArr256", "_DetailLoaded" };
+        {
+            "_SplatA", "_SplatB", "_SplatC", "_SplatD", "_SplatE", "_SplatF", "_DetailArr256", "_DetailLoaded",
+            "_ShallowsFloor", "_ShallowsFloorRefraction",
+        };
 
         [TestCase("Water_DeepBlue", 0.3f)]
         [TestCase("Water_FoggySmother", 1.2f)]
