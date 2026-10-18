@@ -30,7 +30,8 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <item><b>she is drawn and inked through her own figure id</b> — before (the sprite) and after (the
     /// mesh) are shot in the SAME frame, same seed, same clock, same camera;</item>
     /// <item><b>IsoFacetOverlay keeps exactly her own pixels</b> — the overlay's footprint is compared
-    /// with her id in <c>_HHHullScreenTex</c>, her cell padded 1 px;</item>
+    /// with her id as the overlay itself reads it (below), her cell padded 1 px (her art pixel with the
+    /// look ON);</item>
     /// <item><b>LampShadow, DeckOccludedSprite and IsoFacetResolve read her id correctly</b> — she cuts
     /// no fisher's sprite, and a hull's lamp shadow does not count her pixels as its own;</item>
     /// <item><b>HHHullGuard draws her while a displaced sea is live</b> — read from
@@ -48,9 +49,19 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <para><b>The id and the guard are read INSIDE the render.</b> RenderGraph re-binds every global
     /// it published to 4x4 black when its graph ends, so a read after <c>Capture()</c> saw black on
     /// every render, and <c>4ade16c7</c> read "unknown" on every numeric claim. The
-    /// <see cref="InFrameChannelReadback"/> pass (tests only) copies <c>_HHHullScreenTex</c> and
-    /// <c>_HHHullGuardTex</c> out of the stage camera's graph while they are live, and each read below
-    /// takes the copy that the capture just before it made.</para>
+    /// <see cref="InFrameChannelReadback"/> pass (tests only) copies <c>_HHHullScreenTex</c>,
+    /// <c>_HHHullGuardTex</c> and <c>_HHFigureScreenTex</c> out of the stage camera's graph while they are
+    /// live, and each read below takes the copy that the capture just before it made.</para>
+    ///
+    /// <para><b>Her id is read the way the overlay reads it</b> (<c>HHFigureOver</c> in
+    /// <c>HiddenHarboursIsoFacetOverlay.shader</c>): the alpha of <c>_HHFigureScreenTex</c> through
+    /// <c>_HHFigurePixelMap</c> where that texel is not empty, otherwise the alpha of <c>_HHHullScreenTex</c>.
+    /// With the figure pixel look ON a live figure leaves the full-size facet list for the figures' own
+    /// target, so her id is no longer in <c>_HHHullScreenTex</c> (the moved premise named in
+    /// <c>docs/design/figure-pixel-target.md</c> §6); with it OFF the map is zero and the read is
+    /// <c>_HHHullScreenTex</c> alone, as before. Read through the map, her id lies in art pixels of m screen
+    /// pixels each: the claims pad by that art pixel, and claim 4 holds the full-size guard only to her art
+    /// pixels inside her ink ring and the art pixel's own edge.</para>
     ///
     /// <para><b>Frames 1–5 call <see cref="IsoCharacterFigureRenderer.EnterAshore"/> themselves</b>, on a
     /// plate figure built beside the skinned player inside the test, and
@@ -705,17 +716,17 @@ namespace HiddenHarbours.Tests.PlayMode
             _figure.Visible = true;
             _sprite.forceRenderingOff = true;
             byte[] mesh = _stage.Capture();
-            Raw rawIdsM = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string idHow);
+            IdRead readM = ReadTheIds();
             byte[] meshb = _stage.Capture();
 
             _figure.AshoreOverlay.enabled = false;     // her id still written; her colours not composited
             byte[] idOnly = _stage.Capture();
-            Raw rawIdsI = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out _);
+            IdRead readI = ReadTheIds();
             Raw rawGuardI = ReadGlobalChannel(IsoFacetShaderIds.GuardTex, "_HHHullGuardTex", 0, out string guardHow);
 
             _figure.Visible = false;                   // no mesh, no id: the "without her" control
             byte[] c1 = _stage.Capture();
-            Raw rawIdsC1 = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out _);
+            IdRead readC1 = ReadTheIds();
             Raw rawGuardC1 = ReadGlobalChannel(IsoFacetShaderIds.GuardTex, "_HHHullGuardTex", 0, out _);
 
             byte[] c1f = null, idOnlyF = null;
@@ -736,11 +747,15 @@ namespace HiddenHarbours.Tests.PlayMode
             // (an RTHandle sized by a larger earlier camera holds this render in its bottom-left
             // sub-rect; a scaled one is stretched; either may read upside down)
             bool[] changedC0M = Changed(c0, mesh);
-            Mapping map = Calibrate(rawIdsM, changedC0M, out string orient);
+            Mapping map = CalibrateTheOverlaysRead(readM, changedC0M, out bool flipRows, out string orient);
+            Raw rawIdsM = OverlaysIds(readM, flipRows), rawIdsI = OverlaysIds(readI, flipRows),
+                rawIdsC1 = OverlaysIds(readC1, flipRows);
             byte[] idsM = ToPlate(rawIdsM, map), idsI = ToPlate(rawIdsI, map), idsC1 = ToPlate(rawIdsC1, map);
             byte[] guardI = ToPlate(rawGuardI, map), guardC1 = ToPlate(rawGuardC1, map);
             int pad = rawIdsM == null || IsSubRect(map, rawIdsM) || rawIdsM.W >= w
                 ? 1 : Mathf.CeilToInt(w / (float)rawIdsM.W);
+            if (rawIdsM != null) pad = Mathf.Max(pad, Mathf.CeilToInt(rawIdsM.Texel));   // her art pixel, through the map
+            string idHow = readM.How;
 
             // ---- NOISE: A/A pairs from the same frame ----------------------------------------------
             bool[] aaC0 = Changed(c0, c0b), aaS = Changed(spr, sprb), aaM = Changed(mesh, meshb);
@@ -887,14 +902,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 int onHulls = 0;
                 for (int p = 0; p < gC1.Length; p++) if (gC1[p] && idsC1[p] != 0 && idsC1[p] != _fid) onHulls++;
                 float sanity = interiorC1 > 0 ? onHulls / (float)interiorC1 : 0f;
-                int decidable = Count(And(herI, gC1));
-                int flippedByHer = Count(And(And(herI, gC1), Not(gI)));
+                // Through the figures' map her id lies in art pixels and the guard in screen pixels: the
+                // guard is held only to her art pixels inside her ink ring and the art pixel's own edge.
+                int inner = rawIdsM != null && rawIdsM.Texel > 1f ? pad + Mathf.CeilToInt(rawIdsM.Texel / 2f) : 0;
+                bool[] herInner = inner > 0 ? Erode(herI, w, h, inner) : herI;
+                string innerNote = inner > 0 ? $" ({inner} px inside her art pixels)" : "";
+                int decidable = Count(And(herInner, gC1));
+                int flippedByHer = Count(And(And(herInner, gC1), Not(gI)));
                 bool[] guardMoved = new bool[gC1.Length];
                 for (int p = 0; p < gC1.Length; p++) guardMoved[p] = gC1[p] != gI[p];
                 int movedOutside = Count(And(guardMoved, Not(Dilate(herI, w, h, pad))));
                 int herWritesInterior = Count(And(And(herI, gI), Not(gC1)));
                 string n4 = $"{n4Head}; guard interior {interiorC1} px, {sanity:P1} on the hulls' ids; her id over " +
-                            $"interior {decidable} px, of which drawn out by her {flippedByHer}; guard moved outside " +
+                            $"interior {decidable} px{innerNote}, of which drawn out by her {flippedByHer}; guard moved outside " +
                             $"her (dilated {pad}) {movedOutside}; her px turned INTERIOR {herWritesInterior} (INFO)";
                 if (interiorC1 == 0 || sanity < GuardOnHullsAtLeast)
                     Verdict("4 guard draws her", arm, Unknown, "the guard read does not sit on the hulls' ids; " + n4);
@@ -981,7 +1001,7 @@ namespace HiddenHarbours.Tests.PlayMode
             int drawersOff = Drawers(out string whichOff);
             int figuresBefore = IsoFacetHullRegistry.FigureCount;
             byte[] shotOff = _stage.Capture();
-            Raw rawIdsOff = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string idHowOff);
+            IdRead readOff = ReadTheIds();
             byte[] shotOffB = _stage.Capture();
             byte[] shotOffNoFence = null;
             if (fence != null)
@@ -1019,7 +1039,7 @@ namespace HiddenHarbours.Tests.PlayMode
             bool onRight = _presenter.DrawsAshore && fig != null && fig.Visible && body != null && body.enabled &&
                            body.forceRenderingOff;
             byte[] shotOn = _stage.Capture();
-            Raw rawIdsOn = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string idHowOn);
+            IdRead readOn = ReadTheIds();
             byte[] shotOnB = _stage.Capture();
             byte[] shotOnBare = null;
             if (fig != null && fig.Visible)
@@ -1060,7 +1080,7 @@ namespace HiddenHarbours.Tests.PlayMode
             IsoCharacterFigureRenderer fig2 = _presenter.AshoreFigure;
             bool child2 = HasChildNamed(_player.transform, AshoreFigureName);
             byte[] shotOff2 = _stage.Capture();
-            Raw rawIdsOff2 = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string idHowOff2);
+            IdRead readOff2 = ReadTheIds();
 
             // ---- the noise, her box and the id mapping ----
             bool[] aaOff = Changed(shotOff, shotOffB), aaOn = Changed(shotOn, shotOnB);
@@ -1071,9 +1091,12 @@ namespace HiddenHarbours.Tests.PlayMode
             bool[] boxWide = RectMask(HerBox(0.5f), w, h);
             bool[] changedMesh = shotOnBare != null ? Changed(shotOnBare, shotOn) : Changed(shotOff, shotOn);
             Mapping map = Mapping.Scaled;
+            bool flipRows = false;
             string orient = "not calibrated (she holds no figure id)";
-            if (_fid != 0) map = Calibrate(rawIdsOn, changedMesh, out orient);
-            byte[] idsOff = ToPlate(rawIdsOff, map), idsOn = ToPlate(rawIdsOn, map), idsOff2 = ToPlate(rawIdsOff2, map);
+            if (_fid != 0) map = CalibrateTheOverlaysRead(readOn, changedMesh, out flipRows, out orient);
+            byte[] idsOff = ToPlate(OverlaysIds(readOff, flipRows), map), idsOn = ToPlate(OverlaysIds(readOn, flipRows), map),
+                   idsOff2 = ToPlate(OverlaysIds(readOff2, flipRows), map);
+            string idHowOff = readOff.How, idHowOn = readOn.How, idHowOff2 = readOff2.How;
             string noiseLine = $"A/A noise (same state twice): OFF {Count(aaOff)}, ON {Count(aaOn)} px; OFF across two " +
                                $"frames {Count(aaLater)} px; her box {boxRect} px; id reads: OFF {idHowOff}; ON {idHowOn}; " +
                                $"OFF again {idHowOff2}; mapping {orient}";
@@ -1233,6 +1256,9 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             public byte[] Px;
             public int W, H;
+            /// <summary>Screen pixels per texel of the figures' own target where the overlay's read went
+            /// through it (<c>_HHFigurePixelMap.w</c>); 1 for a texture read alone.</summary>
+            public float Texel = 1f;
         }
 
         /// <summary>How a texture's texels lie on the plate's pixels (bottom-left origin).</summary>
@@ -1286,8 +1312,9 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// Copy the facet block's two globals out of every render of the stage camera, inside the frame.
-        /// Armed before the first shutter and disarmed in the teardown.
+        /// Copy the facet block's two globals, and the figures' own target the overlay reads through its
+        /// map, out of every render of the stage camera, inside the frame. Armed before the first shutter
+        /// and disarmed in the teardown.
         /// </summary>
         void ArmTheReadback(Camera cam)
         {
@@ -1296,6 +1323,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 _readback = new InFrameChannelReadback();
                 _readback.Watch(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex");
                 _readback.Watch(IsoFacetShaderIds.GuardTex, "_HHHullGuardTex");
+                _readback.Watch(IsoFacetFigureTarget.ScreenTexId, "_HHFigureScreenTex");
             }
             _readback.Arm(cam);
         }
@@ -1335,6 +1363,91 @@ namespace HiddenHarbours.Tests.PlayMode
             how = $"{name}: {note} (plate {_stage.Width}x{_stage.Height})";
             return raw;
         }
+
+        /// <summary>
+        /// What the overlay reads as the id under each pixel, taken apart straight after a capture: the
+        /// figures' pixel map (a CPU global, read FIRST: the next render's feature zeroes it), the alpha of
+        /// <c>_HHHullScreenTex</c> and, while the map is live, the alpha of <c>_HHFigureScreenTex</c>.
+        /// <see cref="OverlaysIds"/> puts them together.
+        /// </summary>
+        sealed class IdRead
+        {
+            public Vector4 Map;
+            public Raw Hull, Figure;
+            public string How;
+            public bool MapLive => Map.w >= 0.5f;
+        }
+
+        IdRead ReadTheIds()
+        {
+            var read = new IdRead { Map = Shader.GetGlobalVector(IsoFacetFigureTarget.PixelMapId) };
+            read.Hull = ReadGlobalChannel(IsoFacetShaderIds.HullScreenTex, "_HHHullScreenTex", 3, out string hullHow);
+            if (!read.MapLive)
+            {
+                read.How = hullHow + "; _HHFigurePixelMap zero: the overlay reads _HHHullScreenTex alone";
+                return read;
+            }
+            read.Figure = ReadGlobalChannel(IsoFacetFigureTarget.ScreenTexId, "_HHFigureScreenTex", 3, out string figureHow);
+            read.How = $"{hullHow}; _HHFigurePixelMap ({read.Map.x:0.###}, {read.Map.y:0.###}, {read.Map.z:0.#####}, " +
+                       $"{read.Map.w:0.###}); {figureHow}";
+            return read;
+        }
+
+        /// <summary>
+        /// The id under each texel of <c>_HHHullScreenTex</c> as the overlay reads it (<c>HHFigureOver</c>
+        /// in <c>HiddenHarboursIsoFacetOverlay.shader</c>): the figures' texel
+        /// <c>floor((pixel centre − map.xy) × map.z)</c> where it is not empty, otherwise the hull texture's
+        /// own. With the map zero this IS <see cref="IdRead.Hull"/>. <paramref name="flipRows"/> reads both
+        /// textures' rows in reverse (the readback's row order, which <see cref="CalibrateTheOverlaysRead"/>
+        /// decides). Null when the map is live but the figures' target was not copied: "unknown from this plate".
+        /// </summary>
+        static Raw OverlaysIds(IdRead read, bool flipRows)
+        {
+            if (read?.Hull == null) return null;
+            if (!read.MapLive) return read.Hull;
+            if (read.Figure == null) return null;
+            Raw hull = read.Hull, fig = read.Figure;
+            var o = new Raw { Px = new byte[hull.W * hull.H], W = hull.W, H = hull.H, Texel = read.Map.w };
+            for (int y = 0; y < hull.H; y++)
+            {
+                float gy = (flipRows ? hull.H - 1 - y : y) + 0.5f - read.Map.y;   // the row the shader's pixel centre names
+                int ty = Mathf.FloorToInt(gy * read.Map.z);
+                int fy = flipRows ? fig.H - 1 - ty : ty;
+                for (int x = 0; x < hull.W; x++)
+                {
+                    int i = y * hull.W + x;
+                    o.Px[i] = hull.Px[i];
+                    int tx = Mathf.FloorToInt((x + 0.5f - read.Map.x) * read.Map.z);
+                    if (tx < 0 || ty < 0 || tx >= fig.W || ty >= fig.H) continue;
+                    byte id = fig.Px[fy * fig.W + tx];
+                    if (id != 0) o.Px[i] = id;
+                }
+            }
+            return o;
+        }
+
+        /// <summary>
+        /// <see cref="Calibrate"/> for the overlay's read of the frame where her figure is drawn, with the
+        /// row order decided the same way, once, for the arm's other frames: the rows as read (the readback
+        /// keeps a texture's row order, as the plates showed for <c>_HHHullScreenTex</c>) against both
+        /// textures' rows reversed. Both scores are written down; with the map zero it is
+        /// <see cref="Calibrate"/> itself.
+        /// </summary>
+        Mapping CalibrateTheOverlaysRead(IdRead read, bool[] herChanged, out bool flipRows, out string note)
+        {
+            flipRows = false;
+            Raw asRead = OverlaysIds(read, false);
+            Mapping best = Calibrate(asRead, herChanged, out note);
+            if (asRead == null || !read.MapLive) return best;
+            Raw reversed = OverlaysIds(read, true);
+            Mapping bestReversed = Calibrate(reversed, herChanged, out string noteReversed);
+            flipRows = HerIdOn(reversed, bestReversed, herChanged) > HerIdOn(asRead, best, herChanged);
+            note = flipRows ? $"rows reversed: {noteReversed} (rows as read: {note})"
+                            : $"rows as read: {note} (rows reversed: {noteReversed})";
+            return flipRows ? bestReversed : best;
+        }
+
+        int HerIdOn(Raw ids, Mapping m, bool[] herChanged) => Count(And(Where(ToPlate(ids, m), _fid), herChanged));
 
         // =============================================================================================
         //  The region, her, the hull, the lamps and the sea
