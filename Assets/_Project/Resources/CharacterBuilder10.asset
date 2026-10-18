@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d39dd324ecb44b8b93e7a0e64bac0db9, type: 3}
+  m_Name: CharacterBuilder10
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuilderDef
+  Id: builder.character_iso10
+  Contract: {fileID: 11400000, guid: 0465be0e21d162546a3f457436cdbba7, type: 2}
+  Ramps: {fileID: 11400000, guid: f61e2b71164aa574ebd3017c90cdc7eb, type: 2}
+  Fit: {fileID: 11400000, guid: 2d9057d58a5888f4b9b7b8c7fae1870c, type: 2}
+  Builds:
+  - {fileID: 11400000, guid: 2b27ab4c0b694b5f806e0d25514ca44a, type: 2}
+  - {fileID: 11400000, guid: bb7996803a56b874e8b86df42d1e17b7, type: 2}
+  - {fileID: 11400000, guid: e2f8f5fbb3760dc4ba2f13d192d64a46, type: 2}
+  - {fileID: 11400000, guid: 62d9a9f4c0de2ee40977937767187b34, type: 2}
+  - {fileID: 11400000, guid: fae300df84b17024b93d2b8f20d77ec5, type: 2}
+  - {fileID: 11400000, guid: 5e5ff01b97c0c9b4b9c85f3f2e8a6415, type: 2}
+  - {fileID: 11400000, guid: 510dcc541b277c1488956f57098b2547, type: 2}
+  - {fileID: 11400000, guid: 0b7b08407b6e3e248a7565666848676e, type: 2}
+  - {fileID: 11400000, guid: 38398184b2d13c445b32a0c2009f2662, type: 2}
+  - {fileID: 11400000, guid: 27942a077c1371c49a30beb2f4b405a7, type: 2}
+  PlayerDefaultBuildId: char_build.fisher
