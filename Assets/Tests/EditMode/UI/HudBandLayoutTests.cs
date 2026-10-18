@@ -9,16 +9,15 @@ namespace HiddenHarbours.Tests.UI.EditMode
     /// The S4.5 OVERLAP rule, from the other side: the always-on HUD band stays, so the helm overlays
     /// keep out from under it (<see cref="HudBandLayout"/>). Pure maths — no canvas, no screen.
     ///
-    /// <para>The regression these pin is real and shipped: at 1920×1080 the focused dash reached
+    /// <para>The regression these pinned was real and shipped: at 1920×1080 the focused dash reached
     /// screen y 781 against a band bottom of 750, and the band's canvas sorts at 100 against the
-    /// helm's 60, so the clock and the tide were drawn across the top of the wheelhouse. At 1280×720
-    /// the dash ran the full height and the whole band sat on it.</para>
+    /// helm's 60, so the clock and the tide were drawn across the top of the wheelhouse. The dash card
+    /// and its four tests retired with H2; what stays is the reserve, and the fit a raised instrument
+    /// falls back to where no whole scale fits between the bands
+    /// (<see cref="HelmBandLayout.RaisedCardRect"/>).</para>
     /// </summary>
     public class HudBandLayoutTests
     {
-        // The two hull families' canvases (HelmDashGeometry) and the shipped overlay dials.
-        private const int SkiffW = 600, SkiffH = 510, PilotW = 600, PilotH = 548;
-
         private static float Band(float w, float h) => HudBandLayout.ReservedTopPx(w, h, 0f);
 
         [Test]
@@ -43,79 +42,7 @@ namespace HiddenHarbours.Tests.UI.EditMode
                         "a notch pushes the band down, so it pushes the reserve down too");
         }
 
-        // ---- the dash ------------------------------------------------------------------------------
-
-        [Test]
-        public void REGRESSION_TheFocusedDashUsedToReachIntoTheBand()
-        {
-            // The negative control for the fix: run the OLD call (reserve 0) and prove it really did
-            // overlap. If this ever stops overlapping, the fix below is no longer load-bearing and the
-            // reserve should be re-derived rather than kept out of habit.
-            HelmOverlaySettings s = HelmOverlaySettings.Default;
-            Rect old = HelmOverlayLayout.DashCardRect(true, PilotW, PilotH, in s, 1920f, 1080f);
-            float bandBottom = 1080f - Band(1920f, 1080f);
-            Assert.That(old.yMax, Is.GreaterThan(bandBottom),
-                        "SABOTAGE NOT DETECTED: the unreserved focused dash no longer reaches the " +
-                        "band, so this fix is pinning nothing — re-derive against the current dials");
-
-            Rect now = HelmOverlayLayout.DashCardRect(true, PilotW, PilotH, in s, 1920f, 1080f,
-                                                      Band(1920f, 1080f));
-            Assert.That(now.yMax, Is.LessThanOrEqualTo(bandBottom + 0.01f), "…and now it does not");
-        }
-
-        [Test]
-        public void TheDashClearsTheBandAtEveryPlausibleWindow()
-        {
-            HelmOverlaySettings s = HelmOverlaySettings.Default;
-            (float w, float h)[] screens =
-            {
-                (1280f, 720f), (1366f, 768f), (1600f, 900f), (1920f, 1080f), (2560f, 1440f),
-                (3840f, 2160f), (1024f, 600f), (2560f, 1080f),
-            };
-            foreach (var (w, h) in screens)
-            {
-                float reserve = Band(w, h);
-                foreach (bool focused in new[] { false, true })
-                {
-                    foreach (var (rw, rh) in new[] { (SkiffW, SkiffH), (PilotW, PilotH) })
-                    {
-                        Rect card = HelmOverlayLayout.DashCardRect(focused, rw, rh, in s, w, h, reserve);
-                        Assert.That(card.yMax, Is.LessThanOrEqualTo(h - reserve + 0.01f),
-                                    $"{w}x{h} focused={focused} rig={rw}x{rh}: the dash is under the band");
-                        Assert.That(card.width, Is.GreaterThan(0f), $"{w}x{h}: the dash vanished");
-                        Assert.That(card.width / card.height,
-                                    Is.EqualTo(rw / (float)rh).Within(1e-3f), "never distorted");
-                    }
-                }
-            }
-        }
-
-        [Test]
-        public void TheSmallDashIsUntouchedByTheReserve()
-        {
-            // The reserve must bite on the focused state only. The small card is a quarter of the
-            // screen at the bottom and nowhere near the band; if this changes, the owner's
-            // DashSmallScale has quietly stopped meaning what it says.
-            HelmOverlaySettings s = HelmOverlaySettings.Default;
-            Rect free = HelmOverlayLayout.DashCardRect(false, PilotW, PilotH, in s, 1920f, 1080f);
-            Rect held = HelmOverlayLayout.DashCardRect(false, PilotW, PilotH, in s, 1920f, 1080f,
-                                                       Band(1920f, 1080f));
-            Assert.That(held, Is.EqualTo(free));
-        }
-
-        [Test]
-        public void TheOldOverloadStillMeansTheOldThing()
-        {
-            // Additive, not a behaviour change to the existing signature: reserve 0 is the shipped
-            // maths exactly, so every S2a/S4 call site and golden keeps its meaning.
-            HelmOverlaySettings s = HelmOverlaySettings.Default;
-            foreach (bool focused in new[] { false, true })
-                Assert.That(HelmOverlayLayout.DashCardRect(focused, SkiffW, SkiffH, in s, 1920f, 1080f),
-                            Is.EqualTo(HelmOverlayLayout.DashCardRect(focused, SkiffW, SkiffH, in s,
-                                                                      1920f, 1080f, 0f)));
-        }
-
-        // ---- an expanded instrument ------------------------------------------------------------------
+        // ---- a raised instrument's fallback fit -----------------------------------------------------
 
         [Test]
         public void AnExpandedInstrumentSlidesDownBeforeItShrinks()

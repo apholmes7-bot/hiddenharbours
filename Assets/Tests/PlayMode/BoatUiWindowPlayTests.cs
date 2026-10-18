@@ -10,15 +10,14 @@ using HiddenHarbours.UI;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// The boat-UI windowing (the owner's 2026-08-07 ruling) end to end, in a live scene: hide-all
-    /// standing every card down and bringing them back, the flush faces following the HELM window,
-    /// an expanded instrument keeping its own window, a dragged/collapsed dash actually moving the
-    /// published card rect, and the whole thing changing NOTHING while the state is untouched.
+    /// What is left of the boat-UI windowing (the owner's 2026-08-07 ruling) once the band retired the
+    /// dash's and the instruments' windows (H2), end to end in a live scene: the hide-all press (M,
+    /// through the HUD's intent seam) standing the band and a raised card down and bringing the band
+    /// back, and the watch hiding on its own with the hide-all restore as its recovery.
     ///
     /// <para>PlayMode rather than pure because the thing that can break is the AGREEMENT between
-    /// self-installing hosts that cannot see each other — the helm publishing its (windowed) card,
-    /// the sounder mounting into it, the registry gating them both — in execution order. The
-    /// geometry itself is EditMode-pinned (<c>BoatUiWindowTests</c>). Scaffolding mirrors
+    /// self-installing hosts that cannot see each other — the reader toggling, the helm standing its
+    /// band down, the sounder lowering its card — in execution order. Scaffolding mirrors
     /// <see cref="SounderPlayTests"/>.</para>
     /// </summary>
     public class BoatUiWindowPlayTests
@@ -87,6 +86,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
+            BoatUiWindowInput.ConfigureHudInput(null);
             BoatUiWindows.Reset();
             HelmInstrumentExpansion.Collapse();
             GameServices.Reset();
@@ -121,7 +121,8 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>A console hull under way with the shipped hosts running (they self-install; a
-        /// stripped rig spawns them). Two frames so the helm publishes and the sounder mounts.</summary>
+        /// stripped rig spawns them). Two frames so the helm raises its band and the sounder takes its
+        /// housing in it.</summary>
         private IEnumerator RigConsoleBoat()
         {
             if (HelmOverlayHost.Instance == null)
@@ -151,131 +152,60 @@ namespace HiddenHarbours.Tests.PlayMode
             go.GetComponent<HelmControlRelay>().DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.window_test"));
             InstrumentLocker.Add(_save.Current, "boat.window_test", BoatEquipment.DepthSounderId);
-            yield return null;                       // the helm publishes its card
-            yield return null;                       // …and the sounder mounts into it
+            yield return null;                       // the helm raises its band
+            yield return null;                       // …and the sounder takes its housing
         }
 
-        [UnityTest]
-        public IEnumerator UntouchedState_ChangesNothing_TheDashAndFlushMountStand()
+        /// <summary>A press of the hide-all through the HUD's seam: held for one frame, then let go
+        /// (it is an edge), and one more frame so every host has read the toggle.</summary>
+        private static IEnumerator PressHideAll(HeldHudIntents held)
         {
-            yield return RigConsoleBoat();
-
-            Assert.That(HelmOverlayHost.Instance.CardKind,
-                        Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash), "premise: a dash is up");
-            Assert.That(HelmOverlayHost.TryDashCard(out Rect card, out _), Is.True);
-            Assert.That(card.width, Is.GreaterThan(0f));
-            Assert.That(SounderOverlayHost.Instance.Showing, Is.True);
-            Assert.That(SounderOverlayHost.Instance.FlushMounted, Is.True,
-                        "default window state = the shipped S4.5 behaviour, untouched");
+            held.PressHideAll();
+            yield return null;                       // the reader takes the press and toggles
+            held.Release();
+            yield return null;                       // every host has seen the toggle
         }
 
         [UnityTest]
         public IEnumerator HideAll_StandsEveryCardDown_AndTheToggleBringsThemBack()
         {
             yield return RigConsoleBoat();
+            // The press arrives through the HUD's intent seam, where the asset's M arrives (ADR 0043): a
+            // PlayMode fixture cannot deliver a key to the Input System, so a held source stands in for
+            // the device and drives the REAL reader. A second reader self-destroys if one is running.
+            var input = new GameObject("BoatUiWindowInput(test)");
+            _spawned.Add(input);
+            input.AddComponent<BoatUiWindowInput>();
+            var held = new HeldHudIntents();
+            BoatUiWindowInput.ConfigureHudInput(held);
 
-            BoatUiWindows.ToggleHideAll();
+            Assert.That(HelmOverlayHost.Instance.CardKind,
+                        Is.EqualTo(HelmOverlayHost.HelmCardKind.Band), "premise: the band is up");
+            Assert.That(HelmOverlayHost.BandUp, Is.True);
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Sounder);
             yield return null;
-            Assert.That(HelmOverlayHost.TryDashCard(out _, out _), Is.False,
-                        "hide-all: the dash is gone (and with it the brow publication)");
+            yield return null;
+            Assert.That(SounderOverlayHost.Instance.Expanded, Is.True, "premise: the sounder's card is raised");
+            Assert.That(HelmInstrumentExpansion.TryRaisedCard(out _), Is.True);
+
+            int reads = held.Reads;
+            yield return PressHideAll(held);
+            Assert.That(held.Reads, Is.GreaterThan(reads), "the hide-all read the seam (not a vacuous pass)");
+            Assert.That(BoatUiWindows.AllHidden, Is.True, "one press hides all");
+            Assert.That(HelmOverlayHost.BandUp, Is.False, "hide-all: the band is gone");
             Assert.That(HelmOverlayHost.Instance.CardKind,
                         Is.EqualTo(HelmOverlayHost.HelmCardKind.None));
-            Assert.That(SounderOverlayHost.Instance.Showing, Is.False,
-                        "…and the flush sounder went with it");
-
-            BoatUiWindows.ToggleHideAll();
-            yield return null;
-            yield return null;   // helm republishes, then the sounder remounts
-            Assert.That(HelmOverlayHost.TryDashCard(out _, out _), Is.True, "one toggle restores");
-            Assert.That(SounderOverlayHost.Instance.Showing, Is.True);
-            Assert.That(SounderOverlayHost.Instance.FlushMounted, Is.True);
-        }
-
-        [UnityTest]
-        public IEnumerator HidingTheHelmWindow_TakesTheFlushFaceWithIt_ButNotAnExpandedInstrument()
-        {
-            yield return RigConsoleBoat();
-
-            BoatUiWindows.SetHidden(BoatUiWindowId.Helm, true);
-            yield return null;
-            Assert.That(SounderOverlayHost.Instance.Showing, Is.False,
-                        "the flush face is bolted to the dash — it never pops out to a card the " +
-                        "player did not ask for");
-
-            // An EXPANDED instrument is its own window and stands on its own.
-            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Sounder);
-            yield return null;
-            Assert.That(SounderOverlayHost.Instance.Showing, Is.True);
-            Assert.That(SounderOverlayHost.Instance.Expanded, Is.True);
-            Assert.That(SounderOverlayHost.Instance.FlushMounted, Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator HidingTheInstrumentWindow_ClosesItsExpansion_RatherThanStrandingIt()
-        {
-            yield return RigConsoleBoat();
-
-            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Sounder);
-            yield return null;
-            Assert.That(SounderOverlayHost.Instance.Expanded, Is.True, "premise");
-
-            BoatUiWindows.SetHidden(BoatUiWindowId.Sounder, true);
-            yield return null;
-            Assert.That(SounderOverlayHost.Instance.Showing, Is.False);
+            Assert.That(SounderOverlayHost.Instance.Showing, Is.False, "…and the sounder with it");
             Assert.That(HelmInstrumentExpansion.AnyExpanded, Is.False,
-                        "an invisible card must not keep owning the pointer and Esc");
-        }
+                        "the raised card is lowered, not left invisible owning the pointer and Esc");
 
-        [UnityTest]
-        public IEnumerator ADraggedDash_MovesThePublishedCard_AndTheFlushMountFollows()
-        {
-            yield return RigConsoleBoat();
-
-            Assert.That(HelmOverlayHost.TryDashCard(out Rect before, out _), Is.True);
-
-            BoatUiWindowState st = BoatUiWindows.State(BoatUiWindowId.Helm);
-            st.HasCustomCenter = true;
-            st.Center01 = new Vector2(0.25f, 0.6f);
-            BoatUiWindows.SetState(BoatUiWindowId.Helm, in st);
-            yield return null;
-
-            Assert.That(HelmOverlayHost.TryDashCard(out Rect after, out HelmFit fit), Is.True);
-            Assert.That(after.center.x, Is.Not.EqualTo(before.center.x).Within(1f),
-                        "the published dash card moved with the window");
-            // The clamp may bite at the band/screen edges, so pin direction rather than exact centre.
-            Assert.That(after.center.x, Is.LessThan(before.center.x),
-                        "…toward the port quarter it was dragged to");
-
-            // The flush mount is computed FROM the published card, so it followed for free.
-            Assert.That(HelmInstrumentMountLayout.TryBrowSounderRect(in fit, after, out Rect mount),
-                        Is.True);
-            Assert.That(mount.xMin, Is.GreaterThanOrEqualTo(after.xMin - 0.5f));
-            Assert.That(mount.xMax, Is.LessThanOrEqualTo(after.xMax + 0.5f));
-            Assert.That(SounderOverlayHost.Instance.FlushMounted, Is.True);
-        }
-
-        [UnityTest]
-        public IEnumerator ABarCollapsedDash_FoldsItsBrowAway_AndCompactKeepsIt()
-        {
-            yield return RigConsoleBoat();
-
-            BoatUiWindowState st = BoatUiWindows.State(BoatUiWindowId.Helm);
-            st.Collapse = BoatUiCollapse.Bar;
-            BoatUiWindows.SetState(BoatUiWindowId.Helm, in st);
-            yield return null;
-            Assert.That(HelmOverlayHost.TryDashCard(out _, out _), Is.False,
-                        "BAR: no dash picture, no brow publication");
-            Assert.That(SounderOverlayHost.Instance.Showing, Is.False,
-                        "…and the flush face folded away with it");
-
-            st.Collapse = BoatUiCollapse.Compact;
-            BoatUiWindows.SetState(BoatUiWindowId.Helm, in st);
-            yield return null;
-            yield return null;
-            Assert.That(HelmOverlayHost.TryDashCard(out Rect compact, out _), Is.True,
-                        "COMPACT still draws the dash");
-            Assert.That(SounderOverlayHost.Instance.FlushMounted, Is.True);
-            Assert.That(compact.width, Is.GreaterThan(0f));
+            yield return PressHideAll(held);
+            yield return null;   // the helm raises its band again, then the sounder takes its housing
+            Assert.That(BoatUiWindows.AllHidden, Is.False, "the second press restores");
+            Assert.That(HelmOverlayHost.BandUp, Is.True, "the band is back");
+            Assert.That(SounderOverlayHost.Instance.Showing, Is.True);
+            Assert.That(HelmInstrumentExpansion.AnyExpanded, Is.False,
+                        "the restore brings the band back, not the card the hide lowered");
         }
 
         [UnityTest]
@@ -308,26 +238,6 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;   // the unhide transition forces a repaint, which re-enables the face
             Assert.That(watch.enabled, Is.True,
                         "the hide-all RESTORE brings back an individually hidden watch");
-        }
-
-        [UnityTest]
-        public IEnumerator LosingTheHelm_LeavesTheWindowStateAlone_ForTheNextBoat()
-        {
-            yield return RigConsoleBoat();
-
-            BoatUiWindowState st = BoatUiWindows.State(BoatUiWindowId.Helm);
-            st.HasCustomCenter = true;
-            st.Center01 = new Vector2(0.3f, 0.5f);
-            BoatUiWindows.SetState(BoatUiWindowId.Helm, in st);
-            yield return null;
-
-            GameServices.Helm.SetPilotedHull(null);   // stepped ashore
-            yield return null;
-            Assert.That(HelmOverlayHost.Instance.CardKind,
-                        Is.EqualTo(HelmOverlayHost.HelmCardKind.None));
-            Assert.That(BoatUiWindows.State(BoatUiWindowId.Helm).HasCustomCenter, Is.True,
-                        "the layout is session state — going ashore does not reset where the " +
-                        "player parked their helm");
         }
     }
 }

@@ -164,7 +164,7 @@ namespace HiddenHarbours.Player
         private void RefreshLift()
         {
             HelmFootprintArea covered = HelmFootprint.Current;
-            int w = Screen.width, h = Screen.height;
+            int w = HudScreen.Width, h = HudScreen.Height;
             if (covered == _liftFor && w == _liftW && h == _liftH) return;
             _liftFor = covered;
             _liftW = w;

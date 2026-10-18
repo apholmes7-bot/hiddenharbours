@@ -314,34 +314,26 @@ namespace HiddenHarbours.Tests.UI.EditMode
                         "…and the console box would have put it somewhere else entirely");
         }
 
-        // ---- the expanded card -------------------------------------------------------------------------
+        // ---- the raised card --------------------------------------------------------------------------
 
         [Test]
         public void TheMaxCard_IsAnIntegerScaleOfTheMaxFace_AndCentred()
         {
-            Rect card = ChartplotterOverlayLayout.ExpandedCardRect(1920f, 1080f,
-                                                                   NavRigGeometry.Face.Max);
-            float scale = card.width / NavRigGeometry.MaxW;
-            Assert.That(scale, Is.EqualTo(Mathf.Round(scale)).Within(1e-4f),
-                        "a fractional scale resamples the 3x5 rail into mush");
-            Assert.That(scale, Is.GreaterThanOrEqualTo(1f));
-            Assert.That(card.height / NavRigGeometry.MaxH, Is.EqualTo(scale).Within(1e-4f));
-            Assert.That(card.center.x, Is.EqualTo(960f).Within(0.5f));
-            Assert.That(card.center.y, Is.EqualTo(540f).Within(0.5f));
-
-            Rect small = ChartplotterOverlayLayout.ExpandedCardRect(640f, 400f,
-                                                                    NavRigGeometry.Face.Max);
-            Assert.That(small.width, Is.EqualTo((float)NavRigGeometry.MaxW).Within(1e-3f),
-                        "never below 1x — a downscaled rig is illegible");
-        }
-
-        [Test]
-        public void TheDefaultOverload_IsStillTheConsoleFace()
-        {
-            // A pre-existing caller must not silently start getting a MAX-sized card.
-            Assert.That(ChartplotterOverlayLayout.ExpandedCardRect(1920f, 1080f),
-                        Is.EqualTo(ChartplotterOverlayLayout.ExpandedCardRect(
-                                       1920f, 1080f, NavRigGeometry.Face.Console)));
+            // From 1080p up the max face is raised whole: at today's x1 where no whole scale fits
+            // between the bands (1080p, its top on the top band), and at the largest whole scale that
+            // does (1440p, 4K). The 720p and 800p cards are today's undistorted fit (Q1: B).
+            foreach (Vector2 sc in new[] { new Vector2(1920f, 1080f), new Vector2(2560f, 1440f),
+                                           new Vector2(3840f, 2160f) })
+            {
+                Rect card = HelmBandLayout.RaisedCardRect(NavRigGeometry.MaxW, NavRigGeometry.MaxH, sc.x, sc.y,
+                                                          HudBandLayout.ReservedTopPx(sc.x, sc.y, 0f));
+                float scale = card.width / NavRigGeometry.MaxW;
+                Assert.That(scale, Is.EqualTo(Mathf.Round(scale)).Within(1e-4f),
+                            $"{sc}: a fractional scale resamples the 3x5 rail into mush");
+                Assert.That(scale, Is.GreaterThanOrEqualTo(1f));
+                Assert.That(card.height / NavRigGeometry.MaxH, Is.EqualTo(scale).Within(1e-4f));
+                Assert.That(card.center.x, Is.EqualTo(sc.x / 2f).Within(1f), $"{sc}: centred across");
+            }
         }
 
         // ---- the three panes actually draw -------------------------------------------------------------

@@ -22,8 +22,8 @@ namespace HiddenHarbours.Tests.PlayMode
     /// later-spawned hull took the player's own helm away for good.</para>
     ///
     /// <para><b>How the two boats are told apart on screen.</b> The player's is a CONSOLE hull, which
-    /// earns the composed dash; the other is a bare motor, which earns the tiller card. So the host's
-    /// <c>CardKind</c> names which boat won without any test-only accessor: <c>Dash</c> is hers,
+    /// earns the band; the other is a bare motor, which earns the tiller card. So the host's
+    /// <c>CardKind</c> names which boat won without any test-only accessor: <c>Band</c> is hers,
     /// <c>Tiller</c> is his, and <c>None</c> is nobody's. Under the old seam the enable order decided
     /// it; here it must not be able to.</para>
     /// </summary>
@@ -122,11 +122,11 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;                                     // her Awake + OnEnable have run
             GameServices.Helm.SetPilotedHull(dory);                // she takes her own helm
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
-                        "precondition: she is at her own helm and her dash is up");
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band),
+                        "precondition: she is at her own helm and her band is up");
 
             // …and an NPC hull is spawned alongside and gets under way. THIS is the old bug: her relay
-            // enabled LAST, so it took the slot and the player's dash became somebody else's tiller.
+            // enabled LAST, so it took the slot and the player's band became somebody else's tiller.
             var (_, skiffRelay) = Launch("NpcSkiff", NewEngineHull("boat.npc_skiff"));
             yield return null;
             yield return null;
@@ -172,8 +172,8 @@ namespace HiddenHarbours.Tests.PlayMode
                           "⚠ though HasHelm is TRUE of him — he is an engine hull under way. Reading THAT " +
                           "as 'the player is piloting' is the whole defect");
 
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
-                        "the overlay still draws HER dash. A Tiller card here would be the skiff's helm " +
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band),
+                        "the overlay still draws HER band. A Tiller card here would be the skiff's helm " +
                         "drawn to somebody who is not steering her");
         }
 
@@ -188,7 +188,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             GameServices.Helm.SetPilotedHull(dory);
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash), "precondition");
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band), "precondition");
 
             GameServices.Helm.SetPilotedHull(null);   // she steps back onto the deck
             yield return null;
@@ -207,7 +207,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             GameServices.Helm.SetPilotedHull(dory);
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash), "precondition");
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band), "precondition");
 
             Object.DestroyImmediate(dory.gameObject);
             yield return null;
@@ -243,7 +243,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.That(GameServices.HelmControl, Is.SameAs(doryRelay), "and it comes back to her");
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash));
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band));
         }
     }
 }
