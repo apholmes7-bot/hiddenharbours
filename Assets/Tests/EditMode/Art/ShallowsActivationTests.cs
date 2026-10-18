@@ -26,6 +26,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const string SurfaceGuid = "720419e734bb47b19ff0a4ce8281ed56";
         private const int RequestedResolution = 1520;
         private static readonly Vector4 Ratio = new Vector4(1f, 0.18f, 0.08f, 0f);
+        // W4-4: the ground's floor on a sea's block (TerrainSplatSurface.WriteGroundFloor): the splats, the
+        // kit and its gate. Never water-material properties (the shader declares none of them).
+        private static readonly string[] FloorNames =
+            { "_SplatA", "_SplatB", "_SplatC", "_SplatD", "_SplatE", "_SplatF", "_DetailArr256", "_DetailLoaded" };
 
         [TestCase("Water_DeepBlue", 0.3f)]
         [TestCase("Water_FoggySmother", 1.2f)]
@@ -48,6 +52,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 AssertActivation(copy);
                 Assert.That(copy.GetFloat("_Turbidity"), Is.EqualTo(turbidity).Within(1e-6f),
                     "Activation must not retune the preset's optical density.");
+                // W4-4: the ground's floor rides each surface's block, as the bake does, and is never a
+                // material property, so no preset can carry, clear or retune it.
+                foreach (string floor in FloorNames)
+                    Assert.That(copy.shader.FindPropertyIndex(floor), Is.EqualTo(-1), floor);
             }
             finally { Object.DestroyImmediate(copy); }
         }
@@ -58,11 +66,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var material = new Material(LoadMaterial(LivePath));
             var firstBake = new Texture2D(2, 2);
             var secondBake = new Texture2D(3, 3);
-            GameObject first = null, second = null;
+            var height = new Texture2D(2, 2);
+            var splat = new Texture2D(2, 2);
+            var kit = new Texture2DArray(1, 1, 1, TextureFormat.RGBA32, false);
+            GameObject first = null, second = null, ground = null;
             try
             {
                 first = MakeInactiveSea(material);
                 second = MakeInactiveSea(material);
+                // W4-4: the first region's ground, live, over the frame the first sea feeds its shader.
+                ground = MakeLiveGround(height, splat, kit);
+                BindHeight(first.GetComponent<Renderer>(), height);
                 var a = first.GetComponent<WaterSurface>();
                 var b = second.GetComponent<WaterSurface>();
                 Texture originalMaterialTexture = material.GetTexture("_SeabedTex");
@@ -70,6 +84,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 b.ConfigureSeabedTexture(secondBake);
                 Assert.That(BoundBottom(first.GetComponent<Renderer>()), Is.SameAs(firstBake));
                 Assert.That(BoundBottom(second.GetComponent<Renderer>()), Is.SameAs(secondBake));
+                AssertFloor(first.GetComponent<Renderer>(), splat);
+                AssertFloor(second.GetComponent<Renderer>(), null);
 
                 var block = new MaterialPropertyBlock();
                 first.GetComponent<Renderer>().GetPropertyBlock(block);
@@ -86,13 +102,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.That(block.GetFloat("_WaterLevel"), Is.EqualTo(1.234f),
                     "Changing albedo must not replace the gameplay water-level binding.");
                 Assert.That(material.GetTexture("_SeabedTex"), Is.SameAs(originalMaterialTexture));
+                // W4-4: clearing the bake keeps the ground's floor, and the other region never gains it.
+                AssertFloor(first.GetComponent<Renderer>(), splat);
+                AssertFloor(second.GetComponent<Renderer>(), null);
             }
             finally
             {
                 if (first != null) Object.DestroyImmediate(first);
                 if (second != null) Object.DestroyImmediate(second);
+                if (ground != null) Object.DestroyImmediate(ground);
                 Object.DestroyImmediate(firstBake);
                 Object.DestroyImmediate(secondBake);
+                Object.DestroyImmediate(height);
+                Object.DestroyImmediate(splat);
+                Object.DestroyImmediate(kit);
                 Object.DestroyImmediate(material);
             }
         }
@@ -105,11 +128,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var material = new Material(LoadMaterial(LivePath));
             var firstBake = new Texture2D(2, 2);
             var secondBake = new Texture2D(3, 3);
-            GameObject sea = null;
+            var height = new Texture2D(2, 2);
+            var splat = new Texture2D(2, 2);
+            var kit = new Texture2DArray(1, 1, 1, TextureFormat.RGBA32, false);
+            GameObject sea = null, ground = null;
             DisplacedWaterSurface displaced = null;
             try
             {
                 sea = MakeInactiveSea(material);
+                // W4-4: a live ground over the frame this sea feeds its shader; its floor rides the block.
+                ground = MakeLiveGround(height, splat, kit);
+                BindHeight(sea.GetComponent<Renderer>(), height);
                 var surface = sea.GetComponent<WaterSurface>();
                 displaced = sea.AddComponent<DisplacedWaterSurface>();
                 // Exercise the real construction/copy path on two small chunks, without Play or a draw.
@@ -137,6 +166,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     foreach (MeshRenderer chunk in chunks)
                     {
                         Assert.That(BoundBottom(chunk), Is.SameAs(expected), chunk.name);
+                        AssertFloor(chunk, splat);
                         AssertActivation(chunk.sharedMaterial);
                         Assert.That(chunk.sharedMaterial.GetShaderPassEnabled("Universal2D"), Is.False);
                     }
@@ -148,8 +178,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 // as OnDestroy so no owned meshes or published frame survive an assertion failure.
                 if (displaced != null) Invoke(displaced, "ReleaseOwned");
                 if (sea != null) Object.DestroyImmediate(sea);
+                if (ground != null) Object.DestroyImmediate(ground);
                 Object.DestroyImmediate(firstBake);
                 Object.DestroyImmediate(secondBake);
+                Object.DestroyImmediate(height);
+                Object.DestroyImmediate(splat);
+                Object.DestroyImmediate(kit);
                 Object.DestroyImmediate(material);
             }
         }
@@ -234,6 +268,42 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var block = new MaterialPropertyBlock();
             renderer.GetPropertyBlock(block);
             return block.GetTexture("_SeabedTex");
+        }
+
+        /// <summary>A live splat ground (W4-4) over the default frame a WaterSurface feeds its shader: the
+        /// builders' order (inactive, configure, activate), so OnEnable builds it and lists it live.</summary>
+        private static GameObject MakeLiveGround(Texture2D height, Texture2D splat, Texture2DArray kit)
+        {
+            var go = new GameObject("ShallowsFloorGround") { hideFlags = HideFlags.HideAndDontSave };
+            go.SetActive(false);
+            var ground = go.AddComponent<TerrainSplatSurface>();
+            ground.ConfigureHeightMap(height, -4f, 6f); // WaterSurface's default range, -4..6 m
+            ground.ConfigureDetail(kit, null);
+            ground.ConfigureSplat(splat, null, null, null, null, null);
+            go.SetActive(true);
+            return go;
+        }
+
+        /// <summary>The height texture a painted feed would have put on this sea's block.</summary>
+        private static void BindHeight(Renderer renderer, Texture height)
+        {
+            var block = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(block);
+            block.SetTexture("_HeightTex", height);
+            renderer.SetPropertyBlock(block);
+        }
+
+        /// <summary>W4-4: this sea's block carries its own ground's floor (that ground's splat, its kit's
+        /// gate open), or, with no ground of its own (null), no splat at all and the gate shut.</summary>
+        private static void AssertFloor(Renderer renderer, Texture splat)
+        {
+            var block = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(block);
+            if (splat != null)
+                Assert.That(block.GetTexture("_SplatA"), Is.SameAs(splat), renderer.name + ": its ground's floor");
+            else
+                Assert.That(block.HasTexture("_SplatA"), Is.False, renderer.name + ": no other region's ground");
+            Assert.That(block.GetFloat("_DetailLoaded"), Is.EqualTo(splat != null ? 1f : 0f), renderer.name);
         }
 
         private static void Invoke(DisplacedWaterSurface surface, string name, params object[] args)

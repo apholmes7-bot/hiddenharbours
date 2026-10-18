@@ -535,6 +535,29 @@ namespace HiddenHarbours.Core
                  "and boat and sea stay on the same water, never retuned apart.")]
         public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
 
+        // -----------------------------------------------------------------------------------------
+        //  The floor in the shallows (W4-4; ruling 7 of 2026-10-10, "Shallows: 2B")
+        // -----------------------------------------------------------------------------------------
+        // In clear shallow water the sea draws the ground's own textures inside its opaque composite
+        // (2B; 2A, the splat colours baked into _SeabedTex, stays unbuilt as the mobile-port fallback).
+        // Each step has its own switch, and each switch is an EXACT passthrough when off: today's
+        // pixels, bit for bit. FLAT fields whose code defaults are OFF, so a GameConfig.asset that lags
+        // the code reads false, which is the safe side (the pixel-grid note below says why flat).
+
+        /// <summary>W4-4a's ship default — <b>OFF</b> until its plates are accepted. With it on, the
+        /// ground skips its shading wherever the displaced sea covers it opaquely this frame (the
+        /// coverage <c>IsoFacetHullFeature</c> draws); the sea paints its own bed there, so no pixel
+        /// changes and the terrain's shading under the water is saved.</summary>
+        public const bool DefaultTerrainUnderwaterClip = false;
+
+        [Header("The floor in the shallows (W4-4 — the ground seen through clear water)")]
+        [Tooltip("Skip the ground's shading under the displaced sea? The sea's composite paints its own " +
+                 "bed wherever it covers the ground opaquely, so those ground pixels are never seen: ON " +
+                 "changes no pixel and saves their shading; OFF draws the ground everywhere, as before. " +
+                 "The clip follows the sea's own coverage this frame (still water, swash and hulls " +
+                 "included), never a waterline of the ground's own. Read per camera per frame.")]
+        public bool TerrainUnderwaterClip = DefaultTerrainUnderwaterClip;
+
         /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
         /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
         /// consumers with no config wired (EditMode, a bare test rig) resolve the SAME style the shipped

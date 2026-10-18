@@ -170,3 +170,37 @@ The owner approved importing the packed terrain textures from two committed reci
 Library. The source PNGs, manifest and shader slice contract remain committed; the five
 native packed assets retire. This supersedes only the packed-array persistence described
 above. Independent byte tests and scene-reference guards preserve the ground's content.
+
+## The ground under the sea, W4-4 (2026-10-18)
+
+Ruling 7 of 2026-10-10 ("Shallows: 2B") has the sea draw this ground's own textures as the
+floor of clear shallow water (ADR 0027 #7, amended with W4-4). On the ground's side:
+
+- **One albedo, two shaders.** The ground's seven helpers and its inline albedo (the hem, the
+  splat weights, the kit sum, the macro drift, the wet band) move unchanged into
+  `Art/Shaders/Include/TerrainSplatAlbedo.hlsl`, under a `TSA_` prefix. The terrain includes
+  it once and calls the same five functions in the same order; the sea includes the same file.
+  The material tables stay literal in the terrain, where `TerrainSplatBandPinTests` read them,
+  and the include carries a copy under `#ifndef TSA_TABLES_DEFINED`; `ShallowsFloorShaderTests`
+  hold the two copies equal, entry for entry.
+- **The underwater clip.** Where the displaced sea covers a pixel opaquely, the ground skips
+  its shading: the terrain frag opens with a gated `discard` where the sea's coverage target
+  (`_HHWaterScreenTex`) holds alpha 1. The overlay blends that same texel by its own alpha, so
+  an alpha-1 pixel is wholly the sea's and the ground under it is never seen. The margin is the
+  blend weight itself, zero metres: the clip reads coverage, not a level, so the translucent
+  fringe, the swash and still water keep their ground, and a pixel no sea fragment reached
+  reads the target's clear (alpha 0) and draws as before. A level-based clip was weighed and
+  dropped: to stay safe under the chop's warp and the swash it needs one margin of 1.8 to 6.7 m
+  (St Peters and Nine Mile Creek, low to high water), and at that margin it skips no pixel.
+- **The flag is each camera's own.** `IsoFacetHullFeature` lowers `_HHTerrainUnderwaterClip`
+  for every camera before it adds that camera's passes (and on Dispose), and raises it only
+  inside that camera's displaced water pass, after the coverage is drawn, while
+  `GameConfig.TerrainUnderwaterClip` is on. Every quality level runs the one pipeline, whose one
+  renderer holds the feature, active, and each camera is submitted before the next is set up.
+  A view that draws no displaced sea (the flat sea, or the sea toggled off) never clips.
+- **The switch ships OFF.** `GameConfig.TerrainUnderwaterClip` is `false` in code and in
+  `GameConfig.asset`; off, the gate's branch is never taken and the ground's pixels are as
+  before. It turns on only when the W4-4 plates are accepted.
+
+Look-only: the simulation, the CPU classifier and every placement read nothing new (rule 5).
+What the clip saves on the GPU is the slot's to time (W4-4 Phase B).
