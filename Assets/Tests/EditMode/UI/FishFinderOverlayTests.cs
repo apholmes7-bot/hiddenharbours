@@ -8,7 +8,7 @@ namespace HiddenHarbours.Tests.UI.EditMode
 {
     /// <summary>
     /// The fish finder HOST's policy, as pure maths (ADR 0025 S3b): the scan cadence that keeps the
-    /// instrument inside the frame budget, the card's placement and hit geometry, the mark presenter, and
+    /// instrument inside the frame budget, the raised card's size and hit geometry, the mark presenter, and
     /// the owner's Ruling A control mapping including the kept shallow alarm (Ruling E).
     ///
     /// <para><b>Every claim here is negative-controlled</b> — each guard is paired with a test that shows
@@ -96,23 +96,26 @@ namespace HiddenHarbours.Tests.UI.EditMode
 
         // ---- card placement ------------------------------------------------------------------------------
 
+        /// <summary>The finder's card raised on a screen (H2: from its housing in the band).</summary>
+        private static Rect Raised(float w, float h)
+            => HelmBandLayout.RaisedCardRect(FishRigGeometry.W, FishRigGeometry.H, w, h,
+                                             HudBandLayout.ReservedTopPx(w, h, 0f));
+
         [Test]
         public void TheCard_IsAScaledBlitOfTheNativeRig_AndKeepsThePortraitAspect()
         {
-            FishFinderSettings s = Cfg;
-            Assert.AreEqual(0.5f, FishFinderOverlayLayout.CardScale(false, in s, 1920f, 1080f), 1e-4f);
-            Assert.AreEqual(1f, FishFinderOverlayLayout.CardScale(true, in s, 1920f, 1080f), 1e-4f);
+            Rect at1080 = Raised(1920f, 1080f);
+            Assert.AreEqual(480f, at1080.width, 1e-3f,
+                "at 1080p no whole scale fits between the bands, so the card is raised at today's: native");
+            Assert.AreEqual(660f, at1080.height, 1e-3f);
 
-            Rect small = FishFinderOverlayLayout.CardRect(false, in s, 1920f, 1080f);
-            Assert.AreEqual(240f, small.width, 1e-3f);
-            Assert.AreEqual(330f, small.height, 1e-3f);
-            Assert.AreEqual((double)FishRigGeometry.W / FishRigGeometry.H,
-                            (double)small.width / small.height, 1e-6,
-                            "one scale drives both axes — a portrait instrument is never stretched");
-
-            Rect focus = FishFinderOverlayLayout.CardRect(true, in s, 1920f, 1080f);
-            Assert.AreEqual(480f, focus.width, 1e-3f, "the focused state is the rig's native size");
-            Assert.AreEqual(660f, focus.height, 1e-3f);
+            Rect at720 = Raised(1280f, 720f);
+            Assert.Less(at720.width, 480f,
+                "at 720p the screen below the top band is shorter than the card: less than native");
+            foreach (Rect r in new[] { at1080, at720, Raised(3840f, 2160f), Raised(1024f, 600f) })
+                Assert.AreEqual((double)FishRigGeometry.W / FishRigGeometry.H,
+                                (double)r.width / r.height, 1e-6,
+                                "one scale drives both axes — a portrait instrument is never stretched");
         }
 
         [Test]
@@ -134,28 +137,16 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         [Test]
-        public void TheSmallCard_ParksTopRight_AndTheFocusedOneCentres()
-        {
-            FishFinderSettings s = Cfg;
-            Rect small = FishFinderOverlayLayout.CardRect(false, in s, 1920f, 1080f);
-            Assert.AreEqual(1920f - s.MarginX - 240f, small.xMin, 1e-3f);
-            Assert.AreEqual(1080f - s.MarginY - 330f, small.yMin, 1e-3f, "screen y is UP — top-right");
-
-            Rect focus = FishFinderOverlayLayout.CardRect(true, in s, 1920f, 1080f);
-            Assert.AreEqual(960f, focus.center.x, 1e-3f);
-            Assert.AreEqual(540f, focus.center.y, 1e-3f);
-        }
-
-        [Test]
         public void TheCard_ShrinksToFitAShortScreen_RatherThanRunningOffIt()
         {
             // A portrait instrument is the one that does not fit: 660 px of native rig on a 600 px screen.
-            FishFinderSettings s = Cfg;
-            Rect focus = FishFinderOverlayLayout.CardRect(true, in s, 1024f, 600f);
-            Assert.LessOrEqual(focus.height, 600f - s.MarginY * 2f + 1e-3f,
-                               "the focused card fits the screen it sits on");
+            float top = 600f - HudBandLayout.ReservedTopPx(1024f, 600f, 0f);
+            Rect raised = Raised(1024f, 600f);
+            Assert.Less(raised.height, 660f, "the raised card shrinks rather than running off");
+            Assert.AreEqual(top, raised.yMax, 1e-3f, "its top edge on the top band's bottom, never into it");
+            Assert.GreaterOrEqual(raised.yMin, -1e-3f, "and it fits the screen it sits on");
             Assert.AreEqual((double)FishRigGeometry.W / FishRigGeometry.H,
-                            (double)focus.width / focus.height, 1e-6, "…without distorting");
+                            (double)raised.width / raised.height, 1e-6, "…without distorting");
         }
 
         /// <summary>Does the rig's own text fit the boxes it is drawn in at this mount size? The two that

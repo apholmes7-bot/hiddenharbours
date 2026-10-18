@@ -466,13 +466,6 @@ namespace HiddenHarbours.Core
                  "owner-tunable, no code (rule 6).")]
         public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
 
-        [Header("Boat-UI windows (draggable/resizable instrument cards — 2026-08-07 ruling)")]
-        [Tooltip("The windowed boat UI's chrome sizes and resize/collapse bounds: the hover title " +
-                 "strip every instrument card is dragged by, its two buttons, the corner grip, and " +
-                 "the scale clamps. Presentation only — where a player parks a window is transient " +
-                 "session state, never saved.")]
-        public BoatUiWindowSettings BoatUiWindows = BoatUiWindowSettings.Default;
-
         [Header("Helm footprint (the camera answers a full-width helm band — ADR 0050)")]
         [Tooltip("How the camera answers a helm band that spans the whole width of the screen: the " +
                  "share of the band's height the boat's place on screen rises by (0.5 = half, the " +
@@ -1110,11 +1103,13 @@ namespace HiddenHarbours.Core
     /// <summary>
     /// Owner tuning for the <b>helm instrument overlay</b> (<see cref="GameConfig.HelmOverlay"/>) — the
     /// screen-space card that shows the active hull's diegetic control (the tiller or the binnacle
-    /// lever, ADR 0025 S1) while piloting a motorised hull. Placement, the click-to-FOCUS enlargement
-    /// (owner addition 2026-08-03: clicking an instrument brings it to a bigger state where its controls
-    /// are properly clickable; Esc/click-away returns), and the pointer-mapping radii all live here so
-    /// the whole feel is dialled in the Inspector with no code (rule 6). Presentation preferences only —
-    /// never sim state, never saved (rule 5).
+    /// lever, ADR 0025 S1) while piloting a motorised hull. Placement and the pointer-mapping radii
+    /// live here so the whole feel is dialled in the Inspector with no code (rule 6). Presentation
+    /// preferences only — never sim state, never saved (rule 5).
+    ///
+    /// <para>The card's FOCUS state and the composed dash's two scales retired with the dash card
+    /// (H2): a wheel helm is its band, which takes its size from the screen, and the tiller's and the
+    /// lone lever's controls are live on the one card.</para>
     /// </summary>
     [System.Serializable]
     public struct HelmOverlaySettings
@@ -1122,18 +1117,11 @@ namespace HiddenHarbours.Core
         [Tooltip("Scale of the small card in HUD reference pixels per rig pixel. 1 = native at 1280x720.")]
         [Min(0.1f)] public float SmallScale;
 
-        [Tooltip("Scale of the FOCUSED state (click the instrument to enlarge; Esc/click-away returns). " +
-                 "Bigger = controls easier to hit; the rig's hit geometry scales with it.")]
-        [Min(0.1f)] public float FocusScale;
-
         [Tooltip("Where the SMALL card centres horizontally, as a 0..1 fraction of screen width. " +
                  "0.5 = bottom-centre (the owner's placement ruling, 2026-08-03).")]
         [Range(0f, 1f)] public float SmallCenterX01;
 
-        [Tooltip("Where the FOCUSED card centres horizontally, as a 0..1 fraction of screen width.")]
-        [Range(0f, 1f)] public float FocusCenterX01;
-
-        [Tooltip("Margin (HUD reference px) from the screen's bottom edge — BOTH states anchor to the bottom of the " +
+        [Tooltip("Margin (HUD reference px) from the screen's bottom edge — the card anchors to the bottom of the " +
                  "screen (the helm rises from the dash).")]
         [Min(0f)] public float MarginY;
 
@@ -1145,27 +1133,15 @@ namespace HiddenHarbours.Core
                  "drive across its FULL range (up = ahead). Smaller = twitchier.")]
         [Min(1f)] public float TillerDragFullDrivePx;
 
-        [Tooltip("Scale of the COMPOSED DASH's small state (S2a — the 600×510 console/sport card is " +
-                 "far bigger than a lone instrument, so it gets its own dial). 0.5 = half rig size.")]
-        [Min(0.1f)] public float DashSmallScale;
-
-        [Tooltip("Scale of the composed dash's FOCUSED state. Clamped at runtime so the card always " +
-                 "fits the screen.")]
-        [Min(0.1f)] public float DashFocusScale;
-
-        /// <summary>Native-size card CENTRED AT THE BOTTOM (the owner's 2026-08-03 placement ruling),
-        /// 2× focus rising from the same bottom-centre anchor.</summary>
+        /// <summary>Native-size card CENTRED AT THE BOTTOM (the owner's 2026-08-03 placement
+        /// ruling).</summary>
         public static HelmOverlaySettings Default => new HelmOverlaySettings
         {
             SmallScale = 1f,
-            FocusScale = 2f,
             SmallCenterX01 = 0.5f,
-            FocusCenterX01 = 0.5f,
             MarginY = 16f,
             GrabRadiusPx = 30f,
             TillerDragFullDrivePx = 140f,
-            DashSmallScale = 0.5f,
-            DashFocusScale = 1.5f,
         };
     }
 
@@ -1220,57 +1196,6 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// Owner tuning for the <b>boat-UI windows</b> (<see cref="GameConfig.BoatUiWindows"/> — the
-    /// 2026-08-07 windowing ruling: every instrument card draggable, resizable, collapsible, plus the
-    /// one hide-all input). The chrome's strip/button/grip sizes and the resize/collapse scale bounds
-    /// live here so the whole feel is dialled in the Inspector with no code (rule 6). Presentation
-    /// preferences only — where a player parks a window is transient session state (rule 5), never
-    /// saved, and never stored here.
-    ///
-    /// <para><b>The size floor is about grabbability, not legibility.</b> Resizing a window only
-    /// re-targets the destination rect of the instrument's ONE native raster (the letterbox
-    /// contract) — no rig is ever re-rendered small, so no font law is in play at any size. MinScale
-    /// simply keeps a window big enough to grab back.</para>
-    /// </summary>
-    [System.Serializable]
-    public struct BoatUiWindowSettings
-    {
-        [Tooltip("Height (screen px; HUD reference px for the helm) of the window title strip that appears on hover above each " +
-                 "boat-UI card — the grab handle for dragging.")]
-        [Min(0f)] public float TitleBarPx;
-
-        [Tooltip("Width (screen px; HUD reference px for the helm) of the two strip buttons (collapse tier, hide).")]
-        [Min(0f)] public float ChromeButtonPx;
-
-        [Tooltip("Size (screen px; HUD reference px for the helm) of the corner resize grip inside the card's bottom-right.")]
-        [Min(0f)] public float GripPx;
-
-        [Tooltip("The COMPACT collapse tier's scale multiplier on the window's Full size — the " +
-                 "glance-sized middle tier between Full and the bare title bar.")]
-        [Range(0.1f, 1f)] public float CompactScale;
-
-        [Tooltip("Floor on the per-window resize multiplier. Grabbability, not legibility — the " +
-                 "raster is never re-rendered, only re-targeted.")]
-        [Min(0.05f)] public float MinScale;
-
-        [Tooltip("Ceiling on the per-window resize multiplier (the window still clamps to the " +
-                 "screen and under the HUD band whatever this says).")]
-        [Min(0.1f)] public float MaxScale;
-
-        /// <summary>An 18 px strip with 22 px buttons and a 14 px grip; Compact at 55% of Full;
-        /// resize clamped 0.35×–3× of the dialled base size.</summary>
-        public static BoatUiWindowSettings Default => new BoatUiWindowSettings
-        {
-            TitleBarPx = 18f,
-            ChromeButtonPx = 22f,
-            GripPx = 14f,
-            CompactScale = 0.55f,
-            MinScale = 0.35f,
-            MaxScale = 3f,
-        };
-    }
-
-    /// <summary>
     /// Owner tuning for how the <b>camera answers the helm's footprint</b>
     /// (<see cref="GameConfig.HelmFootprint"/> — ADR 0050). While the helm's UI covers a band across the
     /// whole width of the screen (<see cref="HelmFootprint"/>), the boat's place on screen eases up by
@@ -1309,10 +1234,8 @@ namespace HiddenHarbours.Core
     /// one shared height map (<see cref="DepthSounder.DisplayDepth"/>, rule 5). These are the instrument's
     /// dials, not the sea's.</para>
     ///
-    /// <para><b>Why the card placement lives here and not in <see cref="HelmOverlaySettings"/>:</b> the
-    /// sounder is a SECOND card that can be on screen beside the piloting control, so it needs its own
-    /// corner and its own scale. Keeping them separate also means the owner can move one without moving
-    /// the other.</para>
+    /// <para>No card placement lives here any more: since H2 the sounder's place on the helm is its
+    /// housing in the band, and its raised card is placed by the one rule every instrument shares.</para>
     /// </summary>
     [System.Serializable]
     public struct DepthSounderSettings
@@ -1353,34 +1276,8 @@ namespace HiddenHarbours.Core
                  "the PR that shipped it.")]
         public float PlaceholderWaterTempC;
 
-        [Tooltip("⚠ FALLBACK ONLY since S4.5. Scale of the loose small card (screen px per rig px, " +
-                 "1 = native). The sounder now draws FLUSH in the dash's own brow mount by default, " +
-                 "sized by that authored cutout, so this is only reached when there is no dash on " +
-                 "screen to mount into.")]
-        [Min(0.1f)] public float CardScale;
-
-        [Tooltip("Scale of the EXPANDED state (click the flush sounder to blow it up; Esc/click-away " +
-                 "returns it to the dash). Bigger = the three pushers are easier to hit; the rig's hit " +
-                 "geometry scales with it. This one is very much live — it is the state you read the " +
-                 "instrument in.")]
-        [Min(0.1f)] public float FocusScale;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's RIGHT edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginX;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's TOP edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginY;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen width.")]
-        [Range(0f, 1f)] public float FocusCenterX01;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen height.")]
-        [Range(0f, 1f)] public float FocusCenterY01;
-
         /// <summary>A 4 Hz sounding, armed at 3 m with ±0.5 m pushers (the rig's own defaults), a 2 Hz
-        /// flash, metres, and a native-size card in the top-right with a 2× focused state.</summary>
+        /// flash, and metres.</summary>
         public static DepthSounderSettings Default => new DepthSounderSettings
         {
             ReadIntervalSec = 0.25f,
@@ -1392,12 +1289,6 @@ namespace HiddenHarbours.Core
             MaxAlarmMetres = 20f,
             AlarmBlinkHz = 2f,
             PlaceholderWaterTempC = 12f,
-            CardScale = 1f,
-            FocusScale = 2f,
-            MarginX = 24f,
-            MarginY = 16f,
-            FocusCenterX01 = 0.5f,
-            FocusCenterY01 = 0.5f,
         };
     }
 
@@ -1411,8 +1302,8 @@ namespace HiddenHarbours.Core
     /// safety-critical number rather than a taste one: at zero the contour is Inf/NaN, not small. Naming it
     /// here, once, is what lets the save migration heal an old row and the UI draw a fresh one from the SAME
     /// value (rule 6 — the number is data, never a literal in two places). The rest of the finder's tuning
-    /// — card placement, scan cadence, mark sizing and the placeholder strip — joined it in the UI slice
-    /// (S3b) and is documented field by field below.</para>
+    /// — scan cadence, mark sizing and the placeholder strip — joined it in the UI slice (S3b) and is
+    /// documented field by field below; its card placement retired with the band (H2).</para>
     ///
     /// <para><b><see cref="WaterfallHz"/> is the perf knob, not a taste one.</b> The rig's scan phase
     /// free-runs, and its <c>sonarView</c> is O(width) in <c>fillRect</c> spans plus a whole-texture
@@ -1458,33 +1349,6 @@ namespace HiddenHarbours.Core
                  "and the range, it is a look-at-it-now toggle, not a setting a fisherman expects to find " +
                  "tomorrow.")]
         public bool DefaultFishId;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5. Scale of the loose small card, as a fraction of the rig's " +
-                 "native 480x660 (the surface is always native and the card is a scaled blit of it). " +
-                 "The finder now draws FLUSH in the dash's authored brow mount by default, sized by " +
-                 "that cutout, so this is only reached when there is no dash on screen to mount into.")]
-        [Range(0.2f, 2f)] public float CardScale;
-
-        [Tooltip("Scale of the EXPANDED state (click the flush finder to blow it up; Esc/click-away " +
-                 "returns it to the dash), as a fraction of the rig's native 480x660. Bigger = the " +
-                 "pushers are easier to hit; the rig's hit geometry scales with it. This is the state " +
-                 "the instrument is actually READ in — below ~83% of native its typography breaks " +
-                 "down, so keep it at or above 1.")]
-        [Range(0.2f, 2f)] public float FocusScale;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's RIGHT edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginX;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's TOP edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginY;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen width.")]
-        [Range(0f, 1f)] public float FocusCenterX01;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen height.")]
-        [Range(0f, 1f)] public float FocusCenterY01;
 
         [Tooltip("Fish-mark size (the rig's own 'size' multiplier, ~0.5-2.5) for a school you are only " +
                  "clipping the EDGE of — signal strength 0. Small marks read as a weak return.")]
@@ -1536,19 +1400,12 @@ namespace HiddenHarbours.Core
         /// placeholders exactly as <c>fishRig.js:320-321</c> states them (sens 0.75, link on, batt 0.8,
         /// 4.0 V) — so the shipped glass looks like the art director's preview until real models exist.
         /// A 4 Hz scan (measured at ~4.8 ms a repaint, so ~19 ms of every second — and a multiple of
-        /// 2× the 2 Hz alarm blink, so the flash costs nothing extra), a half-size card in the top-right,
-        /// and a native-size focused state.</summary>
+        /// 2× the 2 Hz alarm blink, so the flash costs nothing extra).</summary>
         public static FishFinderSettings Default => new FishFinderSettings
         {
             DefaultRangeMetres = 20f,
             WaterfallHz = 4f,
             DefaultFishId = true,
-            CardScale = 0.5f,
-            FocusScale = 1f,
-            MarginX = 24f,
-            MarginY = 16f,
-            FocusCenterX01 = 0.5f,
-            FocusCenterY01 = 0.5f,
             MarkSizeMin = 0.7f,
             MarkSizeMax = 1.6f,
             MarkSizeJitter01 = 0.25f,
