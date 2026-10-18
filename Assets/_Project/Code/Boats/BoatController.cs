@@ -56,7 +56,7 @@ namespace HiddenHarbours.Boats
         private const float RudderFeelScale = 0.01f;
 
         [SerializeField] private BoatHullDef _hull;
-        [Tooltip("Placeholder local seabed depth (m). Replaced by a real seabed/depth map later.")]
+        [Tooltip("Fallback seabed depth below chart datum (m), used only where terrain/environment is absent.")]
         [SerializeField] private float _localSeabedDepth = 3f;
 
         [Header("Seakeeping (ADR 0018 B3 — the sea pushes the boat)")]
@@ -580,14 +580,9 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Set the depth of water this hull believes is under her at chart datum, in metres — the
-        /// grounding read's only input besides the tide (<c>waterDepth = this + TideHeight</c>).
-        ///
-        /// <para>⚠ <b>It is a flat per-hull number, not a per-position sounding</b>, and the field's own
-        /// note says so: the real per-position gate is <c>BoatCrossing</c>. So a hull placed somewhere
-        /// with a known bed should be TOLD it, or she carries the component default (3 m) and reads
-        /// aground wherever the tide is lower than that leaves her draught. Exposed for the same reason
-        /// <see cref="SetHull"/> is: a boat spawned at runtime has no inspector to be authored in.</para>
+        /// Set the fallback depth below chart datum, in metres, for scenes without terrain.
+        /// ArrivalOpening's runtime channel-bed setting remains effective in those scenes.
+        /// Authored terrain takes precedence whenever it is available; this is not a terrain override.
         /// </summary>
         public void SetLocalSeabedDepth(float metres) => _localSeabedDepth = metres;
 
@@ -636,15 +631,13 @@ namespace HiddenHarbours.Boats
                 ? GameServices.Environment.Sample()
                 : default;
 
-            // --- Grounding: water depth = seabed depth + tide height; aground if draught exceeds it (P5). ---
+            // --- Grounding: current terrain depth through Core, flat-bed fallback in unwired scenes. ---
             // NOTE: grounding is NON-killing. It SLOWS the boat (the grounded-slowdown drag below) so the
             // shallows feel heavy and sluggish — the "teeth" — but it NEVER zeroes thrust or cuts the rudder.
-            // The helm/throttle/oars stay fully responsive so the player can always steer/power their way back
-            // to deep water (P5, never-punishing). This matters under St Peters' big tide: at low water the
-            // region-wide TideHeight alone can trip this (the depth here is still flat & time-based, not
-            // per-position) — so it MUST stay a slowdown, not a helm-cut, or a transient tide phase would kill
-            // control independent of where you are.
-            float waterDepth = _localSeabedDepth + env.TideHeight;
+            // The helm/throttle/oars stay responsive so the player can work back into deep water.
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            float waterDepth = BoatCrossing.GroundingDepthAt(GameServices.TidalTerrain,
+                GameServices.Environment, now, _rb.position, _localSeabedDepth, env.TideHeight);
             bool agroundNow = waterDepth < _hull.DraughtMeters;
             if (agroundNow && !IsAground)
                 EventBus.Publish(new BoatGrounded(this, Mathf.Clamp01(_hull.DraughtMeters - waterDepth)));
