@@ -27,7 +27,7 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>⚠⚠ AND THIS FIXTURE HAS TO CLEAN UP AFTER A SCENE THAT OUTLIVES ITS OWN UNLOAD.</b>
     /// Measured on CI run 34081721484, where this file's first version turned four tests RED in three
-    /// other classes, every one of them running after this one. <c>StPeters.unity</c> carries <b>eight</b>
+    /// other classes, every one of them running after this one. <c>StPeters.unity</c> carries <b>nine</b>
     /// <see cref="PersistentObject"/> roots, and <c>PersistentObject.Awake</c> is
     /// <c>DontDestroyOnLoad(gameObject)</c> — which promotes them OUT of the scene. Unloading the scene
     /// therefore does not remove them: GameRoot, the services root, the ControlSwitcher, the
