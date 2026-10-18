@@ -125,6 +125,8 @@ namespace HiddenHarbours.Tests.PlayMode
         const string Fail = "FAIL";
         const string Unknown = "unknown from this plate";
         const string Info = "INFO";
+        /// <summary>A half of a claim with nothing in the frame to decide on: it asserts nothing, never a PASS.</summary>
+        const string Inconclusive = "INCONCLUSIVE";
 
         /// <summary>The asset the build ships, the switch ON since the owner's ruling of 2026-09-19: the
         /// plates compare the loaded config to it and never write it.</summary>
@@ -911,13 +913,35 @@ namespace HiddenHarbours.Tests.PlayMode
                 int flippedByHer = Count(And(And(herInner, gC1), Not(gI)));
                 bool[] guardMoved = new bool[gC1.Length];
                 for (int p = 0; p < gC1.Length; p++) guardMoved[p] = gC1[p] != gI[p];
-                int movedOutside = Count(And(guardMoved, Not(Dilate(herI, w, h, pad))));
+                bool[] movedOut = And(guardMoved, Not(Dilate(herI, w, h, pad)));
+                int movedOutside = Count(movedOut);
                 int herWritesInterior = Count(And(And(herI, gI), Not(gC1)));
                 string n4 = $"{n4Head}; guard interior {interiorC1} px, {sanity:P1} on the hulls' ids; her id over " +
                             $"interior {decidable} px{innerNote}, of which drawn out by her {flippedByHer}; guard moved outside " +
                             $"her (dilated {pad}) {movedOutside}; her px turned INTERIOR {herWritesInterior} (INFO)";
                 if (interiorC1 == 0 || sanity < GuardOnHullsAtLeast)
                     Verdict("4 guard draws her", arm, Unknown, "the guard read does not sit on the hulls' ids; " + n4);
+                else if (inner > 0)
+                {
+                    // Through the map each half answers for itself. The guard keeps her full-size mesh, so it can
+                    // move where her full-size body peeks past a nearer figure while her art pixel there is judged
+                    // covered: a pixel it moves outside her passes only where her frame equals the no-body control
+                    // (c-control-body-hidden, by the plate's own diff). Her id held inside her art pixels may lie
+                    // over no interior at all: that half then decides nothing, says so by name and is never a PASS.
+                    int movedShows = Count(And(movedOut, changedC0M));
+                    bool notDrawnOut = decidable > 0 && flippedByHer != decidable;
+                    string n4Map = $"{n4}; of those moved outside her, differing from the no-body control {movedShows}";
+                    if (notDrawnOut || movedShows > 0)
+                        Verdict("4 guard draws her", arm, Fail,
+                                (notDrawnOut ? "her id over the interior is not all drawn out by her; " : "") +
+                                (movedShows > 0 ? "the guard moved pixels outside her that her frame shows; " : "") + n4Map);
+                    else if (decidable == 0)
+                        Verdict("4 guard draws her", arm, Inconclusive + " (0 px)",
+                                "her id inside her art pixels lies over no guarded interior, so that half asserts " +
+                                "nothing; every pixel the guard moved outside her equals the no-body control; " + n4Map);
+                    else
+                        Verdict("4 guard draws her", arm, Pass, n4Map);
+                }
                 else if (decidable == 0)
                     Verdict("4 guard draws her", arm, Unknown, "she stands over no guarded interior in this frame; " + n4);
                 else
