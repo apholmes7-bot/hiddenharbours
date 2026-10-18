@@ -335,7 +335,7 @@ namespace HiddenHarbours.Tests.EditMode
             // passages on the same side of the region — the tidal crossing and the sea door — and a
             // trigger band that reached the other's would make the crossing fire the wrong region.
             AssertBandsClear(
-                StPetersBuilder.ToNineMileCreekPassagePos.y, StPetersBuilder.SandbarHalfWidth * 2f,
+                StPetersBuilder.ToNineMileCreekPassagePos.y, StPetersBuilder.NineMileCreekPassageBandSize.y,
                 StPetersBuilder.ToWestWaterPassagePos.y, StPetersBuilder.WestWaterPassageBandSize.y,
                 "St Peters' bar passage and its sea door");
             AssertBandsClear(

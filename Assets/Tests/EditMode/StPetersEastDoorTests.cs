@@ -274,7 +274,7 @@ namespace HiddenHarbours.Tests.EditMode
             // boat standing in two bands takes whichever passage the physics step happened to raise
             // first, which is a crossing to the wrong region with nothing failing.
             var bar = (pos: StPetersBuilder.ToNineMileCreekPassagePos,
-                       size: new Vector2(3f, StPetersBuilder.SandbarHalfWidth * 2f), name: "the bar walk");
+                       size: StPetersBuilder.NineMileCreekPassageBandSize, name: "the bar walk");
             var west = (pos: StPetersBuilder.ToWestWaterPassagePos,
                         size: StPetersBuilder.WestWaterPassageBandSize, name: "the west sea door");
             var east = (pos: StPetersBuilder.ToEastWaterPassagePos,
