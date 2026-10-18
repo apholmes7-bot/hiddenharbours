@@ -152,14 +152,10 @@ MonoBehaviour:
     NeutralSnapWindow01: 0.08
   HelmOverlay:
     SmallScale: 1
-    FocusScale: 2
     SmallCenterX01: 0.5
-    FocusCenterX01: 0.5
     MarginY: 16
     GrabRadiusPx: 30
     TillerDragFullDrivePx: 140
-    DashSmallScale: 0.5
-    DashFocusScale: 1.5
   DepthSounder:
     ReadIntervalSec: 0.25
     DefaultAlarmMetres: 3
@@ -170,22 +166,10 @@ MonoBehaviour:
     MaxAlarmMetres: 20
     AlarmBlinkHz: 2
     PlaceholderWaterTempC: 12
-    CardScale: 1
-    FocusScale: 2
-    MarginX: 24
-    MarginY: 16
-    FocusCenterX01: 0.5
-    FocusCenterY01: 0.5
   FishFinder:
     DefaultRangeMetres: 20
     WaterfallHz: 4
     DefaultFishId: 1
-    CardScale: 0.5
-    FocusScale: 1
-    MarginX: 24
-    MarginY: 16
-    FocusCenterX01: 0.5
-    FocusCenterY01: 0.5
     MarkSizeMin: 0.7
     MarkSizeMax: 1.6
     MarkSizeJitter01: 0.25
@@ -222,13 +206,6 @@ MonoBehaviour:
     SelfCentre: 0
     RimGrabPadPx: 8
     SteerEaseSeconds: 0.25
-  BoatUiWindows:
-    TitleBarPx: 18
-    ChromeButtonPx: 22
-    GripPx: 14
-    CompactScale: 0.55
-    MinScale: 0.35
-    MaxScale: 3
   HelmFootprint:
     CameraBandShare: 0.5
     CameraEaseSeconds: 0.4

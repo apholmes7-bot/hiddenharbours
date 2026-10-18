@@ -1381,7 +1381,7 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
   rate** is flagged `_confirm` — it is the number that decides how nasty losing your bottom feels.
 - **Two controls, one verb** (owner ask, 2026-08-23) — and never two states, because both call the
   same `BoatAnchor.Toggle()`:
-  - **At a helm: a switch on the dash** (`UI/HelmDashController`), which is the diegetic answer ADR
+  - **At a helm: a switch on the dash** (`UI/HelmBandController`, in the band since H2), which is the diegetic answer ADR
     0039 asks for. On the **pilothouse** hulls it is the rigs' *already-authored* `ANCH` breaker
     (`ColA[3]` of the bank, drawn dead since that dash shipped and now lit by the hook itself). On the
     **skiffs** it is a third switch bat in the panel, midway between DECK and SPOT — derived from the
@@ -1415,7 +1415,7 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
   resolvers), `Code/Boats/BoatAnchor.cs` (state + the per-tick restraint, runtime-spawned by
   `BoatController` so no builder re-run is needed), `Code/Boats/AnchorInput.cs` (the key),
   `Code/Boats/HelmControlRelay.cs` (the Boats side of the Core tackle seam),
-  `Code/UI/HelmDashController.cs` + `Code/UI/Draw/HelmDashGeometry.cs` (the dash switch),
+  `Code/UI/HelmBandController.cs` + `Code/UI/Draw/HelmBandGeometry.cs` (the switch, in the band since H2),
   `Code/Core/Boats/AnchorSettings.cs` (the owner's policy, and the shared `AnchorState`). Tests:
   `AnchorMathTests` and `AnchorContentValidationTests` (EditMode — the decision half, the tackle
   ladder, and the `GameConfig.asset` / hull-asset YAML-key guards), `HelmAnchorSwitchTests` (EditMode

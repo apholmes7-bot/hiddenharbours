@@ -197,12 +197,59 @@ namespace HiddenHarbours.Core
         private static IRadarContacts _radarContacts;
 
         /// <summary>
+        /// The birds near the view right now (<see cref="IBirdPresence"/>) — written by the flock that
+        /// draws them, read by the audio that voices them, so the gull calls come from the gulls and
+        /// neither module names the other (rule 4).
+        ///
+        /// <para><b>⚠ NEVER null, like <see cref="RadarContacts"/> — read it without a null check.</b>
+        /// Absent a registered flock it is <see cref="EmptyBirdPresence"/>, an empty sky: no birds near,
+        /// so nothing calls. That is the right shipped behaviour on the title screen, in a bare scene and
+        /// under a fixture that has stood the flock down.</para>
+        ///
+        /// <para>Same lifetime and discipline as <see cref="RadarContacts"/> otherwise: the flock
+        /// registers itself when enabled and <b>must clear this on disable</b> (assign null — the getter
+        /// turns that back into the empty sky) so a disabled flock is a silent one.</para>
+        /// FLAG lead-architect: new Core contract (the bird-presence seam).
+        /// </summary>
+        public static IBirdPresence BirdPresence
+        {
+            get
+            {
+                IBirdPresence model = _birdPresence;
+                // ⚠️ NEVER `_birdPresence ?? EmptyBirdPresence.Instance` here — the FishSchools reasoning
+                // verbatim. A flock is a MonoBehaviour, and once it is destroyed the reference is Unity's
+                // FAKE-null: `??`/`?.` bypass UnityEngine.Object's overloaded `==`, so a DESTROYED flock
+                // would read as live and every call through it would throw.
+                if (model is UnityEngine.Object producer && producer == null) return EmptyBirdPresence.Instance;
+                return model != null ? model : EmptyBirdPresence.Instance;
+            }
+            set => _birdPresence = value;
+        }
+
+        private static IBirdPresence _birdPresence;
+
+        /// <summary>
         /// The versioned save system (VS-08). Self-installing and persistent (SaveService bootstraps
         /// itself before the first scene), so unlike the others it is not wired by GameRoot. The world
         /// reads/writes persisted flags through it (the onboarding-flags consolidation off PlayerPrefs).
         /// Optional — null before the bootstrap runs (e.g. EditMode) — so consumers must null-check.
         /// </summary>
         public static ISaveService Save { get; set; }
+
+        /// <summary>
+        /// The player's look (character PR 2b, ADR 0051): the seam a picker previews and keeps a
+        /// <see cref="CharacterRecipe"/> through, over <see cref="Save"/> and the shipped builder. Never
+        /// null: nothing has to wire it, so a default <see cref="PlayerAppearance"/> is made on first read;
+        /// a test assigns its own. Cleared by <see cref="Reset"/>, so an open preview never outlives the
+        /// session that opened it (enter-play-mode options keep statics alive between plays).
+        /// </summary>
+        public static IPlayerAppearance Appearance
+        {
+            get => _appearance ??= new PlayerAppearance();
+            set => _appearance = value;
+        }
+
+        private static IPlayerAppearance _appearance;
 
         /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
@@ -845,13 +892,6 @@ namespace HiddenHarbours.Core
         public static HelmWheelSettings HelmWheel =>
             Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
 
-        /// <summary>The boat-UI windows' chrome tunables (the 2026-08-07 windowing ruling — the
-        /// hover title strip, its buttons, the corner grip, and the resize/collapse scale bounds).
-        /// Same contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline
-        /// (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).</summary>
-        public static BoatUiWindowSettings BoatUiWindowing =>
-            Config != null ? Config.BoatUiWindows : BoatUiWindowSettings.Default;
-
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
@@ -1036,7 +1076,9 @@ namespace HiddenHarbours.Core
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
+            BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;
+            Appearance = null;           // → a fresh default on next read; drops any open preview
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;

@@ -30,6 +30,18 @@ namespace HiddenHarbours.Boats
     public static class BoatCrossing
     {
         /// <summary>
+        /// Grounding uses the same terrain depth as crossing. In a scene without a terrain or
+        /// environment service, retain the controller's authored/spawned flat bed plus sample tide.
+        /// The fallback is deliberately distinct from CanFloat's open-water passability default.
+        /// No cache: a move, tide jump or region replacement is visible on the next physics tick.
+        /// </summary>
+        public static float GroundingDepthAt(ITidalTerrain terrain, IEnvironmentService environment,
+            double totalSeconds, Vector2 worldPos, float fallbackSeabedDepth, float fallbackTideHeight)
+            => terrain != null && environment != null
+                ? DepthAt(terrain, environment, totalSeconds, worldPos)
+                : fallbackSeabedDepth + fallbackTideHeight;
+
+        /// <summary>
         /// Water depth (m) over <paramref name="worldPos"/> at <paramref name="totalSeconds"/>, resolved
         /// from the authored terrain and the deterministic water level. Returns
         /// <see cref="float.PositiveInfinity"/> when no terrain/environment is wired ("open water" — no

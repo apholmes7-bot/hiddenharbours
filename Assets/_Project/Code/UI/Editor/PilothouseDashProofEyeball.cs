@@ -101,7 +101,7 @@ namespace HiddenHarbours.UI.Editor
                 }
             }
 
-            // compass → wheel → lever, exactly the compositor's order (HelmDashController).
+            // compass → wheel → lever, exactly the retired dash compositor's order.
             if (fit.Compass != CompassMount.None)
             {
                 HelmDashGeometry.CompassBoxOnCard(rig, fit.Compass, out int cbx, out int cby,
