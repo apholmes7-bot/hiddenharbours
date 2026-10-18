@@ -136,8 +136,10 @@ namespace HiddenHarbours.Art
 
     /// <summary>
     /// Every tunable of the GULL flock (rule 6). <see cref="GullFlock"/> serializes an owner-editable
-    /// instance. Defaults are a handful of birds working the harbour, a third of them down on the water
-    /// or the wharf at any moment.
+    /// instance. The birds themselves belong to places: each <see cref="BirdHauntDef"/> says how many
+    /// use it, and the schedule (<see cref="BirdHauntLibrary.Tuning"/>) says when. This is how the flock
+    /// DRAWS them: a pool bound to the birds nearest the view, how they fly between places, how many of
+    /// a place's birds sit, and how they look.
     ///
     /// <para><b>There is no size knob, and that is deliberate.</b> A gull is 1.40 m across at every
     /// altitude — 45 px at the project's 32 px/m — and the sheet is baked at exactly that. Height is a
@@ -150,21 +152,42 @@ namespace HiddenHarbours.Art
     public struct GullConfig
     {
         [Header("Flock")]
-        [Tooltip("How many gulls work the harbour at once. A FEW reads as a living coast; a sky full reads as a swarm.")]
+        [Tooltip("The pool: the most gulls drawn at once. The birds the schedule puts near the view are " +
+                 "drawn nearest first; any more are counted (and heard) but not drawn.")]
         [Min(0)] public int Count;
-        [Tooltip("Half-size (m) of the region, centred on the camera, the flock works (x across, y depth). " +
-                 "Landing spots are drawn inside it; a settled bird left outside it rejoins the wheel off-screen.")]
-        public Vector2 AreaHalfSize;
         [Tooltip("Radius (m) of the wheel the flying birds turn. 0 = the rig's own FLOCK.radius_m (6 m), " +
                  "which is what the art director tuned the wheel against.")]
         [Min(0f)] public float WheelRadiusMetres;
         [Tooltip("Seed for the wheel and for where birds choose to put down. Same seed, same flock, every run.")]
         public int Seed;
+        [Tooltip("The bird this flock draws, as a bird. id: it reads that bird's entry at every place.")]
+        public string SpeciesId;
+
+        [Header("Places")]
+        [Tooltip("Metres beyond the view a place still counts as near, so its birds are drawn before " +
+                 "they come into frame. Match the calls' hearing margin.")]
+        [Min(0f)] public float ShowMarginMetres;
+        [Tooltip("Metres farther still that a near place must be before it stops counting, so a place " +
+                 "at the edge of the frame does not blink in and out.")]
+        [Min(0f)] public float ShowHysteresisMetres;
+        [Tooltip("How often (per second, real time) the schedule places the birds and the pool is rebound.")]
+        [Min(0.5f)] public float ScheduleTicksPerSecond;
+        [Tooltip("How fast a gull flies between its haunt and its roost, metres per game second.")]
+        [Min(0.1f)] public float CommuteSpeedMetresPerSecond;
+        [Tooltip("Of the birds that sit, the share that stands on a perch when one is free near its spot (0..1).")]
+        [Range(0f, 1f)] public float PerchShare;
+        [Tooltip("Half-size (m) of the box around a bird's own spot that it looks in for a free perch.")]
+        public Vector2 PerchSearchHalfSize;
 
         [Header("Cadence")]
-        [Tooltip("Share of the flock that is DOWN on ground or water at any moment (0..1). 0 = they never " +
-                 "settle, 1 = they never fly. Birds re-decide on the rig's own settle_after_s.")]
+        [Tooltip("Share of a place's birds that is DOWN on ground or water at any moment on a fine day " +
+                 "(0..1). 0 = they never settle, 1 = they never fly. Birds re-decide on the rig's own " +
+                 "settle_after_s. Every bird at a roost sits.")]
         [Range(0f, 1f)] public float SettledFraction;
+        [Tooltip("Share that sits in thick fog: the birds that stay mostly sit it out.")]
+        [Range(0f, 1f)] public float FogSettledFraction;
+        [Tooltip("Share that sits in a gale: the few that stay at a sheltered place stand on their feet.")]
+        [Range(0f, 1f)] public float GaleSettledFraction;
 
         [Header("Look")]
         [Tooltip("Metres the whole wheel is skewed downwind on the shared breeze (the flock rides it).")]
@@ -175,25 +198,29 @@ namespace HiddenHarbours.Art
         [Range(0f, 1f)] public float MaxAlpha;
 
         [Header("Day / night")]
-        [Tooltip("How strongly night dims the gulls (0 = ignore). They roost rather than vanish, so this " +
-                 "should DIM, not erase.")]
+        [Tooltip("How strongly night dims the gulls (0 = ignore). The schedule sends them to their " +
+                 "roosts at night, so this should DIM, not erase.")]
         [Range(0f, 1f)] public float NightFade;
-        [Tooltip("Day/night brightness (0..1) at or below which the flock roosts: every bird puts down and " +
-                 "stands. Gulls do not wheel over a dark harbour.")]
-        [Range(0f, 1f)] public float RoostBelowBrightness;
 
         public static GullConfig Default => new GullConfig
         {
-            Count                = 5,
-            AreaHalfSize         = new Vector2(14f, 9f),
-            WheelRadiusMetres    = 0f,
-            Seed                 = 7,
-            SettledFraction      = 0.35f,
-            WindDrift            = 1.0f,
-            Color                = Color.white,
-            MaxAlpha             = 1f,
-            NightFade            = 0.6f,
-            RoostBelowBrightness = 0.3f,
+            Count                       = 40,
+            WheelRadiusMetres           = 0f,
+            Seed                        = 7,
+            SpeciesId                   = "bird.herring_gull",
+            ShowMarginMetres            = 15f,
+            ShowHysteresisMetres        = 5f,
+            ScheduleTicksPerSecond      = 4f,
+            CommuteSpeedMetresPerSecond = 9f,
+            PerchShare                  = 0.5f,
+            PerchSearchHalfSize         = new Vector2(4f, 3f),
+            SettledFraction             = 0.35f,
+            FogSettledFraction          = 0.8f,
+            GaleSettledFraction         = 1f,
+            WindDrift                   = 1.0f,
+            Color                       = Color.white,
+            MaxAlpha                    = 1f,
+            NightFade                   = 0.6f,
         };
     }
 
