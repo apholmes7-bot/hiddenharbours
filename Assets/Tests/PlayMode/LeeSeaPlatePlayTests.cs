@@ -69,8 +69,8 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             new Shore("StPeters", "mean", 0f, new Vector2(-201.25f, 9.75f), new Vector2(-152f, 112f)),
             new Shore("StPeters", "high", 2.2f, new Vector2(90.25f, 65.25f), new Vector2(192f, 168f)),
-            new Shore("NineMileCreek", "mean", 0f, new Vector2(108.25f, -151.75f), new Vector2(184f, -40f)),
-            new Shore("NineMileCreek", "high", 2.2f, new Vector2(56.25f, 141.75f), new Vector2(288f, 216f)),
+            new Shore("NineMileCreek", "mean", 0f, new Vector2(108.25f, -151.75f), new Vector2(216f, -40f)),
+            new Shore("NineMileCreek", "high", 2.2f, new Vector2(121.75f, 140.25f), new Vector2(312f, 216f)),
         };
 
         static readonly MethodInfo PushUniforms = typeof(WaterSurface).GetMethod("PushUniforms",
@@ -121,8 +121,8 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // A painted seabed read on the CPU. St Peters' water draws its painted map, while its scene gives the
-        // sim the analytic zones; NMC's water bakes the sim's terrain at 256, and its seabed asset is the
-        // same terrain baked at full resolution. The captions give the fetch on both sides of that seam.
+        // sim the analytic zones; the captions give the fetch on both sides of that seam. NMC's water and
+        // its sim read one ground, G3 (NMC H2), so its two fetches read one field.
         sealed class Painted : ITidalTerrain
         {
             readonly PaintedHeightField _field;
@@ -199,9 +199,8 @@ namespace HiddenHarbours.Tests.PlayMode
             var water = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
             Assert.IsNotNull(water);
             var bed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>("Assets/_Project/Data/Terrain/StPetersSeabed.asset");
-            var creekBed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>("Assets/_Project/Data/Terrain/NineMileCreekSeabed.asset");
+            var creekGround = NineMileCreekBuilder.LoadGround();   // G3; throws rather than return no ground
             Assert.IsNotNull(bed);
-            Assert.IsNotNull(creekBed);
             WaveFetchSettings shipped = config.WaveFetch, off = shipped, fringeOff = shipped;
             off.Strength = 0;
             fringeOff.FringeLeeRoughness = 1f;
@@ -223,7 +222,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 var d = new Vector2(Mathf.Cos(toward * Mathf.Deg2Rad), Mathf.Sin(toward * Mathf.Deg2Rad));
                 string seabeds = st
                     ? "on the painted seabed the water draws, and on the analytic zones the sim reads"
-                    : "on the seabed bake at full resolution (the water bakes the same terrain at 256), and on the terrain the sim reads";
+                    : "on G3, the ground the water draws, and on the same ground the sim reads";
                 var terrainHost = Host(region + "Terrain");
                 ITidalTerrain drawn, sim;
                 if (st)
@@ -236,11 +235,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
                 else
                 {
-                    var terrain = terrainHost.AddComponent<MainlandTidalTerrain>();
-                    NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
+                    // G3, as NineMileCreekLiveGround.Register sets it: enabled before its map, so as there no still
+                    // water registers (the old ground had none) and the field decodes on its first read.
+                    var terrain = terrainHost.AddComponent<PaintedTidalTerrain>();
+                    terrain.Map = creekGround;
                     GameServices.TidalTerrain = terrain;
                     sim = terrain;
-                    drawn = new Painted(creekBed.Field);
+                    drawn = new Painted(creekGround.Field);
                 }
                 var sea = Host(region + "Sea");
                 sea.SetActive(false);
@@ -255,6 +256,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (st)
                     surface.ConfigurePaintedHeightMap(bed.HeightTexture, bed.WorldCenter,
                         bed.WorldSize, bed.MinElevation, bed.MaxElevation);
+                else
+                    surface.ConfigurePaintedHeightMap(creekGround.HeightTexture, creekGround.WorldCenter,
+                        creekGround.WorldSize, creekGround.MinElevation, creekGround.MaxElevation);
                 sea.SetActive(true);
                 foreach (var shore in Shores)
                 {
