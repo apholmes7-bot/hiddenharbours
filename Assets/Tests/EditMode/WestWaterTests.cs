@@ -339,7 +339,7 @@ namespace HiddenHarbours.Tests.EditMode
                 StPetersBuilder.ToWestWaterPassagePos.y, StPetersBuilder.WestWaterPassageBandSize.y,
                 "St Peters' bar passage and its sea door");
             AssertBandsClear(
-                NineMileCreekBuilder.ToStPetersPassagePos.y, NineMileCreekBuilder.PassageBandSize.y,
+                NineMileCreekBuilder.ToStPetersPassagePos.y, NineMileCreekBuilder.StPetersPassageBandSize.y,
                 NineMileCreekMainland.ToWestWaterPassagePos.y, NineMileCreekMainland.WestWaterPassageBandSize.y,
                 "the mainland's bar passage and its sea door");
 
