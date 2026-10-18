@@ -29,8 +29,9 @@ namespace HiddenHarbours.Core
         /// it she has half. A non-positive half-speed disables the falloff.
         ///
         /// <para>Return the DIVISOR so callers keep <c>steer / divisor</c>: multiplying by its
-        /// reciprocal can round differently. A start of zero preserves the standstill curve
-        /// bit for bit.</para>
+        /// reciprocal can round differently. Returning this float also rounds the divisor, so
+        /// callers requiring the legacy zero-start bits must keep the original division inline
+        /// rather than pass its denominator through this helper.</para>
         /// </summary>
         public static float SteerFalloffDivisor(float speedMetersPerSecond,
                                                 float startMetersPerSecond,

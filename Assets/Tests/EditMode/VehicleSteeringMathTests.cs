@@ -33,25 +33,49 @@ namespace HiddenHarbours.Tests.EditMode
         {
             string[] guids = AssetDatabase.FindAssets("t:VehicleDef",
                 new[] { "Assets/_Project/Data/Vehicles" });
-            Assert.That(guids.Length, Is.GreaterThanOrEqualTo(11));
+            Assert.That(guids.Length, Is.GreaterThanOrEqualTo(13));
             foreach (string guid in guids)
             {
-                var def = AssetDatabase.LoadAssetAtPath<VehicleDef>(AssetDatabase.GUIDToAssetPath(guid));
-                Assert.That(def, Is.Not.Null);
-                float half = def.SteerFalloffHalfSpeedMetersPerSecond;
-                foreach (float ceiling in new[] { def.MaxSpeedMetersPerSecond,
-                                                  -def.MaxReverseSpeedMetersPerSecond })
-                    for (int i = 0; i <= 128; i++)
-                    {
-                        float speed = ceiling * i / 128f;
-                        foreach (float steer in new[] { -1f, -0.73f, -0.2f, -0f, 0f, 0.2f, 0.73f, 1f })
+                var asset = AssetDatabase.LoadAssetAtPath<VehicleDef>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.That(asset, Is.Not.Null);
+                var def = UnityEngine.Object.Instantiate(asset);
+                var go = new GameObject("legacy steering", typeof(Rigidbody2D), typeof(VehicleController));
+                try
+                {
+                    // Keep the committed tunables, without editing the asset. No mesh means no
+                    // terrain gate or skid-steer speed cap: this checks EffectiveSteer's legacy
+                    // bits across the whole envelope, not a machine's ground-contact model.
+                    def.Mesh = null;
+                    def.SteerFalloffStartMetersPerSecond = 0f;
+                    var controller = go.GetComponent<VehicleController>();
+                    controller.SetVehicle(def);
+                    float half = def.SteerFalloffHalfSpeedMetersPerSecond;
+                    foreach (float ceiling in new[] { def.MaxSpeedMetersPerSecond,
+                                                      -def.MaxReverseSpeedMetersPerSecond })
+                        for (int i = 0; i <= 128; i++)
                         {
-                            float before = half <= 0f ? steer : steer / (1f + Mathf.Abs(speed) / half);
-                            float after = steer / VehicleSteeringMath.SteerFalloffDivisor(speed, 0f, half);
-                            Assert.That(BitConverter.GetBytes(after), Is.EqualTo(BitConverter.GetBytes(before)),
-                                $"{def.name}, speed {speed}, steer {steer}: zero start changed a float bit.");
+                            float target = ceiling * i / 128f;
+                            controller.Throttle = Mathf.Sign(ceiling) * i / 128f;
+                            foreach (float demand in new[] { -1f, -0.73f, -0.2f, -0f, 0f, 0.2f, 0.73f, 1f })
+                            {
+                                controller.SteerDemand = demand;
+                                controller.StepPhysics(60f);
+                                Assert.That(controller.SpeedMetersPerSecond, Is.EqualTo(target));
+                                Assert.That(controller.Steer, Is.EqualTo(demand));
+                                float speed = controller.SpeedMetersPerSecond;
+                                float steer = controller.Steer;
+                                float before = half <= 0f ? steer : steer / (1f + Mathf.Abs(speed) / half);
+                                float after = controller.EffectiveSteer;
+                                Assert.That(BitConverter.GetBytes(after), Is.EqualTo(BitConverter.GetBytes(before)),
+                                    $"{asset.name}, speed {speed}, steer {steer}: zero start changed a float bit.");
+                            }
                         }
-                    }
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(go);
+                    UnityEngine.Object.DestroyImmediate(def);
+                }
             }
         }
 

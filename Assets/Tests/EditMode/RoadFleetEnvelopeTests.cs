@@ -41,6 +41,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         [TestCase("Dually3500", 4f)]
         [TestCase("Modern3500", 4f)]
+        [TestCase("Modern350", 4f)]
+        [TestCase("Modern2500", 4f)]
         [TestCase("HightopVan", 4f)]
         [TestCase("CaboverBox", 4f)]
         [TestCase("ConvBox", 4f)]
@@ -57,6 +59,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         [TestCase("Dually3500")]
         [TestCase("Modern3500")]
+        [TestCase("Modern350")]
+        [TestCase("Modern2500")]
         [TestCase("HightopVan")]
         [TestCase("CaboverBox")]
         [TestCase("ConvBox")]
