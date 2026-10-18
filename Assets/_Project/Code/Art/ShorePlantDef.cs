@@ -105,8 +105,10 @@ namespace HiddenHarbours.Art
 
         [Header("Rendering")]
         [Tooltip("Sorting order while SUBMERGED. Must sit BELOW the Sea plane (−5) and ABOVE the " +
-                 "painted seabed (−21…−18): that gap is where the water's own shallow transparency " +
-                 "reveals the bed. −8 leaves room either side.")]
+                 "painted seabed (−21…−18), so the surface draws over the plant. The sea composites " +
+                 "its bed opaquely (ADR 0027 #7), so the plant shows there only where the shore fades " +
+                 "the sea, unless GameConfig.ShallowsSubmergedProps is on: then the sea draws it " +
+                 "through the water, over the floor (W4-4c). −8 leaves room either side.")]
         public int SubmergedSortingOrder = -8;
 
         [Tooltip("Pre-sort order while EMERGENT. YSortSprite OWNS the order above water — this is " +

@@ -468,6 +468,16 @@ and no alpha blend returns, so §17.3's cancellation stays dissolved by construc
 - **What did not change.** σ, the ratio, the bands and every mood's turbidity; `depth`, `clip()`, `_WaterLevel` and
   the height read the sim uses (visual only, rule 5). Live spec:
   [water rendering §17.13](../design/water-rendering.md#1713-the-floor-in-the-shallows-w4-4-2026-10-18).
+- **The plants under the water take the same law (W4-4c).** A shore plant wholly under the live water, while
+  `GameConfig.ShallowsSubmergedProps` is on (false in code and in `GameConfig.asset`, read in play only), carries
+  rendering-layer bit 27. The renderer feature draws those plants' `HHUnderWater` pass (the lit sprite's albedo,
+  unlit and premultiplied, where each stands) into one target, and the sea lays its texel into `bed` after the
+  floor and before the lerp, bent by the floor's own helper: the column's transmission and bands, the caustics and
+  the grade then take plant and floor together, so the law is applied once and never copied
+  (`TheFloorAndThePropsShareOneColumnLaw`, `ASubmergedPlant_IsSeenThroughTheWater`). No `SortingBands` rung moves
+  (ADR 0032 unchanged) and no Def gains a field. The rocks keep the waterline their sprites are clipped at
+  (`AnAwashRock_DrawsNoSecondWaterline`); drawing their below-water pixels through the column is a scene change in
+  both played regions, raised before it is built (§17.13).
 
 ---
 

@@ -36,6 +36,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const string TerrainPath = "Assets/_Project/Art/Shaders/HiddenHarboursTerrainSplat.shader";
         private const string TerrainFrag = "half4 frag (Varyings i) : SV_Target";
         private const string WaterSurfacePath = "Assets/_Project/Code/Art/WaterSurface.cs";
+        private const string ViewPath = "Assets/_Project/Code/Art/ShorePlantTideView.cs";
 
         // Script and asset guids, each from its own .meta (checked below, so a moved file fails here first).
         private const string WaterSurfaceGuid = "720419e734bb47b19ff0a4ce8281ed56";   // WaterSurface.cs.meta
@@ -213,6 +214,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// false, also off), no config wired reads OFF, and the shader's change sits wholly behind it.</summary>
         [TestCase("clip")]
         [TestCase("floor")]
+        [TestCase("props")]
         public void SwitchOff_IsTodaysPixels_BitForBit(string step)
         {
             switch (step)
@@ -266,9 +268,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
                     // OFF, the shader's floor is one [branch] around one assignment of the bed, between the
                     // base's bands and its composite: the bed stays the bake's and the column is the base's.
+                    // (W4-4c moved this premise: the props' own gated assignment follows the floor's.)
                     string water = Body(Code(WaterPath), WaterFrag);
-                    StringAssert.Contains(BedBand + "#ifdefined(HH_SHALLOWS_FLOOR)" + FloorGate + FloorCall + "#endif" +
-                                          BedLerp, Squash(water));
+                    StringAssert.Contains(BedBand + "#ifdefined(HH_SHALLOWS_FLOOR)" + FloorGate + FloorCall + PropsGate +
+                                          PropsCall + "#endif" + BedLerp, Squash(water));
                     Assert.AreEqual(1, Count(Squash(water), @"_ShallowsFloor(?![A-Za-z0-9_])"),
                         "the switch is read once, at its gate");
                     // The wave field's sample moved ahead of the composite (TheFloor_BendsByWholeGroundPixels)
@@ -280,6 +283,80 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     foreach (string output in new[] { "waveHeight", "waveSlope", "waveCrest", "wavePrimCos" })
                         Assert.AreEqual(0, Count(water, @"(?<![A-Za-z0-9_.])" + output + @"(?:\.[xyzw]+)?\s*[-+*/]?=(?!=)"),
                             output + " is written by the sample alone");
+                    break;
+                case "props":
+                    // W4-4c ships OFF: the plants under the water draw as before, seen only where the shore
+                    // fades the sea. An asset lagging the code reads a bool's default, false, also off.
+                    Assert.IsFalse(GameConfig.DefaultShallowsSubmergedProps);
+                    Assert.AreEqual("0", AssetKey("ShallowsSubmergedProps"));
+                    StringAssert.Contains("publicboolShallowsSubmergedProps=DefaultShallowsSubmergedProps;",
+                        Squash(Code(ConfigPath)));
+                    StringAssert.Contains(
+                        "Config!=null?Config.ShallowsSubmergedProps:GameConfig.DefaultShallowsSubmergedProps;",
+                        Squash(Code(ServicesPath)));
+                    GameConfig wired = GameServices.Config;
+                    try
+                    {
+                        GameServices.Config = null;
+                        Assert.IsFalse(GameServices.ShallowsSubmergedProps, "no config wired reads OFF");
+                    }
+                    finally
+                    {
+                        GameServices.Config = wired;
+                    }
+
+                    // OFF, no plant carries the bit (set in play only, with the switch on), so the list stays
+                    // empty, the props pass is never recorded and no target is held.
+                    StringAssert.Contains(
+                        "privatestaticboolPropsOn=>Application.isPlaying&&GameServices.ShallowsSubmergedProps;",
+                        Squash(Code(ViewPath)));
+                    string cs = Code(FeaturePath);
+                    string passes = Squash(Body(cs,
+                        "public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)"));
+                    StringAssert.Contains(
+                        "boolprops=GameServices.ShallowsSubmergedProps&&UnderWaterRegistry.Count>0;" +
+                        "if(!props){UnderWaterRegistry.BindIdle();_pass?.ReleaseUnderWater();}" +
+                        "if(!hulls&&!water&&!reflect&&!meshSubjects&&!foam&&!props)return;", passes,
+                        "off, or nothing under the water: nothing recorded, nothing held");
+                    StringAssert.Contains("_pass.DrawUnderWater=props;", passes);
+
+                    // The sea's read is THIS camera's: lowered before every early return (second, after the
+                    // clip's) and on Dispose, raised once, by the props pass after its props are drawn.
+                    const string lower = "Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive,0f);";
+                    const string clipLower = "Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip,0f);";
+                    StringAssert.StartsWith(clipLower + lower, passes, "lowered before every early return");
+                    StringAssert.StartsWith(clipLower + lower,
+                        Squash(Body(cs, "protected override void Dispose(bool disposing)")), "and on Dispose");
+                    Assert.AreEqual(2, Count(cs, @"SetGlobalFloat\(\s*UnderWaterShaderIds\.UnderWaterLive\s*,\s*0f\s*\)"),
+                        "lowered in those two places");
+                    Assert.AreEqual(1, Count(cs, @"SetGlobalFloat\(\s*UnderWaterShaderIds\.UnderWaterLive\s*,\s*1f\s*\)"),
+                        "raised in one place");
+                    Assert.AreEqual(
+                        "ctx.cmd.DrawRendererList(data.Renderers);" +
+                        "ctx.cmd.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive,1f);",
+                        Squash(Body(cs, "builder.SetRenderFunc((UnderWaterPassData data, RasterGraphContext ctx) =>")),
+                        "raised by the props pass, after its props are drawn");
+
+                    // Lowered, the sea's props are one [branch] the frag skips, after the floor's assignment:
+                    // the bed is the floor's, bit for bit. The flag and the texture are globals, never
+                    // properties, so no preset or Water.mat can carry a raised one.
+                    string waterCode = Code(WaterPath);
+                    string seaFrag = Squash(Body(waterCode, WaterFrag));
+                    StringAssert.Contains(FloorCall + PropsGate + PropsCall + "#endif" + BedLerp, seaFrag);
+                    Assert.AreEqual(1, Count(seaFrag, @"_HHUnderWaterLive(?![A-Za-z0-9_])"), "read once, at its gate");
+                    string seaProperties = Body(waterCode, "Properties");
+                    StringAssert.Contains("_SeabedTex", seaProperties, "the sea's Properties block");
+                    StringAssert.DoesNotContain("_HHUnderWater", seaProperties);
+
+                    // The lit sprite's own draw is untouched: the second pass shares the first's one
+                    // UnityPerMaterial layout (the SRP Batcher's condition), so the shader stays compatible and
+                    // the plants, shrubs and houses batch as they did. The first pass's pixels are
+                    // SpriteLitDecorTests' and their siblings', unchanged.
+                    string lit = Code(LitSpritePath);
+                    string[] layouts = Regex.Matches(lit, @"CBUFFER_START\(UnityPerMaterial\)(?<rows>.*?)CBUFFER_END",
+                        RegexOptions.Singleline).Cast<Match>().Select(m => Squash(m.Groups["rows"].Value)).ToArray();
+                    Assert.AreEqual(2, layouts.Length, "two passes, two declarations");
+                    Assert.AreEqual(layouts[0], layouts[1], "one UnityPerMaterial layout across the passes");
                     break;
                 default:
                     Assert.Fail("no switch named " + step);

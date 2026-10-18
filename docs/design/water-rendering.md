@@ -2126,8 +2126,10 @@ classes whose measured premises predate clarity 1.
 Ruling 7 (2026-10-10): "Shallows: 2B. 2A stays unbuilt as the mobile-port fallback." In clear, calm, shallow
 water the sea's bed is the ground's own textures, the splat paint, kit tiles, macro drift and wet band the terrain
 draws, seen through the column by §17.7's law: darker and bluer with depth, stepped by the six bands, lit by the
-caustics, graded, and gone in a murky or stormy sea. Above the water nothing changes. ADR 0027 #7's amendment and
-ADR 0028's note (both 2026-10-18) carry the decision; this section is the live spec. Every switch ships OFF.
+caustics, graded, and gone in a murky or stormy sea. The shore plants wholly under the water lie on that floor and
+take the same law (W4-4c); the rocks keep the waterline their sprites carry. Above the water nothing changes. ADR
+0027 #7's amendment and ADR 0028's note (both 2026-10-18) carry the decision; this section is the live spec. Every
+switch ships OFF.
 
 #### One ground, two readers (W4-4a)
 
@@ -2214,6 +2216,89 @@ sea its red goes at 0.4 m and the whole floor by 5.2 m; in a storm by 9.7 m. The
 (St Peters) and −6 m (Nine Mile Creek), so in the clear moods the floor shows wherever the ground lies. More or less
 floor is a mood's `_Turbidity` (every depth above scales as 1/σ) or the ratio (the colour order); neither moves here.
 
+#### The plants under the water (W4-4c)
+
+A shore plant wholly under the live water is laid into the sea's bed over the floor, before the lerp, so the
+column's transmission and bands, the caustics and the grade take it with the floor beside it: it darkens, shifts
+colour, steps, catches the light and grades exactly as the floor does, by the one law applied once.
+
+```hlsl
+#if defined(HH_SHALLOWS_FLOOR)
+// ... the floor's gate and call (above) ...
+[branch]
+if (_HHUnderWaterLive > 0.5 && bedIn > 0.0 && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
+    bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0));
+#endif
+col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
+```
+
+- **Who is under.** The plant's own submerged test, the one that already sorts it under the sea
+  (`ShorePlantTideMath.IsSubmerged`: over its ground by at least its drawn standing height), sets rendering-layer
+  bit 27 (`UnderWaterRegistry.RenderingLayer`, beside the silhouette's 28, the reflection's 29 and the displaced
+  sea's 30) while `GameConfig.ShallowsSubmergedProps` is on, in play only. It reads the level the sea draws by
+  (`WaterLevelAt`, which the sea eases to with a 0.5 s response: millimetres at tidal rates). The bit is written
+  only when it changes and `UnderWaterRegistry` follows it; a disabled plant leaves the set and gives the bit back.
+  No scene stores it and no `ShorePlantDef` or `ShoreRockDef` field is new: membership is derived, not authored.
+- **The pass.** `IsoFacetHullFeature` draws one more filtered renderer list, every renderer with the bit and an
+  `HHUnderWater` pass, sorted `CommonTransparent` as the main pass sorts them, into one ARGB32 sRGB target at camera
+  resolution, cleared first, published as `_HHUnderWaterTex`. The lit sprite's `HHUnderWater` pass draws the sprite
+  where it stands with the main pass's tint, albedo and clip, premultiplied and unlit, because the light under the
+  water is the sea's. Its `UnityPerMaterial` rows come from the main pass's macros, so the shader keeps one layout.
+  Every placed plant draws with `LitShorePlant.mat`, whose shader is the lit sprite.
+- **The read.** `ShallowsPropsBed` bends the point by `ShallowsBend`, the floor's own helper (whole ground pixels),
+  finds the screen pixel that point was drawn at, reads that texel and lays it over the bed (premultiplied over
+  straight alpha). The floor and the plant wobble together on the ground's grid, and under the displaced sea both
+  ride the lift by the same few pixels. The helper holds no absorption, caustic or grade.
+- **The flag is this camera's.** `_HHUnderWaterLive` is lowered for every camera before its passes are added and
+  on Dispose, and raised only by that camera's props pass once it has drawn; the water pass declares the read, so
+  the render graph orders the props first. Before the pass, or with nothing under, the sea reads a clear 1×1 and a
+  flag of 0.
+- **What the player sees.** Wholly under at low, mean and high water: 0, 9 and 27 plants at St Peters, 80, 495 and
+  1087 at Nine Mile Creek. Today the sea covers them all. With the switch on they show through clear water with the
+  floor and fade with it in murky or stormy moods, each in the tide column it wears now. A plant whose tip stands
+  above the water (St Peters 0, 9 and 3; Nine Mile Creek 197, 516 and 54) draws above the sea as today, the part of
+  it below the surface included; only a wholly submerged plant goes through the column. Still water is not a
+  plant's level (`ShorePlantTideView` reads the tide), so a pond plant's state follows the tide, as before.
+- **For the plates.** The plant bake already tints a submerged column cooler and darker (the rig's ramp) and the
+  column darkens it again: whether both stay is the art director's call. A plant is absorbed at the depth of the
+  ground under each of its pixels, not at its own height. The plants ship with the floor: alone they would bend
+  against the unbent bake.
+
+#### Why the sea draws them: the three routes
+
+| | (i) above the sea, a column material | (ii) the sea lays them in (built) | (iii) baked into the floor |
+|---|---|---|---|
+| What the player sees | the plant over the swash, foam and surface light: on the water, not in it | the plant in the water, under every surface layer, with the floor | the plant in the water, held at one tide |
+| GPU | the column in each plant pixel | one projection and one texel read per shown sea pixel; the plants' pixels drawn once more | nothing new at draw time |
+| Draw calls, batching | two passes a plant for per-channel light, in a new band | one more draw per wholly submerged plant on screen, batched as the main pass batches it (each plant's light block already keeps it out of the SRP batcher) | none for a baked plant |
+| Pixel grid | the plant's own | the plant's own, read through the floor's whole-pixel bend | the bake's texels |
+| Tide swap | kept | kept | lost: a bake holds one column |
+| Determinism | look-only | look-only | look-only |
+| `SortingBands` | a new rung over `Sea` (an ADR 0032 amendment), and the submerged order moves | none | none |
+| Tests it moves | `SortingBandsTests`, `ShorePlantTideTableTests`' submerged order | four W4-4b premises (below) | the bake's tests, and a builder change (1377 plants at Nine Mile Creek; St Peters cannot be rebuilt) |
+| The law | a second material runs it | the floor's, applied once | the bake's, fixed |
+
+(ii) is built in the form that needs no new sorting layer. The seat's form, a URP 2D sorting-layer texture, is a
+TagManager and ADR-sized change on a one-layer project; a rendering-layer bit with a pass tag picks the same
+renderers inside the feature that already draws the sea's coverage, reflections and foam.
+
+#### The rocks keep their one waterline
+
+Every placed rock (33 at St Peters, 18 at Nine Mile Creek, under `Shoreline/ShoreRocks`) draws with URP's
+Sprite-Lit-Default above the sea (orders 619 to 1629 against the sea's −5), so the sea never covers one. An awash
+rock's sprite is clipped at the sea plane its bake assumed
+(`RockRigBakeTests.AnAwashRockIsCLIPPED_NotFlooded_SoNoWaterIsEverBaked`): that clip is its waterline, and the sea
+shows below it. W4-4c draws no rock under the water, so nothing draws a second line to disagree with it.
+
+Its below-water pixels should go through the column too: one law for everything under the water. A rock would know
+which of its pixels are under by each pixel's height above its foot (its row ÷ 32 px/m, capped at the rock's
+height) against the sea's own level over the DRAWN ground at its foot: the painted height map the sea reads, never
+the simulation's ground, which under St Peters' rocks lies a median 1.10 m below the drawn one and up to 4.58 m off
+(at Nine Mile Creek the two are one map). It would wear its wet row, unclipped, and the live level would cut it:
+above the line in the main pass, below it through the props target. That is a material change for every rock in
+both played scenes and a drawn-ground source per rock, so it is raised before it is built;
+`AnAwashRock_DrawsNoSecondWaterline` guards today's state and moves with that change.
+
 #### Switches (off is today's pixels)
 
 | Switch | Lives in | Default | Off |
@@ -2221,7 +2306,8 @@ floor is a mood's `_Turbidity` (every depth above scales as 1/σ) or the ratio (
 | `TerrainUnderwaterClip` | `GameConfig` (code and asset) | false | the terrain's gate is never taken |
 | `ShallowsFloor` | `GameConfig` (code and asset), pushed by `WaterSurface` | false | the sea's gate skips the call; the bed is the bake |
 | `ShallowsFloorRefraction` | `GameConfig` (code and asset) | 0.25 | read only while the floor is on; 0 holds it still |
-| `HH_SHALLOWS_FLOOR` | the water shader | defined unless `SHADER_API_MOBILE` | a mobile build compiles today's bed |
+| `ShallowsSubmergedProps` | `GameConfig` (code and asset), read in play | false | no plant takes the bit; the feature draws no props pass and binds a clear 1×1; the sea's flag stays 0 |
+| `HH_SHALLOWS_FLOOR` | the water shader | defined unless `SHADER_API_MOBILE` | a mobile build compiles today's bed, without the props read |
 
 A stale asset that deserializes a switch as 0 reads off. `WaterSurface` pushes the floor's switch and bend beside
 the salience knobs, in the edit-mode preview and in play; with no config wired it reads the defaults, off.
@@ -2233,12 +2319,22 @@ the salience knobs, in the edit-mode preview and in play; with no config wired i
 - **On, where the floor shows:** one height read, six splat reads and two kit reads for each material over 0.4%
   weight (9 to 13 reads at one to three materials) and the terrain's own albedo arithmetic. The gate keeps it to
   in-rect pixels where some channel passes light; below the ground's paint floor it is the height read alone.
-- **Against it,** the clip skips the ground's shading wherever the sea covers it opaquely: by the 2B estimate 81% of
-  St Peters' rect and 34% of Nine Mile Creek's at low water, more at higher tides. The terrain shaded those pixels
-  (six splat reads, two kit reads and the relight) and the sea painted over them. Both sides are timed on the slot.
+- **Against it,** the clip skips the ground's shading wherever the sea covers it opaquely. The terrain already
+  discards below its paint floor after one height read (`TSA_Hem`), so the full shading the clip saves (six splat
+  reads, the kit's reads and the relight) is the painted ground under the opaque sea: by the height maps at least
+  9.0% of St Peters' rect at mean water and 12.2% at high, 12.4% and 18.5% of Nine Mile Creek's, and almost none at
+  low water (0.0% and 0.2%). The 2B estimate's 81% and 34% are the always-wet share of each rect, mostly below the
+  paint floor, where the clip saves the one height read. So the floor's reads mostly move from the terrain to the
+  sea, and add where both still draw: the fringe, the swash and still water. Both sides are timed on the slot.
 - **Samplers:** two inline states (linear clamp for the splats, point repeat for the kit) take the water shader
   from 10 to 12 of D3D11's 16. **Memory:** nothing new; the ground's textures are bound, not copied. **CPU:** no
   per-frame allocation; two floats more in each block write.
+- **The plants (W4-4c).** Off: nothing, no pass, no target, the sea's gate never taken. On: one more draw per wholly
+  submerged plant on screen, its own pixels drawn once more, and in the sea one projection and one texel read per
+  shown pixel. **Memory:** the props target, 4 bytes a pixel at camera resolution (8.3 MB at 1920×1080, 33 MB at
+  3840×2160), held only while the switch is on and a plant is under, released otherwise. **CPU:** no per-frame
+  allocation; a plant writes its bit and the set only when its state changes. A build without `HH_SHALLOWS_FLOOR`
+  compiles the read out with the floor, so the switch stays off there.
 - **The 2A line** (proposed with W4-4, for acceptance with its plates): a port turns to 2A (the splat's colours
   baked into `_SeabedTex`, no new read) if the floor's own price, floor on minus floor off with the clip on in both,
   times above 0.5 ms a frame at the 14 m dory framing over St Peters' low-water intertidal on that port's typical
@@ -2258,9 +2354,17 @@ on the two shaders and the include) and `ShallowsFloorTests` (data, binding and 
 `TheFloor_GoesThroughThePaletteGrade`, `TheFloor_IsAbsorbedPerChannel`, `TheCaustics_LightTheSplatFloor`,
 `TheFloor_BendsByWholeGroundPixels`, `SameFrame_IsOneMapPlacement`,
 `EachPlayedRegion_SeaAndGround_ShareOneHeightFrame`, `TheClipFlag_IsRaisedOnlyByThisCamerasOwnWaterPass`,
-`TheGroundFloor_BindsEveryUniformTheIncludeReads` and `SwitchOff_IsTodaysPixels_BitForBit` (clip, floor). HLSL
-does not compile headless: `WaterShaderCompileGuardTests` in the editor and the slot's plates prove what text
-cannot.
+`TheGroundFloor_BindsEveryUniformTheIncludeReads` and `SwitchOff_IsTodaysPixels_BitForBit` (clip, floor, props).
+HLSL does not compile headless: `WaterShaderCompileGuardTests` and `LitSpriteShaderCompileGuardTests` in the editor
+and the slot's plates prove what text cannot.
+
+W4-4c adds `TheFloorAndThePropsShareOneColumnLaw`, the props case, and `ShallowsPropsTests`'
+`ASubmergedPlant_IsSeenThroughTheWater` and `AnAwashRock_DrawsNoSecondWaterline`. It moves four W4-4b premises,
+each named in its test: `TheFloor_GoesThroughThePaletteGrade` (what comes before the composite, 5dab2083's frag
+:5162-:5165: the floor's call, `#endif`, the lerp), `TheFloor_IsAbsorbedPerChannel` and the floor case (the column's
+sequence, :5149-:5165), and `TheFloor_BendsByWholeGroundPixels` (the bend, inline at :2256-:2257, now `ShallowsBend`'s
+body, unchanged). The plants' bit and set are render state, read only by the plant view, its math and the feature
+(the rock guard's scan), so the simulation reads nothing new.
 
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 

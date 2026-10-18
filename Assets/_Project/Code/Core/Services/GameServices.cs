@@ -933,6 +933,16 @@ namespace HiddenHarbours.Core
         public static bool TerrainUnderwaterClip =>
             Config != null ? Config.TerrainUnderwaterClip : GameConfig.DefaultTerrainUnderwaterClip;
 
+        /// <summary>The props under the water (W4-4c): does the sea draw a shore plant wholly under the
+        /// live water through its own column, over the floor? Same contract as
+        /// <see cref="TerrainUnderwaterClip"/>, including the <c>Config != null</c> discipline. Falls back
+        /// to <see cref="GameConfig.DefaultShallowsSubmergedProps"/> — <b>OFF</b> — so an unwired scene
+        /// draws the plants as before. Read per camera per frame by <c>IsoFacetHullFeature</c> and on the
+        /// tide tick by <c>ShorePlantTideView</c>.
+        /// FLAG lead-architect: new Core contract (the W4-4 shallows-floor seam).</summary>
+        public static bool ShallowsSubmergedProps =>
+            Config != null ? Config.ShallowsSubmergedProps : GameConfig.DefaultShallowsSubmergedProps;
+
         public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
         public static int HullReflectionResolutionDivisor =>
             Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;

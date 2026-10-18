@@ -20,6 +20,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
     ///
     /// <para><b>On the base</b> (b8710c59) the include does not exist, the terrain frag starts at its height
     /// read and the sea's bed is the bake alone: every test here fails at its first assert.</para>
+    ///
+    /// <para><b>W4-4c</b> lays the plants under the water into the same bed, over the floor, through the same
+    /// bend (<see cref="TheFloorAndThePropsShareOneColumnLaw"/>). At W4-4b (5dab2083) there are no props: that
+    /// test and the three floor premises it moved (what comes before the composite, the column's sequence, the
+    /// bend's home) fail there, and the rest pass.</para>
     /// </summary>
     public sealed class ShallowsFloorShaderTests
     {
@@ -37,7 +42,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         // The sea's seabed column, squashed, as b8710c59's water frag holds it: the bake's sample :5044, the
         // per-channel transmission at the fringe depth :5046 and its bands :5047, the composite :5048. The
-        // floor's gate and call (this PR) sit between the bands and the composite.
+        // floor's gate and call (W4-4b), then the props' (W4-4c), sit between the bands and the composite.
         private const string BedSample = "half4bed=SAMPLE_TEXTURE2D(_SeabedTex,sampler_SeabedTex,bedUV);";
         private const string BedColumn = "float3bedT=AbsorptionTransmission(absSigma,max(depthC,0.0));";
         internal const string BedBand = "bedT=AbsorptionBand(bedT,_AbsorptionBands);";
@@ -46,6 +51,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
             "[branch]if(_ShallowsFloor>0.5&&_DetailLoaded>0.5&&bedIn>0.0&&max(bedT.r,max(bedT.g,bedT.b))>0.0)";
         internal const string FloorCall =
             "bed=ShallowsFloorBed(bed,worldXY,waveSlope,max(depthC,0.0),elevation+depth,floorDx,floorDy);";
+        // W4-4c's gate and call for the props under the water, after the floor's (this PR's water frag
+        // :5210-:5212): the floor's gate without the floor's switch, behind the props pass's own flag.
+        internal const string PropsGate =
+            "[branch]if(_HHUnderWaterLive>0.5&&bedIn>0.0&&max(bedT.r,max(bedT.g,bedT.b))>0.0)";
+        internal const string PropsCall = "bed=ShallowsPropsBed(bed,worldXY,waveSlope,max(depthC,0.0));";
+        private const string PropsHelper = "half4 ShallowsPropsBed(";
+        private const string BendHelper = "float2 ShallowsBend(float2 worldXY, float2 slope, float depth)";
+        internal const string LitSpritePath = ShaderDir + "/HiddenHarboursLitSprite.shader";
         // b8710c59's water frag :5469 (the caustics' add) and :6025 (the palette grade).
         private const string CausticAdd =
             "col.rgb+=_CausticColor.rgb*caustic*_CausticAmount*causticGate*causticDay*causticTransmission;";
@@ -330,8 +343,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1, Count(squashed, Regex.Escape(Grade)), "one grade");
             int call = squashed.IndexOf(FloorCall, System.StringComparison.Ordinal);
             int lerp = squashed.IndexOf(BedLerp, System.StringComparison.Ordinal);
-            Assert.AreEqual(call + FloorCall.Length + "#endif".Length, lerp,
-                "the bed the floor drew goes straight into the composite");
+            // W4-4c moved this premise: the props are laid over the floor's bed before the composite
+            // (TheFloorAndThePropsShareOneColumnLaw), so their gate and call now sit between the two.
+            Assert.AreEqual(call + FloorCall.Length + PropsGate.Length + PropsCall.Length + "#endif".Length, lerp,
+                "the bed the floor drew goes into the composite, with only the props laid over it");
             Assert.Less(lerp, squashed.IndexOf(Grade, System.StringComparison.Ordinal), "the composite, then the grade");
 
             int from = frag.IndexOf("col.rgb = lerp(col.rgb, bed.rgb,", System.StringComparison.Ordinal);
@@ -360,19 +375,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// W4-4b, the absorption's fault guarded: the floor is absorbed per channel by the mood's own depths.
         /// It sits INSIDE the painted bed's column, which is unchanged: the bake's sample, the transmission at
         /// the fringe depth (one exponential per channel, so red goes first and the floor darkens and blues with
-        /// depth), its bands, the floor, then the composite weighing each channel by its own transmission. A
-        /// murky or stormy mood hides the floor where it hid the painted bed, and the gate skips the floor
-        /// exactly where the composite weighs the bed 0 in every channel. Bar sources: b8710c59's water frag
-        /// :5044-:5048 and AbsorptionTransmission :1761-:1764.
+        /// depth), its bands, the floor and the props over it (W4-4c), then the composite weighing each channel
+        /// by its own transmission. A murky or stormy mood hides the floor where it hid the painted bed, and the
+        /// gate skips the floor exactly where the composite weighs the bed 0 in every channel. Bar sources:
+        /// b8710c59's water frag :5044-:5048 and AbsorptionTransmission :1761-:1764.
         /// </summary>
         [Test]
         public void TheFloor_IsAbsorbedPerChannel()
         {
             string water = Code(WaterPath);
             string frag = Squash(Body(water, WaterFrag));
+            // W4-4c moved this premise: the props' gate and call follow the floor's inside the same #if.
             StringAssert.Contains(
-                BedSample + BedColumn + BedBand + "#ifdefined(HH_SHALLOWS_FLOOR)" + FloorGate + FloorCall + "#endif" +
-                BedLerp, frag, "the floor inside the painted bed's column, the column unchanged");
+                BedSample + BedColumn + BedBand + "#ifdefined(HH_SHALLOWS_FLOOR)" + FloorGate + FloorCall + PropsGate +
+                PropsCall + "#endif" + BedLerp, frag, "the floor inside the painted bed's column, the column unchanged");
             StringAssert.Contains("float3absSigma=AbsorptionSigma();", frag);
             StringAssert.Contains(
                 "float3AbsorptionTransmission(float3sigma,floatdepth){returnexp(-sigma*(ABSORPTION_PATH*max(depth,0.0)));}",
@@ -423,24 +439,99 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// field's slope (the one sample per pixel the swell draws and the hulls ride, now taken ahead of the
         /// composite) times the column's depth and the bend (GameConfig.ShallowsFloorRefraction), and the offset
         /// is rounded to whole ground pixels, so the floor moves by whole texels of its own grid; the kit reads
-        /// at point, so a whole-texel step never resamples between texels. Bar sources: this PR's helper, and
+        /// at point, so a whole-texel step never resamples between texels. The bend is ONE helper, ShallowsBend,
+        /// which the props under the water (W4-4c) bend through too. Bar sources: this PR's helpers, and
         /// b8710c59's water frag :5099 (the sample, then below the composite; its call unchanged).
         /// </summary>
         [Test]
         public void TheFloor_BendsByWholeGroundPixels()
         {
             string water = Code(WaterPath);
+            // W4-4c moved this premise: the bend W4-4b wrote inline here is ShallowsBend's body now, unchanged.
             StringAssert.StartsWith(
                 "floatppm=max(_PixelsPerMetre,1.0);" +
-                "float2wp=worldXY+round(slope*depth*_ShallowsFloorRefraction*ppm)/ppm;" +
+                "float2wp=ShallowsBend(worldXY,slope,depth);" +
                 "floate=SeabedElevationLod(wp);",
-                Squash(Body(water, FloorHelper)), "the bend in whole ground pixels, before the floor's first read");
+                Squash(Body(water, FloorHelper)), "the bend, before the floor's first read");
+            Assert.AreEqual(1, Definitions(water, "ShallowsBend"), "one bend");
+            Assert.AreEqual(
+                "floatppm=max(_PixelsPerMetre,1.0);" +
+                "returnworldXY+round(slope*depth*_ShallowsFloorRefraction*ppm)/ppm;",
+                Squash(Body(water, BendHelper)), "the bend in whole ground pixels");
             string frag = Squash(Body(water, WaterFrag));
             const string sample = "WaveFieldSample(Pixelize(worldXY),waveFreqScale,waveFetchFactors," +
                                   "waveHeight,waveSlope,waveCrest,wavePrimCos);";
             Assert.AreEqual(1, Count(frag, Regex.Escape(sample)), "the field's one sample per pixel");
             Assert.Less(frag.IndexOf(sample, System.StringComparison.Ordinal),
                 frag.IndexOf(FloorCall, System.StringComparison.Ordinal), "taken before the floor bends by its slope");
+        }
+
+        /// <summary>
+        /// W4-4c, ONE LAW FOR EVERYTHING UNDER THE WATER. A plant under clear shallow water is laid into the
+        /// floor's own bed after the floor and before the composite, inside the floor's block, so the column's
+        /// per-channel absorption, the caustics added after it and the palette grade take the plant exactly as
+        /// they take the floor beside it: the three faults this file guards for the floor hold for the one bed
+        /// both make. Both helpers bend through the one ShallowsBend, neither touches the pixel's colour, and no
+        /// shader carries a second copy of the law: the plant's own HHUnderWater pass draws its albedo alone.
+        /// Bar sources: this PR's water helpers :2259-:2315 and frag :5196-:5214, and
+        /// HiddenHarboursLitSprite.shader's HHUnderWater pass :236-:300.
+        /// </summary>
+        [Test]
+        public void TheFloorAndThePropsShareOneColumnLaw()
+        {
+            string water = Code(WaterPath);
+            string frag = Squash(Body(water, WaterFrag));
+            StringAssert.Contains(FloorCall + PropsGate + PropsCall + "#endif" + BedLerp, frag,
+                "the props over the floor, in the one bed the column composites");
+            Assert.AreEqual(1, Count(frag, @"ShallowsPropsBed\("), "the props are laid once, into the bed");
+            Assert.AreEqual(0, Count(frag, "_HHUnderWaterTex"), "the frag reads the props through the helper alone");
+
+            // One bend for both, defined once: the floor and the props reach the same bent point.
+            Assert.AreEqual(1, Definitions(water, "ShallowsBend"));
+            Assert.AreEqual(1, Definitions(water, "ShallowsPropsBed"));
+            Assert.AreEqual(2, Count(Squash(water), Regex.Escape("float2wp=ShallowsBend(worldXY,slope,depth);")),
+                "the floor's helper and the props' bend alike");
+            string props = Body(water, PropsHelper);
+            string squashed = Squash(props);
+            StringAssert.StartsWith("float2wp=ShallowsBend(worldXY,slope,depth);", squashed, "the props bend first");
+
+            // The props hand back a bed and nothing else: the law is the column's, in the frag, once.
+            Assert.AreEqual(0, Count(props, @"\bcol\b"), "the props never touch the pixel's colour");
+            foreach (string law in new[] { "Absorption", "absSigma", "bedT", "[Cc]austic", "PaletteGrade", "dayNight", "_Turbidity" })
+                Assert.AreEqual(0, Count(props, law), "no law of the props' own: " + law);
+            StringAssert.Contains(
+                "float2ndc=ComputeNormalizedDeviceCoordinates(float3(wp,0.0),UNITY_MATRIX_VP);" +
+                "int2px=int2(floor(ndc*_ScreenParams.xy));" +
+                "if(any(px<0)||any(px>=int2(_ScreenParams.xy)))returnbed;" +
+                "half4prop=LOAD_TEXTURE2D(_HHUnderWaterTex,px);[branch]if(prop.a<=0.0)returnbed;", squashed,
+                "the bent point's own pixel; off the target or a clear texel, the bed untouched");
+            StringAssert.EndsWith(
+                "floata=lerp(bed.a,1.0,prop.a);returnhalf4((prop.rgb+bed.rgb*bed.a*(1.0-prop.a))/max(a,1e-4),a);",
+                squashed, "the prop over the bed, premultiplied over straight alpha");
+            Assert.AreEqual(3, Count(props, @"\breturn\b"));
+
+            // The caustics, added after the composite, read nothing of the props': they light the bed.
+            int lerp = frag.IndexOf(BedLerp, System.StringComparison.Ordinal);
+            int add = frag.IndexOf(CausticAdd, System.StringComparison.Ordinal);
+            Assert.IsTrue(lerp > 0 && add > lerp, "the composite, then the caustics");
+            string light = frag.Substring(lerp + BedLerp.Length, add - lerp - BedLerp.Length);
+            foreach (string prop in new[] { "Props", "_HHUnderWater" })
+                StringAssert.DoesNotContain(prop, light, "the caustics read nothing of the props': " + prop);
+
+            // The plant's own pass is its albedo alone: no response, no glow, no fisher, no water.
+            string pass = UnderWaterPass(Code(LitSpritePath));
+            foreach (string law in new[]
+                     {
+                         "SpriteLitDecorResponse", "SpriteLitDecorEmit", "SPRITE_LIT_DECOR_PARAMS", "SilhouetteThrough",
+                         "_LightResponse", "Absorption", "[Cc]austic", "PaletteGrade", "_DayNight", "_HHUnderWater",
+                     })
+                Assert.AreEqual(0, Count(pass, law), "the plant's pass carries no law of its own: " + law);
+            Assert.AreEqual(
+                "UNITY_SETUP_INSTANCE_ID(IN);" +
+                "half4col=SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,IN.uv)*IN.color;clip(col.a-_AlphaClip);" +
+                "returnhalf4(col.rgb*col.a,col.a);",
+                Squash(Body(pass, "half4 underWaterFrag(UnderWaterVaryings IN) : SV_Target")),
+                "the sprite's albedo and clip, premultiplied");
         }
 
         // ---- source helpers ------------------------------------------------------------------------------
@@ -507,6 +598,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
             Assert.Fail("Unbalanced braces after '" + signature + "'.");
             return null;
+        }
+
+        /// <summary>The lit sprite's HHUnderWater pass (W4-4c), from its LightMode tag to its ENDHLSL.</summary>
+        internal static string UnderWaterPass(string lit)
+        {
+            Match tag = Regex.Match(lit, @"""LightMode""\s*=\s*""HHUnderWater""");
+            Assert.IsTrue(tag.Success, "the lit sprite's HHUnderWater pass");
+            int end = lit.IndexOf("ENDHLSL", tag.Index, System.StringComparison.Ordinal);
+            Assert.Greater(end, tag.Index, "its HLSL block");
+            return lit.Substring(tag.Index, end - tag.Index);
         }
 
         /// <summary>A literal-sized static table's entries, in order.</summary>

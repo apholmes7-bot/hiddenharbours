@@ -306,6 +306,7 @@ MonoBehaviour:
   TerrainUnderwaterClip: 0
   ShallowsFloor: 0
   ShallowsFloorRefraction: 0.25
+  ShallowsSubmergedProps: 0
   HullKeylineFlood: 0
   HullMeshReflections: 0
   HullReflectionResolutionDivisor: 1
