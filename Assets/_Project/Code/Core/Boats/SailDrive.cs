@@ -236,6 +236,23 @@ namespace HiddenHarbours.Core
                 * SailTorqueWindFactor(trueWindKn, referenceWindKn);
         }
 
+        /// <summary>
+        /// Unattended windward restoring torque. The wind-loaded floor remains in the no-go;
+        /// additional drive strengthens it. Together with pay-off this permits a stable luffing
+        /// heading inside the no-go instead of endlessly re-entering the polar at its hard edge.
+        /// Manned use is explicitly zero. Zero torque opts a hull out.
+        /// </summary>
+        public static float UnmannedRoundUpTorque(bool unmanned, float trueAngleDeg,
+            float targetSpeedKn, float torque, float noGoTrueDeg, float referenceDriveKn,
+            float trueWindKn, float referenceWindKn)
+        {
+            if (!unmanned || torque <= 0f || noGoTrueDeg <= 0f || referenceDriveKn <= 0f) return 0f;
+            float angle = Mathf.Repeat(trueAngleDeg + 180f, 360f) - 180f;
+            return -Mathf.Clamp(angle / noGoTrueDeg, -1f, 1f) * torque
+                * (1f + Mathf.Clamp01(targetSpeedKn / referenceDriveKn))
+                * SailTorqueWindFactor(trueWindKn, referenceWindKn);
+        }
+
         private static float SailTorqueWindFactor(float trueWindKn, float referenceWindKn)
             => referenceWindKn > 0f ? Mathf.Clamp01(trueWindKn / referenceWindKn) : 0f;
 

@@ -29,6 +29,10 @@ namespace HiddenHarbours.Tests.EditMode
         public void Controller_PaysOffWithinProposedBar(int size, float helm, float barSeconds)
             => WithBoat(size, false, helm, barSeconds);
 
+        [TestCase(30, 20f)] [TestCase(88, 25f)]
+        public void Controller_UnmannedDoesNotSailOnForTwentySevenSeconds(int size, float barMetres)
+            => WithBoat(size, true, 0f, barMetres);
+
         static void WithBoat(int size, bool unmanned, float helm, float bar)
         {
             var oldTerrain = GameServices.TidalTerrain; var oldSea = GameServices.Environment;
