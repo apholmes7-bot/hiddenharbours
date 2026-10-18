@@ -206,7 +206,11 @@ namespace HiddenHarbours.Vehicles
 
                 float half = _vehicle != null ? _vehicle.SteerFalloffHalfSpeedMetersPerSecond : 0f;
                 if (half <= 0f) return steer;
-                return steer / (1f + Mathf.Abs(_speed) / half);
+                float start = _vehicle != null ? _vehicle.SteerFalloffStartMetersPerSecond : 0f;
+                // Keep the legacy expression INLINE. Returning a float divisor from the helper
+                // adds a rounding boundary: Unity's runtime moved a zero-start result by one ulp.
+                if (start == 0f) return steer / (1f + Mathf.Abs(_speed) / half);
+                return steer / VehicleSteeringMath.SteerFalloffDivisor(_speed, start, half);
             }
         }
 
