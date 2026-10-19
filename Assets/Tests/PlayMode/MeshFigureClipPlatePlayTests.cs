@@ -41,6 +41,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
     public partial class AshoreFigurePlatePlayTests
     {
+        Vector3 _movePlateCameraPosition;
         sealed class MovePlateSea : IEnvironmentService
         {
             public IEnvironmentService Source;
@@ -95,13 +96,23 @@ namespace HiddenHarbours.Tests.PlayMode
             var begin = typeof(ControlSwitcher).GetMethod("BeginBoardingMove", BindingFlags.Instance | BindingFlags.NonPublic);
             Type kind = begin.GetParameters()[0].ParameterType;
             Assert.IsTrue(BoardingLadders.TryFindNearestNow(head, 3f, out IBoardingLadder ladder));
-            float deckHeight = _player.GetComponent<DeckWalkController>().DeckHeightMeters;
-            float levelAtRail = ladder.TopElevationMeters - deckHeight + boat.Hull.DraughtMeters;
+            Vector2 beachBoat;
+            Vector2 beach = FindMoveBeach(head, boat.Hull.DraughtMeters, out beachBoat);
             foreach (bool low in new[] { false, true })
             {
-                sea.Water = low ? levelAtRail - 2f : levelAtRail;
+                // This high wharf is a ladder berth even at ordinary high water. The vault is shot
+                // on an actual dry beach at mean water, not by flooding the island up to its planks.
+                sea.Water = low ? StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude : StPetersBuilder.TideMean;
+                Vector2 from = low ? shore : beach;
+                Vector2 mooring = low ? boatAt : beachBoat;
+                boat.transform.position = mooring; boat.GetComponent<Rigidbody2D>().position = mooring;
+                landing.transform.position = from;
                 controls.Configure(_player, boat, null, landing.transform, 12f, landing.transform);
-                PutHerAt(shore, withBody: true);
+                PutHerAt(from, withBody: true);
+                yield return _stage.FrameOn((from + mooring) * 0.5f + Vector2.up * (low ? -1f : 0.8f));
+                FitTheFrame(low ? 20f : 10f, low ? "the full low-water climb" : "the beach vault");
+                _plateOrtho = _stage.Camera.orthographicSize;
+                _movePlateCameraPosition = _stage.Camera.transform.position;
                 foreach (string direction in new[] { "Boarding", "Disembarking" })
                 {
                     Assert.IsTrue((bool)begin.Invoke(controls, new[] { Enum.Parse(kind, direction) }));
@@ -115,23 +126,30 @@ namespace HiddenHarbours.Tests.PlayMode
                         {
                             _rider.SetMode(ControlMode.OnFoot, null);
                             ShootMove(player, $"m1-{(low ? "ladder" : "vault")}-{direction.ToLowerInvariant()}-" +
-                                $"{(low ? "low-water" : "rail-level-water")}-f{shot++:000}");
+                                $"{(low ? "low-water-wharf" : "mean-water-beach")}-f{shot++:000}");
                         }
                     }
                     Assert.IsFalse(controls.IsBoardingMove, "the move finished within bounded seconds");
                     Assert.Greater(shot, 0, "a sequence of the move was captured");
-                    Debug.Log($"[mesh-move-plate] {direction}, {(low ? "low water" : "rail-level water")}, " +
-                        $"water {sea.Water:0.000} m, {shot} frames; actual ControlSwitcher transition entry and tick");
+                    Debug.Log($"[mesh-move-plate] {direction}, {(low ? "low water wharf" : "mean water beach")}, " +
+                        $"water {sea.Water:0.000} m, shore {from}, boat {mooring}, {shot} frames; " +
+                        "actual ControlSwitcher transition entry and tick");
                 }
             }
             // D8 compares the old sprite cells with the mesh chop; the tool key alone proves no knife.
+            sea.Water = StPetersBuilder.TideMean;
+            landing.transform.position = beach;
             controls.Configure(_player, boat, null, landing.transform, 12f, landing.transform);
-            PutHerAt(shore, true);
+            PutHerAt(beach, true);
+            yield return _stage.FrameOn(beach + Vector2.up * 0.8f);
+            FitTheFrame(8f, "the Chop beat and its sprite-cell control");
+            _plateOrtho = _stage.Camera.orthographicSize;
+            _movePlateCameraPosition = _stage.Camera.transform.position;
             Assert.IsTrue(player.PlayDriven(CharacterClip.Chop, 180f));
             for (int f = 0; f < _iso.Visual.ClipFrameCount(CharacterClip.Chop); f++)
             {
                 player.SeekFrame(f); _rider.SetMode(ControlMode.OnFoot, null);
-                ShootMove(player, $"m1-chop-low-water-f{f:00}");
+                ShootMove(player, $"m1-chop-mean-water-beach-f{f:00}");
                 var figure = _presenter.AshoreFigure;
                 figure.Visible = false;
                 _sprite.forceRenderingOff = false;
@@ -146,6 +164,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
         void ShootMove(CharacterClipPlayer clip, string name)
         {
+            _stage.Camera.transform.position = _movePlateCameraPosition;
+            _stage.Camera.orthographicSize = _plateOrtho;
             AssertTheSubjectIsInFrame(_player.transform, name);
             foreach (bool pixels in new[] { false, true })
             {
@@ -163,6 +183,32 @@ namespace HiddenHarbours.Tests.PlayMode
                 figure.Visible = true;
                 _stage.SavePlate(name + (pixels ? "-on.png" : "-off.png"), subject);
             }
+        }
+
+        static Vector2 FindMoveBeach(Vector2 near, float draught, out Vector2 boatAt)
+        {
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            Assert.IsNotNull(terrain, "the vault must stand on the scene's real exposed terrain");
+            float water = StPetersBuilder.TideMean;
+            float best = float.PositiveInfinity;
+            Vector2 shore = default, mooring = default;
+            foreach (Vector2 direction in new[] { Vector2.down, Vector2.right, Vector2.left, Vector2.up })
+                for (int y = -60; y <= 60; y++)
+                    for (int x = -60; x <= 60; x++)
+                    {
+                        Vector2 p = near + new Vector2(x, y);
+                        float elevation = terrain.ElevationAt(p);
+                        if (elevation < water || elevation > water + 0.6f) continue;
+                        if (BoardingLadders.TryFindNearestNow(p, 8f, out _)) continue;
+                        Vector2 b = p + direction * 2f;
+                        if (terrain.ElevationAt(b) > water - draught) continue;
+                        float distance = (p - near).sqrMagnitude;
+                        if (distance >= best) continue;
+                        best = distance; shore = p; mooring = b;
+                    }
+            Assert.IsFalse(float.IsPositiveInfinity(best), "no nearby dry beach with water deep enough for this hull");
+            boatAt = mooring;
+            return shore;
         }
     }
 }
