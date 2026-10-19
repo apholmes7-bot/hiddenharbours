@@ -101,7 +101,7 @@ namespace HiddenHarbours.Tests.PlayMode
             "inside something (a cab, or a helm that hides its pilot): she draws neither";
         private const string HiddenElsewhereReason =
             "ashore — her body's forceRenderingOff was set by something other than this figure";
-        private const string ClipReason = "ashore — a clip is playing, and the sprite draws every clip";
+        private const string ClipReason = "ashore — the running clip cannot draw as mesh; the sprite owns this move";
         /// <summary>The registry's warning for a figure the pool refuses, once per ask.</summary>
         private const string NoFacetIdWarning = "this figure gets NO facet id";
         /// <summary>The id no figure may take: a pool that has lent 1..254 is a pool at its end — the
