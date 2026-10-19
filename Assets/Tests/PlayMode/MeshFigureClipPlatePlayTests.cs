@@ -47,7 +47,12 @@ namespace HiddenHarbours.Tests.PlayMode
             public float Water;
             public int WorldSeed => Source.WorldSeed;
             public TideProfile ActiveTideProfile { get => Source.ActiveTideProfile; set => Source.ActiveTideProfile = value; }
-            public EnvironmentSample Sample() => Source.Sample();
+            public EnvironmentSample Sample()
+            {
+                var s = Source.Sample();
+                return new EnvironmentSample(s.WindVector, s.CurrentVector, Water,
+                    s.SeaState, s.Visibility, s.SeaState01);
+            }
             public float TideHeightAt(double t) => Water;
             public float WaterLevelAt(double t) => Water;
         }
@@ -71,7 +76,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 boatAt = new Vector2(head.x,
                 StPetersWharf.MooringFaceY - StPetersBuilder.AlongsideFenderGapMetres - halfBeam);
             boat.transform.position = boatAt;
+            boat.transform.rotation = Quaternion.Euler(0f, 0f, -StPetersBuilder.DoryMooredHeadingDegrees);
             boat.GetComponent<Rigidbody2D>().position = boatAt;
+            boat.GetComponent<Rigidbody2D>().rotation = -StPetersBuilder.DoryMooredHeadingDegrees;
             boat.GetComponent<Rigidbody2D>().simulated = false;
             var landing = _stage.Track(new GameObject("MeshMoveLanding"));
             landing.transform.position = shore;
@@ -103,6 +110,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     while (controls.IsBoardingMove && elapsed < 40f)
                     {
                         controls.TickBoardingMove(0.075f); player.Advance(0.075f); elapsed += 0.075f;
+                        yield return null; // publish this position's Y-sort and drawn water before the shutters
                         if (player.IsPlaying)
                         {
                             _rider.SetMode(ControlMode.OnFoot, null);
@@ -124,10 +132,12 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 player.SeekFrame(f); _rider.SetMode(ControlMode.OnFoot, null);
                 ShootMove(player, $"m1-chop-low-water-f{f:00}");
-                _presenter.enabled = false;
-                _rider.SetMode(ControlMode.OnFoot, null); _sprite.forceRenderingOff = false;
+                var figure = _presenter.AshoreFigure;
+                figure.Visible = false;
+                _sprite.forceRenderingOff = false;
                 _stage.SavePlate($"m1-chop-sprite-control-f{f:00}.png", _stage.Capture());
-                _presenter.enabled = true;
+                _sprite.forceRenderingOff = true;
+                figure.Visible = true;
             }
             player.Stop();
             GameServices.Environment = sea.Source;

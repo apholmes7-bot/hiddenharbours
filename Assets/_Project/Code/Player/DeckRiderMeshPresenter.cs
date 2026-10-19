@@ -847,7 +847,7 @@ namespace HiddenHarbours.Player
             Vector3 local = stand.FigureStandRigMetres + SabotageStandOffsetMetres;
             float bearing = clipPose
                 ? DeckRiderFacingMath.DeckBearingFor(clipHeading,
-                    _hull.HeadingDirUnits * HullMeshMath.DegreesPerDirUnit)
+                    _rider.LiveHullPresenter.DrawnHeadingDegrees())
                 : stand.FigureDeckBearingDegrees;
             float yaw = skin.AzimuthCounterClockwise ? -bearing : bearing;
             yaw = FigureHeadingDial.DeckYaw(yaw, _hull != null ? _hull.HeadingDirUnits * HullMeshMath.DegreesPerDirUnit : 0f,

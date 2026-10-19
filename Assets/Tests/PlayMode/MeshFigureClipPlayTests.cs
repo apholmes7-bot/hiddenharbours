@@ -55,6 +55,8 @@ namespace HiddenHarbours.Tests.PlayMode
         Rig NewMoveRig(bool pixels)
         {
             Rig rig = NewAshoreRig();
+            // An independent, nonzero compass heading catches confusion with the hull's CCW rig units.
+            rig.BoatRoot.transform.rotation = Quaternion.Euler(0f, 0f, -73f);
             rig.Config.FigurePixelTarget = pixels;
             var clips = new List<CharacterSkinDef.SkinClip>(rig.Skin.Clips);
             var states = new List<string>(rig.Skin.MeshStates);
@@ -94,7 +96,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(player.Frame, figure.DrawnFrame, "no hidden integrity-frame substitution");
             Assert.IsFalse(figure.LastFrameWasFenced);
             float yaw = aboard ? rig.Presenter.FigureYawDegrees : rig.Presenter.AshoreYawDegrees;
-            float expected = rig.Skin.AzimuthCounterClockwise ? -player.HeadingDegrees : player.HeadingDegrees;
+            float bearing = player.HeadingDegrees - (aboard ? 73f : 0f);
+            float expected = rig.Skin.AzimuthCounterClockwise ? -bearing : bearing;
             Assert.AreEqual(0f, Mathf.DeltaAngle(expected, yaw), 0.001f, "clip heading, not stale gait heading");
         }
 
