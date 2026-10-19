@@ -913,7 +913,7 @@ namespace HiddenHarbours.Boats
             WaveTrain dominant = trains.Dominant;
 
             BreakerContour contour = BreakerMath.ContourFor(
-                in dominant, WaveFetch.Envelope01(0f, in fetch), in breakers);
+                in dominant, WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
             if (!contour.Breaks) return SurfState.Calm;
 
             float waterLevel = environment.WaterLevelAt(now);
@@ -974,7 +974,7 @@ namespace HiddenHarbours.Boats
                     ? WaveMemory.TrainsAt(history, now, in waveField)
                     : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
             // Published travel is baked; a first-frame fallback carries raw phases at the clock.
-            WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchEnvelopeAt(pos));
+            WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
 
             // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the
             // same depth the boat-cross gate reads; open water (no seabed map) = +Inf depth = fully exposed.

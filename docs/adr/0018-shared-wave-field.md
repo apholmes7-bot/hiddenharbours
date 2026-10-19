@@ -654,3 +654,75 @@ remain Phase B checks.
   premise changes when that stage lands, not in Stage A.
 - **Order:** C2a → W4-1 → W4-2 → W4-3 → W4-4a/b → W4-5 (Stage C) → W4-6a/b
   (Stage D, bathymetry) → B2 (breakers) → P1 (wake riding). W4-2 lands after W4-1.
+
+
+## Amendment (2026-10-14): Stage B built
+
+This completes Stage B in the 2026-10-13 staged decision. One unchanged 24-step march
+carries X as a fraction of its reach, preserving its exact full-reach sentinel. The
+6.34 m and 5 m trains recover over 8 m; longer trains require progressively more
+water, with the 30 m train needing the full 96 m. This is a stylised compression of
+[fetch-limited growth and the changing spectral peak](https://www.sciencedirect.com/science/article/pii/S0378383996000063)
+onto a game region; kilometre-scale growth is not simulated over 96 metres.
+
+For wavelength lambda, u = saturate((lambda - short) / (long - short)), required
+fetch = lerp(shortFetch, reach, u^growthExponent), and growth = smoothstep(0, required,
+X * reach). The floor is LeeFloor times (1 - smoothstep(short, floorMax, lambda)).
+The final factor blends from one to lerp(floor, 1, growth), with blend strength
+saturate(Strength / FullShelterStrength). Zero strength and full reach return exactly
+one before the curve. Zero wavelength-curve endpoints use the defaults below; ordered
+endpoint guards prevent division by zero. Bands still quantizes X, default off.
+
+| New WaveFetchSettings field | Default | Unit | Range |
+|---|---:|---|---|
+| ShortWavelengthMeters | 6.5 | m | 1–100 |
+| LongWavelengthMeters | 30 | m | 1–100; effective upper endpoint exceeds short |
+| ShortFetchMeters | 8 | m | 0.05–288; capped at reach |
+| FloorMaxWavelengthMeters | 8.5 | m | 1–100; effective upper endpoint exceeds short |
+| GrowthExponent | 0.25 | dimensionless | 0.05–4 |
+| FullShelterStrength | 0.8 | dimensionless | 0.01–1 |
+
+Zero or missing values in all six new fields use their defaults. The serialized values
+match this table. StepMeters stays 4, Strength stays 0.8 and LeeFloor stays 0.25.
+Strength now reaches full spectral shelter at 0.8, continuously from the exact off
+state. The former uniform blend's residual 20 percent would prevent absent long waves.
+The floor is 0.25 for the two shortest slots, about 0.01554 at 8.196 m, and zero for
+longer slots. A silent field stays silent: these multipliers cannot create waves.
+The legacy Exponent and Envelope01 helpers retain uniform-envelope compatibility.
+
+FetchWindAt selects WaveMemory.ShortWind, or the current wind when no history seam is
+available. Both the service and bridge call it, and both use WaveFetch.Upwind for the
+same normalization arithmetic. WaveFetchSample carries X and data without allocation;
+GameServices.FetchAt supplies it to every surface rider. FetchEnvelopeAt keeps its scalar
+contract and returns the unfetched dominant train's factor. Surf, breaker contours,
+foam deposit and weed keep that scalar. The water and foam shaders retain identical
+fetch and bore blocks. The water pixel computes eight factors once and reuses them
+across its field taps. C# and HLSL apply each factor to amplitude inside the train sum;
+TotalAmplitude remains unfetched for whitecaps. Wavelength, speed and phase never change.
+
+The earlier amplitude-only premise now means each train's amplitude depends on its
+wavelength. Three guards keep their names with this premise: FetchTouchesAmplitudeOnly_NeverWavelengthOrSpeed,
+LandImmediatelyUpwind_CollapsesToTheLeeFloor, and EnvelopeScalesHeightAndSlopeTogether.
+TheMarchDoesNotQuantizeThroughTheMaterialPixelsPerUnit changes only its macro end marker,
+since the march now returns raw X. The frozen e4762df0 sample arithmetic is compared
+bit for bit at full reach, at zero strength and on glass. The packed twin agrees across
+the lee and both displaced frequency scales.
+
+Limits requiring visual review: slope still uses E grad(h), omitting h grad(E).
+On a continuous straight fetch ramp, the storm fixture's largest omitted per-train
+slope bound is 0.00324; the 6.34 m train reaches 14.2 percent of its unscaled sine slope
+scale. It is not uniformly negligible, especially at crests. On the quantized terrain
+march, two-pixel secants at shadow edges are much larger: the 30 m bound reaches 1.505
+at St Peters high water. These are phase-independent upper bounds, not simultaneous
+wave slopes. A corrective design must carry a spatial fetch gradient from a shared,
+continuous terrain sampler or baked field, add h grad(E) in both twins, and evaluate
+the hull footprint consistently. Extra independent marches are not introduced here.
+
+The light-wind berth also qualifies the expectation that every boat pitches less:
+at 20 m off the selected St Peters mean-tide shore, geometric pitch p95 rises from
+0.269 to 0.438 degrees as short chop recovers. At 10 m/s it falls from 1.624 to 0.429
+degrees. The headless hull heave p95 falls from 0.201 to 0.047 m in that storm fixture.
+These are steady-wind, centre-fetch footprint results, before material exaggeration
+and mesh pose gains; the visual and sailing verdict remains the editor stage.
+NMC's existing 256-square shader bake still differs from the CPU painted map. A shared
+wind line does not cure that terrain seam; its plates must inspect it explicitly.

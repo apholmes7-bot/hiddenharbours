@@ -229,7 +229,7 @@ namespace HiddenHarbours.Art
             {
                 PackedWaveField field = WaveFieldBridge.ReadPublishedField();
                 float raw = WaveFieldBridge.ShaderTwinSample(anchor, in field, sea.FreqScale,
-                    GameServices.FetchEnvelopeAt(anchor)).Height;
+                    GameServices.FetchAt(anchor)).Height;
                 var environment = GameServices.Environment;
                 float water = environment != null ? environment.WaterLevelAt(GameServices.Clock != null
                     ? GameServices.Clock.TotalSeconds : 0) : 0;
