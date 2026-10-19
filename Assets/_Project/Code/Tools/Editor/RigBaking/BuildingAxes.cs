@@ -230,6 +230,7 @@ namespace HiddenHarbours.Tools.RigBaking
             int i => i.ToString(CultureInfo.InvariantCulture),
             float f => f.ToString("0.####", CultureInfo.InvariantCulture),
             double d => d.ToString("0.####", CultureInfo.InvariantCulture),
+            IReadOnlyDictionary<string, object> options => ToOptionsLiteral(options),
             _ => throw new ArgumentException($"Cannot serialise {v.GetType().Name} into a rig option."),
         };
 

@@ -20,6 +20,21 @@ namespace HiddenHarbours.Tests.RigBaking
     /// </summary>
     public class BuildingAxesTests
     {
+        [Test]
+        public void OptionsLiteral_PreservesNestedRoomShellOptions()
+        {
+            var room = new Dictionary<string, object>
+            {
+                ["shell"] = new Dictionary<string, object>
+                {
+                    ["shape"] = "gable", ["size"] = 0.3, ["bay"] = false,
+                },
+                ["storey"] = "upper", ["beds"] = 1,
+            };
+            Assert.AreEqual("{shell:{shape:'gable',size:0.3,bay:false},storey:'upper',beds:1}",
+                BuildingAxes.ToOptionsLiteral(room));
+        }
+
         static string RigSource(string rigKey) =>
             File.ReadAllText(Path.Combine(RigCatalog.RepoRoot, RigCatalog.Get(rigKey).ScriptPath));
 

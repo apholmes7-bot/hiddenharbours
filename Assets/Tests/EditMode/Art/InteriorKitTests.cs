@@ -29,6 +29,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// </summary>
     public class InteriorKitTests
     {
+        [Test]
+        public void NewVillageRooms_KeepTheirShellAndOneBedUpstairs()
+        {
+            foreach (string key in new[] { "harbourGable", "creamSaltbox", "whiteGable" })
+            {
+                var shell = VillageBuildingKit.FindBuild(key).Value.Dialled;
+                foreach (string suffix in new[] { "", "Upper" })
+                {
+                    var room = InteriorKit.FindRoom(key + suffix).Value;
+                    Assert.AreEqual(key, InteriorKit.ExteriorKeyFor(room.Key));
+                    CollectionAssert.AreEquivalent(shell,
+                        (IReadOnlyDictionary<string, object>)room.Dialled["shell"]);
+                    Assert.AreEqual(suffix == "" ? "ground" : "upper", room.Dialled["storey"]);
+                    if (suffix == "Upper") Assert.AreEqual(1, room.Dialled["beds"]);
+                }
+            }
+        }
+
         static string RepoRoot => Directory.GetParent(Application.dataPath)!.FullName;
 
         static string RigSource(string fileName) =>

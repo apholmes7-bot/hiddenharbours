@@ -115,6 +115,7 @@ namespace HiddenHarbours.Art.Editor
         {
             "size", "floor", "floorTone", "wall", "paper", "wainscot",
             "windows", "winDensity", "door", "dividers", "hearth", "stairs", "beams", "weather",
+            "shell", "storey", "beds",
         };
 
         /// <summary>Every option key a PROP build is allowed to dial, grep-verified the same way against
@@ -344,6 +345,222 @@ namespace HiddenHarbours.Art.Editor
                 ["beams"] = true,
                 ["weather"] = 0.15,
             }, "the biggest of the three — the one with a family in it"),
+            Build.RoomDialled("harbourGable", "harbour gable ground", new Dictionary<string, object>
+                {
+                    ["size"] = 0.3,
+                    ["shell"] = new Dictionary<string, object>
+                    {
+                        ["era"] = "plain",
+                        ["shape"] = "gable",
+                        ["siding"] = "clapboard",
+                        ["body"] = "blue",
+                        ["roof"] = "asphaltGrey",
+                        ["size"] = 0.3,
+                        ["windows"] = "twoOverTwo",
+                        ["winDensity"] = 0.55,
+                        ["attic"] = "gable",
+                        ["porch"] = "front",
+                        ["dormers"] = 0,
+                        ["chimneys"] = 1,
+                        ["bay"] = false,
+                        ["weather"] = 0.3,
+                    },
+                    ["beds"] = 1,
+                    ["storey"] = "ground",
+                    ["floor"] = "plank",
+                    ["wall"] = "plaster",
+                    ["paper"] = "cream",
+                    ["wainscot"] = true,
+                    ["windows"] = "twoOverTwo",
+                    ["winDensity"] = 0.55,
+                    ["door"] = true,
+                    ["dividers"] = 0,
+                    ["hearth"] = true,
+                    ["beams"] = true,
+                    ["weather"] = 0.25,
+                }, "flattened village room; one bed upstairs, no residents"),
+
+            Build.RoomDialled("harbourGableUpper", "harbour gable upper", new Dictionary<string, object>
+                {
+                    ["size"] = 0.3,
+                    ["shell"] = new Dictionary<string, object>
+                    {
+                        ["era"] = "plain",
+                        ["shape"] = "gable",
+                        ["siding"] = "clapboard",
+                        ["body"] = "blue",
+                        ["roof"] = "asphaltGrey",
+                        ["size"] = 0.3,
+                        ["windows"] = "twoOverTwo",
+                        ["winDensity"] = 0.55,
+                        ["attic"] = "gable",
+                        ["porch"] = "front",
+                        ["dormers"] = 0,
+                        ["chimneys"] = 1,
+                        ["bay"] = false,
+                        ["weather"] = 0.3,
+                    },
+                    ["beds"] = 1,
+                    ["storey"] = "upper",
+                    ["floor"] = "plank",
+                    ["wall"] = "plaster",
+                    ["paper"] = "cream",
+                    ["wainscot"] = true,
+                    ["windows"] = "twoOverTwo",
+                    ["winDensity"] = 0.55,
+                    ["door"] = true,
+                    ["dividers"] = 0,
+                    ["hearth"] = true,
+                    ["beams"] = true,
+                    ["weather"] = 0.25,
+                }, "flattened village room; one bed upstairs, no residents"),
+
+            Build.RoomDialled("creamSaltbox", "cream saltbox ground", new Dictionary<string, object>
+                {
+                    ["size"] = 0.35,
+                    ["shell"] = new Dictionary<string, object>
+                    {
+                        ["era"] = "modern",
+                        ["shape"] = "saltbox",
+                        ["siding"] = "clapboard",
+                        ["body"] = "cream",
+                        ["roof"] = "asphaltBrown",
+                        ["size"] = 0.35,
+                        ["windows"] = "twoOverTwo",
+                        ["winDensity"] = 0.6,
+                        ["attic"] = "none",
+                        ["porch"] = "front",
+                        ["dormers"] = 0,
+                        ["chimneys"] = 1,
+                        ["bay"] = false,
+                        ["weather"] = 0.25,
+                    },
+                    ["beds"] = 1,
+                    ["storey"] = "ground",
+                    ["floor"] = "plank",
+                    ["wall"] = "plaster",
+                    ["paper"] = "cream",
+                    ["wainscot"] = true,
+                    ["windows"] = "twoOverTwo",
+                    ["winDensity"] = 0.6,
+                    ["door"] = true,
+                    ["dividers"] = 0,
+                    ["hearth"] = true,
+                    ["beams"] = true,
+                    ["weather"] = 0.25,
+                }, "flattened village room; one bed upstairs, no residents"),
+
+            Build.RoomDialled("creamSaltboxUpper", "cream saltbox upper", new Dictionary<string, object>
+                {
+                    ["size"] = 0.35,
+                    ["shell"] = new Dictionary<string, object>
+                    {
+                        ["era"] = "modern",
+                        ["shape"] = "saltbox",
+                        ["siding"] = "clapboard",
+                        ["body"] = "cream",
+                        ["roof"] = "asphaltBrown",
+                        ["size"] = 0.35,
+                        ["windows"] = "twoOverTwo",
+                        ["winDensity"] = 0.6,
+                        ["attic"] = "none",
+                        ["porch"] = "front",
+                        ["dormers"] = 0,
+                        ["chimneys"] = 1,
+                        ["bay"] = false,
+                        ["weather"] = 0.25,
+                    },
+                    ["beds"] = 1,
+                    ["storey"] = "upper",
+                    ["floor"] = "plank",
+                    ["wall"] = "plaster",
+                    ["paper"] = "cream",
+                    ["wainscot"] = true,
+                    ["windows"] = "twoOverTwo",
+                    ["winDensity"] = 0.6,
+                    ["door"] = true,
+                    ["dividers"] = 0,
+                    ["hearth"] = true,
+                    ["beams"] = true,
+                    ["weather"] = 0.25,
+                }, "flattened village room; one bed upstairs, no residents"),
+
+            Build.RoomDialled("whiteGable", "white gable ground", new Dictionary<string, object>
+                {
+                    ["size"] = 0.35,
+                    ["shell"] = new Dictionary<string, object>
+                    {
+                        ["beds"] = 3,
+                        ["era"] = "colonial",
+                        ["shape"] = "gable",
+                        ["siding"] = "clapboard",
+                        ["body"] = "white",
+                        ["roof"] = "asphaltGrey",
+                        ["size"] = 0.35,
+                        ["windows"] = "twoOverOne",
+                        ["winDensity"] = 0.6,
+                        ["attic"] = "round",
+                        ["porch"] = "wrap",
+                        ["dormers"] = 2,
+                        ["chimneys"] = 2,
+                        ["mirror"] = true,
+                        ["shutters"] = "iron",
+                        ["doorPaint"] = "red",
+                        ["weather"] = 0.1,
+                    },
+                    ["beds"] = 1,
+                    ["storey"] = "ground",
+                    ["floor"] = "plank",
+                    ["wall"] = "plaster",
+                    ["paper"] = "cream",
+                    ["wainscot"] = true,
+                    ["windows"] = "twoOverOne",
+                    ["winDensity"] = 0.6,
+                    ["door"] = true,
+                    ["dividers"] = 0,
+                    ["hearth"] = true,
+                    ["beams"] = true,
+                    ["weather"] = 0.25,
+                }, "flattened village room; one bed upstairs, no residents"),
+
+            Build.RoomDialled("whiteGableUpper", "white gable upper", new Dictionary<string, object>
+                {
+                    ["size"] = 0.35,
+                    ["shell"] = new Dictionary<string, object>
+                    {
+                        ["beds"] = 3,
+                        ["era"] = "colonial",
+                        ["shape"] = "gable",
+                        ["siding"] = "clapboard",
+                        ["body"] = "white",
+                        ["roof"] = "asphaltGrey",
+                        ["size"] = 0.35,
+                        ["windows"] = "twoOverOne",
+                        ["winDensity"] = 0.6,
+                        ["attic"] = "round",
+                        ["porch"] = "wrap",
+                        ["dormers"] = 2,
+                        ["chimneys"] = 2,
+                        ["mirror"] = true,
+                        ["shutters"] = "iron",
+                        ["doorPaint"] = "red",
+                        ["weather"] = 0.1,
+                    },
+                    ["beds"] = 1,
+                    ["storey"] = "upper",
+                    ["floor"] = "plank",
+                    ["wall"] = "plaster",
+                    ["paper"] = "cream",
+                    ["wainscot"] = true,
+                    ["windows"] = "twoOverOne",
+                    ["winDensity"] = 0.6,
+                    ["door"] = true,
+                    ["dividers"] = 0,
+                    ["hearth"] = true,
+                    ["beams"] = true,
+                    ["weather"] = 0.25,
+                }, "flattened village room; one bed upstairs, no residents"),
+
         };
 
         /// <summary>
@@ -419,8 +636,14 @@ namespace HiddenHarbours.Art.Editor
         /// <c>sageCottage</c> is the inside of the village building named <c>sageCottage</c>, and a
         /// test asserts the two resolve the same <c>size</c>. Returns null for a room with no shell.
         /// </summary>
-        public static string ExteriorKeyFor(string roomKey) =>
-            VillageBuildingKit.FindBuild(roomKey) != null ? roomKey : null;
+        public static string ExteriorKeyFor(string roomKey)
+        {
+            string key = roomKey;
+            if (key == "creamSaltboxUpper") key = "creamSaltbox";
+            if (key == "whiteGableUpper") key = "whiteGable";
+            if (key == "harbourGableUpper") key = "harbourGable";
+            return VillageBuildingKit.FindBuild(key) != null ? key : null;
+        }
 
         // =================================================================================
         //  the contract schema

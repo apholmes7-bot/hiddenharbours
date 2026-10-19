@@ -156,15 +156,21 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheBuildTable_BakesNothingNoStyleAsksFor()
+        public void TheBuildTable_BakesOnlyBoundaryPiecesAndRuledVillageDressing()
         {
             var required = new HashSet<string>(YardDressing.RequiredPieceKeys());
+            var dressing = new[] { "buoyPost", "trapBench", "anchorSet", "doryPlanter", "oilTank",
+                "sawhorses", "clothesline", "vegRows", "potatoDrills", "barrelPlanter", "borderBed",
+                "swingSet", "firePit", "farmStand", "flagpole" };
+            CollectionAssert.AreEquivalent(dressing,
+                YardKit.Builds.Where(b => b.Part == YardKit.Role.Dressing).Select(b => b.Key));
+            required.UnionWith(dressing);
             var spare = YardKit.Builds.Where(b => !required.Contains(b.Key)).Select(b => b.Key).ToArray();
 
             Assert.IsEmpty(spare,
                 "these sheets bake and nothing places them: " + string.Join(", ", spare) + ". The kit " +
-                "has 52 more pieces of dressing that deliberately do NOT bake yet; a row here that no " +
-                "style names is texture memory nobody asked for (CLAUDE.md rule 7).");
+                "keeps unruled dressing out of the bake; every row must have a named use " +
+                "(CLAUDE.md rule 7).");
         }
 
         [Test]
