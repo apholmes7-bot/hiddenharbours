@@ -2242,8 +2242,11 @@ the salience knobs, in the edit-mode preview and in play; with no config wired i
 - **The 2A line** (proposed with W4-4, for acceptance with its plates): a port turns to 2A (the splat's colours
   baked into `_SeabedTex`, no new read) if the floor's own price, floor on minus floor off with the clip on in both,
   times above 0.5 ms a frame at the 14 m dory framing over St Peters' low-water intertidal on that port's typical
-  device. A build without `HH_SHALLOWS_FLOOR` already draws today's bed, so 2A is a bake into a texture the sea
-  already reads; nothing here makes it harder.
+  device. No 2A now: the line is a port's, ruling 7 keeps 2B on PC, and a mobile build already compiles without
+  `HH_SHALLOWS_FLOOR`. As measured on this PC (2026-10-18, noon, mean and high water, the clip off in both arms),
+  the floor costs +0.76 to +1.37 ms a frame at 1920×1080 and +3.9 to +5.0 ms at 3840×2160 over both played regions,
+  so any slower port is over the line and 2A is its path. A build without `HH_SHALLOWS_FLOOR` already draws today's
+  bed, so 2A is a bake into a texture the sea already reads; nothing here makes it harder.
 
 #### Determinism and tests
 
