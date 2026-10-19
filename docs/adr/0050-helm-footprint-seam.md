@@ -81,6 +81,9 @@ Only `UI/HelmOverlayHost.cs`, today:
 - **`None`** with no helm in her hand, while the window is hidden (hide-all or its own ×), and when
   the host is disabled or destroyed. A host that does not own the statement never clears it.
 - **H2's band host** will say `FullWidthBand(144·k)` while the band shows.
+- **Recorded 2026-10-17 (H2):** the windows are retired, so a card is the tiller's or the lone lever's
+  where it stands, with no title strip and no focus (`BoatUiWindowSettings` is gone). The band host says
+  `FullWidthBand(144·k)` while the band shows, and `None` while M hides it.
 
 ## 4. Who keeps clear, and how
 

@@ -770,8 +770,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// <b>THE KEY SCENES' DATA HOLDS TO ITS FILES, AND TO THE GAME.</b> Subject: the committed
     /// <see cref="KeySceneDef"/>s and <see cref="WordsTableDef"/>. They hold their files' rows as
-    /// <see cref="StPetersKeyScenesRecord"/> records them (return 2's for the Landing and the cannery; CD's package,
-    /// through the id map, for the seven scenes O3 brings as data), and no id holds a position; every piece the step
+    /// <see cref="StPetersKeyScenesRecord"/> records them (CD's second issue through the stable id map and two ruled
+    /// gull exceptions; the east end joins both pinned files), and no id holds a position; every piece the step
     /// places resolves to its kit, and every height it places reads the game's own ground or deck (#890) within five
     /// centimetres; the tide board's marks read true against the game's sea; nothing stands in a frozen area (the
     /// arrival route, the berth pocket, the berths, the wharf's fittings and lamps, the deck's walking lane), all

@@ -18,14 +18,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para>What this pins: the seam says nothing until somebody speaks, and with no UI up nobody does;
     /// it raises one change event per change and none on a reset; the two keep-out rules every overlay
     /// shares (a band raises the floor, a card is stepped over by the overlay's own gap); the helm host's
-    /// statement of its card (the card and its title strip); and that nothing of it reaches the save
+    /// statement of its band and its card (the card alone since H2); and that nothing of it reaches the save
     /// (rule 5). The host publishing and clearing it live is <c>HelmFootprintPlayTests</c>'.</para>
     /// </summary>
     public class HelmFootprintSeamTests
     {
-        /// <summary>The window chrome's title strip as shipped (<c>BoatUiWindowSettings.TitleBarPx</c>).</summary>
-        private const float ShippedTitleBarPx = 18f;
-
         private readonly List<HelmFootprintChanged> _heard = new List<HelmFootprintChanged>();
 
         [SetUp]
@@ -252,23 +249,28 @@ namespace HiddenHarbours.Tests.EditMode
         // ===== the helm host's statement =============================================================
 
         [Test]
-        public void TheHelmHost_StatesItsCardsWindow_TheTitleStripIncluded()
+        public void TheHelmHost_StatesTheBand_AndTheTillersCard_NoTitleStrip()
         {
             var card = new Rect(580f, 16f, 120f, 244f);   // the tiller's card at ×1 on a 1280-wide screen
-            HelmFootprintArea said = HelmOverlayHost.FootprintOf(card, ShippedTitleBarPx);
+            HelmFootprintArea said = HelmOverlayHost.FootprintOf(HelmOverlayHost.HelmCardKind.Tiller, card, 720);
             Assert.AreEqual(HelmFootprintKind.Card, said.Kind, "a card is never stated as a band");
-            Assert.AreEqual(new Rect(580f, 16f, 120f, 262f), said.Rect,
-                "the card AND the strip above it — the strip shows on hover and while dragging, and an " +
-                "overlay parked on the card's top would be under it the moment the pointer arrived");
+            Assert.AreEqual(card, said.Rect,
+                "the card alone: the title strip above it retired with the windows (H2)");
+            Assert.AreEqual(card, HelmOverlayHost.FootprintOf(HelmOverlayHost.HelmCardKind.Lever, card, 720).Rect,
+                "the lone lever's card is stated the same way");
+            Assert.IsTrue(HelmOverlayHost.FootprintOf(HelmOverlayHost.HelmCardKind.Tiller,
+                                                      new Rect(580f, 16f, 0f, 244f), 720).IsNone,
+                "a card the screen gave no room covers nothing");
+            Assert.IsTrue(HelmOverlayHost.FootprintOf(HelmOverlayHost.HelmCardKind.None, card, 720).IsNone,
+                "no card covers nothing");
 
-            HelmFootprintArea bar = HelmOverlayHost.FootprintOf(new Rect(580f, 16f, 120f, 0f), ShippedTitleBarPx);
-            Assert.AreEqual(new Rect(580f, 16f, 120f, ShippedTitleBarPx), bar.Rect,
-                "a BAR-collapsed card is its strip alone");
-
-            Assert.AreEqual(new Rect(580f, 16f, 120f, 244f),
-                            HelmOverlayHost.FootprintOf(card, -5f).Rect, "a negative strip is no strip");
-            Assert.IsTrue(HelmOverlayHost.FootprintOf(new Rect(580f, 16f, 0f, 244f), ShippedTitleBarPx).IsNone,
-                "a card the window gave no room covers nothing");
+            foreach (int h in new[] { 720, 800, 1080, 1440, 2160 })
+            {
+                HelmFootprintArea band = HelmOverlayHost.FootprintOf(HelmOverlayHost.HelmCardKind.Band, card, h);
+                Assert.AreEqual(HelmFootprintKind.Band, band.Kind, $"{h}p: a wheel helm states a full-width band");
+                Assert.AreEqual(144f * Mathf.Max(1, h / 1080), band.FullWidthHeightPx, 1e-4f,
+                    $"{h}p: the band is 144k tall, k the screen's whole 1080s, whatever card rect is passed");
+            }
         }
     }
 }

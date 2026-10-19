@@ -44,9 +44,12 @@ namespace HiddenHarbours.Tests.EditMode
         /// registers itself into <c>GameServices.TidalTerrain</c> — which, since the ordering fix, makes
         /// every live <c>WaterSurface</c> re-bake. Doing it first keeps the measurement from quietly
         /// re-baking the fixture's own sea mid-test.</para>
+        /// <para>Since NMC H2 the scene's sea draws G3's painted depth (<c>04-ground-g3</c>), but its fade band
+        /// is still sized off the plan's coast: the builder passes the analytic premise's gradient, so this
+        /// measures the same premise through the one shared probe.</para>
         /// </summary>
         [SetUp]
-        public void SetUp() => _creekGradient = NineMileCreekMaxShoreGradient();
+        public void SetUp() => _creekGradient = NineMileCreekLiveGround.PremiseShoreGradient();
 
         [TearDown]
         public void TearDown()
@@ -217,22 +220,6 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{Path.GetFileName(path)} must not hang the displaced surface itself — that is the " +
                     "shared call's job, and a second place that does it is a second place to forget.");
             }
-        }
-
-        // ---- helpers ---------------------------------------------------------------------------------
-
-        /// <summary>The creek's steepest shore, measured off the coast plan the builder authors — the same
-        /// call the builder makes, so this cannot assert a number the region does not have.</summary>
-        static float NineMileCreekMaxShoreGradient()
-        {
-            var go = new GameObject("NineMileCreekTerrain_Probe", typeof(MainlandTidalTerrain));
-            try
-            {
-                var terrain = go.GetComponent<MainlandTidalTerrain>();
-                NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
-                return terrain.MaxShoreGradient();
-            }
-            finally { Object.DestroyImmediate(go); }
         }
     }
 }

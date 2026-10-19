@@ -120,6 +120,10 @@ namespace HiddenHarbours.Art
                 if (_meshRenderer != null) _meshRenderer.enabled = value;
                 if (_overlayRenderer != null) _overlayRenderer.enabled = value;
                 SyncInk();
+                // The pixel look's hand-in, on the call, as LateUpdate does it: a figure shown after her own
+                // LateUpdate (a presenter at order 100) or before it (a capture on the call) would otherwise draw
+                // one frame at full size. Play mode only, as LateUpdate is: edit mode hands nothing in.
+                if (Application.isPlaying && isActiveAndEnabled) IsoFacetFigureTarget.Sync(_facetMaterial, Visible);
             }
         }
 
@@ -208,6 +212,60 @@ namespace HiddenHarbours.Art
             _lookYaw = _lookPitch = _drawnYaw = _drawnPitch = 0d;
             _gaze = CharacterFigureLook.GazeOpen;
             SyncInk();
+        }
+
+        /// <summary>
+        /// <b>Paint this figure from other ramps</b> (character PR 2b, ADR 0051): the builder's colours
+        /// for the player's recipe, one ramp per material in the def's order, each exactly as long as
+        /// the def's own. Only colour moves: the mesh, the bones, the clips, the tones and the ink stay
+        /// the def's, so this rebuilds and rebinds the ramp textures, on a change and never per frame.
+        /// Throws on ramps that are not the def's shape; the builder refuses those before they get here.
+        /// </summary>
+        public void Recolour(Color32[][] colours)
+        {
+            if (!IsConfigured)
+                throw new InvalidOperationException("Recolour before Configure: there is no def to paint.");
+            if (colours == null) throw new ArgumentNullException(nameof(colours));
+            if (colours.Length != _def.Materials.Length)
+                throw new ArgumentException(
+                    $"{colours.Length} ramps for '{_def.Id}', which paints {_def.Materials.Length} materials.",
+                    nameof(colours));
+
+            var copy = new Color32[colours.Length][];
+            for (int m = 0; m < colours.Length; m++)
+            {
+                int want = _def.Materials[m].Colors != null ? _def.Materials[m].Colors.Length : 0;
+                if (colours[m] == null || colours[m].Length != want)
+                    throw new ArgumentException(
+                        $"Material {m} ('{_def.Materials[m].Name}') of '{_def.Id}' takes {want} colours, not " +
+                        $"{(colours[m] == null ? "none" : colours[m].Length.ToString())}.", nameof(colours));
+                copy[m] = (Color32[])colours[m].Clone();
+            }
+            Repaint(RampsOf(_def, copy));
+            Recoloured = true;
+        }
+
+        /// <summary>Paint this figure from its def's own ramps again: the body as baked.</summary>
+        public void ResetColours()
+        {
+            if (!IsConfigured || !Recoloured) return;
+            Repaint(RampsOf(_def, null));
+            Recoloured = false;
+        }
+
+        /// <summary>True while the figure draws ramps other than its def's (<see cref="Recolour"/>).</summary>
+        public bool Recoloured { get; private set; }
+
+        /// <summary>The ramps drawn, material by material. The textures cannot be read back once
+        /// uploaded, so a test reads these.</summary>
+        internal Color32[][] ShownRamps { get; private set; }
+
+        private void Repaint(Color32[][] ramps)
+        {
+            DestroyRampTextures();
+            BuildRampTextures(_def, ramps);
+            _facetMaterial.SetTexture(IsoFacetShaderIds.RampTex, _rampTex);
+            _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTex, _inkApplied ? _stepRampTex : _darkRampTex);
         }
 
         // ---------------------------------------------------------------- the bind mesh
@@ -369,22 +427,36 @@ namespace HiddenHarbours.Art
 
         // ---------------------------------------------------------------- material
 
-        private void BuildRampTextures(CharacterSkinDef def)
+        private void BuildRampTextures(CharacterSkinDef def) => BuildRampTextures(def, RampsOf(def, null));
+
+        /// <summary>
+        /// The ramps the figure draws, one per material it can show: <paramref name="colours"/>' when
+        /// given (a recolour), else the def's own. A material with no colours is drawn in the keyline,
+        /// as it always has been.
+        /// </summary>
+        private static Color32[][] RampsOf(CharacterSkinDef def, Color32[][] colours)
         {
             int count = Mathf.Min(def.Materials.Length, CharacterSkinDef.MaxMaterials(def.ToneRule));
-            int maxLen = 1;
-            for (int m = 0; m < count; m++)
-                maxLen = Mathf.Max(maxLen, def.Materials[m].Colors != null ? def.Materials[m].Colors.Length : 1);
-
-            _rampTex = MakeRampTexture("HHCharRampTex", maxLen, count);
-            _darkRampTex = MakeRampTexture("HHCharDarkRampTex", maxLen, count);
-
             var ramps = new Color32[count][];
             for (int m = 0; m < count; m++)
             {
-                Color32[] c = def.Materials[m].Colors;
+                Color32[] c = colours != null ? colours[m] : def.Materials[m].Colors;
                 ramps[m] = c != null && c.Length > 0 ? c : new[] { def.Keyline };
             }
+            return ramps;
+        }
+
+        private void BuildRampTextures(CharacterSkinDef def, Color32[][] ramps)
+        {
+            int count = ramps.Length;
+            int maxLen = 1;
+            for (int m = 0; m < count; m++)
+                maxLen = Mathf.Max(maxLen, ramps[m].Length);
+
+            ShownRamps = ramps;
+            _rampTex = MakeRampTexture("HHCharRampTex", maxLen, count);
+            _darkRampTex = MakeRampTexture("HHCharDarkRampTex", maxLen, count);
+
             Color32[][] dark = IsoFacetMath.BuildDarkenedRamps(ramps);
 
             for (int m = 0; m < count; m++)
@@ -723,6 +795,7 @@ namespace HiddenHarbours.Art
             if (IsAshore) WriteAshoreProperties();
             else WriteHullProperties();
             SyncInk();
+            IsoFacetFigureTarget.Sync(_facetMaterial, Visible);   // the figure pixel look; OFF: nothing
         }
 
         // ---------------------------------------------------------------- the rig's ink
@@ -941,6 +1014,7 @@ namespace HiddenHarbours.Art
             if (!IsAshore || _meshRenderer == null || _overlayRenderer == null) return;
 
             Vector3 p = transform.position;
+            p = FigurePixelGrid.SnapDrawnRoot(p, GameServices.FigurePixelTarget, GameServices.WorldUnitsPerRenderedPixel);
             Vector4 shear = Vector4.zero;
             Vector3 framePosition = p;
             if (DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame frame))
@@ -1030,17 +1104,14 @@ namespace HiddenHarbours.Art
             DestroyAshoreObjects();
             if (_posedMesh != null) DestroySafely(_posedMesh);
             if (_facetMaterial != null) DestroySafely(_facetMaterial);
-            if (_rampTex != null) DestroySafely(_rampTex);
-            if (_darkRampTex != null) DestroySafely(_darkRampTex);
-            if (_stepRampTex != null) DestroySafely(_stepRampTex);
+            DestroyRampTextures();
             _meshChild = null;
             _meshRenderer = null;
             _meshFilter = null;
             _posedMesh = null;
             _facetMaterial = null;
-            _rampTex = null;
-            _darkRampTex = null;
-            _stepRampTex = null;
+            ShownRamps = null;
+            Recoloured = false;
             _faceStarts = _faceCounts = null;
             _smoothFaces = null;
             _smoothBind = null;
@@ -1048,6 +1119,16 @@ namespace HiddenHarbours.Art
             _faceUniform = Vector4.zero;
             HeadSnapPoint = Vector4.zero;
             if (!keepDef) { _def = null; _hull = null; _honestFrames.Clear(); _fenceReport.Clear(); }
+        }
+
+        private void DestroyRampTextures()
+        {
+            if (_rampTex != null) DestroySafely(_rampTex);
+            if (_darkRampTex != null) DestroySafely(_darkRampTex);
+            if (_stepRampTex != null) DestroySafely(_stepRampTex);
+            _rampTex = null;
+            _darkRampTex = null;
+            _stepRampTex = null;
         }
 
         private static void DestroySafely(UnityEngine.Object o)

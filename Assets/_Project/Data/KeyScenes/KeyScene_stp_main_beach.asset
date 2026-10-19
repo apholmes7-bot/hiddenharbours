@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_main_beach
   DisplayName: West Gap Beach, the main beach
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_main_beach/scene.json,
-    14731 bytes, sha256 5038d430dbb07cf5dcff89e399646ed98c531b9c0917f4baac7b5737ff118c27
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_main_beach/scene.json,
+    18219 bytes, sha256 b01491f3d2a018535c021bcbb77a1c83157cd9e85e56c2aea962820da53dc45e
   Placed: 0
   Pieces:
   - Id: prop.stp_beach_bench

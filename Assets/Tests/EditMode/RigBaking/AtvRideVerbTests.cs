@@ -346,7 +346,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// words what it is for: <i>"she BAKES PARKED. A dirtbike does not stand upright without a
         /// rider … a game that shows her upright with nobody aboard is showing a bug the rig will not
         /// catch."</i> The mesh this repo holds is <c>stand:0</c>, the RIDDEN state. That was the right
-        /// call at intake (the parked build is 502 faces against 497 and a 12° lean — a topology
+        /// call at intake (the parked build is 573 faces against 568 and a 12° lean — a topology
         /// change, not a rotation, so it cannot be posed out of what is here) and it is a VISIBLE gap
         /// now that <c>StPetersMachines</c> stands her outside the shop.</para>
         ///

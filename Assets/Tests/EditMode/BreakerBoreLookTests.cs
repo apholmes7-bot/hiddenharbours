@@ -152,7 +152,7 @@ namespace HiddenHarbours.Tests.EditMode
             //       within half a bore spacing, where a shift cannot alias. The bore advances at sqrt(g*d)
             //       at the depth it is running over, so the prediction is made at the mean depth under the
             //       sheet and the band is wide because the run shoals.
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             float meanDepth = MeanDepthUnder(c0, terrain, NineMileCreekMainland.SpringLowWater);
             float g = GameServices.WaveField.Gravity;
             float predicted = Mathf.Sqrt(g * Mathf.Max(meanDepth, 0.02f)) * period * 0.25f;
@@ -326,7 +326,7 @@ namespace HiddenHarbours.Tests.EditMode
             Debug.Log($"[bore-look] steepest break-contour point xi = {xi:F3}, plunging weight {weight:F3} at {ledge}");
             if (weight > 0.01f)
             {
-                var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+                var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
                 Vector2 ledgeShore = BreakerSurfRenderTests.ShoreGradient(terrain, ledge);
                 Strip("checkin-ledge", ledge + ledgeShore * 4f, period, live);
             }
@@ -930,10 +930,11 @@ namespace HiddenHarbours.Tests.EditMode
 
         (Vector2 aim, Vector2 shoreDir) AimAtTheSurf(float waterLevel)
         {
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
             BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
-                WaveFetch.Envelope01(0f, GameServices.WaveFetch), GameServices.Breakers);
+                WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch),
+                GameServices.Breakers);
             Assert.IsTrue(contour.Breaks, "the shot sea must break somewhere, or there is nothing to photograph");
 
             Vector2 at = BreakerSurfRenderTests.FindTheSurfZone(terrain, waterLevel, contour.BreakDepths.x);
@@ -947,11 +948,11 @@ namespace HiddenHarbours.Tests.EditMode
 
         Vector2 SteepestBreakPoint(float waterLevel, out float bestXi, out float weight)
         {
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
             var settings = GameServices.Breakers;
             BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
-                WaveFetch.Envelope01(0f, GameServices.WaveFetch), settings);
+                WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch), settings);
             float h0 = 2f * trains.Dominant.Amplitude;
             Vector2 centre = NineMileCreekBuilder.NineMileCreekSeaCenter;
             Vector2 size = NineMileCreekBuilder.NineMileCreekSeaSize;
@@ -977,9 +978,8 @@ namespace HiddenHarbours.Tests.EditMode
         void BuildTheShore()
         {
             _terrainGo = new GameObject("TidalTerrain");
-            var terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
-            GameServices.TidalTerrain = terrain;
+            // The scene's own ground (NMC H2): G3, registered by hand as its OnEnable registers it in play.
+            var terrain = NineMileCreekLiveGround.Register(_terrainGo);
 
             var region = AssetDatabase.LoadAssetAtPath<RegionDef>(WaterSceneTemplate.RegionAssetPathFor("NineMileCreek"));
             Assert.IsNotNull(region, "Data/Regions/NineMileCreek.asset must exist to size the ground");
@@ -1006,7 +1006,9 @@ namespace HiddenHarbours.Tests.EditMode
             WaterSceneTemplate.ConfigureLandRegionWater(
                 _seaGo, NineMileCreekBuilder.NineMileCreekSeaCenter, NineMileCreekBuilder.NineMileCreekSeaSize,
                 NineMileCreekBuilder.NineMileCreekHeightResolution, NineMileCreekBuilder.NineMileCreekHeightMin,
-                NineMileCreekBuilder.NineMileCreekHeightMax, terrain.MaxShoreGradient());
+                NineMileCreekBuilder.NineMileCreekHeightMax, NineMileCreekLiveGround.PremiseShoreGradient());
+            // …and the sea draws the G3 map it floats on, as the builder wires it.
+            NineMileCreekLiveGround.DrawUnder(_seaGo, terrain);
             _seaGo.SetActive(true);
 
             _camGo = new GameObject("BoreShotCam");

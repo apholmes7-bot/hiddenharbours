@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_ne_light
   DisplayName: The north-east light and its cliff
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_ne_light/scene.json,
-    36010 bytes, sha256 d9fec2ce6df52908432c0b88cc9cff7be21436fe7e61e5e551eea15c4060e901
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ne_light/scene.json,
+    41882 bytes, sha256 4508886b3363e71c94b70ba481aa22d028dcf8385a8d125443c17add37d3832f
   Placed: 0
   Pieces:
   - Id: station.stp_ne_light
@@ -322,8 +322,8 @@ MonoBehaviour:
     Kit: shoreFinds
     Piece: NetFloat
     State: dry
-    At: {x: 192.87, y: 40.86}
-    Z: -0.51
+    At: {x: 192.98, y: 41.01}
+    Z: -0.49
     StandsOn: ground
     MountHost: 
     MountAnchor: 
@@ -374,7 +374,7 @@ MonoBehaviour:
     Kit: shoreFinds
     Piece: TrapLath
     State: bleached
-    At: {x: 191.6, y: 40.6}
+    At: {x: 191.77, y: 41}
     Z: -0.32
     StandsOn: ground
     MountHost: 
@@ -623,7 +623,7 @@ MonoBehaviour:
     At: {x: 199, y: 46.2}
     Z: 6.4
     StandsOn: mount
-    MountHost: ground.stp_ne_head
+    MountHost: form.stp_ne_head
     MountAnchor: westFaceLedge
     HasFoot: 0
     Foot: {x: 0, y: 0}
@@ -651,7 +651,7 @@ MonoBehaviour:
     At: {x: 204.9, y: 47.9}
     Z: 8.3
     StandsOn: mount
-    MountHost: ground.stp_ne_head
+    MountHost: form.stp_ne_head
     MountAnchor: westFaceLedge
     HasFoot: 0
     Foot: {x: 0, y: 0}
@@ -679,7 +679,7 @@ MonoBehaviour:
     At: {x: 210.6, y: 50.2}
     Z: 4.6
     StandsOn: mount
-    MountHost: ground.stp_ne_head
+    MountHost: form.stp_ne_head
     MountAnchor: southFaceLedge
     HasFoot: 0
     Foot: {x: 0, y: 0}
@@ -807,7 +807,7 @@ MonoBehaviour:
     Piece: block
     State: 
     At: {x: 191.2, y: 41}
-    Z: 0.11
+    Z: -0.04
     StandsOn: ground
     MountHost: 
     MountAnchor: 

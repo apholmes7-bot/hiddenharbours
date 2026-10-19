@@ -9,7 +9,9 @@ recorded.
 slot on **`Resources/AudioClipSet.asset`** (`AudioClipSetDef`, one `AudioClip` field per row below), and
 add its row to **`LICENSES.md`**. Each player loads that asset in `Awake` and copies every non-null slot
 over its own field *before* it builds its sources; a null slot keeps its placeholder. Nothing here is a
-serialized reference on a component any more, so slotting a sound never touches a scene.
+serialized reference on a component any more, so slotting a sound never touches a scene. A checkout with
+the owner's **private sound pack** installed lays a second set over this one (see
+[The private sound pack](#the-private-sound-pack)); every other checkout plays this set as it is.
 
 > Authoring standard (match the art lock spirit): **mono, 44,100 Hz**. `.ogg` (Vorbis ~q6) where it
 > saves real bytes, 16-bit PCM `.wav` where a loop needs a sample-exact join (see `LICENSES.md`).
@@ -27,9 +29,21 @@ serialized reference on a component any more, so slotting a sound never touches 
 |---|---|---|
 | Ambience | `_ambienceVolume` | calm bed, moderate/rough sea layers, gulls, aboard boat bed (oar/water **or** outboard engine), wind tell, distant foghorn |
 | SFX | `_sfxVolume` | one-shot cues (sting, warmth) |
-| Music | `_musicVolume` | reserved — no music cue wired yet (future) |
+| Music | `_musicVolume` | the clip set's **songs**, one after another (`MusicCycle`, below); the public set ships none, so the bus is silent without the private sound pack |
 
 Cues **duck** the ambience/music beds under them; the calm bed also **thins** as the wind tell rises.
+
+### The music bus: a song cycle
+
+The bus plays the clip set's **`Songs`** in order: each song plays through once, then
+**`SongGapSeconds`** of silence (a tunable on the set, rule 6; 4 s on `AudioClipSet.asset`), then the
+next, wrapping after the last. No shuffle. `MusicCycle` decides and the director plays, on unscaled time,
+so a pause never stretches the gap; a song counts as ended only once it has been heard playing. The bus
+still ducks under cues, and `_catchSting` / `_homeWarmth` keep their held slots on the SFX bus.
+
+The public set ships **no songs**, so a fresh clone, CI and every lane box hear the bus silent, exactly as
+before it was wired. Songs arrive with the private sound pack, which imports them as **streaming Vorbis**
+(rule 7): minutes of stereo never sit decoded in memory.
 
 ### "Made it home" warmth is **earned** (P5)
 The ashore exhale (`_homeWarmth` on coming ashore) fires **only when the sea had become a worry that
@@ -107,6 +121,24 @@ prefab later) — every layer has a tooltip'd 0..1 level (`_fishingVolume` maste
 > small in-lane follow-up. (b) Fishing cues do not yet duck the ambient beds; wire that when the
 > shared bus lands.
 
+## The private sound pack
+
+Some sounds the owner picked are licensed to the owner alone and may not sit in this public repository.
+They live outside it, in the owner's sound pack folder, and reach the game through a second clip set:
+
+- **Hidden Harbours ▸ Audio ▸ Install Private Sound Pack** copies the pack into the gitignored
+  `Assets/_Project/Audio/Private/` and points `Private/Resources/AudioClipSetPrivate.asset` at the copies.
+- At boot both players read `AudioClipSets.Effective()`: a slot the private set fills overrides the public
+  clip; a null private slot keeps the public one (or its placeholder). Private songs, when there are any,
+  replace the public ones; the gap stays the public set's. The merged set is built in memory with
+  `HideFlags.DontSave`, so the public asset is never written.
+- Without the folder nothing changes: the public set loads as it is and the music bus stays silent.
+- **Remove Private Sound Pack** deletes the folder.
+
+The public set and `LICENSES.md` never name a private clip. `AudioClipSetsTests` fails if the public set
+points into the private folder or if the folder's ignore lines go missing. How-to:
+[`docs/audio/private-sound-pack.md`](../../../docs/audio/private-sound-pack.md).
+
 ## Missing Core signals (flagged for a follow-up — NOT added this round)
 The Audio lane subscribes to **existing** Core signals only (`FishCaught`, `CatchSold`,
 `ControlModeChanged`, `ActiveBoatChanged`) and polls the deterministic `IEnvironmentService` /
@@ -135,6 +167,7 @@ the owning lanes rather than reached across:
   `_splashDown` already voices that exact frame, so the fix there is a level, not a file.
 
 ## Wishlist (future, not wired this round)
-- A light **music** stem for the harbour / title (would slot onto the Music bus).
+- A light **music** stem for the harbour / title that the public set could ship (the Music bus plays the
+  set's `Songs`; today only the private sound pack fills them).
 - More per-sea-state regional variants after the moderate/rough layers are tuned by the owner's ears.
 - A distinct **grounding** alarm on `BoatGrounded` (P5) — a follow-up once the warning palette exists.

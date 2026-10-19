@@ -1,32 +1,35 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
 {
     /// <summary>
     /// The always-on top band's own geometry, in ONE place (ADR 0025 S4.5). <see cref="HudController"/>
     /// builds the band from these numbers, and the helm overlays keep OUT of them — so the band and
-    /// the dash cannot disagree about where the band ends, which is the whole point of extracting it.
+    /// a raised instrument cannot disagree about where the band ends, which is the whole point of
+    /// extracting it.
     ///
-    /// <para><b>Why the dash yields here and the band does not.</b> The owner's ask is that game UI
+    /// <para><b>Why the helm yields here and the band does not.</b> The owner's ask is that game UI
     /// stop obstructing the boat UI, and everything that CAN move or hide does (see
     /// <see cref="HelmHudSuppression"/>). The five band reads — clock, tide, wind, sea, money — were the
     /// exception: no instrument on any dash shows them, so hiding them at the helm would have deleted
-    /// the tide and the money rather than relocated them. Nothing may be drawn OVER the dash; instead
-    /// the dash (and an expanded instrument) simply size and sit themselves in the space below the
-    /// band. That is the same clamp <see cref="HelmOverlayLayout.DashCardRect"/> already applies to
-    /// the screen edge, told about one more edge.</para>
+    /// the tide and the money rather than relocated them. Nothing may be drawn OVER the helm; instead
+    /// a raised instrument simply sits itself in the space below this band
+    /// (<see cref="HelmBandLayout.RaisedCardRect"/> takes its height as the card's top edge), and the
+    /// helm band itself keeps to the bottom edge (H2).</para>
     ///
     /// <para><b>⚠ The 2026-08-22 diegetic ruling changed the premise, and NOT these numbers.</b> Four
     /// of those five reads are now off in normal play (<see cref="HudVisibilityPolicy"/>), so most of
     /// the time the band holds only the watch. The reserve stays the full band height anyway, and
     /// deliberately: the watch alone is 190 of these 220 units, and the dev override brings every read
     /// back into exactly the box measured below. A reserve that tracked what happened to be visible
-    /// would put the dash back under the band the moment someone turned the readouts on.</para>
+    /// would put a raised card back under the band the moment someone turned the readouts on.</para>
     ///
     /// <para><b>It really did overlap.</b> At 1920×1080 the shipped focused dash (1.5× of 600×548,
     /// bottom-anchored at MarginY 16) reached screen y 781 while the band's bottom sat at 750 — the
     /// band drew over the top of the wheelhouse, because its canvas sorts at 100 and the helm's at 60.
-    /// At 1280×720 the overlap was the whole band. Pinned by test.</para>
+    /// At 1280×720 the overlap was the whole band. That was pinned by test until H2 retired the dash
+    /// card; a raised instrument is held below the band by <see cref="HelmBandLayout.RaisedCardRect"/>.</para>
     ///
     /// <para>Pure and static: the maths is EditMode-testable without a canvas, and it mirrors Unity's
     /// own <c>CanvasScaler.ScaleWithScreenSize</c> formula rather than guessing at it.</para>
@@ -73,16 +76,17 @@ namespace HiddenHarbours.UI
         /// tests drive.</summary>
         public static float ReservedTopPx()
         {
-            Rect sa = Screen.safeArea;
-            float topGap = Screen.height - (sa.y + sa.height);
-            return ReservedTopPx(Screen.width, Screen.height, topGap);
+            Rect sa = HudScreen.SafeArea;
+            float topGap = HudScreen.Height - (sa.y + sa.height);
+            return ReservedTopPx(HudScreen.Width, HudScreen.Height, topGap);
         }
 
         /// <summary>
         /// Move — and only if it still will not fit, shrink — <paramref name="card"/> so it lies
-        /// entirely in the screen BELOW the band. Translating first is deliberate: an expanded
-        /// instrument is the state the player actually reads the glass in, so it gives up its position
-        /// long before it gives up its size.
+        /// entirely in the screen BELOW the band. Translating first is deliberate: a raised instrument
+        /// is the state the player actually reads the glass in, so it gives up its position long
+        /// before it gives up its size. Since H2 it is the raised card's fallback where no whole scale
+        /// fits between the bands (<see cref="HelmBandLayout.RaisedCardRect"/>).
         ///
         /// <para>A shrink preserves the aspect (the rigs are authored at one shape each) and re-centres
         /// on what is left. With no room at all the result is empty rather than inverted.</para>

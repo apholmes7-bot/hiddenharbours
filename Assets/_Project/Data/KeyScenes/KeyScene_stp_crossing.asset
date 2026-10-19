@@ -15,8 +15,8 @@ MonoBehaviour:
   Id: keyscene.stp_crossing
   DisplayName: The tidal crossing
   RegionId: region.st_peters
-  Source: HH-st-peters-one-scene-package-2026-10-01, scenes/keyscene.stp_crossing/scene.json,
-    93787 bytes, sha256 3668d9f5d0ae81e89350222a1c2218a46a946643a1e6d734701601417555a395
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_crossing/scene.json,
+    99406 bytes, sha256 28b122128269c734fe1fcf57d07a02e80444e5dd1e09b32eb8f826ea82c32f90
   Placed: 0
   Pieces:
   - Id: prop.stp_cx_crossing_board

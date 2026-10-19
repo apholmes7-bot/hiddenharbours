@@ -123,10 +123,13 @@ namespace HiddenHarbours.App
         /// beach 400 m away. Where you ARRIVE and where you STEP ASHORE are two different questions and
         /// only the first one is the passage's to answer.</para>
         /// </summary>
-        public static void ApplyArrival(Transform player, Transform boat, ControlSwitcher switcher,
+        /// <returns>True when she was laid at the region's alongside berth (see
+        /// <see cref="LayAlongside"/>), which the coordinator then holds against a change of hull.</returns>
+        public static bool ApplyArrival(Transform player, Transform boat, ControlSwitcher switcher,
                                         RegionAnchor anchor, string arrivalKey)
         {
-            if (anchor == null) return;
+            if (anchor == null) return false;
+            bool alongside = false;
 
             Transform arrivalPoint = anchor.ArrivalPointFor(arrivalKey);
             Transform landingPoint = anchor.DisembarkPointFor(arrivalKey);
@@ -148,6 +151,14 @@ namespace HiddenHarbours.App
                 boat.position = anchor.AuthoredBoatBerthPosition;
                 boat.rotation = anchor.AuthoredBoatBerthRotation;
             }
+            // An ALONGSIDE berth is laid for a design hull: a hull of another beam lies with her side on the
+            // same fender line, so her centre is the hull's to say, not the point's. A named way in keeps
+            // its own point.
+            else if (boat != null && arrivalPoint != null && anchor.AlongsideBerth && arrivalPoint == anchor.ArrivalPoint)
+            {
+                LayAlongside(boat, anchor);
+                alongside = true;
+            }
             else if (boat != null && arrivalPoint != null) boat.position = arrivalPoint.position;
             if (player != null && landingPoint != null) player.position = landingPoint.position;
             if (switcher != null)
@@ -155,6 +166,52 @@ namespace HiddenHarbours.App
                 switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);   // the WHARF's step-off — see above
                 switcher.ReassertControlMode();   // re-enable the active boat/foot controller after the toggle
             }
+            return alongside;
+        }
+
+        /// <summary>How far she may move from where she was laid alongside and still be re-laid when her
+        /// hull changes there. Past it she has been sailed off and the berth no longer holds her.</summary>
+        public const float AlongsideHoldMetres = 0.5f;
+
+        /// <summary>Lay <paramref name="boat"/> at <paramref name="anchor"/>'s alongside berth, sized to
+        /// her live hull (<see cref="RegionAnchor.AlongsideCentre"/>), on the berth's heading. Returns the
+        /// half beam she was laid for.</summary>
+        public static float LayAlongside(Transform boat, RegionAnchor anchor)
+        {
+            Transform point = anchor.ArrivalPoint;
+            float design = anchor.AlongsideHalfBeamMetres;
+            float live = LiveHalfBeam(boat, design);
+            boat.SetPositionAndRotation(RegionAnchor.AlongsideCentre(point.position, point.rotation, design, live),
+                                        point.rotation);
+            return live;
+        }
+
+        /// <summary>Her hull's half beam, or <paramref name="design"/> while no hull reports one.</summary>
+        static float LiveHalfBeam(Transform boat, float design)
+        {
+            var hull = boat.GetComponent<IHullPresence>();
+            float live = hull != null ? hull.Footprint.HalfBeam : 0f;
+            return live > 0f ? live : design;
+        }
+
+        // The alongside berth she was last laid at, held while she lies there: a hull configured after the
+        // arrival (a reload, the earned dory) is re-laid on the same fender line.
+        RegionAnchor _alongside;
+        Vector3 _alongsideAt;
+        float _alongsideHalfBeam;
+
+        private void LateUpdate()
+        {
+            if (_alongside == null) return;
+            if (_boat == null || !_alongside.isActiveAndEnabled ||
+                (_boat.position - _alongsideAt).sqrMagnitude > AlongsideHoldMetres * AlongsideHoldMetres)
+            {
+                _alongside = null;
+                return;
+            }
+            if (LiveHalfBeam(_boat, _alongside.AlongsideHalfBeamMetres) == _alongsideHalfBeam) return;
+            _alongsideHalfBeam = LayAlongside(_boat, _alongside);
+            _alongsideAt = _boat.position;
         }
 
         // ---- play-mode glue (scene toggling — flagged for Unity verification) ---------------
@@ -186,7 +243,12 @@ namespace HiddenHarbours.App
                 Debug.LogWarning($"[RegionTravelCoordinator] Passage asked for arrival '{arrivalKey}' in " +
                                  $"'{anchor.RegionId}', which authors no such way in — landing at the " +
                                  "region's default instead.", anchor);
-            ApplyArrival(_player, _boat, _switcher, anchor, arrivalKey);
+            _alongside = ApplyArrival(_player, _boat, _switcher, anchor, arrivalKey) ? anchor : null;
+            if (_alongside != null)
+            {
+                _alongsideAt = _boat.position;
+                _alongsideHalfBeam = LiveHalfBeam(_boat, anchor.AlongsideHalfBeamMetres);
+            }
 
             // The boat was just teleported to the arrival point — bring it to rest there so a residual
             // velocity from the previous region doesn't carry it off the mark once the controller re-enables.

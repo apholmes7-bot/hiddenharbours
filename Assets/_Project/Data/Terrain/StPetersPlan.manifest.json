@@ -199,7 +199,7 @@
     ["stream.stp_storm_brook", "Assets/_Project/Data/Terrain/StPetersPlan/Stream_StormBrook.asset", "074cb43581e2de5eaba4ebc9027b8f84b85241167dbfb5d48dca789b0026e3b3", ""],
     ["terrain_plan.st_peters", "Assets/_Project/Data/Terrain/StPetersPlan/TerrainPlan_StPeters.asset", "575690c334aefbead54821d952710e7ec549ce39bd82da1b076e7c803f19b53a", ""]
   ],
-  "derivation": "4c06b6fbff8c153caf67d5e99951020a76599006eef7aa2d8b4352b87d890e23",
+  "derivation": "f85700a9fcfd0fb55b1a0b8ade170fc05e312d4c1d38a411f0794d74c0dd69b4",
   "order": [
     "01 part 1: bay.stp_main_beach: 10547 cells by its bands on the import (227 at its back)",
     "02 part 1: pass 9's plan: 7 sections, 5 ponds, 6 streams, 2 creeks, 4 pans, 7 paths",
@@ -547,6 +547,6 @@
     {"role": "splatD", "path": "Assets/_Project/Data/Terrain/StPetersSplatD.png", "values": "40d4c1a9f5e6b347774f47d6b47f715f1ca668f07d62a39f11225416facd22ec", "file": "73e8b53bdda5706e31d8ba815dc61d811c5429eaa727ad91fc0abddea8890655"},
     {"role": "splatE", "path": "Assets/_Project/Data/Terrain/StPetersSplatE.png", "values": "4d3d3c38524017c5e85195f36b7096083ac70370eb1d0df91061eb82d292032c", "file": "22aec8314bd5e533783267a03eda6991cea4080d1e1acc9dca1876e144ba5d8e"},
     {"role": "splatF", "path": "Assets/_Project/Data/Terrain/StPetersSplatF.png", "values": "3a5cb93be26e5a472453fba465d0e983642bda375a1aa4c3f6215bd10cbcdec8", "file": "0563d67578ebd03e9654f6cd2c3ec940502b6d6118e7e508ba0df87dc4ade500"},
-    {"role": "still", "path": "Assets/_Project/Data/Terrain/StPetersStillWater.png", "values": "bcae93713addfe97d886b7717620d9369fd45d8a190d6dc5d336607ad82c1a45", "file": "4b898edf5f9485787ebfffc79c050445d3081d0cad679d98bd5e4f09c059c99a"}
+    {"role": "still", "path": "Assets/_Project/Data/Terrain/StPetersStillWater.png", "values": "dd57083971fe20e632f8c37aef2ea9f9eaf60c5c3e28a1b6143cf6b46a0d21c1", "file": "0441b1e95f8d8451ddcb550eda824fdc1317f4ce7cb72f9455bc7b80804abd43"}
   ]
 }

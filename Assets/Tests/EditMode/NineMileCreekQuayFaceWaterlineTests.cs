@@ -37,6 +37,12 @@ namespace HiddenHarbours.Tests.EditMode
     /// runs the identical measurement against the face as main draws it (uncut, its sea edge pinned at the
     /// sprite's own foot) and reports the same table failing. A guard that cannot fail on the picture it
     /// was written about is a mirror.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> This fixture measures the plan's wall: the dressing's runs on the
+    /// plan's analytic ground, with its hulls at the plan's berths. The scene's wall stands on the third issue's
+    /// faces at <see cref="NineMileCreekGroundPlan.DeckElevation"/> (step 05), its berths a metre south
+    /// (<see cref="NineMileCreekGroundSteps.WallBerth"/>), and <c>NineMileCreekSceneQuayTests</c> holds its
+    /// faces. None of these tests claims the scene's wall.</para>
     /// </summary>
     public class NineMileCreekQuayFaceWaterlineTests
     {

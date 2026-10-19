@@ -19,7 +19,7 @@ namespace HiddenHarbours.App.Editor
     ///
     /// <para><b>⭐ EVERY POINT HERE IS DERIVED, NONE IS TYPED.</b> The bay at the town end is the one
     /// constant the whole truck park hangs off; the bay at the wharf end is the authored parking site;
-    /// the road between them is the published <see cref="NineMileCreekMainland.WharfRoad"/> and the park's
+    /// the road between them is Wharf Road on its final line (<see cref="WharfRoad"/>) and the park's
     /// own spur; and the buyer's post is the exact spot <see cref="NineMileCreekPeople"/> already stands
     /// him on, read from there rather than copied. Move the park, re-cut the road or walk the buyer
     /// somewhere else and the trip follows in the same one-line change (#345's lesson).</para>
@@ -46,6 +46,29 @@ namespace HiddenHarbours.App.Editor
         public const string TripRootName = "FishBuyerRun";
 
         // =============================================================================================
+        //  THE ROADS THEY DRIVE — the third issue's lines, as G3 paves them (NMC H2)
+        // =============================================================================================
+
+        /// <summary>
+        /// Wharf Road as every run drives it: <see cref="NineMileCreekGroundPlan.WharfRoad"/>, town to turning
+        /// pad. The analytic premise's line (<see cref="NineMileCreekMainland.WharfRoad"/>) ran on through the
+        /// yard; this one ends in the turning circle at the head of its ramp, so the runs are re-anchored onto
+        /// it rather than onto ground the scene no longer paves.
+        /// </summary>
+        public static Vector2[] WharfRoad => NineMileCreekGroundPlan.WharfRoad;
+
+        /// <summary>
+        /// Route 91 as every run drives it: <see cref="NineMileCreekGroundPlan.Route91"/>, walked south to
+        /// north like the premise's through-road (<see cref="NineMileCreekMainland.ThroughRoad"/>), so each
+        /// verge bay keeps the side and the heading it was placed with. One array, built once:
+        /// <see cref="ToTheForecourt"/> tells the two roads apart by reference.
+        /// </summary>
+        public static readonly Vector2[] ThroughRoad = Reversed(NineMileCreekGroundPlan.Route91);
+
+        /// <summary>Where Wharf Road meets Route 91: Wharf Road's town end, a vertex of both lines.</summary>
+        public static Vector2 Junction => NineMileCreekGroundPlan.WharfRoad[0];
+
+        // =============================================================================================
         //  THE TWO BAYS
         // =============================================================================================
 
@@ -67,40 +90,30 @@ namespace HiddenHarbours.App.Editor
             new Vector2(NineMileCreekMainland.ParkingPos.x, NineMileCreekMainland.ParkingPos.y);
 
         /// <summary>
-        /// Where she leaves the carriageway for the gravel: the point on Wharf Road nearest her bay,
-        /// backed off along the road by <see cref="ApproachRunMetres"/> so the pull-in is a turn a truck
-        /// can take rather than a right-angle hop off the road.
+        /// Where she leaves the turning pad for the gravel. Wharf Road ends in the turning circle at the
+        /// head of its ramp, and the yard's own road leaves the circle's east side along y 120
+        /// (<see cref="NineMileCreekGroundPlan.TurningPadExit"/>): she crosses the pad to that point and runs
+        /// the yard road's line onto the buyers' gravel, a straight pull-in rather than a turn off a road.
+        ///
+        /// <para>⚠ The yard road is a later wave's, so the court between the circle and the gravel (about
+        /// 5.9 m) is unpaved dry ground until it lands. <c>NineMileCreekTripsTests</c> holds the gap to that
+        /// one stretch.</para>
         /// </summary>
-        public static Vector2 PullOff()
-        {
-            Vector2[] road = NineMileCreekMainland.WharfRoad;
-            Vector2 bay = WharfBay();
-            Vector2 onRoad = NineMileCreekRoads.NearestPointOnRoute(road, bay);
-            Vector2 dir = DirectionOn(road, onRoad);
-            return onRoad - dir * ApproachRunMetres;
-        }
-
-        /// <summary>
-        /// How much road she uses to line up for the gravel: two vehicle lengths (13.4 m) — <b>the truck
-        /// park's own rule</b>, "one to park in and one to turn in"
-        /// (<see cref="NineMileCreekRoads.ParkLengthsDeep"/> × the fleet envelope). Stated in the
-        /// vehicle's units rather than the region's, because what makes a pull-in tight is the truck.
-        /// </summary>
-        public static float ApproachRunMetres =>
-            NineMileCreekRoads.ParkLengthsDeep * NineMileCreekRoads.ParkedVehicleLengthMetres;
+        public static Vector2 PullOff() => NineMileCreekGroundPlan.TurningPadExit;
 
         // =============================================================================================
         //  THE TWO ROADS
         // =============================================================================================
 
         /// <summary>
-        /// Her road down to the wharf: out of the park on its own spur, east along Wharf Road, off at the
-        /// pull-in and onto the buyers' gravel.
+        /// Her road down to the wharf: out of the park on its own spur, east along Wharf Road to its end
+        /// in the turning pad, across the pad to the pull-off and onto the buyers' gravel.
         /// </summary>
         public static Vector2[] OutboundRoute()
         {
             var route = new List<Vector2> { HomeBay(), SpurJoin() };
-            route.AddRange(AlongWharfRoad(SpurJoin(), PullOff()));
+            route.AddRange(AlongWharfRoad(SpurJoin(), WharfRoadEnd));   // ends AT the road's end
+            route.Add(PullOff());
             route.Add(WharfBay());
             return Dedup(route);
         }
@@ -109,11 +122,14 @@ namespace HiddenHarbours.App.Editor
         /// one-way pair of streets would be expressible here and a reversed view would not.</summary>
         public static Vector2[] ReturnRoute()
         {
-            var route = new List<Vector2> { WharfBay(), PullOff() };
-            route.AddRange(AlongWharfRoad(PullOff(), SpurJoin()));   // ends AT the spur join
+            var route = new List<Vector2> { WharfBay(), PullOff(), WharfRoadEnd };
+            route.AddRange(AlongWharfRoad(WharfRoadEnd, SpurJoin()));   // ends AT the spur join
             route.Add(HomeBay());
             return Dedup(route);
         }
+
+        /// <summary>Wharf Road's wharf end, in the turning pad: (50, 118).</summary>
+        static Vector2 WharfRoadEnd => WharfRoad[WharfRoad.Length - 1];
 
         // =============================================================================================
         //  THE DRIVER'S TWO POSTS
@@ -246,7 +262,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Her van, pulled onto the verge of Route 19 at the head of her own shop walk.</summary>
         public static Vector2 ChandleryBay() =>
-            ShoulderBay(NineMileCreekMainland.ThroughRoad, ChandleryPost());
+            ShoulderBay(ThroughRoad, ChandleryPost());
 
         // =============================================================================================
         //  THE OUTBOARD MAN'S FUEL RUN — the wharf end, afternoon
@@ -268,9 +284,11 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Where the outboard man stands — read from the cast, like every other post here.</summary>
         public static Vector2 DoryYardPost() => NineMileCreekPeople.Named(OutboardManAssetName).Position;
 
-        /// <summary>His box truck, pulled onto Wharf Road's verge beside his own yard.</summary>
+        /// <summary>His box truck, pulled off Wharf Road beside his own yard. Wharf Road now ends in the
+        /// turning circle, which paves the yard, so she stands on the circle's south side, (56.7, 113.6),
+        /// clear of the road's line.</summary>
         public static Vector2 DoryYardBay() =>
-            ShoulderBay(NineMileCreekMainland.WharfRoad, DoryYardPost());
+            ShoulderBay(WharfRoad, DoryYardPost());
 
         // =============================================================================================
         //  THE ONE PLACE THEY BOTH DRIVE TO — Route 91
@@ -282,7 +300,7 @@ namespace HiddenHarbours.App.Editor
         /// different hours, which a test proves rather than assumes.
         /// </summary>
         public static Vector2 ForecourtBay() =>
-            ShoulderBay(NineMileCreekMainland.ThroughRoad, NineMileCreekStation.Route91ForecourtPos);
+            ShoulderBay(ThroughRoad, NineMileCreekStation.Route91ForecourtPos);
 
         /// <summary>Where a customer stands to work a hose: out from the island's own ground centre
         /// toward the road, so they are at the pump face rather than standing on the kerb. The island is
@@ -314,26 +332,25 @@ namespace HiddenHarbours.App.Editor
         {
             Vector2 bay = ShoulderBay(road, post);
             Vector2 join = ShoulderJoin(road, post);
-            Vector2 pumpsJoin = ShoulderJoin(NineMileCreekMainland.ThroughRoad,
+            Vector2 pumpsJoin = ShoulderJoin(ThroughRoad,
                                              NineMileCreekStation.Route91ForecourtPos);
 
             var route = new List<Vector2> { bay, VergeAhead(road, post), join };
-            if (!ReferenceEquals(road, NineMileCreekMainland.ThroughRoad))
+            if (!ReferenceEquals(road, ThroughRoad))
             {
                 // From Wharf Road: run west to the junction it dead-ends on, which is Route 19's own
                 // node, then continue down Route 19. Two roads, one polyline, joined at the point both
-                // publish (NineMileCreekStation.Route91Junction reads it rather than restating it).
-                route.AddRange(AlongRoad(road, join, NineMileCreekStation.Route91Junction));
-                route.AddRange(AlongRoad(NineMileCreekMainland.ThroughRoad,
-                                         NineMileCreekStation.Route91Junction, pumpsJoin));
+                // publish (Junction reads it rather than restating it).
+                route.AddRange(AlongRoad(road, join, Junction));
+                route.AddRange(AlongRoad(ThroughRoad, Junction, pumpsJoin));
             }
             else
             {
-                route.AddRange(AlongRoad(NineMileCreekMainland.ThroughRoad, join, pumpsJoin));
+                route.AddRange(AlongRoad(ThroughRoad, join, pumpsJoin));
             }
             // …and off again the same way: down the pumps' own verge, so she comes to rest alongside the
             // road rather than nose-in to it. See VergeAhead.
-            route.Add(VergeAhead(NineMileCreekMainland.ThroughRoad,
+            route.Add(VergeAhead(ThroughRoad,
                                  NineMileCreekStation.Route91ForecourtPos));
             route.Add(ForecourtBay());
             return Dedup(route);
@@ -435,15 +452,15 @@ namespace HiddenHarbours.App.Editor
             ScheduledTrip chandler = HangRun(
                 creekPeople, ChandlerAssetName, ChandleryTripPath, ChandleryVanDefPath, ChandleryVanName,
                 ChandleryBay(), ChandleryPost(),
-                ToTheForecourt(NineMileCreekMainland.ThroughRoad, ChandleryPost()),
-                FromTheForecourt(NineMileCreekMainland.ThroughRoad, ChandleryPost()));
+                ToTheForecourt(ThroughRoad, ChandleryPost()),
+                FromTheForecourt(ThroughRoad, ChandleryPost()));
             if (chandler != null) made.Add(chandler);
 
             ScheduledTrip outboard = HangRun(
                 creekPeople, OutboardManAssetName, OutboardTripPath, OutboardTruckDefPath, OutboardTruckName,
                 DoryYardBay(), DoryYardPost(),
-                ToTheForecourt(NineMileCreekMainland.WharfRoad, DoryYardPost()),
-                FromTheForecourt(NineMileCreekMainland.WharfRoad, DoryYardPost()));
+                ToTheForecourt(WharfRoad, DoryYardPost()),
+                FromTheForecourt(WharfRoad, DoryYardPost()));
             if (outboard != null) made.Add(outboard);
 
             return made;
@@ -548,7 +565,7 @@ namespace HiddenHarbours.App.Editor
         /// is going: hand it (west, east) and it counts up, hand it (east, west) and it counts down.</para>
         /// </summary>
         public static IEnumerable<Vector2> AlongWharfRoad(Vector2 from, Vector2 to)
-            => AlongRoad(NineMileCreekMainland.WharfRoad, from, to);
+            => AlongRoad(WharfRoad, from, to);
 
         /// <inheritdoc cref="AlongWharfRoad"/>
         public static IEnumerable<Vector2> AlongRoad(Vector2[] road, Vector2 from, Vector2 to)
@@ -604,6 +621,14 @@ namespace HiddenHarbours.App.Editor
                 if (d < bestSq) { bestSq = d; best = i; }
             }
             return (route[best + 1] - route[best]).normalized;
+        }
+
+        /// <summary>A polyline walked the other way, as a new array.</summary>
+        static Vector2[] Reversed(Vector2[] line)
+        {
+            var back = (Vector2[])line.Clone();
+            System.Array.Reverse(back);
+            return back;
         }
 
         /// <summary>Drop repeated points. A zero-length segment is a division waiting to happen in the

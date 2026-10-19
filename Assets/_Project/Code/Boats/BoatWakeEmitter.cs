@@ -472,7 +472,7 @@ namespace HiddenHarbours.Boats
                 if (!Active) return 0f;
                 // Per-element fetch (ADR 0027 #1): a wake trail spreads over tens of metres — the fetch
                 // scale — so unlike a hull or a weed bed this one genuinely varies along its own length.
-                float height = _animator.Sample(worldPos, GameServices.FetchEnvelopeAt(worldPos)).Height;
+                float height = _animator.Sample(worldPos, GameServices.FetchAt(worldPos)).Height;
                 return ShoreFadeMath.DisplacedHeight(height, depth, _bandMeters, _exaggeration);
             }
 

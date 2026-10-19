@@ -11,18 +11,12 @@ namespace HiddenHarbours.UI
     /// sounder in the same brow cutout. While the player pilots a hull whose effective fit resolves to
     /// <see cref="SounderKind.Fish"/>, it paints the live water column.
     ///
-    /// <para><b>Flush on the dash by default; expanded is a choice</b> (S4.5, the owner's ask). The scan
-    /// paints into the console's authored brow mount — the pilothouse's TALL portrait slot, the skiffs'
-    /// cutout — where a sounder actually lives, and clicking it EXPANDS it to the standalone card this
-    /// host has always drawn. Only there are the three side pushers and the three glass regions live.
-    /// The flush face is glance value: at mount size the rig is far below the ~83% its typography
-    /// survives, so the numbers are not readable — but the marks visibly light up, which is the read
-    /// that matters at a glance, and the expanded state is where you actually read it.</para>
-    ///
-    /// <para><b>One raster, two presentations.</b> The flush face and the expanded card are the SAME
-    /// texture at two rects (<see cref="HelmInstrumentMountLayout"/>) — so the two views cannot
-    /// disagree about the sea, the shallow alarm flashes in both (Ruling E), and mounting costs nothing:
-    /// no second render, and the dash card does not repaint when the scan steps.</para>
+    /// <para><b>A housing in the band; raised is a choice</b> (H2, from S4.5's ask). The finder's place
+    /// on the helm is its named housing in the band (on the pilot bands it carries the depth too), and
+    /// pressing the housing RAISES the standalone card this host has always drawn, placed by
+    /// <see cref="HelmBandLayout.RaisedCardRect"/>. Only there are the three side pushers and the three
+    /// glass regions live. Pressing the housing again, pressing away, or Esc lowers it; unraised, this
+    /// host draws nothing and asks the seam for no fish.</para>
     ///
     /// <para><b>Its own host, not a branch inside <see cref="SounderOverlayHost"/>.</b> That file's own
     /// reasoning applies again and harder: each instrument's lifetime, hit geometry and repaint rule is its
@@ -63,9 +57,9 @@ namespace HiddenHarbours.UI
     public sealed class FishFinderOverlayHost : MonoBehaviour
     {
         [Header("Canvas")]
-        [Tooltip("Sorting order of the finder canvas. The same brow slot as the depth sounder — they are " +
-                 "never on screen together — and, like it, ABOVE the helm dash's own canvas (60): the " +
-                 "chrome draws the bezel, this draws the glass inside it.")]
+        [Tooltip("Sorting order of the finder canvas. The same housing as the depth sounder — they are " +
+                 "never on screen together — and, like it, ABOVE the helm band's own canvas (60), so a " +
+                 "raised card that reaches down over the band reads over it.")]
         [SerializeField] private int _sortingOrder = 62;
 
         private static FishFinderOverlayHost _instance;
@@ -98,18 +92,18 @@ namespace HiddenHarbours.UI
         private long _scanBucket = long.MinValue;
         private int _marksRev;
 
+        // True from the second frame of a raise: the press that raised the card was the band's, so
+        // the frame it rises must not read that same press as one on the card.
+        private bool _wasExpanded;
+
         /// <summary>The one host per play session (it self-installs and survives scene loads). Exposed so
         /// a PlayMode test can drive the host that is actually running rather than a second copy — a
         /// duplicate destroys itself in <c>Awake</c>.</summary>
         public static FishFinderOverlayHost Instance => _instance;
 
-        /// <summary>Blown up to its own card (S4.5) rather than flush in the dash's brow. Shared state,
-        /// so only one instrument is ever expanded. Exposed for tests.</summary>
+        /// <summary>Raised to its own card rather than only a housing in the band. Shared state, so
+        /// only one instrument is ever raised. Exposed for tests.</summary>
         public bool Expanded => HelmInstrumentExpansion.IsExpanded(Slot);
-
-        /// <summary>S3b's name for <see cref="Expanded"/> — the enlarged, controls-live state. Kept
-        /// because that is what it still is, and what the shipped tests read it as.</summary>
-        public bool Focused => Expanded;
 
         /// <summary>What the ▲/▼ pushers are currently adjusting (Ruling A). Exposed for tests.</summary>
         public FishRigAdjust Adjust => _adjust;
@@ -117,23 +111,14 @@ namespace HiddenHarbours.UI
         /// <summary>Are the per-mark depth tags drawn? Exposed for tests.</summary>
         public bool FishId => _fishId;
 
-        /// <summary>True while the instrument is on screen — i.e. this hull's helm actually carries the
-        /// fish finder AND there is a sounding to scale the picture against. Exposed for tests.</summary>
-        public bool Showing => _cardGo != null && _cardGo.activeSelf;
-
-        /// <summary>True while the scan is drawing FLUSH in the dash's authored brow mount (the
-        /// default), false while it is expanded or has fallen back to its own card. Exposed for
-        /// tests.</summary>
-        public bool FlushMounted { get; private set; }
+        /// <summary>True while the instrument is presented — this hull's helm actually carries the fish
+        /// finder AND there is a sounding to scale the picture against (its housing in the band, or its
+        /// card raised). Exposed for tests.</summary>
+        public bool Showing { get; private set; }
 
         /// <summary>How many rasters this host has done. The cadence guard's evidence — exposed so a test
         /// can prove the scan repaints at <c>WaterfallHz</c> and not per frame.</summary>
         public int RepaintCount { get; private set; }
-
-        // The EXPANDED card as a WINDOW (2026-08-07 ruling). The flush face is part of the dash
-        // picture and follows the HELM window instead — it gets no chrome of its own.
-        private readonly BoatUiWindowController _window =
-            new BoatUiWindowController(BoatUiWindowId.FishFinder);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -173,47 +158,42 @@ namespace HiddenHarbours.UI
 
         private void OnDestroy()
         {
-            if (_instance == this) { _instance = null; _window.StandDown(); }
+            if (_instance == this) _instance = null;
             if (_texture != null) Destroy(_texture);
         }
 
         private void Update()
         {
             IHelmInstruments instruments = GameServices.HelmInstruments;
-            // The FINDER owns the brow only while the fit says Fish. A Depth fit is the plain sounder's
-            // cutout — this card stands down rather than drawing the wrong instrument.
+            // The FINDER owns the housing only while the fit says Fish. A Depth fit is the plain
+            // sounder's — this host stands down rather than drawing the wrong instrument.
             bool fitted = instruments != null && instruments.Fit.Sounder == SounderKind.Fish;
             if (!fitted || !instruments.TryReadDepth(out float depth))
             {
                 if (Expanded) HelmInstrumentExpansion.Collapse();
                 _painted = false;
-                FlushMounted = false;
                 // Drop the marks and the bucket too: coming back (a hull swap, a re-entered region) must
                 // re-ask the seam rather than paint the last boat's fish for a scan step.
                 _scanBucket = long.MinValue;
                 _drawMarks.Clear();
-                _window.StandDown();
-                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                StandDown();
                 return;
             }
 
-            // This instrument's WINDOW is hidden (hide-all or its own ×): stand down, and close any
-            // expansion rather than leaving an invisible card owning the pointer and Esc.
-            if (!_window.Shown)
+            // Hide-all (M): stand down, and lower any raised card rather than leaving an invisible
+            // one owning the pointer and Esc.
+            if (BoatUiWindows.AllHidden)
             {
                 if (Expanded) HelmInstrumentExpansion.Collapse();
-                FlushMounted = false;
-                _window.StandDown();
-                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                StandDown();
                 return;
             }
+            Showing = true;
 
-            // The flush face follows the HELM window (2026-08-07 ruling) — see SounderOverlayHost.
-            if (!Expanded && instruments.Fit.Rig != ConsoleRigKind.None
-                          && !BoatUiWindows.FlushMountsAvailable)
+            // Unraised, the housing in the band is the whole presentation: no scan, no fish query.
+            if (!Expanded)
             {
-                FlushMounted = false;
-                _window.StandDown();
+                _wasExpanded = false;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -248,57 +228,27 @@ namespace HiddenHarbours.UI
                 finder.PlaceholderSens01, finder.PlaceholderLink, finder.PlaceholderBatt01,
                 finder.PlaceholderVolts);
 
-            bool expanded = Expanded;
-            Rect card = GlassRect(expanded, in finder);
-            if (expanded)
-            {
-                // The expanded card is this instrument's WINDOW (2026-08-07). Resize re-targets the
-                // ONE native raster's destination rect — the rig is never re-rendered small, so its
-                // two font laws (which disagree below ~83% of native when RE-RENDERED) never apply.
-                card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
-            }
-            else
-            {
-                _window.StandDown();   // flush face / fallback card: no chrome, no publication
-            }
-            bool visible = !expanded || _window.CardVisible;
-            if (_image.enabled != visible) _image.enabled = visible;
-
+            // The raised card re-targets the ONE native raster's destination rect — the rig is never
+            // re-rendered small, so its two font laws (which disagree below ~83% of native when
+            // RE-RENDERED) never apply. A portrait rig is never distorted.
+            Rect card = HelmBandLayout.RaisedCardRect(FishRigRender.W, FishRigRender.H,
+                                                      HudScreen.Width, HudScreen.Height,
+                                                      HudBandLayout.ReservedTopPx());
             LayoutCard(card);
-            if (visible) Repaint(in state);
+            Repaint(in state);
+            HelmInstrumentExpansion.PublishRaisedCard(Slot, card);
 
-            if (expanded)
-            {
-                _window.LayoutChrome(_cardGo.transform.parent);
-                if (_window.HandlePointer(controlDragLive: false)) return;
-            }
-            if (BoatUiWindows.AnySession) return;   // a window drag owns the pointer
-            ReadPointer(instruments, in prefs, in sounder, in finder, card, expanded);
+            bool raiseFrame = !_wasExpanded;
+            _wasExpanded = true;
+            if (raiseFrame) return;
+            ReadPointer(instruments, in prefs, in sounder, in finder, card);
         }
 
-        /// <summary>
-        /// Where the scan draws this frame: FLUSH in the dash's authored brow mount by default (S4.5),
-        /// the standalone card when expanded. The standalone rect doubles as the FALLBACK for a frame
-        /// with no dash published — unreachable in shipped play, since the fit resolves through a
-        /// <c>HelmConsoleDef</c> and no console means no finder, but better than vanishing at boot or
-        /// on a test rig. See <see cref="SounderOverlayHost"/> for the same reasoning at length.
-        /// </summary>
-        private Rect GlassRect(bool expanded, in FishFinderSettings finder)
+        private void StandDown()
         {
-            if (!expanded && HelmOverlayHost.TryDashCard(out Rect dash, out HelmFit fit)
-                          && HelmInstrumentMountLayout.TryBrowSounderRect(in fit, dash, out Rect mount))
-            {
-                FlushMounted = true;
-                return mount;
-            }
-            FlushMounted = false;
-            Rect card = FishFinderOverlayLayout.CardRect(expanded, in finder,
-                                                         Screen.width, Screen.height);
-            // Keep the expanded glass out from under the always-on band (S4.5) — see
-            // SounderOverlayHost for the reasoning. Slides down before it shrinks; a portrait rig is
-            // never distorted, only made smaller if there is genuinely no room.
-            return HudBandLayout.FitBelowBand(card, Screen.width, Screen.height,
-                                              HudBandLayout.ReservedTopPx());
+            Showing = false;
+            _wasExpanded = false;
+            if (_cardGo.activeSelf) _cardGo.SetActive(false);
         }
 
         // ---- the fish read (a PURE read of the Core seam) -------------------------------------------
@@ -342,8 +292,8 @@ namespace HiddenHarbours.UI
             // is a scan, so its key is numeric and its cadence is what bounds the cost.)
             if (_painted && _shownMarksRev == _marksRev && state.Equals(_shownState)) return;
 
-            // Always the rig's NATIVE size — the card is a scaled blit of it, never a smaller drawing
-            // (see FishFinderOverlayLayout for why a half-size render breaks the rig's own typography).
+            // Always the rig's NATIVE size — the card is a blit of it, never a smaller drawing (see
+            // FishFinderOverlayLayout for why a half-size render breaks the rig's own typography).
             _surface ??= new DrawSurface(FishRigRender.W, FishRigRender.H);
 
             FishRigRender.Render(_surface, in state, _drawMarks);
@@ -359,19 +309,17 @@ namespace HiddenHarbours.UI
         // ---- pointer + keys ---------------------------------------------------------------------------
 
         /// <summary>
-        /// The selection model (S4.5), identical to the depth sounder's so the brow behaves one way.
-        /// FLUSH: the whole face is one button — click it to EXPAND, and nothing else on it is live, so
-        /// a glance can never be a mis-set RANGE. EXPANDED: the pushers and the glass regions work, and
-        /// a click ANYWHERE outside collapses (click-away, and "click the mount again" wherever the
-        /// owner's dialled card leaves it uncovered). A click inside that lands on no control does
-        /// nothing rather than closing. Esc collapses from anywhere.
+        /// The raised card's pointer (H2), identical to the depth sounder's so the helm behaves one
+        /// way: the pushers and the glass regions work, and a press inside that lands on no control
+        /// does nothing rather than lowering. Esc lowers from anywhere. A press OUTSIDE the card is the
+        /// band's to route while the band is up; with no band it is this card's click-away.
         /// </summary>
         private void ReadPointer(IHelmInstruments instruments, in SounderPrefs prefs,
                                  in DepthSounderSettings sounder, in FishFinderSettings finder,
-                                 Rect card, bool expanded)
+                                 Rect card)
         {
             var kb = Keyboard.current;
-            if (expanded && kb != null && kb.escapeKey.wasPressedThisFrame)
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 HelmInstrumentExpansion.Collapse();
                 return;
@@ -383,20 +331,13 @@ namespace HiddenHarbours.UI
             Vector2 pos = mouse.position.ReadValue();
 
             // A press on ANY window's chrome is that window's business — never this instrument's
-            // expand, collapse-away or controls (2026-08-07 ruling).
+            // controls or click-away (2026-08-07 ruling).
             if (BoatUiWindows.OverAnyChrome(pos)) return;
 
-            bool inCard = card.Contains(pos);
-
-            if (!expanded)
+            if (!card.Contains(pos))
             {
-                if (inCard) HelmInstrumentExpansion.Click(Slot);
-                return;
-            }
-
-            if (!inCard)
-            {
-                HelmInstrumentExpansion.Click(HelmInstrumentSlot.None);   // click-away → collapse
+                if (!HelmOverlayHost.BandUp)
+                    HelmInstrumentExpansion.Click(HelmInstrumentSlot.None);   // click-away → lower
                 return;
             }
 

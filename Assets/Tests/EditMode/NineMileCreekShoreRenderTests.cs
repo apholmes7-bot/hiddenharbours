@@ -33,6 +33,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// capture. Registered in <see cref="SetUp"/>, and put back in <see cref="TearDown"/> because it is a
     /// global.</para>
     ///
+    /// <para><b>NMC H2: the scene stands on G3.</b> The fixture registers G3, the ground the plants read their tide
+    /// off and the sea draws, and scatters the shore and stands the walls on the analytic premise, as the builder
+    /// still does (the shore pass is a later wave's). The frames are aimed off the plan's own coast sectors, so
+    /// they frame G3's waterline where the plan's coast runs.</para>
+    ///
     /// <para><b>⚠ Self-skips without a graphics device</b> — the standing CI law. CI runs Unity on the
     /// Null device, where nothing renders and nothing is proved; a rendering test that asserts anyway
     /// kills the CI editor. A skip here is "NOT VERIFIED", never "passed".</para>
@@ -76,6 +81,7 @@ namespace HiddenHarbours.Tests.EditMode
         const int ShotPx = 1200;
 
         GameObject _terrainGo, _seaGo, _camGo;
+        MainlandTidalTerrain _premise;   // the analytic coast the builder still scatters the shore on (NMC H2)
         Camera _cam;
         RenderTexture _rt;
         ITidalTerrain _previousTerrain;
@@ -98,6 +104,7 @@ namespace HiddenHarbours.Tests.EditMode
                 if (go != null) Object.DestroyImmediate(go);
             _seaGo = _camGo = _terrainGo = null;
             _cam = null;
+            _premise = null;   // its GameObject went with _built
             // ⚠ PUT THE GLOBAL BACK. A resident TidalTerrain accessor pointing at a destroyed component
             // is exactly the "a resident region reds ANOTHER file" hazard, one scope down.
             GameServices.TidalTerrain = _previousTerrain;
@@ -214,9 +221,8 @@ namespace HiddenHarbours.Tests.EditMode
             // NineMileCreekShoreTests.TheCliffWallsResolveIdenticallyTwice, which resolves chunks purely
             // and needs no pixels.
 
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
-            NineMileCreekCliffWalls.Build(terrain);
-            NineMileCreekShorePainter.Paint(terrain);
+            NineMileCreekCliffWalls.Build(_premise);
+            NineMileCreekShorePainter.Paint(_premise);
             Remember(NineMileCreekCliffWalls.RootName);
             Remember(NineMileCreekShorePainter.RootName);
 
@@ -236,11 +242,17 @@ namespace HiddenHarbours.Tests.EditMode
 
         void BuildTheShore()
         {
-            // 1. The terrain, configured exactly as the builder configures it — and REGISTERED BY HAND.
+            // 1. The terrain, as the builder lays it — and REGISTERED BY HAND. Since NMC H2 that is two things: the
+            //    scene's own ground, G3, which the plants read their tide off and the sea draws; and the analytic
+            //    premise the builder still scatters the shore and stands the walls on, kept inactive and off the
+            //    services the way the builder keeps it.
             _terrainGo = new GameObject("TidalTerrain");
-            var terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
-            GameServices.TidalTerrain = terrain;
+            var terrain = NineMileCreekLiveGround.Register(_terrainGo);
+            var premiseGo = new GameObject("NMC analytic premise (test)");
+            premiseGo.SetActive(false);
+            _built.Add(premiseGo);
+            _premise = premiseGo.AddComponent<MainlandTidalTerrain>();
+            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(_premise);
 
             // 2. The painted ground (#527), through the builder's OWN one-call helper.
             //
@@ -286,13 +298,14 @@ namespace HiddenHarbours.Tests.EditMode
                     NineMileCreekBuilder.NineMileCreekHeightResolution,
                     NineMileCreekBuilder.NineMileCreekHeightMin,
                     NineMileCreekBuilder.NineMileCreekHeightMax,
-                    terrain.MaxShoreGradient());
+                    _premise.MaxShoreGradient());
+                NineMileCreekLiveGround.DrawUnder(_seaGo, terrain);   // the sea draws G3, as the builder wires it
                 _seaGo.SetActive(true);
             }
 
-            // 4. The pass under test.
-            NineMileCreekCliffWalls.Build(terrain);
-            NineMileCreekShorePainter.Paint(terrain);
+            // 4. The pass under test, on the premise the builder hands it.
+            NineMileCreekCliffWalls.Build(_premise);
+            NineMileCreekShorePainter.Paint(_premise);
             Remember(NineMileCreekCliffWalls.RootName);
             Remember(NineMileCreekShorePainter.RootName);
 

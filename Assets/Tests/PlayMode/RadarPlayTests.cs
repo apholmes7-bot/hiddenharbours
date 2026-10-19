@@ -11,7 +11,7 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
     /// On-water integration for the ADR 0025 S5 radar: fit → mount → sweep, on the two hulls that carry
-    /// a brow radar station. This is the half EditMode structurally cannot see — the equipment gate
+    /// a radar station. This is the half EditMode structurally cannot see — the equipment gate
     /// flipping with no rebuild, the self-installing host actually drawing, the Core seam being read
     /// through <see cref="GameServices"/> rather than through a test double wired straight in, and the
     /// preferences surviving the round trip.
@@ -227,6 +227,17 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = 0; i < 600 && Host.RepaintCount == was; i++) yield return null;
         }
 
+        /// <summary>Raise the scope's card and let it raster (H2). Unraised, the housing in the band is
+        /// the whole presentation — nothing sweeps, asks the seam for contacts or rasters — so every probe
+        /// of the raster reads a raised card. One frame to raise, one to paint.</summary>
+        private static IEnumerator Raise()
+        {
+            if (!Host.Expanded) HelmInstrumentExpansion.Click(HelmInstrumentSlot.Radar);
+            yield return null;
+            yield return null;
+            Assert.IsTrue(Host.Expanded, "premise: the scope's card is raised");
+        }
+
         private static void Store(RadarPrefs p)
             => InstrumentLocker.SetRadarPrefs(GameServices.Save.Current,
                                               GameServices.HelmInstruments.HullId, in p);
@@ -244,14 +255,10 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.IsTrue(Host.Showing, "the fit resolves fresh every frame — no rebuild, no reload");
-            Assert.Greater(Host.RepaintCount, 0, "…and it has actually rastered something");
+            Assert.IsFalse(Host.Expanded, "…as its housing in the band (H2), until it is raised");
 
-            // Flush-mounting is "iff there is a dash to mount IN" — asserted as that relationship rather
-            // than as a bare true, because whether this harness brings a helm dash up is the dash host's
-            // business, not the radar's. The dome-compass test below is the case that matters.
-            bool dashUp = HelmOverlayHost.TryDashCard(out _, out _);
-            Assert.AreEqual(dashUp, Host.FlushMounted,
-                            "flush in the brow whenever a dash is published (S4.5), its own card otherwise");
+            yield return Raise();
+            Assert.Greater(Host.RepaintCount, 0, "…and raised, it has actually rastered something");
         }
 
         [UnityTest]
@@ -259,7 +266,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return Aboard("boat.cape", ConsoleRigKind.Cape, fitRadar: true);
             Assert.IsTrue(Host.Showing);
-            Assert.AreEqual(HelmOverlayHost.TryDashCard(out _, out _), Host.FlushMounted);
+            Assert.IsFalse(Host.Expanded, "…as its housing in the band, as on the Novi");
 
             TearDown();
             SetUp();
@@ -269,22 +276,10 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator ADomeCompassTakesTheStation_SoTheScopeHasNoFlushMountButStillOpens()
-        {
-            // The one shipped case where a fitted instrument legitimately has nowhere to sit flush.
-            yield return Aboard("boat.novi_dome", ConsoleRigKind.Novi, fitRadar: true,
-                                compass: CompassMount.Dome);
-            Assert.IsTrue(Host.Showing, "the set is fitted and must still be usable");
-            Assert.IsFalse(Host.FlushMounted,
-                           "…but the dome binnacle owns the centre brow station (noviRig.js:453)");
-        }
-
-        // ---- the differential probes ----------------------------------------------------------------
-
-        [UnityTest]
         public IEnumerator TransmitReachesTheRaster_AndSoDoesStandby()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
 
             Store(Stored().WithMode(RadarMode.HeadUp));
             yield return null; yield return null;
@@ -301,6 +296,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator NightAndOrientationAndRangeAllReachTheRaster()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
 
             Assert.IsFalse(Host.NightShown, "noon, no override — the day phosphor");
             Store(Stored().WithNight(true));
@@ -325,6 +321,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TheSeaStateReachesTheGlass_WhichIsTheWeathersOnlyMarkOnIt()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
             Assert.AreEqual(0f, Host.SeaClutterShown, 1e-4f, "flat calm speckles nothing");
 
             _env.Sea01 = 1f;
@@ -345,6 +342,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator ContactsOnTheCoreSeamAppearOnTheGlass_AtTheRightBearingAndRange()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
             Store(Stored().WithMode(RadarMode.NorthUp));
             yield return null; yield return null;
 
@@ -373,6 +371,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator AContactBeyondTheRangeIsNotOnTheGlass_UntilYouRangeOut()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
             RadarSettings cfg = Cfg;
             Store(new RadarPrefs(false, RadarMode.NorthUp, 0));      // the closest rung: 0.05 NM ≈ 93 m
             yield return null; yield return null;
@@ -394,6 +393,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // comes from the terrain rather than from the seam so the picture is still honest.
             GameServices.RadarContacts = null;
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
 
             Assert.IsTrue(Host.Showing);
             Assert.Greater(Host.RepaintCount, 0);
@@ -408,6 +408,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TheSweepIsRateCapped_AndTheCoastIsNotRescannedPerRepaint()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
             Store(Stored().WithMode(RadarMode.HeadUp));
             yield return null; yield return null;
 
@@ -438,6 +439,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // re-measure and the scope genuinely has a new picture to draw. The claim is that removing
             // the SWEEP removes the dominant source of change — and that neither state is per-frame.
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
 
             Store(Stored().WithMode(RadarMode.HeadUp));
             yield return null; yield return null;
@@ -463,6 +465,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator PreferencesArePerHull_AndSurviveSteppingOffAndBackOn()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
+            yield return Raise();
             Store(new RadarPrefs(true, RadarMode.NorthUp, 4));
             yield return null; yield return null;
             Assert.IsTrue(Host.NightShown);
@@ -577,12 +580,11 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator OnlyOneInstrumentIsEverExpanded()
         {
             yield return Aboard("boat.novi", ConsoleRigKind.Novi, fitRadar: true);
-            Assert.IsFalse(Host.Expanded, "flush is the default (S4.5)");
+            Assert.IsFalse(Host.Expanded, "a housing in the band is the default (H2)");
 
             HelmInstrumentExpansion.Click(HelmInstrumentSlot.Radar);
             yield return null;
             Assert.IsTrue(Host.Expanded);
-            Assert.IsFalse(Host.FlushMounted, "expanded is its own card, not the brow mount");
 
             HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);
             yield return null;

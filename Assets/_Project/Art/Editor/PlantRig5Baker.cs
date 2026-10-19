@@ -12,6 +12,8 @@ namespace HiddenHarbours.Art.Editor
         public const string Source = "docs/art/rigs/plants";
         public const string Destination = "Assets/_Project/Art/Foliage/Plants5";
         public const string DefFolder = "Assets/_Project/Data/Plants5";
+        // The importer's cap. A larger page would be downscaled, which moves every cell's pixels, so Import refuses it.
+        public const int MaxPageSize = 2048;
 
         [Serializable] public sealed class Catalog { public int ppu; public Species[] species; }
         [Serializable] public sealed class Species
@@ -60,7 +62,7 @@ namespace HiddenHarbours.Art.Editor
                 def.Pages = new PlantSheetPage[sp.pages.Length];
                 for (int p = 0; p < sp.pages.Length; p++)
                 {
-                    if (sp.pages[p].w > 2048 || sp.pages[p].h > 2048) throw new InvalidOperationException("Plant atlas too large");
+                    if (sp.pages[p].w > MaxPageSize || sp.pages[p].h > MaxPageSize) throw new InvalidOperationException("Plant atlas too large");
                     def.Pages[p] = new PlantSheetPage { Albedo = Load(sp.key, p, "unlit", sp.pages[p]),
                         Normal = Load(sp.key, p, "normal", sp.pages[p]), Light = Load(sp.key, p, "light", sp.pages[p]),
                         Detail = Load(sp.key, p, "detail", sp.pages[p]) };
@@ -110,12 +112,25 @@ namespace HiddenHarbours.Art.Editor
             importer.sRGBTexture = channel == "unlit"; importer.mipmapEnabled = false;
             importer.filterMode = FilterMode.Point; importer.wrapMode = TextureWrapMode.Clamp;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
-            importer.npotScale = TextureImporterNPOTScale.None; importer.maxTextureSize = 2048;
+            importer.npotScale = TextureImporterNPOTScale.None; importer.maxTextureSize = MaxPageSize;
             importer.alphaIsTransparency = false; importer.isReadable = false;
+            // The detail map's part moves from b to r on every platform, so the shader reads .r whatever the format.
+            importer.swizzleR = channel == "detail" ? TextureImporterSwizzle.B : TextureImporterSwizzle.R;
+            importer.swizzleG = TextureImporterSwizzle.G; importer.swizzleB = TextureImporterSwizzle.B; importer.swizzleA = TextureImporterSwizzle.A;
+            // DefaultTexturePlatform stays Uncompressed (RGBA32, the exact pixels) for every platform without an
+            // override. Standalone names each kind's format instead of trusting Automatic, as ADR 0046 does for R16.
+            importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings { name = "Standalone", overridden = true,
+                maxTextureSize = MaxPageSize, textureCompression = TextureImporterCompression.Uncompressed, format = StandaloneFormat(channel) });
             importer.SaveAndReimport();
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
             if (tex == null || tex.width != spec.w || tex.height != spec.h) throw new InvalidOperationException("Plant map size changed " + path);
             return tex;
         }
+        // The narrowest uncompressed format that keeps every channel HiddenHarboursPlant.shader reads, byte for byte
+        // (art bible §9.2: Compression None). It reads all of unlit (rgba) and normal (rgb); r (sky) and g (through)
+        // of light, never b (height); and only the part of detail, which the swizzle above has moved to r.
+        // Block formats need whole 4x4 blocks and change pixels: BC7 moved a quarter of the drawn albedo texels.
+        static TextureImporterFormat StandaloneFormat(string channel) =>
+            channel == "light" ? TextureImporterFormat.RG16 : channel == "detail" ? TextureImporterFormat.R8 : TextureImporterFormat.RGBA32;
     }
 }

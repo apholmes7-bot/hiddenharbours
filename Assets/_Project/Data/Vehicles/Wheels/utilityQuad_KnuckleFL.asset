@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-682422957267289392
+--- !u!43 &-6891175882356038341
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,23 +192,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
   Id: vehicleprop.utility_quad_knuckle_fl
   SourceRigPath: docs/art/rigs/atv-pack/atvIsoRig.js
-  SourceFaceBuilder: build(AtvIso.resolve({body:'quad'}))
-  Mesh: {fileID: -682422957267289392}
+  SourceFaceBuilder: build(AtvIso.resolve({body:'quad',paint:'sage'}))
+  Mesh: {fileID: -6891175882356038341}
   FixedMesh: {fileID: 0}
   Ramps:
   - Colors:
     - serializedVersion: 2
-      rgba: 4279375175
+      rgba: 4281746747
     - serializedVersion: 2
-      rgba: 4279705185
+      rgba: 4282603338
     - serializedVersion: 2
-      rgba: 4280232320
+      rgba: 4283525212
     - serializedVersion: 2
-      rgba: 4280824985
+      rgba: 4284710000
     - serializedVersion: 2
-      rgba: 4281615537
+      rgba: 4285960838
     - serializedVersion: 2
-      rgba: 4282735557
+      rgba: 4287539357
     Offset: 0
   - Colors:
     - serializedVersion: 2

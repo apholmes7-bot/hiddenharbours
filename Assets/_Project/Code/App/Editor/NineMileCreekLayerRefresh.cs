@@ -168,38 +168,36 @@ namespace HiddenHarbours.App.Editor
 
         public static T WithPlanGround<T>(Func<ITidalTerrain, T> body)
         {
-            // Inactive: never publishes GameServices.TidalTerrain. No asset or scene serialization.
-            var probe = new GameObject("N1 authored ground probe") { hideFlags = HideFlags.HideAndDontSave };
-            probe.SetActive(false);
-            try
-            {
-                var ground = probe.AddComponent<MainlandTidalTerrain>();
-                NineMileCreekBuilder.ConfigureNineMileCreekTerrain(ground);
-                return body(ground);
-            }
-            finally { Object.DestroyImmediate(probe); }
+            // The G3 ground (NMC H2), decoded from its committed height: never publishes
+            // GameServices.TidalTerrain. No asset or scene serialization.
+            return body(NineMileCreekGround.Load());
         }
 
         [MenuItem("Hidden Harbours/Nine Mile Creek Layers/Write patches (dry run)")]
         public static void DryRun() => Run(false);
         [MenuItem("Hidden Harbours/Nine Mile Creek Layers/Apply named patches")]
         public static void Apply() => Run(true);
-        public static LayerPatch Run(bool apply)
+        /// <summary>Plans NMC H2's steps, 04 to 09 (NineMileCreekGroundSteps), on the committed scene. 01 is
+        /// in the scene already and 03 is never run again; 02 stays the carried debt it names.</summary>
+        public static List<NineMileCreekGroundSteps.Step> Run(bool apply)
         {
             if (apply)
                 for (int i = 0; i < SceneManager.sceneCount; i++)
                     if (SceneManager.GetSceneAt(i).path == ScenePath)
                         throw new Refusal("NineMileCreek is open. Close it before applying text patches.");
             string before = File.ReadAllText(ScenePath);
-            var patch = WithPlanGround(ground => QuayFace(SceneYaml.Parse(before), ground, new EditorFaceAssets()));
-            string after = patch.ApplyTo(before);
+            var steps = NineMileCreekGroundSteps.PlanAll(before, new NineMileCreekGroundSteps.Inputs(
+                NineMileCreekGround.Load(), new NineMileCreekGroundSteps.EditorBerths()), out string after);
             Directory.CreateDirectory(PatchFolder);
             var utf8 = new UTF8Encoding(false);
-            File.WriteAllText(Path.Combine(PatchFolder, QuayStep + ".patch.yaml"), patch.ToYaml(), utf8);
+            foreach (var step in steps)
+                foreach (var patch in step.Patches)
+                    File.WriteAllText(Path.Combine(PatchFolder, NineMileCreekGroundSteps.PatchFileName(patch)), patch.ToYaml(), utf8);
             File.WriteAllText(Path.Combine(PatchFolder, InteriorStep + ".txt"), InteriorDebt + "\n", utf8);
             if (apply && before != after) File.WriteAllText(ScenePath, after, utf8);
-            Debug.Log($"[NineMileCreekLayerRefresh] {(apply ? "Applied" : "Dry run")}: {patch.Summary()}\n{InteriorStep}: {InteriorDebt}");
-            return patch;
+            Debug.Log($"[NineMileCreekLayerRefresh] {(apply ? "Applied" : "Dry run")}:\n" +
+                      string.Join("\n", steps.Select(s => s.Summary())) + $"\n{InteriorStep}: {InteriorDebt}");
+            return steps;
         }
 
         static bool IsScript(Doc doc, string name) => doc.ClassId == 114 &&

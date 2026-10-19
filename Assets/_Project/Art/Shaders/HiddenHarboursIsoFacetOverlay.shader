@@ -54,6 +54,27 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             float _HullIdFore;
             float _HullIdForeSpan;
 
+            // The figure pixel look (route 1, GameConfig.FigurePixelTarget; IsoFacetFigureTarget): the
+            // figures at one texel per art pixel, and the map from a screen pixel to its texel,
+            // (offset x, offset y, 1/m, m). Both GLOBAL, never material properties. The map is zero for
+            // every camera the look did not run for, and zero returns the pixel untouched.
+            Texture2D<float4> _HHFigureScreenTex;
+            float4 _HHFigurePixelMap;
+
+            // A non-empty texel takes the place of the resolved pixel BEFORE the id test, so the test
+            // keeps it for the overlay whose id it carries and drops it from every other: the
+            // art-pixel image sorts exactly where the full-size one did.
+            float4 HHFigureOver(float4 c, float2 pos)
+            {
+                if (_HHFigurePixelMap.w < 0.5) return c;
+                int2 t = int2(floor((pos - _HHFigurePixelMap.xy) * _HHFigurePixelMap.z));
+                uint w, h;
+                _HHFigureScreenTex.GetDimensions(w, h);
+                if (any(t < 0) || t.x >= (int)w || t.y >= (int)h) return c;
+                float4 f = _HHFigureScreenTex.Load(int3(t, 0));
+                return f.a >= 0.5 / 255.0 ? f : c;
+            }
+
             // True when a resolved alpha is one of THIS hull's ids. Ids are small integers over
             // 255, so the comparison is done in id space with a half-step tolerance — 8-bit alpha
             // rounding must not be able to drop a pixel of the boat.
@@ -88,7 +109,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
 
             float4 frag (Varyings i) : SV_Target
             {
-                float4 c = _HHHullScreenTex.Load(int3(int2(i.positionCS.xy), 0));
+                float4 c = HHFigureOver(_HHHullScreenTex.Load(int3(int2(i.positionCS.xy), 0)), i.positionCS.xy);
                 // Only THIS hull's pixels — either of her ids.
                 clip(HHIsThisHull(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);
@@ -146,6 +167,23 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             float  _HHReflectLit;      // 1 = night light content (rides the post-grade bucket, §11.6)
             float4 _DayNightTint;      // GLOBAL (DayNightController) — the overlay this pass compensates for
 
+            // The figure pixel look's texture and map, restated for this pass (see the in-scene pass).
+            Texture2D<float4> _HHFigureScreenTex;
+            float4 _HHFigurePixelMap;
+
+            // The in-scene pass's figure substitution, restated in this pass's own HLSL block. Same
+            // rule; zero map, untouched pixel.
+            float4 HHFigureOverReflect(float4 c, float2 pos)
+            {
+                if (_HHFigurePixelMap.w < 0.5) return c;
+                int2 t = int2(floor((pos - _HHFigurePixelMap.xy) * _HHFigurePixelMap.z));
+                uint w, h;
+                _HHFigureScreenTex.GetDimensions(w, h);
+                if (any(t < 0) || t.x >= (int)w || t.y >= (int)h) return c;
+                float4 f = _HHFigureScreenTex.Load(int3(t, 0));
+                return f.a >= 0.5 / 255.0 ? f : c;
+            }
+
             // The in-scene pass's membership test, restated in this pass's own HLSL block (the two
             // passes do not share one). Same rule, same tolerance.
             bool HHIsThisHullReflect(float a)
@@ -187,7 +225,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
                 int2 px = int2(i.positionCS.x, 2.0 * i.pivotRow - i.positionCS.y);
                 if (any(px < 0) || any(px >= int2(_ScreenParams.xy))) discard;
 
-                float4 c = _HHHullScreenTex.Load(int3(px, 0));
+                float4 c = HHFigureOverReflect(_HHHullScreenTex.Load(int3(px, 0)), float2(px) + 0.5);
                 // Only THIS hull's pixels — the same either-id filter the in-scene pass uses, for
                 // the same reason: two overlapping hulls must not reflect each other's image, and a
                 // boat must not lose her wheelhouse out of the water the moment anyone boards her.

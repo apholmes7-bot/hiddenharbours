@@ -298,7 +298,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             bool readGround = false;
             Assert.Throws<KeySceneImport.Refusal>(() => KeySceneImport.ImportEastEnd(
-                Encoding.UTF8.GetBytes("{}"), at => { readGround = true; return 0f; }, null, ScriptGuid));
+                Encoding.UTF8.GetBytes("{}"), Encoding.UTF8.GetBytes("{}"), at => { readGround = true; return 0f; }, null, ScriptGuid));
             Assert.IsFalse(readGround);
         }
 
@@ -556,6 +556,100 @@ namespace HiddenHarbours.Tests.EditMode
             Fixture none = Answered(Perched, PerchedAnswer);
             none.HostsTable = null;
             Refuses(none, "no hosts' table");
+        }
+
+        static string Explicit(string piece, string host, string anchor, string extra = "") =>
+            piece.Substring(0, piece.Length - 1) + ", `host`: " + (host == null ? "null" : "`" + host + "`") +
+            ", `anchor`: `" + anchor + "`" + extra + "}";
+
+        [Test]
+        public void ExplicitMounts_ReadMappedIds_NotLegacyWords_AndKeepTheHeightCheck()
+        {
+            string gull = Explicit(Perched, "rock.t_stone@1,2", "top", ", `hostZ`: 1.02");
+            var f = Cove(Stone, gull);
+            f.IdMap = Map("rock.t_stone@1,2", StoneRenamed);
+            var r = Import(f);
+            Assert.AreEqual(StoneRenamed, Row(r, "gull.t_perched").Get("MountHost").Scalar);
+            Assert.AreEqual("top", Row(r, "gull.t_perched").Get("MountAnchor").Scalar);
+            f.Files[CovePath] = f.Files[CovePath].Replace(Perch, "CD may explain the same ids in different words, +1.02");
+            var changedWords = Row(Import(f), "gull.t_perched");
+            Assert.AreEqual(StoneRenamed, changedWords.Get("MountHost").Scalar);
+            Assert.AreEqual("top", changedWords.Get("MountAnchor").Scalar);
+            Assert.AreEqual("1.02", changedWords.Get("Z").Scalar);
+            f.Files[CovePath] = f.Files[CovePath].Replace("+1.02", "+1.20");
+            Refuses(f, "more than 5 cm");
+        }
+
+        [Test]
+        public void ExplicitAnchors_SelectGroundFootWaterDeck_WithoutInventingAHost()
+        {
+            foreach (var pair in new[] { ("ground", "ground"), ("foot", "ground"), ("afloat", "water"), ("deck", "deck") })
+            {
+                var f = Cove(Explicit(Perched, pair.Item1 == "deck" ? "context.wharf" : null, pair.Item1));
+                var row = Row(Import(f), "gull.t_perched");
+                Assert.AreEqual(pair.Item2, row.Get("StandsOn").Scalar);
+                Assert.AreEqual("", row.Get("MountHost").Scalar);
+                Assert.AreEqual("", row.Get("MountAnchor").Scalar);
+            }
+        }
+
+        [Test]
+        public void ExplicitMounts_RefuseMissingForeignOrUnmappedHosts_AndPartialContracts()
+        {
+            Refuses(Cove(Explicit(Perched, "rock.t_absent", "top")), "explicit host is held by no scene");
+            Refuses(Cove(Explicit(Perched, "rock.t_stone@1,2", "top")), "holds a position");
+            Refuses(Cove(Explicit(Perched, null, "top")), "needs a host id");
+            Refuses(Cove(Explicit(Perched, "context.wharf", "ground")), "names no host");
+            Refuses(Cove(Explicit(Perched, null, "")), "empty anchor");
+            Refuses(Cove(Explicit(Perched, null, "ground").Replace(", `host`: null", "")), "host");
+            Refuses(Cove(Explicit(Perched, null, "ground").Replace(", `mount`: `" + Perch + "`", "")), "require mount words");
+            var f = Cove(Explicit(Perched, "context.wharf", "deck"));
+            f.Files[CovePath] = f.Files[CovePath].Replace(J("`context`: {`wharf`: {`deck`: 5.35}}"), J("`context`: {}"));
+            Refuses(f, "explicit host is held by no scene");
+        }
+
+        [Test]
+        public void SuppliedHostHeightAndFootAlias_MustAgreeWithTheSource()
+        {
+            Refuses(Cove(Explicit(Perched, null, "ground", ", `hostZ`: 1.03")), "hostZ must equal z");
+            string step = Explicit(Perched, null, "foot", ", `foot`: [2,3], `footAt`: [2,3]");
+            Assert.AreEqual("{x: 2, y: 3}", Row(Import(Cove(step)), "gull.t_perched").Get("Foot").Scalar);
+            Refuses(Cove(step.Replace("`footAt`: [2,3]", "`footAt`: [2,4]")), "footAt must equal foot");
+            Refuses(Cove(step.Replace(", `foot`: [2,3]", "")), "footAt must equal foot");
+        }
+
+        [Test]
+        public void RuledHostSchema_KeepsHeightInData_AfterCheckingSourceHeight()
+        {
+            string gull = Explicit(Perched, null, "ground", ", `hostZ`: 1.02");
+            string own = PerchedAnswer.Replace("`standsOn`: `mount`, `host`: `rock.t_stone@1,2`, `anchor`: `perch`",
+                "`standsOn`: `ground`, `host`: ``, `anchor`: ``");
+            var f = Cove(gull);
+            f.HostsTable = Hosts(own.Substring(0, own.Length - 1) + ", `keepZ`: 1.14}").Replace("key-scene-hosts@1", "key-scene-hosts@2");
+            var r = Import(f);
+            Assert.AreEqual("1.14", Row(r, "gull.t_perched").Get("Z").Scalar);
+            Assert.Contains("ruled: gull.t_perched keeps 1.14 against the file's 1.02", r.Report);
+            f.Files[CovePath] = f.Files[CovePath].Replace("1.02", "1.03").Replace(J("`z`: 1.03"), J("`z`: 1.02"));
+            Refuses(f, "hostZ must equal z");
+            f = Cove(gull); f.HostsTable = Hosts(own.Substring(0, own.Length - 1) + ", `keepZ`: 1.14}");
+            Refuses(f, "new to the importer");
+        }
+
+        [Test]
+        public void SecondIssue_RoutesOnlyTheBaitCompanions_AndNamesTheEastEntry()
+        {
+            var f = Cove(Board, Find.Replace("`dir`: 0", "`dir`: 0, `take`: `with its building`, `with`: `structure.stp_bait_store`, `zPass2`: 0.5"));
+            f.Files[KeySceneImport.IslandFile] = f.Files[KeySceneImport.IslandFile].Replace("keyscene.t_cove", "keyscene.stp_landing")
+                .Replace(J("`id`: `lookpass.t_end`, `box`: [0, 0, 1, 1]"), J("`id`: `lookpass.stp_east_end`, `file`: `" + KeySceneImport.EastEndFile + "`"));
+            f.Files[CovePath] = f.Files[CovePath].Replace("keyscene.t_cove", "keyscene.stp_landing");
+            f.Files[KeySceneImport.LandingFile] = f.Files[CovePath];
+            f.Files.Remove(CovePath);
+            f.Files[KeySceneImport.EastEndFile] = "not read by the nine-scene import";
+            var r = Import(f);
+            Assert.AreEqual(1, r.Assets.Count);
+            StringAssert.DoesNotContain("prop.t_find", r.Assets["KeyScene_stp_landing.asset"]);
+            Assert.IsTrue(r.Report.Any(s => s.Contains("prop.t_find from the Landing to keyscene.stp_east_end")));
+            Assert.IsTrue(r.Report.Any(s => s.Contains("lookpass.stp_east_end")));
         }
 
         [Test]

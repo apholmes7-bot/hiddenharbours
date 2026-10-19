@@ -15,8 +15,9 @@ MonoBehaviour:
   Id: keyscene.stp_east_end
   DisplayName: St Peters east end
   RegionId: region.st_peters
-  Source: HH-st-peters-phase-a-art-2026-10-02/east-end/eastEndPieces.json; sha256
-    e7cd4023be9c6819a7c1d66143ba76dfa47ad5f13ba4f8e12c90c0080c160f9a
+  Source: HH-st-peters-one-scene-package-2026-10-07, scenes/lookpass.stp_east_end/scene.json,
+    12695 bytes, sha256 ff311bcbcdad346c0b92795a5e28b38297404565015be2f1659259613738bf43;
+    scenes/keyscene.stp_landing/scene.json, 25754 bytes, sha256 2d8bde76678511edfa188d3d5df58410dae14da69c862e1f7121a19c6778bb09
   Placed: 1
   Pieces:
   - Id: structure.stp_net_loft

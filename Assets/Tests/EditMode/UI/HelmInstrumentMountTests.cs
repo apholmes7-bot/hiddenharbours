@@ -11,8 +11,8 @@ namespace HiddenHarbours.Tests.UI.EditMode
     /// selectable, which UI can be expanded".
     ///
     /// <para>Two halves, both pure: <see cref="HelmInstrumentExpansion"/>'s state machine (one open at
-    /// a time, nothing persisted) and <see cref="HelmInstrumentMountLayout"/>'s placement of the glass
-    /// in the console's own authored cutout.</para>
+    /// a time, nothing persisted) and which authored box a fit means. The glass's flush placement in
+    /// that box retired with the dash card (H2): an unraised instrument is a plate in the band.</para>
     /// </summary>
     public class HelmInstrumentMountTests
     {
@@ -195,91 +195,5 @@ namespace HiddenHarbours.Tests.UI.EditMode
                                   out _, out _, out _, out _), $"compass {m} must not blank the sounder");
         }
 
-        [Test]
-        public void TheMountFollowsTheDevBrowCycle()
-        {
-            // #409's K-cycle steps the brow bare → depth → fish on the boat under you. Each step has
-            // to land somewhere real (or nowhere at all, for bare) with no second table to keep in
-            // step — the mount is a pure function of the same fit the chrome draws its bezel from.
-            Rect card = new Rect(0f, 0f, 600f, 548f);
-            var fit0 = Fit(ConsoleRigKind.Novi, SounderKind.None);
-            var fit1 = Fit(ConsoleRigKind.Novi, SounderKind.Depth);
-            var fit2 = Fit(ConsoleRigKind.Novi, SounderKind.Fish);
-
-            Assert.IsFalse(HelmInstrumentMountLayout.TryBrowSounderRect(fit0, card, out _));
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowSounderRect(fit1, card, out Rect depth));
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowSounderRect(fit2, card, out Rect fish));
-            Assert.That(fish, Is.Not.EqualTo(depth), "the portrait finder does not sit where the sounder did");
-            Assert.That(fish.height, Is.GreaterThan(depth.height));
-        }
-
-        // ---- the letterbox ---------------------------------------------------------------------------
-
-        [Test]
-        public void TheGlassFitsInsideItsBox_CentredAndUndistorted()
-        {
-            // 1:1 card so the numbers are readable; the flip from card space (y down) to screen space
-            // (y up) is the part that is easy to get backwards.
-            var card = new Rect(100f, 50f, HelmDashGeometry.W, HelmDashGeometry.H);
-            var fit = Fit(ConsoleRigKind.Console, SounderKind.Depth);
-            HelmDashGeometry.TryBrowSounderBox(fit, out int bx, out int by, out int bw, out int bh);
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowSounderRect(fit, card, out Rect m));
-
-            float boxLeft = card.xMin + bx, boxBottom = card.yMax - (by + bh);
-            Assert.That(m.xMin, Is.GreaterThanOrEqualTo(boxLeft - 0.01f));
-            Assert.That(m.xMax, Is.LessThanOrEqualTo(boxLeft + bw + 0.01f));
-            Assert.That(m.yMin, Is.GreaterThanOrEqualTo(boxBottom - 0.01f));
-            Assert.That(m.yMax, Is.LessThanOrEqualTo(boxBottom + bh + 0.01f));
-
-            Assert.That(m.center.x, Is.EqualTo(boxLeft + bw * 0.5f).Within(0.01f), "centred in x");
-            Assert.That(m.center.y, Is.EqualTo(boxBottom + bh * 0.5f).Within(0.01f), "centred in y");
-            Assert.That(m.width / m.height,
-                        Is.EqualTo(DepthRigRender.W / (float)DepthRigRender.H).Within(1e-4f),
-                        "the rig's aspect is never stretched to fill a hole");
-        }
-
-        [Test]
-        public void TheDepthSounderNearlyFillsBothAuthoredCutouts()
-        {
-            // Not decoration: the depth rig (480×330, 1.4545) and the two authored mounts were drawn
-            // for each other, so a big letterbox gap here means the wrong box has been picked. The
-            // portrait finder in a landscape skiff hole legitimately does NOT fill it, which is why
-            // this only claims it of the sounder.
-            var card = new Rect(0f, 0f, HelmDashGeometry.W, HelmDashGeometry.H);
-            var skiff = Fit(ConsoleRigKind.Console, SounderKind.Depth, CompassMount.Dome);
-            HelmDashGeometry.TryBrowSounderBox(skiff, out _, out _, out int sw, out int sh);
-            HelmInstrumentMountLayout.TryBrowSounderRect(skiff, card, out Rect sm);
-            Assert.That(sm.width * sm.height / (sw * (float)sh), Is.GreaterThan(0.95f),
-                        "the skiff cutout");
-
-            var pilot = new Rect(0f, 0f, HelmDashGeometry.PilotW, HelmDashGeometry.PilotH);
-            var novi = Fit(ConsoleRigKind.Novi, SounderKind.Depth);
-            HelmDashGeometry.TryBrowSounderBox(novi, out _, out _, out int pw, out int ph);
-            HelmInstrumentMountLayout.TryBrowSounderRect(novi, pilot, out Rect pm);
-            Assert.That(pm.width * pm.height / (pw * (float)ph), Is.GreaterThan(0.95f),
-                        "the pilothouse brow slot");
-        }
-
-        [Test]
-        public void TheMountRidesTheDashCardsScale()
-        {
-            // The flush face is the dash's own texture rect scaled — so focusing the dash, or the
-            // owner re-dialling DashSmallScale, moves and grows the instrument with it for free.
-            var fit = Fit(ConsoleRigKind.Cape, SounderKind.Fish);
-            var half = new Rect(0f, 0f, HelmDashGeometry.PilotW * 0.5f, HelmDashGeometry.PilotH * 0.5f);
-            var full = new Rect(0f, 0f, HelmDashGeometry.PilotW, HelmDashGeometry.PilotH);
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowSounderRect(fit, half, out Rect a));
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowSounderRect(fit, full, out Rect b));
-            Assert.That(b.width, Is.EqualTo(a.width * 2f).Within(0.01f));
-            Assert.That(b.height, Is.EqualTo(a.height * 2f).Within(0.01f));
-        }
-
-        [Test]
-        public void ACollapsedCardMountsNothing()
-        {
-            var fit = Fit(ConsoleRigKind.Novi, SounderKind.Depth);
-            Assert.IsFalse(HelmInstrumentMountLayout.TryBrowSounderRect(fit, new Rect(0, 0, 0, 0), out _));
-            Assert.IsFalse(HelmInstrumentMountLayout.TryBrowSounderRect(fit, new Rect(0, 0, 600, 0), out _));
-        }
     }
 }

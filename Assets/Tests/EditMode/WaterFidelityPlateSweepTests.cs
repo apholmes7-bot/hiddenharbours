@@ -1381,7 +1381,7 @@ namespace HiddenHarbours.Tests.EditMode
                     stage = BuildNineMileCreek();
                     stage.Name = cells[i].key;
                     stage.Aim = cells[i].key == "nmc-steep" ? AimAtTheSteepestBreak(stage)
-                                                            : AimAtTheLongestSurfRun(stage);
+                                                            : AimAtTheLongestSurfRun(stage, liveSurf: true);
                 }
                 BuildCamera();
                 _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
@@ -1738,7 +1738,7 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     stage = BuildNineMileCreek();
                     stage.Name = "nmc-sand";
-                    stage.Aim = AimAtTheLongestSurfRun(stage);
+                    stage.Aim = AimAtTheLongestSurfRun(stage, liveSurf: true);
                 }
                 BuildCamera();
                 _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
@@ -2327,8 +2327,8 @@ namespace HiddenHarbours.Tests.EditMode
             WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in trains));
             WaveFieldBridge.PublishFetchGlobals(GameServices.WaveFetch, _env.Wind);
             WaveFieldBridge.PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch, GameServices.Breakers);
-            contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch),
-                                             GameServices.Breakers);
+            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch);
+            contour = BreakerMath.ContourFor(trains.Dominant, leeEnvelope, GameServices.Breakers);
 
             // The hour, published the way ADR 0013's controller publishes it (it does not tick in edit mode).
             // Moonless: the moon needs a clock for its phase, and a plate is an instant.
@@ -3528,12 +3528,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var terrainGo = new GameObject("TidalTerrain");
             _built.Add(terrainGo);
-            var terrain = terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
+            // The scene's own ground (NMC H2): G3, the map the region's sea draws and its hulls sail on.
             // ⚠ Registered by hand: the terrain components are not [ExecuteAlways], so OnEnable never fires
             // in edit mode and the accessor stays null — whereupon WaterSurface bakes a flat height field
             // and the sea draws opaque over everything. Cost the #680 pass a capture.
-            GameServices.TidalTerrain = terrain;
+            var terrain = NineMileCreekLiveGround.Register(terrainGo);
 
             var region = AssetDatabase.LoadAssetAtPath<RegionDef>(WaterSceneTemplate.RegionAssetPathFor("NineMileCreek"));
             Assert.IsNotNull(region, "Data/Regions/NineMileCreek.asset must exist to size the ground");
@@ -3546,7 +3545,8 @@ namespace HiddenHarbours.Tests.EditMode
                                                 NineMileCreekBuilder.NineMileCreekHeightResolution,
                                                 NineMileCreekBuilder.NineMileCreekHeightMin,
                                                 NineMileCreekBuilder.NineMileCreekHeightMax,
-                                                terrain.MaxShoreGradient());
+                                                NineMileCreekLiveGround.PremiseShoreGradient());
+            NineMileCreekLiveGround.DrawUnder(sea, terrain);   // the sea draws G3, as the builder wires it
             return new Stage
             {
                 Terrain = terrain, SeaGo = sea,
@@ -3682,8 +3682,8 @@ namespace HiddenHarbours.Tests.EditMode
         static BreakerContour ReferenceContour(out WaveTrains trains)
         {
             trains = WaveMath.TrainsFrom(WindFor(Weather.Blow), SeaStateFor(Weather.Blow), GameServices.WaveField);
-            return BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch),
-                                          GameServices.Breakers);
+            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch);
+            return BreakerMath.ContourFor(trains.Dominant, leeEnvelope, GameServices.Breakers);
         }
 
         /// <summary>#680's plunge scan: the highest surf-similarity number on the break contour — Nine Mile
@@ -3728,9 +3728,17 @@ namespace HiddenHarbours.Tests.EditMode
             return bestAt;
         }
 
+        /// <summary>W4-3: the fetch below which <see cref="AimAtTheLongestSurfRun"/> skips a break point for a
+        /// case that reads the live surf. For the Blow's wind the longest runs sit either side of a wide gap:
+        /// fetch 0.039–0.067 on the lee shoals (dominant factor 0.013 at most) and 0.349 and up (factor 0.28 and
+        /// up), so any threshold from 0.1 to 0.3 picks the same aim.</summary>
+        const float NearZeroFetch01 = 0.1f;
+
         /// <summary>#680's surf-zone finder: the point on the break contour from which the surf RUNS
-        /// furthest shoreward — the widest spilling beach on the coast.</summary>
-        Vector2 AimAtTheLongestSurfRun(Stage stage)
+        /// furthest shoreward — the widest spilling beach on the coast. A case that reads the LIVE surf passes
+        /// <paramref name="liveSurf"/>: the lee law (W4-3) grows no long train where the Blow's wind has next
+        /// to no fetch, so a break point there breaks next to no surf, and the finder skips it.</summary>
+        Vector2 AimAtTheLongestSurfRun(Stage stage, bool liveSurf = false)
         {
             BreakerContour contour = ReferenceContour(out _);
             Assert.IsTrue(contour.Breaks, "the reference sea must break somewhere");
@@ -3755,6 +3763,8 @@ namespace HiddenHarbours.Tests.EditMode
                 if (BreakerSurfRenderTests.InsideTheHarbour(p)) continue;
                 float depth = level - stage.Terrain.ElevationAt(p);
                 if (depth <= 0f || Mathf.Abs(depth - contour.BreakDepths.x) > 0.06f) continue;
+                if (liveSurf && WaveFetch.Fetch01(p, WindFor(Weather.Blow), level, stage.Terrain, GameServices.WaveFetch) < NearZeroFetch01)
+                    continue;
                 atBreakDepth++;
 
                 float run = 0f;

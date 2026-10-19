@@ -436,60 +436,6 @@ namespace HiddenHarbours.Tests.UI.EditMode
             }
         }
 
-        // ---- the mount ---------------------------------------------------------------------------------
-
-        [Test]
-        public void BrowRadarRect_MountsPortraitInTheCentreSlot_OnAPilothouseOnly()
-        {
-            var card = new Rect(100f, 50f, 600f, 548f);      // the pilothouse canvas at 1×
-
-            var novi = new HelmFit(ConsoleRigKind.Novi, SounderKind.Depth, CompassMount.None, true, false);
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowRadarRect(in novi, card, out Rect mount));
-            Assert.Greater(mount.height, mount.width, "the radar is a PORTRAIT instrument");
-            Assert.AreEqual((float)RadarRigRender.W / RadarRigRender.H, mount.width / mount.height, 0.01f,
-                            "letterboxed, never stretched");
-
-            var cape = new HelmFit(ConsoleRigKind.Cape, SounderKind.Depth, CompassMount.None, true, false);
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowRadarRect(in cape, card, out _));
-
-            var skiff = new HelmFit(ConsoleRigKind.Console, SounderKind.Depth, CompassMount.None, true, false);
-            Assert.IsFalse(HelmInstrumentMountLayout.TryBrowRadarRect(in skiff, card, out _),
-                           "a centre-console skiff has no pilothouse brow");
-
-            var unfitted = new HelmFit(ConsoleRigKind.Novi, SounderKind.Depth, CompassMount.None, false, false);
-            Assert.IsFalse(HelmInstrumentMountLayout.TryBrowRadarRect(in unfitted, card, out _),
-                           "no radar, no mount");
-        }
-
-        [Test]
-        public void BrowRadarRect_IsFalseUnderADomeCompass_BecauseTheDomeTAKESThatStation()
-        {
-            // noviRig.js:453 skips the CENTRE brow slot when a dome is fitted, and the centre slot IS the
-            // radar's. Painting a scope over the binnacle would be the dash and the instrument disagreeing.
-            var card = new Rect(100f, 50f, 600f, 548f);
-            var dome = new HelmFit(ConsoleRigKind.Novi, SounderKind.Depth, CompassMount.Dome, true, false);
-            Assert.IsFalse(HelmInstrumentMountLayout.TryBrowRadarRect(in dome, card, out _));
-
-            var flush = new HelmFit(ConsoleRigKind.Novi, SounderKind.Depth, CompassMount.Flush, true, false);
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowRadarRect(in flush, card, out _),
-                          "…but the FLUSH unit sinks into the face and the brow keeps all three");
-        }
-
-        [Test]
-        public void BrowRadarRect_DoesNotCollideWithTheSounderOrTheGpsMount()
-        {
-            var card = new Rect(0f, 0f, 600f, 548f);
-            var fit = new HelmFit(ConsoleRigKind.Novi, SounderKind.Fish, CompassMount.Flush, true, true);
-
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowRadarRect(in fit, card, out Rect radar));
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowSounderRect(in fit, card, out Rect sounder));
-            Assert.IsTrue(HelmInstrumentMountLayout.TryBrowGpsRect(in fit, card, out Rect gps));
-
-            Assert.IsFalse(radar.Overlaps(sounder), "three instruments, three stations");
-            Assert.IsFalse(radar.Overlaps(gps));
-            Assert.IsFalse(sounder.Overlaps(gps));
-        }
-
         // ---- the range ladder is the game's, not the rig's --------------------------------------------
 
         [Test]

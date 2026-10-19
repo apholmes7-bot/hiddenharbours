@@ -28,11 +28,12 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>⚠ <c>aboard == false</c> is NOT "ashore".</b> The rider also says false in a cab and at
     /// a helm that hides its pilot. So the ashore figure draws only while the rider says her body is
-    /// shown on the root (<see cref="DeckRiderVisual.BodyShownOnRoot"/>), no clip is playing and she is
-    /// dry (<see cref="WhyNotShownAshore"/>). Any clip (the boarding vault, the ladders, the haul, the
-    /// chop, the bench, sleep, swim, the open machines' Drive) and wading hand the draw back to the
-    /// sprite for their length: the mesh follows stance and gait only and has no pose for any of
-    /// them. The held item stays at the sprite's hand.</para>
+    /// shown on the root (<see cref="DeckRiderVisual.BodyShownOnRoot"/>), no clip is playing, nothing has
+    /// claimed her skin and she is dry (<see cref="WhyNotShownAshore"/>). Any clip (the boarding vault,
+    /// the ladders, the haul, the chop, the bench, sleep, swim, the open machines' Drive), a claim on her
+    /// skin (<see cref="IsoCharacterSprite.IsSuspended"/>: the fight, the haul; aboard as well) and
+    /// wading hand the draw back to the sprite for their length: the mesh follows stance and gait only
+    /// and has no pose for any of them. The held item stays at the sprite's hand.</para>
     ///
     /// <para><b>⚠ Her body is hidden with <see cref="Renderer.forceRenderingOff"/>, never
     /// <c>enabled</c>.</b> <c>enabled</c> is the rider's stand-down's alone, and the sprite shadow and
@@ -134,6 +135,13 @@ namespace HiddenHarbours.Player
         private CharacterClipPlayer _clipPlayer;
         private PlayerWalkController _walk;
 
+        // Character PR 2b: her look (ADR 0051). The body her recipe resolved to and the colours of each
+        // of its materials, or both null for the body as baked; the builder's tables, loaded once.
+        private CharacterSkinDef _lookSkin;
+        private Color32[][] _lookColours;
+        private CharacterBuilderDef _builder;
+        private bool _builderLoaded;
+
         // ---------------------------------------------------------------- published
 
         /// <inheritdoc/>
@@ -147,7 +155,8 @@ namespace HiddenHarbours.Player
         /// <summary>The facet hull she is riding, or null.</summary>
         public IsoFacetHullRenderer Hull => _hull;
 
-        /// <summary>The def actually in use aboard — the serialized one, or the character art def's.</summary>
+        /// <summary>The def actually in use aboard — the serialized one, her recipe's, or the character
+        /// art def's.</summary>
         public CharacterSkinDef Skin => _configured;
 
         /// <summary>The ABOARD figure's clip key drawn this frame, or null. Ashore, read
@@ -221,10 +230,15 @@ namespace HiddenHarbours.Player
             // Register with the rider rather than have the rider find us: the rider owns the sprite
             // and must keep working with no figure at all, so the dependency only ever points this way.
             if (_rider != null) _rider.SetFigureOverride(this);
+            EventBus.Subscribe<PlayerAppearanceChanged>(OnAppearanceChanged);
+            EventBus.Subscribe<PlayerAppearancePreviewRequested>(OnAppearancePreviewRequested);
+            ApplyLook(GameServices.Appearance.Showing);
         }
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<PlayerAppearanceChanged>(OnAppearanceChanged);
+            EventBus.Unsubscribe<PlayerAppearancePreviewRequested>(OnAppearancePreviewRequested);
             if (_rider != null) _rider.SetFigureOverride(null);
             DrawsInsteadOfSprite = false;
             NotDrawingReason = "presenter disabled";
@@ -270,6 +284,14 @@ namespace HiddenHarbours.Player
 
             if (config == null) { Stop("no GameConfig"); return; }
             if (!config.MeshCharacter) { Stop("GameConfig.MeshCharacter is off"); return; }
+
+            // Claimed: the fight, the haul or a clip is writing her body sprite, and the rider's child
+            // mirrors it. The mesh has none of those poses, so the sprite shows what it is made to show.
+            if (SkinSuspended(stand))
+            {
+                Stop("her skin is suspended (the fight, the haul, a clip), and the sprite shows what it is made to show");
+                return;
+            }
 
             CharacterSkinDef skin = ResolveSkin(stand);
             if (skin == null) { Stop("no CharacterSkinDef — none set here and none on the art def"); return; }
@@ -364,7 +386,8 @@ namespace HiddenHarbours.Player
                 hasBody: body != null,
                 bodyShownOnRoot: _rider != null && _rider.BodyShownOnRoot,
                 clipPlaying: ClipPlaying(),
-                water: WaterAtFeet());
+                water: WaterAtFeet(),
+                skinSuspended: SkinSuspended(stand));
             if (notShown != null) { StopAshore(notShown); return; }
 
             // Shown ashore on her own feet. An ARRIVAL clears a refusal, so the pool is asked once more.
@@ -449,6 +472,7 @@ namespace HiddenHarbours.Player
             // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are
             // the same number, so this is the aboard rule with the hull taken out.
             float heading = character.HeadingDegrees;
+            heading = FigureHeadingDial.Heading(heading, FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             float yaw = skin.AzimuthCounterClockwise ? -heading : heading;
             _ashoreFigure.SetAshoreYaw(yaw);
             AshoreYawDegrees = yaw;
@@ -468,20 +492,27 @@ namespace HiddenHarbours.Player
             config != null && config.MeshCharacter && config.MeshCharacterAshore;
 
         /// <summary>
-        /// <b>The ashore hand-over rule</b>, as a pure function of what the rider, the clip player and
-        /// the walk controller publish: null when she is SHOWN ASHORE on her own feet and her mesh may
-        /// stand in for her body sprite, else the reason she is not (the owner's ruling of 2026-09-19,
-        /// decision 4, and the NEITHER rule). Static, so EditMode holds it to the rule without a frame.
+        /// <b>The ashore hand-over rule</b>, as a pure function of what the rider, the clip player, her
+        /// skin and the walk controller publish: null when she is SHOWN ASHORE on her own feet and her
+        /// mesh may stand in for her body sprite, else the reason she is not (the owner's ruling of
+        /// 2026-09-19, decision 4, and the NEITHER rule). Static, so EditMode holds it to the rule
+        /// without a frame.
+        ///
+        /// <para><paramref name="skinSuspended"/>: another driver has claimed her skin
+        /// (<see cref="IsoCharacterSprite.IsSuspended"/>) and writes her body sprite itself — the fight
+        /// on the wharf, the haul. Left out, nothing has claimed it.</para>
         /// </summary>
         public static string WhyNotShownAshore(bool riderLive, bool hasRiderChild, bool hasBody,
                                                bool bodyShownOnRoot, bool clipPlaying,
-                                               OnFootWaterState water)
+                                               OnFootWaterState water, bool skinSuspended = false)
         {
             if (!riderLive) return "ashore — the rider is disabled, so nothing poses her each frame";
             if (!hasRiderChild) return "ashore — no rider child is wired, so the rider cannot tell a deck from the shore";
             if (!hasBody) return "ashore — there is no body sprite to stand in for";
             if (!bodyShownOnRoot) return "inside something (a cab, or a helm that hides its pilot): she draws neither";
             if (clipPlaying) return "ashore — a clip is playing, and the sprite draws every clip";
+            if (skinSuspended)
+                return "ashore — her skin is suspended (the fight, the haul), and the sprite shows what it is made to show";
             if (water == OnFootWaterState.Wade) return "ashore — wading, and the sprite draws her in the water";
             if (water != OnFootWaterState.Dry) return "ashore — swimming, and the sprite draws her in the water";
             return null;
@@ -590,6 +621,14 @@ namespace HiddenHarbours.Player
             return _walk != null ? _walk.WaterState : OnFootWaterState.Dry;
         }
 
+        /// <summary>Claimed (<see cref="IsoCharacterSprite.Suspend"/>): another driver — the fight, the
+        /// haul, a clip — is writing her body sprite. A missing skin is claimed by nobody.</summary>
+        private static bool SkinSuspended(ICharacterFigureStand stand)
+        {
+            IsoCharacterSprite character = stand.FigureCharacter;
+            return character != null && character.IsSuspended;
+        }
+
         // ---------------------------------------------------------------- resolution
 
         /// <summary>
@@ -601,6 +640,7 @@ namespace HiddenHarbours.Player
         private CharacterSkinDef ResolveSkin(ICharacterFigureStand stand)
         {
             if (_skin != null) return _skin;
+            if (_lookSkin != null) return _lookSkin;    // her recipe's body (PR 2b): a preset's baked def
             IsoCharacterSprite character = stand.FigureCharacter;
             CharacterVisualDef visual = character != null ? character.Visual : null;
             return visual != null ? visual.Skin : null;
@@ -662,6 +702,7 @@ namespace HiddenHarbours.Player
             // the parent chain, and a figure configured while unparented would carry no hull id.
             _figure = go.AddComponent<IsoCharacterFigureRenderer>();
             _figure.Configure(skin);
+            Paint(_figure, skin);
             _figure.Visible = false;
             _stateKey = null;
             return _figure.IsConfigured;
@@ -684,10 +725,72 @@ namespace HiddenHarbours.Player
             go.transform.SetParent(body.transform, false);
             _ashoreFigure = go.AddComponent<IsoCharacterFigureRenderer>();
             _ashoreFigure.Configure(skin);
+            Paint(_ashoreFigure, skin);
             _ashoreFigure.Visible = false;
             _ashoreConfigured = skin;
             _ashoreStateKey = null;
             return _ashoreFigure.IsConfigured;
+        }
+
+        // ---------------------------------------------------------------- her look (character PR 2b)
+
+        /// <summary>The body her recipe resolved to, or null while she is drawn as baked.</summary>
+        public CharacterSkinDef LookSkin => _lookSkin;
+
+        /// <summary>Why her last recipe was not drawn, in the builder's words, or null.</summary>
+        public string LookRefusal { get; private set; }
+
+        private void OnAppearanceChanged(PlayerAppearanceChanged e) => ApplyLook(e.Recipe);
+
+        /// <summary>The same path as a kept recipe, on purpose (the <c>PlayerOutfitVisual</c>
+        /// reasoning): a preview gets the same resolution and the same refusals as the real thing, and
+        /// the cancel arrives by the same route with the committed recipe.</summary>
+        private void OnAppearancePreviewRequested(PlayerAppearancePreviewRequested e) => ApplyLook(e.Recipe);
+
+        /// <summary>
+        /// <b>Resolve her recipe and paint both figures from it.</b> The builder answers with a preset's
+        /// baked body and the colours of its materials; nothing about where she stands, how she is
+        /// posed or how tall she is changes here — the next pose resolves the body through
+        /// <see cref="ResolveSkin"/> and places it by the same rules as every other def. An empty recipe
+        /// is the body as baked. A refused one is drawn as baked and said out loud; the save is never
+        /// touched from here.
+        /// </summary>
+        private void ApplyLook(CharacterRecipe recipe)
+        {
+            _lookSkin = null;
+            _lookColours = null;
+            LookRefusal = null;
+            if (recipe != null && !recipe.IsEmpty)
+            {
+                if (!_builderLoaded)
+                {
+                    _builder = CharacterBuilderDef.LoadShipped();
+                    _builderLoaded = true;
+                }
+                if (CharacterBuilder.TryBuild(_builder, recipe, CharacterAudience.Player,
+                                              out CharacterLook look, out string refusal))
+                {
+                    _lookSkin = look.Skin;
+                    _lookColours = look.Colours;
+                }
+                else
+                {
+                    LookRefusal = refusal;
+                    Debug.LogError($"[DeckRiderMeshPresenter] Refusing the player's recipe ({recipe}): {refusal} " +
+                                   "Drawing her as baked; the save is untouched.", this);
+                }
+            }
+            Paint(_figure, _configured);
+            Paint(_ashoreFigure, _ashoreConfigured);
+        }
+
+        /// <summary>The look's colours on a figure built from the look's body; the def's own on any
+        /// other (the next pose rebuilds it from the look's body).</summary>
+        private void Paint(IsoCharacterFigureRenderer figure, CharacterSkinDef configured)
+        {
+            if (figure == null || !figure.IsConfigured) return;
+            if (_lookColours != null && configured == _lookSkin) figure.Recolour(_lookColours);
+            else figure.ResetColours();
         }
 
         /// <summary>
@@ -712,6 +815,8 @@ namespace HiddenHarbours.Player
             Vector3 local = stand.FigureStandRigMetres + SabotageStandOffsetMetres;
             float bearing = stand.FigureDeckBearingDegrees;
             float yaw = skin.AzimuthCounterClockwise ? -bearing : bearing;
+            yaw = FigureHeadingDial.DeckYaw(yaw, _hull != null ? _hull.HeadingDirUnits * HullMeshMath.DegreesPerDirUnit : 0f,
+                                            FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             FigureLocalMetres = local;
             FigureYawDegrees = yaw;
             _figureRoot.SetLocalPositionAndRotation(local, Quaternion.AngleAxis(yaw, Vector3.forward));
