@@ -54,6 +54,8 @@ It is built in two passes:
 - M0 acceptance + a human playtest of the loop.
 
 **[M1] — make it good (the slice):**
+- **Mesh figure performance, held-props wave M1–M3** — gameplay-systems, with lead-architect reviewing Core: M1 plays the existing vault, ladder, haul and deck-work clips on the mesh aboard and ashore; M2 brings the cast and fight across with the mesh rod after the socket and thin-line work; M3 places sleep and driving on their mounts. Keep one visible drawer and a named sprite fallback for an unsupported move; accept the vault and both ladder directions at St Peters before M1 lands. Waterline work remains a separate owner decision (N3).
+
 - **Boat force model v1** for the dory: engine thrust + anisotropic hydro-drag + windage + speed-scaled rudder,
   consuming the FORCES `EnvironmentSample` — wind pushes, tide sets, the boat carries way (inshore/forgiving tune).
 - `EnvironmentService` v1: wind field, sea-state value, the full `EnvironmentSample` struct, **tide-table** generation.
