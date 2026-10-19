@@ -972,6 +972,21 @@ namespace HiddenHarbours.Core
         public static bool MeshFigureKeyline =>
             Config != null ? Config.MeshFigureKeyline : GameConfig.DefaultMeshFigureKeyline;
 
+        /// <summary>Are the mesh figures drawn at the art's own pixel size (the figure pixel look,
+        /// route 1)? Falls back to <see cref="GameConfig.DefaultFigurePixelTarget"/> (ON). Read every
+        /// frame by the figure renderers and the hull feature; OFF is the picture before the look,
+        /// byte for byte.
+        /// FLAG lead-architect: new Core contract (the figure pixel look's switch).</summary>
+        public static bool FigurePixelTarget =>
+            Config != null ? Config.FigurePixelTarget : GameConfig.DefaultFigurePixelTarget;
+
+        /// <summary>How many facings a figure turns through while the pixel look is ON; 0 is smooth.
+        /// Never below 0. Falls back to <see cref="GameConfig.DefaultFigureHeadingSteps"/> (0, the
+        /// owner's D2 of 10-15). Read through <see cref="FigureHeadingDial.LiveSteps"/>.
+        /// FLAG lead-architect: new Core contract (the figure heading dial).</summary>
+        public static int FigureHeadingSteps =>
+            System.Math.Max(0, Config != null ? Config.FigureHeadingSteps : GameConfig.DefaultFigureHeadingSteps);
+
         /// <summary>The boat-glow passthrough (owner's ruling, 2026-09-03 — "the glows should be
         /// constrained to their space, if its interior it should be confined to the cabin with the glow
         /// only coming through the windows"): does the fleet still wear yesterday's discs? Same contract
