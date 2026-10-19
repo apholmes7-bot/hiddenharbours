@@ -67,6 +67,9 @@ namespace HiddenHarbours.Core
 
         public WaveSample Sample(Vector2 worldPos) => WaveMath.Sample(worldPos, 0.0, in _current);
         public WaveSample Sample(Vector2 worldPos, float fetchEnvelope01)
+            => Sample(worldPos, (WaveFetchSample)fetchEnvelope01);
+
+        public WaveSample Sample(Vector2 worldPos, WaveFetchSample fetchEnvelope01)
             => WaveMath.Sample(worldPos, 0.0, in _current, fetchEnvelope01);
         public float DominantPhaseDegrees(Vector2 worldPos) =>
             _current.Count > 0 ? WaveMath.TrainPhaseDegrees(_current.Dominant, worldPos, 0.0) : 0f;

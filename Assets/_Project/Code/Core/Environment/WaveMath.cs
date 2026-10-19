@@ -1030,8 +1030,7 @@ namespace HiddenHarbours.Core
         /// factor divides the scaled height by the UNSCALED <c>TotalAmplitude</c>, so a lee shore
         /// loses its whitecaps for free — correct, deliberate, and the reason the fetch term must not
         /// be folded into the trains themselves. The slope takes only the <c>E·∇h</c> term of
-        /// <c>∇(E·h)</c>; see <see cref="WaveFetch"/> for why the <c>h·∇E</c> term is negligible by
-        /// construction.</para>
+        /// <c>∇(E·h)</c>; see ADR 0018 Stage B for the bound on the omitted <c>h·∇E</c> term.</para>
         ///
         /// <para>⚠️ The HLSL twin applies the envelope in the SAME place (inside
         /// <c>WaveFieldSample</c>, after the train loop, before the crest factor). Change one, change
@@ -1041,6 +1040,12 @@ namespace HiddenHarbours.Core
         /// Clamped to [0, 1]; 1 = no fetch limiting.</param>
         public static WaveSample Sample(Vector2 worldPos, double timeSeconds, in WaveTrains trains,
                                         float fetchEnvelope01)
+            => Sample(worldPos, timeSeconds, in trains, (WaveFetchSample)fetchEnvelope01);
+
+        /// <summary>Apply each wavelength's factor inside the sum. The unfetched amplitudes still
+        /// normalize crests. A uniform payload preserves the legacy after-sum multiplication.</summary>
+        public static WaveSample Sample(Vector2 worldPos, double timeSeconds, in WaveTrains trains,
+                                        WaveFetchSample fetchEnvelope01)
         {
             float height = 0f;
             float slopeX = 0f;
@@ -1054,6 +1059,7 @@ namespace HiddenHarbours.Core
                 WaveTrain train = trains[i];
                 float amplitude = train.Amplitude;
                 totalAmplitude += amplitude;
+                if (fetchEnvelope01.Spectral) amplitude *= fetchEnvelope01.ForWavelength(train.Wavelength);
                 if (amplitude <= 0f) continue; // a silent train contributes exactly nothing
 
                 float waveNumber = (2f * Mathf.PI) / train.Wavelength;
@@ -1083,7 +1089,7 @@ namespace HiddenHarbours.Core
             // The FETCH envelope (ADR 0027 #1): a spatial amplitude multiplier applied to the summed
             // field. Height and slope both scale; TotalAmplitude deliberately does NOT, so the crest
             // factor below collapses in a lee and the whitecaps go with it.
-            float fetch = Mathf.Clamp01(fetchEnvelope01);
+            float fetch = fetchEnvelope01.Uniform;
             if (fetch < 1f)
             {
                 height *= fetch;

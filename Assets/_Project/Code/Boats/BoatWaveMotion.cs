@@ -452,7 +452,7 @@ namespace HiddenHarbours.Boats
             // and so the fallback is never a stale sea the moment a publisher goes away.
             WaveSample wave;
             float seaState01 = 0f;                            // no sim = glass = no storm (blend 0)
-            float fetchEnvelope = 1f;                         // resolved ONCE per tick (rule 7)
+            WaveFetchSample fetchEnvelope = 1f;                         // resolved ONCE per tick (rule 7)
             WaveFieldSettings field = GameServices.WaveField; // also supplies g to the weight filter
             // THE HULL'S OWN HEAVE CHARACTER (water fidelity PR 10): how many points of her waterline
             // the sea is read at, and the mass-spring she answers it with, from the data her own
@@ -473,7 +473,7 @@ namespace HiddenHarbours.Boats
                 // The WIND-FETCH envelope (ADR 0027 #1), resolved once at the hull's centre and
                 // shared by the surface sample below AND the storm-attitude envelope — the march is
                 // real terrain reads, and the two consumers must see the same lee.
-                fetchEnvelope = GameServices.FetchEnvelopeAt((Vector2)transform.position);
+                fetchEnvelope = GameServices.FetchAt((Vector2)transform.position);
                 wave = SampleTheHullsFootprint((Vector2)transform.position, (Vector2)transform.up,
                                                in heave, fetchEnvelope);
             }
@@ -690,7 +690,7 @@ namespace HiddenHarbours.Boats
         /// single centre sample and returns it untouched — the byte-identical pre-PR path.</para>
         /// </summary>
         private WaveSample SampleTheHullsFootprint(Vector2 worldPos, Vector2 heading,
-                                                   in HullHeaveResponse heave, float fetchEnvelope01)
+                                                   in HullHeaveResponse heave, WaveFetchSample fetchEnvelope01)
         {
             WaveSample centre = SampleTheDrawnSea(worldPos, fetchEnvelope01);
             int n = heave.FootprintSamples;
@@ -746,7 +746,7 @@ namespace HiddenHarbours.Boats
         ///
         /// <para>Displaced sea off ⇒ scale 1 ⇒ byte-identical to before (the A/B contract).</para>
         /// </summary>
-        private WaveSample SampleTheDrawnSea(Vector2 worldPos, float fetchEnvelope01)
+        private WaveSample SampleTheDrawnSea(Vector2 worldPos, WaveFetchSample fetchEnvelope01)
         {
             float s = DisplacedSea.TryGet(out DisplacedSeaState sea) ? sea.FreqScale : 1f;
             WaveTrains trains = DrawnTrains;
@@ -882,7 +882,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void DriveRockFrame(float rideMeters, float stormBlend, float responseMultiplier,
                                     in SeakeepingResponse hullCharacter, in StormRockSettings storm,
-                                    float fetchEnvelope01, in HullHeaveResponse heave)
+                                    WaveFetchSample fetchEnvelope01, in HullHeaveResponse heave)
         {
             var hull = Hull;
 
@@ -939,7 +939,7 @@ namespace HiddenHarbours.Boats
                             ? sea.FreqScale : 1f;
                         float slopeEnvelope = dominant.Amplitude
                                             * ((2f * Mathf.PI) / dominant.Wavelength)
-                                            * freqScale * Mathf.Clamp01(fetchEnvelope01);
+                                            * freqScale * fetchEnvelope01.ForWavelength(dominant.Wavelength);
 
                         Vector2 up = (Vector2)transform.up;
                         float sqr = up.x * up.x + up.y * up.y;

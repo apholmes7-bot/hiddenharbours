@@ -262,6 +262,8 @@ Phased deliberately: **fetch modulates the visual layers first** (Tier A cost), 
 hulls ride only in the later phase, where it earns a twin and tests. Visual-only fetch means the player *sees* the
 lee before the boat *feels* it — an acceptable intermediate, and an explicit one.
 
+Stage B (2026-10-14) now applies fetch growth per wavelength; ADR 0018 records the law, scalar consumers and approximation limits.
+
 **(6) #5 — Spectrum-shaped swell (JONSWAP weighting + wave groups).**
 The largest visual gap and the honest reason people reach for FFT: a handful of sine trains repeats at large scale
 and never produces **sets**. Replace the flat train weighting in `_WaveFieldParams` with a **JONSWAP-shaped
