@@ -2142,7 +2142,13 @@ namespace HiddenHarbours.App.Editor
 
             // Light onboarding: one nudge per beat of the new earned-dory loop, then it bows out and persists
             // 'onboarded' (on the dory being REPAIRED) so the opening never re-triggers on reload.
-            new GameObject("Onboarding").AddComponent<OnboardingDirector>();
+            //
+            // ⚠️ AND IT TRAVELS WITH THE CORE (PersistentObject): most of its beats are heard AWAY from here.
+            // The licence, the rod, buying the dory and repairing her all happen at the Nine Mile Creek
+            // shipwright, and a crossing switches off every root of the region left behind — so a guide left
+            // in this scene went deaf at the first crossing, never heard the repair, and the opening never
+            // closed. Quit to title takes it down with the rest of the core; the boot reload makes one fresh.
+            new GameObject("Onboarding", typeof(OnboardingDirector), typeof(PersistentObject));
 
             // --- ⭐ THE ARRIVAL (owner ruling, 2026-08-19) ------------------------------------------
             // Onboarding's step ZERO, and the reason the east berth was dredged: a new game does not
