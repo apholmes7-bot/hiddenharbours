@@ -1935,6 +1935,9 @@ namespace HiddenHarbours.App.Editor
             // to place anything at all if that measured table is missing.
             var dooryards = YardDressing.Place(StPetersYards.Yards, parent: null, regionLabel: "St Peters");
             Debug.Log($"[StPetersBuilder] the dooryards: {dooryards}");
+            StPetersVillageDressing.Place(dooryards.Root.transform);
+            var villagePlan = StPetersVillageYards.Read<VillagePlanDef>("village_plan.st_peters");
+            StPetersVillageLights.Place(villagePlan.LightIds.Select(StPetersVillageYards.Read<LightPostDef>).ToArray());
 
             // --- THE STORE'S COUNTER (§7.5's other half: the placement) -----------------------------------
             // #356 built the island general store's ECONOMY — the StPetersStore market channel that pays a
