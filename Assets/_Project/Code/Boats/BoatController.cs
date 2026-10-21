@@ -406,8 +406,13 @@ namespace HiddenHarbours.Boats
         /// honest, recoverable feel; it is not zeroed by a grounding flag.
         /// </summary>
         public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec)
+            => RudderTorque(helm, rudderAuthority, wayMetersPerSec, 2f);
+
+        /// <summary>Sail hulls share their Def's full-way threshold with the irons assist.</summary>
+        public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec,
+                                        float fullAuthorityWayMs)
             => -Mathf.Clamp(helm, -1f, 1f) * rudderAuthority
-               * Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / 2f);
+               * (fullAuthorityWayMs > 0f ? Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / fullAuthorityWayMs) : 0f);
 
         /// <summary>
         /// Set per-oar rowing input (Propulsion = Oars). leftOar/rightOar in -1..1 (forward pull positive,
@@ -602,17 +607,20 @@ namespace HiddenHarbours.Boats
         /// instead. It runs the exact same force pass the manned helm runs — hull drag against the
         /// current (she SETS with the tide), wind shove, the seakeeping push + yaw (the weathervane the
         /// deck angler fights against), grounding/shallows — just with the controls at rest
-        /// (<see cref="Stop(bool)"/> zeroed them when the helm was left), so propulsion contributes nothing.
+        /// (<see cref="Stop(bool)"/> zeroed them when the helm was left). Oar/motor propulsion is zero;
+        /// sail propulsion remains live, with the hull's optional windward round-up opposing its pay-off.
         /// One force model, never a parallel drift copy. No-op while enabled (FixedUpdate already runs
         /// the pass — never double-integrate) and before a hull is wired.
         /// </summary>
         public void TickUnmannedDrift()
         {
             if (enabled) return;   // manned — the normal FixedUpdate owns the pass this tick
-            StepPhysics();
+            StepPhysicsForHelm(unmanned: true);
         }
 
-        private void StepPhysics()
+        private void StepPhysics() => StepPhysicsForHelm(unmanned: false);
+
+        private void StepPhysicsForHelm(bool unmanned)
         {
             // The surf under her is re-solved from scratch every tick (rule 5 — nothing accumulates), so
             // clear it FIRST: a tick that never reaches the seakeeping pass (no hull, no body, the policy
@@ -653,7 +661,7 @@ namespace HiddenHarbours.Boats
             // declared Sail with no polar is not sailable, and falling through to her auxiliary is a
             // better answer than sitting still with no explanation.
             if (_hull.HasSailPlan)
-                ApplySailDrive(fwd, vel, env);
+                ApplySailDrive(fwd, vel, env, unmanned);
             else if (UsesEngineHelm(_hull.Propulsion))
                 ApplyEngineDrive(fwd, vel, env);
             else
@@ -799,7 +807,7 @@ namespace HiddenHarbours.Boats
         /// negative branch here and none is wanted; a sloop backing out of a berth is her AUXILIARY,
         /// which is the engine seam, untouched.</para>
         /// </summary>
-        private void ApplySailDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        private void ApplySailDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env, bool unmanned)
         {
             // The wind she is actually in — true for the physics, apparent for the picture. One wind:
             // this reads the sim's WindVector and Core's own apparent maths, and adds neither.
@@ -832,7 +840,13 @@ namespace HiddenHarbours.Boats
             // on cannot steer, under sail every bit as much as under power. In irons she loses steerage
             // exactly as she should, because the polar has taken her way off. ---
             float way = Vector2.Dot(vel - env.CurrentVector, fwd);
-            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way) * RudderFeelScale);
+            float rudder = RudderTorque(_steer, _hull.RudderAuthority, way, _hull.RudderFullAuthorityWayMs);
+            float payOff = SailDrive.IronsPayOffTorque(DrawnInIrons, wind.TrueAngleDeg, _steer, way,
+                _hull.IronsPayOffTorque, _hull.RudderFullAuthorityWayMs, wind.TrueKn, _hull.SailYawReferenceWindKn);
+            float roundUp = SailDrive.UnmannedRoundUpTorque(unmanned, wind.TrueAngleDeg, targetKn,
+                _hull.UnmannedRoundUpTorque, _hull.NoGoTrueWindDeg, _hull.RoundUpReferenceDriveKn,
+                wind.TrueKn, _hull.SailYawReferenceWindKn);
+            _rb.AddTorque((rudder + payOff + roundUp) * RudderFeelScale);
         }
 
         /// <summary>
@@ -899,7 +913,7 @@ namespace HiddenHarbours.Boats
             WaveTrain dominant = trains.Dominant;
 
             BreakerContour contour = BreakerMath.ContourFor(
-                in dominant, WaveFetch.Envelope01(0f, in fetch), in breakers);
+                in dominant, WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
             if (!contour.Breaks) return SurfState.Calm;
 
             float waterLevel = environment.WaterLevelAt(now);
@@ -960,7 +974,7 @@ namespace HiddenHarbours.Boats
                     ? WaveMemory.TrainsAt(history, now, in waveField)
                     : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
             // Published travel is baked; a first-frame fallback carries raw phases at the clock.
-            WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchEnvelopeAt(pos));
+            WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
 
             // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the
             // same depth the boat-cross gate reads; open water (no seabed map) = +Inf depth = fully exposed.

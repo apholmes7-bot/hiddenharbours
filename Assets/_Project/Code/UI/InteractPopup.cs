@@ -146,7 +146,7 @@ namespace HiddenHarbours.UI
         {
             if (_panel == null) return;
             HelmFootprintArea covered = HelmFootprint.Current;
-            int w = Screen.width, h = Screen.height;
+            int w = HudScreen.Width, h = HudScreen.Height;
             if (covered == _placedFor && w == _placedW && h == _placedH) return;
             _placedFor = covered;
             _placedW = w;

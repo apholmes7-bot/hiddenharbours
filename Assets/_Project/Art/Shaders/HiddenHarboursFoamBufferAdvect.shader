@@ -121,6 +121,9 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             // sea level and the seabed). Nothing here is a material property of the water.
             float4 _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3, _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7;
             float4 _WavePhases, _WavePhases2, _WaveFieldParams;
+            float4 _WaveFetchGrowth;
+            float _WaveFetchFullStrength;
+            float _WaveFetchGrowthPower;
             float4 _WaveFetchParams, _WaveFetchParams2;
             float4 _BreakerDepths, _BreakerOuter, _BreakerParams, _BreakerAnatomy, _BreakerBore;
             float4 _HHSeaLevelWorld;      // x = the drawn sea level (m); WaterSurface publishes it
@@ -228,15 +231,6 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 return floor(p * FETCH_MARCH_PPU) / FETCH_MARCH_PPU;
             }
 
-            // Fetch -> amplitude multiplier: lerp(leeFloor, 1, fetch^exponent). Exactly the lee floor at fetch
-            // 0, exactly 1 at fetch 1 — so a fully exposed shore is untouched and the open sea stays the sea
-            // the field was tuned against. Twin: WaveFetch.Amplitude01.
-            float FetchAmplitude01(float fetch01)
-            {
-                float f = pow(max(saturate(fetch01), 1e-6), max(_WaveFetchParams.w, 0.01));
-                return lerp(saturate(_WaveFetchParams.z), 1.0, f);
-            }
-
             // The model's own quantization (_WaveFetchParams2.y). ⚠️ DEFAULTS OFF, unlike the col.rgb layers:
             // this envelope is not drawn, it scales GEOMETRY that already-pixelized layers draw downstream, so
             // banding it would stair-step the surface the hull rides for no pixel-character gain. Deliberately
@@ -255,14 +249,30 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 return floor(saturate(v01) * steps + 0.5) / steps;
             }
 
-            // The finished envelope from an already-marched fetch. strength 0 returns EXACTLY 1 (the shipped
-            // passthrough); bounded to (0, 1] for any input, which is what keeps the C# watertight hull clamp
-            // a valid bound at every strength. Twin: WaveFetch.Envelope01.
-            float FetchEnvelopeFrom(float fetch01)
+            // Twin: WaveFetch.TrainEnvelope01. Wavelength selects amplitude growth only.
+            float FetchTrainEnvelope01(float fetch01, float wavelength)
             {
-                float strength = saturate(_WaveFetchParams.x);
-                if (strength <= 0.0) return 1.0;
-                return lerp(1.0, FetchAmplitude01(FetchBand01(fetch01)), strength);
+                if (_WaveFetchParams.x <= 0.0 || fetch01 >= 1.0) return 1.0;
+                float4 shape = _WaveFetchGrowth;
+                float reach = FETCH_MARCH_STEPS * max(0.05, _WaveFetchParams.y);
+                float u = saturate((wavelength - shape.x) / max(shape.y - shape.x, 1e-3));
+                float curve = u > 0.0 ? pow(u, _WaveFetchGrowthPower) : 0.0;
+                float needed = lerp(min(shape.z, reach), reach, curve);
+                float floor = saturate(_WaveFetchParams.z)
+                            * (1.0 - smoothstep(shape.x, max(shape.w, shape.x + 1e-3), wavelength));
+                float growth = smoothstep(0.0, needed, FetchBand01(fetch01) * reach);
+                float amplitude = lerp(floor, 1.0, growth);
+                float strength = saturate(_WaveFetchParams.x / _WaveFetchFullStrength);
+                return lerp(1.0, amplitude, strength);
+            }
+
+            float FetchDominantEnvelope01(float fetch01)
+            {
+                float4 trains[8] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                     _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, 7);
+                float k = trains[dominant].z;
+                return FetchTrainEnvelope01(fetch01, k > 0.0 ? 6.28318530718 / k : 0.0);
             }
 
             // THE MARCH, written ONCE and instantiated against each stage's seabed sampler below — the same
@@ -295,13 +305,13 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                     blocked *= smoothstep(0.0, band, fdepth);    /* land shadows everything beyond */  \
                     open += blocked;                                                                   \
                 }                                                                                      \
-                return FetchEnvelopeFrom(open / FETCH_MARCH_STEPS);
+                return open / FETCH_MARCH_STEPS;
 
             // FRAGMENT stage (implicit-LOD sampler).
-            float FetchEnvelope01(float2 worldXY)    { FETCH_MARCH_BODY(SeabedElevation) }
+            float FetchMarch01(float2 worldXY)    { FETCH_MARCH_BODY(SeabedElevation) }
             // VERTEX stage (explicit LOD 0 — _HeightTex has no mips, so the two read byte-identical
             // elevations and the displaced surface rides the SAME lee the fragment draws).
-            float FetchEnvelope01Lod(float2 worldXY) { FETCH_MARCH_BODY(SeabedElevationLod) }
+            float FetchMarch01Lod(float2 worldXY) { FETCH_MARCH_BODY(SeabedElevationLod) }
 
             // ==== BREAKING WAVES (ADR 0040) — the HLSL twin ==============================================
             // C# stays the PINNED REFERENCE (BreakerMath + BreakerContour, BreakerMathTests). Change one,
@@ -760,7 +770,7 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                     float outerMax = max(_BreakerOuter.x, max(_BreakerOuter.y, _BreakerOuter.z));
                     if (depth > 0.0 && depth <= outerMax)
                     {
-                        float fetchEnv = FetchEnvelope01(worldXY);
+                        float fetchEnv = FetchDominantEnvelope01(FetchMarch01(worldXY));
                         float breaking = SurfBreaking01(depth, fetchEnv);
                         float2 dir = ShoreDir(worldXY);
                         if (breaking > 0.002 && dot(dir, dir) > 1e-6)

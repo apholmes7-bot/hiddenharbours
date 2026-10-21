@@ -371,7 +371,7 @@ namespace HiddenHarbours.Vehicles
             // The wind-fetch envelope is resolved at the TRUE position — fetch is a real distance over
             // real water, and marching the frequency-scaled one would shelter her behind a headland that
             // is not there.
-            float fetch = GameServices.FetchEnvelopeAt(worldPos);
+            WaveFetchSample fetch = GameServices.FetchAt(worldPos);
             float height = WaveMath.Sample(worldPos * sea.FreqScale, 0.0, in trains, fetch).Height;
             float depth = DepthAt(terrain, environment, totalSeconds, worldPos);
             return ShoreFadeMath.DisplacedHeight(height, depth, sea.ShoreFadeBandMeters, sea.Exaggeration);

@@ -1,6 +1,5 @@
+using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.UI;
 using HiddenHarbours.Core;
 using HiddenHarbours.UI;
 
@@ -8,14 +7,14 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
     /// The night panel's WIRING, on the real paint path (ADR 0025, the boat-UI arc): does the shipped
-    /// compositor actually read the clock, and does it pay for dusk exactly once?
+    /// band actually read the clock, and does it pay for dusk exactly once?
     ///
-    /// <para><b>Why this test exists at all.</b> Every dash renderer in the fleet has carried a
-    /// working <c>night</c> parameter since S4, and the game still had no night helm — because
-    /// <see cref="HelmDashController"/> called them all with <c>false</c>. That is a defect no
-    /// renderer test can see: both sides of it draw a perfectly correct day face. So this drives
-    /// <see cref="HelmDashController.UpdateAndPaint"/> itself, through its own texture upload, and
-    /// asserts on what the card SHOWS.</para>
+    /// <para><b>Why this test exists at all.</b> Every dash renderer in the fleet carried a working
+    /// <c>night</c> parameter from S4, and the game still had no night helm — because the dash's
+    /// compositor called them all with <c>false</c>. That is a defect no renderer test can see: both
+    /// sides of it draw a perfectly correct day face. The band (H2) inherits the lesson, so this drives
+    /// <see cref="HelmBandController.UpdateAndPaint"/> itself, through its own texture uploads, and
+    /// asserts on what the band SHOWS.</para>
     ///
     /// <para><b>Why PlayMode.</b> <c>UpdateAndPaint</c> ends in <c>DrawSurface.ToTexture</c> — a real
     /// <c>Texture2D.Apply</c>. The pure raster half of the feature is asserted headlessly in
@@ -75,8 +74,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public void EndSteerDrag() { }
         }
 
-        private GameObject _go;
-        private Texture2D _texture;
+        private readonly List<HelmBandController> _bands = new();
 
         [SetUp]
         public void SetUp() => GameServices.Reset();
@@ -85,17 +83,21 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             GameServices.Reset();
-            if (_go != null) Object.DestroyImmediate(_go);
-            if (_texture != null) Object.DestroyImmediate(_texture);
-            _go = null;
-            _texture = null;
+            foreach (HelmBandController band in _bands) band.ReleaseTextures();
+            _bands.Clear();
         }
 
-        private RawImage NewImage()
+        /// <summary>A band for this rig, laid out at 1080p (k = 1), its textures released at teardown.</summary>
+        private HelmBandController NewBand(ConsoleRigKind rig)
         {
-            _go = new GameObject("NightPanelTestImage");
-            return _go.AddComponent<RawImage>();
+            var band = new HelmBandController();
+            band.Layout(rig, 1920, 1080);
+            _bands.Add(band);
+            return band;
         }
+
+        private static bool Paint(HelmBandController band, SteadyHelm helm, float heading)
+            => band.UpdateAndPaint(helm, helm.Fit, heading, 0.016f, HelmBandGlance.None);
 
         [Test]
         public void TheDash_TakesItsPanelLightFromTheClock_AndPaysForDuskExactlyOnce()
@@ -108,41 +110,34 @@ namespace HiddenHarbours.Tests.PlayMode
                 Fit = new HelmFit(ConsoleRigKind.Console, SounderKind.Depth, CompassMount.Dome,
                                   false, false),
             };
-            var ctl = new HelmDashController();
-            RawImage image = NewImage();
+            HelmBandController ctl = NewBand(ConsoleRigKind.Console);
 
             // Noon: the first paint always repaints (nothing is shown yet) and shows the DAY face.
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image),
-                        Is.True, "the first paint must draw");
+            Assert.That(Paint(ctl, helm, 235f), Is.True, "the first paint must draw");
             Assert.That(ctl.NightShown, Is.False, "noon is not night");
 
             // A second call with nothing changed must cost nothing — the baseline the dusk assertion
             // below is measured against.
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image),
-                        Is.False, "a steady frame must not repaint");
+            Assert.That(Paint(ctl, helm, 235f), Is.False, "a steady frame must not repaint");
 
             // Dusk. The ONLY thing that moved is the hour.
             clock.HourOfDay = 22f;
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image),
-                        Is.True, "crossing dusk must repaint the dash");
+            Assert.That(Paint(ctl, helm, 235f), Is.True, "crossing dusk must repaint the band");
             Assert.That(ctl.NightShown, Is.True,
-                        "the compositor must light the panel from the clock — the S4 defect was a " +
+                        "the band must light the panel from the clock — the S4 defect was a " +
                         "hard-coded false here, and it looked exactly like a correct day face");
 
             // Deeper into the night: the hour keeps moving, the BOOLEAN does not. This is the
             // "keyed on the night boolean, never on continuous time" criterion, and it is the
             // assertion that fails if anyone keys the repaint on the hour itself.
             clock.HourOfDay = 22.5f;
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image),
-                        Is.False, "time passing at night must not repaint");
+            Assert.That(Paint(ctl, helm, 235f), Is.False, "time passing at night must not repaint");
             clock.HourOfDay = 3f;
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image),
-                        Is.False, "still night after midnight — still no repaint");
+            Assert.That(Paint(ctl, helm, 235f), Is.False, "still night after midnight — still no repaint");
 
             // Dawn: one more flip, one more repaint, back to the day face.
             clock.HourOfDay = 7f;
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image),
-                        Is.True, "dawn must repaint");
+            Assert.That(Paint(ctl, helm, 235f), Is.True, "dawn must repaint");
             Assert.That(ctl.NightShown, Is.False, "and put the day face back");
         }
 
@@ -150,11 +145,10 @@ namespace HiddenHarbours.Tests.PlayMode
         public void EveryHullInTheFleet_LightsItsPanel_NotJustTheOnesPortedFirst()
         {
             // S2a ported the skiffs, S4 the wheelhouses, and only the wheelhouses ever got a night
-            // face wired. Walk all four rigs through the same dusk so a hull can never be quietly
-            // left on the day path again.
+            // face wired. Walk all four rigs' bands through the same dusk so a hull can never be
+            // quietly left on the day path again.
             var clock = new FakeClock();
             GameServices.Clock = clock;
-            RawImage image = NewImage();
 
             foreach (ConsoleRigKind rig in new[]
                      {
@@ -166,15 +160,14 @@ namespace HiddenHarbours.Tests.PlayMode
                 {
                     Fit = new HelmFit(rig, SounderKind.Depth, CompassMount.None, false, false),
                 };
-                var ctl = new HelmDashController();
+                HelmBandController ctl = NewBand(rig);
 
                 clock.HourOfDay = 12f;
-                ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image);
+                Paint(ctl, helm, 235f);
                 Assert.That(ctl.NightShown, Is.False, $"{rig} at noon");
 
                 clock.HourOfDay = 21f;
-                Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 235f, 0.016f, false, ref _texture, image),
-                            Is.True, $"{rig} must repaint at dusk");
+                Assert.That(Paint(ctl, helm, 235f), Is.True, $"{rig} must repaint at dusk");
                 Assert.That(ctl.NightShown, Is.True, $"{rig} must light its panel");
             }
         }
@@ -195,14 +188,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 Fit = new HelmFit(ConsoleRigKind.Console, SounderKind.Depth, CompassMount.None,
                                   false, false),
             };
-            var ctl = new HelmDashController();
-            RawImage image = NewImage();
+            HelmBandController ctl = NewBand(ConsoleRigKind.Console);
 
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref _texture, image),
-                        Is.True, "first paint");
+            Assert.That(Paint(ctl, helm, 0f), Is.True, "first paint");
             Assert.That(ctl.NightShown, Is.False, "no clock is not night");
-            Assert.That(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref _texture, image),
-                        Is.False, "and it must settle, not flap between faces");
+            Assert.That(Paint(ctl, helm, 0f), Is.False, "and it must settle, not flap between faces");
         }
     }
 }

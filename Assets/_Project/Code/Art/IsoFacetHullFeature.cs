@@ -170,6 +170,14 @@ namespace HiddenHarbours.Art
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+            // W4-4a: the ground's underwater clip is OFF for this camera until its own water pass
+            // raises it (the HH Displaced Water block). Lowered first, before every early return, so a
+            // camera without that pass (no displaced sea, a preview, the Null device) never reads a
+            // flag the previous camera left raised, nor a coverage texture that is not its own.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
+            // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
+            // this camera's recording publishes its own. A no-op once zero.
+            IsoFacetFigureTarget.Unpublish();
             // "Hulls" is the facet block: every subject of the HHHullFacet list. A mesh hull is one;
             // a skinned figure standing on NO hull (ADR 0044, ashore) is the other, and only while
             // she holds a figure id. With neither registered this is false and nothing below changes.
@@ -276,6 +284,7 @@ namespace HiddenHarbours.Art
             _pass.KeylineFlood = IsoFacetKeylineGate.Enabled;
             _pass.DrawHulls = hulls;
             _pass.DrawWater = water;
+            _pass.ClipTerrain = water && GameServices.TerrainUnderwaterClip;
             _pass.DrawGuard = _interiorMask;
             _pass.DrawReflections = reflect;
             _pass.MeshReflections = meshReflect;
@@ -309,6 +318,8 @@ namespace HiddenHarbours.Art
 
         protected override void Dispose(bool disposing)
         {
+            // W4-4a: never leave the ground clipping against a coverage nobody draws any more.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
             _pass?.Dispose();
             _pass = null;
             CoreUtils.Destroy(_resolveMaterial);
@@ -338,6 +349,8 @@ namespace HiddenHarbours.Art
             readonly Dictionary<EntityId, HullMeshReflection.CameraState> _meshCameras = new Dictionary<EntityId, HullMeshReflection.CameraState>();
             internal delegate void TargetAllocator(ref RTHandle handle, RenderTextureDescriptor descriptor, string name);
             readonly TargetAllocator _allocateTarget;
+            // The figure pixel look (route 1, GameConfig.FigurePixelTarget): records nothing while OFF.
+            readonly IsoFacetFigureTarget.Recorder _figureTarget;
             static void AllocateTarget(ref RTHandle handle, RenderTextureDescriptor descriptor, string name)
                 => RenderingUtils.ReAllocateHandleIfNeeded(ref handle, descriptor, FilterMode.Point, TextureWrapMode.Clamp, name: name);
 
@@ -364,6 +377,9 @@ namespace HiddenHarbours.Art
             public bool KeylineFlood;
             /// <summary>Record the displaced-water pass this frame (any active DisplacedWaterSurface)?</summary>
             public bool DrawWater;
+            /// <summary>W4-4a: raise the ground's underwater clip once the water's coverage is drawn
+            /// (<see cref="DrawWater"/> AND <c>GameServices.TerrainUnderwaterClip</c>)?</summary>
+            public bool ClipTerrain;
             /// <summary>Record the object-reflection pass this frame (any live ReflectiveObject)?</summary>
             public bool DrawReflections;
 
@@ -544,6 +560,7 @@ namespace HiddenHarbours.Art
             public HullPass(TargetAllocator allocator = null)
             {
                 _allocateTarget = allocator ?? AllocateTarget;
+                _figureTarget = new IsoFacetFigureTarget.Recorder(_allocateTarget);
                 profilingSampler = new ProfilingSampler("HH IsoFacet Hulls");
             }
 
@@ -557,6 +574,7 @@ namespace HiddenHarbours.Art
             {
                 public RendererListHandle Renderers;
                 public TextureHandle ClearReflection;
+                public bool ClipTerrain;
             }
 
             private class GuardPassData
@@ -641,6 +659,10 @@ namespace HiddenHarbours.Art
                 /// <summary>Character PR 2a: this frame's rig 9 ink, <c>(edge, mix, live, 0)</c> from
                 /// <see cref="IsoFacetFigureInk.Value"/>, applied in the render func the same way.</summary>
                 public Vector4 FigureInk;
+                /// <summary>The figure pixel look: her art pixels as the hull resolve's depth-edge
+                /// neighbours (<see cref="IsoFacetFigureTarget.Neighbours"/>), empty unless the figure
+                /// target recorded. The reflection resolve never opens it.</summary>
+                public IsoFacetFigureTarget.Neighbours Figures;
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -1081,6 +1103,10 @@ namespace HiddenHarbours.Art
                             builder.AllowGlobalStateModification(true);
                             builder.SetGlobalTextureAfterPass(clearReflection, ReflectionShaderIds.ReflectTex);
                         }
+                        // W4-4a: the pass raises the ground's clip flag, a global, once its coverage
+                        // is drawn (AddRenderPasses lowered it for this camera).
+                        passData.ClipTerrain = ClipTerrain;
+                        if (ClipTerrain) builder.AllowGlobalStateModification(true);
                         if (reflectTex.IsValid()) builder.UseTexture(reflectTex, AccessFlags.Read);
                         if (foamTex.IsValid()) builder.UseTexture(foamTex, AccessFlags.Read);
                         builder.UseRendererList(passData.Renderers);
@@ -1100,9 +1126,21 @@ namespace HiddenHarbours.Art
                             if (data.ClearReflection.IsValid())
                                 ctx.cmd.SetGlobalTexture(ReflectionShaderIds.ReflectTex, data.ClearReflection);
                             ctx.cmd.DrawRendererList(data.Renderers);
+                            // The ground draws after this pass (BeforeRenderingSprites on the lowest
+                            // layer), so from here to the end of this camera it reads this coverage.
+                            if (data.ClipTerrain)
+                                ctx.cmd.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 1f);
                         });
                     }
                 }
+
+                // ---- the figure pixel look (route 1; GameConfig.FigurePixelTarget, ship ON) ----------
+                // OFF, or a frame it cannot plan, records nothing and leaves everything below as it
+                // was. ON, the figures draw into their own art-pixel target here (after the water,
+                // whose depth hides them) and the facet list below leaves them out.
+                IsoFacetFigureTarget.Neighbours figures = default;
+                bool figuresLow = drawHulls && _figureTarget.Record(renderGraph, cameraData, renderingData,
+                    depthBuf, DrawWater, w, h, ResolveMaterial, profilingSampler, out figures);
 
                 // ---- transient MRT for the facet draw ------------------------------------
                 TextureHandle facet = default, dark = default, key = default, depthVal = default;
@@ -1129,7 +1167,9 @@ namespace HiddenHarbours.Art
                 {
                     var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.None };
                     var drawing = new DrawingSettings(s_FacetTag, sorting) { perObjectData = PerObjectData.None };
-                    var filtering = new FilteringSettings(RenderQueueRange.all);
+                    var filtering = figuresLow
+                        ? new FilteringSettings(IsoFacetFigureTarget.SceneQueue)
+                        : new FilteringSettings(RenderQueueRange.all);
                     passData.Renderers = renderGraph.CreateRendererList(
                         new RendererListParams(renderingData.cullResults, drawing, filtering));
                     // Deck occupants: drawn AFTER the hulls against the SAME private z-buffer, so
@@ -1176,11 +1216,15 @@ namespace HiddenHarbours.Art
                     passData.TexSize = new Vector4(w, h, 0, 0);
                     passData.KeylineFlood = KeylineFlood;
                     passData.FigureInk = IsoFacetFigureInk.Value;
+                    // The figure pixel look: her art pixels as depth-edge neighbours, so the deck keeps
+                    // its contour against her. Empty — a no-op throughout — unless the target recorded.
+                    passData.Figures = figures;
 
                     builder.UseTexture(facet, AccessFlags.Read);
                     builder.UseTexture(dark, AccessFlags.Read);
                     builder.UseTexture(key, AccessFlags.Read);
                     builder.UseTexture(depthVal, AccessFlags.Read);
+                    figures.Use(builder);
                     builder.SetRenderAttachment(resolved, 0);
                     // The consumers are ordinary scene renderers (the overlay quads) whose reads
                     // the graph cannot see — never cull this pass, and publish the result.
@@ -1195,7 +1239,9 @@ namespace HiddenHarbours.Art
                         data.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)data.Depth);
                         IsoFacetKeylineGate.Apply(data.Material, data.KeylineFlood);
                         IsoFacetFigureInk.Apply(data.Material, data.FigureInk);
+                        data.Figures.Open(data.Material, ctx.cmd);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
+                        data.Figures.Close(ctx.cmd);
                     });
                 }
             }
@@ -1410,6 +1456,7 @@ namespace HiddenHarbours.Art
 
             public void Dispose()
             {
+                _figureTarget.Dispose();
                 foreach (var state in _meshCameras.Values) state.Dispose();
                 _meshCameras.Clear();
                 _clearReflectHandle?.Release();

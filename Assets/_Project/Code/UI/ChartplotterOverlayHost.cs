@@ -12,33 +12,28 @@ namespace HiddenHarbours.UI
     /// effective fit carries a GPS, the plotter draws the real surveyed seabed under the boat, with the
     /// player's own waypoints, route and track on it.
     ///
-    /// <para><b>Flush in the brow's GPS slot by default; expanded is a choice</b> (the S4.5 rule, and
-    /// the sounder/finder precedent). The instrument paints into
-    /// <see cref="HelmInstrumentMountLayout.TryBrowGpsRect"/> — the pilothouse brow's third slot, which
-    /// only the Novi and the Cape have. Clicking it EXPANDS it to a centred card, and only there are the
-    /// controls live. Clicking away, clicking the mount again, or Esc collapses it.</para>
+    /// <para><b>A housing in the band; raised is a choice</b> (H2, the sounder/finder precedent). The
+    /// plotter's place on the helm is its named housing in the pilot bands — only the Novi and the Cape
+    /// carry a GPS. Pressing it RAISES a centred card (<see cref="HelmBandLayout.RaisedCardRect"/>), and
+    /// only there are the controls live. Pressing away, pressing the housing again, or Esc lowers it;
+    /// unraised, this host draws nothing, bakes nothing and reads no nav.</para>
     ///
-    /// <para><b>Expanded shows the console face larger; the MAX/CNSL pusher shows the rig's full
-    /// kit</b> (S6 PR 4). Click-to-expand keeps exactly the meaning it had — the same face, bigger,
-    /// the sounder/finder consistency ruling — and the MAX face is a SEPARATE, deliberate press of
+    /// <para><b>Raised shows the console face; the MAX/CNSL pusher shows the rig's full kit</b>
+    /// (S6 PR 4). Raising keeps exactly the meaning expanding had — the console face, the
+    /// sounder/finder consistency ruling — and the MAX face is a SEPARATE, deliberate press of
     /// <c>keys[0]</c>, which is the key the rig labels MAX/CNSL for precisely that (navRig.js:518).
     /// The MAX face carries the layer/tool rail, the waypoint and route manager, the range/bearing
     /// measure line and the depth-profile strip.</para>
     ///
-    /// <para><b>The face is transient and only means anything while expanded.</b> The brow's GPS
-    /// mount is a landscape slot sized for the console view (the rig's README says so), and the MAX
-    /// face's 3×5 rail would be unreadable there — so flush is always console, and collapsing drops
-    /// back to it. Which view you are looking through is where your eyes are, not a preference
+    /// <para><b>The face is transient and only means anything while raised.</b> Lowering the card
+    /// drops back to the console face, and Esc steps out of the MAX face before it lowers the card.
+    /// Which view you are looking through is where your eyes are, not a preference
     /// (<see cref="HelmInstrumentExpansion"/>'s standing rule).</para>
     ///
     /// <para><b>Typing a waypoint name takes the keyboard off the helm</b> — W/A/S/D are live helm
     /// keys and also four letters. The editor holds <see cref="HelmKeyCapture"/> for as long as it is
     /// open and releases it on commit AND on cancel; the gamepad is untouched, since you cannot type
     /// on one. See that class for why the suppression is on the raw key read.</para>
-    ///
-    /// <para><b>One raster, two presentations.</b> The flush face and the expanded card are the same
-    /// texture at two rects, so they cannot disagree about where the boat is — the honesty invariant
-    /// this arc has applied to every instrument.</para>
     ///
     /// <para><b>The state is never this host's.</b> Every waypoint, route point and crumb is read and
     /// written through <see cref="NavLocker"/> (which owns the caps), and every display preference
@@ -68,9 +63,9 @@ namespace HiddenHarbours.UI
     public sealed class ChartplotterOverlayHost : MonoBehaviour
     {
         [Header("Canvas")]
-        [Tooltip("Sorting order of the chartplotter canvas. Above the helm dash's own canvas (60) and " +
-                 "clear of the sounder/finder (62) — the plotter mounts in a DIFFERENT brow slot, so " +
-                 "both can be on screen at once and neither should ever z-fight the other.")]
+        [Tooltip("Sorting order of the chartplotter canvas. Above the helm band's own canvas (60), so " +
+                 "a raised card that reaches down over the band reads over it, and clear of the " +
+                 "sounder/finder (62) so no two instruments ever z-fight.")]
         [SerializeField] private int _sortingOrder = 63;
 
         private static ChartplotterOverlayHost _instance;
@@ -131,27 +126,22 @@ namespace HiddenHarbours.UI
         /// <summary>Which slot this host owns in the shared expansion arbiter.</summary>
         private const HelmInstrumentSlot Slot = HelmInstrumentSlot.Chartplotter;
 
-        // The EXPANDED card as a WINDOW (2026-08-07 ruling). The flush face is part of the dash
-        // picture and follows the HELM window instead — it gets no chrome of its own.
-        private readonly BoatUiWindowController _window =
-            new BoatUiWindowController(BoatUiWindowId.Chartplotter);
+        // True from the second frame of a raise: the press that raised the card was the band's, so
+        // the frame it rises must not read that same press as one on the card.
+        private bool _wasExpanded;
 
         /// <summary>The one host per play session (it self-installs and survives scene loads). Exposed so
         /// a PlayMode test can drive the host that is actually running rather than a second copy — a
         /// duplicate destroys itself in <c>Awake</c>.</summary>
         public static ChartplotterOverlayHost Instance => _instance;
 
-        /// <summary>Blown up to its own card rather than flush in the brow's GPS slot. Shared state, so
-        /// only one instrument is ever expanded. Exposed for tests.</summary>
+        /// <summary>Raised to its own card rather than only a housing in the band. Shared state, so
+        /// only one instrument is ever raised. Exposed for tests.</summary>
         public bool Expanded => HelmInstrumentExpansion.IsExpanded(Slot);
 
-        /// <summary>True while the instrument is on screen — i.e. this hull's helm actually carries a
-        /// GPS. Exposed for tests.</summary>
-        public bool Showing => _cardGo != null && _cardGo.activeSelf;
-
-        /// <summary>True while the chart is drawing FLUSH in the brow's authored GPS mount (the default),
-        /// false while it is expanded or has fallen back to its own card. Exposed for tests.</summary>
-        public bool FlushMounted { get; private set; }
+        /// <summary>True while the instrument is presented — this hull's helm actually carries a GPS
+        /// (its housing in the band, or its card raised). Exposed for tests.</summary>
+        public bool Showing { get; private set; }
 
         /// <summary>How many rasters this host has done — the repaint-cost guard's evidence, so a test
         /// can prove steady sailing costs a BOUNDED number of repaints rather than one per frame.</summary>
@@ -254,7 +244,7 @@ namespace HiddenHarbours.UI
 
         private void OnDestroy()
         {
-            if (_instance == this) { _instance = null; _window.StandDown(); }
+            if (_instance == this) _instance = null;
             // A host torn down mid-edit must never leave the helm deaf — that is a boat you cannot
             // steer, which is worse than the bug the gate prevents (HelmKeyCapture's remarks).
             ReleaseKeyboard();
@@ -271,31 +261,28 @@ namespace HiddenHarbours.UI
                 if (Expanded) HelmInstrumentExpansion.Collapse();
                 ForgetMaxFace();                // losing the glass must not strand the keyboard
                 _painted = false;
-                FlushMounted = false;
-                _window.StandDown();
-                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                StandDown();
                 return;
             }
 
-            // This instrument's WINDOW is hidden (hide-all or its own ×): stand down, and close any
-            // expansion — CloseMaxFace (not Forget) so the tool and layers survive the way they do
-            // for an ordinary collapse, and the keyboard is never stranded mid-edit.
-            if (!_window.Shown)
+            // Hide-all (M): stand down, and lower any raised card — CloseMaxFace (not Forget) so the
+            // tool and layers survive the way they do for an ordinary lowering, and the keyboard is
+            // never stranded mid-edit.
+            if (BoatUiWindows.AllHidden)
             {
                 if (Expanded) HelmInstrumentExpansion.Collapse();
                 CloseMaxFace();
-                FlushMounted = false;
-                _window.StandDown();
-                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                StandDown();
                 return;
             }
+            Showing = true;
 
-            // The flush face follows the HELM window (2026-08-07 ruling) — see SounderOverlayHost.
-            if (!Expanded && instruments.Fit.Rig != ConsoleRigKind.None
-                          && !BoatUiWindows.FlushMountsAvailable)
+            // Unraised, the housing in the band is the whole presentation, and the face is always the
+            // console's (class remarks): no bake, no nav read, no raster.
+            if (!Expanded)
             {
-                FlushMounted = false;
-                _window.StandDown();
+                CloseMaxFace();
+                _wasExpanded = false;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -315,43 +302,36 @@ namespace HiddenHarbours.UI
             if (_chart.EnsureBaked(GameServices.CurrentRegionBounds, night, GameServices.TidalTerrain))
                 BaseBakeCount++;
 
-            bool expanded = Expanded;
-            if (!expanded) CloseMaxFace();      // collapsed is always the console face (class remarks)
             bool max = _maxFace;
 
             NavRigState state = BuildState(instruments, in prefs, in cfg, night, max);
             ReadNav(save, regionId);
             ClampSelection();
 
-            Rect card = GlassRect(expanded, max);
-            if (expanded)
-            {
-                // The expanded card is this instrument's WINDOW (2026-08-07): the player's layout
-                // goes over the shipped one, and both faces' hit maps scale with the same rect.
-                card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
-            }
-            else
-            {
-                _window.StandDown();   // flush face / fallback card: no chrome, no publication
-            }
-            bool visible = !expanded || _window.CardVisible;
-            if (_image.enabled != visible) _image.enabled = visible;
-
+            Rect card = HelmBandLayout.RaisedCardRect(max ? NavRigGeometry.MaxW : NavRigGeometry.ConsoleW,
+                                                      max ? NavRigGeometry.MaxH : NavRigGeometry.ConsoleH,
+                                                      HudScreen.Width, HudScreen.Height,
+                                                      HudBandLayout.ReservedTopPx());
             LayoutCard(card);
-            if (visible) Repaint(in state, regionId, max);
+            Repaint(in state, regionId, max);
+            HelmInstrumentExpansion.PublishRaisedCard(Slot, card);
 
-            if (expanded)
-            {
-                _window.LayoutChrome(_cardGo.transform.parent);
-                if (_window.HandlePointer(controlDragLive: _measureDragging)) return;
-            }
-            if (BoatUiWindows.AnySession) return;   // a window drag owns the pointer
-            ReadPointer(instruments, save, regionId, in prefs, in cfg, in state, card, expanded, max);
+            bool raiseFrame = !_wasExpanded;
+            _wasExpanded = true;
+            if (raiseFrame) return;
+            ReadPointer(instruments, save, regionId, in prefs, in cfg, in state, card, max);
+        }
+
+        private void StandDown()
+        {
+            Showing = false;
+            _wasExpanded = false;
+            if (_cardGo.activeSelf) _cardGo.SetActive(false);
         }
 
         /// <summary>
         /// Drop the MAX face and everything that only exists on it. Called whenever the instrument
-        /// stops being expanded, by any route — the pusher, Esc, a click away, or losing the GPS with
+        /// stops being raised, by any route — the pusher, Esc, a click away, or losing the GPS with
         /// the boat.
         ///
         /// <para>The measure line goes with it because it is transient by contract (nothing about it
@@ -530,33 +510,6 @@ namespace HiddenHarbours.UI
             NavLocker.TrackIn(save, regionId, _track);
         }
 
-        /// <summary>
-        /// Where the glass draws this frame. FLUSH in the brow's authored GPS mount is the default
-        /// (S4.5); EXPANDED is a centred card at the largest integer scale that fits.
-        ///
-        /// <para>The expanded rect is also the FALLBACK for a frame with no dash published — unreachable
-        /// in shipped play, since the fit resolves through a <c>HelmConsoleDef</c> and no console means
-        /// no GPS, but better than vanishing at boot or on a test rig. See
-        /// <see cref="SounderOverlayHost"/> for the same reasoning at length.</para>
-        /// </summary>
-        private Rect GlassRect(bool expanded, bool max)
-        {
-            if (!expanded && HelmOverlayHost.TryDashCard(out Rect dash, out HelmFit fit)
-                          && HelmInstrumentMountLayout.TryBrowGpsRect(in fit, dash, out Rect mount))
-            {
-                FlushMounted = true;
-                return mount;
-            }
-            FlushMounted = false;
-            Rect card = ChartplotterOverlayLayout.ExpandedCardRect(
-                Screen.width, Screen.height,
-                max ? NavRigGeometry.Face.Max : NavRigGeometry.Face.Console);
-            // Keep the expanded glass out from under the always-on band (S4.5) — it slides down before
-            // it shrinks, because this is the state the instrument is READ in.
-            return HudBandLayout.FitBelowBand(card, Screen.width, Screen.height,
-                                              HudBandLayout.ReservedTopPx());
-        }
-
         // ---- layout -------------------------------------------------------------------------------
 
         private void LayoutCard(Rect card)
@@ -694,15 +647,15 @@ namespace HiddenHarbours.UI
         // ---- pointer + keys ------------------------------------------------------------------------
 
         /// <summary>
-        /// The selection model, the sounder's exactly (S4.5). FLUSH: the whole face is one button — click
-        /// it to EXPAND, and nothing else is live, so a glance at the dash can never be a stray waypoint.
-        /// EXPANDED: the four pushers, the two strips and the chart all work, and a click ANYWHERE
-        /// outside collapses. A click inside that lands on no control does nothing rather than closing,
-        /// so a near-miss on a pusher is never punished. Esc collapses from anywhere.
+        /// The raised card's pointer, the sounder's exactly (H2): the four pushers, the two strips and
+        /// the chart all work, and a press inside that lands on no control does nothing rather than
+        /// lowering, so a near-miss on a pusher is never punished. Esc steps back from anywhere. A press
+        /// OUTSIDE the card is the band's to route while the band is up (its housings, then the
+        /// click-away); with no band it is this card's click-away.
         /// </summary>
         private void ReadPointer(IHelmInstruments instruments, SaveData save, string regionId,
                                  in ChartplotterPrefs prefs, in ChartplotterSettings cfg,
-                                 in NavRigState st, Rect card, bool expanded, bool max)
+                                 in NavRigState st, Rect card, bool max)
         {
             var kb = Keyboard.current;
 
@@ -718,7 +671,7 @@ namespace HiddenHarbours.UI
                 return;
             }
 
-            if (expanded && kb != null && kb.escapeKey.wasPressedThisFrame)
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 // Esc steps back one level: out of the MAX face first, then out of the card. Closing
                 // the whole instrument from the face you were working in would lose the tool, the
@@ -746,18 +699,13 @@ namespace HiddenHarbours.UI
             if (!mouse.leftButton.wasPressedThisFrame) return;
 
             // A press on ANY window's chrome is that window's business — never this instrument's
-            // expand, collapse-away or controls (2026-08-07 ruling).
+            // controls or click-away (2026-08-07 ruling).
             if (BoatUiWindows.OverAnyChrome(pos)) return;
-
-            if (!expanded)
-            {
-                if (inCard) HelmInstrumentExpansion.Click(Slot);
-                return;
-            }
 
             if (!inCard)
             {
-                HelmInstrumentExpansion.Click(HelmInstrumentSlot.None);   // click-away → collapse
+                if (!HelmOverlayHost.BandUp)
+                    HelmInstrumentExpansion.Click(HelmInstrumentSlot.None);   // click-away → lower
                 return;
             }
 
@@ -1002,8 +950,8 @@ namespace HiddenHarbours.UI
 
         // ---- the MAX face's actions ------------------------------------------------------------------
 
-        /// <summary>MAX/CNSL. Only meaningful while expanded — the flush mount is always the console
-        /// face, and the pusher is not live there anyway (the whole flush face is one click target).</summary>
+        /// <summary>MAX/CNSL. Only meaningful while raised — the housing in the band shows no face at
+        /// all, and the pusher is live only on the raised card.</summary>
         private bool ToggleMaxFace()
         {
             if (!Expanded) return false;

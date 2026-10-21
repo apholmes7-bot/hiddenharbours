@@ -262,6 +262,8 @@ Phased deliberately: **fetch modulates the visual layers first** (Tier A cost), 
 hulls ride only in the later phase, where it earns a twin and tests. Visual-only fetch means the player *sees* the
 lee before the boat *feels* it — an acceptable intermediate, and an explicit one.
 
+Stage B (2026-10-14) now applies fetch growth per wavelength; ADR 0018 records the law, scalar consumers and approximation limits.
+
 **(6) #5 — Spectrum-shaped swell (JONSWAP weighting + wave groups).**
 The largest visual gap and the honest reason people reach for FFT: a handful of sine trains repeats at large scale
 and never produces **sets**. Replace the flat train weighting in `_WaveFieldParams` with a **JONSWAP-shaped
@@ -434,6 +436,38 @@ deliberately not pre-empted here.
 **Ships OFF, both gates.** `_WakeFoamStrength` = 0 in `Water.mat` and all eight presets, and nothing in the
 shipped scenes carries a `FoamInjector` — so there is no "buffer off" branch to keep byte-identical, only an
 absent pass. That absence **is** the passthrough proof, the same shape as #8's.
+
+### Amendment to (1) #7 (2026-10-18, W4-4) — in clear shallows the bed is the ground's own splat
+
+Ruling 7 (2026-10-10): "Shallows: 2B. 2A stays unbuilt as the mobile-port fallback." The bed's SOURCE changes and
+#7's law does not. Where the floor switch is on, `bed` is the ground's own splat albedo, read through the one include
+the terrain itself draws by (`Include/TerrainSplatAlbedo.hlsl`, W4-4a, ADR 0028's 2026-10-18 note), instead of
+`_SeabedTex`'s colour alone. It lands **inside the opaque composite**, where the bake's colour always stood: after
+the per-channel transmission and its bands, before the lerp that lays the bed into `col.rgb`. `col.a` stays opaque
+and no alpha blend returns, so §17.3's cancellation stays dissolved by construction.
+
+- **The three faults that retired the see-through shallows stay fixed, each guarded by name** in
+  `ShallowsFloorShaderTests`: (1) the floor goes through the palette grade, `TheFloor_GoesThroughThePaletteGrade`;
+  (2) it is absorbed per channel by the same `AbsorptionTransmission` and `_AbsorptionBands`,
+  `TheFloor_IsAbsorbedPerChannel`; (3) the caustics, C2a's clarity included, still light it,
+  `TheCaustics_LightTheSplatFloor`.
+- **The bake stays.** Its alpha is still the coverage. The ground's hem (the terrain's own alpha) lays the ground
+  over it by the over operator in straight alpha, so the bake's colour is still the bed wherever the floor is off,
+  unbound, or below the ground's paint floor.
+- **The pixel grid is the ground's own.** The floor is pixelized as the terrain is: its kit point-sampled at
+  world-anchored coordinates, 32 texels a metre (`_PixelsPerMetre`), not the sea's 24 px/m `Pixelize` cell that the
+  bake keeps, so at the waterline the floor and the dry ground beside it are the same pixels. The bend through the
+  surface, k × slope × depth with k = `GameConfig.ShallowsFloorRefraction` = 0.25 (about 1 − 1/1.33), is rounded to
+  whole ground pixels: the floor steps by whole texels with the swell and the tide and never resamples between them.
+  The Pixelation table's #7 row holds for the bake.
+- **Ships OFF until its plates are accepted.** `GameConfig.ShallowsFloor` is false in code and in
+  `GameConfig.asset`; the sea reads it once, at a uniform gate whose skip is exact, and a stale asset that
+  deserializes it as 0 reads off. The floor compiles only where `HH_SHALLOWS_FLOOR` is defined, which it is not under
+  `SHADER_API_MOBILE`: a mobile build keeps today's bed exactly, and 2A (the splat's colours baked into
+  `_SeabedTex`) stays as possible as it was.
+- **What did not change.** σ, the ratio, the bands and every mood's turbidity; `depth`, `clip()`, `_WaterLevel` and
+  the height read the sim uses (visual only, rule 5). Live spec:
+  [water rendering §17.13](../design/water-rendering.md#1713-the-floor-in-the-shallows-w4-4-2026-10-18).
 
 ---
 

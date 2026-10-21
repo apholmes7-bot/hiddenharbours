@@ -231,8 +231,15 @@ namespace HiddenHarbours.Tests.PlayMode
             // Pinching inside the no-go: 20° off the true wind, well inside the def's 45°.
             BoatController boat = null;
             yield return BuildSloop(20f, headingDeg: 47f, twsKn: TwsKn, ready: (b, _) => boat = b);
+            // This arm measures polar gating AT 20 degrees, not the time she takes to pay off.
+            // The real sloop now escapes irons; hold the stated heading so the no-go premise survives.
+            var body = boat.GetComponent<Rigidbody2D>();
+            body.constraints |= RigidbodyConstraints2D.FreezeRotation;
+            body.rotation = -47f;
             for (int step = 0; step < 600; step++) yield return new WaitForFixedUpdate();
 
+            Assert.AreEqual(20f, Mathf.Abs(boat.LastSailWind.TrueAngleDeg), 0.01f,
+                "the drive guard must still be measuring its stated 20-degree no-go premise");
             Assert.AreEqual(0f, boat.LastSailTargetKn, 1e-4f,
                 "inside the no-go the polar hands out no speed at all.");
             float inIrons = SailDrive.ToKnots(boat.GetComponent<Rigidbody2D>().linearVelocity.magnitude);

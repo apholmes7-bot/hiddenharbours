@@ -534,6 +534,7 @@ namespace HiddenHarbours.Art
             // same number — the player's rule. Turned BEFORE she is posed, as aboard she is stood before:
             // the look reads her own ground as it lies this frame (amendment 2026-09-28).
             float heading = character.HeadingDegrees;
+            heading = FigureHeadingDial.Heading(heading, FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             float yaw = skin.AzimuthCounterClockwise ? -heading : heading;
             _ashoreFigure.SetAshoreYaw(yaw);
 
@@ -719,6 +720,8 @@ namespace HiddenHarbours.Art
             Vector3 local = stand.FigureStandRigMetres;
             float bearing = stand.FigureDeckBearingDegrees;
             float yaw = skin.AzimuthCounterClockwise ? -bearing : bearing;
+            yaw = FigureHeadingDial.DeckYaw(yaw, _hull != null ? _hull.HeadingDirUnits * HullMeshMath.DegreesPerDirUnit : 0f,
+                                            FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             FigureLocalMetres = local;
             FigureYawDegrees = yaw;
             _figureRoot.SetLocalPositionAndRotation(local, Quaternion.AngleAxis(yaw, Vector3.forward));

@@ -25,8 +25,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// </list>
     ///
     /// <para>Every one is checked at the six screens the band is sized for, against a band of 144·k
-    /// (k = max(1, H div 1080)) and against the tiller's 120×244 card at ×1 with its title strip — the
-    /// card the host publishes for it. With nothing covered, each is where it is on 91ff97f2, bit-exact.
+    /// (k = max(1, H div 1080)) and against the tiller's 120×244 card where the host puts it — the
+    /// card the host publishes for it, the card alone since H2. With nothing covered, each is where it is on 91ff97f2, bit-exact.
     /// The last test is rule 4: every reader reaches the seam through Core, never UI.</para>
     /// </summary>
     public class HelmFootprintOverlayTests
@@ -65,12 +65,13 @@ namespace HiddenHarbours.Tests.EditMode
         private static HelmFootprintArea Band(Vector2Int s)
             => HelmFootprintArea.FullWidthBand(144f * Mathf.Max(1, s.y / 1080));
 
-        /// <summary>The tiller's card at ×1 where the host puts it, with its title strip — exactly what
-        /// <see cref="HelmOverlayHost"/> publishes for it.</summary>
+        /// <summary>The tiller's card where the host puts it — exactly what <see cref="HelmOverlayHost"/>
+        /// publishes for it (the card alone; its title strip retired with the windows, H2).</summary>
         private static HelmFootprintArea TillerCard(GameConfig cfg, Vector2Int s)
             => HelmOverlayHost.FootprintOf(
-                HelmOverlayLayout.CardRect(false, TillerRigRender.W, TillerRigRender.H, cfg.HelmOverlay, s.x, s.y),
-                cfg.BoatUiWindows.TitleBarPx * HudBandLayout.ScaleFactor(s.x, s.y));
+                HelmOverlayHost.HelmCardKind.Tiller,
+                HelmOverlayLayout.CardRect(TillerRigRender.W, TillerRigRender.H, cfg.HelmOverlay, s.x, s.y),
+                s.y);
 
         private static bool Meets(in HelmFootprintArea covered, Rect box)
             => covered.Overlaps(Rect.MinMaxRect(box.xMin + Eps, box.yMin + Eps, box.xMax - Eps, box.yMax - Eps));

@@ -115,8 +115,8 @@ namespace HiddenHarbours.UI
             float scale = HudBandLayout.ScaleFactor(screenW, screenH);
             float gap = (ApparentWindTopRef - HudController.LabelBoxHeightRef) * scale;
             float px = covered.LiftToClear(NavClusterScreenRect(placement, screenW, screenH), gap);
-            // A manually parked window must never push the heading off the screen. The shipped
-            // dash reserves the full cluster height, so this ceiling does not compromise its clearance.
+            // A tall card must never push the heading off the screen. A full-width band reserves
+            // far less than the screen's height, so this ceiling never compromises its clearance.
             return Mathf.Clamp(px / scale, 0f, Mathf.Max(0f, screenH / scale - HeadingTopRef));
         }
 
@@ -151,9 +151,10 @@ namespace HiddenHarbours.UI
 
         /// <summary>
         /// The moved cluster's column: its right anchor, as a fraction of the canvas width, and its left
-        /// margin. 0.42 is where the SMALL dash card's left edge lands at the shipped scales (a 600-wide
-        /// rig at DashSmallScale 0.5, centred), so the column stops short of it with room to spare;
-        /// left-aligned text then grows rightward from the margin only as far as its own length.
+        /// margin. It was set clear of the retired small dash card (whose left edge sat at 0.42); the
+        /// tiller's card (120 rig px at SmallScale, centred) sits further in still, and above a
+        /// full-width band the column is lifted clear instead (<see cref="NavClusterLiftRef"/>).
+        /// Left-aligned text then grows rightward from the margin only as far as its own length.
         /// </summary>
         public const float ClearWidth01 = 0.34f, ClearMarginXRef = 16f;
     }
