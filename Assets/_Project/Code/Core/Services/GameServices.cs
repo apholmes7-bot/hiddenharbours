@@ -924,6 +924,15 @@ namespace HiddenHarbours.Core
         public static bool HullKeylineFlood =>
             Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
 
+        /// <summary>The ground's underwater clip (W4-4a): does the terrain skip its shading where the
+        /// displaced sea covers it opaquely this frame? Same contract as <see cref="HullKeylineFlood"/>,
+        /// including the <c>Config != null</c> discipline. Falls back to
+        /// <see cref="GameConfig.DefaultTerrainUnderwaterClip"/> — <b>OFF</b> — so an unwired scene draws
+        /// the ground everywhere, as before. Read per camera per frame by <c>IsoFacetHullFeature</c>.
+        /// FLAG lead-architect: new Core contract (the W4-4 shallows-floor seam).</summary>
+        public static bool TerrainUnderwaterClip =>
+            Config != null ? Config.TerrainUnderwaterClip : GameConfig.DefaultTerrainUnderwaterClip;
+
         public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
         public static int HullReflectionResolutionDivisor =>
             Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;

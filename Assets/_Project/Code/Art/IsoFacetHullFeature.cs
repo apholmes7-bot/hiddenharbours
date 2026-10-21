@@ -170,6 +170,11 @@ namespace HiddenHarbours.Art
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+            // W4-4a: the ground's underwater clip is OFF for this camera until its own water pass
+            // raises it (the HH Displaced Water block). Lowered first, before every early return, so a
+            // camera without that pass (no displaced sea, a preview, the Null device) never reads a
+            // flag the previous camera left raised, nor a coverage texture that is not its own.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
             // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
             // this camera's recording publishes its own. A no-op once zero.
             IsoFacetFigureTarget.Unpublish();
@@ -279,6 +284,7 @@ namespace HiddenHarbours.Art
             _pass.KeylineFlood = IsoFacetKeylineGate.Enabled;
             _pass.DrawHulls = hulls;
             _pass.DrawWater = water;
+            _pass.ClipTerrain = water && GameServices.TerrainUnderwaterClip;
             _pass.DrawGuard = _interiorMask;
             _pass.DrawReflections = reflect;
             _pass.MeshReflections = meshReflect;
@@ -312,6 +318,8 @@ namespace HiddenHarbours.Art
 
         protected override void Dispose(bool disposing)
         {
+            // W4-4a: never leave the ground clipping against a coverage nobody draws any more.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
             _pass?.Dispose();
             _pass = null;
             CoreUtils.Destroy(_resolveMaterial);
@@ -369,6 +377,9 @@ namespace HiddenHarbours.Art
             public bool KeylineFlood;
             /// <summary>Record the displaced-water pass this frame (any active DisplacedWaterSurface)?</summary>
             public bool DrawWater;
+            /// <summary>W4-4a: raise the ground's underwater clip once the water's coverage is drawn
+            /// (<see cref="DrawWater"/> AND <c>GameServices.TerrainUnderwaterClip</c>)?</summary>
+            public bool ClipTerrain;
             /// <summary>Record the object-reflection pass this frame (any live ReflectiveObject)?</summary>
             public bool DrawReflections;
 
@@ -563,6 +574,7 @@ namespace HiddenHarbours.Art
             {
                 public RendererListHandle Renderers;
                 public TextureHandle ClearReflection;
+                public bool ClipTerrain;
             }
 
             private class GuardPassData
@@ -1091,6 +1103,10 @@ namespace HiddenHarbours.Art
                             builder.AllowGlobalStateModification(true);
                             builder.SetGlobalTextureAfterPass(clearReflection, ReflectionShaderIds.ReflectTex);
                         }
+                        // W4-4a: the pass raises the ground's clip flag, a global, once its coverage
+                        // is drawn (AddRenderPasses lowered it for this camera).
+                        passData.ClipTerrain = ClipTerrain;
+                        if (ClipTerrain) builder.AllowGlobalStateModification(true);
                         if (reflectTex.IsValid()) builder.UseTexture(reflectTex, AccessFlags.Read);
                         if (foamTex.IsValid()) builder.UseTexture(foamTex, AccessFlags.Read);
                         builder.UseRendererList(passData.Renderers);
@@ -1110,6 +1126,10 @@ namespace HiddenHarbours.Art
                             if (data.ClearReflection.IsValid())
                                 ctx.cmd.SetGlobalTexture(ReflectionShaderIds.ReflectTex, data.ClearReflection);
                             ctx.cmd.DrawRendererList(data.Renderers);
+                            // The ground draws after this pass (BeforeRenderingSprites on the lowest
+                            // layer), so from here to the end of this camera it reads this coverage.
+                            if (data.ClipTerrain)
+                                ctx.cmd.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 1f);
                         });
                     }
                 }
