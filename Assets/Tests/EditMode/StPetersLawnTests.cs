@@ -116,6 +116,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryLawn_ReachesTheGroundItsBuildingStandsOn()
         {
+            Assert.AreEqual(9,StPetersYards.Yards.Count);
             foreach (var yard in StPetersYards.Yards)
             {
                 float[] map = StPetersLawns.CoverageFor(yard.Mown, W, H, WorldMin, WorldSize);

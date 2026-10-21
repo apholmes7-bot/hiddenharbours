@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using HiddenHarbours.Vehicles;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -80,12 +81,7 @@ namespace HiddenHarbours.App.Editor
         // ---- where the row stands, DERIVED ------------------------------------------------------
 
         /// <summary>
-        /// How far outside the shop's front boundary the machines stand (m).
-        ///
-        /// <para>Outside it, not on it, and that is the mow line talking: the store's yard is
-        /// <c>MownStyle.Striped</c> and somebody cuts it. A stride and a half puts three machines on
-        /// the open ground at the lane rather than on the shop's own grass, and it is short enough
-        /// that they still read as belonging to the shop.</para>
+        /// How far inside the shop's forecourt the machine row stands, in ground metres.
         /// </summary>
         public const float StandOffMetres = 2f;
 
@@ -150,17 +146,19 @@ namespace HiddenHarbours.App.Editor
         /// the opening the fence data already publishes stays walkable — and runs along
         /// <see cref="Across"/> away from it.</para>
         /// </summary>
-        public static Vector2 StandFor(int index, IReadOnlyList<float> beamsMetres)
+        public static Vector2 StandFor(int index, IReadOnlyList<float> beamsMetres) =>
+            StandFromGate(Gate, Forward, index, beamsMetres);
+
+        public static Vector2 StandFromGate(Vector2 gate, Vector2 forward, int index, IReadOnlyList<float> beamsMetres)
         {
-            if (beamsMetres == null || index < 0 || index >= beamsMetres.Count) return Gate;
-
-            // Distance along the row to THIS machine's centreline: past the gate's own opening, then
-            // every earlier machine's half-beam, the gap, and this one's half-beam in turn.
-            float along = YardPlan.GateWidthMetres * 0.5f + beamsMetres[0] * 0.5f;
+            if (beamsMetres == null || index < 0 || index >= beamsMetres.Count) return gate;
+            float along = YardPlan.GateWidthMetres * .5f + beamsMetres[0] * .5f;
             for (int i = 1; i <= index; i++)
-                along += beamsMetres[i - 1] * 0.5f + GapMetres + beamsMetres[i] * 0.5f;
-
-            return Gate + Forward * StandOffMetres + Across * along;
+                along += beamsMetres[i-1] * .5f + GapMetres + beamsMetres[i] * .5f;
+            Vector2 across = new Vector2(forward.y, -forward.x);
+            Vector2 delta = -forward * StandOffMetres + across * along;
+            delta.y *= IsoGround.GroundDepthScale;
+            return gate + delta;
         }
 
         /// <summary>Each machine's published beam (m), in row order — her collider box across, which

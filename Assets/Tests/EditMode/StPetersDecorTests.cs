@@ -216,6 +216,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryPlacedBuilding_HasAGrassClearing()
         {
+            Assert.AreEqual(9,StPetersVillage.Sites.Count+StPetersShops.Sites.Count);
             foreach (var house in StPetersVillage.Sites)
                 AssertCleared(house.Key, house.Position);
 

@@ -293,8 +293,10 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 if (yard.Name == StPetersYards.CamperLotYard) continue;   // faces the cottage, not the green
 
+                Vector2 approach = StPetersVillageYards.TryKey(yard.Name,out string key)
+                    ? StPetersVillageYards.Read<LotDef>("lot.st_peters."+key).Approach : green;
                 foreach (Vector2 gate in yard.Gates)
-                    Assert.Less(Vector2.Distance(gate, green), Vector2.Distance(yard.Owner, green),
+                    Assert.Less(Vector2.Distance(gate, approach), Vector2.Distance(yard.Owner, approach),
                         $"'{yard.Name}' opens on the far side from the green — you would walk round " +
                         "the house to get in the gate.");
             }
