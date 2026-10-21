@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_027
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_027
+  Status: 2
+  SplitFrom: 
+  Follows: wall.nmc_026
+  Rock: sandstone
+  Class: 5
+  Aspect: E
+  Batter: ramp
+  Brow:
+  - {x: 33.40866, y: -22.259838}
+  - {x: 33.400333, y: -22.009977}
+  - {x: 33.392002, y: -21.760115}
+  - {x: 33.383675, y: -21.510254}
+  - {x: 33.375347, y: -21.260393}
+  - {x: 33.36702, y: -21.010532}
+  Toe:
+  - {x: 36.406994, y: -22.159893}
+  - {x: 36.398666, y: -21.910032}
+  - {x: 36.390335, y: -21.66017}
+  - {x: 36.382008, y: -21.410309}
+  - {x: 36.37368, y: -21.160448}
+  - {x: 36.365353, y: -20.910587}
+  DropMetres:
+  - 5.508892
+  - 5.340171
+  - 5.1751785
+  - 5.0152607
+  - 4.8617635
+  - 4.716032
+  ToeElevations:
+  - 0.49110812
+  - 0.65982914
+  - 0.82482153
+  - 0.9847391
+  - 1.1382366
+  - 1.2839681
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.9927716
+  - 5.9953737
+  - 5.997964
+  - 5.999008
+  - 5.999961
+  - 6
+  ToePass9:
+  - 5.963361
+  - 5.969123
+  - 5.9731584
+  - 5.9741077
+  - 5.9751015
+  - 5.9761686
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 27
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 
+  Why: 'Banked on G3 (plan B): stations k0-k5 as built, the brow on the ground (worst 0.007 m), the toe 4.7-5.5 m off it, where G3''s face is 43-44 deg, which the default bake does not draw. It stands as built until that face has its own wall.'

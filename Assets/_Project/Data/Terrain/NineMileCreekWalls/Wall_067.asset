@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_067
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_067
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 47.633854, y: 80.38244}
+  - {x: 47.716442, y: 80.61841}
+  - {x: 47.79903, y: 80.85437}
+  - {x: 47.88162, y: 81.09033}
+  - {x: 47.964207, y: 81.3263}
+  - {x: 48.04679, y: 81.56226}
+  - {x: 48.12938, y: 81.79823}
+  - {x: 48.211967, y: 82.034195}
+  - {x: 48.294556, y: 82.27016}
+  Toe:
+  - {x: 50.465427, y: 79.39139}
+  - {x: 50.548016, y: 79.62736}
+  - {x: 50.630604, y: 79.86332}
+  - {x: 50.713192, y: 80.09928}
+  - {x: 50.79578, y: 80.33525}
+  - {x: 50.878365, y: 80.57121}
+  - {x: 50.960953, y: 80.80718}
+  - {x: 51.04354, y: 81.043144}
+  - {x: 51.12613, y: 81.279106}
+  DropMetres:
+  - 10.550377
+  - 10.572176
+  - 10.586987
+  - 10.594293
+  - 10.596385
+  - 10.604982
+  - 10.620996
+  - 10.643915
+  - 10.673222
+  ToeElevations:
+  - -4.5503764
+  - -4.572176
+  - -4.586986
+  - -4.5942926
+  - -4.596385
+  - -4.6049824
+  - -4.620997
+  - -4.643915
+  - -4.6732216
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 67
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 2.59-2.66 m off the ground, no face under it). Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'
