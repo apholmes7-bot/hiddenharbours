@@ -251,3 +251,31 @@ sea clutter is read live from the sea state (the instrument answering to the wea
 drawn at zero because there is no precipitation model. Mapping the existing `Visibility` (fog) onto the
 rain dial would invert the instrument's meaning: seeing through fog is what a radar is FOR, and the
 Smother (canon M4) is the slice that gives it a real source.
+
+### Recorded: the helm's band retires the focus and the windows (H2, 2026-10-17)
+
+On every helm with a wheel the console is no longer a card that focuses and a window that drags. It is
+**the band**: a full-width strip along the bottom edge of the screen, 144 native px tall at a whole scale
+k = max(1, ⌊H / 1080⌋), with one tinted panel and the pieces its rig carries (`HelmBandGeometry`: the
+skiffs' table and the pilothouses' table, picked by the helm Def's `Rig`, never by a hull). Option A
+stands as written: every piece is cut from the same live C# renders (the four dashes, `WheelRigRender`,
+`CompassRigRender` and the instruments' own glass), and each uploads only on its own change (rule 7).
+
+- **The instruments' two states become a plate and a raised card.** The flush face is now the
+  instrument's plate in its housing in the band. A click raises the instrument's own native surface,
+  the card the standalone instrument always drew, one at a time (`HelmInstrumentExpansion`); Esc, a
+  click away or a second click lowers it. The owner's answer to Phase A's Q1 (B, 2026-10-17): a raised
+  card takes the largest whole scale that fits between the band and the top HUD band, and where none
+  does (720p, 800p) it keeps today's scale and reaches down over the band, centred, the wheel included;
+  the keys still steer. The card is the same surface as before, so the repaint costs measured above
+  still price it.
+- **Retired:** the windows' drag, resize, collapse and close (`BoatUiWindowChrome`,
+  `BoatUiWindowController`, `BoatUiWindowLayout` and `BoatUiWindowSettings`); the dash's focus; and the
+  sounder's and the finder's fallback card with its dials (`CardScale`, `MarginX`, `MarginY`: the seat's
+  call on Q3). Twenty-two `GameConfig` fields go with them.
+- **What stays of the windowing:** M hides the helm's UI and brings it back, now read through the
+  bindings asset's `Hud` map (ADR 0043), and the watch face keeps its own ×. The tiller's and the lone
+  lever's cards stay as they were, without the focus.
+- The band says what it covers through ADR 0050's seam (`HelmFootprint.FullWidthBand`), and the camera
+  lifts her by `CameraBandShare` of its height (half, as shipped).
+- The panel is the greybox until H3 paints the band's art. The owner accepts the plates before the merge.

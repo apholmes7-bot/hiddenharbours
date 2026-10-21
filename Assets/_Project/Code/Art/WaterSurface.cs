@@ -299,10 +299,17 @@ namespace HiddenHarbours.Art
         private static readonly int IdHWorldMin  = Shader.PropertyToID("_HeightWorldMin");
         private static readonly int IdHWorldSize = Shader.PropertyToID("_HeightWorldSize");
         private static readonly int IdSeabedTex  = Shader.PropertyToID("_SeabedTex");
+        // (W4-4) The floor's gate: 1 only while a live ground sharing this sea's frame is bound with
+        // its kit loaded (TerrainSplatSurface.WriteGroundFloor writes it); 0 keeps the floor off.
+        private static readonly int IdDetailLoaded = Shader.PropertyToID("_DetailLoaded");
         // (ADR 0023 arc step 3) the owner's GameConfig salience knobs — pushed from _config when wired.
         private static readonly int IdCapSalienceStrength  = Shader.PropertyToID("_CapSalienceStrength");
         private static readonly int IdCapEnvelopeThreshold = Shader.PropertyToID("_CapEnvelopeThreshold");
         private static readonly int IdEnvelopeBandStrength = Shader.PropertyToID("_EnvelopeBandStrength");
+        // (W4-4b) The floor in the shallows: its switch and its bend, pushed from _config beside the salience
+        // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
+        private static readonly int IdShallowsFloor = Shader.PropertyToID("_ShallowsFloor");
+        private static readonly int IdShallowsFloorRefraction = Shader.PropertyToID("_ShallowsFloorRefraction");
         // (ADR 0027 #10) The camera FRAMING the ripple band's density fade reads — a GLOBAL, not an MPB
         // property, because it belongs to the camera rather than to this renderer.
         private static readonly int IdSeaFramingHeight = Shader.PropertyToID("_SeaFramingHeight");
@@ -425,6 +432,7 @@ namespace HiddenHarbours.Art
         private Vector2 _smoothedCurrent;
         private Vector2 _smoothedWind;
         private bool _flowInitialized;     // first push snaps to the live sim (no ease-in from zero on enable)
+        private int _groundFloorVersion = -1;   // (W4-4) the ground registry's version at the last floor bind
 
         // ==== the SAMPLED targets (slow tier) the per-frame ease chases ====================================
         // The sim read is throttled — the tide and the weather are slow, and re-reading four anchor materials
@@ -728,6 +736,9 @@ namespace HiddenHarbours.Art
                     // The owner's salience knobs show in the Scene view too, so edit-mode design
                     // reads the same sea Play will (a no-op while no config is wired).
                     PushSalienceKnobs(_mpb);
+                    PushShallowsFloor(_mpb);
+                    // (W4-4) Re-bind the floor only when a ground enabled, disabled or re-pushed.
+                    if (_groundFloorVersion != TerrainSplatSurface.LiveVersion) FeedGroundFloor(_mpb);
                     _renderer.SetPropertyBlock(_mpb);
                 }
                 return;
@@ -823,6 +834,11 @@ namespace HiddenHarbours.Art
             // in-Play config edit reaches the sea within one refresh. Pushed on the flat renderer's
             // block, which the displaced surface COPIES each tick — one push covers both passes.
             PushSalienceKnobs(_mpb);
+            PushShallowsFloor(_mpb);
+
+            // (W4-4) The ground's floor, re-bound only when a ground enabled, disabled or re-pushed: an
+            // int compare per push, and the bind itself writes no new texture and allocates nothing.
+            if (_groundFloorVersion != TerrainSplatSurface.LiveVersion) FeedGroundFloor(_mpb);
 
             // (ADR 0017) WEATHER-DRIVEN MOOD: when enabled, blend the MOOD/COLOUR props from the anchor presets
             // by the eased weather weights and override them on the SAME MPB — composing with the physics props
@@ -1078,6 +1094,21 @@ namespace HiddenHarbours.Art
             mpb.SetFloat(IdCapSalienceStrength, dw.CapSalienceStrength);
             mpb.SetFloat(IdCapEnvelopeThreshold, dw.CapEnvelopeThreshold);
             mpb.SetFloat(IdEnvelopeBandStrength, dw.EnvelopeBandStrength);
+        }
+
+        /// <summary>
+        /// (W4-4b) The floor in the shallows: its switch and its bend, from <see cref="GameConfig.ShallowsFloor"/>
+        /// and <see cref="GameConfig.ShallowsFloorRefraction"/>, re-read every push as the salience knobs are,
+        /// so turning it on in Play reaches the sea within one refresh. Unlike them it ALWAYS writes: with no
+        /// config wired it writes the code's defaults, the switch OFF, so no block keeps a stale "on". The
+        /// displaced chunks copy this block, so one push covers both passes. Visual only (rule 5).
+        /// </summary>
+        private void PushShallowsFloor(MaterialPropertyBlock mpb)
+        {
+            bool on = _config != null ? _config.ShallowsFloor : GameConfig.DefaultShallowsFloor;
+            float bend = _config != null ? _config.ShallowsFloorRefraction : GameConfig.DefaultShallowsFloorRefraction;
+            mpb.SetFloat(IdShallowsFloor, on ? 1f : 0f);
+            mpb.SetFloat(IdShallowsFloorRefraction, bend);
         }
 
         // ==== Weather-driven palette (ADR 0017) ===========================================================
@@ -1535,6 +1566,29 @@ namespace HiddenHarbours.Art
         private void FeedSeabedTexture(MaterialPropertyBlock mpb)
         {
             mpb.SetTexture(IdSeabedTex, _seabedTexture != null ? _seabedTexture : ClearSeabedFallback());
+            // (W4-4) The ground's floor rides every bottom feed, so it reaches the block (and the
+            // displaced chunks, which copy it) wherever _SeabedTex does.
+            FeedGroundFloor(mpb);
+        }
+
+        /// <summary>
+        /// (W4-4) Bind the ground this sea is drawn over to its floor: the live
+        /// <see cref="TerrainSplatSurface"/> holding the SAME height texture this block feeds the shader,
+        /// over the same world rectangle and elevation range, writes its look onto this block through its
+        /// own writer (<see cref="TerrainSplatSurface.WriteGroundFloor"/>). With no such ground it writes
+        /// <c>_DetailLoaded</c> 0, which keeps the floor off. Runs with every bottom feed and whenever a
+        /// ground enables, disables or re-pushes (<see cref="TerrainSplatSurface.LiveVersion"/>), never per
+        /// frame. The shader's floor (W4-4b) reads it only while <see cref="GameConfig.ShallowsFloor"/> is on.
+        /// </summary>
+        private void FeedGroundFloor(MaterialPropertyBlock mpb)
+        {
+            _groundFloorVersion = TerrainSplatSurface.LiveVersion;
+            Texture height = mpb.HasTexture(IdHeightTex) ? mpb.GetTexture(IdHeightTex) : null;
+            Vector2 min = _heightWorldCenter - _heightWorldSize * 0.5f;
+            TerrainSplatSurface ground = TerrainSplatSurface.FindSharing(height, min, _heightWorldSize,
+                                                                         _heightMin, _heightMax);
+            if (ground != null) ground.WriteGroundFloor(mpb);
+            else mpb.SetFloat(IdDetailLoaded, 0f);
         }
 
         // A transparent 1x1 standing in for "this region has no baked bottom". Created once, shared by

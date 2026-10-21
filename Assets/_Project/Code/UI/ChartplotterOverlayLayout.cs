@@ -4,71 +4,20 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// The chartplotter card's PURE placement and hit maths (ADR 0025 S6) — split out of its host so the
+    /// The chartplotter card's PURE hit maths (ADR 0025 S6) — split out of its host so the
     /// geometry is EditMode-testable without a canvas, exactly as <see cref="SounderOverlayLayout"/> is
     /// for the sounder. Screen space is Unity's (origin bottom-left, y up); RIG space is the rigs' (origin
     /// top-left, y down) and the screen→rig mapping is the shared
     /// <see cref="HelmOverlayLayout.ScreenToRig"/> — one mapper, so a hit box can never mean two things.
     ///
-    /// <para><b>Everything here is measured against the CONSOLE face at native size</b>
-    /// (<see cref="NavRigGeometry.ConsoleW"/> × <see cref="NavRigGeometry.ConsoleH"/>), so expanding the
-    /// instrument needs no special-casing: the expanded card is the same face at a bigger scale (§ the
-    /// sounder/finder precedent), and a hit test in rig space is scale-free.</para>
+    /// <para><b>Everything here is measured against a face at native size</b>
+    /// (<see cref="NavRigGeometry.ConsoleW"/> × <see cref="NavRigGeometry.ConsoleH"/>, or the MAX
+    /// face's), so the raised card's scale needs no special-casing: a hit test in rig space is
+    /// scale-free. Where the card goes is the one raised-card rule every instrument shares
+    /// (<see cref="HelmBandLayout.RaisedCardRect"/>), so this file keeps no rect of its own.</para>
     /// </summary>
     public static class ChartplotterOverlayLayout
     {
-        // ---- the expanded card ------------------------------------------------------------------------
-
-        /// <summary>Most of the screen the expanded card may occupy. The plotter is READ when expanded —
-        /// it wants to be big — but it is not a full-screen mode, and leaving a margin is what makes
-        /// "click away to collapse" a reachable gesture rather than a trick.</summary>
-        private const float MaxWidthFrac = 0.62f, MaxHeightFrac = 0.72f;
-
-        /// <summary>
-        /// The expanded card's screen rect: the console face at the largest INTEGER scale that still fits
-        /// the budget above.
-        ///
-        /// <para><b>Integer, and that is the whole point.</b> These rigs are pixel art rastered at native
-        /// size and blitted (<see cref="HelmInstrumentMountLayout"/>); a fractional scale resamples the
-        /// 3×5 font into mush, which is the defect <see cref="FishFinderOverlayLayout"/> already
-        /// documents below ~83% of native. A 1× card on a small screen is honest and crisp; a 1.7× card
-        /// would be neither. The flush brow mount is free to be fractional because it is a glance, not a
-        /// read.</para>
-        /// </summary>
-        public static Rect ExpandedCardRect(float screenW, float screenH)
-            => ExpandedCardRect(screenW, screenH, NavRigGeometry.Face.Console);
-
-        /// <summary>
-        /// The expanded card for a given FACE. The MAX face is a different size natively
-        /// (980 × 648 against the console's 760 × 480 — navRig.js:15), so it gets its own budget rather
-        /// than being letterboxed into the console's rect and losing the rail's legibility.
-        ///
-        /// <para><b>The budget is wider for MAX, and deliberately so.</b> The MAX face IS the read —
-        /// it is the state you open to work the waypoint list — so it is allowed more of the screen
-        /// than the console face, which is a glance you expand for a moment. The integer-scale rule
-        /// is unchanged and is the whole point of both (see the remarks above).</para>
-        /// </summary>
-        public static Rect ExpandedCardRect(float screenW, float screenH, NavRigGeometry.Face face)
-        {
-            bool max = face == NavRigGeometry.Face.Max;
-            int nativeW = max ? NavRigGeometry.MaxW : NavRigGeometry.ConsoleW;
-            int nativeH = max ? NavRigGeometry.MaxH : NavRigGeometry.ConsoleH;
-            float wFrac = max ? MaxFaceWidthFrac : MaxWidthFrac;
-            float hFrac = max ? MaxFaceHeightFrac : MaxHeightFrac;
-
-            int scale = 1;
-            while ((scale + 1) * nativeW <= screenW * wFrac && (scale + 1) * nativeH <= screenH * hFrac)
-                scale++;
-
-            float w = nativeW * scale, h = nativeH * scale;
-            return new Rect((screenW - w) * 0.5f, (screenH - h) * 0.5f, w, h);
-        }
-
-        /// <summary>The MAX face's share of the screen. Larger than the console face's because this is
-        /// the state the instrument is WORKED in rather than glanced at, and its rail and manager
-        /// column are 3×5 text that has to stay readable.</summary>
-        private const float MaxFaceWidthFrac = 0.78f, MaxFaceHeightFrac = 0.84f;
-
         // ---- the hit map ------------------------------------------------------------------------------
 
         /// <summary>Nothing live under the pointer.</summary>

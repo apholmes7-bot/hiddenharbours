@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace HiddenHarbours.UI
 {
     /// <summary>Which brow instrument a click or an expansion is about. One value per instrument that
@@ -15,11 +17,15 @@ namespace HiddenHarbours.UI
     /// Which mounted instrument is currently EXPANDED (ADR 0025 S4.5 — the owner's "shown on the dash
     /// and not blown up by default; this should be selectable, which UI can be expanded").
     ///
-    /// <para><b>The presentation flip, in one place.</b> Every instrument now has two presentations:
-    /// FLUSH in its authored dash mount (the default — glance value plus a click target) and EXPANDED
-    /// (the standalone card S2/S3b built, where its controls are live). Both draw the SAME rig from
-    /// the SAME state objects, so the two views cannot disagree — the arc's honesty invariant is
-    /// structural here rather than a rule someone has to keep.</para>
+    /// <para><b>The presentation flip, in one place.</b> Since H2 every instrument has a HOUSING in
+    /// the helm band (a named plate: the click target, and on the pilot bands the depth) and a RAISED
+    /// card (the standalone card S2/S3b built, where its controls are live), placed by
+    /// <see cref="HelmBandLayout.RaisedCardRect"/>. The flush brow faces retired with the dash card.</para>
+    ///
+    /// <para><b>The raised card's rect is published here</b> (<see cref="PublishRaisedCard"/>) by the
+    /// host that draws it, so the band host can leave a press inside the card to the card and treat a
+    /// press anywhere else as the click-away. It clears whenever <see cref="Expanded"/> changes, so a
+    /// stale rect can never swallow presses meant for the band.</para>
     ///
     /// <para><b>Why a shared arbiter and not a bool per host.</b> The hosts are independent
     /// self-installing singletons that cannot see each other, and "one expanded at a time" is a fact
@@ -29,12 +35,25 @@ namespace HiddenHarbours.UI
     ///
     /// <para><b>Transient, never persisted</b> (rule 5, and the S3b Ruling A precedent): which view a
     /// player is looking through is where their eyes are, not a preference. Nothing here touches
-    /// <c>SounderPrefs</c> or <c>InstrumentLocker</c>, and a reload comes back flush.</para>
+    /// <c>SounderPrefs</c> or <c>InstrumentLocker</c>, and a reload comes back with nothing raised.</para>
     /// </summary>
     public static class HelmInstrumentExpansion
     {
+        private static HelmInstrumentSlot _expanded;
+        private static bool _raisedLive;
+        private static Rect _raisedCard;
+
         /// <summary>The instrument expanded right now, or <see cref="HelmInstrumentSlot.None"/>.</summary>
-        public static HelmInstrumentSlot Expanded { get; private set; }
+        public static HelmInstrumentSlot Expanded
+        {
+            get => _expanded;
+            private set
+            {
+                if (value == _expanded) return;
+                _expanded = value;
+                _raisedLive = false;   // a different card (or none): the old rect is where nothing is
+            }
+        }
 
         /// <summary>
         /// The whole state machine: what a click on <paramref name="clicked"/> leaves expanded.
@@ -75,5 +94,31 @@ namespace HiddenHarbours.UI
             Core.SounderKind.Fish => HelmInstrumentSlot.FishFinder,
             _ => HelmInstrumentSlot.None,
         };
+
+        /// <summary>The raised card's screen rect as its host drew it this frame. Ignored unless
+        /// <paramref name="slot"/> is the one expanded; a zero rect withdraws it.</summary>
+        public static void PublishRaisedCard(HelmInstrumentSlot slot, Rect card)
+        {
+            if (slot == HelmInstrumentSlot.None || slot != _expanded) return;
+            _raisedCard = card;
+            _raisedLive = card.width > 0f && card.height > 0f;
+        }
+
+        /// <summary>The raised card's rect, when one is up and its host has drawn it.</summary>
+        public static bool TryRaisedCard(out Rect card)
+        {
+            card = _raisedCard;
+            return _raisedLive && _expanded != HelmInstrumentSlot.None;
+        }
+
+        // Statics survive a play session when the editor's domain reload is disabled (the
+        // BoatUiWindows precedent): start every session with nothing raised.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            _expanded = HelmInstrumentSlot.None;
+            _raisedLive = false;
+            _raisedCard = default;
+        }
     }
 }

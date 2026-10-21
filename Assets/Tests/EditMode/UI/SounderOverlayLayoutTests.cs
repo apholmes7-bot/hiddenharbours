@@ -6,41 +6,22 @@ using HiddenHarbours.UI;
 namespace HiddenHarbours.Tests.UI.EditMode
 {
     /// <summary>
-    /// The sounder card's placement + pointer mapping (ADR 0025 S2): where the small and focused cards
-    /// sit, and — the load-bearing part — that a click anywhere on the card maps to exactly the control
-    /// it looks like it is on, at BOTH scales. If the hit geometry didn't scale with the card, the
-    /// focused state (the whole reason focus exists) would be unclickable.
+    /// The sounder card's pointer mapping (ADR 0025 S2): the load-bearing part — that a click anywhere
+    /// on the card maps to exactly the control it looks like it is on, at every scale the RAISED card
+    /// takes (H2: the card rises from its housing in the band, <see cref="HelmBandLayout.RaisedCardRect"/>).
+    /// If the hit geometry didn't scale with the card, a raised card would be unclickable. Where the
+    /// small and focused cards sat retired with the focus (H2).
     /// </summary>
     public class SounderOverlayLayoutTests
     {
-        private const float ScreenW = 1920f, ScreenH = 1080f;
-
-        private static DepthSounderSettings Cfg() => DepthSounderSettings.Default;
-
-        [Test]
-        public void TheSmallCard_SitsInsetFromTheTopRight_AtCardScale()
+        /// <summary>Screens whose raised sounder card takes ×1, ×2 and ×3 between the bands, and one
+        /// short enough that no whole scale fits (1024×480: today's scale, ×0.97, its top on the top
+        /// band's bottom).</summary>
+        private static readonly Vector2Int[] Screens =
         {
-            DepthSounderSettings s = Cfg();
-            Rect r = SounderOverlayLayout.CardRect(false, DepthRigRender.W, DepthRigRender.H, in s,
-                                                   ScreenW, ScreenH);
-            Assert.AreEqual(DepthRigRender.W * s.CardScale, r.width, 1e-4f);
-            Assert.AreEqual(DepthRigRender.H * s.CardScale, r.height, 1e-4f);
-            Assert.AreEqual(ScreenW - s.MarginX, r.xMax, 1e-4f, "inset from the RIGHT edge");
-            Assert.AreEqual(ScreenH - s.MarginY, r.yMax, 1e-4f, "and from the TOP — it is a brow instrument");
-            Assert.Greater(r.yMin, ScreenH * 0.5f, "which keeps it clear of the piloting control's card");
-        }
-
-        [Test]
-        public void TheFocusedCard_IsCentredOnTheAnchor_AtFocusScale()
-        {
-            DepthSounderSettings s = Cfg();
-            Rect r = SounderOverlayLayout.CardRect(true, DepthRigRender.W, DepthRigRender.H, in s,
-                                                   ScreenW, ScreenH);
-            Assert.AreEqual(DepthRigRender.W * s.FocusScale, r.width, 1e-4f);
-            Assert.AreEqual(ScreenW * s.FocusCenterX01, r.center.x, 1e-4f);
-            Assert.AreEqual(ScreenH * s.FocusCenterY01, r.center.y, 1e-4f);
-            Assert.Greater(s.FocusScale, s.CardScale, "focusing has to make it BIGGER to be worth doing");
-        }
+            new Vector2Int(1280, 720), new Vector2Int(2560, 1440), new Vector2Int(3840, 2160),
+            new Vector2Int(1024, 480),
+        };
 
         [Test]
         public void EachControl_IsHitAtItsOwnCentre_AndNowhereElse()
@@ -68,7 +49,6 @@ namespace HiddenHarbours.Tests.UI.EditMode
         [Test]
         public void AClickOnAPusher_MapsThroughAtBothScales()
         {
-            DepthSounderSettings s = Cfg();
             RigRect mount = DepthRigGeometry.StandaloneMount();
             DepthRigLayout l = DepthRigGeometry.Layout(mount.X, mount.Y, mount.W, mount.H);
             RigRect target = l.Button1;                       // the alarm-UP pusher
@@ -76,17 +56,22 @@ namespace HiddenHarbours.Tests.UI.EditMode
             float u = (target.X + target.W * 0.5f) / DepthRigRender.W;
             float v = 1f - (target.Y + target.H * 0.5f) / DepthRigRender.H;
 
-            foreach (bool focused in new[] { false, true })
+            var scales = new System.Collections.Generic.HashSet<float>();
+            foreach (Vector2Int sc in Screens)
             {
-                Rect card = SounderOverlayLayout.CardRect(focused, DepthRigRender.W, DepthRigRender.H,
-                                                          in s, ScreenW, ScreenH);
+                Rect card = HelmBandLayout.RaisedCardRect(DepthRigRender.W, DepthRigRender.H, sc.x, sc.y,
+                                                          HudBandLayout.ReservedTopPx(sc.x, sc.y, 0f));
+                float scale = card.width / DepthRigRender.W;
+                scales.Add(scale);
                 var screen = new Vector2(card.xMin + u * card.width, card.yMin + v * card.height);
-                Assert.IsTrue(card.Contains(screen), $"focused={focused}: the point is on the card");
+                Assert.IsTrue(card.Contains(screen), $"{sc} (x{scale:0.###}): the point is on the card");
                 Assert.IsTrue(HelmOverlayLayout.ScreenToRig(screen, card, DepthRigRender.W,
                                                             DepthRigRender.H, out Vector2 rigPx));
                 Assert.AreEqual(1, SounderOverlayLayout.HitTest(rigPx),
-                    $"focused={focused}: the same pixel is the same pusher at any card size");
+                    $"{sc} (x{scale:0.###}): the same pixel is the same pusher at any card size");
             }
+            Assert.AreEqual(Screens.Length, scales.Count,
+                "every listed screen raises the card at a scale of its own, or the sweep pins less than it says");
         }
 
         [Test]

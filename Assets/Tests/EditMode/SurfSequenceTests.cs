@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
+using HiddenHarbours.Environment;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -25,7 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "31d3419dc0879c9174bee353e764920e83dbfa8f3f941c331006e6fdc00ed106";
+        const string BaseWaterHash = "8337e1ae62eabbee11246fc8f961a6ee8fdc86d2449532535ec692fb034f0be3";
         // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
@@ -193,11 +194,11 @@ namespace HiddenHarbours.Tests.EditMode
         public void SurfSequence_ProtectedBorePathsRemainUnchanged()
         {
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
-            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("25ab2f559ca81a4520452dcd11fec144d1e7157c348543f882194f1141456ad7"));
+            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("1e736d5e793982bc9465b4fdf21e27d95e813566e92226dd3ebb8f33d92683e2"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
                 Is.EqualTo("abce0b880d89e3976faba111960260c2e958a1444de6a8d81e1b70f9a7ffae07"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
-                Is.EqualTo("1e231d7b79117950372db2704b0b64efd496c196a68436e7eac82ae37c45c94c"));
+                Is.EqualTo("286cbef705d961a69d8a3e835e32e358bda9b4b672b4c028dc16430a40aeb9fc"));
         }
 
         static void RequireGpu()
@@ -262,6 +263,28 @@ namespace HiddenHarbours.Tests.EditMode
                 }
             }
         }
+        // W4-3's lee law made the old site 2 a dead lee: no fetch upwind of the rig's wind, so a storm swell's long
+        // trains have no room to grow there and break. The bar is read off the W4-3 lee plates (LeeSeaPlatePlayTests,
+        // the storm at 0 m off the lee waterline): under the single lee factor the storm's broken surf covered at least
+        // 6.5 % of the water within 4 m of the waterline on every shore shot (the least: Nine Mile Creek at high
+        // water); under the lee law, none. A third of that least share still fails, and the bar stays above zero: the
+        // claim is next to no surf, not none. The control arm, the same storm with the fetch model off, must clear the
+        // same bar, so the square is shown able to draw surf.
+        static readonly Vector2 DeadLee = new Vector2(50f, -22f);
+        const float DeadLeeSurfBar = .02f;
+        [Test]
+        public void SurfSequence_DeadLeeDrawsNextToNoSurf()
+        {
+            RequireGpu();
+            using (var rig = new RenderRig())
+            {
+                rig.InitializeAt(DeadLee);
+                Assert.That(rig.StormSurfShare(default(WaveFetchSettings)), Is.GreaterThanOrEqualTo(DeadLeeSurfBar),
+                    "control: with the fetch model off the storm must break surf in this square");
+                Assert.That(rig.StormSurfShare(GameServices.WaveFetch), Is.LessThan(DeadLeeSurfBar),
+                    "a dead lee under the storm swell must draw next to no surf");
+            }
+        }
 
         sealed class Measurements
         {
@@ -286,7 +309,14 @@ namespace HiddenHarbours.Tests.EditMode
             const int Pixels = 1120, Steps = 128;
             const float Span = 35f, Level = -2.2f, Extent = 96f;
             static readonly Vector2 Wind = new Vector2(6f, -5.3f);
-            static readonly Vector2[] Sites = { new Vector2(128f, -71f), new Vector2(109f, 157.5f), new Vector2(50f, -22f) };
+            // Site 2 sat at (50, -22) until W4-3's lee law made that corner a dead lee: it breaks no surf to score, and
+            // SurfSequence_DeadLeeDrawsNextToNoSurf guards it instead. (104.5, -65.5) is the nearest point, on a
+            // half-metre search, where the three measures can score: most of its ROI and bins are water the GPU draws,
+            // with surf at their predicted arrivals. BakedBed reads the baked texture half a texel (1.48 m, 1.09 m) off
+            // the GPU, which leaves most of the ROI of every nearer candidate on the GPU's land.
+            static readonly Vector2[] Sites = { new Vector2(128f, -71f), new Vector2(109f, 157.5f), new Vector2(104.5f, -65.5f) };
+            // The storm the W4-3 lee plates were shot in (10 m/s), blown along Wind so _WindDir is unchanged.
+            static readonly Vector2 StormWind = Wind.normalized * 10f;
             readonly List<Object> owned = new List<Object>();
             BreakerBoreLookTests fixture;
             GameConfig previousConfig;
@@ -337,7 +367,14 @@ namespace HiddenHarbours.Tests.EditMode
 
             public void Initialize(int index)
             {
-                site = index; aim = Sites[index];
+                site = index; InitializeAt(Sites[index]);
+                normal = Surf(aim).ShorewardDirection;
+                Assert.That(normal.sqrMagnitude, Is.GreaterThan(.5f));
+            }
+            // A dead lee breaks no surf, so it has no shoreward direction to assert: its case starts here.
+            public void InitializeAt(Vector2 at)
+            {
+                aim = at;
                 previousConfig = GameServices.Config;
                 GameServices.Config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
                 Assert.That(GameServices.Config, Is.Not.Null);
@@ -352,11 +389,9 @@ namespace HiddenHarbours.Tests.EditMode
                     Rect = Shader.GetGlobalVector(SeabedGlobals.Rect), Range = Shader.GetGlobalVector(SeabedGlobals.Range) };
                 Assert.That(bed.Texture, Is.Not.Null);
                 trains = Get<WaveTrains>("_trainsNow"); Period = BreakerMath.PeriodSeconds(trains.Dominant);
-                contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch), GameServices.Breakers);
+                contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch), GameServices.Breakers);
                 scale = shipped.GetFloat("_OceanSwellScale") / (float)typeof(DisplacedWaterSurface).GetField("WaveLegacyScaleRef",
                     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).GetValue(null);
-                normal = Surf(aim).ShorewardDirection;
-                Assert.That(normal.sqrMagnitude, Is.GreaterThan(.5f));
                 output = Get<RenderTexture>("_rt"); camera.targetTexture = null; output.Release();
                 output.width = Pixels; output.height = Pixels; output.Create(); camera.targetTexture = output;
                 camera.orthographicSize = Span / 2; camera.transform.position = new Vector3(aim.x, aim.y, -1000f);
@@ -389,13 +424,56 @@ namespace HiddenHarbours.Tests.EditMode
                 return rt;
             }
             SurfState Surf(Vector2 p) => BreakerMath.SurfAt(p, Level, bed, contour,
-                WaveFetch.EnvelopeAt(p, Wind, Level, bed, GameServices.WaveFetch), trains,
+                LeeEnvelopeAt(p), trains,
                 GameServices.WaveField.Gravity, GameServices.Breakers, scale);
+            // The published surf's twin: the dominant train's own lee factor, as GameServices.FetchEnvelopeAt and the
+            // shader's break gate read it; the contour above anchors at its fetch-0 value, as WaveFieldBridge does.
+            float LeeEnvelopeAt(Vector2 p) => WaveFetch.At(p, Wind, Level, bed, GameServices.WaveFetch).ForWavelength(trains.Dominant.Wavelength);
             public void Publish(float time)
             {
                 seconds = time; Call("PublishTheSea", time); trains = Get<WaveTrains>("_trainsNow");
                 if (Control == 0) { WaveFieldBridge.PublishGlobals(PackedWaveField.Empty); WaveFieldBridge.PublishBreakersOff(); }
                 Shader.SetGlobalVector("_HHSeaLevelWorld", new Vector4(Level, 1, 1, 1));
+            }
+            // The fixture's PublishTheSea for the storm: the same packing and the same fetch and breaker calls, each
+            // train's travel riding in its phase. The fetch settings are the dead-lee case's arm: shipped, or off.
+            void PublishStorm(in WaveTrains storm, float time, in WaveFetchSettings fetch)
+            {
+                var advanced = new WaveTrain[WaveTrains.MaxTrains];
+                for (int i = 0; i < storm.Count; i++)
+                {
+                    WaveTrain tr = storm[i];
+                    float k = 2f * Mathf.PI / Mathf.Max(tr.Wavelength, WaveTrain.MinWavelengthMeters);
+                    advanced[i] = new WaveTrain(tr.Direction, tr.Wavelength, tr.Amplitude, tr.PhaseOffset - k * tr.PhaseSpeed * time,
+                        GameServices.WaveField.Gravity);
+                }
+                seconds = time; trains = WaveTrains.From(advanced, storm.Count, storm.CrestSharpening, storm.DominantIndex);
+                WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in trains));
+                WaveFieldBridge.PublishFetchGlobals(fetch, StormWind);
+                WaveFieldBridge.PublishBreakerGlobals(trains.Dominant, fetch, GameServices.Breakers);
+                Shader.SetGlobalVector("_HHSeaLevelWorld", new Vector4(Level, 1, 1, 1));
+            }
+            // The peak, over two of the storm's periods, of the share of this test's water in the axis-aligned 8 m
+            // square on the aim (every 2nd pixel, as the ROI loop samples) where the shipped dial draws surf or lip.
+            public float StormSurfShare(in WaveFetchSettings fetch)
+            {
+                var water = new List<int>();
+                for (int y = 0; y < Pixels; y += 2)
+                for (int x = 0; x < Pixels; x += 2)
+                {
+                    Vector2 p = aim + new Vector2((x + .5f) * Span / Pixels - Span / 2, (y + .5f) * Span / Pixels - Span / 2);
+                    if (Mathf.Abs(p.x - aim.x) <= 4 && Mathf.Abs(p.y - aim.y) <= 4 && bed.ElevationAt(p) < Level) water.Add(y * Pixels + x);
+                }
+                Assert.That(water.Count, Is.GreaterThan(10));
+                var storm = WaveMath.TrainsFrom(StormWind, WeatherModel.SeaState01(StormWind.magnitude), GameServices.WaveField);
+                float period = BreakerMath.PeriodSeconds(storm.Dominant), peak = 0f;
+                for (int frame = 0; frame < 2 * Steps; frame += 4)
+                {
+                    PublishStorm(storm, frame * period / Steps, fetch);
+                    var black = Shot(false, 0f, 3); var white = Shot(false, 0f, 4);
+                    peak = Mathf.Max(peak, water.Count(i => Contribution(black[i], white[i]) > .1f) / (float)water.Count);
+                }
+                return peak;
             }
             void Step(float dt)
             {
@@ -468,7 +546,7 @@ namespace HiddenHarbours.Tests.EditMode
                 for (int i = 0; i < 24; i++)
                 {
                     Vector2 n = BreakerMath.ShorewardDirection(guess, GameServices.Breakers.SlopeProbeMeters, bed);
-                    float env = WaveFetch.EnvelopeAt(guess, Wind, Level, bed, GameServices.WaveFetch);
+                    float env = LeeEnvelopeAt(guess);
                     float target = BreakerMath.DepthAtEnvelope(contour.BreakDepths, contour.LeeEnvelope, env);
                     float error = Level - bed.ElevationAt(guess) - target;
                     if (Mathf.Abs(error) < .001f) return guess;
@@ -534,7 +612,7 @@ namespace HiddenHarbours.Tests.EditMode
                     Vector2 d = p - aim;
                     if (Mathf.Abs(Vector2.Dot(d, tangent)) <= 4 && Vector2.Dot(d, normal) >= 0 && Vector2.Dot(d, normal) <= 4 && bed.ElevationAt(p) < Level)
                     {
-                        float env = WaveFetch.EnvelopeAt(p, Wind, Level, bed, GameServices.WaveFetch);
+                        float env = LeeEnvelopeAt(p);
                         Assert.That(BreakerMath.Breaking01FromContour(.02f, contour, env), Is.GreaterThan(.999f), "criterion requires full shore domain");
                         roi.Add(y * Pixels + x);
                     }

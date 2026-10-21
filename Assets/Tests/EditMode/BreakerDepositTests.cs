@@ -233,7 +233,8 @@ namespace HiddenHarbours.Tests.EditMode
                 SeabedGlobals.Publish(heightTex, Vector2.zero, new Vector2(PlaneBeach.Size, PlaneBeach.Size),
                                       PlaneBeach.Min, PlaneBeach.Max, 0.4f);
 
-                BreakerContour contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, in fetch), breakers);
+                BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
+                    WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, in fetch), breakers);
                 Assert.IsTrue(contour.Breaks, "the shot sea must break");
 
                 // ---- the pass, blitted by hand ------------------------------------------------------

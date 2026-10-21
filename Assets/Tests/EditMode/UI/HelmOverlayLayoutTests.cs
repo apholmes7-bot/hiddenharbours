@@ -6,9 +6,9 @@ using HiddenHarbours.UI;
 namespace HiddenHarbours.Tests.UI.EditMode
 {
     /// <summary>
-    /// The helm overlay's pure layout + pointer maths (ADR 0025 S1): the small-card placement, the
-    /// click-to-FOCUS enlargement (owner addition 2026-08-03 — hit geometry scales with the card),
-    /// screen→rig mapping, the grip grab test and the tiller drag mapping. Also a render smoke for
+    /// The helm overlay's pure layout + pointer maths (ADR 0025 S1): the tiller's card placement (its
+    /// click-to-FOCUS enlargement retired with the dash card, H2), screen→rig mapping (hit geometry
+    /// scales with the card), the grip grab test and the tiller drag mapping. Also a render smoke for
     /// both ported rigs (they draw pixels, differ across states, and stay inside their cells).
     /// </summary>
     public class HelmOverlayLayoutTests
@@ -18,32 +18,19 @@ namespace HiddenHarbours.Tests.UI.EditMode
         private const float ScreenW = 1920f, ScreenH = 1080f;
 
         [Test]
-        public void CardRect_Small_SitsBottomCentre_AtSmallScale()
+        public void TheTillersCard_SitsBottomCentre_AtTheHudFactor()
         {
-            // 2026-10-07: card dimensions and margin follow the HUD's 1.5 factor at 1080p.
-            // The owner's placement ruling (2026-08-03): "the placement of the ui to be centred at
-            // the bottom" — replacing the S1 bottom-right placeholder.
+            // 2026-10-07: card dimensions and margin follow the HUD's 1.5 factor at 1080p, and the card
+            // has one state since H2 retired the focus. The owner's placement ruling (2026-08-03): "the
+            // placement of the ui to be centred at the bottom" — replacing the S1 bottom-right
+            // placeholder.
             HelmOverlaySettings s = Cfg;
-            Rect r = HelmOverlayLayout.CardRect(false, LeverRigGeometry.W, LeverRigGeometry.H,
-                                                in s, ScreenW, ScreenH);
-            Assert.That(r.width, Is.EqualTo(LeverRigGeometry.W * s.SmallScale * 1.5f).Within(1e-3f));
-            Assert.That(r.height, Is.EqualTo(LeverRigGeometry.H * s.SmallScale * 1.5f).Within(1e-3f));
+            Rect r = HelmOverlayLayout.CardRect(TillerRigRender.W, TillerRigRender.H, in s, ScreenW, ScreenH);
+            Assert.That(r.width, Is.EqualTo(TillerRigRender.W * s.SmallScale * 1.5f).Within(1e-3f));
+            Assert.That(r.height, Is.EqualTo(TillerRigRender.H * s.SmallScale * 1.5f).Within(1e-3f));
             Assert.That(r.center.x, Is.EqualTo(ScreenW * s.SmallCenterX01).Within(1e-3f), "centred");
             Assert.That(s.SmallCenterX01, Is.EqualTo(0.5f), "the default IS bottom-centre");
             Assert.That(r.yMin, Is.EqualTo(s.MarginY * 1.5f).Within(1e-3f), "bottom margin");
-        }
-
-        [Test]
-        public void CardRect_Focused_RisesFromTheSameBottomCentreAnchor_AtFocusScale()
-        {
-            HelmOverlaySettings s = Cfg;
-            Rect r = HelmOverlayLayout.CardRect(true, TillerRigRender.W, TillerRigRender.H,
-                                                in s, ScreenW, ScreenH);
-            Assert.That(r.width, Is.EqualTo(TillerRigRender.W * s.FocusScale * 1.5f).Within(1e-3f),
-                        "the enlargement IS the focus state — controls become properly clickable");
-            Assert.That(r.center.x, Is.EqualTo(ScreenW * s.FocusCenterX01).Within(1e-3f));
-            Assert.That(r.yMin, Is.EqualTo(s.MarginY * 1.5f).Within(1e-3f),
-                        "focused anchors to the bottom too — the helm rises from the dash");
         }
 
         [Test]
@@ -68,17 +55,18 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         [Test]
-        public void ScreenToRig_MapsCorners_WithTheYFlip_AndScalesWithFocus()
+        public void ScreenToRig_MapsCorners_WithTheYFlip_AndScalesWithTheCard()
         {
             HelmOverlaySettings s = Cfg;
-            Rect card = HelmOverlayLayout.CardRect(true, LeverRigGeometry.W, LeverRigGeometry.H,
-                                                   in s, ScreenW, ScreenH);
+            // A 4K card (twice 1080p's), so the corners prove the mapping scales with the card.
+            Rect card = HelmOverlayLayout.CardRect(LeverRigGeometry.W, LeverRigGeometry.H,
+                                                   in s, ScreenW * 2f, ScreenH * 2f);
             // Top-left of the card on screen = rig (0,0) — rig space is y-down.
             Assert.That(HelmOverlayLayout.ScreenToRig(new Vector2(card.xMin, card.yMax), card,
                         LeverRigGeometry.W, LeverRigGeometry.H, out Vector2 rig), Is.True);
             Assert.That(rig.x, Is.EqualTo(0f).Within(1e-3f));
             Assert.That(rig.y, Is.EqualTo(0f).Within(1e-3f));
-            // Bottom-right = rig (W,H), regardless of the focus scale (hit geometry scales along).
+            // Bottom-right = rig (W,H), regardless of the card's scale (hit geometry scales along).
             HelmOverlayLayout.ScreenToRig(new Vector2(card.xMax, card.yMin), card,
                                           LeverRigGeometry.W, LeverRigGeometry.H, out rig);
             Assert.That(rig.x, Is.EqualTo(LeverRigGeometry.W).Within(1e-3f));
@@ -117,10 +105,10 @@ namespace HiddenHarbours.Tests.UI.EditMode
             float d = HelmOverlayLayout.TillerDragDrive(-1f, s.TillerDragFullDrivePx * 1f, 1f,
                                                         s.TillerDragFullDrivePx);
             Assert.That(d, Is.EqualTo(1f).Within(1e-4f), "full sweep = full range");
-            // Focus scale doubles the screen delta for the same rig travel.
-            float dFocused = HelmOverlayLayout.TillerDragDrive(-1f, s.TillerDragFullDrivePx * 2f, 2f,
-                                                               s.TillerDragFullDrivePx);
-            Assert.That(dFocused, Is.EqualTo(d).Within(1e-4f), "same felt travel in the focused state");
+            // A card drawn twice as large doubles the screen delta for the same rig travel.
+            float dLarger = HelmOverlayLayout.TillerDragDrive(-1f, s.TillerDragFullDrivePx * 2f, 2f,
+                                                              s.TillerDragFullDrivePx);
+            Assert.That(dLarger, Is.EqualTo(d).Within(1e-4f), "same felt travel at twice the card's scale");
             Assert.That(HelmOverlayLayout.TillerDragDrive(0.9f, 10000f, 1f, s.TillerDragFullDrivePx),
                         Is.EqualTo(1f), "clamped");
             Assert.That(HelmOverlayLayout.TillerDragDrive(0f, -30f, 1f, s.TillerDragFullDrivePx),

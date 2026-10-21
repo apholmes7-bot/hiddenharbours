@@ -177,7 +177,7 @@ namespace HiddenHarbours.Tests.EditMode
             string path = Path.Combine(Application.dataPath, "..", ShaderPath);
             string src = File.ReadAllText(path);
 
-            Match body = Regex.Match(src, @"#define\s+FETCH_MARCH_BODY.*?return\s+FetchEnvelopeFrom",
+            Match body = Regex.Match(src, @"#define\s+FETCH_MARCH_BODY.*?return\s+open",
                                      RegexOptions.Singleline);
             Assert.IsTrue(body.Success, "FETCH_MARCH_BODY not found in the water shader.");
 
@@ -212,9 +212,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(fetch, 0.05f, "land one step upwind => essentially no fetch");
 
             WaveFetchSettings s = On();
-            float env = WaveFetch.Envelope01(fetch, in s);
-            Assert.AreEqual(s.LeeFloor, env, 0.02f,
-                "a deep lee must land on the lee floor — sheltered, deliberately NOT glass");
+            Assert.AreEqual(0f, WaveFetch.TrainEnvelope01(fetch, 30f, in s));
+            Assert.AreEqual(s.LeeFloor, WaveFetch.TrainEnvelope01(fetch, 5f, in s));
         }
 
         [Test]
@@ -310,19 +309,22 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EnvelopeScalesHeightAndSlopeTogether()
         {
-            // Both terms take the SAME factor: the slope must stay the derivative of the height, which
-            // is the number the deck tilt, the caustics and the ripple windward gate all read.
-            WaveTrains trains = WaveMath.TrainsFrom(new Vector2(-4f, 7f), 0.65f, WaveFieldSettings.Default);
-            const float env = 0.4f;
-            for (int i = 0; i < 20; i++)
+            var settings = WaveFetchSettings.Default; settings.Strength = 0.8f;
+            foreach (float wavelength in new[] { 5f, 8f, 15f, 30f })
             {
-                var pos = new Vector2(i * 1.9f - 10f, i * -0.7f);
-                WaveSample full = WaveMath.Sample(pos, 33.0, in trains, 1f);
-                WaveSample faded = WaveMath.Sample(pos, 33.0, in trains, env);
-
-                Assert.AreEqual(full.Height * env, faded.Height, 1e-4f, "height");
-                Assert.AreEqual(full.Slope.x * env, faded.Slope.x, 1e-4f, "slope.x");
-                Assert.AreEqual(full.Slope.y * env, faded.Slope.y, 1e-4f, "slope.y");
+                var train = new WaveTrain(Vector2.right, wavelength, 0.5f, 0.3f, 9.81f);
+                var trains = WaveTrains.From(new[] { train }, 1, 1.6f, 0);
+                var fetch = new WaveFetchSample(0.1f, in settings);
+                float e = fetch.ForWavelength(wavelength);
+                for (int i = 0; i < 20; i++)
+                {
+                    var pos = new Vector2(i * 1.9f - 10f, i * -0.7f);
+                    var full = WaveMath.Sample(pos, 33.0, in trains);
+                    var faded = WaveMath.Sample(pos, 33.0, in trains, fetch);
+                    Assert.AreEqual(full.Height * e, faded.Height, 1e-5f);
+                    Assert.AreEqual(full.Slope.x * e, faded.Slope.x, 1e-5f);
+                    Assert.AreEqual(full.Slope.y * e, faded.Slope.y, 1e-5f);
+                }
             }
         }
 
@@ -431,12 +433,21 @@ namespace HiddenHarbours.Tests.EditMode
                     "the dispersion relation must remain the ONLY source of a train's speed");
             }
 
-            // And the phase advances at exactly the same rate through the envelope: a fetched sea is a
-            // SMALLER sea, never a slower or a longer one.
-            var pos = new Vector2(3f, 1f);
-            float a0 = WaveMath.Sample(pos, 10.0, in trains, 1f).Height;
-            float a1 = WaveMath.Sample(pos, 10.0, in trains, 0.5f).Height;
-            Assert.AreEqual(a0 * 0.5f, a1, 1e-4f);
+            var settings = WaveFetchSettings.Default; settings.Strength = 0.8f;
+            var fetch = new WaveFetchSample(0.1f, in settings);
+            Assert.Greater(fetch.ForWavelength(5f), fetch.ForWavelength(30f));
+            for (int i = 0; i < trains.Count; i++)
+            {
+                var train = trains[i];
+                var one = WaveTrains.From(new[] { train }, 1, trains.CrestSharpening, 0);
+                for (int t = 0; t < 20; t++)
+                {
+                    var pos = new Vector2(3f, 1f);
+                    float a0 = WaveMath.Sample(pos, t, in one).Height;
+                    float a1 = WaveMath.Sample(pos, t, in one, fetch).Height;
+                    Assert.AreEqual(a0 * fetch.ForWavelength(train.Wavelength), a1, 1e-5f);
+                }
+            }
         }
 
         // ==== (6) DETERMINISM + the guards ===========================================================
