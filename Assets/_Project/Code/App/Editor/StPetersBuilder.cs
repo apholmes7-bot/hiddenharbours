@@ -744,11 +744,14 @@ namespace HiddenHarbours.App.Editor
         // little apart), the STORE at its centre where the path from the spawn meets it, the FARMHOUSE —
         // the biggest of them — closing the east end. Then the two smaller houses come round the green:
         // the SALTBOX on the east side and the SAGE COTTAGE on the south, the last house before the shore.
-        public static readonly Vector3 SchoolPos         = new Vector3(-12f,  33f, 0f);
-        public static readonly Vector3 GeneralStorePos   = new Vector3(  4f,  31f, 0f);
+        public static readonly Vector3 SchoolPos         = new Vector3(-11.4f, 35.423f, 0f);
+        public static readonly Vector3 GeneralStorePos   = new Vector3(2.5f, 35.422f, 0f);
         public static readonly Vector3 WhiteFarmhousePos = new Vector3( 21f,  26f, 0f);
         public static readonly Vector3 RedSaltboxPos     = new Vector3( 25f,   8f, 0f);
-        public static readonly Vector3 SageCottagePos    = new Vector3( 10f, -20f, 0f);
+        public static readonly Vector3 SageCottagePos    = new Vector3(-21.5f, 41.643f, 0f);
+        public static readonly Vector3 HarbourGablePos   = new Vector3(-6.25f, 46.125f, 0f);
+        public static readonly Vector3 CreamSaltboxPos   = new Vector3(28.5f, 35.704f, 0f);
+        public static readonly Vector3 WhiteGablePos     = new Vector3(53f, 35.204f, 0f);
 
         // Where the village LOOKS. Every door is turned toward this point rather than given a hard-coded
         // facing index, so the village faces itself — and so a re-bake with four facings instead of eight

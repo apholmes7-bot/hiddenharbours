@@ -95,7 +95,7 @@ namespace HiddenHarbours.App.Editor
         /// <para>Set back up the slope with its door turned back down at the green, which is how a post
         /// office sits in a village this size: on the lane, but not one of the houses on it.</para>
         /// </summary>
-        public static readonly Vector3 PostOfficePos = new Vector3(15f, 43f, 0f);
+        public static readonly Vector3 PostOfficePos = new Vector3(16.5f, 35.766f, 0f);
 
         /// <summary>The shops, in the order you meet them walking up the lane from the spawn.</summary>
         public static IReadOnlyList<Site> Sites => new[]
@@ -115,7 +115,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The facing a site is placed at — its door turned toward
         /// <see cref="StPetersBuilder.VillageGreen"/>, measured from the bake's own door anchors.</summary>
         public static int FacingFor(ShopCatalog.Placement shell, Site site) =>
-            ShopCatalog.FacingToward(shell, site.Position, StPetersBuilder.VillageGreen);
+            ShopCatalog.FacingToward(shell, site.Position, site.Position + Vector2.down);
 
         /// <summary>
         /// How far the furthest shop footprint reaches from <see cref="StPetersBuilder.VillageHearthPos"/> —
