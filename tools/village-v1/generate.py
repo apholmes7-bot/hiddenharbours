@@ -29,7 +29,7 @@ DOORSTEP_FITTINGS = {
     'red_saltbox': [20.43, 7.337929],
     'white_farmhouse': [18.051365, 23.168344],
     'general_store': [1.64, 32.047365],
-    'post_office': [17.3728, 32.825247],
+    'post_office': [15.8728, 40.059247],
 }
 HOME_BAKE_KEYS = {'harbour_gable': 'harbourGable', 'cream_saltbox': 'creamSaltbox',
                   'white_gable': 'whiteGable'}

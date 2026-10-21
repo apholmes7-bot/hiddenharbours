@@ -60,6 +60,8 @@ namespace HiddenHarbours.App.Editor
         public const string WhiteFarmhouseYard = "WhiteFarmhouse";
         public const string RedSaltboxYard = "RedSaltbox";
         public const string SageCottageYard = "SageCottage";
+        public const string HarbourGableYard = "HarbourGable";
+        public const string WhiteGableYard = "WhiteGable";
         public const string GinnyPlotYard = "GinnyPlot";
         public const string CamperLotYard = "CamperLot";
 
@@ -118,22 +120,9 @@ namespace HiddenHarbours.App.Editor
 
                 var rows = new List<Yard>
                 {
-                    // ---- the village: five doors on the green -------------------------------------
-                    Yard.Facing(SchoolYard, V2(StPetersBuilder.SchoolPos), r,
-                                new Vector2(13.0f, 14.5f), green, YardFence.PostRail,
-                                "the schoolyard — trodden rather than planted, so it gets rail rather " +
-                                "than paint, and the deepest front on the green because the children " +
-                                "are in it",
-                                // Striped by the owner's ruling (2026-08-26): the school is a proud
-                                // property. The trodden ground is the children's doing, not the mower's
-                                // undoing — somebody cuts it in stripes and the children wear them off.
-                                back, mown: MownStyle.Striped),
-
-                    Yard.Facing(GeneralStoreYard, V2(StPetersBuilder.GeneralStorePos), r,
-                                new Vector2(13.0f, 14.0f), green, YardFence.None,
-                                "a shop forecourt, open to the lane on purpose: you walk up to a " +
-                                "counter, you do not open a gate to buy flour",
-                                back, mown: MownStyle.Striped),
+                    // V1 bindings; the two west homes keep their main yard geometry below.
+                    StPetersVillageYards.FromDef(SchoolYard),
+                    StPetersVillageYards.FromDef(GeneralStoreYard),
 
                     Yard.Facing(WhiteFarmhouseYard, V2(StPetersBuilder.WhiteFarmhousePos), r,
                                 new Vector2(13.0f, 15.0f), green, YardFence.Picket,
@@ -148,13 +137,10 @@ namespace HiddenHarbours.App.Editor
                                 "post and rail: a working household with no time for painting pickets",
                                 back, mown: MownStyle.Kept),
 
-                    Yard.Facing(SageCottageYard, V2(StPetersBuilder.SageCottagePos), r,
-                                new Vector2(18.0f, 20.0f), green, YardFence.Picket,
-                                "the cottage south of the green stands on its own — 31 m to its nearest " +
-                                "neighbour — so its yard is the one that can be generous without " +
-                                "crowding anybody, and it is the island's biggest lawn for that reason " +
-                                "alone",
-                                back, mown: MownStyle.Striped),
+                    StPetersVillageYards.FromDef(SageCottageYard),
+                    StPetersVillageYards.FromDef(HarbourGableYard),
+                    StPetersVillageYards.FromDef(WhiteGableYard),
+                    // Post office and cream saltbox YardDefs stay unbound until the side-entry item.
 
                     // ---- Aunt Ginny's, out on her own plot in the eastern woods --------------------
                     // ⚠ HER DOORYARD, NOT HER PLOT. StPetersGinnyPlot.ClearingRadius (20 m) is the land

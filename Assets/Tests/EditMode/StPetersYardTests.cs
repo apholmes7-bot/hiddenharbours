@@ -131,6 +131,13 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (Yard yard in StPetersYards.Yards)
             {
+                if (StPetersVillageYards.TryKey(yard.Name, out _))
+                {
+                    float hullMargin = StPetersVillageYards.HullMargin(yard.Polygon,
+                        StPetersVillageYards.HullFor(yard.Name));
+                    Assert.GreaterOrEqual(hullMargin, 0.6f, yard.Name + ": V1 hull plus 0.6 m");
+                    continue;
+                }
                 float margin = yard.Polygon.DistanceToEdge(yard.Owner) - yard.OwnerRadiusMetres;
                 Assert.IsTrue(yard.Polygon.ContainsCircle(yard.Owner, yard.OwnerRadiusMetres),
                     $"'{yard.Name}' does not hold its own building: the mow line passes " +

@@ -1422,7 +1422,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_post_office"
     Kit: "pending"
     Piece: "doorstep lantern on a bracket"
-    Position: {x: 17.3728, y: 32.825247}
+    Position: {x: 15.8728, y: 40.059247}
     Z: 6
     Dir: 4
     Pending: 1

@@ -15,7 +15,6 @@ namespace HiddenHarbours.Tests.EditMode
         {
             CheckLot("school", StPetersBuilder.SchoolPos);
             CheckLot("general_store", StPetersBuilder.GeneralStorePos);
-            CheckLot("post_office", StPetersShops.PostOfficePos);
             CheckLot("sage_cottage", StPetersBuilder.SageCottagePos);
             CheckLot("harbour_gable", StPetersBuilder.HarbourGablePos);
             CheckLot("cream_saltbox", StPetersBuilder.CreamSaltboxPos);
@@ -27,6 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             CheckPosition(StPetersBuilder.RedSaltboxPos, 25f, 8f);
             CheckPosition(StPetersBuilder.WhiteFarmhousePos, 21f, 26f);
+            CheckPosition(StPetersShops.PostOfficePos, 15f, 43f);
             CheckPosition(StPetersBuilder.VillageHearthPos, 0f, 14f);
             Assert.That(StPetersWoods.VillageClearingRadius, Is.EqualTo(44f));
         }
