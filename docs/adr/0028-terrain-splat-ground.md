@@ -198,9 +198,9 @@ floor of clear shallow water (ADR 0027 #7, amended with W4-4). On the ground's s
   `GameConfig.TerrainUnderwaterClip` is on. Every quality level runs the one pipeline, whose one
   renderer holds the feature, active, and each camera is submitted before the next is set up.
   A view that draws no displaced sea (the flat sea, or the sea toggled off) never clips.
-- **The switch ships OFF.** `GameConfig.TerrainUnderwaterClip` is `false` in code and in
-  `GameConfig.asset`; off, the gate's branch is never taken and the ground's pixels are as
-  before. It turns on only when the W4-4 plates are accepted.
+- **The switch ships ON, its code default OFF.** `GameConfig.TerrainUnderwaterClip` is `false`
+  in code and `true` in `GameConfig.asset` since the project lead accepted the W4-4 plates
+  (2026-10-20); off, the gate's branch is never taken and the ground's pixels are as before.
 
 Look-only: the simulation, the CPU classifier and every placement read nothing new (rule 5).
 What the clip saves on the GPU is the slot's to time (W4-4 Phase B).

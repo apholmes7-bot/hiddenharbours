@@ -2128,8 +2128,9 @@ water the sea's bed is the ground's own textures, the splat paint, kit tiles, ma
 draws, seen through the column by §17.7's law: darker and bluer with depth, stepped by the six bands, lit by the
 caustics, graded, and gone in a murky or stormy sea. The shore plants wholly under the water lie on that floor and
 take the same law (W4-4c); the rocks keep the waterline their sprites carry. Above the water nothing changes. ADR
-0027 #7's amendment and ADR 0028's note (both 2026-10-18) carry the decision; this section is the live spec. Every
-switch ships OFF.
+0027 #7's amendment and ADR 0028's note (both 2026-10-18) carry the decision; this section is the live spec. The
+three switches default OFF in code and ship ON in `GameConfig.asset`, since the project lead accepted the W4-4 plates
+on 2026-10-20.
 
 #### One ground, two readers (W4-4a)
 
@@ -2303,10 +2304,10 @@ both played scenes and a drawn-ground source per rock, so it is raised before it
 
 | Switch | Lives in | Default | Off |
 |---|---|---|---|
-| `TerrainUnderwaterClip` | `GameConfig` (code and asset) | false | the terrain's gate is never taken |
-| `ShallowsFloor` | `GameConfig` (code and asset), pushed by `WaterSurface` | false | the sea's gate skips the call; the bed is the bake |
+| `TerrainUnderwaterClip` | `GameConfig` (code and asset) | false in code; true in the asset | the terrain's gate is never taken |
+| `ShallowsFloor` | `GameConfig` (code and asset), pushed by `WaterSurface` | false in code; true in the asset | the sea's gate skips the call; the bed is the bake |
 | `ShallowsFloorRefraction` | `GameConfig` (code and asset) | 0.25 | read only while the floor is on; 0 holds it still |
-| `ShallowsSubmergedProps` | `GameConfig` (code and asset), read in play | false | no plant takes the bit; the feature draws no props pass and binds a clear 1×1; the sea's flag stays 0 |
+| `ShallowsSubmergedProps` | `GameConfig` (code and asset), read in play | false in code; true in the asset | no plant takes the bit; the feature draws no props pass and binds a clear 1×1; the sea's flag stays 0 |
 | `HH_SHALLOWS_FLOOR` | the water shader | defined unless `SHADER_API_MOBILE` | a mobile build compiles today's bed, without the props read |
 
 A stale asset that deserializes a switch as 0 reads off. `WaterSurface` pushes the floor's switch and bend beside
