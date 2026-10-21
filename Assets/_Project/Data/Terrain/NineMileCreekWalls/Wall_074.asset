@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_074
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_074
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 52.6717, y: 94.77628}
+  - {x: 52.754288, y: 95.012245}
+  - {x: 52.836872, y: 95.24821}
+  - {x: 52.91946, y: 95.48418}
+  - {x: 53.00205, y: 95.72014}
+  - {x: 53.084637, y: 95.9561}
+  - {x: 53.167225, y: 96.19207}
+  - {x: 53.24981, y: 96.42803}
+  - {x: 53.332397, y: 96.663994}
+  Toe:
+  - {x: 55.503273, y: 93.78523}
+  - {x: 55.58586, y: 94.021194}
+  - {x: 55.668446, y: 94.25716}
+  - {x: 55.751034, y: 94.493126}
+  - {x: 55.833622, y: 94.72909}
+  - {x: 55.91621, y: 94.96505}
+  - {x: 55.9988, y: 95.20102}
+  - {x: 56.081383, y: 95.43698}
+  - {x: 56.16397, y: 95.67294}
+  DropMetres:
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  ToeElevations:
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 74
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 2.44-2.47 m off the ground, no face under it). Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'
