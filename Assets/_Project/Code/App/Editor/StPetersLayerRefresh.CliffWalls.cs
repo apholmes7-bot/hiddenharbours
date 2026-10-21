@@ -56,14 +56,19 @@ namespace HiddenHarbours.App.Editor
         /// <para>The Defs are cut at <paramref name="toeSpanMetres"/>, the plan's (St Peters' 1 m): a Def that is not one
         /// chunk at that cut is refused. A wall's slices are written where it has them, and where its surface already
         /// holds the field; a wall with none, saved before they existed, keeps none (terrain PR 5w).</para>
+        ///
+        /// <para><paramref name="step"/> names the patch, its refusals and the ids of the walls it adds: St Peters' own
+        /// <see cref="CliffWallsStep"/> by default, or the named N1 step of a region that writes its walls this way
+        /// (Nine Mile Creek's <c>11-cliff-walls-g3</c>).</para>
         /// </summary>
-        public static LayerPatch CliffWalls(SceneYaml scene, IReadOnlyList<CliffWallDef> defs, float toeSpanMetres)
+        public static LayerPatch CliffWalls(SceneYaml scene, IReadOnlyList<CliffWallDef> defs, float toeSpanMetres,
+                                            string step = CliffWallsStep)
         {
             string rootName = StPetersCliffWalls.RootName;
             Doc root = scene.RootNamed(rootName);
             Doc rootTr = scene.TransformOf(root);
             RequireIdentity(rootTr, rootName);
-            var patch = new LayerPatch(CliffWallsStep, rootName, root.FileId);
+            var patch = new LayerPatch(step, rootName, root.FileId);
 
             List<StPetersCliffWalls.SceneWall> walls;
             List<StPetersCliffWalls.Chunk> chunks;
@@ -75,7 +80,7 @@ namespace HiddenHarbours.App.Editor
             }
             catch (InvalidOperationException e)
             {
-                throw new Refusal($"{CliffWallsStep}: {e.Message}");
+                throw new Refusal($"{step}: {e.Message}");
             }
             var byId = walls.ToDictionary(w => w.RealId, StringComparer.Ordinal);
 
@@ -83,15 +88,15 @@ namespace HiddenHarbours.App.Editor
             foreach (CliffWallDef d in defs)
             {
                 if (d == null) continue;
-                if (defById.ContainsKey(d.RealId)) throw new Refusal($"{CliffWallsStep}: two Defs are wall {d.RealId}.");
+                if (defById.ContainsKey(d.RealId)) throw new Refusal($"{step}: two Defs are wall {d.RealId}.");
                 defById.Add(d.RealId, d);
             }
             foreach (StPetersCliffWalls.SceneWall w in walls)
             {
                 if (!defById.TryGetValue(w.RealId, out CliffWallDef d))
-                    throw new Refusal($"{CliffWallsStep}: {w.Name} has no Def.");
+                    throw new Refusal($"{step}: {w.Name} has no Def.");
                 if (d.Status == CliffWallStatus.Held)
-                    throw new Refusal($"{CliffWallsStep}: {w.Name} stands in the scene, but {d.Id} is held: it stands in no scene.");
+                    throw new Refusal($"{step}: {w.Name} stands in the scene, but {d.Id} is held: it stands in no scene.");
             }
 
             // What each face, and every wall, writes: read off the scene's own walls.
@@ -101,10 +106,10 @@ namespace HiddenHarbours.App.Editor
             {
                 Doc surface = scene.Get(w.Surface);
                 string face = WallFace(w.AspectIndex, w.BatterIndex);
-                if (faces.TryGetValue(face, out Doc donor)) RequireSameFields(donor, surface, WallFaceFields, $"the {face} walls");
+                if (faces.TryGetValue(face, out Doc donor)) RequireSameFields(donor, surface, WallFaceFields, $"the {face} walls", step);
                 else faces.Add(face, surface);
                 if (kit == null) kit = surface;
-                else RequireSameFields(kit, surface, WallKitFields, "the walls");
+                else RequireSameFields(kit, surface, WallKitFields, "the walls", step);
             }
 
             var ids = new IdAllocator(scene);
@@ -118,7 +123,7 @@ namespace HiddenHarbours.App.Editor
                 string name = StPetersCliffWalls.WallName(d);
                 string face = WallFace(chunk.AspectIndex, chunk.BatterIndex);
                 if (!faces.TryGetValue(face, out Doc faceDonor))
-                    throw new Refusal($"{CliffWallsStep}: {d.Id} wears {face}, which no wall in the scene wears: no face to copy.");
+                    throw new Refusal($"{step}: {d.Id} wears {face}, which no wall in the scene wears: no face to copy.");
                 int order = YSortSprite.OrderFor(CliffWallGeometry.SortY(chunk.Samples), SortingBands.DecorBase,
                                                  SortingBands.OrdersPerMetre, SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
@@ -161,13 +166,13 @@ namespace HiddenHarbours.App.Editor
                 {
                     string parentId = string.IsNullOrEmpty(d.SplitFrom) ? "" : d.SplitFrom.Substring(Math.Max(0, d.SplitFrom.Length - 3));
                     if (!byId.TryGetValue(parentId, out StPetersCliffWalls.SceneWall parent))
-                        throw new Refusal($"{CliffWallsStep}: {d.Id} has no wall, and is cut from none that stands ('{d.SplitFrom}').");
+                        throw new Refusal($"{step}: {d.Id} has no wall, and is cut from none that stands ('{d.SplitFrom}').");
                     var map = new Dictionary<long, long>
                     {
-                        [parent.GameObject] = ids.Next($"{CliffWallsStep}/{d.Id}/GameObject"),
-                        [parent.Transform] = ids.Next($"{CliffWallsStep}/{d.Id}/Transform"),
-                        [parent.SortingGroup] = ids.Next($"{CliffWallsStep}/{d.Id}/SortingGroup"),
-                        [parent.Surface] = ids.Next($"{CliffWallsStep}/{d.Id}/Surface"),
+                        [parent.GameObject] = ids.Next($"{step}/{d.Id}/GameObject"),
+                        [parent.Transform] = ids.Next($"{step}/{d.Id}/Transform"),
+                        [parent.SortingGroup] = ids.Next($"{step}/{d.Id}/SortingGroup"),
+                        [parent.Surface] = ids.Next($"{step}/{d.Id}/Surface"),
                     };
                     patch.Add(SetField(Remap(scene.Get(parent.GameObject).Text, map), "m_Name", Plain(name)), $"{name} GameObject");
                     patch.Add(SetField(Remap(scene.Get(parent.Transform).Text, map), "m_LocalPosition", WallPlace(f.BrowPlan[0])),
@@ -194,7 +199,7 @@ namespace HiddenHarbours.App.Editor
 
             List<string> before = walls.Select(w => w.RealId).Where(staying.Contains).ToList();
             if (!before.SequenceEqual(staying))
-                throw new Refusal($"{CliffWallsStep}: the walls that stay would change their order under '{rootName}': " +
+                throw new Refusal($"{step}: the walls that stay would change their order under '{rootName}': " +
                                   $"{string.Join(" ", before)} became {string.Join(" ", staying)}.");
             patch.Edit(rootTr, SetRefList(rootTr.Text, "m_Children", children), $"{rootName} Transform's children");
 
@@ -291,11 +296,11 @@ namespace HiddenHarbours.App.Editor
             $"{f.SliceAt.Count(s => s != 0f)} cut, {f.SliceBefore.Length + f.SliceAfter.Length} slice ends" +
             (f.TextureBrowPlan.Length > 0 ? ", its texture pinned" : "");
 
-        static void RequireSameFields(Doc a, Doc b, string[] keys, string what)
+        static void RequireSameFields(Doc a, Doc b, string[] keys, string what, string step)
         {
             foreach (string key in keys)
                 if (WallFieldBlock(a.Text, key) != WallFieldBlock(b.Text, key))
-                    throw new Refusal($"{CliffWallsStep}: {what} disagree on {key} (&{a.FileId}, &{b.FileId}).");
+                    throw new Refusal($"{step}: {what} disagree on {key} (&{a.FileId}, &{b.FileId}).");
         }
 
         static string WallPlace(Vector2 brow0) => $"{{x: {WallFloat(brow0.x)}, y: {WallFloat(brow0.y)}, z: 0}}";
