@@ -37,6 +37,111 @@ namespace HiddenHarbours.Tests.EditMode
                 Position = new Vector2(3, 19) }, held);
 
         [Test]
+        public void VillagePass_ComposesRootsOnce_KeepsCounterData_AndReplansToNothing()
+        {
+            var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
+            var assets = new Assets();
+            var homes = StPetersVillage.Sites.Where(s => s.Key == "creamSaltbox" || s.Key == "harbourGable" || s.Key == "whiteGable")
+                .Select(s => new VillageHome
+                {
+                    Key = s.Key, Position = s.Position, Shell = assets.Post, Room = assets.Post, UpperRoom = assets.Post,
+                    ShellMaterial = assets.Material, RoomMaterial = assets.Material, Mask = assets.Post.Sprite,
+                    Normal = assets.Post.Sprite, Emit = assets.Post.Sprite,
+                    Width = 7, Length = 8, DoorSign = 1, DoorAcross = .2f, StoreyHeight = 3.1f, RoomFacing = 4, Facings = 8,
+                }).ToArray();
+            var moves = new[]
+            {
+                new VillageMove { Root = "IslandVillage", Key = "school", Position = StPetersVillage.Sites.Single(s => s.Key == "school").Position },
+                new VillageMove { Root = "IslandVillage", Key = "sageCottage", Position = StPetersVillage.Sites.Single(s => s.Key == "sageCottage").Position },
+                new VillageMove { Root = "IslandShops", Key = "generalStore", Position = StPetersShops.Sites.Single(s => s.Key == "generalStore").Position },
+            };
+            var owned = new System.Collections.Generic.HashSet<long>();
+            foreach (var move in moves)
+            {
+                var go = scene.ChildNamed(scene.TransformOf(scene.RootNamed(move.Root)), move.Key);
+                owned.UnionWith(scene.SubtreeOf(go.FileId));
+                move.Shell = assets.Post; move.Room = assets.Post;
+                move.Footprint = new InteriorFootprint(Vector2.zero, 7, 8, 4, 8, SpriteLightMath.GroundDepthScale, 1, .25f);
+                if (move.Key == "generalStore") continue;
+                var furniture = scene.ChildNamed(scene.TransformOf(go), "Furniture");
+                move.Props = scene.TransformOf(furniture).FieldRefs("m_Children").Select((id, i) =>
+                {
+                    var prop = scene.Get(scene.Get(id).FieldRef("m_GameObject"));
+                    return new VillageRoomProp { Name = prop.Field("m_Name"), LocalPosition = new Vector2(i * .1f, -1),
+                        Sprite = assets.Post, Quad = new[] { new Vector2(-.2f, -.3f), new Vector2(.2f, -.3f),
+                            new Vector2(.2f, .3f), new Vector2(-.2f, .3f) } };
+                }).ToArray();
+            }
+            var kit = new YardKit.Contract
+            {
+                facings = 8, ppu = 32, cellFaceBearings = Enumerable.Range(0, 8).Select(i => i * 45f).ToArray(),
+                cellRunBearings = Enumerable.Range(0, 8).Select(i => (i * 45f + 90f) % 360f).ToArray(),
+                pieces = YardKit.Builds.Select(b => new YardKit.Entry { key = b.Key, role = b.Part.ToString(), facings = 8,
+                    columns = 8, rows = 1, cellW = 96, cellH = 96, footprintWidthMetres = 2, footprintDepthMetres = .4f }).ToArray(),
+            };
+            var rows = new[] { "GeneralStore", "HarbourGable", "SageCottage", "School", "WhiteGable" }.Select((name, i) =>
+            {
+                float x = i * 20;
+                var yard = new Yard(name, new Vector2(x + 5, 5), 1,
+                    new GroundPolygon(new[] { new Vector2(x, 0), new Vector2(x + 10, 0), new Vector2(x + 10, 10), new Vector2(x, 10) }),
+                    i == 0 ? YardFence.None : YardFence.PostRail, new[] { new Vector2(x + 5, 0) }, "test boundary");
+                return new VillageYard { Yard = yard, Plan = YardDressing.PlanOne(yard, kit) };
+            }).ToArray();
+            var defs = Directory.GetFiles("Assets/_Project/Data/Regions/StPetersVillage", "light.*.asset")
+                .OrderBy(s => s, StringComparer.Ordinal).Select(path =>
+                {
+                    var doc = SceneYaml.Parse(File.ReadAllText(path)).Docs.Single();
+                    var def = (LightPostDef)FormatterServices.GetUninitializedObject(typeof(LightPostDef));
+                    def.Id = doc.Field("Id").Trim('"');
+                    def.KitPiece = doc.Field("KitPiece").Trim('"');
+                    def.Preset = doc.Field("Preset").Trim('"');
+                    var at = doc.Field("Position").Replace("}", ", z: 0}");
+                    def.Position = ParseVec3(at);
+                    def.Reach = ParseFloat(doc.Field("Reach"));
+                    def.CastsShadow = doc.Field("CastsShadow") == "1";
+                    return def;
+                }).ToArray();
+
+            var stands = StPetersVillageStations.Current;
+            var data = new VillageInputs
+            {
+                Moves = moves, Homes = homes, Yards = rows, Lights = defs,
+                Dressing = new[] { Row("commons.st_peters.square", "prop.test.square"), Row("yard.st_peters.school", "prop.test.school") },
+                Stations = VillageStationRows(moves),
+                Lanes = new System.Collections.Generic.Dictionary<string,Vector2>
+                {
+                    [StPetersRoutines.LaneSchool] = stands[StPetersRoutines.LaneSchool].Position,
+                    [StPetersRoutines.LaneStore] = stands[StPetersRoutines.StationStoreCounter].Position,
+                    [StPetersRoutines.LaneSageCottage] = stands[StPetersRoutines.StationSageDooryard].Position,
+                },
+                People = StPetersInhabitants.People.Where(p => p.Position == stands[StPetersRoutines.LaneSchool].Position ||
+                    p.Position == stands[StPetersRoutines.StationStoreCounter].Position).ToDictionary(p => p.AssetName, p => p.Position),
+                Counter = StPetersBuilder.GeneralStoreCounterPos,
+                Machines = new[] { new Vector2(1,27), new Vector2(-1,27), new Vector2(-3,27) },
+                MachineHeading = new Quaternion(0,0,1,0), DressingAssets = assets, LightAssets = assets, BoundaryAssets = assets,
+            };
+            var result = PlanVillage(scene,data);
+            Assert.That(result.IsEmpty, Is.False);
+            Assert.That(result.Net.Select(o => o.FileId).Distinct().Count(), Is.EqualTo(result.Net.Count));
+            Assert.That(result.Net.Count(o => o.Before != null && new Doc(o.Before).ClassId == 1660057539), Is.EqualTo(1));
+            Assert.That(result.Net.Where(o => o.Kind == OpKind.Delete).All(o => !string.IsNullOrWhiteSpace(o.Name)), Is.True);
+            var originalRoots = scene.Docs.Single(d => d.ClassId == 1660057539).FieldRefs("m_Roots");
+            var finalRoots = result.After.Docs.Single(d => d.ClassId == 1660057539).FieldRefs("m_Roots");
+            Assert.That(finalRoots.Take(originalRoots.Count), Is.EqualTo(originalRoots));
+            Assert.That(finalRoots.Count, Is.EqualTo(originalRoots.Count+2));
+            Assert.That(PlanVillage(result.After,data).IsEmpty, Is.True);
+            var counter = scene.RootNamed("GeneralStoreCounter");
+            foreach (var component in scene.ComponentsOf(counter).Where(d => d.ClassId != 4 && d.ClassId != 212))
+                Assert.That(result.After.Get(component.FileId).Text, Is.EqualTo(component.Text));
+            foreach (var root in new[] { ("IslandVillage","redSaltbox"), ("IslandVillage","whiteFarmhouse"), ("IslandShops","postOffice") })
+            {
+                var child = scene.ChildNamed(scene.TransformOf(scene.RootNamed(root.Item1)),root.Item2);
+                foreach (long id in scene.SubtreeOf(child.FileId)) Assert.That(result.After.Get(id).Text, Is.EqualTo(scene.Get(id).Text));
+            }
+            Assert.That(result.ToYaml(), Does.Contain("seller ids and wares book preserved"));
+        }
+
+        [Test]
         public void DressingPatch_HoldsOtherRootsAndHeldRows_AndReplansToNothing()
         {
             var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
