@@ -73947,6 +73947,9 @@ MonoBehaviour:
   - Key: east_water
     ArrivalPoint: {fileID: 1900200301}
     DisembarkPoint: {fileID: 0}
+  - Key: bar
+    ArrivalPoint: {fileID: 0}
+    DisembarkPoint: {fileID: 1900300301}
   _worldCenter: {x: 0, y: 0}
   _worldSizeMeters: {x: 760, y: 520}
 --- !u!4 &987664884
@@ -91296,7 +91299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionPassage
   _target: {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
   _loader: {fileID: 174273176}
-  _arrivalKey: 
+  _arrivalKey: bar
   _reentryCooldownSeconds: 1.5
 --- !u!61 &1283928908
 BoxCollider2D:
@@ -91342,7 +91345,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3, y: 60}
+  m_Size: {x: 6, y: 120}
   m_EdgeRadius: 0
 --- !u!4 &1283928909
 Transform:
@@ -170809,6 +170812,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1900300300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900300301}
+  m_Layer: 0
+  m_Name: StPetersBarLanding
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1900300301
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900300300}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -344, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &700000001
 GameObject:
   m_ObjectHideFlags: 0
@@ -179684,6 +179718,7 @@ SceneRoots:
   - {fileID: 987664884}
   - {fileID: 1900100203}
   - {fileID: 1900200301}
+  - {fileID: 1900300301}
   - {fileID: 700000036}
   - {fileID: 700000078}
   - {fileID: 700000120}
