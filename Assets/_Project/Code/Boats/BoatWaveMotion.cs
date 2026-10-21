@@ -939,7 +939,7 @@ namespace HiddenHarbours.Boats
                             ? sea.FreqScale : 1f;
                         float slopeEnvelope = dominant.Amplitude
                                             * ((2f * Mathf.PI) / dominant.Wavelength)
-                                            * freqScale * fetchEnvelope01.ForWavelength(dominant.Wavelength);
+                                            * freqScale * fetchEnvelope01.ForTrain(field.DominantIndex, dominant.Wavelength);
 
                         Vector2 up = (Vector2)transform.up;
                         float sqr = up.x * up.x + up.y * up.y;

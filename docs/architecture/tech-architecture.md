@@ -293,6 +293,14 @@ same wind memory at the clock. `WaterSurface` uses the short band's wind for dec
 wind and chop. Settings live solely in `GameConfig.WaveField`; nothing is saved. See
 ADR 0018's dated amendment for windows, causality, fallback and future-stage boundaries.
 
+Stage C composes a bay's `SwellClimateDef` after wind memory through
+`GameServices.WithSwell`. World registers each region's climate and glass basins with
+`GameServices.RegisterSwellClimate`; Core resolves them by `CurrentRegionId`.
+`GameServices.FetchAt` carries wind growth and independent swell shelter in one value.
+`WaveFetchSample.ForTrain` selects the system by slot, including in the bore's birth
+read. The shader bridge publishes the same ocean bearing and basin data alongside
+the unchanged eight-train payload. Swell, tide and wind remain recomputed, never saved.
+
 ### Birds belong to places (gulls, 2026-10-15)
 
 The flock no longer gathers around the camera. Each place a bird keeps is a `BirdHauntDef`, one

@@ -1176,6 +1176,14 @@ namespace HiddenHarbours.Core
                                               float phaseDegrees, float periodSeconds,
                                               float fetchEnvelope01, float setStrength, float freqScale = 1f,
                                               double timeSeconds = 0.0)
+            => BoreBirthEnergy01(in field, breakLinePoint, travelSeconds, phaseDegrees, periodSeconds,
+                (WaveFetchSample)fetchEnvelope01, setStrength, freqScale, timeSeconds);
+
+        /// <summary>The same birth read with independent wind and swell shelter.</summary>
+        public static float BoreBirthEnergy01(in WaveTrains field, Vector2 breakLinePoint, float travelSeconds,
+                                              float phaseDegrees, float periodSeconds,
+                                              WaveFetchSample fetchEnvelope01, float setStrength, float freqScale = 1f,
+                                              double timeSeconds = 0.0)
         {
             float strength = Mathf.Clamp01(setStrength);
             if (strength <= 0f || field.Count <= 0) return 1f;
@@ -1263,6 +1271,26 @@ namespace HiddenHarbours.Core
                                        in BreakerContour contour, float fetchEnvelope01,
                                        in WaveTrains field, float gravity, in BreakerSettings settings,
                                        float freqScale = 1f, double timeSeconds = 0.0)
+            => SurfAtCore(worldPos, waterLevelMeters, terrain, in contour, fetchEnvelope01, fetchEnvelope01,
+                in field, gravity, in settings, freqScale, timeSeconds);
+
+        /// <summary>Contours follow the global dominant train. The bore's set reads each system's
+        /// shelter, so wind lee cannot suppress an arriving swell's contribution to that set.</summary>
+        public static SurfState SurfAt(Vector2 worldPos, float waterLevelMeters, ITidalTerrain terrain,
+                                       in BreakerContour contour, WaveFetchSample fetch,
+                                       in WaveTrains field, float gravity, in BreakerSettings settings,
+                                       float freqScale = 1f, double timeSeconds = 0.0)
+        {
+            float factor = fetch.ForTrain(field.DominantIndex, field.Dominant.Wavelength);
+            WaveFetchSample birth = fetch.HasSwell ? fetch : (WaveFetchSample)factor;
+            return SurfAtCore(worldPos, waterLevelMeters, terrain, in contour, factor, birth,
+                in field, gravity, in settings, freqScale, timeSeconds);
+        }
+
+        private static SurfState SurfAtCore(Vector2 worldPos, float waterLevelMeters, ITidalTerrain terrain,
+                                       in BreakerContour contour, float fetchEnvelope01, WaveFetchSample birthFetch,
+                                       in WaveTrains field, float gravity, in BreakerSettings settings,
+                                       float freqScale, double timeSeconds)
         {
             if (terrain == null || !contour.Breaks) return SurfState.Calm;
             if (field.Count <= 0) return SurfState.Calm;
@@ -1290,7 +1318,7 @@ namespace HiddenHarbours.Core
             Vector2 breakLine = BreakLinePoint(worldPos, shoreward, age);
             float phase = BorePhaseDegrees(in dominant, breakLine, travel, freqScale, timeSeconds);
             float birth = BoreBirthEnergy01(in field, breakLine, travel, phase, PeriodSeconds(in dominant),
-                                            fetchEnvelope01, settings.BoreSetStrength, freqScale, timeSeconds);
+                                            birthFetch, settings.BoreSetStrength, freqScale, timeSeconds);
             float bore = BorePulse01(phase, settings.BorePulseSharpness) * birth;
 
             // The run-up is Hunt's law on the height the bore was BORN with — the depth-limited height at

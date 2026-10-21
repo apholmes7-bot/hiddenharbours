@@ -913,11 +913,12 @@ namespace HiddenHarbours.Boats
             WaveTrain dominant = trains.Dominant;
 
             BreakerContour contour = BreakerMath.ContourFor(
-                in dominant, WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
+                in dominant, GameServices.SwellClimate != null && trains.DominantIndex >= SwellMath.FirstSlot
+                    ? 0f : WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
             if (!contour.Breaks) return SurfState.Calm;
 
             float waterLevel = environment.WaterLevelAt(now);
-            float envelope = GameServices.FetchEnvelopeAt(pos);
+            WaveFetchSample envelope = GameServices.FetchAt(pos);
             // THE BORE-AWARE READ (ADR 0040 revision 3). The overload that takes the FIELD adds the surf's
             // clock: the published phase at the break line, read forward at minus the march's own travel
             // time, and from it the pulse, the birth energy and the run-up. The overload without it — the
@@ -970,9 +971,12 @@ namespace HiddenHarbours.Boats
             WaveFieldSettings waveField = GameServices.WaveField;
             bool published = SharedWaveField.TryGet(out WaveTrains trains);
             if (!published)
+            {
                 trains = GameServices.Environment is IWaveWindSource history
                     ? WaveMemory.TrainsAt(history, now, in waveField)
                     : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
+                trains = GameServices.WithSwell(in trains, now, waveField.Gravity);
+            }
             // Published travel is baked; a first-frame fallback carries raw phases at the clock.
             WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
 

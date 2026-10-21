@@ -208,7 +208,9 @@ namespace HiddenHarbours.Art
             WaveFetchSettings fetch = GameServices.WaveFetch;
             BreakerSettings breakers = GameServices.Breakers;
             WaveTrain dominant = trains.Dominant;
-            BreakerContour contour = BreakerMath.ContourFor(in dominant, WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
+            BreakerContour contour = BreakerMath.ContourFor(in dominant,
+                GameServices.SwellClimate != null && trains.DominantIndex >= SwellMath.FirstSlot
+                    ? 0f : WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
             if (!contour.Breaks) return;
 
             float waterLevel = environment.WaterLevelAt(clock.TotalSeconds);
@@ -223,7 +225,7 @@ namespace HiddenHarbours.Art
                 int c = iy * _cells + ix;
                 Vector2 pos = SurfSprayMath.ProbePoint(centre, half, _cells, ix, iy);
                 _cellPos[c] = pos;
-                float envelope = GameServices.FetchEnvelopeAt(pos);
+                WaveFetchSample envelope = GameServices.FetchAt(pos);
                 SurfState s = BreakerMath.SurfAt(pos, waterLevel, terrain, in contour, envelope,
                                                  in trains, gravity, in breakers, drawnScale);
                 _cellWeight[c] = SurfSprayMath.Emission01(s.PlungingWeight01, s.Bore01, s.Whitewater01,

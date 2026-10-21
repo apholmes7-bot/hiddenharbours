@@ -29,7 +29,7 @@ namespace HiddenHarbours.Core
         public readonly float Wavelength;
 
         /// <summary>Amplitude (metres) — half the crest-to-trough height, clamped ≥ 0. Exactly 0 means
-        /// this train contributes nothing (glass calm is sacred: no minimum swell — ADR 0018 §(1)).</summary>
+        /// this train contributes nothing. Stage C adds an authored swell, sheltered independently.</summary>
         public readonly float Amplitude;
 
         /// <summary>Phase speed c (m/s) — <b>derived</b> from <see cref="Wavelength"/> via
@@ -1042,7 +1042,7 @@ namespace HiddenHarbours.Core
                                         float fetchEnvelope01)
             => Sample(worldPos, timeSeconds, in trains, (WaveFetchSample)fetchEnvelope01);
 
-        /// <summary>Apply each wavelength's factor inside the sum. The unfetched amplitudes still
+        /// <summary>Apply each train's wind growth or swell shelter inside the sum. The unfetched amplitudes still
         /// normalize crests. A uniform payload preserves the legacy after-sum multiplication.</summary>
         public static WaveSample Sample(Vector2 worldPos, double timeSeconds, in WaveTrains trains,
                                         WaveFetchSample fetchEnvelope01)
@@ -1059,7 +1059,7 @@ namespace HiddenHarbours.Core
                 WaveTrain train = trains[i];
                 float amplitude = train.Amplitude;
                 totalAmplitude += amplitude;
-                if (fetchEnvelope01.Spectral) amplitude *= fetchEnvelope01.ForWavelength(train.Wavelength);
+                if (fetchEnvelope01.Spectral) amplitude *= fetchEnvelope01.ForTrain(i, train.Wavelength);
                 if (amplitude <= 0f) continue; // a silent train contributes exactly nothing
 
                 float waveNumber = (2f * Mathf.PI) / train.Wavelength;
