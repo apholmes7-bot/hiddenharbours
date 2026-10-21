@@ -1209,6 +1209,11 @@ Shader "HiddenHarbours/Water"
                 TEXTURE2D(_SplatA); TEXTURE2D(_SplatB); TEXTURE2D(_SplatC);
                 TEXTURE2D(_SplatD); TEXTURE2D(_SplatE); TEXTURE2D(_SplatF);
                 TEXTURE2D_ARRAY(_DetailArr256);
+                // W4-4c: the props under the water (IsoFacetHullFeature's HHUnderWater list: albedo,
+                // premultiplied, camera resolution, LOADed so no sampler) and the flag its pass raises
+                // once they are drawn. GLOBALS, never in Properties: unset, the flag reads 0, no prop.
+                TEXTURE2D(_HHUnderWaterTex);
+                float  _HHUnderWaterLive;
                 // URP's inline samplers (Core.hlsl's GlobalSamplers) in the ground's own sampler states (the
                 // include's header says why they match): two slots, where the textures' own seven would pass
                 // the sixteen a D3D11 stage allows. The splats have no mips, so level 0 IS the texture, and
@@ -2250,11 +2255,20 @@ Shader "HiddenHarbours/Water"
             // untouched. level is the water's own level at the pixel (the tide, or still water above it).
             //
             // Visual only: reads the height map the sea already reads, writes nothing the sim sees (rule 5).
+            //
+            // ShallowsBend is THE BEND above, once, for the floor and for the props laid over it (W4-4c):
+            // the point the view reaches at this depth, in whole ground pixels.
+            float2 ShallowsBend(float2 worldXY, float2 slope, float depth)
+            {
+                float ppm = max(_PixelsPerMetre, 1.0);
+                return worldXY + round(slope * depth * _ShallowsFloorRefraction * ppm) / ppm;
+            }
+
             half4 ShallowsFloorBed(half4 bed, float2 worldXY, float2 slope, float depth, float level,
                                    float2 dwx, float2 dwy)
             {
                 float ppm = max(_PixelsPerMetre, 1.0);
-                float2 wp = worldXY + round(slope * depth * _ShallowsFloorRefraction * ppm) / ppm;
+                float2 wp = ShallowsBend(worldXY, slope, depth);
                 float e = SeabedElevationLod(wp);
                 float hem = TSA_Hem(e);
                 [branch]
@@ -2269,6 +2283,35 @@ Shader "HiddenHarbours/Water"
                 ground = TSA_Wet(ground, e, level);
                 float a = lerp(bed.a, 1.0, hem);
                 return half4(lerp(bed.rgb, ground, saturate(hem / max(a, 1e-4))), a);
+            }
+
+            // W4-4c — THE PROPS UNDER THE WATER: a shore plant wholly under the live water, drawn where it
+            // stands into _HHUnderWaterTex by its own HHUnderWater pass (albedo, unlit, premultiplied),
+            // laid over the bed at the point the floor reads: the same bend in the same whole ground
+            // pixels, so the plant and the ground under it wobble together. The column below then takes
+            // both as ONE bed: the mood's absorption per channel, the caustics and the grade light the
+            // plant as they light the floor beside it, and no prop's shader carries a copy of that law.
+            //
+            // The read is the bent point's own screen pixel, by this pass's view projection: the pixel the
+            // HHUnderWater pass drew that ground point to (the props are not lifted; the bed rides the
+            // sea's lift as the floor does). Pixels from _ScreenParams, as ObjectReflection turns its
+            // points into pixels; off the target, no prop.
+            //
+            // The share, premultiplied over straight: a = prop.a + bed.a x (1 - prop.a), colour
+            // (prop + bed x bed.a x (1 - prop.a)) / a. A clear texel returns the bed untouched.
+            half4 ShallowsPropsBed(half4 bed, float2 worldXY, float2 slope, float depth)
+            {
+                float2 wp = ShallowsBend(worldXY, slope, depth);
+                float2 ndc = ComputeNormalizedDeviceCoordinates(float3(wp, 0.0), UNITY_MATRIX_VP);
+                int2 px = int2(floor(ndc * _ScreenParams.xy));
+                if (any(px < 0) || any(px >= int2(_ScreenParams.xy)))
+                    return bed;
+                half4 prop = LOAD_TEXTURE2D(_HHUnderWaterTex, px);
+                [branch]
+                if (prop.a <= 0.0)
+                    return bed;
+                float a = lerp(bed.a, 1.0, prop.a);
+                return half4((prop.rgb + bed.rgb * bed.a * (1.0 - prop.a)) / max(a, 1e-4), a);
             }
             #endif
 
@@ -5161,6 +5204,12 @@ Shader "HiddenHarbours/Water"
                         && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
                         bed = ShallowsFloorBed(bed, worldXY, waveSlope, max(depthC, 0.0), elevation + depth,
                                                floorDx, floorDy);
+                    // W4-4c: the props under the water (ShallowsPropsBed), over the floor, through the SAME
+                    // column below. Lowered (the switch off, nothing under, a camera without the pass), off
+                    // the rect or where the column passes nothing, the bed is the floor's, bit for bit.
+                    [branch]
+                    if (_HHUnderWaterLive > 0.5 && bedIn > 0.0 && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
+                        bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0));
             #endif
                     col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
                 }

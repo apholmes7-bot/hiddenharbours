@@ -583,6 +583,20 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)]
         public float ShallowsFloorRefraction = DefaultShallowsFloorRefraction;
 
+        /// <summary>W4-4c's ship default — <b>OFF</b> until its plates are accepted. With it on, a shore plant
+        /// wholly under the live water is drawn by the sea's own composite, over the floor and through the
+        /// same column: darker and bluer with depth by the mood's absorption, bent with the floor, lit by the
+        /// caustics and graded, as the floor beside it is.</summary>
+        public const bool DefaultShallowsSubmergedProps = false;
+
+        [Tooltip("Show the plants under clear shallow water through the water, as the floor is shown? ON: " +
+                 "a plant wholly under the tide is drawn by the sea over the floor, darker and bluer with " +
+                 "depth, wobbling with the floor and lit by the caustics; murky and stormy moods hide it as " +
+                 "they hide the floor. OFF: as before, bit for bit (the sea's bed covers it). Desktop only: " +
+                 "a mobile build's sea never reads it. Ship it with ShallowsFloor, whose bend it shares. " +
+                 "Read per camera per frame, and by each plant on the tide tick.")]
+        public bool ShallowsSubmergedProps = DefaultShallowsSubmergedProps;
+
         /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
         /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
         /// consumers with no config wired (EditMode, a bare test rig) resolve the SAME style the shipped
