@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using HiddenHarbours.Art;
+using HiddenHarbours.Art.Editor;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.World;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ namespace HiddenHarbours.Tests.EditMode
 {
     public class StPetersVillageRefreshTests
     {
-        sealed class Assets : IVillageDressingAssets, IVillageLightAssets
+        sealed class Assets : IVillageDressingAssets, IVillageLightAssets, IVillageBoundaryAssets
         {
             public int Reads;
             public SpriteRef SpriteFor(StPetersVillageDressing.Row row)
@@ -26,6 +27,7 @@ namespace HiddenHarbours.Tests.EditMode
             public ScriptRef Sorter => new ScriptRef(new ObjRef(11500000, "33333333333333333333333333333333", 3),
                 "HiddenHarbours.Art::HiddenHarbours.Art.YSortSprite");
             public SpriteRef Post => new SpriteRef(new ObjRef(21300000, "44444444444444444444444444444444", 3), new Vector2(1, 4));
+            public SpriteRef SpriteFor(YardDressing.PlannedPiece piece) => Post;
             public ScriptRef ScriptFor(Type type) => new ScriptRef(Sorter.Script, type.Assembly.GetName().Name + "::" + type.FullName);
         }
 
@@ -214,6 +216,56 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var patch in patches) Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));
             moves[0].Key = "redSaltbox";
             Assert.Throws<Refusal>(() => MoveVillageBuildings(scene, moves));
+        }
+
+        [Test]
+        public void YardBoundaries_KeepHeldGroups_UseOneColliderPerSegment_AndReplanToNothing()
+        {
+            var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
+            var assets = new Assets();
+            var kit = new YardKit.Contract
+            {
+                facings = 8, ppu = 32, cellFaceBearings = Enumerable.Range(0, 8).Select(i => i * 45f).ToArray(),
+                cellRunBearings = Enumerable.Range(0, 8).Select(i => (i * 45f + 90f) % 360f).ToArray(),
+                pieces = YardKit.Builds.Select(b => new YardKit.Entry { key = b.Key, role = b.Part.ToString(), facings = 8,
+                    columns = 8, rows = 1, cellW = 96, cellH = 96, footprintWidthMetres = 2, footprintDepthMetres = .4f }).ToArray(),
+            };
+            var rows = new[] { "GeneralStore", "HarbourGable", "SageCottage", "School", "WhiteGable" }.Select((name, i) =>
+            {
+                float x = i * 20;
+                var yard = new Yard(name, new Vector2(x + 5, 5), 1,
+                    new GroundPolygon(new[] { new Vector2(x, 0), new Vector2(x + 10, 0), new Vector2(x + 10, 10), new Vector2(x, 10) }),
+                    i == 0 ? YardFence.None : YardFence.PostRail, new[] { new Vector2(x + 5, 0) }, "test boundary");
+                return new VillageYard { Yard = yard, Plan = YardDressing.PlanOne(yard, kit) };
+            }).ToArray();
+            var patch = VillageYardBoundaries(scene, rows, assets);
+            var after = patch.Apply(scene);
+            var root = scene.RootNamed("Yards");
+            var changed = new System.Collections.Generic.HashSet<long> { scene.TransformOf(root).FileId };
+            foreach (string name in new[] { "School", "SageCottage" })
+                changed.UnionWith(scene.SubtreeOf(scene.ChildNamed(scene.TransformOf(root), name).FileId));
+            foreach (var doc in scene.Docs.Where(d => !changed.Contains(d.FileId)))
+                Assert.That(after.Get(doc.FileId).Text, Is.EqualTo(doc.Text));
+            foreach (var row in rows)
+            {
+                if (!row.Plan.Fenced)
+                {
+                    Assert.That(after.Docs.Any(d => d.ClassId == 1 && d.Field("m_Name") == row.Yard.Name), Is.False);
+                    continue;
+                }
+                var group = after.ChildNamed(after.TransformOf(root), row.Yard.Name);
+                var boundary = after.ChildNamed(after.TransformOf(group), "Boundary");
+                var walls = after.ChildNamed(after.TransformOf(boundary), "Walls");
+                var colliders = after.ComponentsOf(walls).Where(d => d.ClassId == 60).ToArray();
+                Assert.That(colliders.Length, Is.EqualTo(row.Plan.Runs.Sum(r => r.Length - 1)));
+                Assert.That(after.ComponentsOf(boundary).Count(d => d.IsScript(typeof(PropertyBoundary).FullName)), Is.EqualTo(1));
+                foreach (var collider in colliders)
+                    Assert.That(collider.Lines.Count(l => l == "    - - {x: " || l.StartsWith("    - - {x:", StringComparison.Ordinal)), Is.EqualTo(1));
+            }
+            Assert.That(VillageYardBoundaries(after, rows, assets).IsEmpty, Is.True);
+            Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));
+            rows[0].Yard = new Yard("WhiteFarmhouse", Vector2.zero, 1, rows[0].Yard.Polygon, YardFence.None, null, "test");
+            Assert.Throws<Refusal>(() => VillageYardBoundaries(scene, rows, assets));
         }
 
         [Test]
