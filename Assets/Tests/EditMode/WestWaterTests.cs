@@ -22,7 +22,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para><b>Everything here is built through the same calls the builder uses</b>
     /// (<see cref="WestWaterPlan.Plan"/>, <see cref="WaterScenePlan.ConfigureTerrain"/>,
     /// <see cref="WaterSceneTemplate.ApplyRegionFacts"/>), so a test can never assert a region the scene
-    /// does not have.</para>
+    /// does not have. Nine Mile Creek's side of the seam is the ground its scene stands on since NMC H2:
+    /// G3 (<see cref="NineMileCreekLiveGround.Plan"/>), which reads the bay floor's −6 m exactly at the
+    /// sea door.</para>
     ///
     /// <para><b>No scene, no OnEnable.</b> EditMode never runs a region's activation, so nothing here
     /// asserts registration into <c>GameServices</c> — that is a rig fact and it lives in
@@ -33,10 +35,9 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private GameObject _westWaterGo;
         private GameObject _islandGo;
-        private GameObject _mainlandGo;
         private RectTidalTerrain _westWater;
         private TidalTerrain _island;
-        private MainlandTidalTerrain _mainland;
+        private ITidalTerrain _mainland;
 
         [SetUp]
         public void SetUp()
@@ -52,9 +53,8 @@ namespace HiddenHarbours.Tests.EditMode
             _island = _islandGo.AddComponent<TidalTerrain>();
             StPetersBuilder.ConfigureTidalTerrain(_island);
 
-            _mainlandGo = new GameObject("NineMileCreek_SeamReference");
-            _mainland = _mainlandGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_mainland);
+            // Nine Mile Creek's side is the ground its scene stands on since NMC H2: G3, not the analytic plan.
+            _mainland = NineMileCreekLiveGround.Plan;
         }
 
         [TearDown]
@@ -62,7 +62,6 @@ namespace HiddenHarbours.Tests.EditMode
         {
             if (_westWaterGo != null) Object.DestroyImmediate(_westWaterGo);
             if (_islandGo != null) Object.DestroyImmediate(_islandGo);
-            if (_mainlandGo != null) Object.DestroyImmediate(_mainlandGo);
             GameServices.Reset();
         }
 
@@ -336,11 +335,11 @@ namespace HiddenHarbours.Tests.EditMode
             // passages on the same side of the region — the tidal crossing and the sea door — and a
             // trigger band that reached the other's would make the crossing fire the wrong region.
             AssertBandsClear(
-                StPetersBuilder.ToNineMileCreekPassagePos.y, StPetersBuilder.SandbarHalfWidth * 2f,
+                StPetersBuilder.ToNineMileCreekPassagePos.y, StPetersBuilder.NineMileCreekPassageBandSize.y,
                 StPetersBuilder.ToWestWaterPassagePos.y, StPetersBuilder.WestWaterPassageBandSize.y,
                 "St Peters' bar passage and its sea door");
             AssertBandsClear(
-                NineMileCreekBuilder.ToStPetersPassagePos.y, NineMileCreekBuilder.PassageBandSize.y,
+                NineMileCreekBuilder.ToStPetersPassagePos.y, NineMileCreekBuilder.StPetersPassageBandSize.y,
                 NineMileCreekMainland.ToWestWaterPassagePos.y, NineMileCreekMainland.WestWaterPassageBandSize.y,
                 "the mainland's bar passage and its sea door");
 

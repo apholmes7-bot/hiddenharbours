@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_117
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_117
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: wall
+  Brow:
+  - {x: 203.46419, y: 48.25}
+  - {x: 203.71419, y: 48.25}
+  - {x: 203.96419, y: 48.25}
+  - {x: 204.21419, y: 48.25}
+  - {x: 204.25, y: 48.464184}
+  - {x: 204.37239, y: 48.747135}
+  - {x: 204.61063, y: 48.75}
+  - {x: 204.86063, y: 48.75}
+  - {x: 205.11063, y: 48.75}
+  Toe:
+  - {x: 203.68185, y: 47.744907}
+  - {x: 203.90793, y: 47.735252}
+  - {x: 204.13234, y: 47.726337}
+  - {x: 204.37401, y: 47.723732}
+  - {x: 204.46794, y: 47.746544}
+  - {x: 204.6775, y: 47.742443}
+  - {x: 204.77045, y: 48.223732}
+  - {x: 205.02045, y: 48.223732}
+  - {x: 205.19414, y: 48.206375}
+  DropMetres:
+  - 10.358367
+  - 10.370896
+  - 10.388262
+  - 10.39813
+  - 10.391449
+  - 10.380544
+  - 10.276228
+  - 10.339367
+  - 10.386577
+  ToeElevations:
+  - 0.64161736
+  - 0.6290888
+  - 0.6117231
+  - 0.6018541
+  - 0.60853565
+  - 0.60504633
+  - 0.72375697
+  - 0.660618
+  - 0.6134085
+  Stations:
+  - 183
+  - 184
+  - 185
+  - 186
+  - 187
+  - 188
+  - 189
+  - 190
+  - 191
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'S wall: a new face: no St Peters wall wears S wall'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 183 to 191; the ring''s own PR builds it.'

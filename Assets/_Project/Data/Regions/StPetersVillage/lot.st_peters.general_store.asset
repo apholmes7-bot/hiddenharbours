@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8a1730c3b79fb7eb9873bdf343be0f, type: 3}
+  m_Name: lot.st_peters.general_store
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
+  Id: "lot.st_peters.general_store"
+  BuildingId: "building.stp_general_store"
+  BakeKey: "harbourStore"
+  StreetId: "route.stpeters.school_lane"
+  Position: {x: 2.5, y: 35.422}
+  DoorOffset: {x: 0.0, y: -3.213}
+  FootprintId: "footprint.st_peters.general_store"
+  FacingCell: 4
+  Entry: "front"
+  DoorFaces: "S"
+  RoofTop: 45.64
+  ArtBottom: 32.209
+  Gate: {x: 2.5, y: 29.585}
+  Approach: {x: 2.5, y: 28.3}
+  Outline:
+  - {x: -5.1, y: 29.585}
+  - {x: 8.25, y: 29.585}
+  - {x: 8.25, y: 39.5}
+  - {x: -5.1, y: 39.5}
+  SetbackMetres: 0.0
+  FrontageMetres: 13.35
+  DepthMetres: 15.425
+  WalkId: "route.stpeters.general_store_walk"

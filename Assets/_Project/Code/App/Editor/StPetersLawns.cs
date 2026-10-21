@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using UnityEngine;
+using HiddenHarbours.World;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.App.Editor

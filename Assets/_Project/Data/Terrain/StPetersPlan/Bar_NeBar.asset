@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 344c4e8c513e3f4eb61621c1b27f812f, type: 3}
+  m_Name: Bar_NeBar
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.TidalBarDef
+  Id: bar.stp_ne_bar
+  DisplayName: NE bar
+  Crest:
+  - {x: 219.8, y: 61.8}
+  - {x: 227.5, y: 69.5}
+  - {x: 236, y: 78.2}
+  - {x: 244.5, y: 87.2}
+  - {x: 251.5, y: 95.8}
+  - {x: 255.2, y: 101.8}
+  CrestTop: 0.75
+  CrestFall: 2.8
+  CrestExponent: 1.15
+  CrestWave: {x: 0.12, y: 0.9}
+  TipSlope: 0.32
+  HalfWidth: {x: 8.5, y: 5.5}
+  FlankFall: 1.7
+  SeawardSteepen: 1.3
+  WindowMin: {x: 208, y: 52}
+  WindowMax: {x: 266, y: 112}
+  Before: -6
+  Reach: 22
+  Recipe: {fileID: 11400000, guid: d38524bb2023670050c81e83b6685532, type: 2}
+  SourceId: terrain_change.stp_ne_head
+  Why: 'The shingle bar from the Head out past the stack: bare to its tip only at a spring low.'

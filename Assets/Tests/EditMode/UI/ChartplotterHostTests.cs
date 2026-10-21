@@ -154,30 +154,50 @@ namespace HiddenHarbours.Tests.UI.EditMode
                         "further before the glass owes a repaint");
         }
 
-        // ---- the expanded card -------------------------------------------------------------------------
+        // ---- the raised card --------------------------------------------------------------------------
+
+        /// <summary>The console face raised on a screen (H2: from its housing in the band).</summary>
+        private static Rect Raised(float w, float h)
+            => HelmBandLayout.RaisedCardRect(NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH, w, h,
+                                             HudBandLayout.ReservedTopPx(w, h, 0f));
 
         [Test]
         public void TheExpandedCard_IsAnIntegerScaleOfTheConsoleFace_AndCentred()
         {
-            Rect card = ChartplotterOverlayLayout.ExpandedCardRect(1920f, 1080f);
-            float scale = card.width / NavRigGeometry.ConsoleW;
+            foreach (Vector2 sc in new[] { new Vector2(1920f, 1080f), new Vector2(2560f, 1440f),
+                                           new Vector2(3840f, 2160f) })
+            {
+                Rect card = Raised(sc.x, sc.y);
+                float scale = card.width / NavRigGeometry.ConsoleW;
 
-            Assert.That(scale, Is.EqualTo(Mathf.Round(scale)).Within(1e-4f),
-                        "a fractional scale resamples the 3x5 font into mush");
-            Assert.That(scale, Is.GreaterThanOrEqualTo(1f));
-            Assert.That(card.height / NavRigGeometry.ConsoleH, Is.EqualTo(scale).Within(1e-4f),
-                        "aspect preserved — the same face, larger");
-            Assert.That(card.center.x, Is.EqualTo(960f).Within(0.5f));
-            Assert.That(card.center.y, Is.EqualTo(540f).Within(0.5f));
+                Assert.That(scale, Is.EqualTo(Mathf.Round(scale)).Within(1e-4f),
+                            $"{sc}: a fractional scale resamples the 3x5 font into mush");
+                Assert.That(scale, Is.GreaterThanOrEqualTo(1f));
+                Assert.That(card.height / NavRigGeometry.ConsoleH, Is.EqualTo(scale).Within(1e-4f),
+                            "aspect preserved — the same face, larger");
+                Assert.That(card.center.x, Is.EqualTo(sc.x / 2f).Within(1f), $"{sc}: centred across");
+                float bandTop = HelmBandLayout.BandHeightPx((int)sc.y);
+                float top = sc.y - HudBandLayout.ReservedTopPx(sc.x, sc.y, 0f);
+                Assert.That(card.center.y, Is.EqualTo((bandTop + top) / 2f).Within(1f),
+                            $"{sc}: …and centred between the band's top and the top HUD band");
+            }
         }
 
         [Test]
         public void OnATinyScreen_TheCardFallsBackToNativeSize_RatherThanBelowIt()
         {
-            Rect card = ChartplotterOverlayLayout.ExpandedCardRect(640f, 400f);
-            Assert.AreEqual(NavRigGeometry.ConsoleW, card.width, 1e-3f,
-                            "never smaller than 1x — a downscaled rig is illegible, and the rig is the " +
-                            "read in this state");
+            // 720p and 800p, the smallest screens the PC build ships for: no whole scale fits between
+            // the bands, so the card is raised at today's scale — native — and reaches down over the
+            // band while it is raised (Q1: B).
+            foreach (Vector2 sc in new[] { new Vector2(1280f, 720f), new Vector2(1280f, 800f) })
+            {
+                Rect card = Raised(sc.x, sc.y);
+                Assert.AreEqual(NavRigGeometry.ConsoleW, card.width, 1e-3f,
+                                $"{sc}: never smaller than 1x — a downscaled rig is illegible, and the rig " +
+                                "is the read in this state");
+                Assert.Less(card.yMin, HelmBandLayout.BandHeightPx((int)sc.y),
+                            $"{sc}: …so it reaches down over the band rather than shrinking above it");
+            }
         }
 
         // ---- the range ladder --------------------------------------------------------------------------

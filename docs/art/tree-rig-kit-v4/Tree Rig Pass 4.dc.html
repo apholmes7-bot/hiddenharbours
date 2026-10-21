@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="lib/pixelLanguage.js"></script>
+<script src="weatherSky.js"></script>
+<script src="lib/treeIsoRig3.js"></script>
+<script src="treeIsoRig4.js"></script>
+<script src="treeMaps4.js"></script>
+<script src="lib/_sidecarExport.js"></script>
+<script src="_treeGameplay.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1418;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#8fd6a0;text-decoration:none;}
+  a:hover{color:#c2e9cc;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:#243b3d;border-radius:2px;outline:none;margin:0;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6cc;border:1px solid #0b1418;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6cc;border:1px solid #0b1418;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1418;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aab6b4;padding:30px 20px 64px;display:flex;flex-direction:column;align-items:center;gap:20px;">
+
+  <div style="width:100%;max-width:1080px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #21322f;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3ee;letter-spacing:0.5px;line-height:1;">Acadian Tree Rig &middot; Pass 4</div>
+      <div style="font-size:10.5px;letter-spacing:0.15em;color:#6b807c;line-height:1.7;">WEATHER-LIT &middot; LIVE LIGHT MAPS &middot; CAST SHADOWS &middot; MASS-ANCHORED WIND &middot; LEAF SHIMMER &middot; RINGLESS</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:470px;text-align:right;line-height:1.45;text-wrap:pretty;">Pass 3 lit every tree once, at noon, and swayed it by sliding rows. Pass 4 ships the light as maps and lights them from the sky set here: the hour, cloud, rain, fog, snow and wind move the same trees, their shadows and the terrain under them.</div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+    <div style="font-size:10px;letter-spacing:0.14em;color:#6b807c;margin-right:6px;">WEATHER</div>
+    <sc-for list="{{ presets }}" as="p" hint-placeholder-count="11">
+      <div onClick="{{ p.onClick }}" style="padding:6px 10px;font-size:10.5px;letter-spacing:0.05em;cursor:pointer;user-select:none;border:1px solid #26413c;color:{{ p.fg }};background:{{ p.bg }};">{{ p.label }}</div>
+    </sc-for>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;flex-direction:column;gap:10px;">
+    <div style="position:relative;border:1px solid #21322f;background:#0d1a1c;overflow:auto;max-height:940px;">
+      <canvas ref="{{ heroRef }}" width="520" height="450" style="width:1040px;height:900px;"></canvas>
+      <div style="position:absolute;left:12px;top:10px;display:flex;flex-direction:column;gap:2px;pointer-events:none;">
+        <div style="font-family:'IM Fell English SC',serif;font-size:21px;color:#f3efe6;text-shadow:0 1px 0 #0b1418,0 0 6px rgba(11,20,24,0.7);">{{ clock }}</div>
+        <div style="font-size:10px;letter-spacing:0.12em;color:#f3efe6;text-shadow:0 1px 0 #0b1418,0 0 6px rgba(11,20,24,0.7);">{{ skyName }}</div>
+      </div>
+      <div style="position:absolute;right:12px;top:12px;font-size:10px;letter-spacing:0.1em;color:#f3efe6;text-shadow:0 1px 0 #0b1418,0 0 6px rgba(11,20,24,0.7);pointer-events:none;">{{ frameTag }}</div>
+      <div style="position:absolute;left:12px;bottom:10px;max-width:620px;font-size:10px;line-height:1.5;color:#e7ece7;background:rgba(11,20,24,0.8);padding:6px 9px;pointer-events:none;text-wrap:pretty;">{{ channelNote }}</div>
+      <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:0.14em;color:#6b807c;">{{ status }}</div>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <div style="display:flex;border:1px solid #26413c;flex-wrap:wrap;">
+        <sc-for list="{{ channelBtns }}" as="m" hint-placeholder-count="10">
+          <div onClick="{{ m.onClick }}" style="padding:7px 10px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;border:1px solid #26413c;">
+        <sc-for list="{{ zoomBtns }}" as="m" hint-placeholder-count="3">
+          <div onClick="{{ m.onClick }}" style="padding:7px 11px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+        </sc-for>
+      </div>
+      <div onClick="{{ togglePlay }}" style="padding:7px 14px;font-size:10.5px;letter-spacing:0.1em;cursor:pointer;user-select:none;background:#152522;border:1px solid #26413c;color:#cfd6cc;">{{ playLabel }}</div>
+      <div onClick="{{ toggleDir }}" style="padding:7px 14px;font-size:10.5px;letter-spacing:0.1em;cursor:pointer;user-select:none;background:#152522;border:1px solid #26413c;color:#cfd6cc;">{{ dirLabel }}</div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
+    <div style="flex:1;min-width:min(420px,100%);display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Sky &amp; weather</div><div style="font-size:10px;color:#6b807c;">one sky lights the trees and the ground</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px 20px;border:1px solid #21322f;background:#0e1a1b;padding:14px 14px 16px;">
+        <sc-for list="{{ sliders }}" as="sl" hint-placeholder-count="7">
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.12em;color:#6b807c;"><span>{{ sl.label }}</span><span style="color:#cfd6cc;">{{ sl.text }}</span></div>
+            <input type="range" min="{{ sl.min }}" max="{{ sl.max }}" step="{{ sl.step }}" value="{{ sl.value }}" onInput="{{ sl.onInput }}" />
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#8fd6a0;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Readout</div></div>
+      <div style="border:1px solid #21322f;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ infoRows }}" as="row" hint-placeholder-count="10">
+          <div style="padding:6px 11px;color:#6b807c;letter-spacing:0.07em;border-top:{{ row.border }};background:#0e1a1b;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#cfd6cc;border-top:{{ row.border }};border-left:1px solid #21322f;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="width:360px;flex:none;max-width:100%;display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#4f8a5f;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Species</div><div style="font-size:10px;color:#6b807c;">Acadian forest &middot; true height</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+        <sc-for list="{{ species }}" as="s" hint-placeholder-count="10">
+          <div onClick="{{ s.onClick }}" style="display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid {{ s.bd }};background:{{ s.bg }};cursor:pointer;">
+            <div style="width:12px;height:12px;flex:none;background:{{ s.dot }};border:1px solid rgba(0,0,0,0.4);"></div>
+            <div style="display:flex;flex-direction:column;gap:1px;min-width:0;">
+              <div style="font-size:11px;color:{{ s.fg }};letter-spacing:0.02em;line-height:1.15;">{{ s.name }}</div>
+              <div style="font-size:9px;color:#5c6d69;line-height:1.1;">{{ s.m }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;border:1px solid #26413c;">
+          <sc-for list="{{ seasonBtns }}" as="m" hint-placeholder-count="3">
+            <div onClick="{{ m.onClick }}" style="flex:1;text-align:center;padding:7px 8px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;border:1px solid #26413c;">
+          <sc-for list="{{ stageBtns }}" as="m" hint-placeholder-count="4">
+            <div onClick="{{ m.onClick }}" style="flex:1;text-align:center;padding:7px 8px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;border:1px solid #26413c;">
+          <sc-for list="{{ variantBtns }}" as="m" hint-placeholder-count="4">
+            <div onClick="{{ m.onClick }}" style="flex:1;text-align:center;padding:7px 8px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ m.fg }};background:{{ m.bg }};border-left:{{ m.border }};">{{ m.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div onClick="{{ dlFrame }}" style="font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #2f7959;background:#11241d;color:#8fd6a0;text-align:center;cursor:pointer;">&darr;&nbsp; this frame, lit by this sky</div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ dlGbuf }}" style="flex:1;font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #6a4f2c;background:#1d1710;color:#d9b47c;text-align:center;cursor:pointer;">&darr;&nbsp; light maps &times; 4</div>
+          <div onClick="{{ dlSheet }}" style="flex:1;font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #35504c;background:#101d1e;color:#9db4ae;text-align:center;cursor:pointer;">&darr;&nbsp; wind sheet 4&times;4</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <a href="treeIsoRig4.js" download="treeIsoRig4.js" style="flex:1;font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #35504c;background:#101d1e;color:#9db4ae;text-align:center;">&darr;&nbsp; treeIsoRig4.js</a>
+          <a href="weatherSky.js" download="weatherSky.js" style="flex:1;font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #35504c;background:#101d1e;color:#9db4ae;text-align:center;">&darr;&nbsp; weatherSky.js</a>
+        </div>
+        <div onClick="{{ dlRest }}" style="font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #35504c;background:#101d1e;color:#9db4ae;text-align:center;cursor:pointer;">&darr;&nbsp; rest pose &middot; light maps + snow + wind weights &times; 7</div>
+        <div onClick="{{ dlGameplay }}" style="font-size:10.5px;letter-spacing:0.07em;padding:9px 8px;border:1px solid #6a4f2c;background:#1d1710;color:#d9b47c;text-align:center;cursor:pointer;">&darr;&nbsp; gameplay sidecar &middot; {{ gpName }}</div>
+        <div style="font-size:9.5px;color:{{ gpColor }};line-height:1.55;">{{ gpNote }}</div>
+        <div style="font-size:9.5px;color:#5c6d69;line-height:1.55;">Light maps: _unlit &middot; _normal &middot; _light (R sky visibility &middot; G leaf thinness &middot; B height above ground) &middot; _detail (RG stamp id &middot; B material). The wind sheet is the current channel over the 16-frame loop at the current wind.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #21322f;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.13em;color:#6b807c;">THE FAMILY UNDER THIS SKY &middot; 1&times; &middot; TRUE HEIGHTS &times; 0.6 &middot; FIRST FRAME OF THE WIND LOOP</div>
+      <div style="font-size:10px;color:#c9a86a;letter-spacing:0.08em;">{{ lineStatus }}</div>
+    </div>
+    <div style="border:1px solid #21322f;background:#0d1a1c;overflow-x:auto;">
+      <canvas ref="{{ lineRef }}" width="1860" height="520"></canvas>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1080px;display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:26px;border-top:1px solid #21322f;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:11px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">What pass 3 got wrong, and what changed</div></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">A</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">Light was baked.</span> Every sprite was lit once from the authored key, so a tree could not follow the hour and the terrain relight had to hold sprites to one band. The rig now emits light maps and is lit on call from a sky.</span></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">B</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">Popcorn crowns.</span> Each floret was lit from its own normal, so a crown had no light side. Normals now blend leaf, floret and crown envelope (an ellipsoid for broadleaves, a cone for conifers); one normal per stamp keeps one band per stamp.</span></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">C</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">No volume, no shadow.</span> Sky visibility and sun transmission come from opacity maps over the real clumps and limbs: interiors, the lower crown under the upper, spruce tiers, the bole under an oak. The same map throws the cast shadow, with sun flecks and a canopy shade that stays under overcast.</span></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">D</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">A fixed warm fringe</span> on every crown's upper right. Gone; a rim appears only when the sun is behind the tree, on the silhouette edge that faces it, and thin foliage transmits.</span></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">E</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">Sway was a row shear.</span> Four frames of sliding scanlines stair-stepped the trunk and dragged the crown as one sheet. Wind is now a field: trunk lean and sway, limb sway and bob per mass, flutter. Masses move whole pixels with their stamps; wood re-rasterises bent. Sixteen frames, looping.</span></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">F</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">Leaves never moved.</span> Deciduous stamps now turn over on their own cycles and show a paler underside, and the lit ones glint. Aspen trembles in still air, then birch, maple and oak, each stronger with wind.</span></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">G</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">Shapes.</span> Florets were rosettes of equal satellites; now domed on top and flat underneath. White pine pom-poms became flat layered sprays swept up at the tip. Birch and aspen crowns close into one oval. Limbs curve through their elbows. Birch bark is warm white, not blue.</span></div>
+      <div style="display:flex;gap:10px;font-size:11px;line-height:1.55;color:#8ba39d;"><span style="color:#c9a86a;flex:none;width:14px;">H</span><span style="text-wrap:pretty;"><span style="color:#e7ece7;">Trees floated.</span> Contact shade at the trunk foot, canopy shade under the crown, and the cast shadow, all on the pixel terrain and relit with it.</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#8fd6a0;"></div><div style="font-size:13px;color:#e7ece7;letter-spacing:0.05em;">Engine contract</div></div>
+      <div style="font-size:11px;line-height:1.6;color:#8ba39d;text-wrap:pretty;">Per frame of a 16-frame wind loop, baked per wind level (calm &middot; breeze &middot; wind &middot; gale), four maps on one cell and pivot:</div>
+      <div style="border:1px solid #21322f;display:grid;grid-template-columns:auto 1fr;font-size:10.5px;line-height:1.5;">
+        <div style="padding:6px 10px;color:#d9b47c;background:#0e1a1b;">_unlit</div><div style="padding:6px 10px;color:#aab6b4;border-left:1px solid #21322f;">Structure bands under a flat sky: stamps, the dark between leaves, crevices, bark grain. No sun in it.</div>
+        <div style="padding:6px 10px;color:#d9b47c;background:#0e1a1b;border-top:1px solid #21322f;">_normal</div><div style="padding:6px 10px;color:#aab6b4;border-left:1px solid #21322f;border-top:1px solid #21322f;">R x &middot; G y-up &middot; B toward camera. Stamp-flat, so per-pixel N&middot;L lights a stamp as one unit.</div>
+        <div style="padding:6px 10px;color:#d9b47c;background:#0e1a1b;border-top:1px solid #21322f;">_light</div><div style="padding:6px 10px;color:#aab6b4;border-left:1px solid #21322f;border-top:1px solid #21322f;">R sky visibility &middot; G leaf thinness &times; translucency &middot; B height above ground (0 = the foot, 255 = tree height).</div>
+        <div style="padding:6px 10px;color:#d9b47c;background:#0e1a1b;border-top:1px solid #21322f;">_detail</div><div style="padding:6px 10px;color:#aab6b4;border-left:1px solid #21322f;border-top:1px solid #21322f;">RG stamp id + 1 (16 bit; 0 = between leaves) &middot; B 255 leaf &middot; 170 bark &middot; 85 twig. A shader draws a stamp's seam on the side away from the sun and its tip toward it.</div>
+      </div>
+      <div style="font-size:11px;line-height:1.6;color:#8ba39d;text-wrap:pretty;">The reference relight is <span style="color:#cfd6cc;">TreeRig4.relight(frame, sky)</span>; <span style="color:#cfd6cc;">WeatherSky.at()</span> is the sky, <span style="color:#cfd6cc;">WeatherSky.lightTile()</span> relights the terrain pack under the same sky, and <span style="color:#cfd6cc;">toHarmony()</span> feeds the harmony compositor. Cast shadows: <span style="color:#cfd6cc;">TreeRig4.castShadow()</span> gives exact ground levels per sky; engines that skew a flat shadow sprite read <span style="color:#cfd6cc;">sky.shear</span>. The sun path is a stage path: east at dawn, near the zenith before noon, west-northwest at sunset, so shadows fall toward the camera as in the harmony scenes. The 14:00 key is the one every rig was authored against.</div>
+      <div style="font-size:11px;line-height:1.6;color:#7d6b5e;text-wrap:pretty;"><span style="color:#a08a6e;">Still open.</span> The bible's top-of-frame key vs upper-left is still unruled; one keyframe in weatherSky.js moves it. Sheets are not re-baked yet; the bake is one call per species and wind level.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;fps&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:8,&quot;min&quot;:4,&quot;max&quot;:12,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Playback&quot;,&quot;description&quot;:&quot;Wind-loop playback rate&quot;},&quot;particles&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Playback&quot;,&quot;description&quot;:&quot;Falling rain and snow over the scene&quot;},&quot;startPreset&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;afternoon&quot;,&quot;options&quot;:[&quot;afternoon&quot;,&quot;dawn&quot;,&quot;morning&quot;,&quot;golden&quot;,&quot;overcast&quot;,&quot;squall&quot;,&quot;fog&quot;,&quot;snow&quot;,&quot;dusk&quot;,&quot;night&quot;,&quot;gale&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Weather&quot;,&quot;description&quot;:&quot;Weather the page opens in&quot;}}">
+class Component extends DCLogic {
+  state = {
+    sp: 'RedMaple', variant: 0, season: 'summer', stage: 'mature',
+    time: 14, cloud: 0, rain: 0, fog: 0, snow: 0, wind: 0.22, gust: 0.3, dir: 1, preset: 'afternoon',
+    ch: 'lit', zoom: 2, play: true, ready: false, status: 'LOADING THE RIGS…', lineStatus: '', info: null,
+  };
+  heroRef = React.createRef();
+  lineRef = React.createRef();
+  fi = 0; tick = 0; cache = new Map(); floorC = null;
+
+  componentDidMount() {
+    this.pendingPreset = this.props.startPreset || 'afternoon';
+    const load = (src) => new Promise((res) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = res; document.head.appendChild(s); });
+    const wait = (f) => new Promise((res) => { const t = () => (f() ? res() : (this._w = setTimeout(t, 50))); t(); });
+    (async () => {
+      await wait(() => window.PxLang && window.WeatherSky && window.TreeRig4);
+      if (!window.PxKit) await load('lib/pxKit.js');
+      if (!window.Harmony && window.PxKit) await load('lib/harmonyScenes.js');
+      if (!this.dead) this.boot();
+    })();
+  }
+  componentWillUnmount() { this.dead = true; clearTimeout(this._w); clearInterval(this._iv); clearTimeout(this._lt); }
+
+  boot() {
+    const P = window.PxLang, K = window.PxKit, H = window.Harmony, FW = 520, FH = 520;
+    let tile = null;
+    try {
+      if (H && H.floor) {
+        const mid = (x) => FH * 0.87 + 12 * Math.sin(x / FW * 2 * Math.PI) + 5 * Math.sin(x / FW * 4 * Math.PI + 1.3);
+        const onPath = (x, y) => Math.abs(y - mid(x)) < 10 + 3 * Math.sin(x / FW * 6 * Math.PI);
+        tile = H.floor(null, FW, FH, [{ key: 'grass', step: 1, R: (x, y) => !onPath(x, y), seed: 3072 }, { key: 'path', step: 1, R: onPath, seed: 4410 }], 55).tile;
+      }
+    } catch (e) { tile = null; }
+    if (!tile && K) tile = K.build('grass', 1).tile;
+    if (!tile) { this.setState({ status: 'PIXEL KIT DID NOT LOAD' }); return; }
+    this.tile = tile; this.nr = P.normals(tile, 1.2);
+    const p = window.WeatherSky.PRESETS.find(q => q.key === this.pendingPreset);
+    const patch = p ? this.presetPatch(p) : {};
+    this.setState(Object.assign({ ready: true, status: '' }, patch), () => { this.restartLoop(); this.draw(); this.queueLineup(); });
+  }
+  presetPatch(p) {
+    const o = { preset: p.key, time: p.time, cloud: p.cloud, rain: p.rain, fog: p.fog, snow: p.snow, wind: p.wind, gust: p.gust };
+    if (p.key === 'snow') o.season = 'winter';
+    return o;
+  }
+  applyPreset(key) {
+    const p = window.WeatherSky && window.WeatherSky.PRESETS.find(q => q.key === key);
+    if (p) this.setState(this.presetPatch(p));
+  }
+  componentDidUpdate() {
+    // the runtime passes no prevProps / prevState: keep a snapshot of both, taken before the ready gate
+    const s = this.state, ps = this._ps || {}, pp = this._pp || {};
+    this._ps = Object.assign({}, s); this._pp = Object.assign({}, this.props);
+    if (!s.ready) return;
+    if (ps.play !== s.play || pp.fps !== this.props.fps) this.restartLoop();
+    if (ps.sp !== s.sp || ps.ready !== s.ready) this.checkSidecar();
+    if (['sp', 'variant', 'season', 'stage', 'time', 'cloud', 'rain', 'fog', 'snow', 'wind', 'gust', 'dir', 'ch', 'zoom', 'ready'].some(k => ps[k] !== s[k]) || pp.particles !== this.props.particles) this.draw();
+    if (['season', 'stage', 'time', 'cloud', 'rain', 'fog', 'snow', 'wind', 'gust', 'dir', 'ready'].some(k => ps[k] !== s[k])) this.queueLineup();
+  }
+  restartLoop() {
+    clearInterval(this._iv);
+    const fps = Math.max(4, Math.min(12, this.props.fps ?? 8));
+    if (this.state.play) this._iv = setInterval(() => { this.fi = (this.fi + 1) % window.TreeRig4.LOOP; this.tick++; this.draw(); }, 1000 / fps);
+  }
+
+  sky() { const s = this.state; return window.WeatherSky.at({ time: s.time, cloud: s.cloud, rain: s.rain, fog: s.fog, snow: s.snow, wind: s.wind, gust: s.gust, dir: s.dir }); }
+  skyKey() { const s = this.state; return [s.time, s.cloud, s.rain, s.fog, s.snow].map(v => Math.round(v * 100)).join(','); }
+  treeOpts() { const s = this.state; return { variant: s.variant, season: s.season, stage: s.stage }; }
+  windOf() { const s = this.state; return { w: s.wind, gust: s.gust, dir: s.dir }; }
+
+  floorLevels(sky, W, H, flat, key) {
+    if (this.floorC && this.floorC.k === key) return this.floorC.lv;
+    const WS = window.WeatherSky;
+    let lv;
+    if (!flat) lv = [0, 1, 2, 3].map(l => WS.lightTile(this.tile, this.nr, sky, { x0: 0, y0: 0, w: W, h: H, level: l }));
+    else lv = [[16, 24, 26], [34, 42, 46], [58, 66, 70], [96, 102, 104]].map((c, l) => { const a = new Uint8ClampedArray(W * H * 4); const cc = flat === 'sun' ? c : [16, 24, 26]; for (let i = 0; i < W * H; i++) { a[i * 4] = cc[0]; a[i * 4 + 1] = cc[1]; a[i * 4 + 2] = cc[2]; a[i * 4 + 3] = 255; } return a; });
+    this.floorC = { k: key, lv };
+    return lv;
+  }
+  blit(out, W, H, hit, sh, tx, ty, piv, lv) {
+    if (sh) {
+      const sox = tx - piv.x, soy = ty - piv.y;
+      for (let y = 0; y < sh.h; y++) {
+        const Y = soy + sh.y0 + y; if (Y < 0 || Y >= H) continue;
+        for (let x = 0; x < sh.w; x++) {
+          const l = sh.lv[y * sh.w + x]; if (!l) continue;
+          const X = sox + sh.x0 + x; if (X < 0 || X >= W) continue;
+          const o = (Y * W + X) * 4, L = lv[l]; out[o] = L[o]; out[o + 1] = L[o + 1]; out[o + 2] = L[o + 2];
+        }
+      }
+    }
+    const px = hit.px, ox = tx - hit.pv.x, oy = ty - hit.pv.y;
+    for (let y = 0; y < hit.ph; y++) {
+      const Y = oy + y; if (Y < 0 || Y >= H) continue;
+      for (let x = 0; x < hit.pw; x++) {
+        const i = (y * hit.pw + x) * 4; if (!px[i + 3]) continue;
+        const X = ox + x; if (X < 0 || X >= W) continue;
+        const o = (Y * W + X) * 4; out[o] = px[i]; out[o + 1] = px[i + 1]; out[o + 2] = px[i + 2];
+      }
+    }
+  }
+
+  draw() {
+    const cv = this.heroRef.current;
+    if (!cv || !this.tile || this.dead) return;
+    const R = window.TreeRig4, s = this.state, z = s.zoom;
+    const W = Math.round(1040 / z), H = z === 1 ? 500 : Math.round(900 / z);
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; cv.style.width = (W * z) + 'px'; cv.style.height = (H * z) + 'px'; }
+    const t0 = performance.now(), sky = this.sky(), sk = this.skyKey();
+    const fr = R.frame(s.sp, Object.assign(this.treeOpts(), { wind: this.windOf(), frame: this.fi }));
+    const piv = fr.mdl.pivot, lit = s.ch === 'lit' || s.ch === 'pass3' || s.ch === 'shader';
+    const tx = Math.round(W * 0.40), ty = Math.min(H - 14, Math.max(Math.round(H * 0.78), piv.y + 6));
+    const lv = this.floorLevels(sky, W, H, lit ? '' : (s.ch === 'sun' ? 'sun' : 'flat'), sk + '|' + W + 'x' + H + '|' + (lit ? 'lit' : s.ch === 'sun' ? 'sun' : 'flat'));
+    const out = new Uint8ClampedArray(lv[0]);
+    const fk = s.ch === 'pass3' ? this.fi % 4 : this.fi;
+    const ck = [s.sp, s.variant, s.season, s.stage, s.wind, s.gust, s.dir, fk, sk, s.ch, s.ch === 'snowmap' ? s.snow : ''].join('|');
+    let hit = this.cache.get(ck);
+    if (!hit) {
+      const TM = window.TreeMaps4;
+      if (s.ch === 'pass3' && window.TreeRig3) {
+        const r3 = window.TreeRig3.render(s.sp, Object.assign(this.treeOpts(), { frame: fk }));
+        hit = { px: r3.rgba, pw: r3.w, ph: r3.h, pv: r3.pivot, sh: null };
+      } else if (TM && (s.ch === 'shader' || s.ch === 'windmap')) {
+        const rf = TM.rest(s.sp, this.treeOpts());
+        if (s.ch === 'shader') { const sf = TM.shade(rf, this.windOf(), this.fi); hit = { px: R.relight(sf, sky), pw: rf.v.w, ph: rf.v.h, pv: piv, sh: R.castShadow(sf, sky) }; }
+        else {
+          const wm = TM.windMaps(rf).wind, px = new Uint8ClampedArray(wm.length);
+          for (let i = 0; i < rf.v.w * rf.v.h; i++) if (rf.v.a[i]) { px[i * 4] = wm[i * 4]; px[i * 4 + 1] = wm[i * 4 + 1]; px[i * 4 + 2] = wm[i * 4 + 2]; px[i * 4 + 3] = 255; }
+          hit = { px, pw: rf.v.w, ph: rf.v.h, pv: piv, sh: null };
+        }
+      } else if (TM && s.ch === 'snowmap') {
+        const sm = TM.snowMap(fr), k = Math.round(s.snow * 254), px = new Uint8ClampedArray(fr.v.w * fr.v.h * 4);
+        for (let i = 0; i < fr.v.w * fr.v.h; i++) {
+          if (!fr.v.a[i]) continue;
+          const b = sm[i], c = b <= k ? [238, 244, 244] : b === 255 ? [30, 38, 44] : [40 + 150 * (1 - b / 254), 70 + 130 * (1 - b / 254), 120 + 110 * (1 - b / 254)];
+          px[i * 4] = c[0]; px[i * 4 + 1] = c[1]; px[i * 4 + 2] = c[2]; px[i * 4 + 3] = 255;
+        }
+        hit = { px, pw: fr.v.w, ph: fr.v.h, pv: piv, sh: null };
+      } else {
+        hit = { px: R.view(fr, s.ch === 'pass3' ? 'lit' : s.ch, sky), pw: fr.v.w, ph: fr.v.h, pv: piv, sh: (s.ch === 'lit' || s.ch === 'sun') ? R.castShadow(fr, sky) : null };
+      }
+      this.cache.set(ck, hit);
+      if (this.cache.size > 90) this.cache.delete(this.cache.keys().next().value);
+    }
+    this.blit(out, W, H, hit, hit.sh, tx, ty, piv, lv);
+    if (this.props.particles !== false && (s.ch === 'lit' || s.ch === 'shader')) this.particles(out, W, H, sky);
+    cv.getContext('2d').putImageData(new ImageData(out, W, H), 0, 0);
+    this.lastMs = Math.round(performance.now() - t0); this.lastFr = fr; this.lastSky = sky;
+    if (!this._infoT || performance.now() - this._infoT > 450) { this._infoT = performance.now(); this.setState({ info: this.infoOf(fr, sky) }); }
+  }
+  particles(out, W, H, sky) {
+    const hash = (n) => { let h = Math.imul(n ^ 0x9e3779b9, 2654435761); h ^= h >>> 15; h = Math.imul(h, 2246822519); h ^= h >>> 13; return (h >>> 0) / 4294967296; };
+    const WS = window.WeatherSky, t = this.tick;
+    if (sky.rain > 0.02) {
+      const n = Math.round(sky.rain * W * H / 650), sl = sky.wind.w * sky.wind.dir * 0.8, c = WS.h2r(WS.mix(sky.skyC, '#e4ecef', 0.55));
+      for (let k = 0; k < n; k++) {
+        const x0 = hash(k) * W, y0 = (hash(k + 7777) * (H + 40) + t * (11 + 6 * hash(k + 3))) % (H + 40) - 20;
+        for (let q = 0; q < 3; q++) {
+          const X = Math.round(x0 + sl * q), Y = Math.round(y0 + q); if (X < 0 || Y < 0 || X >= W || Y >= H) continue;
+          const o = (Y * W + X) * 4; out[o] = (out[o] + c[0]) >> 1; out[o + 1] = (out[o + 1] + c[1]) >> 1; out[o + 2] = (out[o + 2] + c[2]) >> 1;
+        }
+      }
+    }
+    if (sky.snow > 0.05 && sky.cloud > 0.35) {
+      const n = Math.round(sky.snow * W * H / 1500);
+      for (let k = 0; k < n; k++) {
+        const X = Math.round(hash(k + 31) * W + Math.sin(t * 0.3 + k) * 2 + t * sky.wind.w * sky.wind.dir * 1.5) % W, Y = Math.round(hash(k + 91) * H + t * (1.2 + hash(k + 5))) % H;
+        const Xw = (X + W) % W, o = (Y * W + Xw) * 4; out[o] = 236; out[o + 1] = 242; out[o + 2] = 244;
+      }
+    }
+  }
+  queueLineup() { clearTimeout(this._lt); this._lt = setTimeout(() => this.lineup(), 240); }
+  lineup() {
+    const cv = this.lineRef.current;
+    if (!cv || !this.tile || this.dead) return;
+    const R = window.TreeRig4, WS = window.WeatherSky, s = this.state, sky = this.sky(), tok = (this._tok = (this._tok || 0) + 1);
+    const keys = ['RedOak', 'RedMaple', 'WhiteBirch', 'TremblingAspen', 'WhitePine', 'RedSpruce', 'BalsamFir', 'BlackSpruce', 'WhiteCedar', 'Tamarack'];
+    const xs = []; let x = 40;
+    for (const k of keys) { const w = Math.max(70, R.byKey[k].crown * R.M2PX); xs.push(Math.round(x + w / 2)); x += w + 26; }
+    const W = Math.round(x + 80), H = 520, base = 440;
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    const lv = [0, 1, 2, 3].map(l => WS.lightTile(this.tile, this.nr, sky, { x0: 0, y0: 0, w: W, h: H, level: l }));
+    const out = new Uint8ClampedArray(lv[0]), items = [];
+    let i = 0;
+    const step = () => {
+      if (this.dead || tok !== this._tok) return;
+      if (i < keys.length) {
+        const fr = R.frame(keys[i], { season: s.season, stage: s.stage, wind: this.windOf(), frame: 0 });
+        items.push({ fr, hit: { px: R.relight(fr, sky), pw: fr.v.w, ph: fr.v.h, pv: fr.mdl.pivot }, sh: R.castShadow(fr, sky), x: xs[i] });
+        i++;
+        this.setState({ lineStatus: 'LIGHTING ' + i + ' / ' + keys.length });
+        setTimeout(step, 0);
+        return;
+      }
+      for (const it of items) this.blit(out, W, H, { px: new Uint8ClampedArray(4), pw: 0, ph: 0, pv: it.fr.mdl.pivot }, it.sh, it.x, base, it.fr.mdl.pivot, lv);
+      for (const it of items) this.blit(out, W, H, it.hit, null, it.x, base, it.fr.mdl.pivot, lv);
+      if (this.props.particles !== false) this.particles(out, W, H, sky);
+      cv.getContext('2d').putImageData(new ImageData(out, W, H), 0, 0);
+      this.setState({ lineStatus: '' });
+    };
+    step();
+  }
+  infoOf(fr, sky) {
+    const m = fr.mdl, R = window.TreeRig4, spec = R.sheetSpec(m.key, m.size), f1 = (v) => (Math.round(v * 100) / 100).toFixed(2);
+    const rows = [
+      ['sky', sky.clock + ' · ' + sky.name],
+      ['key', sky.sunI > 0.01 ? (sky.key === 'moon' ? 'moon' : 'sun') + ' az ' + Math.round(sky.az) + '° · el ' + Math.round(sky.el) + '° · ' + f1(sky.sunI) : 'none — the sun is down'],
+      ['sky light', f1(sky.skyI) + ' · exposure ' + f1(sky.expo)],
+      ['shadow skew', sky.sunI > 0.04 ? f1(sky.shear[0]) + ', ' + f1(sky.shear[1]) + ' px per px of height' : 'canopy shade only'],
+      ['wind', Math.round(this.state.wind * 100) + '% · gust ' + Math.round(this.state.gust * 100) + '% · ' + (this.state.dir < 0 ? 'from the east' : 'from the west')],
+      ['parts', m.parts.length + ' rigid masses · ' + m.limbs.length + ' limb pieces'],
+      ['stamps', m.stampN + ' leaf stamps'],
+      ['cell', m.cell.w + ' × ' + m.cell.h + ' · pivot ' + m.pivot.x + ', ' + m.pivot.y],
+      ['wind sheet', spec.w + ' × ' + spec.h + (spec.fits ? ' · fits 2048' : ' · must split')],
+      ['height', spec.trueMetres + ' m true · ' + spec.metres + ' m baked'],
+      ['cost', 'frame ' + (this.lastMs || 0) + ' ms · model ' + m.ms + ' ms'],
+    ];
+    return { rows: rows.map(([k, v], i) => ({ k, v, border: i ? '1px solid #21322f' : 'none' })) };
+  }
+  dl(kind) {
+    const fr = this.lastFr, sky = this.lastSky, R = window.TreeRig4, s = this.state;
+    if (!fr) return;
+    const name = fr.mdl.key + '_' + fr.mdl.stage + '_' + fr.mdl.season + '_v' + (fr.mdl.variant + 1);
+    const save = (rgba, w, h, fn) => {
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(rgba), w, h), 0, 0);
+      c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fn; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); });
+    };
+    if (kind === 'frame') save(R.relight(fr, sky), fr.v.w, fr.v.h, name + '_' + sky.clock.replace(':', '') + '_lit.png');
+    else if (kind === 'gbuf') ['unlit', 'normal', 'light', 'detail'].forEach((ch, i) => setTimeout(() => save(R.view(fr, ch, sky), fr.v.w, fr.v.h, name + '_' + ch + '.png'), i * 300));
+    else if (kind === 'rest' && window.TreeMaps4) {
+      const TM = window.TreeMaps4, rf = TM.rest(s.sp, this.treeOpts()), rn = name + '_rest';
+      TM.SHEET_MAPS.forEach((ch, i) => setTimeout(() => save(TM.view(rf, ch, sky), rf.v.w, rf.v.h, rn + '_' + ch + '.png'), i * 300));
+    }
+    else {
+      const ch = ['pass3', 'shader', 'snowmap', 'windmap'].includes(s.ch) ? 'lit' : s.ch, sh = R.sheet(s.sp, Object.assign(this.treeOpts(), { wind: this.windOf() }), ch, sky);
+      save(sh.rgba, sh.w, sh.h, name + '_wind' + Math.round(s.wind * 100) + '_' + ch + '_sheet.png');
+    }
+  }
+
+  // the committed sidecar for this species, checked against the three files it was derived from
+  async checkSidecar() {
+    const SX = window.SidecarExport, TG = window.TREE_GAMEPLAY, sp = this.state.sp;
+    if (!SX || !TG || !sp) return;
+    try {
+      const r = await fetch('gameplay/' + TG.fileName(sp), { cache: 'no-store' });
+      if (!r.ok) { this.setState({ gp: { sp, ok: false, note: 'No committed sidecar for this species.' } }); return; }
+      const doc = await r.json();
+      const [a, b, c] = await Promise.all(['treeIsoRig4.js', 'weatherSky.js', '_treeGameplay.js'].map(u => SX.rigSha256(u)));
+      const bad = [['rig', doc.derivedFromRigSha256, a], ['sky', doc.skyDerivedFromRigSha256, b], ['writer', doc.writerDerivedFromRigSha256, c]].filter(x => x[1] !== x[2]).map(x => x[0]);
+      if (this.state.sp !== sp) return;
+      this.setState({ gp: { sp, ok: !bad.length, note: bad.length
+        ? 'Committed sidecar is stale: the ' + bad.join(' + ') + ' moved since ' + doc.generated + '. Re-generate.'
+        : 'Committed sidecar matches the served rig, sky and writer (' + a.slice(0, 8) + '). ' + doc._checks.checked + ' checks, ' + doc._checks.failed + ' failed.' } });
+    } catch (e) { this.setState({ gp: { sp, ok: false, note: 'Sidecar check failed: ' + e.message } }); }
+  }
+  async dlGameplay() {
+    const R = window.TreeRig4, TG = window.TREE_GAMEPLAY, SX = window.SidecarExport, sp = this.state.sp;
+    if (!R || !TG || !SX || this._gpBusy) return;
+    this._gpBusy = true; this.setState({ gp: { sp, ok: true, note: 'Measuring 32 rest frames…' } });
+    try {
+      await new Promise(res => setTimeout(res, 40));
+      const doc = TG.sidecar(R, sp, { generated: new Date().toISOString().slice(0, 10) });
+      const [a, b, c] = await Promise.all(['treeIsoRig4.js', 'weatherSky.js', '_treeGameplay.js'].map(u => SX.rigSha256(u)));
+      SX.saveJSON(TG.stamp(doc, a, b, c), TG.fileName(sp));
+      this.setState({ gp: { sp, ok: !doc._checks.failed, note: 'Saved ' + TG.fileName(sp) + ' · ' + doc._checks.checked + ' checks, ' + doc._checks.failed + ' failed.' } });
+    } catch (e) { this.setState({ gp: { sp, ok: false, note: 'Sidecar failed: ' + e.message } }); }
+    this._gpBusy = false;
+  }
+
+  renderVals() {
+    const s = this.state, R = window.TreeRig4, WS = window.WeatherSky;
+    const seg = (items, cur, key) => items.map((it, i) => {
+      const [val, label] = Array.isArray(it) ? it : [it, it.toUpperCase()], a = val === cur;
+      return { label, fg: a ? '#0b1418' : '#aab6b4', bg: a ? '#8fd6a0' : '#0e1a1b', border: i ? '1px solid #26413c' : 'none', onClick: () => this.setState({ [key]: val }) };
+    });
+    const CH = [['lit', 'LIT'], ['shader', 'SHADER'], ['unlit', 'UNLIT'], ['normal', 'NORMAL'], ['ao', 'SKY AO'], ['sun', 'SUN + SHADOW'], ['trans', 'THINNESS'], ['height', 'HEIGHT'], ['stamps', 'STAMPS'], ['parts', 'WIND PARTS'], ['snowmap', 'SNOW MAP'], ['windmap', 'WIND WEIGHTS'], ['pass3', 'PASS 3']];
+    const NOTES = {
+      lit: 'The light maps lit by this sky: the only view that is not a map. Terrain from the pixel terrain pack (grass and path, with the kit\'s own edges), relit under the same sky.',
+      unlit: '_unlit: structure only, under a flat sky with no sun. Stamps, the dark between leaves, crevices, bark grain.',
+      normal: '_normal: blended leaf, floret and crown-envelope normals, one per stamp, so any light gives a stamp one band.',
+      ao: 'Sky visibility through the crown, five directions. The whole of the light on an overcast day.',
+      sun: 'Sun transmission for this sky, self-shadow included; the ground shows the cast-shadow levels (canopy · partial · full).',
+      trans: 'Leaf thinness × species translucency: where a sun behind the tree comes through.',
+      height: 'Height above the ground plane per pixel: what an engine projects a shadow with.',
+      stamps: 'Every leaf stamp in its own colour. Stamps belong to their mass and travel with it in the wind.',
+      parts: 'The rigid wind parts. Each mass moves in whole pixels; the wood (tan) is re-rasterised bent every frame.',
+      pass3: 'Pass 3 as shipped: light baked at noon, a 4-frame row shear, no shadow. Same floor, same sky.',
+      shader: 'The wind from the rest pose and the weight maps (TreeMaps4.shade), not from a baked frame: what a game shader draws. Same sky, same relight.',
+      snowmap: 'The one snow map: the cover at which each pixel turns to snow. White = snowed at the SNOW COVER slider; brighter blue = snows sooner; dark = never.',
+      windmap: 'The rest pose\'s wind weights: R lean (height) · G sway (reach from the stem) · B flutter (a leaf). The _phase map beside it holds wave position, mass play and depth.',
+    };
+    const presets = (WS ? WS.PRESETS : []).map(p => ({ label: p.name, fg: s.preset === p.key ? '#0b1418' : '#cfd6cc', bg: s.preset === p.key ? '#c9a86a' : '#101d1e', onClick: () => this.applyPreset(p.key) }));
+    const SL = [['time', 'TIME OF DAY', 4.5, 22.75, 0.05], ['cloud', 'CLOUD', 0, 1, 0.01], ['rain', 'RAIN', 0, 1, 0.01], ['fog', 'FOG', 0, 1, 0.01], ['snow', 'SNOW COVER', 0, 1, 0.01], ['wind', 'WIND', 0, 1, 0.01], ['gust', 'GUSTS', 0, 1, 0.01]];
+    const sliders = SL.map(([k, label, min, max, step]) => ({ label, min, max, step, value: s[k],
+      text: k === 'time' ? (WS ? WS.hhmm(s[k]) : '') : Math.round(s[k] * 100) + '%',
+      onInput: (e) => this.setState({ [k]: +e.target.value, preset: '' }) }));
+    const species = R ? R.SPECIES.map(sp => {
+      const a = s.sp === sp.key;
+      return { name: sp.name, m: sp.real + ' m · ' + sp.latin, dot: sp.fol, fg: a ? '#eef3ee' : '#aab6b4', bg: a ? '#16302a' : '#0e1a1b', bd: a ? '#4f8a5f' : '#21322f', onClick: () => this.setState({ sp: sp.key }) };
+    }) : [];
+    const sky = s.ready && WS ? this.sky() : null;
+    const fps = Math.max(4, Math.min(12, this.props.fps ?? 8));
+    return {
+      heroRef: this.heroRef, lineRef: this.lineRef, presets, sliders, species,
+      seasonBtns: seg(['summer', 'autumn', 'winter'], s.season, 'season'),
+      stageBtns: seg(['sapling', 'young', 'pole', 'mature'], s.stage, 'stage'),
+      variantBtns: seg([[0, 'V1'], [1, 'V2'], [2, 'V3'], [3, 'V4']], s.variant, 'variant'),
+      channelBtns: seg(CH, s.ch, 'ch'),
+      zoomBtns: seg([[1, '1×'], [2, '2×'], [3, '3×']], s.zoom, 'zoom'),
+      playLabel: s.play ? 'PAUSE' : 'PLAY',
+      togglePlay: () => this.setState({ play: !s.play }),
+      dirLabel: s.dir < 0 ? '◀ WIND FROM THE EAST' : 'WIND FROM THE WEST ▶',
+      toggleDir: () => this.setState({ dir: -s.dir }),
+      clock: sky ? sky.clock : '',
+      skyName: sky ? sky.name.toUpperCase() : '',
+      frameTag: 'FRAME ' + (this.fi + 1) + ' / 16 · ' + fps + ' FPS · WIND ' + Math.round(s.wind * 100) + '%',
+      channelNote: NOTES[s.ch] || '',
+      loading: !s.ready, status: s.status, lineStatus: s.lineStatus,
+      infoRows: s.info ? s.info.rows : [],
+      dlFrame: () => this.dl('frame'), dlGbuf: () => this.dl('gbuf'), dlSheet: () => this.dl('sheet'), dlRest: () => this.dl('rest'),
+      dlGameplay: () => this.dlGameplay(),
+      gpName: R && R.byKey[s.sp] ? R.byKey[s.sp].name.toUpperCase() : '',
+      gpNote: s.gp && s.gp.sp === s.sp ? s.gp.note : 'Collider, canopy, shade, wind and sort data for the engine; stamped with the rig, sky and writer hashes.',
+      gpColor: s.gp && s.gp.sp === s.sp ? (s.gp.ok ? '#6f9a80' : '#c98a5a') : '#5c6d69',
+    };
+  }
+}
+</script>
+</body>
+</html>

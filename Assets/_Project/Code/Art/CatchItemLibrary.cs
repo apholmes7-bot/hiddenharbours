@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.Art
@@ -49,6 +50,11 @@ namespace HiddenHarbours.Art
             [Tooltip("Frames per facing in Held — the held pose's own animation, or its variant " +
                      "count for a non-directional handful.")]
             public int HeldFramesPerFacing;
+
+            [Tooltip("The kind in a hand as a facet MESH (ADR 0053): the fish rig's own geometry at the " +
+                     "tail rest, grip at the origin. Set by the library builder from the held-prop bake; " +
+                     "empty for a kind the bake does not make. Nothing draws it yet.")]
+            public HeldPropMeshDef HeldMesh;
         }
 
         [Serializable]
@@ -61,6 +67,24 @@ namespace HiddenHarbours.Art
             public string Kind;
         }
 
+        /// <summary>One bucket state as a facet mesh (ADR 0053): a bucket tier at a fill band, holding
+        /// a catch group — named in the bucket rig's own words, so nothing finds it by arithmetic.</summary>
+        [Serializable]
+        public sealed class BucketMeshEntry
+        {
+            [Tooltip("The bucket rig's tier id: pail / tote / tray.")]
+            public string TierId;
+
+            [Tooltip("The fill band the mesh shows.")]
+            public CatchFillBand Band;
+
+            [Tooltip("The bucket rig's catch group: fish / shell / crust. Empty for the Empty band.")]
+            public string Group;
+
+            [Tooltip("The baked state.")]
+            public HeldPropMeshDef Mesh;
+        }
+
         [SerializeField, Tooltip("Sprite variants per catch kind")]
         private KindEntry[] _kinds;
 
@@ -70,6 +94,12 @@ namespace HiddenHarbours.Art
         [SerializeField, Tooltip("Visual kind for species with no mapping — the tote should still " +
                                  "gain SOMETHING when an unmapped catch lands, never under-read")]
         private string _fallbackKind = "cod";
+
+        [SerializeField, Tooltip("Every bucket state as a facet mesh — tier × band × catch group, from the " +
+                                 "held-prop bake (ADR 0053). The pail's presenter already holds this " +
+                                 "asset, so the meshes reach it without a scene holding a copy. Nothing " +
+                                 "draws them yet.")]
+        private BucketMeshEntry[] _bucketMeshes = Array.Empty<BucketMeshEntry>();
 
         // Lookup caches (built once; invalidated when the asset reloads).
         [NonSerialized] private Dictionary<string, KindEntry> _kindLookup;
@@ -140,17 +170,40 @@ namespace HiddenHarbours.Art
             return e.Held == null || e.Held.Length == 0 ? 0 : Mathf.Max(1, e.HeldFacings);
         }
 
+        /// <summary>This kind in a hand as a facet mesh, or null when the held-prop bake makes none
+        /// for it.</summary>
+        public HeldPropMeshDef HeldMeshFor(string kind)
+        {
+            if (_kindLookup == null) BuildLookups();
+            return kind != null && _kindLookup.TryGetValue(kind, out var e) ? e.HeldMesh : null;
+        }
+
+        /// <summary>One bucket state's mesh, or null when it was not baked. The Empty band carries no
+        /// catch, so it ignores <paramref name="group"/>. A scan, not a cache: it runs when a fill band
+        /// changes, never per frame.</summary>
+        public HeldPropMeshDef BucketMesh(string tierId, CatchFillBand band, string group)
+        {
+            if (_bucketMeshes == null) return null;
+            foreach (BucketMeshEntry e in _bucketMeshes)
+                if (e != null && e.TierId == tierId && e.Band == band &&
+                    (band == CatchFillBand.Empty || e.Group == group))
+                    return e.Mesh;
+            return null;
+        }
+
         /// <summary>
         /// Wire the whole table in one call (the importer that builds the committed asset, and tests) —
         /// the <c>Configure</c> seam used across the lane. The arrays are private serialized fields
         /// because they are the OWNER's to edit in an inspector, not an API; this is the one door in, and
         /// it invalidates the lookup caches so a re-wired table is read fresh.
         /// </summary>
-        public void Configure(KindEntry[] kinds, SpeciesEntry[] species, string fallbackKind = null)
+        public void Configure(KindEntry[] kinds, SpeciesEntry[] species, string fallbackKind = null,
+                              BucketMeshEntry[] bucketMeshes = null)
         {
             if (kinds != null) _kinds = kinds;
             if (species != null) _species = species;
             if (!string.IsNullOrEmpty(fallbackKind)) _fallbackKind = fallbackKind;
+            if (bucketMeshes != null) _bucketMeshes = bucketMeshes;
             _kindLookup = null;
             _speciesLookup = null;
         }

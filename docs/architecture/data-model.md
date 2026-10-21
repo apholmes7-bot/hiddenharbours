@@ -31,10 +31,24 @@ time without merge conflicts. Every Def has a stable **string `id`** (e.g., `fis
 | `GearOffer` | `Data/Gear/` | the *economic* side of a purchasable gear item: id, display name, price (the rod/shovel/bucket). The gear *capability* (Gear flag, hold capacity) is gameplay-systems' | `design/economy-and-business.md` |
 | `BaitDef` / `GearDef` | `Data/Gear/`, `Data/Bait/` | gear/bait that gate catch resolution | `design/fish-and-content.md` |
 | `PropertyDef` | `Data/Regions/Property/` | houses & commercial lots: purchase, upgrade tiers, furnishing slots, comfort | `design/progression-and-housing.md` |
+| `KeySceneDef` | `Data/KeyScenes/` | one key scene's placements, per variant (`today` first): piece id, kit and piece, at, z and what it stands on (ground, deck), facing, sort line, the words ids its boards carry. Placements belong to the scene, not the piece's Def, so one piece type can stand in many places; `StPetersLayerRefresh` writes them into the scene | the art desk's key-scene return (`scene.json`) |
+| `WordsTableDef` | `Data/Words/` | the words a sign, name board or notice shows, by string id (`words.snake_case`); boards bake blank, so renaming a place changes a string, never a pixel | — |
+| `RegionTerrainPlanDef` | `Data/Terrain/StPetersPlan/` | one region's terrain plan: seed, reference line, section feathers and warp, tide frame, bed rules, the lists of its coast, pond, stream, creek, pan, path and biome Defs, and the live walls' chunk cut (`WallToeSpanMetres`: St Peters 1 m; 2 m, the builder's own, elsewhere) | `design/st-peters-terrain-pass-9.md` §8.1 |
+| `CliffWallDef` | `Data/Terrain/StPetersWalls/` | one cliff wall (`wall.stp_NNN`; append-only: a cut piece records `SplitFrom`, a retired or held id keeps its file): status, rock, class, aspect, batter, the wall it follows; per station its brow, toe, drop and toe height, its k on the wall it came from (`Stations`) and where its lines came from (`Kept`, `Measured`, `Interpolated`); optionally `TextureBrow`, the line its texture runs along where a top moved out | the class's own summary |
 | `GameConfig` | `Data/Config/` | global tunables: day length, tide constants, season length, economy constants, stamina rates | several |
 
 > `GameConfig` centralises balance numbers so the owner / `economy-sim` can tune feel without
 > touching code. Treat magic numbers as a smell — promote them here.
+
+> **Wall format change (terrain PR 5w, St Peters' 1 m cut; made under the `lead-architect` hat).**
+> `CliffWallDef.Stations` went from `int[]` to `float[]`: a k that is not whole is an *interpolated*
+> station, set between the whole stations either side of it, and its `BrowFrom`/`ToeFrom` read
+> `CliffStationSource.Interpolated` (new, `= 2`). It adds no face of its own: `CliffWallSurface` draws
+> it as a slice of the face its whole neighbours draw, so a re-cut moves no rock. `CliffWallDef.TextureBrow`
+> (optional) and `RegionTerrainPlanDef.WallToeSpanMetres` are new. No asset needed a migration: Unity
+> reads an old asset's whole ks into the float field as they were, an absent `TextureBrow` reads empty
+> (the texture runs along the brow), and an absent `WallToeSpanMetres` reads 2 m, the cut every wall had.
+> Nine Mile Creek's walls and plan are untouched.
 
 ## 3. Cross-references use ids, and resolve through `ContentDatabase`
 
@@ -96,6 +110,17 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > The `v12→v13` step **drops but does not repair**: an anchor whose position is not a finite number is
 > cleared (there is no honest place to invent), while a region or storey the loader merely cannot vouch
 > for is left alone and declined at the point of use.
+
+> **Save schema v15 (the player's own build, [ADR 0051](../adr/0051-building-a-person-without-js.md))** —
+> `SaveData` gained ONE field at v15: `PlayerRecipe`, a `CharacterRecipe` of rig keys (a build id, a fit
+> id and the rig's twenty fields, as strings). It is written only through `IPlayerAppearance.Commit`; a
+> preview never reaches it. **Keys, not colours**, for the `WornOutfitId` reason: a ramp the art
+> director retunes follows into every save. EMPTY is the body as baked, which is a new game and every
+> save older than v15, so the `v14→v15` step adds the empty recipe and nothing else. `WornOutfitId` (v12)
+> stays where it is, because it recolours the sprite layer, which the mesh never drew. No recipe is
+> healed against shipped content: the builder refuses a stale key out loud at the point of use (the
+> v13 reasoning). What a recipe resolves to, a baked body and its ramps, is recomputed from the
+> shipped tables and never stored.
 
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and

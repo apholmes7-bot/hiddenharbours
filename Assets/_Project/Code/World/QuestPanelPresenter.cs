@@ -78,9 +78,10 @@ namespace HiddenHarbours.World
         private void LateUpdate()
         {
             // A window resize re-fits the note. Read here rather than off a resize callback because
-            // Screen is the only honest source and this is two int compares.
+            // the screen (HudScreen: the player's own, unless a plate hands it another) is the only
+            // honest source and this is two int compares.
             if (!IsShowing) return;
-            if (Screen.width == _builtScreenW && Screen.height == _builtScreenH)
+            if (HudScreen.Width == _builtScreenW && HudScreen.Height == _builtScreenH)
             {
                 // What the helm covers is read off the Core seam, never the helm's classes (rule 4).
                 if (HelmFootprint.Current != _placedFor) Place();
@@ -120,11 +121,11 @@ namespace HiddenHarbours.World
             _canvas.gameObject.SetActive(true);
 
             List<string> rows = QuestPanelLayout.Rows(_text);
-            QuestPanelFit fit = QuestPanelLayout.Fit(rows.Count, Screen.width, Screen.height);
+            QuestPanelFit fit = QuestPanelLayout.Fit(rows.Count, HudScreen.Width, HudScreen.Height);
             Fit = fit;
 
-            _builtScreenW = Screen.width;
-            _builtScreenH = Screen.height;
+            _builtScreenW = HudScreen.Width;
+            _builtScreenH = HudScreen.Height;
 
             ReportOverflow(fit);
             ClearNote();

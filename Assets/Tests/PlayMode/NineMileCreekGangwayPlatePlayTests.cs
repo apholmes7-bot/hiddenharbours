@@ -37,6 +37,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <para>⚠️ Re-placed live, not read out of the banked scene: the scene on disk was built before this
     /// PR, so it carries neither the piles nor the brow. Re-placing is what makes the plate a picture of
     /// the code the owner's next Build click will run — #735's own discipline.</para>
+    ///
+    /// <para><b>NMC H2:</b> the scene now stands on G3, and its own gangway (step 05) lies off the north face
+    /// with no brow drawn. This fixture re-places the PLAN's wharf on the builder's analytic premise, as the
+    /// builder does, so it proves the brow's code, not the activated scene's gangway.</para>
     /// </summary>
     public class NineMileCreekGangwayPlatePlayTests
     {
@@ -70,13 +74,15 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return _stage.Load();
 
             // ---- re-place the wharf through the BUILDER -------------------------------------------
-            var terrain = Object.FindFirstObjectByType<MainlandTidalTerrain>();
-            if (terrain == null)
-            {
-                Assert.Ignore("SKIPPED — the region has no MainlandTidalTerrain, so the builder cannot " +
-                              "measure the deck it places against and the plate would be of nothing.");
-                yield break;
-            }
+            // NMC H2: the scene stands on G3 and carries no MainlandTidalTerrain. The builder places the wharf
+            // on its analytic premise, inactive and off the services, so this does the same: the plate is of
+            // the PLAN's brow (its rungs are baked for the plan's 3.0 m deck) in the scene's water. It proves
+            // the brow's code, not the activated scene's own gangway, which 05 moved to the north face and
+            // which has no brow drawn yet (the drawn wharf is a later wave's).
+            var premiseGo = _stage.Track(new GameObject("NMC analytic premise (test)"));
+            premiseGo.SetActive(false);
+            var terrain = premiseGo.AddComponent<MainlandTidalTerrain>();
+            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
 
             GameObject banked = GameObject.Find(NineMileCreekWharf.RootName);
             if (banked != null) Object.DestroyImmediate(banked);

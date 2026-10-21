@@ -10,14 +10,27 @@
 // fraction (smoothstep(_TrunkAnchor,1,uv.y)) instead of from the very base; (2) uses gentler, slower defaults;
 // and (3) decorrelates per-tree with a SMOOTH value-noise phase (NOT grass's floor-cell phase) so a 5.5 m sprite
 // never shows a hard phase seam down its trunk — the canopy flexes naturally and neighbouring trees differ.
-// There is NO footstep interaction (trees don't bend underfoot) and NO loops (so no [unroll] magenta trap).
+// There is NO footstep interaction (trees don't bend underfoot). The legacy sway has NO loops; the pass-4
+// path below has two [unroll]s over CONSTANT bounds (2 each) and a [loop] 5 x 5, never an [unroll] over a
+// runtime bound (the magenta trap).
+//
+// ⭐ PASS 4: THE RIG'S OWN WIND. A tree the pass-4 rig baked (docs/art/rigs/treeIsoRig4.js) also carries
+// WIND and PHASE maps, a SNOW map and a palette, and TreeTrunkAnchor publishes _TreeMaps 1 on its renderer.
+// That tree does NOT use the vertex sway below: its quad stays put and the FRAGMENT stage asks which rest
+// texel the wind carried onto each pixel — the trunk's lean, the limbs' wave, each leaf moving as one stamp
+// with its own flutter, the dark gap a leaf leaves behind, and the snow by the global _FoliageSnow cover.
+// It is a port of the drop's reference shader and every line lives in Include/TreeWindMaps.hlsl, whose C#
+// twin (HiddenHarbours.Art.TreeWindMath) the tests hold to the rig in V8. _TreeMaps 0 — the default, and
+// every tree until the switch to pass 4 — draws exactly the pass-3 tree this shader always drew.
 //
 // ⚠️ THE BEND CURVE REQUIRES A TESSELLATED SPRITE. bendW is shaped in the VERTEX stage, so on a sprite imported
 // as FullRect (a FOUR-VERTEX quad) it is only ever evaluated at uv.y 0 and uv.y 1 and the rasteriser interpolates
 // LINEARLY between them: the squaring collapses, _TrunkAnchor becomes inert for every value, and the whole sprite
 // shears from its bottom row instead of keeping a planted trunk. Measured 2026-07-25 on the shipped trees, which
-// were all FullRect: worst deviation 0.362 of full sway near mid-canopy. Sprites driven by this shader MUST import
-// with Mesh Type Tight (the grass tufts always did). Pinned by Assets/Tests/EditMode/Art/WindBendTessellationTests.
+// were all FullRect: worst deviation 0.362 of full sway near mid-canopy. Sprites driven by the vertex sway MUST
+// import with Mesh Type Tight (the grass tufts always did). Pinned by Assets/Tests/EditMode/Art/WindBendTessellationTests.
+// A PASS-4 sheet is the opposite case and imports FullRect: its motion is per pixel, and a Tight mesh hugging the
+// rest silhouette would clip every leaf the wind carries past it.
 //
 // ⚠️ IT ALSO LIGHTS, BUT IT NO LONGER OWNS THE LIGHTING. The fragment stage consumes the rig's baked MASK and
 // NORMAL sheets so a tree CATCHES and RIMS with the colour of a light (docs/design/sprite-light-response.md) —
@@ -67,6 +80,29 @@ Shader "HiddenHarbours/TreeWind"
         _PhaseScale ("Phase noise scale (per m)", Float) = 0.12
         // How much the crown DIPS in Y as it leans (foreshorten) so a big lean reads as the canopy folding over.
         _BendY ("Bend foreshorten (0..1)", Range(0, 1)) = 0.2
+
+        // ---- PASS 4: THE RIG'S OWN WIND (Include/TreeWindMaps.hlsl) -------------------------------------
+        // The first eight rows are PUBLISHED per renderer by TreeTrunkAnchor from Trees.json and hidden for
+        // the same reason _SpriteRootWS is: there is nothing here for the owner to set. _TreeMaps 0 — the
+        // default and what Tree.mat ships — is the pass-3 tree, drawn exactly as before.
+        [HideInInspector] _TreeMaps ("Pass 4 maps bound (published per renderer)", Range(0, 1)) = 0
+        [HideInInspector] _TreeWind0 ("Species bend limb bob flutter (published)", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _TreeWind1 ("Species shimmer conifer gap row (published)", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _TreeCell ("Cell and sheet size in texels (published)", Vector) = (1, 1, 1, 1)
+        [HideInInspector] [NoScaleOffset] _TreeWindTex ("Wind map (published)", 2D) = "black" {}
+        [HideInInspector] [NoScaleOffset] _TreePhaseTex ("Phase map (published)", 2D) = "black" {}
+        [HideInInspector] [NoScaleOffset] _TreeSnowTex ("Snow map (published)", 2D) = "white" {}
+        [HideInInspector] [NoScaleOffset] _TreePalette ("Snow and gap palette (published)", 2D) = "black" {}
+        [Header(Pass 4 wind feel (trees with baked wind maps))]
+        _TreeLoopSeconds ("Seconds per wind loop", Float) = 2
+        // The rig's gust envelope depth; its own default is 0.4.
+        _TreeGust ("Gust depth", Range(0, 1)) = 0.4
+        // Loops per metre along the wind. 0.0909 at a 2 s loop rolls a gust across a stand at 5.5 m a
+        // second, the speed the legacy sway's gust travels (_SwaySpeed over _GustScale).
+        _TreeWaveScale ("Gust wave (loops per m along the wind)", Float) = 0.0909
+        _TreePhaseJitter ("Per tree phase jitter (loops)", Range(0, 1)) = 1
+        // _WindWorld's strength runs 0 calm to 1 at 12 m a second; the rig's w runs 0 calm to 1 a full gale.
+        _TreeWindResponse ("Wind strength to rig gale", Range(0, 4)) = 1
 
         // ---- LIGHT RESPONSE (the baked mask and normal sheets; Include/SpriteLightResponse.hlsl) --------
         // SHIPS AT 0 = OFF. Tree.mat's flat look is byte-for-byte what it was before this feature, and the
@@ -138,6 +174,8 @@ Shader "HiddenHarbours/TreeWind"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_instancing
+            // Pass 4's maps are records read with Load and unpacked with integer ops.
+            #pragma target 3.5
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             // The SHARED lit-decor consumer: the sheet declarations, the sun/lamp globals, the per-material
@@ -146,6 +184,8 @@ Shader "HiddenHarbours/TreeWind"
             // than each copying a fragment stage. It pulls in SpriteLightResponse.hlsl for the maths, whose
             // every function has a line-for-line C# twin in HiddenHarbours.Art.SpriteLightMath.
             #include "Assets/_Project/Art/Shaders/Include/SpriteLitDecor.hlsl"
+            // Pass 4's wind, flutter and snow from the baked maps; its C# twin is HiddenHarbours.Art.TreeWindMath.
+            #include "Assets/_Project/Art/Shaders/Include/TreeWindMaps.hlsl"
 
             struct Attributes
             {
@@ -215,6 +255,8 @@ Shader "HiddenHarbours/TreeWind"
                 // Batcher requires it to be identical across a shader's passes); unused by this pass.
                 float4 _HHReflectOrigin;
                 float  _HHReflectLit;
+                // Pass 4's rows, from Include/TreeWindMaps.hlsl — pasted into BOTH passes, like the rows above.
+                TREE_WIND_MAPS_MATERIAL_ROWS
             CBUFFER_END
 
             // ---- helpers (declared BEFORE use) ----------------------------------------------------------------
@@ -258,34 +300,40 @@ Shader "HiddenHarbours/TreeWind"
                 // Read the stand position BEFORE the wind offset — a tree sways, it does not relocate.
                 OUT.rootWS = _SpriteRootWS.w > 0.5 ? _SpriteRootWS.xy : wp.xy;
 
-                // Trunk-anchored canopy weight: 0 below _TrunkAnchor (trunk planted), easing up to 1 at the crown.
-                // Squared so the motion accelerates into the upper canopy rather than hinging at the anchor.
-                float bendW = smoothstep(_TrunkAnchor, 1.0, saturate(IN.uv.y));
-                bendW = bendW * bendW;
+                // ---- the legacy canopy sway: pass-3 trees only -------------------------------------------
+                // A pass-4 tree (_TreeMaps 1) moves per pixel in frag(), from its own maps; its quad stays put.
+                UNITY_BRANCH
+                if (_TreeMaps < 0.5)
+                {
+                    // Trunk-anchored canopy weight: 0 below _TrunkAnchor (trunk planted), easing up to 1 at the crown.
+                    // Squared so the motion accelerates into the upper canopy rather than hinging at the anchor.
+                    float bendW = smoothstep(_TrunkAnchor, 1.0, saturate(IN.uv.y));
+                    bendW = bendW * bendW;
 
-                // ---- shared wind ----
-                float2 windVec = _WindWorld.xy;
-                float  windStr = length(windVec);
-                float2 wdir = windStr > 1e-4 ? windVec / windStr : float2(1.0, 0.0);
+                    // ---- shared wind ----
+                    float2 windVec = _WindWorld.xy;
+                    float  windStr = length(windVec);
+                    float2 wdir = windStr > 1e-4 ? windVec / windStr : float2(1.0, 0.0);
 
-                // smooth per-tree phase (value noise; no hard seam down a tall sprite)
-                float phase = ValueNoise(wp.xy * max(_PhaseScale, 1e-3)) * 6.2831853;
+                    // smooth per-tree phase (value noise; no hard seam down a tall sprite)
+                    float phase = ValueNoise(wp.xy * max(_PhaseScale, 1e-3)) * 6.2831853;
 
-                // travelling gust rolls downwind; two beats slightly out of phase read organic.
-                float travel = dot(wp.xy, wdir) * _GustScale;
-                float gust = sin(_Time.y * _SwaySpeed - travel + phase) * 0.6
-                           + sin(_Time.y * _SwaySpeed * 1.7 - travel * 1.3 + phase) * 0.4;
+                    // travelling gust rolls downwind; two beats slightly out of phase read organic.
+                    float travel = dot(wp.xy, wdir) * _GustScale;
+                    float gust = sin(_Time.y * _SwaySpeed - travel + phase) * 0.6
+                               + sin(_Time.y * _SwaySpeed * 1.7 - travel * 1.3 + phase) * 0.4;
 
-                // steady lean holds the crown over in a real wind; the gust ripples around it.
-                float  swayMag = _IdleSway + windStr * _SwayAmount;
-                float  lean    = windStr * _WindLean;
-                float2 windOffset = wdir * ((lean + gust * _GustStrength) * swayMag);
+                    // steady lean holds the crown over in a real wind; the gust ripples around it.
+                    float  swayMag = _IdleSway + windStr * _SwayAmount;
+                    float  lean    = windStr * _WindLean;
+                    float2 windOffset = wdir * ((lean + gust * _GustStrength) * swayMag);
 
-                float2 offset = windOffset * bendW;
-                float  yDip   = -length(offset) * _BendY;
-                offset = PixelSnap(offset);
-                wp.xy += offset;
-                wp.y  += PixelSnap(float2(0.0, yDip)).y;
+                    float2 offset = windOffset * bendW;
+                    float  yDip   = -length(offset) * _BendY;
+                    offset = PixelSnap(offset);
+                    wp.xy += offset;
+                    wp.y  += PixelSnap(float2(0.0, yDip)).y;
+                }
 
                 OUT.positionCS = TransformWorldToHClip(wp);
                 OUT.color = IN.color * _Color;
@@ -298,6 +346,46 @@ Shader "HiddenHarbours/TreeWind"
                 UNITY_SETUP_INSTANCE_ID(IN);
                 half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
                 half4 col = tex * IN.color;
+                // Where the light sheets are read: this texel, or on a pass-4 tree the texel the wind carried here.
+                float2 lightUV = IN.uv;
+
+                // ---- PASS 4: the rig's own wind, per pixel (only where a renderer bound the maps) --------
+                // Which REST texel has the wind carried onto this pixel this frame? Draw THAT texel: its
+                // albedo, its snow, or the dark gap a leaf left. Every read in here is a Load (no gradients,
+                // so the dynamic branch is safe); the albedo sampled above goes unused on this path because
+                // a Sample stays outside a dynamic branch. The maths is Include/TreeWindMaps.hlsl's.
+                UNITY_BRANCH
+                if (_TreeMaps > 0.5)
+                {
+                    TREE_WIND_MAPS_PARAMS(treeParams)
+                    // ONE phase per tree, from where it stands (_SpriteRootWS; TreeTrunkAnchor only raises
+                    // _TreeMaps where it published one): a per-pixel phase would tear the stamps apart.
+                    float noise = ValueNoise(IN.rootWS * max(_PhaseScale, 1e-3));
+                    float loopPos = TreeWindLoopPos(_Time.y, IN.rootWS, _WindWorld.xy, _TreeLoopSeconds,
+                                                    _TreeWaveScale, noise, _TreePhaseJitter);
+                    TreeWindFrame fr = TreeWindFrameOf(_WindWorld.xy, TreeWindF16(loopPos), treeParams);
+
+                    int cellX0;
+                    int2 rig = TreeWindRigOfTexel(TreeWindTexelOfUv(IN.uv, _TreeCell), _TreeCell, cellX0);
+                    int2 src;
+                    TreeWindTexel srcT;
+                    bool fallback;
+                    col = half4(0.0, 0.0, 0.0, 0.0);
+                    if (TreeWindGather(fr, cellX0, (int)_TreeCell.x, (int)_TreeCell.y, rig.x, rig.y,
+                                       src, srcT, fallback))
+                    {
+                        int2 srcTexel = TreeWindTexelOfRig(cellX0, (int)_TreeCell.y, src);
+                        uint index;
+                        uint pick = TreeWindDecode(srcT.word, TreeByte(LOAD_TEXTURE2D(_TreeSnowTex, srcTexel).r),
+                                                   fallback, _FoliageSnow, index);
+                        int paletteRow = pick == TREE_WIND_PICK_SNOW_ROW ? 0 : (int)_TreeWind1.z;
+                        half4 picked = pick == TREE_WIND_PICK_ALBEDO
+                            ? half4(LOAD_TEXTURE2D(_MainTex, srcTexel))
+                            : half4(LOAD_TEXTURE2D(_TreePalette, int2((int)index, paletteRow)).rgb, 1.0);
+                        col = picked * IN.color;
+                        lightUV = TreeWindSourceUv(srcTexel, _TreeCell);
+                    }
+                }
                 clip(col.a - _AlphaClip);
 
                 // ---- the light response ------------------------------------------------------------------
@@ -311,8 +399,10 @@ Shader "HiddenHarbours/TreeWind"
                     // difference from the inline version is a multiply by the IEEE 754 multiplicative
                     // identity — the tree's output is BIT-identical, which is the point of doing it this way
                     // rather than leaving the original behind as a special case.
+                    // lightUV: on a pass-4 tree, the carried texel's own centre. Its sheets import with no
+                    // mips, so a Sample at a uv that jumps between neighbours still reads exactly mip 0.
                     SPRITE_LIT_DECOR_PARAMS(litParams)
-                    col.rgb += _LightResponse * SpriteLitDecorResponse(IN.uv, IN.rootWS, litParams);
+                    col.rgb += _LightResponse * SpriteLitDecorResponse(lightUV, IN.rootWS, litParams);
                 }
 
                 // ---- the fisher, read through this canopy (owner ruling 2026-08-16) ----------------
@@ -345,7 +435,9 @@ Shader "HiddenHarbours/TreeWind"
         //
         // The tree deliberately does NOT sway in its reflection: the wind offset is a per-vertex screen
         // displacement that would have to be mirrored too, and at PPU 32 a reflection is a few dozen
-        // pixels of broken-up colour under a wave warp. Cheapest correct answer wins.
+        // pixels of broken-up colour under a wave warp. Cheapest correct answer wins. A pass-4 tree's
+        // reflection is its REST pose too — but it wears the tree's snow (TreeWindRestSnow), because a
+        // white crown over a green reflection reads as a bug, not a saving.
         Pass
         {
             Name "HHTreeReflect"
@@ -359,6 +451,7 @@ Shader "HiddenHarbours/TreeWind"
             #pragma vertex reflectVert
             #pragma fragment reflectFrag
             #pragma multi_compile_instancing
+            #pragma target 3.5
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Assets/_Project/Art/Shaders/Include/ReflectMirror.hlsl"
@@ -367,6 +460,8 @@ Shader "HiddenHarbours/TreeWind"
             // by construction rather than by two lists someone has to keep in step (the SRP Batcher silently
             // drops the shader when they drift). It also supplies _DayNightTint, which this pass DOES read.
             #include "Assets/_Project/Art/Shaders/Include/SpriteLitDecor.hlsl"
+            // For TREE_WIND_MAPS_MATERIAL_ROWS (the same by-construction layout rule) and the rest-pose snow.
+            #include "Assets/_Project/Art/Shaders/Include/TreeWindMaps.hlsl"
 
             struct ReflectAttributes
             {
@@ -408,6 +503,8 @@ Shader "HiddenHarbours/TreeWind"
                 // actually reads.
                 float4 _HHReflectOrigin;
                 float  _HHReflectLit;
+                // The SAME pass-4 macro as the lit pass; this pass reads _TreeMaps and _TreeCell.
+                TREE_WIND_MAPS_MATERIAL_ROWS
             CBUFFER_END
 
             ReflectVaryings reflectVert(ReflectAttributes IN)
@@ -425,7 +522,12 @@ Shader "HiddenHarbours/TreeWind"
             half4 reflectFrag(ReflectVaryings IN) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(IN);
-                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv) * IN.color;
+                half4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
+                // A pass-4 tree's rest pose, snowed like the tree above it. Loads only; one uniform branch.
+                UNITY_BRANCH
+                if (_TreeMaps > 0.5 && _FoliageSnow > TREE_WIND_SNOW_ON)
+                    tex.rgb = TreeWindRestSnow(tex.rgb, TreeWindTexelOfUv(IN.uv, _TreeCell), _FoliageSnow);
+                half4 col = tex * IN.color;
                 clip(col.a - _AlphaClip);
                 return HHReflectPremultiply(col.rgb, col.a, _HHReflectLit, _DayNightTint.rgb);
             }

@@ -1,0 +1,47 @@
+# cells — passed
+
+species         stage    cell 3    cell 4.1  pivot 3   pivot 4.1 sheet 3    sheet 4.1  foot  fits  README
+RedSpruce       sapling  48×96     76×99     23,79     37,82     192×384    304×396    ok    ok    row matches
+RedSpruce       young    67×158    113×161   33,149    55,152    268×632    452×644    ok    ok    row matches
+RedSpruce       pole     105×233   169×236   52,225    83,228    420×932    676×944    ok    ok    row matches
+RedSpruce       mature   156×329   244×332   77,318    122,321   624×1316   976×1328   ok    ok    row matches
+BlackSpruce     sapling  45×65     67×68     22,47     33,50     180×260    268×272    ok    ok    row matches
+BlackSpruce     young    50×93     82×96     24,84     40,87     200×372    328×384    ok    ok    row matches
+BlackSpruce     pole     58×130    102×133   28,123    51,126    232×520    408×532    ok    ok    row matches
+BlackSpruce     mature   73×179    129×182   36,171    64,174    292×716    516×728    ok    ok    row matches
+BalsamFir       sapling  42×75     64×78     21,60     31,63     168×300    256×312    ok    ok    row matches
+BalsamFir       young    54×126    88×129    27,114    43,117    216×504    352×516    ok    ok    row matches
+BalsamFir       pole     82×181    128×184   41,173    63,176    328×724    512×736    ok    ok    row matches
+BalsamFir       mature   119×252   179×255   59,243    90,246    476×1008   716×1020   ok    ok    row matches
+WhitePine       sapling  78×121    108×114   39,106    52,105    312×484    432×456    ok    ok    row matches
+WhitePine       young    117×207   171×209   58,199    85,201    468×828    684×836    ok    ok    row matches
+WhitePine       pole     188×311   267×313   94,301    128,303   752×1244   1068×1252  ok    ok    row matches
+WhitePine       mature   269×442   379×441   134,429   190,428   1076×1768  1516×1764  ok    ok    row matches
+WhiteCedar      sapling  39×70     57×73     19,53     28,56     156×280    228×292    ok    ok    row matches
+WhiteCedar      young    48×113    74×116    23,97     36,100    192×452    296×464    ok    ok    row matches
+WhiteCedar      pole     68×163    102×166   34,145    49,148    272×652    408×664    ok    ok    row matches
+WhiteCedar      mature   96×225    140×228   47,202    70,205    384×900    560×912    ok    ok    row matches
+Tamarack        sapling  40×73     70×76     19,62     34,65     160×292    280×304    ok    ok    row matches
+Tamarack        young    51×127    99×130    25,120    48,123    204×508    396×520    ok    ok    row matches
+Tamarack        pole     78×190    148×193   38,182    73,185    312×760    592×772    ok    ok    row matches
+Tamarack        mature   111×266   207×269   55,257    103,260   444×1064   828×1076   ok    ok    row matches
+WhiteBirch      sapling  51×67     83×70     25,60     41,63     204×268    332×280    ok    ok    row matches
+WhiteBirch      young    76×117    134×121   37,110    67,114    304×468    536×484    ok    ok    row matches
+WhiteBirch      pole     109×174   195×179   54,166    96,171    436×696    780×716    ok    ok    row matches
+WhiteBirch      mature   162×269   283×277   81,260    140,268   648×1076   1132×1108  ok    ok    row matches
+RedMaple        sapling  58×75     90×77     28,68     42,70     232×300    360×308    ok    ok    row matches
+RedMaple        young    94×132    145×134   47,125    73,127    376×528    580×536    ok    ok    row matches
+RedMaple        pole     141×196   210×198   70,187    105,189   564×784    840×792    ok    ok    row matches
+RedMaple        mature   209×320   301×321   104,309   149,310   836×1280   1204×1284  ok    ok    row matches
+RedOak          sapling  77×79     103×81    38,72     50,74     308×316    412×324    ok    ok    row matches
+RedOak          young    148×150   191×152   74,142    95,144    592×600    764×608    ok    ok    row matches
+RedOak          pole     223×234   285×235   111,224   137,225   892×936    1140×940   ok    ok    row matches
+RedOak          mature   331×347   407×347   165,334   202,334   1324×1388  1628×1388  ok    ok    row matches
+TremblingAspen  sapling  43×62     77×72     21,55     37,65     172×248    308×288    ok    ok    row matches
+TremblingAspen  young    61×107    113×127   30,100    55,120    244×428    452×508    ok    ok    row matches
+TremblingAspen  pole     86×194    161×183   43,186    78,175    344×776    644×732    ok    ok    row matches
+TremblingAspen  mature   117×271   226×294   58,262    113,285   468×1084   904×1176   ok    ok    row matches
+
+pass 3 sheet = 4 variants × 4 sway frames; pass 4.1 sheet = one variant × 16 wind frames (4 × 4).
+sheet pixels, all 40: pass 3 14,697,376 · pass 4.1 22,490,864 (one variant; × 4 for all four)
+largest 4.1 sheet: WhitePine mature 1516×1764

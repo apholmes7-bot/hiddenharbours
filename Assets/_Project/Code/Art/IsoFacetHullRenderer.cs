@@ -165,6 +165,7 @@ namespace HiddenHarbours.Art
         // version stamp that could say yes while the mesh says nothing.
         private bool _hasRoomGeometry;
         private HiddenHarbours.Core.HullMeshDef.Cut _cutaway;
+        private readonly Vector4[] _roleLiftMasks = new Vector4[31];
 
         // THE DOOR LEAF (owner playtest 2026-09-17). The "DoorLeaf" child under FacetMesh, present
         // only when the setup carries both poses, and the pose last asked for. The answer outlives a
@@ -241,11 +242,16 @@ namespace HiddenHarbours.Art
         {
             // A hull with no tags cannot be cut, and a cut with no level cannot have a lid: both
             // collapse to None here rather than at four call sites.
-            if (!_hasLevelTags || cut.Level <= 0) cut = HiddenHarbours.Core.HullMeshDef.Cut.None;
-            else if (cut.Lid < 0) cut = new HiddenHarbours.Core.HullMeshDef.Cut(cut.Level, 0);
-            if (cut.Level == _cutaway.Level && cut.Lid == _cutaway.Lid) return;
+            if (!_hasLevelTags || !cut.Opens) cut = HiddenHarbours.Core.HullMeshDef.Cut.None;
+            if (cut.Level == _cutaway.Level && cut.LiftLevels == _cutaway.LiftLevels &&
+                cut.ShownRoles == _cutaway.ShownRoles && cut.RoleMasks == _cutaway.RoleMasks) return;
 
             _cutaway = cut;
+            for (int i = 0; i < _roleLiftMasks.Length; i++)
+            {
+                int mask = cut.RoleMasks != null && i < cut.RoleMasks.Length ? cut.RoleMasks[i] : 0;
+                _roleLiftMasks[i] = new Vector4(mask & 65535, (mask >> 16) & 32767, 0, 0);
+            }
             ApplyCutawayKeyword();
             ApplyPose();          // the level and its lid travel in the property block
         }
@@ -543,6 +549,7 @@ namespace HiddenHarbours.Art
             // is no longer the same geometry — and must not leave the keyword on a material that has
             // just been rebuilt underneath it.
             _cutaway = HiddenHarbours.Core.HullMeshDef.Cut.None;
+            System.Array.Clear(_roleLiftMasks, 0, _roleLiftMasks.Length);
 
             BuildRampTextures(setup);
             BuildFacetMaterial(setup);
@@ -777,6 +784,7 @@ namespace HiddenHarbours.Art
 
         private void OnEnable()
         {
+            HullMeshReflection.Register(this);
             if (_hullId == 0)
             {
                 _hullId = IsoFacetHullRegistry.Register(this);
@@ -791,6 +799,8 @@ namespace HiddenHarbours.Art
 
         private void OnDisable()
         {
+            HullMeshReflection.Unregister(this);
+            SetLegacyReflection(!HiddenHarbours.Core.GameServices.HullMeshReflections);
             if (_hullId != 0)
             {
                 IsoFacetHullRegistry.Unregister(this, _hullId);
@@ -807,6 +817,20 @@ namespace HiddenHarbours.Art
         }
 
         private void OnDestroy() => ReleaseOwned();
+
+        internal float ReflectionDepthHeave { get; private set; }
+        internal MeshRenderer ReflectionHull => _meshRenderer;
+        internal MeshRenderer ReflectionLeaf => _leafRenderer;
+        internal Mesh ReflectionMesh => _setup != null ? _setup.Mesh : null;
+        internal Mesh ReflectionLeafMesh => _leafFilter != null ? _leafFilter.sharedMesh : null;
+        internal float ReflectionElevation => _setup != null ? _setup.ElevationDeg : 0;
+        internal float ReflectionHeave => _setup != null ? _heavePixels / (float)_setup.PxPerMetre : 0;
+        internal void SetLegacyReflection(bool enabled)
+        {
+            if (_overlayMaterial != null) _overlayMaterial.SetShaderPassEnabled("HHReflect", enabled);
+        }
+        internal ReflectiveObject ReflectionSource => _overlayRenderer != null
+            ? _overlayRenderer.GetComponent<ReflectiveObject>() : null;
 
         private void OnValidate() => _poseDirty = true;
 
@@ -837,6 +861,7 @@ namespace HiddenHarbours.Art
             // the constant this hull's root is placed by and the gradient her vertices are drawn
             // through can never come from two different reads of the registry.
             Vector4 depthShear = DepthShear;
+            ReflectionDepthHeave = _heavePixels / (float)_setup.PxPerMetre;
             // ADR 0023 phase 3 (the waterline): while a displaced sea is live, translate the
             // whole hull frame into the shared private z-buffer's calibrated iso-depth convention
             // (z = baseZ + (groundY − refY)·cosElev − heaveMetres·sinElev — the water's own
@@ -890,6 +915,7 @@ namespace HiddenHarbours.Art
                 // rest of the hull: the shader takes (worldY − ReferenceY)·g off every vertex, and
                 // the compensation here adds back what it will take at THIS hull's drawn root, so
                 // the calibration above survives untouched and only the gradient changes.
+                ReflectionDepthHeave = zHeaveMeters;
                 offset.z = DisplacedWaterMath.HullDepthBias(root.y, zHeaveMeters, in isoFrame)
                            + DisplacedWaterMath.HullShearCompensation(
                                  root.y, heaveMeters, depthShear.x, in isoFrame)
@@ -960,7 +986,9 @@ namespace HiddenHarbours.Art
             // exterior" — so a block re-used across hulls can never carry one boat's open house onto
             // her sister. Inert while HH_LEVEL_GATE is off: nothing reads it.
             _props.SetFloat(IsoFacetShaderIds.LevelShown, _cutaway.Level);
-            _props.SetFloat(IsoFacetShaderIds.LevelLid, _cutaway.Lid);
+            _props.SetInteger(IsoFacetShaderIds.LiftLevels, _cutaway.LiftLevels);
+            _props.SetInteger(IsoFacetShaderIds.ShownRoles, _cutaway.ShownRoles);
+            _props.SetVectorArray(IsoFacetShaderIds.RoleLiftMasks, _roleLiftMasks);
             _props.SetVectorArray(IsoFacetShaderIds.DeckOccupant, _deckSlotVectors);
             _props.SetFloat(IsoFacetShaderIds.DeckOccupantCount, activeDeckSlots);
             target.SetPropertyBlock(_props);

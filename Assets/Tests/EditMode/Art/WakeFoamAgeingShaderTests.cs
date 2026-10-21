@@ -94,16 +94,27 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "render target, and nothing on a CPU-only CI would ever see it.");
         }
 
+        /// <summary>W4-1 (design 3A): the three stops are the foam, the lifted water and the water, so the
+        /// lift that makes the middle stop is half of this seam too and is compared here with the ramp.</summary>
         [Test]
         public void TheThreeStopRamp_IsTranscribedLineForLine()
         {
             string hlsl = Body(Read(ShaderPath),
-                "float3 WakeFoamRamp3(float age01, float3 foam, float3 shallow, float3 mid)");
+                "float3 WakeFoamRamp3(float age01, float3 foam, float3 lift, float3 body)");
             string csharp = Body(Read(TwinPath),
-                "public static Color Ramp3(float age01, Color foam, Color shallow, Color mid)");
+                "public static Color Ramp3(float age01, Color foam, Color lift, Color body)");
 
             Assert.AreEqual(Normalize(csharp), Normalize(hlsl),
-                "The shader's palette lookup has drifted from WakeFoamAgeing.Ramp3.");
+                "The shader's three-stop walk has drifted from WakeFoamAgeing.Ramp3.");
+
+            string hlslLift = Body(Read(ShaderPath),
+                "float3 WakeBodyLift(float3 body, float3 foam, float lift, float whiten)");
+            string csharpLift = Body(Read(TwinPath),
+                "public static Color BodyLift(Color body, Color foam, float lift, float whiten)");
+
+            Assert.AreEqual(Normalize(csharpLift), Normalize(hlslLift),
+                "The shader's mid stop has drifted from WakeFoamAgeing.BodyLift: the band and the sprites " +
+                "would lift the same water to two different brightnesses at 3.45 s astern.");
         }
 
         // ==== the seam's numbers ======================================================================
@@ -151,10 +162,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "2026-08-27 defect verbatim: the buffer already knows each texel's age (it DECAYS), and " +
                 "the compose is where that information was being thrown away.");
 
-            Assert.IsTrue(Regex.IsMatch(src, @"WakeFoamAgedColor\s*\(\s*wakeFresh\s*\)"),
+            Assert.IsTrue(Regex.IsMatch(src, @"WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*col\.rgb\s*\)"),
                 "The wake compose must run the buffer's FRESHNESS through the age ramp — that is what " +
-                "makes the churn walk through the sea's blues instead of sitting on white. Passing the " +
-                "coverage instead is the round-1 defect (see TheAgeProxy_IsTheBuffersFreshnessChannel).");
+                "makes the churn walk into its water instead of sitting on white. Passing the coverage " +
+                "instead is the round-1 defect (see TheAgeProxy_IsTheBuffersFreshnessChannel).");
 
             Assert.IsTrue(Regex.IsMatch(src, @"saturate\s*\(\s*wakeFoam\s*\)\s*\*\s*_FoamColor\.a"),
                 "…while the COVERAGE stays the compose WEIGHT. The two channels do different jobs: " +
@@ -176,8 +187,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheAgeRamp_HasAnExactPassthroughAtZero()
         {
             string src = Read(ShaderPath);
-            string walk = Body(src, "float3 FoamAgedColor(float age01, float3 legacy, float strength)");
-            string wake = Body(src, "float3 WakeFoamAgedColor(float freshness)");
+            string walk = Body(src, "float3 FoamAgedColor(float age01, float3 legacy, float strength, float3 body)");
+            string wake = Body(src, "float3 WakeFoamAgedColor(float freshness, float3 body)");
 
             // Every visual layer in this shader ships with a knob whose 0 is the previous look, bit-exact.
             // It is how the owner A/Bs a change and how a bad call gets reverted without a revert.
@@ -190,20 +201,94 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "own dial: _WakeFoamAgeStrength 0 is still the single-white compose it always was.");
         }
 
+        /// <summary>
+        /// ⚠️ <b>W4-1 moved this premise.</b> It used to require the walk to read <c>_PaletteFoam</c>,
+        /// <c>_PaletteShallow</c> and <c>_PaletteMid</c>: the three stops were three anchors, and the
+        /// last two sat on darker water as a fixed light marine blue (the owner's 2026-10-09 finding 3).
+        /// Design 3A keeps the white stop on the sea's foam anchor and takes the other two from the water
+        /// itself, so a preset swap still moves every stop — through the water rather than two anchors.
+        /// </summary>
         [Test]
         public void TheRamp_ReadsTheSeasOwnPaletteAnchors()
         {
-            string body = Body(Read(ShaderPath), "float3 FoamAgedColor(float age01, float3 legacy, float strength)");
+            string body = Body(Read(ShaderPath),
+                               "float3 FoamAgedColor(float age01, float3 legacy, float strength, float3 body)");
 
-            // ADR 0015: the "different shades of blue" must come from the water's own bounded ramp, so a
-            // preset swap moves them. A hand-picked blue here would look right in North Atlantic and
-            // wrong in every other preset, and nothing would fail. Since row 2 this binds the caps and
-            // the surf as well: there is one walk, so there is one place this can go wrong.
-            foreach (string anchor in new[] { "_PaletteFoam", "_PaletteShallow", "_PaletteMid" })
-                Assert.IsTrue(body.Contains(anchor),
-                    $"The sea's age ramp no longer reads {anchor}. ADR 0015's palette anchors are where " +
-                    "the sea's blues live; anything else is an invented hex that a preset swap will " +
-                    "leave behind.");
+            // ADR 0015: the walk's colours must come from the sea itself, so a preset swap moves them. A
+            // hand-picked blue here would look right in North Atlantic and wrong in every other preset,
+            // and nothing would fail. Since row 2 this binds the caps and the surf as well: there is one
+            // walk, so there is one place this can go wrong.
+            Assert.IsTrue(body.Contains("_PaletteFoam"),
+                "The walk no longer starts on the sea's foam anchor. ADR 0015's palette anchors are where " +
+                "the sea's white lives; anything else is an invented hex that a preset swap will leave behind.");
+            Assert.IsTrue(Regex.IsMatch(body, @"WakeBodyLift\s*\(\s*body\s*,\s*_PaletteFoam\.rgb\s*,\s*_WakeBodyLift\s*,\s*_WakeBodyWhiten\s*\)"),
+                "The middle stop must be the water this texel rides on, lifted by the mood's own dials.");
+            Assert.IsTrue(Regex.IsMatch(body, @"WakeFoamRamp3\s*\([^;]*_PaletteFoam\.rgb\s*,\s*lift\s*,\s*body\s*\)"),
+                "The walk must run foam -> lifted water -> the water itself, in that order.");
+        }
+
+        /// <summary>
+        /// ⚠️ <b>W4-1 C2 moved this premise</b> (it was <c>FoamAgedColor_ReadsTheSavedBody_NotAnAnchor</c>).
+        /// Design 3A handed the walk the water saved BEFORE the light layers. At noon the sky reflection,
+        /// the spec and the rest lift the sea well above that, so an old wake ended darker than the water
+        /// it rode on: Cape Islander, 4 m, 10.95 s astern, ΔE 15.2 at 0.42 of the water's luma (Phase C),
+        /// and still ΔE 5.8 with the reflection off. The owner ruled it a stripe (2026-10-11).
+        ///
+        /// <para>So every aged foam layer now hands the walk <c>col.rgb</c> at its OWN composite, and the
+        /// compose lerps from that same <c>col.rgb</c>. At the end of the walk the compose is
+        /// <c>lerp(col, col, w)</c>: the layer leaves the pixel exactly as it found it, lit, at every hour
+        /// and over whatever lies under it. Checked here as the shape of each compose, after the last
+        /// light layer; the pre-light save must not come back.</para>
+        /// </summary>
+        [Test]
+        public void FoamAgedColor_EndsOnTheLitWaterUnderEachLayer_NotAnAnchor()
+        {
+            string src = StripComments(Read(ShaderPath));
+
+            string walk = Body(src, "float3 FoamAgedColor(float age01, float3 legacy, float strength, float3 body)");
+            foreach (string anchor in new[] { "_PaletteShallow", "_PaletteMid", "_PaletteDeep" })
+                Assert.IsFalse(walk.Contains(anchor),
+                    $"The walk reads {anchor} again. An old wake must be the water it rides on, not an anchor " +
+                    "blue that sits on darker water as a pale stripe.");
+
+            Assert.IsFalse(Regex.IsMatch(src, @"(?<![A-Za-z0-9_])foamBody(?![A-Za-z0-9_])"),
+                "foamBody is back: a body saved before the light layers is the noon stripe (C2).");
+
+            // Each layer's walk ends on the very col.rgb its compose lerps from.
+            string[] composes =
+            {
+                @"float3\s+surfFoam\s*=\s*FoamAgedColor\s*\(\s*surfAge01\s*,\s*_SurfColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*surfFoam\s*,",
+                @"float3\s+lipFoam\s*=\s*FoamAgedColor\s*\(\s*0\.0\s*,\s*_SurfLipColor\.rgb\s*,\s*_SurfAgeStrength\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*lipFoam\s*,",
+                @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*FoamAgedColor\s*\(\s*capAge01\s*,\s*_FoamColor\.rgb\s*,\s*_CapAgeStrength\s*,\s*col\.rgb\s*\)",
+                @"col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*WakeFoamAgedColor\s*\(\s*wakeFresh\s*,\s*col\.rgb\s*\)",
+            };
+
+            // …after the last light layers, so the col.rgb they end on is the lit sea.
+            int sky = src.IndexOf("col.rgb += SkyReflection(", System.StringComparison.Ordinal);
+            int objects = src.IndexOf("col.rgb = col.rgb * (1.0 - objReflPre.a) + objReflPre.rgb", System.StringComparison.Ordinal);
+            Assert.Greater(sky, -1, "the sky reflection's compose is gone or renamed");
+            Assert.Greater(objects, sky, "the object reflection's compose is gone or moved before the sky");
+            foreach (string compose in composes)
+            {
+                MatchCollection found = Regex.Matches(src, compose);
+                Assert.AreEqual(1, found.Count, $"No single compose matching {compose}.");
+                Assert.Greater(found[0].Index, objects,
+                    $"{compose} runs before the reflections, so the water it ends on is not the lit sea.");
+            }
+
+            // …and nothing else calls the walk: two definitions, the wake's adapter, and the four above.
+            Assert.AreEqual(2 + 1 + composes.Length,
+                Regex.Matches(src, @"(?<![A-Za-z0-9_])(Wake)?FoamAgedColor\s*\(").Count,
+                "A new caller of the foam walk must end it on the col.rgb its own compose lerps from, and " +
+                "join the list above.");
+        }
+
+        static string StripComments(string source)
+        {
+            string s = Regex.Replace(source, @"/\*.*?\*/", " ", RegexOptions.Singleline);
+            return Regex.Replace(s, @"//[^\n]*", " ");
         }
 
         /// <summary>
@@ -219,7 +304,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TheAgeProxy_IsTheBuffersFreshnessChannel()
         {
-            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float freshness)");
+            string body = Body(Read(ShaderPath), "float3 WakeFoamAgedColor(float freshness, float3 body)");
 
             Assert.IsTrue(Regex.IsMatch(body, @"WakeFoamAge01\s*\(\s*freshness\s*,"),
                 "The shader must derive age from the buffer's FRESHNESS channel. Deriving it from the " +

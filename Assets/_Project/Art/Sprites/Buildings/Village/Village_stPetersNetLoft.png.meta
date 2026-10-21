@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 013009edbf1e7e847ac52e65da79f7af
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8084859176832302483
+    second: Village_stPetersNetLoft_0
+  - first:
+      213: -4884244335192202620
+    second: Village_stPetersNetLoft_1
+  - first:
+      213: -6689128199086404114
+    second: Village_stPetersNetLoft_2
+  - first:
+      213: -8821100419626226243
+    second: Village_stPetersNetLoft_3
+  - first:
+      213: 2231597134507166443
+    second: Village_stPetersNetLoft_4
+  - first:
+      213: 522873912654012924
+    second: Village_stPetersNetLoft_5
+  - first:
+      213: -3182791139300240869
+    second: Village_stPetersNetLoft_6
+  - first:
+      213: -4083541688825336871
+    second: Village_stPetersNetLoft_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 311
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6922aa1a8dd328479f448e061ae73f9
+      internalID: 1387848104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d1
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 311
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a270d8f7374b16b4e9f92bfce4d52e92
+      internalID: 1767934953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d2
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 311
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e368cda77c38114d8ccbf327cee5f28
+      internalID: 345403589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d3
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 311
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fa670739c28dd64689f84926cd3366b
+      internalID: 1237712303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d4
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 311
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f329127c65b3b74eae57bb1f0edaab3
+      internalID: 1021340027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d5
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 311
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11162fbc081869346ae716701f3b0073
+      internalID: -1607994910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d6
+      rect:
+        serializedVersion: 2
+        x: 1680
+        y: 311
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32890c974fdd9df4382780fb10023353
+      internalID: 1732822277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersNetLoft_d7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 280
+        height: 311
+      alignment: 9
+      pivot: {x: 0.5, y: 0.28938907}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f3753246a2b85b44a92579ea4bda367
+      internalID: -331136753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 00160d89341d73a4ca0aa502160b66ec
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_stPetersNetLoft_d0: 1387848104
+      Village_stPetersNetLoft_d1: 1767934953
+      Village_stPetersNetLoft_d2: 345403589
+      Village_stPetersNetLoft_d3: 1237712303
+      Village_stPetersNetLoft_d4: 1021340027
+      Village_stPetersNetLoft_d5: -1607994910
+      Village_stPetersNetLoft_d6: 1732822277
+      Village_stPetersNetLoft_d7: -331136753
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

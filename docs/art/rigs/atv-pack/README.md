@@ -79,6 +79,21 @@ Pivot is pinned identically in every cell of every sheet. Each cue was baked at 
 faces the camera — roll and bounce side-on at W, steer nose-on at S, turn and park on the SE quarter where the
 street side (and the stand) read. Recipes are in the contract's sheet manifest.
 
+## September 2026 visual review
+
+All three machines now have bevelled saddles, fuel caps, brake levers and dark exhaust outlets.
+The Enduro and trike gain cylinder cooling fins, and the Enduro gets understated side-panel inserts.
+The quad gains inset service panels, ribbed footboards and a readable instrument face. Fittings
+remain in their sprung or steering groups, so the levers follow the handlebars and every body
+detail follows suspension and lean. Rider anchors, wheel geometry, dimensions and facing bounds
+are unchanged; no material ramps were added.
+
+All 22 reference sheets and the measured contract were regenerated. The harness now fetches the
+sidecar from its actual repository location, and the source is pinned to LF for stable byte hashes.
+See the [before/after plate](reference/OtterAtv_review.png) and
+[review record](../../briefs/otter-atv-visual-review.md). Rebuild the three ATV vehicle meshes in Unity
+after merging; existing Unity mesh assets retain the old geometry until rebaked.
+
 ## Load order
 
 ```html

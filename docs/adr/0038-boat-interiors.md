@@ -4,6 +4,7 @@
 art-pipeline (proposal, this PR) · **Supersedes nothing** · **Related:** ADR 0036 (interior levels
 as layers), ADR 0032 (sorting band rebase), ADR 0033 (hull depth shear), ADR 0026 (rig pivot
 conventions), the owner's 2026-07-30 seamless-interiors ruling
+· **Amended in part by [ADR 0048](0048-the-boats-switch.md)** (proposed 2026-09-27): the declared one-hop lid becomes a lift set, and the cutaway kits retire with their hulls.
 
 ## Ruling (lead-architect, 2026-08-19)
 

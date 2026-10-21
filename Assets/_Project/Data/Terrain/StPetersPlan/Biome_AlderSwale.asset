@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78ae17f2f857aae7f1ac284e05f629b6, type: 3}
+  m_Name: Biome_AlderSwale
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BiomeDef
+  Id: biome.stp_alder_swale
+  DisplayName: Alder swale
+  Kind: 4
+  Rule: the hollow round the Fen Pool and Alder Run
+  Poly:
+  - {x: 95, y: 43.5}
+  - {x: 121, y: 43.5}
+  - {x: 123.5, y: 58}
+  - {x: 114, y: 63.5}
+  - {x: 101, y: 63}
+  - {x: 94, y: 55}
+  Band: {x: 0, y: 0}
+  SectionIds: []
+  CliffTopMinM: 0
+  CliffDistanceM: 0

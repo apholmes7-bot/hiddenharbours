@@ -24,6 +24,12 @@
 // never been lit at all — an unlit default here would ship the exact dead channel this work exists to
 // fix. Both are one slider, both are the owner's to move.
 //
+// ⚠️ A SECOND PASS, HHUnderWater (W4-4c). It draws the sprite's albedo alone, unlit and premultiplied, into
+// the target the sea reads its props from (IsoFacetHullFeature's under-water list). Only a renderer carrying
+// UnderWaterRegistry.RenderingLayer is drawn by it (a shore plant wholly under the live water, with
+// GameConfig.ShallowsSubmergedProps on), and the sea lights what it draws: the column's absorption, the
+// caustics and the grade, the one law the floor beside it takes. No other renderer ever runs it.
+//
 // SHADER CAUTIONS honoured: NO operator characters in any [Header(...)] label or Property string
 // (ShaderLab parse error -> magenta); helpers declared BEFORE use; NO loops (so no [unroll] over a runtime
 // bound); globals OUTSIDE the per-material CBUFFER, tunables INSIDE it; point-sampled, PPU 32. Visual
@@ -150,8 +156,9 @@ Shader "HiddenHarbours/LitSprite"
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
                 float  _AlphaClip;
-                // Every lighting row, from the SHARED include. One pass here, so no cross-pass layout
-                // constraint — but taking them from the macro is what keeps this shader and the tree on
+                // Every lighting row, from the SHARED include. Two passes here (HHUnderWater below), and
+                // the SRP Batcher requires ONE UnityPerMaterial layout across a shader's passes: both take
+                // the rows from the same macros, which also keeps this shader and the tree on
                 // ONE property set as the family grows.
                 SPRITE_LIT_DECOR_MATERIAL_ROWS
                 // The emitter glow's rows. This shader opts in; the tree does not (see
@@ -216,6 +223,78 @@ Shader "HiddenHarbours/LitSprite"
                 col.rgb = SilhouetteThrough(col.rgb, IN.positionCS.xy);
 
                 return col;
+            }
+            ENDHLSL
+        }
+
+        // ---- W4-4c: the sprite UNDER the water ------------------------------------------------------
+        // Drawn only by IsoFacetHullFeature's under-water list, into the target the sea composites over
+        // its floor. ALBEDO ONLY: the light under the water is the sea's (absorption, caustics, grade), so
+        // this pass adds no response and no glow, and stamps no fisher into the sea either. The placement
+        // is the pass above's, so the copy lands on the sprite's own pixels; the UnityPerMaterial rows are
+        // the pass above's, from the same macros.
+        Pass
+        {
+            Name "HHLitSpriteUnderWater"
+            Tags { "LightMode" = "HHUnderWater" }
+            Blend One OneMinusSrcAlpha      // premultiplied: overlapping plants composite in ONE target
+            Cull Off
+            ZWrite Off
+            ZTest Always                    // no depth buffer here; the list's sort orders the plants
+
+            HLSLPROGRAM
+            #pragma vertex underWaterVert
+            #pragma fragment underWaterFrag
+            #pragma multi_compile_instancing
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            // For the rows alone: this pass lights nothing.
+            #include "Assets/_Project/Art/Shaders/Include/SpriteLitDecor.hlsl"
+
+            struct UnderWaterAttributes
+            {
+                float3 positionOS : POSITION;
+                float4 color      : COLOR;
+                float2 uv         : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct UnderWaterVaryings
+            {
+                float4 positionCS : SV_POSITION;
+                float4 color      : COLOR;
+                float2 uv         : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            CBUFFER_START(UnityPerMaterial)
+                float4 _Color;
+                float  _AlphaClip;
+                SPRITE_LIT_DECOR_MATERIAL_ROWS
+                SPRITE_LIT_DECOR_EMIT_ROWS
+            CBUFFER_END
+
+            UnderWaterVaryings underWaterVert(UnderWaterAttributes IN)
+            {
+                UnderWaterVaryings OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
+                // A SpriteRenderer submits world-space vertices (see the pass above): the same placement.
+                OUT.positionCS = TransformWorldToHClip(TransformObjectToWorld(IN.positionOS));
+                OUT.color = IN.color * _Color;
+                OUT.uv = IN.uv;
+                return OUT;
+            }
+
+            half4 underWaterFrag(UnderWaterVaryings IN) : SV_Target
+            {
+                UNITY_SETUP_INSTANCE_ID(IN);
+                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv) * IN.color;
+                clip(col.a - _AlphaClip);
+                return half4(col.rgb * col.a, col.a);
             }
             ENDHLSL
         }

@@ -40,6 +40,59 @@ namespace HiddenHarbours.Tests.RigBaking
     /// </summary>
     public sealed class HullLevelTagBakeTests
     {
+        [Test]
+        public void WalkGlobal_PacksRolesAndAppendsItsRoomWithoutWidening()
+        {
+            using var host = RigScriptHostFactory.Create();
+            var data = HullWalkFixture.Extract(host);
+            Assert.That(data.ShimmedSymbols, Is.Empty);
+            Assert.That(data.Levels.Count, Is.EqualTo(3));
+            var leaf = RigMeshAssetBaker.FindDoorLeaf(host, "BoxWalk", data);
+            Assert.That(leaf.Count, Is.EqualTo(1));
+            Assert.That(leaf.Open.Faces[0].V[0].X - leaf.Closed.Faces[0].V[0].X, Is.EqualTo(1));
+            RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, "BoxWalk", data);
+            var built = RigMeshBuilder.Build(data);
+            try
+            {
+                Assert.That(built.Mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord1), Is.EqualTo(3));
+                Assert.That(built.Mesh.HasVertexAttribute(VertexAttribute.TexCoord2), Is.False);
+                var uv = new List<Vector3>(); built.Mesh.GetUVs(1, uv);
+                int v = 0;
+                foreach (var face in data.Faces)
+                    foreach (var corner in face.V)
+                    {
+                        Assert.That(uv[v++], Is.EqualTo(new Vector3(face.Level, face.Interior ? 1 : 0, face.Role + 1)));
+                    }
+                Assert.That(data.Faces.Count(f => f.Interior), Is.EqualTo(2));
+                Assert.That(data.Faces.Last().Db, Is.GreaterThan(4));
+            }
+            finally { Object.DestroyImmediate(built.Mesh); }
+        }
+
+        [Test]
+        public void MainHullWithoutRoles_KeepsTwoWideUvAndCommittedMeshBytes()
+        {
+            var hull = Pass3Hulls.First();
+            var data = Extract(hull, out var host);
+            using (host)
+            {
+                Assert.That(data.CarriesRoles, Is.False);
+                var leaf = RigMeshAssetBaker.FindDoorLeaf(host, hull.GlobalName, data, hull.Extraction);
+                byte[] sides = RigMeshInteriorClassifier.ClassifySides(data);
+                RigMeshAssetBaker.AppendMeshInteriorIfConverted(host, hull.GlobalName, data, hull.Extraction);
+                System.Array.Resize(ref sides, data.Faces.Count);
+                sides = RigMeshAssetBaker.LiftDoorLeaf(data, leaf, sides);
+                var built = RigMeshBuilder.Build(data, null, sides);
+                try
+                {
+                    Assert.That(built.Mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord1), Is.EqualTo(2));
+                    var committed = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+                    Assert.That(RigMeshAssetBaker.MeshBytesEqual(committed.Mesh, built.Mesh), Is.True, hull.MeshId);
+                }
+                finally { Object.DestroyImmediate(built.Mesh); }
+            }
+        }
+
         /// <summary>
         /// Every hull whose rig publishes a level vocabulary — batch 1 AND batch 2 of the cutaway kit.
         ///

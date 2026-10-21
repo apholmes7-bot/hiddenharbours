@@ -554,6 +554,33 @@ line below is a later job, **logged, not scheduled**; its phase is proposed in Â
   daily fishing; traps are moved through the season as the lobsters migrate. Joins
   [`settlement-population.md`](../docs/design/settlement-population.md) slice P4.
 
+## Logged from the gulls lane (2026-10-15, unscheduled)
+
+The owner's ask: the gulls followed the centre of the screen, and their sound never stopped. Gulls
+now belong to places and hours, and their calls follow them (see `tech-architecture.md`, "Birds belong
+to places"). Each item below was found on the way and is **logged, not built** (rule 8).
+
+- **A possible sea-state mismatch.** `EnvironmentService.SeaState01At` (`Environment/EnvironmentService.cs:154-165`)
+  samples the wind with the serialized `_activeWindProfile` (:163). `Sample()` (:80-83) uses
+  `ActiveWindProfile` (:63-68) instead, which picks a wind-profile asset when one is set, and so does
+  `WaveWindAt` (:120-126). With an asset set, the sea state the gulls read ahead can differ from the
+  one the rest of the game samples. It is a one-line change in Environment, outside the gulls' files.
+- **Only three perches are placed.** `GullPerch` sits three times in a scene, all in `StPeters.unity`:
+  two at the cannery and one at the landing. The other key-scene gull pieces stay perch hints until
+  their key scenes are banked.
+- **No `VisibilityAt(t)`.** `IEnvironmentService` has no such call, so the schedule holds visibility
+  at "now" for the length of a flight.
+- **Single calls from the pack.** The audio pack could supply single-call clips, or onset marks, for
+  the `Gulls` slot. Today each call plays a short stretch of the one clip in that slot, or one of the
+  procedural loop's four phrases when the slot is empty.
+- **Species files for the `bird.` ids.** Each place lists its birds by species id, and only
+  `bird.herring_gull` is written and voiced. The ids do not yet resolve to a species file.
+- **Fleet traffic.** Ambient-fleet landings could later drive the wharves' busy hours.
+- **Later ideas.** A first-year (brown) juvenile sprite; gulls feeding at night under the cannery's
+  lights.
+- **Not this job's:** stealing fish, fouling gear, any bite or catch change, the five unattached
+  attractors above, the dog, new art or animation.
+
 ## Polish (deep backlog)
 
 Small, real, and not worth a branch of their own â€” pick one up when you are already in the file.

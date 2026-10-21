@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_BarWalk
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_bar_walk
+  DisplayName: Bar walk
+  Kind: 2
+  Width: 1
+  Points:
+  - {x: -45, y: 0.4}
+  - {x: -52, y: 0.3}
+  - {x: -60, y: 0}
+  - {x: -71, y: 0}
+  - {x: -75.8, y: -2.847}
+  - {x: -78, y: -3.35}
+  - {x: -80.2, y: -2.847}
+  - {x: -85, y: 0}
+  - {x: -90.2, y: 0}
+  - {x: -94.91, y: 2.805}
+  - {x: -97, y: 3.3}
+  - {x: -99.09, y: 2.805}
+  - {x: -103.8, y: 0}
+  - {x: -109.6, y: 0}
+  - {x: -114.58, y: -2.89}
+  - {x: -117, y: -3.4}
+  - {x: -119.42, y: -2.89}
+  - {x: -124.4, y: 0}
+  - {x: -129.4, y: 0}
+  - {x: -134.02, y: 2.805}
+  - {x: -136, y: 3.3}
+  - {x: -137.98, y: 2.805}
+  - {x: -142.6, y: 0}
+  - {x: -147.8, y: 0}
+  - {x: -152.69, y: -2.847}
+  - {x: -155, y: -3.35}
+  - {x: -157.31, y: -2.847}
+  - {x: -162.2, y: 0}
+  - {x: -165.1, y: 0}
+  - {x: -169.855, y: 2.805}
+  - {x: -172, y: 3.3}
+  - {x: -174.145, y: 2.805}
+  - {x: -178.9, y: 0}
+  - {x: -182.9, y: 0}
+  - {x: -187.745, y: -2.847}
+  - {x: -190, y: -3.35}
+  - {x: -192.255, y: -2.847}
+  - {x: -197.1, y: 0}
+  - {x: -198.4, y: 0}
+  - {x: -203.02, y: 2.805}
+  - {x: -205, y: 3.3}
+  - {x: -206.98, y: 2.805}
+  - {x: -211.6, y: 0}
+  - {x: -271.4, y: 0}
+  - {x: -276.02, y: -2.805}
+  - {x: -278, y: -3.3}
+  - {x: -279.98, y: -2.805}
+  - {x: -284.6, y: 0}
+  - {x: -288.8, y: 0}
+  - {x: -293.69, y: 2.847}
+  - {x: -296, y: 3.35}
+  - {x: -298.31, y: 2.847}
+  - {x: -303.2, y: 0}
+  - {x: -307.2, y: 0}
+  - {x: -311.91, y: -2.805}
+  - {x: -314, y: -3.3}
+  - {x: -316.09, y: -2.805}
+  - {x: -320.8, y: 0}
+  - {x: -352, y: 0}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 0
+  Label: 'crest-top walk (not painted)'
+  Ruts: 0
+  SourceId: path.stp_bar_walk
+  Frozen: 0
+  PaintOnly: 0
+  Why: 'Layout B''s crest-top walk through every crest pool''s dry lane, as the key scene drew it: the line the withies stand on. Never painted (M5).'

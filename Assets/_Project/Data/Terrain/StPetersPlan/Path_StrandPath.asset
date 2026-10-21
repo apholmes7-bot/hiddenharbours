@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_StrandPath
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_strand_path
+  DisplayName: Strand path
+  Kind: 0
+  Width: 1.1
+  Points:
+  - {x: 178.4, y: 0.9}
+  - {x: 181.6, y: 6}
+  - {x: 184.1, y: 12.1}
+  - {x: 186.3, y: 15.9}
+  - {x: 189.4, y: 19.9}
+  - {x: 192.3, y: 23.6}
+  - {x: 194.9, y: 27.4}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: path.stp_strand_path
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'CD''s east end (M10): feet go this way; paint only Paint only; inside the cannery''s frozen 12 m and the Landing''s footprint it paints only where those scenes'' keep lets it.'

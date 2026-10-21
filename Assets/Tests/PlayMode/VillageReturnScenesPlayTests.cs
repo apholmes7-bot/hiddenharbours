@@ -136,7 +136,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator EveryHouseInStPeters_Lights_OnItsOwnSheets() =>
-            EveryHouseLights("StPeters", expectedHouses: 5, expectedOthers: 4);
+            EveryHouseLights("StPeters", expectedHouses: 5, expectedOthers: 7); // O3 adds bait store, loft and shed; ice house waits.
 
         [UnityTest]
         public IEnumerator EveryHouseInNineMileCreek_Lights_OnItsOwnSheets() =>

@@ -1,0 +1,19 @@
+{
+    "name": "HiddenHarbours.Tests.Audio.PlayMode",
+    "rootNamespace": "HiddenHarbours.Tests.Audio.PlayMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "HiddenHarbours.Core",
+        "HiddenHarbours.Audio"
+    ],
+    "includePlatforms": [],
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "overrideReferences": true,
+    "autoReferenced": false
+}

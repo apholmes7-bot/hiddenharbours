@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_GinnysTrack
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_ginnys_track
+  DisplayName: 'Ginny''s track'
+  Kind: 1
+  Width: 1.6
+  Points:
+  - {x: 86, y: 45}
+  - {x: 91.5, y: 50}
+  - {x: 96, y: 55.5}
+  - {x: 99, y: 61}
+  - {x: 100.5, y: 65}
+  - {x: 101, y: 69.5}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: cart track
+  Ruts: 1
+  SourceId: path.stp_ginnys_track
+  Frozen: 1
+  PaintOnly: 0
+  Why: 'A cart track from Ginny''s place down the bank to the cove, where a skiff would be hauled up.'

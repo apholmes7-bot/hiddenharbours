@@ -90,26 +90,22 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.AreEqual(0f, follow.BandShiftMeters, "a card never moves the camera (the tiller's)");
             }
             Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Tiller), "premise: the tiller's card");
-            Rect tiller = HelmOverlayLayout.CardRect(false, TillerRigRender.W, TillerRigRender.H,
+            Rect tiller = HelmOverlayLayout.CardRect(TillerRigRender.W, TillerRigRender.H,
                                                      GameServices.HelmOverlay, Screen.width, Screen.height);
-            Assert.AreEqual(HelmOverlayHost.FootprintOf(tiller, GameServices.BoatUiWindowing.TitleBarPx),
+            Assert.AreEqual(HelmOverlayHost.FootprintOf(HelmOverlayHost.HelmCardKind.Tiller, tiller, Screen.height),
                             HelmFootprint.Current,
-                            "⭐ the seam says the tiller's card: its window, title strip included");
+                            "⭐ the seam says the tiller's card: its rect (H2 retired the title strip)");
             AssertEveryOverlayStandsClear("the tiller's card", toast, note, popup);
 
-            // The composed dash: a console hull, same boat.
-            boat.SetHull(NewHull("boat.test_footprint_dash", NewConsole("footprint_dash")));
-            for (int i = 0; i < 3; i++)
-            {
-                yield return null;
-                Assert.AreEqual(0f, follow.BandShiftMeters, "a card never moves the camera (the dash)");
-            }
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash), "premise: the dash");
-            Assert.That(HelmOverlayHost.TryDashCard(out Rect dash, out _), Is.True, "premise: the dash draws");
-            Assert.AreEqual(HelmOverlayHost.FootprintOf(dash, GameServices.BoatUiWindowing.TitleBarPx),
-                            HelmFootprint.Current, "⭐ the seam says the dash, wherever the window put it");
-            Assert.AreEqual(HelmFootprintKind.Card, HelmFootprint.Current.Kind, "a card, not a band");
-            AssertEveryOverlayStandsClear("the dash", toast, note, popup);
+            // The band: a console hull, same boat (H2). The camera's ease for it is the band's own test
+            // (HelmBandPlayTests); here the seam says it and every overlay stands clear of it.
+            boat.SetHull(NewHull("boat.test_footprint_band", NewConsole("footprint_band")));
+            for (int i = 0; i < 3; i++) yield return null;
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band), "premise: the band");
+            Assert.AreEqual(HelmOverlayHost.FootprintOf(HelmOverlayHost.HelmCardKind.Band, default, Screen.height),
+                            HelmFootprint.Current, "⭐ the seam says the band: the full width, 144k tall");
+            Assert.AreEqual(HelmFootprintKind.Band, HelmFootprint.Current.Kind, "a band, not a card");
+            AssertEveryOverlayStandsClear("the band", toast, note, popup);
         }
 
         [UnityTest]
@@ -124,11 +120,13 @@ namespace HiddenHarbours.Tests.PlayMode
             CameraFollow follow = NewCamera(boatGo.transform);
             yield return null;
 
-            boat.SetHull(NewHull("boat.test_footprint_hideall", NewConsole("footprint_hideall")));
+            // The tiller's card, which never moves the camera, so every "no camera move" below is exact.
+            // The band's hide-all, and the camera easing back from it, is HelmBandPlayTests'.
+            boat.SetHull(NewHull("boat.test_footprint_hideall", null));
             toast.Show("A word while she steers");
             note.Show("A line on the note while she steers");
             for (int i = 0; i < 3; i++) yield return null;
-            Assert.AreEqual(HelmFootprintKind.Card, HelmFootprint.Current.Kind, "premise: the dash is said");
+            Assert.AreEqual(HelmFootprintKind.Card, HelmFootprint.Current.Kind, "premise: the tiller's card is said");
 
             BoatUiWindows.ToggleHideAll();
             yield return null;
@@ -142,7 +140,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.AreEqual(HelmFootprintKind.Card, HelmFootprint.Current.Kind,
                             "one toggle brings the card back, and the seam says it again");
-            AssertEveryOverlayStandsClear("the dash, restored", toast, note, popup);
+            AssertEveryOverlayStandsClear("the tiller's card, restored", toast, note, popup);
 
             GameServices.Helm.SetPilotedHull(null);   // stepped ashore
             yield return null;
@@ -367,8 +365,8 @@ namespace HiddenHarbours.Tests.PlayMode
             return console;
         }
 
-        /// <summary>An engine hull: with a console it shows the composed dash, without one the
-        /// outboard tiller (<see cref="HelmControlRelay.StyleFor"/>).</summary>
+        /// <summary>An engine hull: with a console it shows the band, without one the outboard
+        /// tiller's card (<see cref="HelmControlRelay.StyleFor"/>).</summary>
         private BoatHullDef NewHull(string id, HelmConsoleDef console)
         {
             var h = ScriptableObject.CreateInstance<BoatHullDef>();

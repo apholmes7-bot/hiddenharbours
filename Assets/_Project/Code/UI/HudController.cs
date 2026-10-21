@@ -176,6 +176,11 @@ namespace HiddenHarbours.UI
         private bool _driving;              // ControlModeChanged — whether he is at one at all
         private string _captureVehicleId;   // TrailerCaptureChanged — whose plate took a pin
         private bool _captured;
+
+        // The control hint uses Core's carried-item identity, as the fishing gate does.
+        [SerializeField] private string _fishingHintRodId = "tool.rod";
+        private Text _helmFishingHint;
+        private ControlMode _controlMode;
         private bool _subscribed;
 
         // Cached so a missing GameConfig doesn't recompute the lookup every sample.
@@ -264,6 +269,7 @@ namespace HiddenHarbours.UI
             // Before anything else, and before the Ready gate: a HUD that never gets its services must
             // still obey the ruling rather than sit there showing "--" where the tide used to be.
             ApplyReadoutVisibility();
+            UpdateHelmFishingHint();
 
             // Boot/null safety: services may be unset for the first frame(s) at boot.
             if (!GameServices.Ready)
@@ -514,9 +520,9 @@ namespace HiddenHarbours.UI
                 aboard: true,
                 atHelm ? helm.Style : HelmControlStyle.None,
                 atHelm ? helm.Fit : HelmFit.None,
-                in covered, Screen.width, Screen.height);
+                in covered, HudScreen.Width, HudScreen.Height);
             SetNavPlacement(placement,
-                HelmHudSuppression.NavClusterLiftRef(placement, in covered, Screen.width, Screen.height));
+                HelmHudSuppression.NavClusterLiftRef(placement, in covered, HudScreen.Width, HudScreen.Height));
             if (placement == NavClusterPlacement.Hidden) return;   // nothing to format into hidden labels
 
             // Compass: arrow SHAPE + degrees NUMBER + cardinal WORD (redundant coding, §8). Cross-checked
@@ -754,6 +760,15 @@ namespace HiddenHarbours.UI
             }
         }
 
+        /// <summary>Reads only Core's mode and hands. No formatting or allocation while unchanged.</summary>
+        private void UpdateHelmFishingHint()
+        {
+            if (_helmFishingHint == null) return;
+            bool shown = HelmFishingHint.ShouldShow(_controlMode, GameServices.Hands, _fishingHintRodId)
+                         && !ShellFlow.WorldInputBlocked && !InteractionGate.IsBlocked;
+            if (_helmFishingHint.enabled != shown) _helmFishingHint.enabled = shown;
+        }
+
         // ---- the coupling notice ------------------------------------------------------------
 
         /// <summary>
@@ -805,6 +820,8 @@ namespace HiddenHarbours.UI
         /// the last machine he drove, and the mode gates whether that matters.</summary>
         private void OnControlModeChanged(ControlModeChanged e)
         {
+            _controlMode = e.Mode;
+            UpdateHelmFishingHint();
             _driving = e.Mode == ControlMode.Driving;
             ApplyCouplingNotice();
         }
@@ -999,6 +1016,13 @@ namespace HiddenHarbours.UI
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), 0f, 184f, 64f);
             _catchCardIcon.enabled = false;
 
+            // A single control hint in the quiet band's right column. It earns no new readout.
+            _helmFishingHint = MakeLabel(bandRt, "HelmFishingHint", TextAnchor.UpperRight,
+                new Vector2(0.4f, 1f), new Vector2(1f, 1f), 0f, -176f, 22);
+            _helmFishingHint.rectTransform.sizeDelta = new Vector2(0f, 28f);
+            _helmFishingHint.text = HudStrings.FishingAtHelm;
+            _helmFishingHint.enabled = false;
+
             // VS-19 nav cluster (heading compass + set-&-drift). A sailing read, so it sits BOTTOM-CENTRE
             // (a natural compass spot, clear of the top conditions band) and is shown only while aboard
             // (UpdateNavReads toggles it; hidden ashore). S4.5: at a helm dash it yields — hidden where
@@ -1169,8 +1193,8 @@ namespace HiddenHarbours.UI
         {
             // Convert the top safe-area gap (device pixels) to a small inset. Cheap, computed once
             // at build; a full responsive safe-area binder is a follow-up (VS-19+ reflow work).
-            var sa = Screen.safeArea;
-            float topGap = Screen.height - (sa.y + sa.height);
+            var sa = HudScreen.SafeArea;
+            float topGap = HudScreen.Height - (sa.y + sa.height);
             return Mathf.Max(0f, topGap);
         }
     }

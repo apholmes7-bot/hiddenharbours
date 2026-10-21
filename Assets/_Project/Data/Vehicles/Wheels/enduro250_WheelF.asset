@@ -14,23 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
   Id: vehicleprop.enduro250_wheel_f
   SourceRigPath: docs/art/rigs/atv-pack/atvIsoRig.js
-  SourceFaceBuilder: build(AtvIso.resolve({body:'dirtbike',stand:0}))
-  Mesh: {fileID: 7929034488659211899}
+  SourceFaceBuilder: build(AtvIso.resolve({body:'dirtbike',stand:0,paint:'teal'}))
+  Mesh: {fileID: 3050200816782822671}
   FixedMesh: {fileID: 0}
   Ramps:
   - Colors:
     - serializedVersion: 2
-      rgba: 4279375175
+      rgba: 4281874709
     - serializedVersion: 2
-      rgba: 4279705185
+      rgba: 4282993439
     - serializedVersion: 2
-      rgba: 4280232320
+      rgba: 4284178474
     - serializedVersion: 2
-      rgba: 4280824985
+      rgba: 4285494841
     - serializedVersion: 2
-      rgba: 4281615537
+      rgba: 4287008848
     - serializedVersion: 2
-      rgba: 4282735557
+      rgba: 4288588398
     Offset: 0
   - Colors:
     - serializedVersion: 2
@@ -176,7 +176,7 @@ MonoBehaviour:
   MaxSteerDegrees: 35
   MaxTiltDegrees: 0
   LateralMountsMeters: []
---- !u!43 &7929034488659211899
+--- !u!43 &3050200816782822671
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

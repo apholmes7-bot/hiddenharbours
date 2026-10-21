@@ -24,9 +24,10 @@ namespace HiddenHarbours.Tests.RigBaking
     /// against its COMMITTED def, so the extraction here is the one the bake runs. The same extraction
     /// with the face held back reads 17 for the deckboss and the packer. That proves the ramp guard can
     /// go red, and that the composed face is what brings those two under. Once
-    /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names rig 9 (the character intake's Phase B,
-    /// 2026-09-26), the committed def is rig 9's, so the control reads it back against rig 9's
-    /// extraction instead, and the rig 7 tables here stay a measurement of rig 7.</para>
+    /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names a <c>ComposeV9</c> kit (rig 9 from the
+    /// character intake's Phase B, 2026-09-26; rig 10 from the rig 10 intake's Phase B, 2026-10-02),
+    /// the committed def is that kit's, so the control reads it back against that kit's extraction
+    /// instead, and the rig 7 tables here stay a measurement of rig 7.</para>
     ///
     /// <para>No asset is written. The one guard that needs Phase C's assets on disk is
     /// <see cref="EveryCastArtDefLinksItsOwnUsableSkin"/>, and it is red until they land, by design.</para>
@@ -65,8 +66,10 @@ namespace HiddenHarbours.Tests.RigBaking
         IRigScriptHost _host, _host9;
         readonly Dictionary<string, RigMeshData> _composed = new Dictionary<string, RigMeshData>();
 
-        /// <summary>Rig 9's host, made on first use: only the player's control reads it, and only
-        /// while <see cref="CharacterSkinAssetBaker.LiveRig"/> names rig 9.</summary>
+        /// <summary>The live kit's host (<see cref="CharacterSkinAssetBaker.LiveKit"/>: rig 10 since the
+        /// rig 10 intake's Phase B), made on first use: only the player's control and the state check
+        /// read it, and only while <see cref="CharacterSkinAssetBaker.LiveRig"/> names a
+        /// <c>ComposeV9</c> kit.</summary>
         IRigScriptHost Host9
         {
             get
@@ -74,7 +77,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 if (_host9 == null)
                 {
                     _host9 = RigScriptHostFactory.Create();
-                    CharacterSkinExtractor.Load9(_host9);
+                    CharacterSkinExtractor.Load9(_host9, CharacterSkinAssetBaker.LiveKit);
                 }
                 return _host9;
             }
@@ -225,17 +228,18 @@ namespace HiddenHarbours.Tests.RigBaking
 
             if (CharacterSkinAssetBaker.LiveRigIsV9)
             {
-                // The bake runs ComposeV9: rig 9's whole face, every face group bound since character
-                // PR 2a (FaceMeshJs9), its table read by ReadMaterials9. What it refuses on is
+                // The bake runs ComposeV9 on the live kit: its whole face, every face group bound since
+                // character PR 2a (FaceMeshJs9), its table read by ReadMaterials9. What it refuses on is
                 // MaxMaterials(ToneRule.V9), counted by CharacterSkinBakeGuardTests' v9 guards; the
                 // rig 7 ramp tables above do not measure it.
                 string player = CharacterRigBakeMenu.PlayerPreset;
-                string[] rig9 = CharacterSkinExtractor.ReadMaterials9(
+                string[] live = CharacterSkinExtractor.ReadMaterials9(
                         Host9, player, CharacterSkinExtractor.FaceMeshJs9(Host9, player))
                     .Select(m => m.Name).ToArray();
-                CollectionAssert.AreEqual(committed.Materials.Select(m => m.Name).ToArray(), rig9,
-                    "rig 9's extraction here is not the one that baked the player's committed def, so the " +
-                    "v9 material counts measure some other table than the one the bake refuses on.");
+                CollectionAssert.AreEqual(committed.Materials.Select(m => m.Name).ToArray(), live,
+                    $"{CharacterSkinAssetBaker.LiveKit.Name}'s extraction here is not the one that baked the " +
+                    "player's committed def, so the v9 material counts measure some other table than the one " +
+                    "the bake refuses on.");
                 return;
             }
 
@@ -272,7 +276,7 @@ namespace HiddenHarbours.Tests.RigBaking
             var states = new HashSet<string>(StringComparer.Ordinal);
             if (CharacterSkinAssetBaker.LiveRigIsV9)
             {
-                string g = CharacterSkinExtractor.V9GlobalName;
+                string g = CharacterSkinAssetBaker.LiveKit.GlobalName;
                 foreach (string name in CharacterSkinExtractor.ClipNames9(Host9))
                 {
                     Host9.Execute($"globalThis.__hhCastDef={g}.clipDef('{name}');");

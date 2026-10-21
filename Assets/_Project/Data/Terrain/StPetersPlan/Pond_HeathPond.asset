@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a214f70d740cd7fa1ba3fc6095fc8d8, type: 3}
+  m_Name: Pond_HeathPond
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PondDef
+  Id: pond.stp_heath_pond
+  DisplayName: Heath Pond
+  Kind: pond
+  Centre: {x: 20, y: -53}
+  Radii: {x: 4.5, y: 3}
+  RotationDeg: -15
+  Surface: 5.3
+  Bed: 4.705
+  Basin: {x: 11, y: 0.35}
+  Outlet: {fileID: 11400000, guid: 8c2811b1334f4ac1800004a381a931fd, type: 2}
+  Why: 'Part 2''s pond (terrain pass 9 App. A), standing at +5.3 on the ground file''s import; the Heath Brook spills from it south, through the dune''s notch, to the main beach. Its flood holds by the guard''s rule, as A2 measured it (amendment 2 §4.2).'

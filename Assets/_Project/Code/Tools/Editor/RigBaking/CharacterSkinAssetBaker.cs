@@ -660,13 +660,24 @@ namespace HiddenHarbours.Tools.RigBaking
 
             SkinBake bake;
             using (IRigScriptHost host = RigScriptHostFactory.Create())
+            {
+                // The live kit goes into the host first: ComposeV9 reads whichever kit its host holds,
+                // and a host nobody loaded reads as rig 9.
+                if (LiveRigIsV9) CharacterSkinExtractor.Load9(host, LiveKit);
                 bake = LiveRigIsV9 ? ComposeV9(host, preset, existing, progress)
                                    : Compose(host, preset, existing, progress);
+            }
 
             CharacterSkinDef def = bake.Def;
+            // The figure's real reach past its cell, every honest frame at every facing (the rig 10
+            // intake, Phase B): the ashore overlay pads by it. Measured on what was just composed, so a
+            // refresh measures the mesh and the clips it writes.
+            def.ReachPx = CharacterSkinPose.MeasureReach(def);
+            Debug.Log($"[char-skin] {preset} reach past the cell (px): left {def.ReachPx.x:F2}, " +
+                      $"top {def.ReachPx.y:F2}, right {def.ReachPx.z:F2}, bottom {def.ReachPx.w:F2}");
             Debug.Log($"[char-skin] {preset} turntable sign:\n{bake.SignReport}");
             if (bake.FaceReport.Length > 0) Debug.Log($"[char-skin] {preset} face: {bake.FaceReport}");
-            if (bake.InkReport.Length > 0) Debug.Log($"[char-skin] {preset} ink against rig 9:\n{bake.InkReport}");
+            if (bake.InkReport.Length > 0) Debug.Log($"[char-skin] {preset} ink against {LiveKit?.Name ?? "the rig"}:\n{bake.InkReport}");
 
             // ⚠ CREATION ONLY, and before CreateAsset, so no file ever exists with the list empty. A
             // refresh must not reach this line with the states in hand: that is the `??=` rule in

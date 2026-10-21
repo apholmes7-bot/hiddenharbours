@@ -114,7 +114,23 @@ namespace HiddenHarbours.Tools.RigBaking
         /// ruling for drop 14: the four wharf sheets never move. Refuses, writing nothing, if a carried
         /// entry is missing from the contract (there would be nothing to carry).
         /// </summary>
-        public static string BakeLightChannelBuilds(out int failed)
+        public static string BakeLightChannelBuilds(out int failed) =>
+            BakeOnly(VillageBuildingKit.BakesLightChannels, out failed);
+
+        /// <summary>
+        /// Bake ONLY the builds that bake no light channels — the four wharf-building sheets, re-baked in
+        /// pass 2 (drop 13; the owner ruled albedo for them) — and write the contract with every house
+        /// CARRIED as it stands, its albedo and its three channel sheets untouched. The complement of
+        /// <see cref="BakeLightChannelBuilds"/>: between them the two cover
+        /// <see cref="VillageBuildingKit.AllBuilds"/> exactly once. Refuses, writing nothing, if a carried
+        /// entry is missing from the contract.
+        /// </summary>
+        public static string BakeAlbedoOnlyBuilds(out int failed) =>
+            BakeOnly(build => !VillageBuildingKit.BakesLightChannels(build), out failed);
+
+        /// <summary>Bake the builds <paramref name="bakes"/> picks and carry every other entry from the
+        /// contract as it stands; the contract is written only if nothing failed.</summary>
+        static string BakeOnly(Predicate<VillageBuildingKit.Build> bakes, out int failed)
         {
             failed = 0;
             var log = new StringBuilder();
@@ -127,7 +143,7 @@ namespace HiddenHarbours.Tools.RigBaking
             int ppu = existing.ppu, baked = 0;
             foreach (var build in VillageBuildingKit.AllBuilds)
             {
-                if (!VillageBuildingKit.BakesLightChannels(build))
+                if (!bakes(build))
                 {
                     VillageBuildingKit.Entry carried = VillageBuildingKit.Find(existing, build.Key)
                         ?? throw new InvalidOperationException(
@@ -185,6 +201,28 @@ namespace HiddenHarbours.Tools.RigBaking
             catch (Exception e)
             {
                 Debug.LogError($"[village-buildings] batch houses bake threw: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>Headless entry point for the albedo-only bake (the wharf sheets). Exits non-zero on
+        /// any failure.</summary>
+        public static void BakeAlbedoOnlyBuildsFromCommandLine()
+        {
+            try
+            {
+                string report = BakeAlbedoOnlyBuilds(out int failed);
+                AssetDatabase.Refresh();
+                Debug.Log($"[village-buildings] (batch) albedo-only bake report:\n{report}");
+                if (failed > 0)
+                {
+                    Debug.LogError($"[village-buildings] {failed} build(s) failed.");
+                    EditorApplication.Exit(1);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[village-buildings] batch albedo-only bake threw: {e}");
                 EditorApplication.Exit(1);
             }
         }
@@ -247,6 +285,13 @@ namespace HiddenHarbours.Tools.RigBaking
                         "word). BuildingLifecycleStates.AssertKnown covers the second.");
             }
 
+            if (build.Overrides != null)
+                return BuildingBakeRequest.FromOptions(
+                    build.RigKey, BaseOptionsLiteralFor(build, RigCatalog.Get(build.RigKey).GlobalName), build.Key,
+                    outputFolder, baseName, VillageBuildingKit.Facings, requireDistinctFromDefault: true,
+                    maxSheetDimension: VillageBuildingKit.ImportCapFor(build),
+                    bakeLightChannels: VillageBuildingKit.BakesLightChannels(build));
+
             if (build.IsPreset)
                 return BuildingBakeRequest.FromPreset(
                     build.RigKey, build.Preset, RigCatalog.Get(build.RigKey).GlobalName,
@@ -271,9 +316,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <see cref="LifecycleOptionsLiteralFor"/> layers onto.
         /// </summary>
         public static string BaseOptionsLiteralFor(VillageBuildingKit.Build build, string rigGlobal)
-            => build.IsPreset
+        {
+            string basis = build.IsPreset
                 ? $"Object.assign({{}},{rigGlobal}.PRESETS['{build.Preset.Replace("'", "\\'")}'])"
                 : OptionsLiteralFor(build);
+            return build.Overrides == null ? basis
+                : $"Object.assign({basis},{BuildingAxes.ToOptionsLiteral(build.Overrides)})";
+        }
 
         /// <summary>
         /// The build WITH its state: <c>Object.assign({}, Rig.PRESETS['x'], {decay:'ruin'})</c>.
@@ -435,7 +484,8 @@ namespace HiddenHarbours.Tools.RigBaking
                   $"+ emit {r.EmitPngBytes / 1024.0:F0} KB png, {r.LightChannelRuntimeBytes / 1024.0 / 1024.0:F2} MiB " +
                   $"in memory, {r.GlowTexels} glow texel(s) to level {r.MaxGlowLevel}, " +
                   $"render {r.RenderMilliseconds / 1000.0:F1} s + light {r.LightMilliseconds / 1000.0:F1} s"
-                : $"; render {r.RenderMilliseconds / 1000.0:F1} s");
+                : $"; {r.RuntimeBytesRgba32 / 1024.0 / 1024.0:F2} MiB in memory, render " +
+                  $"{r.RenderMilliseconds / 1000.0:F1} s of {r.TotalMilliseconds / 1000.0:F1} s");
 
         /// <summary>
         /// Headless entry point for <c>-executeMethod</c>. Exits non-zero if any build fails, so a batch

@@ -1,6 +1,182 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-713508211884086322
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a183bdcbdd04f40ba313a1453773cd, type: 3}
+  m_Name: enduro250_WheelR
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
+  Id: vehicleprop.enduro250_wheel_r
+  SourceRigPath: docs/art/rigs/atv-pack/atvIsoRig.js
+  SourceFaceBuilder: build(AtvIso.resolve({body:'dirtbike',stand:0,paint:'teal'}))
+  Mesh: {fileID: 6177525865724808853}
+  FixedMesh: {fileID: 0}
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281874709
+    - serializedVersion: 2
+      rgba: 4282993439
+    - serializedVersion: 2
+      rgba: 4284178474
+    - serializedVersion: 2
+      rgba: 4285494841
+    - serializedVersion: 2
+      rgba: 4287008848
+    - serializedVersion: 2
+      rgba: 4288588398
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280360219
+    - serializedVersion: 2
+      rgba: 4280886819
+    - serializedVersion: 2
+      rgba: 4281610284
+    - serializedVersion: 2
+      rgba: 4282465335
+    - serializedVersion: 2
+      rgba: 4283386180
+    - serializedVersion: 2
+      rgba: 4284438867
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279703066
+    - serializedVersion: 2
+      rgba: 4280426788
+    - serializedVersion: 2
+      rgba: 4281413168
+    - serializedVersion: 2
+      rgba: 4282400062
+    - serializedVersion: 2
+      rgba: 4283584335
+    - serializedVersion: 2
+      rgba: 4284834658
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283913815
+    - serializedVersion: 2
+      rgba: 4285229931
+    - serializedVersion: 2
+      rgba: 4286677377
+    - serializedVersion: 2
+      rgba: 4288125080
+    - serializedVersion: 2
+      rgba: 4289572784
+    - serializedVersion: 2
+      rgba: 4291020488
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283715657
+    - serializedVersion: 2
+      rgba: 4285228895
+    - serializedVersion: 2
+      rgba: 4287070841
+    - serializedVersion: 2
+      rgba: 4288847509
+    - serializedVersion: 2
+      rgba: 4290558385
+    - serializedVersion: 2
+      rgba: 4292269264
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283715658
+    - serializedVersion: 2
+      rgba: 4285163360
+    - serializedVersion: 2
+      rgba: 4287005306
+    - serializedVersion: 2
+      rgba: 4288781974
+    - serializedVersion: 2
+      rgba: 4290492850
+    - serializedVersion: 2
+      rgba: 4292269265
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279768340
+    - serializedVersion: 2
+      rgba: 4280294682
+    - serializedVersion: 2
+      rgba: 4281017891
+    - serializedVersion: 2
+      rgba: 4281676077
+    - serializedVersion: 2
+      rgba: 4282596920
+    - serializedVersion: 2
+      rgba: 4283583558
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278848570
+    - serializedVersion: 2
+      rgba: 4279112282
+    - serializedVersion: 2
+      rgba: 4279508093
+    - serializedVersion: 2
+      rgba: 4280101541
+    - serializedVersion: 2
+      rgba: 4280958153
+    - serializedVersion: 2
+      rgba: 4282341348
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285229408
+    - serializedVersion: 2
+      rgba: 4285821285
+    - serializedVersion: 2
+      rgba: 4286544749
+    - serializedVersion: 2
+      rgba: 4287334262
+    - serializedVersion: 2
+      rgba: 4288979083
+    - serializedVersion: 2
+      rgba: 4291348400
+    Offset: 0
+  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
+  Gain: 3.1
+  Bias: 2.55
+  Bayer16:
+  - 0.03125
+  - 0.53125
+  - 0.15625
+  - 0.65625
+  - 0.78125
+  - 0.28125
+  - 0.90625
+  - 0.40625
+  - 0.21875
+  - 0.71875
+  - 0.09375
+  - 0.59375
+  - 0.96875
+  - 0.46875
+  - 0.84375
+  - 0.34375
+  Keyline:
+    serializedVersion: 2
+    rgba: 4280425498
+  PivotPx: {x: 128, y: 128}
+  PxPerMetre: 32
+  CellW: 256
+  CellH: 192
+  ElevationDeg: 40
+  PivotLocalMeters: {x: 0, y: -0.74, z: 0.33}
+  MaxSteerDegrees: 0
+  MaxTiltDegrees: 0
+  LateralMountsMeters: []
+--- !u!43 &6177525865724808853
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,179 +354,3 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7a183bdcbdd04f40ba313a1453773cd, type: 3}
-  m_Name: enduro250_WheelR
-  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
-  Id: vehicleprop.enduro250_wheel_r
-  SourceRigPath: docs/art/rigs/atv-pack/atvIsoRig.js
-  SourceFaceBuilder: build(AtvIso.resolve({body:'dirtbike',stand:0}))
-  Mesh: {fileID: -713508211884086322}
-  FixedMesh: {fileID: 0}
-  Ramps:
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279375175
-    - serializedVersion: 2
-      rgba: 4279705185
-    - serializedVersion: 2
-      rgba: 4280232320
-    - serializedVersion: 2
-      rgba: 4280824985
-    - serializedVersion: 2
-      rgba: 4281615537
-    - serializedVersion: 2
-      rgba: 4282735557
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4280360219
-    - serializedVersion: 2
-      rgba: 4280886819
-    - serializedVersion: 2
-      rgba: 4281610284
-    - serializedVersion: 2
-      rgba: 4282465335
-    - serializedVersion: 2
-      rgba: 4283386180
-    - serializedVersion: 2
-      rgba: 4284438867
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279703066
-    - serializedVersion: 2
-      rgba: 4280426788
-    - serializedVersion: 2
-      rgba: 4281413168
-    - serializedVersion: 2
-      rgba: 4282400062
-    - serializedVersion: 2
-      rgba: 4283584335
-    - serializedVersion: 2
-      rgba: 4284834658
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4283913815
-    - serializedVersion: 2
-      rgba: 4285229931
-    - serializedVersion: 2
-      rgba: 4286677377
-    - serializedVersion: 2
-      rgba: 4288125080
-    - serializedVersion: 2
-      rgba: 4289572784
-    - serializedVersion: 2
-      rgba: 4291020488
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4283715657
-    - serializedVersion: 2
-      rgba: 4285228895
-    - serializedVersion: 2
-      rgba: 4287070841
-    - serializedVersion: 2
-      rgba: 4288847509
-    - serializedVersion: 2
-      rgba: 4290558385
-    - serializedVersion: 2
-      rgba: 4292269264
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4283715658
-    - serializedVersion: 2
-      rgba: 4285163360
-    - serializedVersion: 2
-      rgba: 4287005306
-    - serializedVersion: 2
-      rgba: 4288781974
-    - serializedVersion: 2
-      rgba: 4290492850
-    - serializedVersion: 2
-      rgba: 4292269265
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279768340
-    - serializedVersion: 2
-      rgba: 4280294682
-    - serializedVersion: 2
-      rgba: 4281017891
-    - serializedVersion: 2
-      rgba: 4281676077
-    - serializedVersion: 2
-      rgba: 4282596920
-    - serializedVersion: 2
-      rgba: 4283583558
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4278848570
-    - serializedVersion: 2
-      rgba: 4279112282
-    - serializedVersion: 2
-      rgba: 4279508093
-    - serializedVersion: 2
-      rgba: 4280101541
-    - serializedVersion: 2
-      rgba: 4280958153
-    - serializedVersion: 2
-      rgba: 4282341348
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4285229408
-    - serializedVersion: 2
-      rgba: 4285821285
-    - serializedVersion: 2
-      rgba: 4286544749
-    - serializedVersion: 2
-      rgba: 4287334262
-    - serializedVersion: 2
-      rgba: 4288979083
-    - serializedVersion: 2
-      rgba: 4291348400
-    Offset: 0
-  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
-  Gain: 3.1
-  Bias: 2.55
-  Bayer16:
-  - 0.03125
-  - 0.53125
-  - 0.15625
-  - 0.65625
-  - 0.78125
-  - 0.28125
-  - 0.90625
-  - 0.40625
-  - 0.21875
-  - 0.71875
-  - 0.09375
-  - 0.59375
-  - 0.96875
-  - 0.46875
-  - 0.84375
-  - 0.34375
-  Keyline:
-    serializedVersion: 2
-    rgba: 4280425498
-  PivotPx: {x: 128, y: 128}
-  PxPerMetre: 32
-  CellW: 256
-  CellH: 192
-  ElevationDeg: 40
-  PivotLocalMeters: {x: 0, y: -0.74, z: 0.33}
-  MaxSteerDegrees: 0
-  MaxTiltDegrees: 0
-  LateralMountsMeters: []

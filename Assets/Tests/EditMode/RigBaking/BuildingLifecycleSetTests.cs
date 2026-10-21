@@ -68,9 +68,9 @@ namespace HiddenHarbours.Tests.RigBaking
             var stems = keys.Select(VillageBuildingKit.StemFor).ToArray();
             CollectionAssert.AllItemsAreUnique(stems, "two builds resolve to the same sheet stem");
 
-            Assert.AreEqual(VillageBuildingKit.M1Set.Length + VillageBuildingKit.LifecycleSet.Length,
+            Assert.AreEqual(VillageBuildingKit.M1Set.Length + VillageBuildingKit.LifecycleSet.Length + VillageBuildingKit.KeySceneSet.Length,
                             VillageBuildingKit.AllBuilds.Length,
-                            "AllBuilds must be exactly the two tables, once each");
+                            "AllBuilds must be exactly the three tables, once each");
         }
 
         [Test]

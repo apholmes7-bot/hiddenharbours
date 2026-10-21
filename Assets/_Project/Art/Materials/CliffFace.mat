@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: c11ff0ace5ba1000000000000000d001, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _HH_CLIFF_PX
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
@@ -19,7 +20,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties:
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -29,6 +30,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _Normal:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Palette:
+        m_Texture: {fileID: 2800000, guid: 2d81649f314c8804180926253e3a7152, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Unlit:
@@ -42,16 +47,28 @@ Material:
     - _Batter: 90
     - _Bounce: 0.28
     - _CastStrength: 0.7
+    - _DampBandMetres: 0.55
+    - _DampDarken: 0.45
+    - _FoamCollarBias: 0.45
+    - _FoamCollarMetres: 0.16
+    - _PxDecal: 0
     - _SkyFloor: 0.34
+    - _SubmergedDepth: 2.2
+    - _SubmergedFloor: 0.18
     - _SunStrength: 1
+    - _SurgeGain: 1
     - _TileMetresS: 12
     - _TileMetresT: 9
     - _WallAzimuth: 180
+    - _WaterlineStrength: 1
     m_Colors:
     - _BakeL: {r: -0.6, g: -0.55, b: 0.58, a: 0}
     - _BounceColour: {r: 0.85, g: 0.74, b: 0.62, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _FoamColour: {r: 0.92, g: 0.96, b: 0.97999996, a: 1}
+    - _PxKey: {r: -0.54767734, g: -0.6572128, b: 0.51780397, a: 0}
     - _SkyColour: {r: 0.72, g: 0.8, b: 0.95, a: 1}
+    - _SubmergedTint: {r: 0.29999998, g: 0.45999992, b: 0.52, a: 1}
     - _SunColour: {r: 1, g: 0.96, b: 0.88, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

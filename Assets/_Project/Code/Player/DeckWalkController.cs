@@ -939,8 +939,8 @@ namespace HiddenHarbours.Player
             {
                 DeckArea a = deck.Areas[i];
                 if (a == null || a.Kind != DeckAreaKind.Washboard || !a.IsUsable()) continue;
-                if (DeckAreaMath.Contains(a.Outline, deckPoint)) { onIt = deckPoint; return true; }
-                Vector2 p = DeckAreaMath.ClosestPointOnOutline(a.Outline, deckPoint, out float sqr);
+                if (DeckAreaMath.Contains(a, deckPoint)) { onIt = deckPoint; return true; }
+                Vector2 p = DeckAreaMath.ClosestPointOnOutline(a, deckPoint, out float sqr);
                 if (sqr < best) { best = sqr; onIt = p; found = true; }
             }
             return found;

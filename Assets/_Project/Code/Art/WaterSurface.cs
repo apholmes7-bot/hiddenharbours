@@ -114,27 +114,11 @@ namespace HiddenHarbours.Art
                  "moving value is a visible staircase.")]
         [Min(0.5f)] [SerializeField] private float _refreshHz = 8f;
 
-        [Header("Flow momentum (the water has MASS — rule 6)")]
-        [Tooltip("Response time (seconds) for the VISUAL surface motion to ease toward the live sim flow. The " +
-                 "sim's wind/current directions WANDER over time; rather than the surface SNAPPING to a new " +
-                 "heading the instant the force shifts, the pushed flow/wind vectors are exponentially smoothed " +
-                 "toward the live sim with this time constant — so the surface decelerates through a heading " +
-                 "change and accelerates out of it (momentum). Heavier (larger) = more sluggish inertia; lighter " +
-                 "(smaller) = livelier, snappier. Frame-rate independent. PRESENTATION ONLY — the boat physics " +
-                 "still read the real EnvironmentSample directly; this lags only what the player SEES, and saves " +
-                 "nothing (rule 5). 0 = no smoothing (instant snap, the old behaviour).")]
+        [Header("Current momentum")]
+        [Tooltip("Response time in seconds for decorative current motion. Wind uses WaveField's short memory window.")]
         [Min(0f)] [SerializeField] private float _flowResponseTime = 3f;
 
-        [Header("Transition continuity (the sim SAMPLE steps; the SURFACE must not — rule 6)")]
-        [Tooltip("Response time (seconds) for the drawn CHOPPINESS (_Chop) to ease toward the sampled " +
-                 "sea-state. _Chop is not just a look dial: it scales every band's spatial FREQUENCY " +
-                 "(_BandScaleResponse) and, through the dispersion relation, every band's scroll SPEED, so " +
-                 "a stepped _Chop translates the whole pattern by an amount proportional to distance from " +
-                 "the world origin — the 'stuttery on transitions' defect. Keep it near the wave field's " +
-                 "own parameter smoothing (WaveFieldAnimatorSettings, 1.5 s) so the drawn bands and the " +
-                 "field the hull rides change character together. Frame-rate independent; presentation " +
-                 "only (rule 5). 0 = no easing (the old, stepping behaviour).")]
-        [Min(0f)] [SerializeField] private float _chopResponseTime = 2f;
+        [Header("Transition continuity")]
         [Tooltip("Response time (seconds) for the drawn WATER LEVEL (_WaterLevel) to ease toward the " +
                  "sampled tide. The tide moves at most ~3.5 cm/s at peak spring, so a sample-and-hold push " +
                  "marched the waterline in visible jerks across near-flat sand (millimetres of level become " +
@@ -315,10 +299,17 @@ namespace HiddenHarbours.Art
         private static readonly int IdHWorldMin  = Shader.PropertyToID("_HeightWorldMin");
         private static readonly int IdHWorldSize = Shader.PropertyToID("_HeightWorldSize");
         private static readonly int IdSeabedTex  = Shader.PropertyToID("_SeabedTex");
+        // (W4-4) The floor's gate: 1 only while a live ground sharing this sea's frame is bound with
+        // its kit loaded (TerrainSplatSurface.WriteGroundFloor writes it); 0 keeps the floor off.
+        private static readonly int IdDetailLoaded = Shader.PropertyToID("_DetailLoaded");
         // (ADR 0023 arc step 3) the owner's GameConfig salience knobs — pushed from _config when wired.
         private static readonly int IdCapSalienceStrength  = Shader.PropertyToID("_CapSalienceStrength");
         private static readonly int IdCapEnvelopeThreshold = Shader.PropertyToID("_CapEnvelopeThreshold");
         private static readonly int IdEnvelopeBandStrength = Shader.PropertyToID("_EnvelopeBandStrength");
+        // (W4-4b) The floor in the shallows: its switch and its bend, pushed from _config beside the salience
+        // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
+        private static readonly int IdShallowsFloor = Shader.PropertyToID("_ShallowsFloor");
+        private static readonly int IdShallowsFloorRefraction = Shader.PropertyToID("_ShallowsFloorRefraction");
         // (ADR 0027 #10) The camera FRAMING the ripple band's density fade reads — a GLOBAL, not an MPB
         // property, because it belongs to the camera rather than to this renderer.
         private static readonly int IdSeaFramingHeight = Shader.PropertyToID("_SeaFramingHeight");
@@ -382,6 +373,9 @@ namespace HiddenHarbours.Art
             "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_ReflectionChopScatter",
             "_ReflectionWindScatter", "_ReflectionSkyTint", "_ReflectionSmear", "_ReflectionSunStreak",
             "_ReflectionSunSharp",
+            // the wake's mid stop (W4-1, design 3A): how much brighter than its water churned water reads,
+            // and how far it whitens toward the foam — a look per mood (a fog can hush it), never physics.
+            "_WakeBodyLift", "_WakeBodyWhiten",
         };
         private static readonly string[] MoodColorNames =
         {
@@ -438,6 +432,7 @@ namespace HiddenHarbours.Art
         private Vector2 _smoothedCurrent;
         private Vector2 _smoothedWind;
         private bool _flowInitialized;     // first push snaps to the live sim (no ease-in from zero on enable)
+        private int _groundFloorVersion = -1;   // (W4-4) the ground registry's version at the last floor bind
 
         // ==== the SAMPLED targets (slow tier) the per-frame ease chases ====================================
         // The sim read is throttled — the tide and the weather are slow, and re-reading four anchor materials
@@ -569,6 +564,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void PublishSeaLevel(float waterLevelMeters)
         {
+            FoamInjectionRegistry.PublishTransportSeaLevel(waterLevelMeters, true);
             float freqScale = 1f;
             float exaggeration = 1f;
             if (DisplacedSea.TryGet(out DisplacedSeaState sea))
@@ -590,7 +586,11 @@ namespace HiddenHarbours.Art
         }
 
         private static void PublishSeaLevelUnset()
-            => Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
+        {
+            Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
+            FoamInjectionRegistry.PublishTransportSeaLevel(0, false);
+            FoamInjectionRegistry.PublishTransportStrengths(Vector3.zero);
+        }
 
         private void OnDestroy()
         {
@@ -736,6 +736,9 @@ namespace HiddenHarbours.Art
                     // The owner's salience knobs show in the Scene view too, so edit-mode design
                     // reads the same sea Play will (a no-op while no config is wired).
                     PushSalienceKnobs(_mpb);
+                    PushShallowsFloor(_mpb);
+                    // (W4-4) Re-bind the floor only when a ground enabled, disabled or re-pushed.
+                    if (_groundFloorVersion != TerrainSplatSurface.LiveVersion) FeedGroundFloor(_mpb);
                     _renderer.SetPropertyBlock(_mpb);
                 }
                 return;
@@ -776,6 +779,8 @@ namespace HiddenHarbours.Art
             //    ⚠️ The GLOBAL blend, without FoamDriftDir()'s per-position shoreward bias: a rigid
             //    buffer scroll is uniform by construction and cannot carry a position-dependent term.
             Material live = _renderer.sharedMaterial;
+            // Owner transport policy, not a weather-eased mood. Absent material means exact passthrough.
+            FoamInjectionRegistry.PublishTransportStrengths(FoamTransport.ReadStrengths(live));
             if (live != null)
             {
                 float wakeFoamStrength = live.HasProperty(IdWakeFoamStrength)
@@ -829,6 +834,11 @@ namespace HiddenHarbours.Art
             // in-Play config edit reaches the sea within one refresh. Pushed on the flat renderer's
             // block, which the displaced surface COPIES each tick — one push covers both passes.
             PushSalienceKnobs(_mpb);
+            PushShallowsFloor(_mpb);
+
+            // (W4-4) The ground's floor, re-bound only when a ground enabled, disabled or re-pushed: an
+            // int compare per push, and the bind itself writes no new texture and allocates nothing.
+            if (_groundFloorVersion != TerrainSplatSurface.LiveVersion) FeedGroundFloor(_mpb);
 
             // (ADR 0017) WEATHER-DRIVEN MOOD: when enabled, blend the MOOD/COLOUR props from the anchor presets
             // by the eased weather weights and override them on the SAME MPB — composing with the physics props
@@ -851,7 +861,8 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// Push the four ADR 0015 palette anchors onto the Core <see cref="SeaPalette"/> seam as they stand
-        /// after this frame's mood blend.
+        /// after this frame's mood blend — and, since W4-1 (design 3A), the wake's two dials and the water
+        /// body (<see cref="WaterBody"/>) the aged wake ends on.
         ///
         /// <para>Each anchor is read from the property BLOCK when the blend wrote one there and from the
         /// shared material otherwise — which is the honest reading of "what is this surface drawing with",
@@ -869,7 +880,63 @@ namespace HiddenHarbours.Art
                 EffectivePaletteColor(mat, PaletteDeepId),
                 EffectivePaletteColor(mat, PaletteMidId),
                 EffectivePaletteColor(mat, PaletteShallowId),
-                EffectivePaletteColor(mat, PaletteFoamId)));
+                EffectivePaletteColor(mat, PaletteFoamId),
+                EffectiveFloat(mat, WakeBodyLiftId, 1f),
+                EffectiveFloat(mat, WakeBodyWhitenId, 0f),
+                WaterBody(mat)));
+        }
+
+        /// <summary>
+        /// THE WATER ITSELF, as this surface draws it before any light layer (W4-1, design 3A): the depth
+        /// ramp or the two-colour lerp, the depth range and the deep-blue pull, each at the value the GPU
+        /// will see. An aged wake sprite ends on this at its own depth. The band in the shader ends on the
+        /// LIT water instead (<c>col.rgb</c> at its own composite; W4-1 C2): the reflection, the spec and the
+        /// sky are GPU-only, so the sprites keep this water and reach the lit sea by their alpha fade.
+        ///
+        /// <para>The ramp's texels are read ONCE per ramp texture (<c>DepthRamp.png</c> is imported
+        /// readable for exactly this: 256×8 RGBA, 8 KB of CPU memory, no GPU readback), then shared by
+        /// reference every publish. A ramp that cannot be read publishes no water at all, so the sprites
+        /// keep ending on the mid anchor as they did before 3A, and it is said once in the console.</para>
+        /// </summary>
+        private SeaWaterBody WaterBody(Material mat)
+        {
+            Color32[] ramp = null;
+            if (mat.IsKeywordEnabled("_USE_DEPTHRAMP"))
+            {
+                ramp = DepthRampRow(mat.HasProperty(DepthRampId) ? mat.GetTexture(DepthRampId) : null);
+                if (ramp == null) return default;
+            }
+            return new SeaWaterBody(ramp,
+                EffectivePaletteColor(mat, ShallowColorId), EffectivePaletteColor(mat, DeepColorId),
+                EffectiveFloat(mat, ShallowDepthId, 0f), EffectiveFloat(mat, DeepDepthId, 1f),
+                EffectiveFloat(mat, DepthBandsId, 0f),
+                EffectivePaletteColor(mat, DeepBlueColorId),
+                EffectiveFloat(mat, DeepBlueStartId, 0f), EffectiveFloat(mat, DeepBlueStrengthId, 0f));
+        }
+
+        /// <summary>The row of the depth ramp the shader samples (v = 0.5, point: row ⌊h/2⌋), shallow end
+        /// first — read when the ramp texture changes, never per tick. Null when it cannot be read.</summary>
+        private Color32[] DepthRampRow(Texture texture)
+        {
+            if (ReferenceEquals(texture, _depthRampSource)) return _depthRampRow;
+            _depthRampSource = texture;
+            _depthRampRow = null;
+
+            var tex = texture as Texture2D;
+            if (tex != null && tex.isReadable && tex.width > 0 && tex.height > 0)
+            {
+                Color32[] all = tex.GetPixels32();
+                int row = Mathf.Min(tex.height / 2, tex.height - 1);
+                _depthRampRow = new Color32[tex.width];
+                System.Array.Copy(all, row * tex.width, _depthRampRow, 0, tex.width);
+            }
+            else if (texture != null)
+            {
+                Debug.LogWarning($"[WaterSurface] the depth ramp '{texture.name}' is not readable, so wake " +
+                                 "sprites cannot end on the water they ride on and keep ending on the mid " +
+                                 "anchor (W4-1). Tick Read/Write on its import.", this);
+            }
+            return _depthRampRow;
         }
 
         /// <summary>The value the GPU will actually see for one colour property: the MPB override where one
@@ -879,6 +946,30 @@ namespace HiddenHarbours.Art
             if (_mpb != null && _mpb.HasColor(id)) return _mpb.GetColor(id);
             return mat.HasProperty(id) ? mat.GetColor(id) : Color.white;
         }
+
+        /// <summary>The float twin of <see cref="EffectivePaletteColor"/>: the MPB value where the mood blend
+        /// wrote one, else the shared material's; <paramref name="fallback"/> if the shader has no such
+        /// property.</summary>
+        private float EffectiveFloat(Material mat, int id, float fallback)
+        {
+            if (_mpb != null && _mpb.HasFloat(id)) return _mpb.GetFloat(id);
+            return mat.HasProperty(id) ? mat.GetFloat(id) : fallback;
+        }
+
+        // W4-1 (design 3A): the wake's two dials and the water body's inputs, resolved once.
+        private static readonly int WakeBodyLiftId     = Shader.PropertyToID("_WakeBodyLift");
+        private static readonly int WakeBodyWhitenId   = Shader.PropertyToID("_WakeBodyWhiten");
+        private static readonly int DepthRampId        = Shader.PropertyToID("_DepthRamp");
+        private static readonly int ShallowColorId     = Shader.PropertyToID("_ShallowColor");
+        private static readonly int DeepColorId        = Shader.PropertyToID("_DeepColor");
+        private static readonly int ShallowDepthId     = Shader.PropertyToID("_ShallowDepth");
+        private static readonly int DeepDepthId        = Shader.PropertyToID("_DeepDepth");
+        private static readonly int DepthBandsId       = Shader.PropertyToID("_DepthBands");
+        private static readonly int DeepBlueColorId    = Shader.PropertyToID("_DeepBlueColor");
+        private static readonly int DeepBlueStartId    = Shader.PropertyToID("_DeepBlueStart");
+        private static readonly int DeepBlueStrengthId = Shader.PropertyToID("_DeepBlueStrength");
+        private Texture _depthRampSource;    // the ramp texture _depthRampRow was read from
+        private Color32[] _depthRampRow;     // its sampled row, shallow first (null = unreadable / none)
 
         // The four ADR 0015 anchor ids, resolved once. Deliberately independent of the MoodColorNames
         // array: the palette must publish whether or not the weather-mood blend is switched on.
@@ -938,6 +1029,14 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void EaseTowardTargets(float dt)
         {
+            // Use the short trains' window at the same clock, including between slow weather ticks.
+            if (GameServices.Environment is IWaveWindSource history)
+            {
+                var field = GameServices.WaveField;
+                var wind = WaveMemory.ShortWind(history, WaveFieldAnimator.GameTimeSeconds, in field);
+                _targetWind = wind.Wind;
+                _targetChop = Choppiness(wind.SeaState01);
+            }
             bool snap = dt <= 0f || !_flowInitialized;
             if (snap)
             {
@@ -950,8 +1049,8 @@ namespace HiddenHarbours.Art
             else
             {
                 _smoothedCurrent = SmoothVectorToward(_smoothedCurrent, _targetCurrent, _flowResponseTime, dt);
-                _smoothedWind    = SmoothVectorToward(_smoothedWind,    _targetWind,    _flowResponseTime, dt);
-                _easedChop       = SmoothScalarToward(_easedChop,       _targetChop,    _chopResponseTime, dt);
+                _smoothedWind = _targetWind;
+                _easedChop = _targetChop;
                 _easedWaterLevel = SmoothScalarToward(_easedWaterLevel, _targetWaterLevel,
                                                       _waterLevelResponseTime, dt);
             }
@@ -995,6 +1094,21 @@ namespace HiddenHarbours.Art
             mpb.SetFloat(IdCapSalienceStrength, dw.CapSalienceStrength);
             mpb.SetFloat(IdCapEnvelopeThreshold, dw.CapEnvelopeThreshold);
             mpb.SetFloat(IdEnvelopeBandStrength, dw.EnvelopeBandStrength);
+        }
+
+        /// <summary>
+        /// (W4-4b) The floor in the shallows: its switch and its bend, from <see cref="GameConfig.ShallowsFloor"/>
+        /// and <see cref="GameConfig.ShallowsFloorRefraction"/>, re-read every push as the salience knobs are,
+        /// so turning it on in Play reaches the sea within one refresh. Unlike them it ALWAYS writes: with no
+        /// config wired it writes the code's defaults, the switch OFF, so no block keeps a stale "on". The
+        /// displaced chunks copy this block, so one push covers both passes. Visual only (rule 5).
+        /// </summary>
+        private void PushShallowsFloor(MaterialPropertyBlock mpb)
+        {
+            bool on = _config != null ? _config.ShallowsFloor : GameConfig.DefaultShallowsFloor;
+            float bend = _config != null ? _config.ShallowsFloorRefraction : GameConfig.DefaultShallowsFloorRefraction;
+            mpb.SetFloat(IdShallowsFloor, on ? 1f : 0f);
+            mpb.SetFloat(IdShallowsFloorRefraction, bend);
         }
 
         // ==== Weather-driven palette (ADR 0017) ===========================================================
@@ -1452,6 +1566,29 @@ namespace HiddenHarbours.Art
         private void FeedSeabedTexture(MaterialPropertyBlock mpb)
         {
             mpb.SetTexture(IdSeabedTex, _seabedTexture != null ? _seabedTexture : ClearSeabedFallback());
+            // (W4-4) The ground's floor rides every bottom feed, so it reaches the block (and the
+            // displaced chunks, which copy it) wherever _SeabedTex does.
+            FeedGroundFloor(mpb);
+        }
+
+        /// <summary>
+        /// (W4-4) Bind the ground this sea is drawn over to its floor: the live
+        /// <see cref="TerrainSplatSurface"/> holding the SAME height texture this block feeds the shader,
+        /// over the same world rectangle and elevation range, writes its look onto this block through its
+        /// own writer (<see cref="TerrainSplatSurface.WriteGroundFloor"/>). With no such ground it writes
+        /// <c>_DetailLoaded</c> 0, which keeps the floor off. Runs with every bottom feed and whenever a
+        /// ground enables, disables or re-pushes (<see cref="TerrainSplatSurface.LiveVersion"/>), never per
+        /// frame. The shader's floor (W4-4b) reads it only while <see cref="GameConfig.ShallowsFloor"/> is on.
+        /// </summary>
+        private void FeedGroundFloor(MaterialPropertyBlock mpb)
+        {
+            _groundFloorVersion = TerrainSplatSurface.LiveVersion;
+            Texture height = mpb.HasTexture(IdHeightTex) ? mpb.GetTexture(IdHeightTex) : null;
+            Vector2 min = _heightWorldCenter - _heightWorldSize * 0.5f;
+            TerrainSplatSurface ground = TerrainSplatSurface.FindSharing(height, min, _heightWorldSize,
+                                                                         _heightMin, _heightMax);
+            if (ground != null) ground.WriteGroundFloor(mpb);
+            else mpb.SetFloat(IdDetailLoaded, 0f);
         }
 
         // A transparent 1x1 standing in for "this region has no baked bottom". Created once, shared by

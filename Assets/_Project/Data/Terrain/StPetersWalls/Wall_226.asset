@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_226
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_226
+  Status: 0
+  SplitFrom: wall.stp_026
+  Follows: wall.stp_026
+  Rock: sandstone
+  Class: 5
+  Aspect: SE
+  Batter: steep
+  Brow:
+  - {x: 149.27956, y: -52.547787}
+  - {x: 149.05688, y: -52.66181}
+  - {x: 148.83405, y: -52.775375}
+  Toe:
+  - {x: 150.22429, y: -54.388012}
+  - {x: 149.99686, y: -54.501892}
+  - {x: 149.76926, y: -54.61528}
+  DropMetres:
+  - 7.65
+  - 7.65
+  - 7.65
+  ToeElevations:
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  TextureBrow: []
+  Stations:
+  - 9
+  - 10
+  - 11
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.8971496
+  - 5.929698
+  - 5.93451
+  ToePass9:
+  - -1.5852525
+  - -1.497782
+  - -1.5087318
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 26
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Cut from 026 at St Peters'' 1 m cut (terrain PR 5w): its stations k9-k11. The list''s row 026 (East Ledges): kept.'

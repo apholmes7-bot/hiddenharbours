@@ -100,9 +100,10 @@ namespace HiddenHarbours.Tests.EditMode
                 "reference must point at that file.");
 
             foreach (string map in new[] { InputBindings.WalkMap, InputBindings.DeckMap, InputBindings.HelmMap,
-                                           InputBindings.DriveMap, InputBindings.UiMap })
+                                           InputBindings.DriveMap, InputBindings.UiMap, InputBindings.HudMap })
                 Assert.IsNotNull(asset.FindActionMap(map, throwIfNotFound: false),
-                    $"the '{map}' map is missing — ADR 0043 fixes the mode list as Walk, Deck, Helm, Drive, UI.");
+                    $"the '{map}' map is missing — ADR 0043 fixes the mode list as Walk, Deck, Helm, Drive, UI, " +
+                    "and H2 adds Hud, the press every mode shares.");
 
             CollectionAssert.AreEquivalent(
                 new[] { InputBindings.KeyboardMouseScheme, InputBindings.GamepadScheme },
@@ -126,6 +127,33 @@ namespace HiddenHarbours.Tests.EditMode
                 "PR 0 declares the Gamepad scheme and binds NOTHING to it — the pad table is the input lane's " +
                 "PR 2 and is owner-gated (the feel ruling). When PR 2 lands, this test becomes the pad's " +
                 $"pin. Found: {string.Join(", ", pad.Select(b => b.action + "=" + b.path))}");
+        }
+
+        /// <summary>
+        /// H2's row of the table (ADR 0043): the HUD's hide-all is M, once, in a map of its own, and the
+        /// pure map carries the press through the HUD's two gates and no further. The pad's row (View,
+        /// held) is PR 2's.
+        /// </summary>
+        [Test]
+        public void HideAll_IsM_InTheBindingsAsset()
+        {
+            InputAction hideAll = ActionOf(InputBindings.HudMap, DeviceHudIntentSource.HideAllAction);
+            Assert.AreEqual(InputActionType.Button, hideAll.type, "the hide-all is a press, not a value.");
+            CollectionAssert.AreEqual(new[] { "<Keyboard>/m" },
+                PathsOf(hideAll, b => (b.groups ?? "").Split(';').Contains(InputBindings.KeyboardMouseScheme)),
+                "the hide-all is M on the keyboard (swept free of every other key on 2026-08-07).");
+            int ms = Asset().actionMaps.SelectMany(m => m.bindings)
+                .Count(b => string.Equals(b.path, "<Keyboard>/m", StringComparison.OrdinalIgnoreCase));
+            Assert.AreEqual(1, ms, "M is bound once in the whole asset, to the hide-all.");
+
+            Assert.IsTrue(DeviceHudIntentSource.Map(true, worldStopped: false, keysCaptured: false).HideAll,
+                "an open press arrives.");
+            Assert.IsFalse(DeviceHudIntentSource.Map(false, worldStopped: false, keysCaptured: false).HideAll,
+                "no press is no intent.");
+            Assert.IsFalse(DeviceHudIntentSource.Map(true, worldStopped: true, keysCaptured: false).HideAll,
+                "a stopped world takes the press: the pause menu is not the place to relayout the helm.");
+            Assert.IsFalse(DeviceHudIntentSource.Map(true, worldStopped: false, keysCaptured: true).HideAll,
+                "a text field that owns the keys takes it: an M typed in a waypoint name is a letter.");
         }
 
         /// <summary>
@@ -359,6 +387,36 @@ namespace HiddenHarbours.Tests.EditMode
             finally { UnityEngine.Object.DestroyImmediate(go); }
         }
 
+        [Test]
+        public void TheHudReadsTheAssetUntilHandedAnotherSource()
+        {
+            // The HUD's reader is in UI and cannot construct a Player source, so the device layer installs
+            // the asset's source in Core and the reader takes it from there (H2).
+            IControlIntentSource<HudIntents> before = HudInput.Device;
+            try
+            {
+                DeviceHudIntentSource.Install();
+                Assert.IsInstanceOf<DeviceHudIntentSource>(HudInput.Device,
+                    "the device layer installs the asset's HUD source in Core.");
+                Assert.IsTrue(((DeviceHudIntentSource)HudInput.Device).IsBound, "that source finds Hud/HideAll.");
+                Assert.AreSame(HudInput.Device, HiddenHarbours.UI.BoatUiWindowInput.HudInputSource,
+                    "with nothing configured the hide-all must read the bindings asset, not silence.");
+
+                var held = new HeldHudIntents();
+                HiddenHarbours.UI.BoatUiWindowInput.ConfigureHudInput(held);
+                Assert.AreSame(held, HiddenHarbours.UI.BoatUiWindowInput.HudInputSource,
+                    "a configured source is not the one the hide-all reads.");
+                HiddenHarbours.UI.BoatUiWindowInput.ConfigureHudInput(null);
+                Assert.AreSame(HudInput.Device, HiddenHarbours.UI.BoatUiWindowInput.HudInputSource,
+                    "null did not restore the asset.");
+            }
+            finally
+            {
+                HiddenHarbours.UI.BoatUiWindowInput.ConfigureHudInput(null);
+                HudInput.InstallDevice(before);
+            }
+        }
+
         // =============================================================================================
         //  the device signal
         // =============================================================================================
@@ -430,6 +488,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Code/Player/PlayerWalkController.cs",
                 "Assets/_Project/Code/Player/DeckWalkController.cs",
                 "Assets/_Project/Code/App/ArrivalOpening.cs",
+                "Assets/_Project/Code/UI/BoatUiWindowInput.cs",
             })
             {
                 // Code lines only: a comment may NAME the old read (it is history worth keeping);

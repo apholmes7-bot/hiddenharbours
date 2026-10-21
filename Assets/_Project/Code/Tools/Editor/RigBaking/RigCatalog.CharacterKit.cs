@@ -177,11 +177,23 @@ namespace HiddenHarbours.Tools.RigBaking
                 // contract), so it names no prerequisite. Its poses (characterIsoRig9.poses.js) and
                 // checks (characterIsoRig9.checks.js) patch THIS global and define none of their own,
                 // so they cannot be entries: InstallModule asserts the global an entry names.
-                // CharacterSkinExtractor.Load9 runs them. The cast bakes from it because
-                // CharacterSkinAssetBaker.LiveRig names it (Phase B, 2026-09-26).
+                // CharacterSkinExtractor.Load9 runs them. The cast baked from it from the character
+                // intake's Phase B (2026-09-26) until the rig 10 intake's Phase B (2026-10-02).
                 ["characterRig9"] = new RigEntry(
                     $"{RigFolder}/character/rig9/Art/characterIsoRig9.js",
                     "CharacterIso9",
+                    AzimuthConvention.Clockwise),
+
+                // Added by the character rig 10 intake (2026-10-02): Claude Design's kit 10.2, landed
+                // as delivered under character/rig10/ beside rig 9 (whose folder stays as 9.2's
+                // record). The same shape as rig 9's entry: no prerequisite, and its poses and checks
+                // patch CharacterIso10 and define nothing of their own, so Load9 runs them
+                // (CharacterRigKit.Rig10). Its frozen 10.1 (characterIsoRig10_1.js) is the review
+                // page's and no entry. The cast bakes from it since the rig 10 intake's Phase B
+                // (2026-10-02): CharacterSkinAssetBaker.LiveRig names it.
+                ["characterRig10"] = new RigEntry(
+                    $"{RigFolder}/character/rig10/Art/characterIsoRig10.js",
+                    "CharacterIso10",
                     AzimuthConvention.Clockwise),
             };
     }

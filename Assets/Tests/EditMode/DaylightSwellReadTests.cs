@@ -149,7 +149,7 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 Assert.AreEqual(0f, bare.GetFloat("_SwellReadRelative"));
-                Assert.AreEqual(0.35f, bare.GetFloat("_SwellReadStrength"));
+                Assert.AreEqual(0.2f, bare.GetFloat("_SwellReadStrength"), "owner d20, 2026-10-07");
                 Assert.AreEqual(0f, bare.GetFloat("_SwellReadBands"));
                 CheckMaterial("Assets/_Project/Art/Materials/Water.mat", bare);
                 foreach (string path in Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat"))
@@ -167,8 +167,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0.1f, asset.GetFloat("_SwellReadSeaStateLo"), path);
             // Preset copying must restore the new default without changing a serialized asset.
             scratch.SetFloat("_SwellReadRelative", 1f);
+            scratch.SetFloat("_SwellReadStrength", 0.35f); // superseded default must not survive the copy
             scratch.CopyPropertiesFromMaterial(asset);
             Assert.AreEqual(0f, scratch.GetFloat("_SwellReadRelative"), path);
+            Assert.AreEqual(0.2f, scratch.GetFloat("_SwellReadStrength"), path + ": copied owner d20");
         }
 
         [Test]

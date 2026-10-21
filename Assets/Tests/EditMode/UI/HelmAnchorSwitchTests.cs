@@ -16,12 +16,14 @@ namespace HiddenHarbours.Tests.UI.EditMode
     ///   the ignition key. The pilothouse's is the rigs' already-authored <c>ANCH</c> breaker, so this
     ///   pins that it really is the fourth rocker of the port column and nothing has slid.</item>
     ///   <item><b>A press on it flicks the tackle</b> — one <c>ToggleAnchor</c>, through the Core seam,
-    ///   with no drag session left open — and a press anywhere else does not.</item>
+    ///   with no drag session left open — wherever the band's switches piece puts it (H2: the band
+    ///   crops the switch panel from the same dash raster, so the switch is the same switch).</item>
     ///   <item><b>A hull with no hook has no switch</b>, and pressing where one would be does nothing:
     ///   the pilothouse draws its ANCH breaker either way (it is authored panel furniture), so the
     ///   press has to be gated on the DATA and not only on the box.</item>
     ///   <item><b>The repaint key</b> follows the tackle: the chrome rebakes when the hook goes over
-    ///   the side and then costs nothing again (rule 7).</item>
+    ///   the side, the band re-cuts its switches piece alone, and then it costs nothing again
+    ///   (rule 7).</item>
     /// </list>
     /// </summary>
     public class HelmAnchorSwitchTests
@@ -30,7 +32,7 @@ namespace HiddenHarbours.Tests.UI.EditMode
 
         // ---- doubles -------------------------------------------------------------------------------
 
-        /// <summary>A helm that records what the dash asked of it. Everything but the ground tackle is
+        /// <summary>A helm that records what the band asked of it. Everything but the ground tackle is
         /// parked: these tests are about the switch.</summary>
         private sealed class SwitchHelm : IHelmControl
         {
@@ -204,18 +206,27 @@ namespace HiddenHarbours.Tests.UI.EditMode
 
         // ---- 2. the press ---------------------------------------------------------------------------
 
-        private static HelmDashController DashOn(ConsoleRigKind rig, SwitchHelm helm, out Texture2D tex)
+        private const int ScreenW = 1920, ScreenH = 1080;
+
+        /// <summary>A band laid out on a 1080p screen for this rig and painted once, exactly as the
+        /// host drives it every frame (the paint is what tells the band the hull's tackle).</summary>
+        private static HelmBandController BandOn(ConsoleRigKind rig, SwitchHelm helm)
         {
-            var ctl = new HelmDashController();
+            var ctl = new HelmBandController();
             helm.Fit = new HelmFit(rig, SounderKind.None, CompassMount.None, false, false);
-            tex = null;
-            var go = new GameObject("anchor-switch-card");
-            var image = go.AddComponent<UnityEngine.UI.RawImage>();
-            // One paint so the controller knows which rig it is hit-testing against (that is what
-            // UpdateAndPaint sets), exactly as the host drives it every frame.
-            ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, true, ref tex, image);
-            Object.DestroyImmediate(go);
+            ctl.Layout(rig, ScreenW, ScreenH);
+            ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, HelmBandGlance.None);
             return ctl;
+        }
+
+        /// <summary>The centre of the band's anchor switch in screen px (y up): the switches piece's
+        /// rect, and the hit box inside it (piece px, y down) at the band's scale.</summary>
+        private static Vector2 CentreOfBandSwitch(HelmBandController ctl, ConsoleRigKind rig)
+        {
+            Assert.IsTrue(HelmBandGeometry.TryAnchorHitBox(rig, out RectInt b), $"{rig} must offer an anchor hit box");
+            Rect r = ctl.PieceRect(HelmBandGeometry.IndexOf(rig, HelmBandPieceKind.Switches));
+            int k = ctl.K;
+            return new Vector2(r.xMin + (b.x + b.width / 2f) * k, r.yMax - (b.y + b.height / 2f) * k);
         }
 
         [Test]
@@ -226,17 +237,21 @@ namespace HiddenHarbours.Tests.UI.EditMode
             {
                 var helm = new SwitchHelm();
                 HelmOverlaySettings cfg = Cfg;
-                HelmDashController ctl = DashOn(rig, helm, out Texture2D tex);
-
-                ctl.Press(helm, CentreOfSwitch(rig), in cfg);
-
-                Assert.That(helm.Toggles, Is.EqualTo(1), $"{rig}: one flick, one toggle");
-                Assert.That(helm.DriveWrites, Is.EqualTo(0), $"{rig}: a switch is not the lever");
-                Assert.That(helm.SteerSessions, Is.EqualTo(0), $"{rig}: nor the wheel");
-                Assert.IsFalse(ctl.Interacting,
-                    $"{rig}: a switch is a discrete flick — it must leave no drag session behind");
-
-                if (tex != null) Object.DestroyImmediate(tex);
+                HelmBandController ctl = BandOn(rig, helm);
+                try
+                {
+                    Assert.IsTrue(ctl.PressControls(helm, CentreOfBandSwitch(ctl, rig), in cfg),
+                        $"{rig}: the switch takes the press");
+                    Assert.That(helm.Toggles, Is.EqualTo(1), $"{rig}: one flick, one toggle");
+                    Assert.That(helm.DriveWrites, Is.EqualTo(0), $"{rig}: a switch is not the lever");
+                    Assert.That(helm.SteerSessions, Is.EqualTo(0), $"{rig}: nor the wheel");
+                    Assert.IsFalse(ctl.Interacting,
+                        $"{rig}: a switch is a discrete flick — it must leave no drag session behind");
+                }
+                finally
+                {
+                    ctl.ReleaseTextures();
+                }
             }
         }
 
@@ -248,13 +263,18 @@ namespace HiddenHarbours.Tests.UI.EditMode
             // and reach for an anchor that is not there.
             var helm = new SwitchHelm { HasAnchor = false };
             HelmOverlaySettings cfg = Cfg;
-            HelmDashController ctl = DashOn(ConsoleRigKind.Novi, helm, out Texture2D tex);
-
-            Assert.IsFalse(ctl.AnchorSwitchShown, "nothing to switch");
-            ctl.Press(helm, CentreOfSwitch(ConsoleRigKind.Novi), in cfg);
-            Assert.That(helm.Toggles, Is.EqualTo(0), "no hook, no flick");
-
-            if (tex != null) Object.DestroyImmediate(tex);
+            HelmBandController ctl = BandOn(ConsoleRigKind.Novi, helm);
+            try
+            {
+                Assert.IsFalse(ctl.AnchorSwitchShown, "nothing to switch");
+                Assert.IsFalse(ctl.PressControls(helm, CentreOfBandSwitch(ctl, ConsoleRigKind.Novi), in cfg),
+                    "…and nothing else in the switches piece takes the press");
+                Assert.That(helm.Toggles, Is.EqualTo(0), "no hook, no flick");
+            }
+            finally
+            {
+                ctl.ReleaseTextures();
+            }
         }
 
         // ---- 3. the repaint key ---------------------------------------------------------------------
@@ -263,44 +283,44 @@ namespace HiddenHarbours.Tests.UI.EditMode
         public void TheChrome_RebakesWhenTheHookGoesOverTheSide_AndThenCostsNothing()
         {
             var helm = new SwitchHelm();
-            var go = new GameObject("anchor-switch-card");
-            var image = go.AddComponent<UnityEngine.UI.RawImage>();
-            Texture2D tex = null;
+            var ctl = new HelmBandController();
             try
             {
-                var ctl = new HelmDashController();
                 helm.Fit = new HelmFit(ConsoleRigKind.Console, SounderKind.None, CompassMount.None, false, false);
+                ctl.Layout(ConsoleRigKind.Console, ScreenW, ScreenH);
 
-                Assert.IsTrue(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref tex, image),
+                Assert.IsTrue(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, HelmBandGlance.None),
                     "the first paint always draws");
                 Assert.IsTrue(ctl.AnchorSwitchShown, "she carries a hook, so a switch is drawn");
                 Assert.IsFalse(ctl.AnchorShown, "…stowed");
 
-                Assert.IsFalse(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref tex, image),
-                    "a steady dash repaints nothing (rule 7)");
+                Assert.IsFalse(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, HelmBandGlance.None),
+                    "a steady band repaints nothing (rule 7)");
 
                 helm.AnchorState = AnchorState.Set;
-                Assert.IsTrue(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref tex, image),
+                int before = ctl.UploadCount;
+                Assert.IsTrue(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, HelmBandGlance.None),
                     "the hook going down lights the switch, which is a chrome rebake");
+                Assert.That(ctl.UploadCount - before, Is.EqualTo(1),
+                    "…and the band re-cuts its switches piece alone, not the tach or the fuel beside it");
                 Assert.IsTrue(ctl.AnchorShown);
-                Assert.IsFalse(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref tex, image),
+                Assert.IsFalse(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, HelmBandGlance.None),
                     "…and then costs nothing again while she lies to it");
 
                 // Dragging is still DOWN as far as the switch is concerned — the drag cue is the red
                 // rode and the toast, not a second switch state — so it must NOT keep repainting.
                 helm.AnchorState = AnchorState.Dragging;
-                Assert.IsFalse(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref tex, image),
+                Assert.IsFalse(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, HelmBandGlance.None),
                     "set → dragging is the same switch position; no rebake");
 
                 helm.AnchorState = AnchorState.Stowed;
-                Assert.IsTrue(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, false, ref tex, image),
+                Assert.IsTrue(ctl.UpdateAndPaint(helm, helm.Fit, 0f, 0.016f, HelmBandGlance.None),
                     "weighing her puts the switch back");
                 Assert.IsFalse(ctl.AnchorShown);
             }
             finally
             {
-                Object.DestroyImmediate(go);
-                if (tex != null) Object.DestroyImmediate(tex);
+                ctl.ReleaseTextures();
             }
         }
     }

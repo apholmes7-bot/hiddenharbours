@@ -53,12 +53,6 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>The clip frames the turn is composed on.</summary>
         static readonly (string Clip, int Frame)[] TurnFrames = { ("idle", 0), ("walk", 2), ("oars_row", 4) };
 
-        readonly Dictionary<string, Dictionary<string, RigClipRow9>> _rigClipRows9 =
-            new Dictionary<string, Dictionary<string, RigClipRow9>>(StringComparer.Ordinal);
-
-        [OneTimeTearDown]
-        public void ForgetRigClipRows9() => _rigClipRows9.Clear();
-
         // =======================================================================================
         // v9 life 1. every preset binds every face group of the rig, each face culled by its role
         // =======================================================================================
@@ -176,15 +170,18 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <c>{held:false}</c>. Clips are matched to the rig's by anim and carry, not by position.
         /// </summary>
         [Test]
-        public void V9_EveryClipCarriesTheRigsFaceAndToolTracks()
+        public void V9_EveryClipCarriesTheRigsFaceAndToolTracks() =>
+            EveryClipCarriesTheRigsFaceAndToolTracks(Guard9);
+
+        void EveryClipCarriesTheRigsFaceAndToolTracks(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
+            IRigScriptHost host = guard.Host;
             var report = new StringBuilder();
             long faceStates = 0;
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                CharacterSkinDef def = V9Bake(preset).Def;
-                Dictionary<string, RigClipRow9> rows = RigClipRows9(preset);
+                CharacterSkinDef def = guard.Bake(preset).Def;
+                Dictionary<string, RigClipRow9> rows = RigClipRows9(guard, preset);
                 Assert.AreEqual(rows.Count, def.Clips.Length,
                     $"{preset}: the rig plays {rows.Count} clips and the def carries {def.Clips.Length}.");
                 int tools = 0;
@@ -192,7 +189,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 {
                     int ci = SkinClipIndex9(def, row.Anim, row.Carry);
                     Assert.GreaterOrEqual(ci, 0,
-                        $"{preset}: no clip of the def is rig 9's '{row.Name}' ({row.Anim}, carry '{row.Carry}').");
+                        $"{preset}: no clip of the def is {guard.Kit.Name}'s '{row.Name}' ({row.Anim}, carry '{row.Carry}').");
                     CharacterSkinDef.SkinClip clip = def.Clips[ci];
                     string at = $"{preset} '{row.Name}'";
                     Assert.AreEqual(row.Frames, clip.FrameCount, $"{at}: frame count.");
@@ -235,7 +232,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
                 report.Append($"\n  {preset}: {rows.Count} clips carry the rig's face track, {tools} its tool track");
             }
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 tracks: {faceStates:N0} face states equal the rig's " +
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} tracks: {faceStates:N0} face states equal the rig's " +
                       $"clip() tracks:{report}");
         }
 
@@ -253,10 +250,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// and takes any other eyes.
         /// </summary>
         [Test]
-        public void V9_TheBlinkIsTheRigsBlink()
+        public void V9_TheBlinkIsTheRigsBlink() =>
+            TheBlinkIsTheRigsBlink(Guard9);
+
+        void TheBlinkIsTheRigsBlink(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
-            string g = CharacterSkinExtractor.V9GlobalName;
+            IRigScriptHost host = guard.Host;
+            string g = guard.G;
             string[] b = host.EvaluateString(
                 "(function(){var K=" + g + ".BLINK,C=" + g + ".blinkClip(),e=K.slot;" +
                 "return [K.steps.map(function(s){return e+'.'+s[e]+':'+s.ms;}).join(','),K.interval_ms.join(',')," +
@@ -264,19 +264,19 @@ namespace HiddenHarbours.Tests.RigBaking
                 "((K.skipIf||{})[e]||[]).map(function(x){return e+'.'+x;}).join(',')," +
                 "C.tracks.map(function(t){return e+'.'+t.face[e];}).join(','),String(C.ms)].join('|');})()")
                 .Split('|');
-            Assert.AreEqual(7, b.Length, "Rig 9's BLINK read as the wrong number of fields.");
+            Assert.AreEqual(7, b.Length, $"{guard.Kit.Title}'s BLINK read as the wrong number of fields.");
             string[] steps = b[0].Split(',');
             string[] interval = b[1].Split(',');
             double chance = D9(b[2]), gapMs = D9(b[3]);
             string[] skips = b[4].Length == 0 ? Array.Empty<string>() : b[4].Split(',');
             string[] clipFrames = b[5].Split(',');
             double clipMs = D9(b[6]);
-            Assert.AreEqual(2, interval.Length, "Rig 9's BLINK.interval_ms is not a pair.");
+            Assert.AreEqual(2, interval.Length, $"{guard.Kit.Title}'s BLINK.interval_ms is not a pair.");
 
             long skipped = 0, blinked = 0;
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                CharacterSkinDef def = V9Bake(preset).Def;
+                CharacterSkinDef def = guard.Bake(preset).Def;
                 Assert.IsTrue(def.HasBlink, $"{preset}: the def carries no blink.");
                 Assert.AreEqual(steps.Length, def.BlinkSteps.Length, $"{preset}: blink step count.");
                 for (int i = 0; i < steps.Length; i++)
@@ -309,10 +309,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 // The skip, judged on the frame's own eyes, on every frame the rig plays.
                 int blinkEyes = def.FaceGroupId(steps[0].Split(':')[0]);
                 string blinkName = GroupName9(def, blinkEyes);
-                foreach (RigClipRow9 row in RigClipRows9(preset).Values)
+                foreach (RigClipRow9 row in RigClipRows9(guard, preset).Values)
                 {
                     int ci = SkinClipIndex9(def, row.Anim, row.Carry);
-                    Assert.GreaterOrEqual(ci, 0, $"{preset}: no clip of the def is rig 9's '{row.Name}'.");
+                    Assert.GreaterOrEqual(ci, 0, $"{preset}: no clip of the def is {guard.Kit.Name}'s '{row.Name}'.");
                     CharacterSkinDef.SkinClip clip = def.Clips[ci];
                     for (int k = 0; k < row.Frames; k++)
                     {
@@ -328,7 +328,7 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             Assert.Greater(skipped, 0,
                 "No frame of any clip shows eyes the rig's blink skips, so the skip was never tried.");
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 blink: steps [{b[0]}], every {b[1]} ms, double " +
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} blink: steps [{b[0]}], every {b[1]} ms, double " +
                       $"{b[2]} after {b[3]} ms, skips [{b[4]}]; the schedule plays blinkClip [{b[5]}]; a blink " +
                       $"showed on {blinked:N0} clip frames and left {skipped:N0} alone.");
         }
@@ -345,23 +345,26 @@ namespace HiddenHarbours.Tests.RigBaking
         /// contract's "both in the chest frame"; the grid test below fails if it moves).
         /// </summary>
         [Test]
-        public void V9_TheLookIsTheRigsLook()
+        public void V9_TheLookIsTheRigsLook() =>
+            TheLookIsTheRigsLook(Guard9);
+
+        void TheLookIsTheRigsLook(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
-            string g = CharacterSkinExtractor.V9GlobalName;
+            IRigScriptHost host = guard.Host;
+            string g = guard.G;
             string[] l = host.EvaluateString(
                 "(function(){var L=" + g + ".LOOK,E=" + g + ".lookContract().eyes;" +
                 "return [L.bones.join(','),String(L.split[L.bones[0]]),String(L.split[L.bones[1]]),L.yaw.join(',')," +
                 "L.pitch.join(','),String(L.headShare),String(L.eyesBeyond_deg),E.centre,E.left,E.right].join('|');})()")
                 .Split('|');
-            Assert.AreEqual(10, l.Length, "Rig 9's LOOK read as the wrong number of fields.");
+            Assert.AreEqual(10, l.Length, $"{guard.Kit.Title}'s LOOK read as the wrong number of fields.");
             string[] bones = l[0].Split(',');
-            Assert.AreEqual(2, bones.Length, $"Rig 9's LOOK turns [{l[0]}]; the def splits a turn onto two bones.");
+            Assert.AreEqual(2, bones.Length, $"{guard.Kit.Title}'s LOOK turns [{l[0]}]; the def splits a turn onto two bones.");
             string[] yaw = l[3].Split(','), pitch = l[4].Split(',');
 
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                CharacterSkinDef def = V9Bake(preset).Def;
+                CharacterSkinDef def = guard.Bake(preset).Def;
                 Assert.IsTrue(def.HasLook, $"{preset}: the def carries no look.");
                 string[] ix = host.EvaluateString(
                     "(function(){var B=" + g + ".buildOf(" + JsQuote9(preset) + "),x=B.sk.ix;" +
@@ -405,10 +408,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// both axes both ways.
         /// </summary>
         [Test]
-        public void V9_TheLookPortMatchesTheRigsLookAtOverAGrid()
+        public void V9_TheLookPortMatchesTheRigsLookAtOverAGrid() =>
+            TheLookPortMatchesTheRigsLookAtOverAGrid(Guard9);
+
+        void TheLookPortMatchesTheRigsLookAtOverAGrid(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
-            string g = CharacterSkinExtractor.V9GlobalName;
+            IRigScriptHost host = guard.Host;
+            string g = guard.G;
             List<Vector3> targets = LookGridTargets9();
             var tj = new StringBuilder("[");
             foreach (Vector3 t in targets)
@@ -423,12 +429,12 @@ namespace HiddenHarbours.Tests.RigBaking
             var gazes = new int[3];
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                CharacterSkinDef def = V9Bake(preset).Def;
+                CharacterSkinDef def = guard.Bake(preset).Def;
                 var world = new Matrix4x4[def.Bones.Length];
                 CharacterFigureLook.Limits lim = CharacterFigureLook.Limits.Of(def);
                 foreach ((string name, int frame) in LookGridFrames)
                 {
-                    CharacterSkinDef.SkinClip clip = def.Clips[RigClipIndex9(def, name)];
+                    CharacterSkinDef.SkinClip clip = def.Clips[RigClipIndex9(guard, def, name)];
                     Assert.Less(frame, clip.FrameCount, $"{preset} '{name}' has no frame {frame}.");
                     CharacterSkinPose.ComposeWorld(clip, frame, def.Bones, world);
                     string[] rig = host.EvaluateString(
@@ -469,7 +475,7 @@ namespace HiddenHarbours.Tests.RigBaking
                         }
                 }
             }
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 look: {compared:N0} lookAt results against the rig's; " +
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} look: {compared:N0} lookAt results against the rig's; " +
                       $"worst {worst.ToString("0.#####", CultureInfo.InvariantCulture)}° at {worstAt}; bar " +
                       $"{LookPortToleranceDeg}°; gaze left/open/right {gazes[0]}/{gazes[1]}/{gazes[2]}, {nearThreshold} " +
                       $"within the bar of the threshold; clamps yaw {yawLo}/{yawHi}, pitch {pitchLo}/{pitchHi}.");
@@ -493,10 +499,13 @@ namespace HiddenHarbours.Tests.RigBaking
         /// the port must), and every other bone keeps the exact matrix it had.
         /// </summary>
         [Test]
-        public void V9_TheTurnComposesAsTheRigsLookDoes()
+        public void V9_TheTurnComposesAsTheRigsLookDoes() =>
+            TheTurnComposesAsTheRigsLookDoes(Guard9);
+
+        void TheTurnComposesAsTheRigsLookDoes(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
-            string g = CharacterSkinExtractor.V9GlobalName;
+            IRigScriptHost host = guard.Host;
+            string g = guard.G;
             double[] yaws = { -75, -60, -25, 0, 35, 60, 80 };
             double[] pitches = { -25, -15, 0, 12, 20, 30 };
             var turns = new List<(double Yaw, double Pitch)>();
@@ -512,7 +521,7 @@ namespace HiddenHarbours.Tests.RigBaking
             double worst = 0; string worstAt = "none"; long compared = 0;
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                CharacterSkinDef def = V9Bake(preset).Def;
+                CharacterSkinDef def = guard.Bake(preset).Def;
                 int n = def.Bones.Length, neck = def.LookNeckBone, head = def.LookHeadBone;
                 CharacterFigureLook.Limits lim = CharacterFigureLook.Limits.Of(def);
                 var moved = new List<int>();
@@ -525,7 +534,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 foreach ((string name, int frame) in TurnFrames)
                 {
-                    CharacterSkinDef.SkinClip clip = def.Clips[RigClipIndex9(def, name)];
+                    CharacterSkinDef.SkinClip clip = def.Clips[RigClipIndex9(guard, def, name)];
                     CharacterSkinPose.ComposeWorld(clip, frame, def.Bones, before);
                     string[] rows = host.EvaluateString(
                         "(function(){var G=" + g + ",N=" + JsQuote9(name) + ",cd=G.clipDef(N),u=G.uOf(cd.anim," + frame + ")," +
@@ -567,7 +576,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     }
                 }
             }
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 turn: {compared:N0} bone-turns against the rig's " +
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} turn: {compared:N0} bone-turns against the rig's " +
                       $"evalClip(…, look); worst {worst.ToString("0.00E+0", CultureInfo.InvariantCulture)} at {worstAt}; " +
                       $"bar {TurnPortTolerance}.");
             Assert.LessOrEqual(worst, TurnPortTolerance,
@@ -579,100 +588,193 @@ namespace HiddenHarbours.Tests.RigBaking
         // =======================================================================================
 
         /// <summary>
-        /// The rig's golden <c>look</c> check, ported: on idle frame 0, targets 2 m from the head point
-        /// at seven bearings and three heights; <c>lookAt</c> with share 1; the targets whose whole
-        /// turn lies inside the limits kept; the turn applied; the angle from the head's +y to the
-        /// target measured. The port keeps the same targets as the rig, lands on each within
-        /// <see cref="GoldenAimToleranceDeg"/> of the rig's own aim, keeps as many as the committed
-        /// golden report counts, and its worst aim stays inside the report's "within X°" — the bar
-        /// the rig sets itself, per preset (1.70° for eight presets and 2.40° for the skipper and
-        /// the nan at 9.2), which the rig's aim today must still round to.
+        /// The rig's golden <c>look</c> check, ported, on the rig's own targets (<see cref="AimOf9"/>:
+        /// rig 10.3's <c>AIM</c>, rig 9.2's check literals): on the clip frame the check names, targets
+        /// at its distance from the head point at its bearings and heights; <c>lookAt</c> with its
+        /// share; the targets whose whole turn lies inside the limits kept; the turn applied; the angle
+        /// from the head's +y to the target measured. The port keeps the same targets as the rig, lands
+        /// on each within <see cref="GoldenAimToleranceDeg"/> of the rig's own aim, keeps as many as the
+        /// committed golden report counts, and its worst aim stays inside the report's "within X°" — the
+        /// bar the rig sets itself, per preset (1.70° for eight presets and 2.40° for the skipper and the
+        /// nan at 9.2), which the rig's aim today must still round to. A rig that exports its aim bar
+        /// (rig 10.3's <c>AIM.bar_deg</c>, ruled 4.0° for every build) holds the port's worst inside it
+        /// too.
         /// </summary>
         [Test]
-        public void V9_TheLookPortLandsWhereTheRigsGoldenCheckDoes()
+        public void V9_TheLookPortLandsWhereTheRigsGoldenCheckDoes() =>
+            TheLookPortLandsWhereTheRigsGoldenCheckDoes(Guard9);
+
+        void TheLookPortLandsWhereTheRigsGoldenCheckDoes(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
-            string g = CharacterSkinExtractor.V9GlobalName;
-            Dictionary<string, (double Bar, int Inside)> golden = GoldenLookBars9();
-            double[] bearings = { -50, -30, -15, 0, 15, 30, 50 };
-            double[] rises = { -0.35, 0, 0.25 };
+            Dictionary<string, (double Bar, int Inside)> golden = GoldenLookBars9(guard);
+            Aim9 aim = AimOf9(guard);
             var report = new StringBuilder();
 
-            foreach (string preset in CharacterSkinExtractor.Presets9(host))
+            foreach (string preset in CharacterSkinExtractor.Presets9(guard.Host))
             {
                 Assert.IsTrue(golden.TryGetValue(preset, out (double Bar, int Inside) bar),
                     $"The golden report holds no look check for '{preset}'.");
-                CharacterSkinDef def = V9Bake(preset).Def;
-                int n = def.Bones.Length;
-                CharacterSkinDef.SkinClip idle = def.Clips[RigClipIndex9(def, "idle")];
-                CharacterFigureLook.Limits lim = CharacterFigureLook.Limits.Of(def);
-                var w0 = new Matrix4x4[n];
-                var w2 = new Matrix4x4[n];
-                CharacterSkinPose.ComposeWorld(idle, 0, def.Bones, w0);
-                Vector3 e0 = CharacterSkinPose.HeadPoint(def, w0);
-
-                string[] rig = host.EvaluateString(
-                    "(function(){var G=" + g + ",B=G.buildOf(" + JsQuote9(preset) + "),ix=B.sk.ix,L=G.LOOK,S=G.evalClip('idle',0,B)," +
-                    "mV=function(R,v){return [R[0]*v[0]+R[3]*v[1]+R[6]*v[2],R[1]*v[0]+R[4]*v[1]+R[7]*v[2],R[2]*v[0]+R[5]*v[1]+R[8]*v[2]];}," +
-                    "add=function(a,b){return [a[0]+b[0],a[1]+b[1],a[2]+b[2]];},W0=S.W,e0=add(W0[ix.head].p,mV(W0[ix.head].R,B.D.headMid)),o=[];" +
-                    "[" + JoinR9(bearings) + "].forEach(function(bear){[" + JoinR9(rises) + "].forEach(function(dz){" +
-                    "var T=[e0[0]+2*Math.sin(bear*Math.PI/180),e0[1]+2*Math.cos(bear*Math.PI/180),e0[2]+dz],A=G.lookAt(S,T,1);" +
-                    "if(Math.abs(A.need.yaw)>L.yaw[1]||A.need.pitch<L.pitch[0]||A.need.pitch>L.pitch[1]){o.push('0:0');return;}" +
-                    "var Wh=G.evalClip('idle',0,B,null,null,{yaw:A.yaw,pitch:A.pitch}).W[ix.head],f=mV(Wh.R,[0,1,0])," +
-                    "ep=add(Wh.p,mV(Wh.R,B.D.headMid)),d=[T[0]-ep[0],T[1]-ep[1],T[2]-ep[2]],dl=Math.hypot(d[0],d[1],d[2]);" +
-                    "o.push('1:'+Math.acos(Math.max(-1,Math.min(1,(f[0]*d[0]+f[1]*d[1]+f[2]*d[2])/dl)))*180/Math.PI);});});" +
-                    "return o.join(',');})()").Split(',');
-                Assert.AreEqual(bearings.Length * rises.Length, rig.Length, $"{preset}: rig rows.");
-
-                int inside = 0;
-                double worst = 0, rigWorst = 0, worstGap = 0;
-                string worstAt = "none";
-                for (int bi = 0; bi < bearings.Length; bi++)
-                    for (int di = 0; di < rises.Length; di++)
-                    {
-                        string[] r = rig[bi * rises.Length + di].Split(':');
-                        bool rigKeeps = r[0] == "1";
-                        double rad = bearings[bi] * Math.PI / 180.0;
-                        var target = new Vector3((float)(e0.x + 2 * Math.Sin(rad)), (float)(e0.y + 2 * Math.Cos(rad)),
-                                                 (float)(e0.z + rises[di]));
-                        CharacterFigureLook.Result look = CharacterSkinPose.LookAtFrame(def, w0, target, 1d);
-                        bool keeps = !(Math.Abs(look.NeedYaw) > lim.YawMax ||
-                                       look.NeedPitch < lim.PitchMin || look.NeedPitch > lim.PitchMax);
-                        string at = $"bearing {R9(bearings[bi])}°, {R9(rises[di])} m";
-                        Assert.AreEqual(rigKeeps, keeps,
-                            $"{preset} {at}: the rig {(rigKeeps ? "keeps" : "skips")} the target and the port " +
-                            $"{(keeps ? "keeps" : "skips")} it.");
-                        if (!keeps) continue;
-                        inside++;
-
-                        Array.Copy(w0, w2, n);
-                        CharacterSkinPose.ApplyTurn(idle, 0, def.Bones, w2,
-                            def.LookNeckBone, CharacterFigureLook.TurnOf(look.Yaw, look.Pitch, def.LookSplitNeck, lim),
-                            def.LookHeadBone, CharacterFigureLook.TurnOf(look.Yaw, look.Pitch, def.LookSplitHead, lim));
-                        Matrix4x4 h = w2[def.LookHeadBone];
-                        Vector3 ep = CharacterSkinPose.HeadPoint(def, w2);
-                        double dx = (double)target.x - ep.x, dy = (double)target.y - ep.y, dz = (double)target.z - ep.z;
-                        double dl = Math.Sqrt(dx * dx + dy * dy + dz * dz);
-                        double cos = ((double)h.m01 * dx + (double)h.m11 * dy + (double)h.m21 * dz) / dl;
-                        double aim = Math.Acos(Math.Max(-1d, Math.Min(1d, cos))) * 180.0 / Math.PI;
-                        double rigAim = D9(r[1]);
-                        worstGap = Math.Max(worstGap, Math.Abs(aim - rigAim));
-                        rigWorst = Math.Max(rigWorst, rigAim);
-                        if (aim > worst) { worst = aim; worstAt = at; }
-                    }
-
+                LookAims9 a = LookPortAims9(guard, preset, aim);
                 string line = string.Format(CultureInfo.InvariantCulture,
                     "{0}: {1} targets inside; the port's worst aim {2:0.000}° ({3}), the rig's {4:0.000}°, the report's " +
-                    "bar {5:0.00}°; port against rig at most {6:0.0000}°", preset, inside, worst, worstAt, rigWorst,
-                    bar.Bar, worstGap);
+                    "bar {5:0.00}°; port against rig at most {6:0.0000}°", preset, a.Inside, a.Worst, a.WorstAt, a.RigWorst,
+                    bar.Bar, a.WorstGap);
                 report.Append("\n  ").Append(line);
-                Assert.AreEqual(bar.Inside, inside, $"{preset}: the golden report counts {bar.Inside} targets inside and the port {inside}.");
-                Assert.LessOrEqual(worstGap, GoldenAimToleranceDeg, $"{line}: the port's aim leaves the rig's.");
-                Assert.AreEqual(bar.Bar, rigWorst, 0.005 + 1e-9,
+                Assert.AreEqual(bar.Inside, a.Inside, $"{preset}: the golden report counts {bar.Inside} targets inside and the port {a.Inside}.");
+                Assert.LessOrEqual(a.WorstGap, GoldenAimToleranceDeg, $"{line}: the port's aim leaves the rig's.");
+                Assert.AreEqual(bar.Bar, a.RigWorst, 0.005 + 1e-9,
                     $"{line}: the committed golden report's bar is not the rig's own aim today.");
-                Assert.LessOrEqual(worst, bar.Bar + 0.005 + GoldenAimToleranceDeg, $"{line}: past the rig's bar.");
+                Assert.LessOrEqual(a.Worst, bar.Bar + 0.005 + GoldenAimToleranceDeg, $"{line}: past the rig's bar.");
+                if (aim.Exported)
+                    Assert.LessOrEqual(a.Worst, aim.Bar, $"{line}: past the rig's AIM.bar_deg of {R9(aim.Bar)}°.");
             }
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 golden look (share 1, targets 2 m away, inside the limits):{report}");
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} golden look ({aim}, inside the limits):{report}");
+        }
+
+        /// <summary>The targets of the rig's golden look check, and its bar where the rig exports one.</summary>
+        sealed class Aim9
+        {
+            public double[] Bearings, Rises;
+            public double Distance, Share;
+            public string Clip;
+            public int Frame;
+
+            /// <summary>True when the rig exports its aim (rig 10.3's <c>AIM</c>); false on rig 9.2,
+            /// whose check holds its targets as literals and whose bar is its golden report's alone.</summary>
+            public bool Exported;
+
+            /// <summary>The rig's <c>AIM.bar_deg</c>; NaN where it exports none.</summary>
+            public double Bar = double.NaN;
+
+            public override string ToString() => string.Format(CultureInfo.InvariantCulture,
+                "{0} f{1}, share {2}, targets {3} m away at {4} bearings and {5} heights{6}", Clip, Frame, R9(Share),
+                R9(Distance), Bearings.Length, Rises.Length, Exported ? ", AIM.bar_deg " + R9(Bar) + "°" : "");
+        }
+
+        /// <summary>
+        /// <see cref="Aim9"/>, read off the rig: rig 10.3 exports its aim (<c>AIM</c>: its clip and frame,
+        /// <c>distance_m</c>, <c>bearings_deg</c>, <c>dz_m</c>, <c>share</c> and <c>bar_deg</c>, which its
+        /// <c>lookContract().aimBar.deg</c> must name too), read here in V8. Rig 9.2 exports none: its
+        /// golden look check holds its targets as literals (idle frame 0, 2 m, seven bearings and three
+        /// heights, share 1), read here off its checks source, which must hold that row once.
+        /// </summary>
+        static Aim9 AimOf9(GuardRig9 guard)
+        {
+            if (!guard.Kit.ExportsNumbers)
+            {
+                string checks = File.ReadAllText(Path.Combine(RigCatalog.RepoRoot, guard.Kit.ChecksPath));
+                MatchCollection rows = Regex.Matches(checks,
+                    @"const S=C8\.evalClip\('(\w+)',(\d+),B\), ix=B\.sk\.ix; let aim=0, aAt='', inside=0;\s*" +
+                    @"const W0=S\.W, e0=add\(W0\[ix\.head\]\.p, mV\(W0\[ix\.head\]\.R, B\.D\.headMid\)\);\s*" +
+                    @"for\(const bear of \[([-0-9.,]+)\]\) for\(const dz of \[([-0-9.,]+)\]\)\{ " +
+                    @"const T=\[e0\[0\]\+([0-9.]+)\*Math\.sin\(bear\*Math\.PI/180\), e0\[1\]\+([0-9.]+)\*Math\.cos\(bear\*Math\.PI/180\), " +
+                    @"e0\[2\]\+dz\], L=C8\.lookAt\(S,T,([0-9.]+)\);");
+                Assert.AreEqual(1, rows.Count,
+                    $"{guard.Kit.ChecksPath} holds its golden look check's targets {rows.Count} times, not once. Re-read its look row.");
+                GroupCollection t = rows[0].Groups;
+                Assert.AreEqual(t[5].Value, t[6].Value,
+                    $"{guard.Kit.ChecksPath} sets its look targets {t[5].Value} m across and {t[6].Value} m ahead; the port reads one distance.");
+                return new Aim9
+                {
+                    Bearings = Array.ConvertAll(t[3].Value.Split(','), D9), Rises = Array.ConvertAll(t[4].Value.Split(','), D9),
+                    Distance = D9(t[5].Value), Share = D9(t[7].Value), Clip = t[1].Value, Frame = I9(t[2].Value),
+                };
+            }
+            string[] p = guard.Host.EvaluateString(
+                "(function(){var G=" + guard.G + ",A=G.AIM;if(!A||typeof A!=='object')return 'none';" +
+                "var C=G.lookContract().aimBar||{};" +
+                "return [A.bearings_deg.join(','),A.dz_m.join(','),String(A.distance_m),String(A.share)," +
+                "String(A.clip),String(A.frame),String(A.bar_deg),String(C.deg)].join('|');})()").Split('|');
+            Assert.AreNotEqual("none", p[0], $"{guard.Kit} exports no AIM.");
+            Assert.AreEqual(8, p.Length, $"{guard.Kit}'s AIM read as {p.Length} fields.");
+            Assert.AreEqual(p[6], p[7],
+                $"{guard.Kit}'s lookContract().aimBar.deg is {p[7]} and its AIM.bar_deg {p[6]}; the contract names the bar.");
+            var aim = new Aim9
+            {
+                Bearings = Array.ConvertAll(p[0].Split(','), D9), Rises = Array.ConvertAll(p[1].Split(','), D9),
+                Distance = D9(p[2]), Share = D9(p[3]), Clip = p[4], Frame = I9(p[5]), Exported = true, Bar = D9(p[6]),
+            };
+            Assert.Greater(aim.Bar, 0, $"{guard.Kit}'s AIM.bar_deg.");
+            return aim;
+        }
+
+        /// <summary>What <see cref="LookPortAims9"/> measured on one preset, degrees.</summary>
+        struct LookAims9
+        {
+            public int Inside;
+            public double Worst, RigWorst, WorstGap;
+            public string WorstAt;
+        }
+
+        /// <summary>
+        /// The golden look check on <paramref name="preset"/>, on both sides: the rig's own aim at each of
+        /// <paramref name="aim"/>'s targets (by JS written here, in V8), and the port's, on the def's float
+        /// keys (<see cref="CharacterSkinPose.LookAtFrame"/> and <see cref="CharacterSkinPose.ApplyTurn"/>).
+        /// Fails on any target one side keeps and the other skips.
+        /// </summary>
+        static LookAims9 LookPortAims9(GuardRig9 guard, string preset, Aim9 aim)
+        {
+            IRigScriptHost host = guard.Host;
+            double[] bearings = aim.Bearings, rises = aim.Rises;
+            CharacterSkinDef def = guard.Bake(preset).Def;
+            int n = def.Bones.Length;
+            CharacterSkinDef.SkinClip clip = def.Clips[RigClipIndex9(guard, def, aim.Clip)];
+            CharacterFigureLook.Limits lim = CharacterFigureLook.Limits.Of(def);
+            var w0 = new Matrix4x4[n];
+            var w2 = new Matrix4x4[n];
+            CharacterSkinPose.ComposeWorld(clip, aim.Frame, def.Bones, w0);
+            Vector3 e0 = CharacterSkinPose.HeadPoint(def, w0);
+
+            string at0 = JsQuote9(aim.Clip) + "," + aim.Frame.ToString(CultureInfo.InvariantCulture);
+            string[] rig = host.EvaluateString(
+                "(function(){var G=" + guard.G + ",B=G.buildOf(" + JsQuote9(preset) + "),ix=B.sk.ix,L=G.LOOK,S=G.evalClip(" + at0 + ",B)," +
+                "mV=function(R,v){return [R[0]*v[0]+R[3]*v[1]+R[6]*v[2],R[1]*v[0]+R[4]*v[1]+R[7]*v[2],R[2]*v[0]+R[5]*v[1]+R[8]*v[2]];}," +
+                "add=function(a,b){return [a[0]+b[0],a[1]+b[1],a[2]+b[2]];},W0=S.W,e0=add(W0[ix.head].p,mV(W0[ix.head].R,B.D.headMid)),o=[];" +
+                "[" + JoinR9(bearings) + "].forEach(function(bear){[" + JoinR9(rises) + "].forEach(function(dz){" +
+                "var T=[e0[0]+" + R9(aim.Distance) + "*Math.sin(bear*Math.PI/180),e0[1]+" + R9(aim.Distance) +
+                "*Math.cos(bear*Math.PI/180),e0[2]+dz],A=G.lookAt(S,T," + R9(aim.Share) + ");" +
+                "if(Math.abs(A.need.yaw)>L.yaw[1]||A.need.pitch<L.pitch[0]||A.need.pitch>L.pitch[1]){o.push('0:0');return;}" +
+                "var Wh=G.evalClip(" + at0 + ",B,null,null,{yaw:A.yaw,pitch:A.pitch}).W[ix.head],f=mV(Wh.R,[0,1,0])," +
+                "ep=add(Wh.p,mV(Wh.R,B.D.headMid)),d=[T[0]-ep[0],T[1]-ep[1],T[2]-ep[2]],dl=Math.hypot(d[0],d[1],d[2]);" +
+                "o.push('1:'+Math.acos(Math.max(-1,Math.min(1,(f[0]*d[0]+f[1]*d[1]+f[2]*d[2])/dl)))*180/Math.PI);});});" +
+                "return o.join(',');})()").Split(',');
+            Assert.AreEqual(bearings.Length * rises.Length, rig.Length, $"{preset}: rig rows.");
+
+            var m = new LookAims9 { WorstAt = "none" };
+            for (int bi = 0; bi < bearings.Length; bi++)
+                for (int di = 0; di < rises.Length; di++)
+                {
+                    string[] r = rig[bi * rises.Length + di].Split(':');
+                    bool rigKeeps = r[0] == "1";
+                    double rad = bearings[bi] * Math.PI / 180.0;
+                    var target = new Vector3((float)(e0.x + aim.Distance * Math.Sin(rad)),
+                                             (float)(e0.y + aim.Distance * Math.Cos(rad)), (float)(e0.z + rises[di]));
+                    CharacterFigureLook.Result look = CharacterSkinPose.LookAtFrame(def, w0, target, aim.Share);
+                    bool keeps = !(Math.Abs(look.NeedYaw) > lim.YawMax ||
+                                   look.NeedPitch < lim.PitchMin || look.NeedPitch > lim.PitchMax);
+                    string at = $"bearing {R9(bearings[bi])}°, {R9(rises[di])} m";
+                    Assert.AreEqual(rigKeeps, keeps,
+                        $"{preset} {at}: the rig {(rigKeeps ? "keeps" : "skips")} the target and the port " +
+                        $"{(keeps ? "keeps" : "skips")} it.");
+                    if (!keeps) continue;
+                    m.Inside++;
+
+                    Array.Copy(w0, w2, n);
+                    CharacterSkinPose.ApplyTurn(clip, aim.Frame, def.Bones, w2,
+                        def.LookNeckBone, CharacterFigureLook.TurnOf(look.Yaw, look.Pitch, def.LookSplitNeck, lim),
+                        def.LookHeadBone, CharacterFigureLook.TurnOf(look.Yaw, look.Pitch, def.LookSplitHead, lim));
+                    Matrix4x4 h = w2[def.LookHeadBone];
+                    Vector3 ep = CharacterSkinPose.HeadPoint(def, w2);
+                    double dx = (double)target.x - ep.x, dy = (double)target.y - ep.y, dz = (double)target.z - ep.z;
+                    double dl = Math.Sqrt(dx * dx + dy * dy + dz * dz);
+                    double cos = ((double)h.m01 * dx + (double)h.m11 * dy + (double)h.m21 * dz) / dl;
+                    double aimDeg = Math.Acos(Math.Max(-1d, Math.Min(1d, cos))) * 180.0 / Math.PI;
+                    double rigAim = D9(r[1]);
+                    m.WorstGap = Math.Max(m.WorstGap, Math.Abs(aimDeg - rigAim));
+                    m.RigWorst = Math.Max(m.RigWorst, rigAim);
+                    if (aimDeg > m.Worst) { m.Worst = aimDeg; m.WorstAt = at; }
+                }
+            return m;
         }
 
         // =======================================================================================
@@ -746,14 +848,17 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <c>SHADING.keylineMix</c> does.
         /// </summary>
         [Test]
-        public void V9_EveryPresetsInkMatchesTheRigsOwnRender()
+        public void V9_EveryPresetsInkMatchesTheRigsOwnRender() =>
+            EveryPresetsInkMatchesTheRigsOwnRender(Guard9);
+
+        void EveryPresetsInkMatchesTheRigsOwnRender(GuardRig9 guard)
         {
-            IRigScriptHost host = V9Host;
-            double mix = D9(host.EvaluateString("String(" + CharacterSkinExtractor.V9GlobalName + ".SHADING.keylineMix)"));
+            IRigScriptHost host = guard.Host;
+            double mix = D9(host.EvaluateString("String(" + guard.G + ".SHADING.keylineMix)"));
             var report = new StringBuilder();
             foreach (string preset in CharacterSkinExtractor.Presets9(host))
             {
-                CharacterSkinAssetBaker.SkinBake bake = V9Bake(preset);
+                CharacterSkinAssetBaker.SkinBake bake = guard.Bake(preset);
                 CharacterSkinDef def = bake.Def;
                 CharacterSkinInk9.Reading[] readings = bake.InkReadings;
                 Assert.IsNotEmpty(readings, $"{preset}: the bake shot no ink.");
@@ -789,7 +894,7 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"{preset}: the def's keyline mix {def.KeylineMix} does not mix as the rig's {mix}: {miss}.");
                 report.Append($"\n  {preset}: {readings.Length} shots, worst cluster {bake.InkWorstCluster} px");
             }
-            Debug.Log($"[CharacterSkinBakeGuardTests] v9 ink against rig 9's own render (bar " +
+            Debug.Log($"[CharacterSkinBakeGuardTests] {guard.Kit.FileTag} ink against {guard.Kit.Name}'s own render (bar " +
                       $"{CharacterSkinInk9.ClusterBar} px):{report}");
         }
 
@@ -812,13 +917,13 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>Every clip the rig plays for <paramref name="preset"/>, read once, by name.</summary>
-        Dictionary<string, RigClipRow9> RigClipRows9(string preset)
+        static Dictionary<string, RigClipRow9> RigClipRows9(GuardRig9 guard, string preset)
         {
-            if (_rigClipRows9.TryGetValue(preset, out Dictionary<string, RigClipRow9> rows)) return rows;
+            if (guard.ClipRows.TryGetValue(preset, out Dictionary<string, RigClipRow9> rows)) return rows;
             var slots = new StringBuilder();
             foreach (string s in CharacterSkinDef.FaceSlotNames) slots.Append(slots.Length == 0 ? "" : ",").Append(JsQuote9(s));
-            string text = V9Host.EvaluateString(
-                "(function(){var G=" + CharacterSkinExtractor.V9GlobalName + ",P=" + JsQuote9(preset) + ",S=[" + slots + "]," +
+            string text = guard.Host.EvaluateString(
+                "(function(){var G=" + guard.G + ",P=" + JsQuote9(preset) + ",S=[" + slots + "]," +
                 "N=G.clipNames(),o=[];" +
                 "for(var i=0;i<N.length;i++){var c=G.clip(N[i],P),fs=[],ts=[],any=false;" +
                 "for(var t=0;t<c.tracks.length;t++){var fc=c.tracks[t].face||{},k=c.tracks[t].tool||{};" +
@@ -846,20 +951,20 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
                 rows.Add(row.Name, row);
             }
-            _rigClipRows9[preset] = rows;
+            guard.ClipRows[preset] = rows;
             return rows;
         }
 
         /// <summary>The def clip the rig's <paramref name="rigClip"/> was baked into, found by the anim
         /// and carry the rig's <c>clipDef</c> gives it.</summary>
-        int RigClipIndex9(CharacterSkinDef def, string rigClip)
+        static int RigClipIndex9(GuardRig9 guard, CharacterSkinDef def, string rigClip)
         {
-            string[] ac = V9Host.EvaluateString(
-                "(function(){var d=" + CharacterSkinExtractor.V9GlobalName + ".clipDef(" + JsQuote9(rigClip) + ");" +
+            string[] ac = guard.Host.EvaluateString(
+                "(function(){var d=" + guard.G + ".clipDef(" + JsQuote9(rigClip) + ");" +
                 "return d?d.anim+'|'+(d.carry||''):'';})()").Split('|');
-            Assert.AreEqual(2, ac.Length, $"Rig 9 has no clip '{rigClip}'.");
+            Assert.AreEqual(2, ac.Length, $"{guard.Kit.Title} has no clip '{rigClip}'.");
             int i = SkinClipIndex9(def, ac[0], ac[1]);
-            Assert.GreaterOrEqual(i, 0, $"{def.Preset}: no clip of the def is rig 9's '{rigClip}'.");
+            Assert.GreaterOrEqual(i, 0, $"{def.Preset}: no clip of the def is {guard.Kit.Name}'s '{rigClip}'.");
             return i;
         }
 
@@ -890,10 +995,10 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>The committed golden report's look check per preset: the "within X°" bar and the
         /// number of targets inside, read in V8 off the report's own words.</summary>
-        Dictionary<string, (double Bar, int Inside)> GoldenLookBars9()
+        static Dictionary<string, (double Bar, int Inside)> GoldenLookBars9(GuardRig9 guard)
         {
-            string json = CharacterSkinExtractor.ReadKitText9(CharacterSkinExtractor.V9KitRoot, "golden-report.json");
-            string text = V9Host.EvaluateString(
+            string json = CharacterSkinExtractor.ReadKitText9(guard.Kit.KitRoot, "golden-report.json");
+            string text = guard.Host.EvaluateString(
                 "(function(R){var o=[];Object.keys(R.builds||{}).forEach(function(p){" +
                 "var c=(R.builds[p].checks||[]).filter(function(x){return x.id==='look';})[0],d=c?String(c.detail):''," +
                 "w=/within ([0-9.]+)\\u00b0/.exec(d),n=/for ([0-9]+) targets/.exec(d);" +

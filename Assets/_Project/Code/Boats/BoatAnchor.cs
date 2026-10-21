@@ -56,7 +56,7 @@ namespace HiddenHarbours.Boats
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [DisallowMultipleComponent]
-    public sealed class BoatAnchor : MonoBehaviour
+    public sealed class BoatAnchor : MonoBehaviour, IVesselWay
     {
         // Greybox feedback (DevNotice → DevToast) so the owner reads the hook without the Console.
         // Event-time only (a keypress or a tide crossing), never per frame. Public so tests assert the
@@ -85,6 +85,28 @@ namespace HiddenHarbours.Boats
 
         /// <summary>True only while she is actually being held (not dragging).</summary>
         public bool IsHolding => State == AnchorState.Set;
+
+        /// <summary>A holding hook shows the anchor light. A dragging hook has lost the bottom.
+        /// A berth declaration takes precedence; both components on a root answer identically,
+        /// regardless of which one GetComponent finds first. Derived, never saved.</summary>
+        public VesselWay Way
+        {
+            get
+            {
+                var berth = GetComponent<MooredBoat>();
+                return berth != null ? berth.Way : IsHolding ? VesselWay.Moored : VesselWay.UnderWay;
+            }
+        }
+
+        private void SetState(AnchorState state)
+        {
+            VesselWay before = Way;
+            State = state;
+            VesselWay after = Way;
+            if (before == after) return;
+            foreach (var component in GetComponentsInChildren<MonoBehaviour>(true))
+                if (component is IVesselWayListener listener) listener.OnVesselWayChanged(after);
+        }
 
         /// <summary><b>Does this hull carry ground tackle at all?</b> Her own
         /// <see cref="BoatHullDef.HasAnchor"/> data, through the one resolver
@@ -177,7 +199,7 @@ namespace HiddenHarbours.Boats
             {
                 case AnchorDrop.Set:
                     DropPoint = here;
-                    State = AnchorState.Set;
+                    SetState(AnchorState.Set);
                     EventBus.Publish(new DevNotice(NoticeSet));
                     break;
                 case AnchorDrop.NoBottom:
@@ -195,8 +217,9 @@ namespace HiddenHarbours.Boats
         /// <summary>Weigh anchor — bring the hook home. Safe in any state; only speaks up if it was down.</summary>
         public void Weigh()
         {
-            if (State != AnchorState.Stowed) EventBus.Publish(new DevNotice(NoticeWeighed));
-            State = AnchorState.Stowed;
+            bool wasDown = IsDown;
+            SetState(AnchorState.Stowed);
+            if (wasDown) EventBus.Publish(new DevNotice(NoticeWeighed));
             UpdateRodeVisual();
         }
 
@@ -228,7 +251,7 @@ namespace HiddenHarbours.Boats
             bool lost = AnchorMath.HasLostBottom(depth, rode);
             if (lost && State == AnchorState.Set)
             {
-                State = AnchorState.Dragging;
+                SetState(AnchorState.Dragging);
                 EventBus.Publish(new DevNotice(NoticeDragging));
             }
             else if (!lost && State == AnchorState.Dragging)
@@ -236,7 +259,7 @@ namespace HiddenHarbours.Boats
                 // The ebb hands the bottom back and the hook bites again — WHERE SHE HAS FETCHED TO, not
                 // where she was dropped. Dragging costs you your berth, not your anchor: cozy, with teeth.
                 DropPoint = _rb.position;
-                State = AnchorState.Set;
+                SetState(AnchorState.Set);
                 EventBus.Publish(new DevNotice(NoticeReBite));
                 depth = DepthAt(DropPoint);
             }

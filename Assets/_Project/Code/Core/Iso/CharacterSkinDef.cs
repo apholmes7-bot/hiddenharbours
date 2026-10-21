@@ -481,6 +481,12 @@ namespace HiddenHarbours.Core
         public Vector2 PivotPx;
         public int PxPerMetre = 32;
         public float ElevationDeg = 40f;
+        [Tooltip("How far the figure reaches past the cell, in px, as (left, top, right, bottom): the most " +
+                 "any honest frame of any clip passes each edge by, at whichever facing carries it furthest " +
+                 "(negative: room to spare). MEASURED by the bake (CharacterSkinPose.MeasureReach), never " +
+                 "authored. The ashore overlay pads by it, so a figure that lies past the cell is not cut. " +
+                 "Zero on a def baked before it: the overlay keeps the one pixel it always had.")]
+        public Vector4 ReachPx;
 
         [Header("Shading (the rig's own pipeline, verbatim)")]
         [Tooltip("The rig's LN, already normalised by the rig itself.")]
@@ -493,7 +499,9 @@ namespace HiddenHarbours.Core
         public ShadeStep StepMode = ShadeStep.HardThreshold;
         [Tooltip("The rig's hard step threshold (pass 6: 0.55).")]
         public float HardStepThreshold = 0.55f;
-        [Tooltip("4×4 ordered-dither thresholds, (v+0.5)/16, row-major [x*4+y].")]
+        [Tooltip("4×4 ordered-dither thresholds, row-major [x*4+y]: rig 10.3's DITHER.bayer4 under its " +
+                 "own threshold rule, the canonical matrix's (v+0.5)/16 on rig 9 and rig 7. The V9 tone " +
+                 "rule rounds and never reads it (DITHER.used is false).")]
         public float[] Bayer16 = Array.Empty<float>();
         [Tooltip("The rig's keyline colour.")]
         public Color32 Keyline;
@@ -535,6 +543,11 @@ namespace HiddenHarbours.Core
         [Tooltip("V9 only: the head's mid point in the head bone's frame (the build's D.headMid), " +
                  "metres — the point the head snap rounds, and the eye the look aims from.")]
         public Vector3 HeadMid;
+        [Tooltip("V9 only: whether the rig draws its keyline round the figure unless asked not to. True " +
+                 "on rig 9 (its paint inks unless told keyline:false) and on every def baked before the " +
+                 "field; false on rig 10, which inks only when asked (owner, 10-01: the game follows the " +
+                 "rig and draws no character keyline). The figure keeps its silhouette edge either way.")]
+        public bool KeylineDefault = true;
 
         [Header("The face (v9: every group bound, one per slot drawn)")]
         [Tooltip("V9 only: the rig's face groups in its GROUP_ORDER ('eyes.open' … 'mouth.smile'). A " +
@@ -548,9 +561,17 @@ namespace HiddenHarbours.Core
         [Tooltip("V9 only: the face cull by role — the 'toward' a face must BEAT to draw: x near, " +
                  "y far, z side (the rig's ROLE[..].minT), w the mouth (the rig's literal).")]
         public Vector4 FaceMinToward;
-        [Tooltip("V9 only: the floor every face culls at, body faces included — the 1e-4 of the " +
-                 "rig's max(1e-4, minT).")]
+        [Tooltip("V9 only: the floor every face culls at, body faces included — rig 10.3's TOL.cull in " +
+                 "its max(TOL.cull, minT), which its marks cull at too; rig 9's literal there.")]
         public float FaceCullFloor;
+        [Tooltip("Rig 10 only: its face is drawn as point marks, and a mark draws only while its normal " +
+                 "has at least this horizontal length — the floor of the rig's hh < floor, a literal in " +
+                 "its paint. Each mark's own turn band (its az) rides the bind mesh's UV1.w. 0 on a def " +
+                 "with no marks.")]
+        public float FaceMarkAzFloor;
+        [Tooltip("Rig 10 only: a mark whose centre lies within this of a pixel edge draws nothing — rig " +
+                 "10.3's TOL.markEdge in its |cx − round(cx)| < TOL.markEdge. 0 on a def with no marks.")]
+        public float FaceMarkEdge;
 
         [Header("Blink (v9: the rig's BLINK, played on the figure's own clock)")]
         [Tooltip("V9 only: the blink's steps, in order (the rig's BLINK.steps).")]

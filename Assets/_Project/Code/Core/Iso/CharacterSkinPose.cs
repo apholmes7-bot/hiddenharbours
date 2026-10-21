@@ -382,5 +382,123 @@ namespace HiddenHarbours.Core
                 outNorms[v] = nrm.sqrMagnitude > 1e-12f ? nrm.normalized : Vector3.up;
             }
         }
+
+        // ---------------------------------------------------------------- rig 10's smooth normal
+
+        /// <summary>
+        /// <b>Rig 10's smooth normal, posed</b> (the rig 10 intake, Phase B). Rig 10's paint culls a
+        /// face on its own normal and LIGHTS it on its smooth one, which the rig's <c>posed()</c> turns
+        /// with the bone of the face's first corner, or with that corner's two bones weighted and then
+        /// normalised where the corner is blended (characterIsoRig10.js: "the smooth normal rides the
+        /// face's first bone (weighted where the face is blended)"). Face <c>faces[i]</c>, a run of
+        /// <paramref name="starts"/> / <paramref name="counts"/>, has <c>bindNormals[i]</c> in the bind
+        /// frame; it is posed so through <paramref name="skin"/> and written to the xyz of every corner
+        /// of the face in <paramref name="marks"/>, whose w (the face's mark flags) is kept. The bake's
+        /// port of the rig's paint poses it the same way (<c>CharacterSkinInk9.PosedNormal</c>).
+        /// </summary>
+        public static void PoseSmoothNormals(int[] faces, Vector3[] bindNormals, int[] starts, int[] counts,
+                                             Matrix4x4[] skin, BoneWeight[] weights, Vector4[] marks)
+        {
+            for (int i = 0; i < faces.Length; i++)
+            {
+                int s = starts[faces[i]], n = counts[faces[i]];
+                BoneWeight w = weights[s];
+                Vector3 a = skin[w.boneIndex0].MultiplyVector(bindNormals[i]);
+                double x = a.x, y = a.y, z = a.z;
+                if (w.weight1 != 0f)
+                {
+                    Vector3 b = skin[w.boneIndex1].MultiplyVector(bindNormals[i]);
+                    x = (double)a.x * w.weight0 + (double)b.x * w.weight1;
+                    y = (double)a.y * w.weight0 + (double)b.y * w.weight1;
+                    z = (double)a.z * w.weight0 + (double)b.z * w.weight1;
+                    double l = Math.Sqrt(x * x + y * y + z * z);
+                    if (!(l > 0)) l = 1;
+                    x /= l;
+                    y /= l;
+                    z /= l;
+                }
+                for (int k = 0; k < n; k++)
+                    marks[s + k] = new Vector4((float)x, (float)y, (float)z, marks[s + k].w);
+            }
+        }
+
+        // ---------------------------------------------------------------- the reach past the cell
+
+        /// <summary>
+        /// <b>How far a figure reaches past its cell</b>, in pixels, as (left, top, right, bottom): on
+        /// each side, the most any corner of any honest frame of any clip passes the cell's edge by, at
+        /// whichever facing carries it furthest that way; negative while every corner stays inside. The
+        /// bake records it on the def (<see cref="CharacterSkinDef.ReachPx"/>) and the ashore overlay
+        /// covers it (the rig 10 intake, Phase B; the owner's ruling of 10-02: measure each figure's
+        /// real reach and let the drawing area cover it, and the cell stays as it is).
+        ///
+        /// <para><b>Every facing, exactly, without sampling one.</b> Ashore the facing is any angle, and
+        /// the rig projects <c>sx = cx + xr·S</c>, <c>sy = cy − (yr·sin e + z·cos e)·S</c>, with
+        /// <c>(xr, yr)</c> the point's <c>(x, y)</c> turned by the facing. A turn keeps
+        /// <c>r = hypot(x, y)</c>, and over a whole turn <c>xr</c> and <c>yr</c> each sweep
+        /// <c>[−r, r]</c>: so a point reaches <c>r·S</c> to either side, <c>(z·cos e + r·sin e)·S</c> up
+        /// and <c>(r·sin e − z·cos e)·S</c> down (<see cref="WidenExtent"/>), and a triangle reaches no
+        /// further along a screen axis than its furthest corner.</para>
+        ///
+        /// <para>A frame the fence holds out (<see cref="FrameIsHonest"/>) is never drawn, and is not
+        /// measured. The look's turn of the head and the head snap's half pixel are not measured either:
+        /// they ride inside the one pixel the overlay has always kept past the cell.</para>
+        /// </summary>
+        public static Vector4 MeasureReach(CharacterSkinDef def)
+        {
+            if (def == null) throw new ArgumentNullException(nameof(def));
+            Mesh bind = def.BindMesh;
+            if (bind == null || def.Bones == null || def.Clips == null) return Vector4.zero;
+
+            Vector3[] verts = bind.vertices;
+            BoneWeight[] weights = bind.boneWeights;
+            Matrix4x4[] bindposes = bind.bindposes;
+            int bones = def.Bones.Length;
+            if (weights.Length != verts.Length || bindposes.Length < bones) return Vector4.zero;
+
+            var world = new Matrix4x4[bones];
+            var skin = new Matrix4x4[bones];
+            float e = def.ElevationDeg * Mathf.Deg2Rad, sinE = Mathf.Sin(e), cosE = Mathf.Cos(e);
+            var extent = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+            foreach (CharacterSkinDef.SkinClip clip in def.Clips)
+            {
+                if (!clip.KeysWellFormed(bones)) continue;
+                for (int f = 0; f < clip.FrameCount; f++)
+                {
+                    if (!FrameIsHonest(clip, f, bones, FenceMetres)) continue;
+                    ComposeSkinMatrices(clip, f, def.Bones, bindposes, world, skin);
+                    for (int v = 0; v < verts.Length; v++)
+                    {
+                        BoneWeight w = weights[v];
+                        Vector3 p = skin[w.boneIndex0].MultiplyPoint3x4(verts[v]) * w.weight0;
+                        if (w.weight1 != 0f) p += skin[w.boneIndex1].MultiplyPoint3x4(verts[v]) * w.weight1;
+                        extent = WidenExtent(extent, p, sinE, cosE);
+                    }
+                }
+            }
+            return float.IsNegativeInfinity(extent.x) ? Vector4.zero : ReachPastCell(extent, def);
+        }
+
+        /// <summary>One point, in the figure's metres, widened into its extent over every facing: x the
+        /// furthest <c>r = hypot(x, y)</c>, y the furthest up (<c>z·cos e + r·sin e</c>), z the furthest
+        /// down (<c>r·sin e − z·cos e</c>). Start from negative infinity (<see cref="MeasureReach"/>).</summary>
+        public static Vector3 WidenExtent(Vector3 extent, Vector3 p, float sinE, float cosE)
+        {
+            float r = Mathf.Sqrt(p.x * p.x + p.y * p.y);
+            float up = p.z * cosE + r * sinE, down = r * sinE - p.z * cosE;
+            return new Vector3(Mathf.Max(extent.x, r), Mathf.Max(extent.y, up), Mathf.Max(extent.z, down));
+        }
+
+        /// <summary>An extent (<see cref="WidenExtent"/>) as pixels past the def's cell, (left, top, right,
+        /// bottom): the cell runs 0 to <c>CellW</c> across and 0 to <c>CellH</c> down, the figure's origin
+        /// at <c>PivotPx</c>, <c>PxPerMetre</c> pixels a metre.</summary>
+        public static Vector4 ReachPastCell(Vector3 extent, CharacterSkinDef def)
+        {
+            float s = def.PxPerMetre, side = extent.x * s;
+            return new Vector4(side - def.PivotPx.x,
+                               extent.y * s - def.PivotPx.y,
+                               def.PivotPx.x + side - def.CellW,
+                               def.PivotPx.y + extent.z * s - def.CellH);
+        }
     }
 }

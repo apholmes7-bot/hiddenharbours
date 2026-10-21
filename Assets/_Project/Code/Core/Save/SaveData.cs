@@ -291,6 +291,23 @@ namespace HiddenHarbours.Core
         /// heal: every save written before there were storeys was written by a player standing on the
         /// ground.</para></summary>
         public int RestLevel;
+
+        /// <summary>
+        /// <b>The player's own build</b> (character PR 2b, ADR 0051, added in v15): a
+        /// <see cref="CharacterRecipe"/> of rig keys the builder resolves against shipped tables. EMPTY
+        /// means the body as baked, which is both the new-game state and the honest answer for every save
+        /// written before there was a builder. Written only through <see cref="IPlayerAppearance.Commit"/>;
+        /// a preview never reaches it.
+        ///
+        /// <para><b>Keys, not colours</b>, for the <see cref="WornOutfitId"/> reason: a save names a
+        /// choice and never a pixel, so a ramp the art director retunes follows into every save. The
+        /// recipe carries its own <see cref="CharacterRecipe.SchemaVersion"/> and the fit it was made
+        /// against, so a recipe from a later rig is refused out loud rather than drawn wrong.</para>
+        ///
+        /// <para><b>Beside <see cref="WornOutfitId"/>, not instead of it.</b> The wardrobe recolours the
+        /// sprite layer, which the mesh never drew; v15 leaves that id exactly where it was.</para>
+        /// </summary>
+        public CharacterRecipe PlayerRecipe = new CharacterRecipe();
     }
 
     /// <summary>

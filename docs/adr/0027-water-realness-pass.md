@@ -155,6 +155,7 @@ The painted `_DepthRamp` stays the colour authority for the water body (finding 
 rolling over it. Caustics are focused light: brightest where the surface is locally **convex toward the sun**.
 Derive them from the local **curvature** of `WaveFieldSample()` (already available in HLSL, §16.2), keeping the
 existing `_CausticDepth` gate and the `_CausticDayGate` sun gate. **No new uniform.** Cheapest real win on the list.
+C2a's clarity dial ships at **1** (owner, 2026-10-08) and shares #7's optical law; see [water rendering §17.12](../design/water-rendering.md#1712-c2a-caustic-clarity-attenuation-ships-at-1-2026-10-08).
 
 **(3) #3 — Foam gains a convergence (Jacobian) gate.**
 Unity spawns foam where the surface **Jacobian goes negative** — where the surface pinches and folds — not merely
@@ -261,6 +262,8 @@ Phased deliberately: **fetch modulates the visual layers first** (Tier A cost), 
 hulls ride only in the later phase, where it earns a twin and tests. Visual-only fetch means the player *sees* the
 lee before the boat *feels* it — an acceptable intermediate, and an explicit one.
 
+Stage B (2026-10-14) now applies fetch growth per wavelength; ADR 0018 records the law, scalar consumers and approximation limits.
+
 **(6) #5 — Spectrum-shaped swell (JONSWAP weighting + wave groups).**
 The largest visual gap and the honest reason people reach for FFT: a handful of sine trains repeats at large scale
 and never produces **sets**. Replace the flat train weighting in `_WaveFieldParams` with a **JONSWAP-shaped
@@ -276,6 +279,32 @@ amendment. Treat the boat-feel change as a **first-class outcome to be verified 
 ### Tier C — new render plumbing
 
 **(7) #8 — Reflections: a filtered renderer list into an RT, wave-warped by the water shader.** — **SHIPPED (P5, 2026-07-29).** Built as decided; `design/water-rendering.md` §26 is the live spec. Two things the decision text could not have known, both recorded there: the mirror axis had to be **published per renderer** (the SpriteRenderer identity-matrix trap — every sprite, not an edge case), and the pre/post-grade split for night-lit sources needs **no flag channel**, because premultiplied output makes "rgb exceeds coverage" mean exactly "compensated light content".
+
+**R3 amendment (2026-10-01; implementation approved, activation held):** Hull reflection gains
+an opt-in physical-height mesh path. The hull's current posed mesh, selected door leaf,
+hull-owned mesh fittings and hull-attached mesh figures draw through a reflected rig-height
+view into a camera-local depth-tested facet block, then resolve into the existing wave-warped
+reflection texture before water colour consumes it. The source is this frame's geometry, not
+the normal-view resolved hull image. The rig is Z-up; its mirrored winding conventions and
+water-reachability side labels are not outward-normal or general visibility metadata.
+
+The rejection of a planar camera re-drawing the scene remains. This submits only a bounded,
+explicit hull-owned mesh list: no terrain, buildings, sea, unrelated sprites or scene lighting
+are replayed. Scratch cost is 20 bytes/source pixel plus the existing 8-byte full-size reflection
+output, with full/half source resolution and submission ceilings held as data. No eligible
+hulls means no mesh raster/resolve work. Trees retain their flat sprite mirror. The previous
+"flat silhouette is enough" probe continues to describe that sprite case; it cannot establish
+correct physical-height reflection of a hull whose projection mixes height and ground depth.
+
+Below the calibrated local water plane, reflected mesh fragments remain colourless depth
+occluders; a winning blocker yields no mesh reflection and cannot receive keyline or figure
+ink. This prevents the water's warped lookup from fetching inside through the clipped shell,
+at the stated cost of conservative suppression where submerged geometry projects beyond the
+exact waterline section. Real geometry holes remain an Art issue and are measured with
+shipped-warp contact controls. Two-sided nearest depth decides visibility; appended rooms
+remain excluded, and the pose envelope excludes capsize. Lamp glow/cones and sprite-only
+fittings are accepted omissions. Mesh mode stays off by default and changes no shipped look
+until the owner accepts Phase C's plates. See [the implementation and control boundary](../design/hull-reflection-mesh.md).
 
 ADR 0010's eighth addendum **rejected** reflections. That rejection is revisited here on a **new fact**, which is
 the only thing that justifies reopening an ADR. It read: a reflection pass "would need a second camera + render
@@ -384,6 +413,8 @@ sentence demands:
   deliberately *coarser* than the pixel grid, which is the Pixelation section's own "foam coarser than
   caustics" scale hierarchy taken up rather than ignored.
 
+**F2 — bounded local foam transport (2026-10-06).** Camera-window movement remains an exact whole-cell copy on the foam buffer's own eight-cells-per-metre lattice. All new transport strengths at zero execute the previous buffer path bit for bit, including its format policy, banked global drift and drawn remainder. Enabled unobstructed uniform flow also uses that whole-cell path. Enabled nonuniform or obstructed flow instead holds the drawn remainder fixed, remaps only the camera window, and moves the full visual velocity, including global drift, through bounded neighbour exchanges. On RG32 UNORM each exchange transfers equal integer coverage codes from donor to receiver; excess inflow is refused and retained at the donor. Freshness travels as a coverage-weighted mean, never an accumulated channel. Solid cells block exchanges. Coverage changes outside transfer remain attributable to the existing deposits, decay, source saturation, source-store rounding and finite-window eviction. Repeated bilinear resampling of foam history is not permitted. Local exchange's numerical spread must be measured against deformation controls, not called tearing. No gameplay surf, boat force, water height or waterline changes.
+
 **The determinism boundary, stated honestly (this is new, and it is a real exception).** The buffer is
 **accumulated VISUAL state**. It is *not* a deterministic function of `(worldSeed, gameTime)`, and it is
 **allowed to differ run-to-run** with frame pacing — exactly as particles are. It therefore:
@@ -405,6 +436,48 @@ deliberately not pre-empted here.
 **Ships OFF, both gates.** `_WakeFoamStrength` = 0 in `Water.mat` and all eight presets, and nothing in the
 shipped scenes carries a `FoamInjector` — so there is no "buffer off" branch to keep byte-identical, only an
 absent pass. That absence **is** the passthrough proof, the same shape as #8's.
+
+### Amendment to (1) #7 (2026-10-18, W4-4) — in clear shallows the bed is the ground's own splat
+
+Ruling 7 (2026-10-10): "Shallows: 2B. 2A stays unbuilt as the mobile-port fallback." The bed's SOURCE changes and
+#7's law does not. Where the floor switch is on, `bed` is the ground's own splat albedo, read through the one include
+the terrain itself draws by (`Include/TerrainSplatAlbedo.hlsl`, W4-4a, ADR 0028's 2026-10-18 note), instead of
+`_SeabedTex`'s colour alone. It lands **inside the opaque composite**, where the bake's colour always stood: after
+the per-channel transmission and its bands, before the lerp that lays the bed into `col.rgb`. `col.a` stays opaque
+and no alpha blend returns, so §17.3's cancellation stays dissolved by construction.
+
+- **The three faults that retired the see-through shallows stay fixed, each guarded by name** in
+  `ShallowsFloorShaderTests`: (1) the floor goes through the palette grade, `TheFloor_GoesThroughThePaletteGrade`;
+  (2) it is absorbed per channel by the same `AbsorptionTransmission` and `_AbsorptionBands`,
+  `TheFloor_IsAbsorbedPerChannel`; (3) the caustics, C2a's clarity included, still light it,
+  `TheCaustics_LightTheSplatFloor`.
+- **The bake stays.** Its alpha is still the coverage. The ground's hem (the terrain's own alpha) lays the ground
+  over it by the over operator in straight alpha, so the bake's colour is still the bed wherever the floor is off,
+  unbound, or below the ground's paint floor.
+- **The pixel grid is the ground's own.** The floor is pixelized as the terrain is: its kit point-sampled at
+  world-anchored coordinates, 32 texels a metre (`_PixelsPerMetre`), not the sea's 24 px/m `Pixelize` cell that the
+  bake keeps, so at the waterline the floor and the dry ground beside it are the same pixels. The bend through the
+  surface, k × slope × depth with k = `GameConfig.ShallowsFloorRefraction` = 0.25 (about 1 − 1/1.33), is rounded to
+  whole ground pixels: the floor steps by whole texels with the swell and the tide and never resamples between them.
+  The Pixelation table's #7 row holds for the bake.
+- **Ships ON since its plates were accepted (2026-10-20).** `GameConfig.ShallowsFloor` is false in code and true
+  in `GameConfig.asset`; the sea reads it once, at a uniform gate whose skip is exact, and a stale asset that
+  deserializes it as 0 reads off. The floor compiles only where `HH_SHALLOWS_FLOOR` is defined, which it is not under
+  `SHADER_API_MOBILE`: a mobile build keeps today's bed exactly, and 2A (the splat's colours baked into
+  `_SeabedTex`) stays as possible as it was.
+- **What did not change.** σ, the ratio, the bands and every mood's turbidity; `depth`, `clip()`, `_WaterLevel` and
+  the height read the sim uses (visual only, rule 5). Live spec:
+  [water rendering §17.13](../design/water-rendering.md#1713-the-floor-in-the-shallows-w4-4-2026-10-18).
+- **The plants under the water take the same law (W4-4c).** A shore plant wholly under the live water, while
+  `GameConfig.ShallowsSubmergedProps` is on (false in code, true in `GameConfig.asset`, read in play only), carries
+  rendering-layer bit 27. The renderer feature draws those plants' `HHUnderWater` pass (the lit sprite's albedo,
+  unlit and premultiplied, where each stands) into one target, and the sea lays its texel into `bed` after the
+  floor and before the lerp, bent by the floor's own helper: the column's transmission and bands, the caustics and
+  the grade then take plant and floor together, so the law is applied once and never copied
+  (`TheFloorAndThePropsShareOneColumnLaw`, `ASubmergedPlant_IsSeenThroughTheWater`). No `SortingBands` rung moves
+  (ADR 0032 unchanged) and no Def gains a field. The rocks keep the waterline their sprites are clipped at
+  (`AnAwashRock_DrawsNoSecondWaterline`); drawing their below-water pixels through the column is a scene change in
+  both played regions, raised before it is built (§17.13).
 
 ---
 
@@ -453,7 +526,9 @@ decisions above). This is the one place where "pixelate at the end" would have s
 | #9 dispersion | Changes speed only — no new sampling, so the pixelize step is untouched |
 | #10 ripples | World-grid quantized (`Pixelize`) **and** posterized into solid steps with a Bayer-dithered window at each step edge (`_RippleBands` / `_RippleDitherWin`, **default ON**). ~~amplitude faded per discrete zoom tier~~ → **faded by the FRAMING** (`_SeaFramingHeight`): the footprint is tier-invariant, the CYCLE COUNT is not (see the #10 amendment) |
 | #8 reflections | RT at camera render resolution, point filter, warped lookup snapped to the **world** PPU grid (screen-snapping crawls on every pan) |
-| #6 wake buffer | Cells anchored to a **world** grid; camera-relative addressing only, scrolled in whole world cells — **and so is the wind drift**, remainder banked, because a fractional scroll must be resampled and resampling a buffer into itself every frame is a blur filter. On its **own** constant (`FOAM_CELLS_PER_UNIT` = 8/m = 4 px), deliberately coarser than the pixel grid and deliberately **not** `_PixelsPerUnit` (which ships at 24). Value posterized + edge-dithered on the shared world-locked Bayer cell, **default ON** |
+| #6 wake buffer | World-grid integer copy at zero/uniform flow; bounded local exchanges when enabled. See the approved F2 pixelation paragraph immediately below. |
+
+**Pixelation table, #6 wake buffer.** Cells remain on the eight-per-metre world lattice; camera addressing changes only by whole cells. Zero-strength and unobstructed uniform-flow paths preserve exact integer drift copies and the banked drawn remainder. Enabled local transport holds that remainder fixed and transfers bounded integer coverage between neighbouring world cells; obstacle faces block flux. Velocity alone may be interpolated from a one-metre world grid. History is never bilinearly advected. Existing value posterization, shared world Bayer cells and foam compose are unchanged; the grid never derives from material PixelsPerUnit.
 
 ---
 
@@ -496,6 +571,9 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   nothing else** — that last clause is what contains the exception. Its maths (`FoamBuffer`) is nonetheless pure
   and deterministic in its own arguments, which is what keeps it testable headless. Full statement in the #6
   amendment.
+
+**Bounded visual-history exception, F2.** F2 stays inside #6's existing visual-only exception. Its field reads the published visual wind/current drift; published wave trains, amplitudes, directions, wavelengths, wrapped phases and drawn scale; the published seabed and still-water bytes and sea level; current Core hull footprints; and authored structure contact shapes/transforms. Existing hull, dispersal and bore deposits remain the only foam sources. F2 adds no randomness, independent phase or clock, reads no Time.time in Core, and leaves BorePhaseDegrees/SurfBorePhaseDeg as the bore's one phase law. Input preparation and transfer are deterministic in their explicit arguments; accumulated foam may still differ with frame pacing. Only foam maintenance and the water shader's foam compose may read this history; no simulation or save consumer is added. Unsupported formats retain legacy foam with F2 unavailable; invalid contact/map data holds local movement and reports the degraded state.
+
 - **#5 and #1 do change the field hulls ride** (the #4/#9 "promotions" turned out to be an audit result, not code — see P2). They are deterministic functions of
   `(worldSeed, gameTime)` + authored height, recomputed and never saved — but they require C# twins, headless
   determinism tests, and an **ADR 0018 amendment**. This is stated as a gate, not a footnote.
@@ -504,13 +582,11 @@ P1, P4, P5 and the parallel #6 are independent across lanes. P2→P3 are serial 
   byte-identical until the owner dials each in — the discipline every ADR-0010 addendum has kept.
 - **Rule 7:** #8 and #6 each add one filtered list / one RT, both honouring the existing zero-cost-when-idle
   contract. The `HHReflect` list needs a **distance-or-layer rule** so it stays small (see open questions).
-  #6's budget, measured at its 96 m default: **768² × R8 × 2 (ping-pong) = 1.1 MB per camera**, one fullscreen
-  blit per frame over a fixed 8-slot injection loop — against the seabed bake's 1.0 MB per region. Its
-  resolution is **derived** from the window extent (`extent × cells-per-metre`), so "one texel = one world cell"
-  holds by construction and cannot be broken by typing a different number. A single channel is all a coverage
-  mask needs, which is what keeps the later mobile port affordable. **Both** of its gates are shut when idle:
-  no hull churning water (every `FoamInjector` unregisters off the water) **or** the owner's dial at 0 ⇒ no
-  target, no blit, nothing recorded.
+
+**F2 budget, at the existing 96 m window.** The old R8 budget is historical: main now prefers a 768² RG32 pair, 4,718,592 bytes (4.5 MiB), with RGHalf/RG16 fallbacks. Enabled F2 reuses that pair and adds at most a 99² RGFloat velocity texture plus a 768² R8 obstacle mask: 668,232 GPU bytes, total 5,386,824 bytes (5.1373 MiB) per camera. CPU texture backing, two conservative terrain-bound arrays and 128 fixed contact records add at most 5,395,016 bytes (5.1451 MiB) per camera, excluding existing source-map storage and driver staging. One source/decay pass plus four exchanges per substep costs five passes normally and at most seventeen for four substeps; each exchange fragment has at most eight logical texture loads and one RG32 store. Upload at most 668,232 bytes per enabled camera frame. Zero strengths add no resources, uploads or passes. The eight-injector limit remains unchanged. No steady-frame managed allocation is permitted. Target support, CPU work, uploads, GPU timing, numerical spread, camera scaling and memory must be measured in Phase C before positive look values ship. This budget approval covers the 96 m window; larger windows require a stated budget and measurement before F2 is enabled on them.
+
+**F2 evidence status — Phase B, Phase C acceptance pending.** All three strengths ship at 0 on Water and all eight presets. A positive strength may ship only after Phase C maintains 60 fps, adds at most 1 ms CPU preparation and 1 ms GPU time in the normal one-step 96 m case, and adds no steady-frame GC. No visual deformation, GPU identity or performance acceptance is claimed in Phase B. No Unity was run locally. The contact contract is implemented; a reviewed pier fixture belongs to Phase C. Wiring live piers requires a separate World handoff written only after the owner accepts the Phase C pier plate. No builder or scene changes are authorized here. CI results remain pending when the draft PR opens.
+
 
 ## Test & CI guards
 

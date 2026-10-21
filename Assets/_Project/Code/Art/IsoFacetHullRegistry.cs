@@ -270,6 +270,12 @@ namespace HiddenHarbours.Art
         /// <summary>The displaced water surface's resolved screen texture (ADR 0023 phase 2) —
         /// written by the feature's water pass, sampled by the in-scene WaterOverlay quad.</summary>
         public static readonly int WaterScreenTex = Shader.PropertyToID("_HHWaterScreenTex");
+        /// <summary>The ground's underwater clip flag (W4-4a): 1 while THIS camera's water pass has drawn
+        /// its coverage into <see cref="WaterScreenTex"/> and the clip is switched on
+        /// (<c>GameServices.TerrainUnderwaterClip</c>), 0 everywhere else. The feature lowers it at the
+        /// top of every camera and raises it only inside the water pass; the terrain shader discards
+        /// where that coverage is opaque, which is exactly where the overlay replaces the ground.</summary>
+        public static readonly int TerrainUnderwaterClip = Shader.PropertyToID("_HHTerrainUnderwaterClip");
         /// <summary>The per-pixel INTERIOR GUARD (ADR 0023, the per-face interior mask): 1 where the
         /// nearest hull surface at that pixel is an open interior, 0 everywhere else. Written by the
         /// facet shader's HHHullGuard pass into its own depth buffer, read by the displaced water's
@@ -321,7 +327,9 @@ namespace HiddenHarbours.Art
         /// <summary>THE LID (coordinator ruling 2026-08-27): the level whose faces are the ceiling of
         /// the one the occupant is inside, and which comes off with it. 0 = none. Written per draw
         /// beside <see cref="LevelShown"/> and for the same reason.</summary>
-        public static readonly int LevelLid = Shader.PropertyToID("_HHLevelLid");
+        public static readonly int LiftLevels = Shader.PropertyToID("_HHLiftLevels");
+        public static readonly int ShownRoles = Shader.PropertyToID("_HHShownRoles");
+        public static readonly int RoleLiftMasks = Shader.PropertyToID("_HHRoleLiftMasks");
 
         /// <summary>The facet shader's cutaway keyword. <c>_local</c>, so it lives PER MATERIAL and
         /// <c>Shader.EnableKeyword</c> does not reach it — the renderer writes its own instance

@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_091
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_091
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: wall
+  Brow:
+  - {x: 186.16393, y: 41.25}
+  - {x: 186.25, y: 41.41393}
+  - {x: 186.32233, y: 41.759445}
+  - {x: 186.56038, y: 41.75}
+  - {x: 186.81038, y: 41.75}
+  - {x: 187.06038, y: 41.75}
+  - {x: 187.31038, y: 41.75}
+  - {x: 187.56038, y: 41.75}
+  - {x: 187.75, y: 41.81038}
+  - {x: 187.76364, y: 42.13838}
+  Toe:
+  - {x: 186.42203, y: 40.70835}
+  - {x: 186.47885, y: 40.7524}
+  - {x: 186.62744, y: 40.75475}
+  - {x: 186.74925, y: 41.128048}
+  - {x: 186.9936, y: 41.231415}
+  - {x: 187.26796, y: 41.24068}
+  - {x: 187.50412, y: 41.235252}
+  - {x: 187.7202, y: 41.223732}
+  - {x: 187.92435, y: 41.236267}
+  - {x: 188.03969, y: 41.22937}
+  DropMetres:
+  - 10.444216
+  - 10.409247
+  - 10.435321
+  - 10.276593
+  - 10.2769
+  - 10.3193245
+  - 10.3622675
+  - 10.402949
+  - 10.419911
+  - 10.369757
+  ToeElevations:
+  - 0.5557694
+  - 0.5907373
+  - 0.5646639
+  - 0.7233912
+  - 0.7230845
+  - 0.6806607
+  - 0.6377175
+  - 0.59703565
+  - 0.58007306
+  - 0.5672688
+  Stations:
+  - 94
+  - 95
+  - 96
+  - 97
+  - 98
+  - 99
+  - 100
+  - 101
+  - 102
+  - 103
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'S wall: a new face: no St Peters wall wears S wall'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 94 to 103; the ring''s own PR builds it.'

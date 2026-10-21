@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_069
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_069
+  Status: 4
+  SplitFrom: 
+  Follows: wall.stp_252
+  Rock: sandstone
+  Class: 4
+  Aspect: SW
+  Batter: steep
+  Brow:
+  - {x: -36.671524, y: -32.0631}
+  - {x: -36.836555, y: -31.87558}
+  - {x: -37.0009, y: -31.687443}
+  - {x: -37.164528, y: -31.498722}
+  - {x: -37.32746, y: -31.309385}
+  - {x: -37.48967, y: -31.119461}
+  - {x: -37.65119, y: -30.928892}
+  Toe:
+  - {x: -38.582684, y: -33.751286}
+  - {x: -38.753906, y: -33.556732}
+  - {x: -38.886734, y: -33.32867}
+  - {x: -39.169956, y: -33.23099}
+  - {x: -39.263416, y: -32.969074}
+  - {x: -39.43184, y: -32.771877}
+  - {x: -39.714188, y: -32.670742}
+  DropMetres:
+  - 9.448688
+  - 9.53722
+  - 9.541382
+  - 9.757818
+  - 9.718233
+  - 9.7434225
+  - 9.887255
+  ToeElevations:
+  - -3.4486878
+  - -3.5372202
+  - -3.5413818
+  - -3.757818
+  - -3.7182329
+  - -3.743422
+  - -3.8872552
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 5.9217114
+  - 5.8855567
+  - 5.8992214
+  - 5.905327
+  - 5.903802
+  - 5.8789706
+  - 5.9018955
+  ToePass9:
+  - -3.600459
+  - -3.6959796
+  - -3.7493162
+  - -3.859857
+  - -3.8965774
+  - -3.93051
+  - -3.9748628
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 69
+  MeasuredOn: 'the ground file''s import, StPetersSeabed_HeightTex.png at 883f27b5 (codes sha256 5984ad51f888582b173babc0d4d61b37faeb29e3eb14742182ed7a64f07d4261)'
+  FaceNeeded: 
+  Why: 'Toe-lifted on the import: stations k0-k11. The list''s row 069 (South-West Bluff): kept, toe lifted. Re-cut at St Peters'' 1 m cut (terrain PR 5w): its stations k0-k6.'

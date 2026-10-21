@@ -150,6 +150,12 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterHands6", AzimuthConvention.Clockwise, "character"),
             new Snapshot("characterHead", "docs/art/rigs/headIsoRig3.js",
                          "HeadIso3", AzimuthConvention.Clockwise, "characterEye"),
+            // Added by the character rig 10 intake (2026-10-02): Claude Design's kit 10.2, landed as
+            // delivered beside rig 9. Its own body, so no prerequisite; its poses and checks are
+            // sidecars that CharacterSkinExtractor.Load9 runs (CharacterRigKit.Rig10), not entries.
+            // Ordinal order puts "characterRig10" before "characterRig9".
+            new Snapshot("characterRig10", "docs/art/rigs/character/rig10/Art/characterIsoRig10.js",
+                         "CharacterIso10", AzimuthConvention.Clockwise),
             // Added by the character rig intake, PR 1 (2026-09-25): Claude Design's kit v9.2, landed
             // as delivered. Its own body, so no prerequisite; its poses and checks are sidecars that
             // CharacterSkinExtractor.Load9 runs, not entries.
@@ -346,6 +352,14 @@ namespace HiddenHarbours.Tests.RigBaking
                          "UtilityIso", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfBuilding", "docs/art/rigs/wharfBuildingRig.js",
                          "WharfBuilding", AzimuthConvention.CounterClockwise, "buildingLifecycle"),
+            // Added by the wharf buildings pass 2, drop 13, beside pass 1 (which keeps its row). The
+            // prerequisites are the README's load order: coastalPass brings interiorProp first.
+            new Snapshot("wharfBuilding2", "docs/art/rigs/wharf-building-kit-v2/wharfBuildingRig2.js",
+                         "WharfBuilding2", AzimuthConvention.CounterClockwise,
+                         "coastalPass", "buildingLifecycle", "wharfBuilding2Geometry"),
+            // Wharf buildings pass 2, drop 13: non-directional geometry library.
+            new Snapshot("wharfBuilding2Geometry", "docs/art/rigs/wharf-building-kit-v2/wharfBuildingRig2.geo.js",
+                         "WharfBuildingGeo2", AzimuthConvention.Clockwise),
             new Snapshot("wharfDecor", "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
                          "WharfDecor", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfIso", "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",

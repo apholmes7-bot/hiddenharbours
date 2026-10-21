@@ -449,6 +449,32 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0, IsoFacetFigureInk.Count);
         }
 
+        /// <summary>
+        /// Owner ruling K4 (10-01): the game follows the rig, and rig 10 draws no keyline unless a caller
+        /// asks (<see cref="CharacterSkinDef.KeylineDefault"/> off). Such a def is inked by its rig's edge
+        /// rule without the keyline ring, still in the resolve's registry for its edge; a rig 9 def keeps
+        /// its ring (<see cref="TheInkIsLiveWhileTheSwitchIsOnAndTheFigureInTheRegistryOnlyWhileShown"/>).
+        /// </summary>
+        [Test]
+        public void ADefWhoseRigDrawsNoKeylineIsInkedWithoutItsRing()
+        {
+            CharacterSkinDef def = MakeDef();
+            def.KeylineDefault = false;
+            IsoCharacterFigureRenderer figure = MakeFigure(def);
+            Material mat = DrawnMaterial(figure);
+
+            Assert.IsTrue(figure.InkLive, "A def whose rig draws no keyline is not inked by its rig at all.");
+            Assert.AreEqual(IsoFacetFigureShaderIds.InkWithoutRing, mat.GetFloat(IsoFacetFigureShaderIds.FigureInkOn),
+                "A def whose rig draws no keyline unasked is inked with the ring.");
+            Assert.AreNotEqual(IsoFacetFigureShaderIds.InkWithRing, IsoFacetFigureShaderIds.InkWithoutRing);
+            Assert.AreEqual(1, IsoFacetFigureInk.Count, "The resolve no longer inks the figure's edge.");
+
+            _config.MeshFigureKeyline = false;
+            figure.Visible = true;
+            Assert.IsFalse(figure.InkLive, "The switch off left the ink on.");
+            Assert.AreEqual(0f, mat.GetFloat(IsoFacetFigureShaderIds.FigureInkOn));
+        }
+
         [Test]
         public void TheRegistryHoldsEachFigureOnceAndReadsTheLastIn()
         {

@@ -1,0 +1,2034 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62a6ae92e7f455a331dd9b902475950b, type: 3}
+  m_Name: village_plan.st_peters
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.VillagePlanDef
+  Id: "village_plan.st_peters"
+  Lines:
+  - Name: "GR_Y"
+    Value: 28.3
+  - Name: "CW_Y"
+    Value: 12.5
+  - Name: "AXIS_X"
+    Value: 2.5
+  - Name: "EAST_X"
+    Value: 13.25
+  - Name: "BLUFF_X"
+    Value: -6.25
+  - Name: "BLUFF_HEAD"
+    Value: 41.1
+  - Name: "BW_X"
+    Value: -17.5
+  - Name: "SW_Y"
+    Value: 34.5
+  - Name: "GAP_X"
+    Value: 41.0
+  - Name: "GR_W"
+    Value: -19.0
+  - Name: "GR_E"
+    Value: 57.0
+  - Name: "GINNY_W"
+    Value: 69.0
+  - Name: "FARM_X"
+    Value: 34.0
+  - Name: "FARM_Y"
+    Value: 18.9
+  Tunables:
+  - Name: "FENCE_OFF"
+    Value: 0.4
+  - Name: "WALK_GAP"
+    Value: 0.5
+  - Name: "YARD_GAP"
+    Value: 1.0
+  - Name: "YARD_HOLD"
+    Value: 0.6
+  - Name: "RING_R"
+    Value: 3.0
+  - Name: "CLASS_M_street"
+    Value: 4.0
+  - Name: "CLASS_M_lane"
+    Value: 3.0
+  - Name: "CLASS_M_footpath"
+    Value: 1.5
+  - Name: "CLASS_M_walk"
+    Value: 1.5
+  - Name: "CLASS_M_alley"
+    Value: 1.0
+  - Name: "ART_HID_MAX"
+    Value: 0.2
+  - Name: "FOOTPRINT_GAP"
+    Value: 4
+  - Name: "HEARTH_CLEARANCE"
+    Value: 8
+  - Name: "BAR_SIGHTLINE"
+    Value: 40
+  - Name: "GATE_WIDTH"
+    Value: 1.8
+  - Name: "EPSILON"
+    Value: 0.001
+  - Name: "MARKER_REACH"
+    Value: 3
+  FixedPoints:
+  - Name: "hearth"
+    Position: {x: 0.0, y: 14.0}
+  - Name: "spawn"
+    Position: {x: 5.0, y: 0.0}
+  - Name: "green"
+    Position: {x: 2.5, y: 7.0}
+  - Name: "ginnyMark"
+    Position: {x: 4.0, y: 11.0}
+  - Name: "nedLetter"
+    Position: {x: -2.0, y: 10.5}
+  Footprints:
+  - Id: "footprint.st_peters.school"
+    LocalBounds: {x: -3.18, y: -2.453, z: 3.18, w: 2.452}
+    Source: "Buildings.json"
+    Provisional: 0
+  - Id: "footprint.st_peters.general_store"
+    LocalBounds: {x: -4.0, y: -3.213, z: 4.0, w: 3.214}
+    Source: "shops.contract.json"
+    Provisional: 0
+  - Id: "footprint.st_peters.post_office"
+    LocalBounds: {x: -3.5, y: -2.732, z: 3.5, w: 2.732}
+    Source: "shops.contract.json"
+    Provisional: 0
+  - Id: "footprint.st_peters.cream_saltbox"
+    LocalBounds: {x: -3.42, y: -2.722, z: 3.42, w: 2.722}
+    Source: "houseIsoRig (new_homes.js)"
+    Provisional: 1
+  - Id: "footprint.st_peters.white_gable"
+    LocalBounds: {x: -3.42, y: -2.722, z: 3.42, w: 2.722}
+    Source: "houseIsoRig (new_homes.js)"
+    Provisional: 1
+  - Id: "footprint.st_peters.red_saltbox"
+    LocalBounds: {x: -3.48, y: -2.79, z: 3.48, w: 2.79}
+    Source: "Buildings.json"
+    Provisional: 0
+  - Id: "footprint.st_peters.white_farmhouse"
+    LocalBounds: {x: -3.84, y: -3.195, z: 3.84, w: 3.195}
+    Source: "Buildings.json"
+    Provisional: 0
+  - Id: "footprint.st_peters.sage_cottage"
+    LocalBounds: {x: -3.3, y: -2.588, z: 3.3, w: 2.587}
+    Source: "Buildings.json"
+    Provisional: 0
+  - Id: "footprint.st_peters.harbour_gable"
+    LocalBounds: {x: -3.36, y: -2.655, z: 3.36, w: 2.655}
+    Source: "houseIsoRig (new_homes.js)"
+    Provisional: 1
+  LotIds:
+  - "lot.st_peters.school"
+  - "lot.st_peters.general_store"
+  - "lot.st_peters.post_office"
+  - "lot.st_peters.cream_saltbox"
+  - "lot.st_peters.white_gable"
+  - "lot.st_peters.red_saltbox"
+  - "lot.st_peters.white_farmhouse"
+  - "lot.st_peters.sage_cottage"
+  - "lot.st_peters.harbour_gable"
+  YardIds:
+  - "yard.st_peters.school"
+  - "yard.st_peters.general_store"
+  - "yard.st_peters.post_office"
+  - "yard.st_peters.cream_saltbox"
+  - "yard.st_peters.white_gable"
+  - "yard.st_peters.red_saltbox"
+  - "yard.st_peters.white_farmhouse"
+  - "yard.st_peters.sage_cottage"
+  - "yard.st_peters.harbour_gable"
+  RouteIds:
+  - "route.stpeters.school_lane"
+  - "route.stpeters.green_step"
+  - "route.stpeters.cross_walk"
+  - "route.stpeters.cross_walk_east"
+  - "route.stpeters.green_walk"
+  - "route.stpeters.east_walk"
+  - "route.stpeters.farm_walk"
+  - "route.stpeters.bluff_path"
+  - "route.stpeters.bluff_walk"
+  - "route.stpeters.shore_walk"
+  - "route.stpeters.garden_walk"
+  - "route.stpeters.garden_path"
+  - "route.stpeters.barren_gap"
+  - "route.stpeters.plot_path"
+  - "route.stpeters.school_walk"
+  - "route.stpeters.general_store_walk"
+  - "route.stpeters.post_office_walk"
+  - "route.stpeters.cream_saltbox_walk"
+  - "route.stpeters.white_gable_walk"
+  - "route.stpeters.red_saltbox_walk"
+  - "route.stpeters.white_farmhouse_walk"
+  - "route.stpeters.sage_cottage_walk"
+  - "route.stpeters.harbour_gable_walk"
+  CommonsIds:
+  - "commons.st_peters.square"
+  - "commons.st_peters.west_garden"
+  - "commons.st_peters.flake_yard"
+  LightIds:
+  - "light.st_peters.doorstep_lantern_school"
+  - "light.st_peters.doorstep_lantern_general_store"
+  - "light.st_peters.doorstep_lantern_post_office"
+  - "light.st_peters.doorstep_lantern_cream_saltbox"
+  - "light.st_peters.doorstep_lantern_white_gable"
+  - "light.st_peters.doorstep_lantern_red_saltbox"
+  - "light.st_peters.doorstep_lantern_white_farmhouse"
+  - "light.st_peters.doorstep_lantern_sage_cottage"
+  - "light.st_peters.doorstep_lantern_harbour_gable"
+  - "light.st_peters.lantern_post_green_walk"
+  - "light.st_peters.lantern_post_green"
+  - "light.st_peters.lantern_post_farm_walk"
+  - "light.st_peters.lantern_post_barren_gap"
+  - "light.st_peters.lantern_post_bluff_walk"
+  - "light.st_peters.fire_pit_square"
+  - "light.st_peters.battery_shed_light_sage_cottage"
+  Pieces:
+  - Id: "building.stp_school"
+    Kit: "houseIso"
+    Piece: "school"
+    Position: {x: -11.4, y: 35.423}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"beds\":0,\"era\":\"colonial\",\"shape\":\"gable\",\"siding\":\"clapboard\",\"body\":\"white\",\"roof\":\"slate\",\"size\":0.15,\"windows\":\"sixOverSix\",\"winDensity\":0.85,\"attic\":\"gable\",\"porch\":\"front\",\"dormers\":0,\"chimneys\":1,\"belfry\":true,\"shutters\":\"blue\",\"weather\":0.3}"
+    CasterAnchors: []
+    MetadataJson: "{\"look\":\"the village square (pass 4, HouseIso.CAST)\",\"plan\":\"school\",\"isNew\":false}"
+  - Id: "building.stp_general_store"
+    Kit: "shopfront"
+    Piece: "harbourStore"
+    Position: {x: 2.5, y: 35.422}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"type\":\"generalStore\",\"size\":0.35,\"weather\":0.32}"
+    CasterAnchors: []
+    MetadataJson: "{\"plan\":\"general_store\",\"isNew\":false}"
+  - Id: "building.stp_post_office"
+    Kit: "shopfront"
+    Piece: "villagePost"
+    Position: {x: 16.5, y: 35.766}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"type\":\"postOffice\",\"size\":0.3,\"weather\":0.24}"
+    CasterAnchors: []
+    MetadataJson: "{\"plan\":\"post_office\",\"isNew\":false}"
+  - Id: "building.stp_cream_saltbox"
+    Kit: "houseIso"
+    Piece: "cream_saltbox"
+    Position: {x: 28.5, y: 35.704}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"beds\":2,\"era\":\"modern\",\"shape\":\"saltbox\",\"siding\":\"clapboard\",\"body\":\"cream\",\"roof\":\"metalGreen\",\"size\":0.3,\"windows\":\"sixOverSix\",\"winDensity\":0.6,\"attic\":\"none\",\"porch\":\"none\",\"dormers\":0,\"chimneys\":1,\"shutters\":\"red\",\"doorPaint\":\"blue\",\"weather\":0.15}"
+    CasterAnchors: []
+    MetadataJson: "{\"look\":\"the village square (pass 4, HouseIso.CAST)\",\"shell\":\"camera-first shell and room: art ask\",\"plan\":\"cream_saltbox\",\"isNew\":true}"
+  - Id: "building.stp_white_gable"
+    Kit: "houseIso"
+    Piece: "white_gable"
+    Position: {x: 53.0, y: 35.204}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"era\":\"colonial\",\"shape\":\"gable\",\"siding\":\"clapboard\",\"body\":\"white\",\"roof\":\"asphaltBrown\",\"size\":0.35,\"windows\":\"sixOverSix\",\"winDensity\":0.7,\"attic\":\"gable\",\"porch\":\"front\",\"dormers\":0,\"chimneys\":1,\"bay\":false,\"weather\":0.2}"
+    CasterAnchors: []
+    MetadataJson: "{\"look\":\"the plan (Buildings.json)\",\"shell\":\"camera-first shell and room: art ask\",\"plan\":\"white_gable\",\"isNew\":true}"
+  - Id: "building.stp_red_saltbox"
+    Kit: "houseIso"
+    Piece: "red_saltbox"
+    Position: {x: 21.696, y: 18.03}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"beds\":1,\"era\":\"modern\",\"shape\":\"saltbox\",\"siding\":\"clapboard\",\"body\":\"red\",\"roof\":\"metal\",\"size\":0.4,\"windows\":\"twoOverTwo\",\"winDensity\":0.6,\"attic\":\"none\",\"porch\":\"front\",\"entry\":\"left\",\"dormers\":0,\"chimneys\":1,\"shutters\":\"none\",\"weather\":0.2}"
+    CasterAnchors: []
+    MetadataJson: "{\"look\":\"the village square (pass 4, HouseIso.CAST)\",\"plan\":\"red_saltbox\",\"isNew\":false}"
+  - Id: "building.stp_white_farmhouse"
+    Kit: "houseIso"
+    Piece: "white_farmhouse"
+    Position: {x: 42.301, y: 16.78}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"beds\":1,\"era\":\"colonial\",\"shape\":\"ell\",\"siding\":\"clapboard\",\"body\":\"white\",\"roof\":\"slate\",\"size\":0.7,\"windows\":\"sixOverSix\",\"winDensity\":0.6,\"attic\":\"gable\",\"porch\":\"wrap\",\"entry\":\"left\",\"mirror\":true,\"dormers\":1,\"chimneys\":1,\"bay\":true,\"shutters\":\"join\",\"weather\":0.1}"
+    CasterAnchors: []
+    MetadataJson: "{\"look\":\"the village square (pass 4, HouseIso.CAST)\",\"plan\":\"white_farmhouse\",\"isNew\":false}"
+  - Id: "building.stp_sage_cottage"
+    Kit: "houseIso"
+    Piece: "sage_cottage"
+    Position: {x: -21.5, y: 41.643}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"beds\":2,\"era\":\"plain\",\"shape\":\"gable\",\"siding\":\"clapboard\",\"body\":\"sage\",\"roof\":\"asphaltBrown\",\"size\":0.25,\"windows\":\"twoOverTwo\",\"winDensity\":0.5,\"attic\":\"gable\",\"porch\":\"front\",\"dormers\":0,\"chimneys\":1,\"shutters\":\"ivory\",\"doorPaint\":\"red\",\"weather\":0.55}"
+    CasterAnchors: []
+    MetadataJson: "{\"look\":\"the village square (pass 4, HouseIso.CAST)\",\"plan\":\"sage_cottage\",\"isNew\":false}"
+  - Id: "building.stp_harbour_gable"
+    Kit: "houseIso"
+    Piece: "harbour_gable"
+    Position: {x: -6.25, y: 46.125}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"beds\":2,\"era\":\"gothic\",\"shape\":\"gable\",\"siding\":\"shingle\",\"body\":\"teal\",\"roof\":\"metalRed\",\"size\":0.3,\"windows\":\"twoOverTwo\",\"winDensity\":0.5,\"attic\":\"gothic\",\"porch\":\"none\",\"crossGable\":1,\"gableFull\":true,\"bargeboard\":true,\"dormers\":0,\"chimneys\":1,\"shutters\":\"none\",\"doorPaint\":\"ivory\",\"weather\":0.45}"
+    CasterAnchors: []
+    MetadataJson: "{\"look\":\"the village square (pass 4, HouseIso.CAST)\",\"shell\":\"camera-first shell and room: art ask\",\"plan\":\"harbour_gable\",\"isNew\":true}"
+  - Id: "prop.stp_vl_fence_school"
+    Kit: "yardIso"
+    Piece: "postRail"
+    Position: {x: -15.28, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6,\"paint\":\"white\",\"panels\":[[-15.28,29.99,4],[-13.14,29.99,4],[-9.06,29.99,4],[-14.86,39,4],[-11.87,39,4],[-8.89,39,4],[-16.35,30.89,6],[-16.35,32.69,6],[-16.35,34.49,6],[-16.35,36.3,6],[-16.35,38.1,6],[-7.4,30.89,2],[-7.4,32.69,2],[-7.4,34.49,2],[-7.4,36.3,2],[-7.4,38.1,2]]}"
+    CasterAnchors:
+    - {x: -15.28, y: 29.99}
+    - {x: -13.14, y: 29.99}
+    - {x: -9.06, y: 29.99}
+    - {x: -14.86, y: 39}
+    - {x: -11.87, y: 39}
+    - {x: -8.89, y: 39}
+    - {x: -16.35, y: 30.89}
+    - {x: -16.35, y: 32.69}
+    - {x: -16.35, y: 34.49}
+    - {x: -16.35, y: 36.3}
+    - {x: -16.35, y: 38.1}
+    - {x: -7.4, y: 30.89}
+    - {x: -7.4, y: 32.69}
+    - {x: -7.4, y: 34.49}
+    - {x: -7.4, y: 36.3}
+    - {x: -7.4, y: 38.1}
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gate_school"
+    Kit: "pending"
+    Piece: "post and rail gate leaf"
+    Position: {x: -11.4, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 1
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"art\":\"pending: a kit ask\",\"ask\":{\"kit\":\"yardIso\",\"what\":\"a gate leaf for post and rail gate leaf, 1.35 m, hung on the fence’s own post with a latch, open and shut states, as picketGate is for the picket\"}}"
+  - Id: "prop.stp_vl_fence_cream_saltbox"
+    Kit: "yardIso"
+    Piece: "wireFence"
+    Position: {x: 25.79, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\",\"panels\":[[25.79,29.99,4],[30.38,29.99,4],[32.79,29.99,4],[25.46,41,4],[28.88,41,4],[32.29,41,4],[23.75,30.9,6],[23.75,32.74,6],[23.75,34.57,6],[23.75,36.41,6],[23.75,38.25,6],[23.75,40.08,6],[34,30.9,2],[34,32.74,2],[34,34.57,2],[34,36.41,2],[34,38.25,2],[34,40.08,2]]}"
+    CasterAnchors:
+    - {x: 25.79, y: 29.99}
+    - {x: 30.38, y: 29.99}
+    - {x: 32.79, y: 29.99}
+    - {x: 25.46, y: 41}
+    - {x: 28.88, y: 41}
+    - {x: 32.29, y: 41}
+    - {x: 23.75, y: 30.9}
+    - {x: 23.75, y: 32.74}
+    - {x: 23.75, y: 34.57}
+    - {x: 23.75, y: 36.41}
+    - {x: 23.75, y: 38.25}
+    - {x: 23.75, y: 40.08}
+    - {x: 34, y: 30.9}
+    - {x: 34, y: 32.74}
+    - {x: 34, y: 34.57}
+    - {x: 34, y: 36.41}
+    - {x: 34, y: 38.25}
+    - {x: 34, y: 40.08}
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gate_cream_saltbox"
+    Kit: "pending"
+    Piece: "wire gate leaf"
+    Position: {x: 28.5, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 1
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"art\":\"pending: a kit ask\",\"ask\":{\"kit\":\"yardIso\",\"what\":\"a gate leaf for wire gate leaf, 1.35 m, hung on the fence’s own post with a latch, open and shut states, as picketGate is for the picket\"}}"
+  - Id: "prop.stp_vl_fence_white_gable"
+    Kit: "yardIso"
+    Piece: "picketPanel"
+    Position: {x: 49.08, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\",\"panels\":[[49.08,29.99,4],[51.24,29.99,4],[54.88,29.99,4],[57.29,29.99,4],[49.31,40.5,4],[51.94,40.5,4],[54.56,40.5,4],[57.19,40.5,4],[48,30.74,6],[48,32.24,6],[48,33.74,6],[48,35.24,6],[48,36.74,6],[48,38.25,6],[48,39.75,6],[58.5,30.74,2],[58.5,32.24,2],[58.5,33.74,2],[58.5,35.24,2],[58.5,36.74,2],[58.5,38.25,2],[58.5,39.75,2]]}"
+    CasterAnchors:
+    - {x: 49.08, y: 29.99}
+    - {x: 51.24, y: 29.99}
+    - {x: 54.88, y: 29.99}
+    - {x: 57.29, y: 29.99}
+    - {x: 49.31, y: 40.5}
+    - {x: 51.94, y: 40.5}
+    - {x: 54.56, y: 40.5}
+    - {x: 57.19, y: 40.5}
+    - {x: 48, y: 30.74}
+    - {x: 48, y: 32.24}
+    - {x: 48, y: 33.74}
+    - {x: 48, y: 35.24}
+    - {x: 48, y: 36.74}
+    - {x: 48, y: 38.25}
+    - {x: 48, y: 39.75}
+    - {x: 58.5, y: 30.74}
+    - {x: 58.5, y: 32.24}
+    - {x: 58.5, y: 33.74}
+    - {x: 58.5, y: 35.24}
+    - {x: 58.5, y: 36.74}
+    - {x: 58.5, y: 38.25}
+    - {x: 58.5, y: 39.75}
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gate_white_gable"
+    Kit: "yardIso"
+    Piece: "picketGate"
+    Position: {x: 53, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\"}"
+    CasterAnchors: []
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_fence_red_saltbox"
+    Kit: "yardIso"
+    Piece: "postRail"
+    Position: {x: 15.87, y: 8.93}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\",\"panels\":[[15.87,8.93,4],[18.8,8.93,4],[21.73,8.93,4],[24.67,8.93,4],[27.6,8.93,4],[30.53,8.93,4],[15.87,26.62,4],[18.8,26.62,4],[21.73,26.62,4],[24.67,26.62,4],[27.6,26.62,4],[30.53,26.62,4],[14.4,9.84,6],[14.4,11.66,6],[14.4,13.49,6],[14.4,15.31,6],[14.4,17.13,6],[14.4,18.95,6],[14.4,21.71,6],[14.4,23.67,6],[14.4,25.63,6],[32,9.81,2],[32,11.58,2],[32,13.35,2],[32,15.12,2],[32,16.89,2],[32,18.66,2],[32,20.43,2],[32,22.19,2],[32,23.96,2],[32,25.73,2]]}"
+    CasterAnchors:
+    - {x: 15.87, y: 8.93}
+    - {x: 18.8, y: 8.93}
+    - {x: 21.73, y: 8.93}
+    - {x: 24.67, y: 8.93}
+    - {x: 27.6, y: 8.93}
+    - {x: 30.53, y: 8.93}
+    - {x: 15.87, y: 26.62}
+    - {x: 18.8, y: 26.62}
+    - {x: 21.73, y: 26.62}
+    - {x: 24.67, y: 26.62}
+    - {x: 27.6, y: 26.62}
+    - {x: 30.53, y: 26.62}
+    - {x: 14.4, y: 9.84}
+    - {x: 14.4, y: 11.66}
+    - {x: 14.4, y: 13.49}
+    - {x: 14.4, y: 15.31}
+    - {x: 14.4, y: 17.13}
+    - {x: 14.4, y: 18.95}
+    - {x: 14.4, y: 21.71}
+    - {x: 14.4, y: 23.67}
+    - {x: 14.4, y: 25.63}
+    - {x: 32, y: 9.81}
+    - {x: 32, y: 11.58}
+    - {x: 32, y: 13.35}
+    - {x: 32, y: 15.12}
+    - {x: 32, y: 16.89}
+    - {x: 32, y: 18.66}
+    - {x: 32, y: 20.43}
+    - {x: 32, y: 22.19}
+    - {x: 32, y: 23.96}
+    - {x: 32, y: 25.73}
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gate_red_saltbox"
+    Kit: "pending"
+    Piece: "post and rail gate leaf"
+    Position: {x: 14.4, y: 20.3}
+    Z: 6
+    Dir: 6
+    Pending: 1
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"art\":\"pending: a kit ask\",\"ask\":{\"kit\":\"yardIso\",\"what\":\"a gate leaf for post and rail gate leaf, 1.35 m, hung on the fence’s own post with a latch, open and shut states, as picketGate is for the picket\"}}"
+  - Id: "prop.stp_vl_fence_white_farmhouse"
+    Kit: "yardIso"
+    Piece: "picketPanel"
+    Position: {x: 36.35, y: 11.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\",\"panels\":[[36.35,11.5,4],[38.74,11.5,4],[41.13,11.5,4],[43.52,11.5,4],[45.91,11.5,4],[48.3,11.5,4],[36.35,26.62,4],[38.74,26.62,4],[41.13,26.62,4],[43.52,26.62,4],[45.91,26.62,4],[48.3,26.62,4],[35.15,12.2,6],[35.15,13.59,6],[35.15,14.98,6],[35.15,16.38,6],[35.15,17.77,6],[35.15,20.06,6],[35.15,21.52,6],[35.15,22.97,6],[35.15,24.43,6],[35.15,25.89,6],[49.5,12.26,2],[49.5,13.77,2],[49.5,15.28,2],[49.5,16.79,2],[49.5,18.3,2],[49.5,19.81,2],[49.5,21.32,2],[49.5,22.84,2],[49.5,24.35,2],[49.5,25.86,2]]}"
+    CasterAnchors:
+    - {x: 36.35, y: 11.5}
+    - {x: 38.74, y: 11.5}
+    - {x: 41.13, y: 11.5}
+    - {x: 43.52, y: 11.5}
+    - {x: 45.91, y: 11.5}
+    - {x: 48.3, y: 11.5}
+    - {x: 36.35, y: 26.62}
+    - {x: 38.74, y: 26.62}
+    - {x: 41.13, y: 26.62}
+    - {x: 43.52, y: 26.62}
+    - {x: 45.91, y: 26.62}
+    - {x: 48.3, y: 26.62}
+    - {x: 35.15, y: 12.2}
+    - {x: 35.15, y: 13.59}
+    - {x: 35.15, y: 14.98}
+    - {x: 35.15, y: 16.38}
+    - {x: 35.15, y: 17.77}
+    - {x: 35.15, y: 20.06}
+    - {x: 35.15, y: 21.52}
+    - {x: 35.15, y: 22.97}
+    - {x: 35.15, y: 24.43}
+    - {x: 35.15, y: 25.89}
+    - {x: 49.5, y: 12.26}
+    - {x: 49.5, y: 13.77}
+    - {x: 49.5, y: 15.28}
+    - {x: 49.5, y: 16.79}
+    - {x: 49.5, y: 18.3}
+    - {x: 49.5, y: 19.81}
+    - {x: 49.5, y: 21.32}
+    - {x: 49.5, y: 22.84}
+    - {x: 49.5, y: 24.35}
+    - {x: 49.5, y: 25.86}
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gate_white_farmhouse"
+    Kit: "yardIso"
+    Piece: "picketGate"
+    Position: {x: 35.15, y: 18.9}
+    Z: 6
+    Dir: 6
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\"}"
+    CasterAnchors: []
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_fence_sage_cottage"
+    Kit: "yardIso"
+    Piece: "picketPanel"
+    Position: {x: -23.84, y: 35.38}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6,\"paint\":\"white\",\"panels\":[[-23.84,35.38,4],[-19.11,35.38,4],[-24.15,45.5,4],[-21.45,45.5,4],[-18.75,45.5,4],[-25.5,36.1,6],[-25.5,37.55,6],[-25.5,38.99,6],[-25.5,40.44,6],[-25.5,41.89,6],[-25.5,43.33,6],[-25.5,44.78,6],[-17.4,36.1,2],[-17.4,37.55,2],[-17.4,38.99,2],[-17.4,40.44,2],[-17.4,41.89,2],[-17.4,43.33,2],[-17.4,44.78,2]]}"
+    CasterAnchors:
+    - {x: -23.84, y: 35.38}
+    - {x: -19.11, y: 35.38}
+    - {x: -24.15, y: 45.5}
+    - {x: -21.45, y: 45.5}
+    - {x: -18.75, y: 45.5}
+    - {x: -25.5, y: 36.1}
+    - {x: -25.5, y: 37.55}
+    - {x: -25.5, y: 38.99}
+    - {x: -25.5, y: 40.44}
+    - {x: -25.5, y: 41.89}
+    - {x: -25.5, y: 43.33}
+    - {x: -25.5, y: 44.78}
+    - {x: -17.4, y: 36.1}
+    - {x: -17.4, y: 37.55}
+    - {x: -17.4, y: 38.99}
+    - {x: -17.4, y: 40.44}
+    - {x: -17.4, y: 41.89}
+    - {x: -17.4, y: 43.33}
+    - {x: -17.4, y: 44.78}
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gate_sage_cottage"
+    Kit: "yardIso"
+    Piece: "picketGate"
+    Position: {x: -21.5, y: 35.38}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6,\"paint\":\"white\"}"
+    CasterAnchors: []
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_fence_harbour_gable"
+    Kit: "yardIso"
+    Piece: "stoneWall"
+    Position: {x: -11.48, y: 41.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\",\"panels\":[[-11.48,41.5,4],[-8.44,41.5,4],[-4.06,41.5,4],[-1.02,41.5,4],[-11.87,49.5,4],[-9.62,49.5,4],[-7.37,49.5,4],[-5.12,49.5,4],[-2.87,49.5,4],[-0.62,49.5,4],[-13,42.3,6],[-13,43.9,6],[-13,45.5,6],[-13,47.1,6],[-13,48.7,6],[0.5,42.3,2],[0.5,43.9,2],[0.5,45.5,2],[0.5,47.1,2],[0.5,48.7,2]]}"
+    CasterAnchors:
+    - {x: -11.48, y: 41.5}
+    - {x: -8.44, y: 41.5}
+    - {x: -4.06, y: 41.5}
+    - {x: -1.02, y: 41.5}
+    - {x: -11.87, y: 49.5}
+    - {x: -9.62, y: 49.5}
+    - {x: -7.37, y: 49.5}
+    - {x: -5.12, y: 49.5}
+    - {x: -2.87, y: 49.5}
+    - {x: -0.62, y: 49.5}
+    - {x: -13, y: 42.3}
+    - {x: -13, y: 43.9}
+    - {x: -13, y: 45.5}
+    - {x: -13, y: 47.1}
+    - {x: -13, y: 48.7}
+    - {x: 0.5, y: 42.3}
+    - {x: 0.5, y: 43.9}
+    - {x: 0.5, y: 45.5}
+    - {x: 0.5, y: 47.1}
+    - {x: 0.5, y: 48.7}
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gatepost_harbour_gable"
+    Kit: "yardIso"
+    Piece: "stonePillar"
+    Position: {x: -7.12, y: 41.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85,\"paint\":\"white\",\"posts\":[[-7.12,41.5],[-5.37,41.5]]}"
+    CasterAnchors: []
+    MetadataJson: "{\"family\":\"fence\"}"
+  - Id: "prop.stp_vl_gate_harbour_gable"
+    Kit: "pending"
+    Piece: "stone wall gate leaf"
+    Position: {x: -6.25, y: 41.5}
+    Z: 6
+    Dir: 4
+    Pending: 1
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"art\":\"pending: a kit ask\",\"ask\":{\"kit\":\"yardIso\",\"what\":\"a gate leaf for stone wall gate leaf, 1.35 m, hung on the fence’s own post with a latch, open and shut states, as picketGate is for the picket\"}}"
+  - Id: "prop.stp_vl_school_flagpole"
+    Kit: "yardIso"
+    Piece: "flagpole"
+    Position: {x: -14.6, y: 30.89}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_school_swing_set"
+    Kit: "yardIso"
+    Piece: "swingSet"
+    Position: {x: -9, y: 31.29}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_school_bench"
+    Kit: "yardIso"
+    Piece: "bench"
+    Position: {x: -13.7, y: 31.39}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_general_store_barrel_planter"
+    Kit: "yardIso"
+    Piece: "barrelPlanter"
+    Position: {x: -0.5, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_general_store_barrel_planter_2"
+    Kit: "yardIso"
+    Piece: "barrelPlanter"
+    Position: {x: 5.5, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_general_store_chalk_sign"
+    Kit: "wharfDecor"
+    Piece: "chalkSign"
+    Position: {x: 0.6, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_general_store_bench"
+    Kit: "wharfDecor"
+    Piece: "bench"
+    Position: {x: 6.9, y: 30.29}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_post_office_mailbox"
+    Kit: "yardIso"
+    Piece: "mailbox"
+    Position: {x: 20.28, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_post_office_planter_box"
+    Kit: "wharfDecor"
+    Piece: "planterBox"
+    Position: {x: 15.58, y: 29.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_post_office_bench"
+    Kit: "wharfDecor"
+    Piece: "bench"
+    Position: {x: 13.18, y: 31.09}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_post_office_bicycle"
+    Kit: "wharfDecor"
+    Piece: "bicycle"
+    Position: {x: 21.78, y: 33.78}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_cream_saltbox_oil_tank"
+    Kit: "yardIso"
+    Piece: "oilTank"
+    Position: {x: 31.4, y: 30.99}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_cream_saltbox_rain_barrel"
+    Kit: "yardIso"
+    Piece: "rainBarrel"
+    Position: {x: 24.4, y: 33.19}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_cream_saltbox_clothesline"
+    Kit: "yardIso"
+    Piece: "clothesline"
+    Position: {x: 33.25, y: 35.99}
+    Z: 6
+    Dir: 6
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_cream_saltbox_trap_stack"
+    Kit: "wharfDecor"
+    Piece: "trapStack"
+    Position: {x: 24.4, y: 36.99}
+    Z: 6
+    Dir: 6
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_gable_sandbox"
+    Kit: "yardIso"
+    Piece: "sandbox"
+    Position: {x: 50.3, y: 30.79}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_gable_doghouse"
+    Kit: "yardIso"
+    Piece: "doghouse"
+    Position: {x: 48.8, y: 34.19}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_gable_swing_set"
+    Kit: "yardIso"
+    Piece: "swingSet"
+    Position: {x: 57.5, y: 35.19}
+    Z: 6
+    Dir: 6
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_gable_veg_rows"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: 57.6, y: 38.78}
+    Z: 6
+    Dir: 6
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_border_bed"
+    Kit: "yardIso"
+    Piece: "borderBed"
+    Position: {x: 15.05, y: 23.8}
+    Z: 6
+    Dir: 6
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_birdbath"
+    Kit: "yardIso"
+    Piece: "birdbath"
+    Position: {x: 15.1, y: 17.8}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_rose_bush"
+    Kit: "yardIso"
+    Piece: "roseBush"
+    Position: {x: 28.8, y: 23.2}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_rain_barrel"
+    Kit: "yardIso"
+    Piece: "rainBarrel"
+    Position: {x: 27.9, y: 19}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_rhubarb"
+    Kit: "yardIso"
+    Piece: "rhubarb"
+    Position: {x: 28.6, y: 17.4}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_woodpile"
+    Kit: "yardIso"
+    Piece: "woodpile"
+    Position: {x: 30.7, y: 25.6}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_veg_rows"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: 18.6, y: 14.9}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_veg_rows_2"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: 18.6, y: 13.2}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_potato_drills"
+    Kit: "yardIso"
+    Piece: "potatoDrills"
+    Position: {x: 22.8, y: 13.9}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_clothesline"
+    Kit: "yardIso"
+    Piece: "clothesline"
+    Position: {x: 27, y: 13.7}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_raspberry_row"
+    Kit: "yardIso"
+    Piece: "raspberryRow"
+    Position: {x: 27, y: 10.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_red_saltbox_compost_bin"
+    Kit: "yardIso"
+    Piece: "compostBin"
+    Position: {x: 30.7, y: 10.7}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_farmhouse_lilac"
+    Kit: "yardIso"
+    Piece: "lilac"
+    Position: {x: 38.15, y: 15.6}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_farmhouse_veg_rows"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: 42.15, y: 14.3}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_farmhouse_veg_rows_2"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: 42.15, y: 12.7}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_farmhouse_potato_drills"
+    Kit: "yardIso"
+    Piece: "potatoDrills"
+    Position: {x: 45.95, y: 13.3}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_farmhouse_clothesline"
+    Kit: "yardIso"
+    Piece: "clothesline"
+    Position: {x: 38.55, y: 12.8}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_white_farmhouse_woodpile"
+    Kit: "yardIso"
+    Piece: "woodpile"
+    Position: {x: 48.15, y: 15.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_sage_cottage_buoy_post"
+    Kit: "yardIso"
+    Piece: "buoyPost"
+    Position: {x: -20.1, y: 35.88}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_sage_cottage_oilskin_line"
+    Kit: "wharfDecor"
+    Piece: "oilskinLine"
+    Position: {x: -18.9, y: 37.18}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_sage_cottage_dory_planter"
+    Kit: "yardIso"
+    Piece: "doryPlanter"
+    Position: {x: -24.3, y: 36.38}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_sage_cottage_sawhorses"
+    Kit: "yardIso"
+    Piece: "sawhorses"
+    Position: {x: -24.3, y: 37.48}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.6}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_harbour_gable_anchor_set"
+    Kit: "yardIso"
+    Piece: "anchorSet"
+    Position: {x: -11.3, y: 45}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_harbour_gable_trap_bench"
+    Kit: "yardIso"
+    Piece: "trapBench"
+    Position: {x: -1.3, y: 46.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_harbour_gable_buoy_post"
+    Kit: "yardIso"
+    Piece: "buoyPost"
+    Position: {x: -11.8, y: 47.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_harbour_gable_woodpile"
+    Kit: "yardIso"
+    Piece: "woodpile"
+    Position: {x: -1, y: 48.4}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_log_bench_01"
+    Kit: "shoreFinds"
+    Piece: "Driftwood"
+    Position: {x: -2.3, y: 15.9}
+    Z: 6
+    Dir: 1
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"art\":\"from the kits: ShoreFinds’ Driftwood, a weathered log, laid along the hearth ring as a log bench\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "prop.stp_vl_common_log_bench_02"
+    Kit: "shoreFinds"
+    Piece: "Driftwood"
+    Position: {x: -0.3, y: 16.7}
+    Z: 6
+    Dir: 2
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"art\":\"from the kits: ShoreFinds’ Driftwood, a weathered log, laid along the hearth ring as a log bench\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "prop.stp_vl_common_notice_board_01"
+    Kit: "wharfDecor"
+    Piece: "noticeBoard"
+    Position: {x: 4.4, y: 18.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_bench_01"
+    Kit: "yardIso"
+    Piece: "bench"
+    Position: {x: 0, y: 21.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_bench_02"
+    Kit: "yardIso"
+    Piece: "bench"
+    Position: {x: 5.2, y: 21.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_flower_bed_01"
+    Kit: "yardIso"
+    Piece: "borderBed"
+    Position: {x: -1.8, y: 19.2}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_flower_bed_02"
+    Kit: "yardIso"
+    Piece: "borderBed"
+    Position: {x: 7.2, y: 18.8}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_flower_bed_03"
+    Kit: "yardIso"
+    Piece: "borderBed"
+    Position: {x: -4.8, y: 24.6}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "tree.stp_vl_square_maple_01"
+    Kit: "treeIsoRig4"
+    Piece: "RedMaple"
+    Position: {x: -5.5, y: 21.5}
+    Z: 6
+    Dir: 0
+    Pending: 0
+    OptionsJson: "{\"stage\":\"young\",\"variant\":0}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "tree.stp_vl_square_maple_02"
+    Kit: "treeIsoRig4"
+    Piece: "RedMaple"
+    Position: {x: 8.6, y: 23.6}
+    Z: 6
+    Dir: 0
+    Pending: 0
+    OptionsJson: "{\"stage\":\"mature\",\"variant\":1}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_garden_beds_01"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: -20.4, y: 16}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_garden_beds_02"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: -20.4, y: 21.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_garden_beds_03"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: -12.5, y: 16}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_garden_beds_04"
+    Kit: "yardIso"
+    Piece: "vegRows"
+    Position: {x: -12.5, y: 21.5}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_bench_03"
+    Kit: "yardIso"
+    Piece: "bench"
+    Position: {x: -22.9, y: 14.2}
+    Z: 6
+    Dir: 2
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_bench_04"
+    Kit: "yardIso"
+    Piece: "bench"
+    Position: {x: -22.9, y: 19.2}
+    Z: 6
+    Dir: 2
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_water_butt_01"
+    Kit: "yardIso"
+    Piece: "rainBarrel"
+    Position: {x: -15.4, y: 25.6}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_tool_shed_low_01"
+    Kit: "yardIso"
+    Piece: "trapBench"
+    Position: {x: -22.4, y: 25.6}
+    Z: 6
+    Dir: 2
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"art\":\"from the kits: YardIso’s trapBench, a low trestle bench, as the commons’ low potting bench by the west garden\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "prop.stp_vl_common_flake_01"
+    Kit: "wharfDecor"
+    Piece: "codFlake"
+    Position: {x: 36.6, y: 31.6}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_flake_02"
+    Kit: "wharfDecor"
+    Piece: "codFlake"
+    Position: {x: 36.6, y: 34.2}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_flake_03"
+    Kit: "wharfDecor"
+    Piece: "codFlake"
+    Position: {x: 45.6, y: 31.6}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_flake_04"
+    Kit: "wharfDecor"
+    Piece: "codFlake"
+    Position: {x: 45.6, y: 34.2}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_trap_stack_01"
+    Kit: "wharfDecor"
+    Piece: "trapStack"
+    Position: {x: 39, y: 31.2}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_bench_05"
+    Kit: "yardIso"
+    Piece: "bench"
+    Position: {x: 43.6, y: 30.7}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_bench_06"
+    Kit: "yardIso"
+    Piece: "bench"
+    Position: {x: -34.6, y: 35.7}
+    Z: 5.93
+    Dir: 2
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_common_buoy_post_01"
+    Kit: "yardIso"
+    Piece: "buoyPost"
+    Position: {x: -33.2, y: 36.3}
+    Z: 5.98
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.85}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_chalk_sign_01"
+    Kit: "wharfDecor"
+    Piece: "chalkSign"
+    Position: {x: -38, y: 3.2}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_trap_stack_01"
+    Kit: "wharfDecor"
+    Piece: "trapStack"
+    Position: {x: -34.8, y: -0.8}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_cod_flake_01"
+    Kit: "wharfDecor"
+    Piece: "codFlake"
+    Position: {x: -28, y: 4.52}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_bench_01"
+    Kit: "wharfDecor"
+    Piece: "bench"
+    Position: {x: -22.5, y: 3.51}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_farm_stand_01"
+    Kit: "yardIso"
+    Piece: "farmStand"
+    Position: {x: -11, y: 4.21}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.7}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_barrel_planter_01"
+    Kit: "yardIso"
+    Piece: "barrelPlanter"
+    Position: {x: -12.8, y: 3.57}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{\"kept\":0.7}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_harbour_sign_01"
+    Kit: "wharfDecor"
+    Piece: "harbourSign"
+    Position: {x: 9.5, y: 7.37}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_bench_02"
+    Kit: "wharfDecor"
+    Piece: "bench"
+    Position: {x: 8, y: 3.61}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_cod_flake_02"
+    Kit: "wharfDecor"
+    Piece: "codFlake"
+    Position: {x: 21.5, y: 7.54}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "prop.stp_vl_road_trap_stack_02"
+    Kit: "wharfDecor"
+    Piece: "trapStack"
+    Position: {x: 27.5, y: 5.77}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{}"
+  - Id: "light.st_peters.doorstep_lantern_school"
+    Kit: "houseIso"
+    Piece: "entry.lantern"
+    Position: {x: -10.5, y: 33.27}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"of\":\"building.stp_school\",\"art\":\"the house’s own: HouseIso’s camera-first portico (the live look) carries a lantern by its steps, faces tagged entry.lantern, lit by the house’s schedule (lightsOn: dusk to bedtime)\",\"drawnBy\":\"building.stp_school\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "light.st_peters.doorstep_lantern_general_store"
+    Kit: "pending"
+    Piece: "doorstep lantern on a bracket"
+    Position: {x: 3.4, y: 32.509}
+    Z: 6
+    Dir: 4
+    Pending: 1
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"art\":\"pending: a kit ask\",\"ask\":{\"kit\":\"shopfront\",\"what\":\"a lantern on a bracket by the door (an emitter, lit dusk to bedtime by the household), as HouseIso’s portico has, for general_store\"}}"
+  - Id: "light.st_peters.doorstep_lantern_post_office"
+    Kit: "pending"
+    Piece: "doorstep lantern on a bracket"
+    Position: {x: 19.08, y: 33.334}
+    Z: 6
+    Dir: 4
+    Pending: 1
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"art\":\"pending: a kit ask\",\"ask\":{\"kit\":\"shopfront\",\"what\":\"a lantern on a bracket by the door (an emitter, lit dusk to bedtime by the household), as HouseIso’s portico has, for post_office\"}}"
+  - Id: "light.st_peters.doorstep_lantern_cream_saltbox"
+    Kit: "houseIso"
+    Piece: "entry.lantern"
+    Position: {x: 29.4, y: 33.282}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"of\":\"building.stp_cream_saltbox\",\"art\":\"the house’s own: HouseIso’s camera-first portico (the live look) carries a lantern by its steps, faces tagged entry.lantern, lit by the house’s schedule (lightsOn: dusk to bedtime)\",\"drawnBy\":\"building.stp_cream_saltbox\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "light.st_peters.doorstep_lantern_white_gable"
+    Kit: "houseIso"
+    Piece: "entry.lantern"
+    Position: {x: 53.9, y: 32.782}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"of\":\"building.stp_white_gable\",\"art\":\"the house’s own: HouseIso’s camera-first portico (the live look) carries a lantern by its steps, faces tagged entry.lantern, lit by the house’s schedule (lightsOn: dusk to bedtime)\",\"drawnBy\":\"building.stp_white_gable\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "light.st_peters.doorstep_lantern_red_saltbox"
+    Kit: "houseIso"
+    Piece: "entry.lantern"
+    Position: {x: 17.916, y: 17.43}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"of\":\"building.stp_red_saltbox\",\"art\":\"the house’s own: HouseIso’s camera-first portico (the live look) carries a lantern by its steps, faces tagged entry.lantern, lit by the house’s schedule (lightsOn: dusk to bedtime)\",\"drawnBy\":\"building.stp_red_saltbox\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "light.st_peters.doorstep_lantern_white_farmhouse"
+    Kit: "houseIso"
+    Piece: "entry.lantern"
+    Position: {x: 38.161, y: 16.18}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"of\":\"building.stp_white_farmhouse\",\"art\":\"the house’s own: HouseIso’s camera-first portico (the live look) carries a lantern by its steps, faces tagged entry.lantern, lit by the house’s schedule (lightsOn: dusk to bedtime)\",\"drawnBy\":\"building.stp_white_farmhouse\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "light.st_peters.doorstep_lantern_sage_cottage"
+    Kit: "houseIso"
+    Piece: "entry.lantern"
+    Position: {x: -20.6, y: 39.355}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"of\":\"building.stp_sage_cottage\",\"art\":\"the house’s own: HouseIso’s camera-first portico (the live look) carries a lantern by its steps, faces tagged entry.lantern, lit by the house’s schedule (lightsOn: dusk to bedtime)\",\"drawnBy\":\"building.stp_sage_cottage\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "light.st_peters.doorstep_lantern_harbour_gable"
+    Kit: "houseIso"
+    Piece: "entry.lantern"
+    Position: {x: -5.35, y: 43.77}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.4},\"of\":\"building.stp_harbour_gable\",\"art\":\"the house’s own: HouseIso’s camera-first portico (the live look) carries a lantern by its steps, faces tagged entry.lantern, lit by the house’s schedule (lightsOn: dusk to bedtime)\",\"drawnBy\":\"building.stp_harbour_gable\",\"from\":\"the quick look’s placeholder (kind pending), given its art in the package\"}"
+  - Id: "light.st_peters.lantern_post_green_walk"
+    Kit: "wharfDecor"
+    Piece: "lanternPost"
+    Position: {x: 3.92, y: 26.515}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.6,\"when\":\"dusk\",\"whoLights\":\"lit at dusk by Marguerite, closing up (a routine block)\"}}"
+  - Id: "light.st_peters.lantern_post_green"
+    Kit: "wharfDecor"
+    Piece: "lanternPost"
+    Position: {x: 3.92, y: 8.3}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.6,\"when\":\"dusk\",\"whoLights\":\"lit at dusk by whoever is last up from the slip\"}}"
+  - Id: "light.st_peters.lantern_post_farm_walk"
+    Kit: "wharfDecor"
+    Piece: "lanternPost"
+    Position: {x: 32.58, y: 26.515}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.6,\"when\":\"dusk\",\"whoLights\":\"lit at dusk by Eileen, home from the school\"}}"
+  - Id: "light.st_peters.lantern_post_barren_gap"
+    Kit: "wharfDecor"
+    Piece: "lanternPost"
+    Position: {x: 42.42, y: 30.085}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.6,\"when\":\"dusk\",\"whoLights\":\"lit at dusk by the cannery hands at the cream saltbox\"}}"
+  - Id: "light.st_peters.lantern_post_bluff_walk"
+    Kit: "wharfDecor"
+    Piece: "lanternPost"
+    Position: {x: -16.08, y: 26.515}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":3.6,\"when\":\"dusk\",\"whoLights\":\"lit at dusk by Junior or Basil, whoever is home first\"}}"
+  - Id: "light.st_peters.fire_pit_square"
+    Kit: "yardIso"
+    Piece: "firePit"
+    Position: {x: 0.0, y: 14.0}
+    Z: 6
+    Dir: 4
+    Pending: 0
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":5.4,\"when\":\"a hall night or a warm evening\"}}"
+  - Id: "light.st_peters.battery_shed_light_sage_cottage"
+    Kit: "pending"
+    Piece: "battery shed worklight"
+    Position: {x: -17.9, y: 44.9}
+    Z: 6
+    Dir: 4
+    Pending: 1
+    OptionsJson: "{}"
+    CasterAnchors: []
+    MetadataJson: "{\"light\":{\"pool\":true,\"reachM\":5.2},\"art\":\"pending: a kit ask\",\"ask\":{\"kit\":\"yardIso or wharfDecor\",\"what\":\"a battery work light on the shed’s door post, a caged bulb on a bracket with a box battery under it (an emitter, lit on a gear night only), for the sage cottage’s shed\"}}"
+  Roadside:
+  - PieceId: "prop.stp_vl_road_chalk_sign_01"
+    Kind: "chalkSign"
+    Position: {x: -38.0, y: 3.203}
+    RouteId: ""
+    Road: "bar_head_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"bar_head_road\",\"why\":\"a chalked board at the bar head: the tide times for the crossing\"}"
+  - PieceId: "prop.stp_vl_road_trap_stack_01"
+    Kind: "trapStack"
+    Position: {x: -34.8, y: -0.802}
+    RouteId: ""
+    Road: "bar_head_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"bar_head_road\",\"why\":\"traps at the bar head, waiting for low water\"}"
+  - PieceId: "prop.stp_vl_road_cod_flake_01"
+    Kind: "codFlake"
+    Position: {x: -28.0, y: 4.516}
+    RouteId: ""
+    Road: "bar_head_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"bar_head_road\",\"why\":\"a salt-fish flake on the meadow above the bar-head road\"}"
+  - PieceId: "prop.stp_vl_road_bench_01"
+    Kind: "bench"
+    Position: {x: -22.5, y: 3.51}
+    RouteId: ""
+    Road: "bar_head_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"bar_head_road\",\"why\":\"a wayside bench looking south over the harbour mouth to the bar\"}"
+  - PieceId: "prop.stp_vl_road_farm_stand_01"
+    Kind: "farmStand"
+    Position: {x: -11.0, y: 4.212}
+    RouteId: ""
+    Road: "bar_head_road"
+    MetadataJson: "{\"rig\":\"YardIso\",\"road\":\"bar_head_road\",\"why\":\"the garden's roadside stand: an honesty box by the road\"}"
+  - PieceId: "prop.stp_vl_road_barrel_planter_01"
+    Kind: "barrelPlanter"
+    Position: {x: -12.8, y: 3.574}
+    RouteId: ""
+    Road: "bar_head_road"
+    MetadataJson: "{\"rig\":\"YardIso\",\"road\":\"bar_head_road\",\"why\":\"\"}"
+  - PieceId: "prop.stp_vl_road_harbour_sign_01"
+    Kind: "harbourSign"
+    Position: {x: 9.5, y: 7.372}
+    RouteId: ""
+    Road: "slip_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"slip_road\",\"why\":\"the harbour sign where the slip road leaves the green\"}"
+  - PieceId: "prop.stp_vl_road_bench_02"
+    Kind: "bench"
+    Position: {x: 8.0, y: 3.613}
+    RouteId: ""
+    Road: "slip_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"slip_road\",\"why\":\"a bench below the road, looking at the harbour\"}"
+  - PieceId: "prop.stp_vl_road_cod_flake_02"
+    Kind: "codFlake"
+    Position: {x: 21.5, y: 7.537}
+    RouteId: ""
+    Road: "slip_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"slip_road\",\"why\":\"a flake on the meadow above the slip road\"}"
+  - PieceId: "prop.stp_vl_road_trap_stack_02"
+    Kind: "trapStack"
+    Position: {x: 27.5, y: 5.77}
+    RouteId: ""
+    Road: "slip_road"
+    MetadataJson: "{\"rig\":\"WharfDecor\",\"road\":\"slip_road\",\"why\":\"a trap stack on the verge, waiting for the cart\"}"
+  HearthRingPosition: {x: 0.0, y: 14.0}
+  HearthRingRadius: 3.0
+  Tree:
+  - Node: "green"
+    Parent: ""
+    Position: {x: 2.5, y: 7.0}
+    Via: []
+    Reason: "the root (StPetersBuilder.VillageGreen)"
+  - Node: "cross_walk"
+    Parent: "green"
+    Position: {x: 2.5, y: 12.5}
+    Via: []
+    Reason: "the Green step meets the Cross Walk, on the ring's gravel"
+  - Node: "green_walk_foot"
+    Parent: "cross_walk"
+    Position: {x: 2.5, y: 15.658}
+    Via: []
+    Reason: "the ring's north edge, the foot of the Green Walk"
+  - Node: "lane_store"
+    Parent: "green_walk_foot"
+    Position: {x: 2.5, y: 28.3}
+    Via: []
+    Reason: "the store's approach on Green Row (kept name)"
+  - Node: "bluff_path_foot"
+    Parent: "lane_store"
+    Position: {x: -6.25, y: 28.3}
+    Via: []
+    Reason: "the Bluff Path leaves Green Row"
+  - Node: "lane_harbour_gable"
+    Parent: "bluff_path_foot"
+    Position: {x: -6.25, y: 41.1}
+    Via: []
+    Reason: "the harbour gable's approach, the Bluff Path's head"
+  - Node: "lane_school"
+    Parent: "bluff_path_foot"
+    Position: {x: -11.4, y: 28.3}
+    Via: []
+    Reason: "the school's approach (kept name)"
+  - Node: "bluff_walk_foot"
+    Parent: "lane_school"
+    Position: {x: -17.5, y: 28.3}
+    Via: []
+    Reason: "the Bluff Walk leaves Green Row"
+  - Node: "yard_sage_cottage"
+    Parent: "bluff_walk_foot"
+    Position: {x: -21.5, y: 34.5}
+    Via:
+    - {x: -17.5, y: 34.5}
+    Reason: "the sage cottage's approach on the Shore Walk (kept name)"
+  - Node: "east_walk_head"
+    Parent: "lane_store"
+    Position: {x: 13.25, y: 28.3}
+    Via: []
+    Reason: "the East Walk meets Green Row"
+  - Node: "yard_saltbox"
+    Parent: "east_walk_head"
+    Position: {x: 13.25, y: 20.3}
+    Via: []
+    Reason: "the red saltbox's approach on the East Walk (kept name): Rose's way to the counter"
+  - Node: "lane_post_office"
+    Parent: "east_walk_head"
+    Position: {x: 18.18, y: 28.3}
+    Via: []
+    Reason: "the post office's approach (kept name)"
+  - Node: "lane_cream_saltbox"
+    Parent: "lane_post_office"
+    Position: {x: 28.5, y: 28.3}
+    Via: []
+    Reason: "the cream saltbox's approach"
+  - Node: "farm_walk_head"
+    Parent: "lane_cream_saltbox"
+    Position: {x: 34.0, y: 28.3}
+    Via: []
+    Reason: "the Farm Walk leaves Green Row"
+  - Node: "lane_farmhouse"
+    Parent: "farm_walk_head"
+    Position: {x: 34.0, y: 18.9}
+    Via: []
+    Reason: "the farmhouse's approach on the Farm Walk (kept name)"
+  - Node: "lane_white_gable"
+    Parent: "farm_walk_head"
+    Position: {x: 53.0, y: 28.3}
+    Via: []
+    Reason: "the white gable's approach"
+  - Node: "green_row_east"
+    Parent: "lane_white_gable"
+    Position: {x: 57.0, y: 28.3}
+    Via: []
+    Reason: "Green Row's east end"
+  - Node: "yard_ginny_plot"
+    Parent: "green_row_east"
+    Position: {x: 76.74, y: 26.13}
+    Via:
+    - {x: 62.0, y: 27.0}
+    Reason: "StPetersGinnyPlot.Dooryard (unchanged); via (62, 27)"
+  - Node: "garden_gate"
+    Parent: "cross_walk"
+    Position: {x: -17.5, y: 12.5}
+    Via: []
+    Reason: "the west garden's gate, where the Garden Path meets the Garden Walk"
+  - Node: "yard_cottage"
+    Parent: "green"
+    Position: {x: 4.0, y: 11.0}
+    Via: []
+    Reason: "Ginny's village mark (4, 11), unchanged"
+  - Node: "flats_head"
+    Parent: "green"
+    Position: {x: -55.0, y: 2.5}
+    Via:
+    - {x: -12.867, y: 1.55}
+    - {x: -29.139, y: 2.158}
+    Reason: "unchanged, with its bends (bar road)"
+  - Node: "slip_head"
+    Parent: "green"
+    Position: {x: 190.0, y: 0.0}
+    Via:
+    - {x: 49.157, y: -0.521}
+    - {x: 95.99, y: -3.406}
+    - {x: 143.156, y: 2.812}
+    Reason: "unchanged, with its bends (slip road)"
+  - Node: "wharf_head"
+    Parent: "slip_head"
+    Position: {x: 207.5, y: 1.5}
+    Via: []
+    Reason: "unchanged"
+  CycleLinks:
+  - Link: "east_walk"
+    Between:
+    - "yard_saltbox"
+    - "cross_walk"
+    Via: "route.stpeters.east_walk south of the red saltbox, and route.stpeters.cross_walk_east"
+    WouldServe: "Rose down to the hearth bench of an evening; in the tree the walk goes by Green Row and the Green Walk"
+  - Link: "garden_walk"
+    Between:
+    - "garden_gate"
+    - "bluff_walk_foot"
+    Via: "route.stpeters.garden_walk"
+    WouldServe: "the school and the sage cottage down to the garden beds; in the tree they go round by the ring"
+  - Link: "ring"
+    Between:
+    - "cross_walk"
+    - "green_walk_foot"
+    Via: "the hearth ring (either side)"
+    WouldServe: "nobody: a villager crosses the ring on one side only"
+  - Link: "barren_gap"
+    Between:
+    - "lane_cream_saltbox"
+    - "barren path"
+    Via: "route.stpeters.barren_gap"
+    WouldServe: "no routine today (pass 9's barren path is the player's)"
+  - Link: "shore_walk"
+    Between:
+    - "yard_sage_cottage"
+    - "shore path"
+    Via: "route.stpeters.shore_walk, west of the cottage"
+    WouldServe: "no routine today (pass 9's shore path is the player's)"
+  Windows:
+  - Key: "B6"
+    Bounds: {x: -32.0, y: 54.0, z: -16.0, w: 63.0}
+    Focal: "pass 9's harbour shore"
+    Wide: 0
+  - Key: "C6"
+    Bounds: {x: -16.0, y: 54.0, z: 0.0, w: 63.0}
+    Focal: "pass 9's roadside meadow"
+    Wide: 0
+  - Key: "H6"
+    Bounds: {x: 64.0, y: 54.0, z: 80.0, w: 63.0}
+    Focal: "pass 9's blueberry barren"
+    Wide: 0
+  - Key: "B5"
+    Bounds: {x: -32.0, y: 45.0, z: -16.0, w: 54.0}
+    Focal: "sage_cottage (its roof)"
+    Wide: 0
+  - Key: "E5"
+    Bounds: {x: 16.0, y: 45.0, z: 32.0, w: 54.0}
+    Focal: "pass 9's blueberry barren"
+    Wide: 0
+  - Key: "G5"
+    Bounds: {x: 48.0, y: 45.0, z: 64.0, w: 54.0}
+    Focal: "pass 9's blueberry barren"
+    Wide: 0
+  - Key: "H5"
+    Bounds: {x: 64.0, y: 45.0, z: 80.0, w: 54.0}
+    Focal: "pass 9's blueberry barren"
+    Wide: 0
+  - Key: "A4"
+    Bounds: {x: -48.0, y: 36.0, z: -32.0, w: 45.0}
+    Focal: "the woods (3 trees and shrubs)"
+    Wide: 0
+  - Key: "B4"
+    Bounds: {x: -32.0, y: 36.0, z: -16.0, w: 45.0}
+    Focal: "sage_cottage's door"
+    Wide: 0
+  - Key: "C4"
+    Bounds: {x: -16.0, y: 36.0, z: 0.0, w: 45.0}
+    Focal: "harbour_gable's front"
+    Wide: 0
+  - Key: "E4"
+    Bounds: {x: 16.0, y: 36.0, z: 32.0, w: 45.0}
+    Focal: "cream_saltbox (its upper front and roof)"
+    Wide: 0
+  - Key: "F4"
+    Bounds: {x: 32.0, y: 36.0, z: 48.0, w: 45.0}
+    Focal: "pass 9's roadside meadow"
+    Wide: 0
+  - Key: "G4"
+    Bounds: {x: 48.0, y: 36.0, z: 64.0, w: 45.0}
+    Focal: "white_gable (its upper front and roof)"
+    Wide: 0
+  - Key: "A3"
+    Bounds: {x: -48.0, y: 27.0, z: -32.0, w: 36.0}
+    Focal: "the bench"
+    Wide: 0
+  - Key: "B3"
+    Bounds: {x: -32.0, y: 27.0, z: -16.0, w: 36.0}
+    Focal: "pass 9's roadside meadow"
+    Wide: 0
+  - Key: "C3"
+    Bounds: {x: -16.0, y: 27.0, z: 0.0, w: 36.0}
+    Focal: "school's door"
+    Wide: 0
+  - Key: "D3"
+    Bounds: {x: 0.0, y: 27.0, z: 16.0, w: 36.0}
+    Focal: "general_store's door"
+    Wide: 0
+  - Key: "E3"
+    Bounds: {x: 16.0, y: 27.0, z: 32.0, w: 36.0}
+    Focal: "cream_saltbox's door"
+    Wide: 0
+  - Key: "F3"
+    Bounds: {x: 32.0, y: 27.0, z: 48.0, w: 36.0}
+    Focal: "the fish flakes"
+    Wide: 0
+  - Key: "G3"
+    Bounds: {x: 48.0, y: 27.0, z: 64.0, w: 36.0}
+    Focal: "white_gable's door"
+    Wide: 0
+  - Key: "B2"
+    Bounds: {x: -32.0, y: 18.0, z: -16.0, w: 27.0}
+    Focal: "the vegRows"
+    Wide: 0
+  - Key: "D2"
+    Bounds: {x: 0.0, y: 18.0, z: 16.0, w: 27.0}
+    Focal: "the notice board"
+    Wide: 0
+  - Key: "E2"
+    Bounds: {x: 16.0, y: 18.0, z: 32.0, w: 27.0}
+    Focal: "red_saltbox's door"
+    Wide: 0
+  - Key: "F2"
+    Bounds: {x: 32.0, y: 18.0, z: 48.0, w: 27.0}
+    Focal: "white_farmhouse's door"
+    Wide: 0
+  - Key: "G2"
+    Bounds: {x: 48.0, y: 18.0, z: 64.0, w: 27.0}
+    Focal: "pass 9's roadside meadow"
+    Wide: 0
+  - Key: "H2"
+    Bounds: {x: 64.0, y: 18.0, z: 80.0, w: 27.0}
+    Focal: "the GinnyPlot"
+    Wide: 0
+  - Key: "B1"
+    Bounds: {x: -32.0, y: 9.0, z: -16.0, w: 18.0}
+    Focal: "the vegRows"
+    Wide: 0
+  - Key: "C1"
+    Bounds: {x: -16.0, y: 9.0, z: 0.0, w: 18.0}
+    Focal: "the hearth and its fire pit"
+    Wide: 0
+  - Key: "D1"
+    Bounds: {x: 0.0, y: 9.0, z: 16.0, w: 18.0}
+    Focal: "the hearth and its fire pit"
+    Wide: 0
+  - Key: "F1"
+    Bounds: {x: 32.0, y: 9.0, z: 48.0, w: 18.0}
+    Focal: "white_farmhouse's yard dressing"
+    Wide: 0
+  - Key: "A0"
+    Bounds: {x: -48.0, y: 0.0, z: -32.0, w: 9.0}
+    Focal: "the roadside: a chalked board at the bar head: the tide times for the crossing"
+    Wide: 0
+  - Key: "B0"
+    Bounds: {x: -32.0, y: 0.0, z: -16.0, w: 9.0}
+    Focal: "the roadside: a salt-fish flake on the meadow above the bar-head road"
+    Wide: 0
+  - Key: "C0"
+    Bounds: {x: -16.0, y: 0.0, z: 0.0, w: 9.0}
+    Focal: "the roadside: the garden's roadside stand: an honesty box by the road"
+    Wide: 0
+  - Key: "D0"
+    Bounds: {x: 0.0, y: 0.0, z: 16.0, w: 9.0}
+    Focal: "a lantern post"
+    Wide: 0
+  - Key: "E0"
+    Bounds: {x: 16.0, y: 0.0, z: 32.0, w: 9.0}
+    Focal: "the roadside: a flake on the meadow above the slip road"
+    Wide: 0
+  - Key: "F0"
+    Bounds: {x: 32.0, y: 0.0, z: 48.0, w: 9.0}
+    Focal: "pass 9's woods floor"
+    Wide: 0
+  - Key: "wide_arrival"
+    Bounds: {x: -9.9445, y: 2.0, z: 14.9445, w: 16.0}
+    Focal: "the hearth and its fire pit"
+    Wide: 1
+  - Key: "wide_square"
+    Bounds: {x: -3.4445, y: 11.5, z: 21.4445, w: 25.5}
+    Focal: "red_saltbox's door"
+    Wide: 1
+  - Key: "wide_bluff"
+    Bounds: {x: -24.4445, y: 34.0, z: 0.4445, w: 48.0}
+    Focal: "harbour_gable's door"
+    Wide: 1
+  - Key: "wide_east"
+    Bounds: {x: 25.5555, y: 18.0, z: 50.4445, w: 32.0}
+    Focal: "white_farmhouse's door"
+    Wide: 1
+  WindowWidth: 16.0
+  WindowHeight: 9.0
+  WindowExtent: {x: -38.0, y: 0.0, z: 80.0, w: 57.0}
+  LampComparisons:
+  - Kind: "windowGlow (today)"
+    Position: {x: 84.0, y: 28.0}
+    Owner: "GinnyPlot/sageCottage"
+    Preset: "WindowGlow"
+    Reach: 3.4
+    When: "evening"
+    Active: 1
+  - Kind: "streetLamp (line)"
+    Position: {x: -19.0, y: 28.3}
+    Owner: "Green Row"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: -7.0, y: 28.3}
+    Owner: "Green Row"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 5.0, y: 28.3}
+    Owner: "Green Row"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 17.0, y: 28.3}
+    Owner: "Green Row"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 29.0, y: 28.3}
+    Owner: "Green Row"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 41.0, y: 28.3}
+    Owner: "Green Row"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 53.0, y: 28.3}
+    Owner: "Green Row"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: -8.0, y: 12.5}
+    Owner: "Cross Walk"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 2.598, y: 12.5}
+    Owner: "Cross Walk (east)"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 2.5, y: 15.658}
+    Owner: "Green Walk"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 13.25, y: 12.02}
+    Owner: "East Walk"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0
+  - Kind: "streetLamp (line)"
+    Position: {x: 13.25, y: 24.02}
+    Owner: "East Walk"
+    Preset: "Lightpost"
+    Reach: 3.6
+    When: "line"
+    Active: 0

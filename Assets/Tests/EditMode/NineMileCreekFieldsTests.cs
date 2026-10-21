@@ -18,9 +18,15 @@ namespace HiddenHarbours.Tests.EditMode
     /// measured rather than intended: no circle the size of a small wood may contain more trees than a
     /// hedgerow does.</para>
     ///
-    /// <para>The terrain is built through the SAME configure call the builder uses, so a test can never
-    /// assert a hinterland the scene does not carry. Nothing here loads an asset: the planting is a pure
+    /// <para>The terrain is built through the SAME configure call the builder uses, so the planting asserted
+    /// is the planting the builder lays into the scene. Nothing here loads an asset: the planting is a pure
     /// function of the published plan plus that terrain, which is why it can be asserted headlessly.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> That terrain is the plan's analytic ground. The scene's ground is
+    /// G3 (<see cref="NineMileCreekLiveGround.Plan"/>), and the planting moves onto it in a later wave, from G3's
+    /// field and wood masks (<see cref="NineMileCreekGroundMasks"/>). Until then some farmed trees stand on
+    /// ground G3 does not keep dry, a conflict the overhaul defers to that wave. None of these tests claims
+    /// G3's hinterland.</para>
     /// </summary>
     public class NineMileCreekFieldsTests
     {

@@ -72,8 +72,8 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// Is the plant's <b>whole standing height</b> under water? This is the SORTING question, not
-        /// the state question: a fully submerged plant is drawn beneath the water surface so the
-        /// sea's own shallow transparency reveals it, while a plant sticking out through the surface
+        /// the state question: a fully submerged plant is drawn beneath the water surface, where the
+        /// sea shows it through the water, while a plant sticking out through the surface
         /// must draw in the decor band or its emergent half would be painted over by the water.
         ///
         /// <para><b>⚠ Height, not depth alone.</b> A 2.75 m sugar kelp under 1 m of water is NOT
@@ -92,10 +92,11 @@ namespace HiddenHarbours.Art
         ///
         /// <list type="bullet">
         /// <item><b>Under water</b> → <paramref name="submergedOrder"/>, which sits BELOW the Sea
-        /// plane (−5) and ABOVE the painted seabed (−21…−18). The water shader already fades toward
-        /// transparent in the shallows (the shore-fade path), so a bed drawn in that gap is simply
-        /// VISIBLE THROUGH the water where it is shallow and lost as it deepens — no new
-        /// transparency system, no second waterline.</item>
+        /// plane (−5) and ABOVE the painted seabed (−21…−18), so the surface draws over it. ⚠ The
+        /// gap alone no longer shows it: the sea composites its own bed opaquely (ADR 0027 #7), so a
+        /// plant there is seen only where the shore fades the sea. Seeing it through clear water is
+        /// the sea's own composite, which <see cref="UnderWaterMask"/> lets it in to (W4-4c). No
+        /// second waterline either way.</item>
         /// <item><b>Emergent</b> → the ordinary <see cref="YSortSprite"/> decor band, sorted against
         /// the player like grass, because that is what it now is.</item>
         /// </list>
@@ -109,5 +110,21 @@ namespace HiddenHarbours.Art
             ySorted = !submerged;
             return submerged ? submergedOrder : emergentOrder;
         }
+
+        /// <summary>
+        /// The renderer's rendering-layer mask with <see cref="UnderWaterRegistry.RenderingLayer"/> set
+        /// exactly when the plant is wholly under the live water (<see cref="IsSubmerged"/>) AND the
+        /// props switch is on (<c>GameConfig.ShallowsSubmergedProps</c>, W4-4c). Every other bit is the
+        /// caller's and comes back untouched.
+        ///
+        /// <para>The bit puts the plant in the sea's under-water list, so the sea draws it through its
+        /// own column, over the floor, by the law the floor beside it takes. It follows the ONE
+        /// submerged test that already sorts the plant under the sea plane, so the list and the
+        /// sorting cannot disagree: a plant lying across the surface is decor, never under.</para>
+        /// </summary>
+        public static uint UnderWaterMask(uint mask, bool submerged, bool propsOn) =>
+            submerged && propsOn
+                ? mask | UnderWaterRegistry.RenderingLayer
+                : mask & ~UnderWaterRegistry.RenderingLayer;
     }
 }

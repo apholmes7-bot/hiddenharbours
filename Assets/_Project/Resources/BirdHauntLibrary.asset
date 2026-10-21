@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 871200f96ba7e2e3bfd80cfcc80d9465, type: 3}
+  m_Name: BirdHauntLibrary
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.BirdHauntLibrary
+  Haunts:
+  - {fileID: 11400000, guid: 2fee0278f34ee7bdca89e66708acc111, type: 2}
+  - {fileID: 11400000, guid: c8bf3861159153238c7a8d6c994c9b47, type: 2}
+  - {fileID: 11400000, guid: 19b45faef5497f90ee1bc86952734d9d, type: 2}
+  - {fileID: 11400000, guid: abb9cd0fb05e7c542eb66321743f67e9, type: 2}
+  - {fileID: 11400000, guid: f72ea52e8b4a9b8620ae83c36a4ec23d, type: 2}
+  - {fileID: 11400000, guid: 67a0f2ffd92095528a704f152d571361, type: 2}
+  - {fileID: 11400000, guid: 1edeb6eeecd0fcda12b2aa87e6ba2870, type: 2}
+  - {fileID: 11400000, guid: 8bf363c45b50a10529f465d16c500d38, type: 2}
+  - {fileID: 11400000, guid: 5d9312e1dfbcefdf88fbbedeb2167573, type: 2}
+  - {fileID: 11400000, guid: 2985a2b54bbefd7c3c9b81a0fc3e887d, type: 2}
+  - {fileID: 11400000, guid: b229db3b1605b1d2cc0450cfd6528ee0, type: 2}
+  - {fileID: 11400000, guid: 58166ff195e31a098cb6d21ebfb5a6f8, type: 2}
+  - {fileID: 11400000, guid: 9a5f9aa9c5a97f1005cc6d1d1b05a339, type: 2}
+  - {fileID: 11400000, guid: bed3701f19787b53538859432406762d, type: 2}
+  - {fileID: 11400000, guid: 299e5adef2348d2eee38c4197c3915cb, type: 2}
+  - {fileID: 11400000, guid: 021fc81c5bae85ba6390fd1c0af7747f, type: 2}
+  - {fileID: 11400000, guid: e50b88a343bd67b1dd883f916c5e66ee, type: 2}
+  - {fileID: 11400000, guid: fe1c3e97075f3e6fc013323452dd5cd8, type: 2}
+  - {fileID: 11400000, guid: 672a025cd11df8eefd52a4e63ede8f50, type: 2}
+  Tuning:
+    DawnLeadHours: 0.5
+    DawnFullHours: 1
+    MorningEndHour: 11
+    MiddayStartHour: 12
+    MiddayEndHour: 15
+    AfternoonLeadHours: 2.5
+    EveningTailHours: 0.25
+    CalmStormMax: 0.35
+    GaleStorm: 0.75
+    ShelterKeep: 0.35
+    GaleTellHours: 1
+    FogClearVisibility: 0.6
+    FogThickVisibility: 0.2
+    FogKeep: 0.4
+    RoostLoafShare: 0.25
+    FogRoostShare: 0.6
+    PopulationHeadroom: 1.3
+    DayJitter: 0.15
+    YoungShare: 0.2
+    YoungFromProgress: 0.5
+    YoungLeaveByEnd: 0.5
+    SchoolBirds: 6
+    SchoolSeason:
+    - 0.9
+    - 1
+    - 1
+    - 0.5
+    SchoolMiddayLevel: 0.7
+    SchoolAfternoonLevel: 0.8

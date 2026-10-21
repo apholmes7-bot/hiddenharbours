@@ -310,17 +310,15 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 ToStPetersPassagePos = new Vector3(352f, -200f, 0f);
 
         /// <summary>
-        /// Where the player STANDS on arriving from St Peters, on foot, mid-crossing.
+        /// Where the player STANDS on arriving from St Peters, on foot, mid-crossing: the region's named
+        /// <c>bar</c> arrival (#456), so a walker lands on this half of the bar and not on the wharf deck.
         ///
-        /// <para>⚠ NOTHING CONSUMES THIS YET, and that is a reported gap rather than an oversight.
-        /// <c>RegionAnchor</c> exposes ONE <c>DisembarkPoint</c> and <c>RegionTravelCoordinator</c>
-        /// teleports the player to it on every arrival — which is right for the one-passage regions built
-        /// so far and wrong the moment a region has both a wharf you sail into and a bar you walk in
-        /// across. Arriving on foot would put the player on the wharf deck 400 m away. The fix is a
-        /// per-passage arrival point on <c>RegionAnchor</c> (App/Core, so lead-architect's call); it is
-        /// named here so Phase A's geometry is ready for it the day it lands.</para>
+        /// <para>On the crest, 8.1 m short of <see cref="BarTo"/> along the bar's own axis and 11 m west of
+        /// the crossing door's band, so a walker arrives OUTSIDE the door they came in by. Inside it, only
+        /// the door's 1.5 s re-fire guard would stand between them and a crossing straight back, and a first
+        /// physics step that came later than that after the scene woke would let the door fire.</para>
         /// </summary>
-        public static readonly Vector3 WalkArrivalPos = new Vector3(350f, -200f, 0f);
+        public static readonly Vector3 WalkArrivalPos = new Vector3(338f, -197.7f, 0f);
 
         // --- ⭐ THE SEA DOOR: out east into THE WEST WATER (world-map-plan §6 step 1) -------------------
         // The wharf's way out to open water, and the half of the home arc that is not tide-gated: leave
@@ -334,7 +332,7 @@ namespace HiddenHarbours.App.Editor
         // the flat −6 m floor — a seam in featureless water, clear of hazards (world-map-plan §4.4).
         //
         // ⚠ 120 m tall, not the full region: the east edge already carries the CROSSING's band at
-        // y = −200, and two doors on one edge must not overlap. The gap between them is 158 m.
+        // y = −200, and two doors on one edge must not overlap. The gap between them is 118 m.
         //
         // ⚠ EXPRESSION-BODIED, not `static readonly`, and it has to be: HarbourBeaconPos is declared
         // further down this same file, and a static field initialiser reading a static field declared

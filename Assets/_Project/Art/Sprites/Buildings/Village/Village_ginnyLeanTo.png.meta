@@ -177,11 +177,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 346
-        width: 388
-        height: 346
+        y: 348
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -198,12 +198,12 @@ TextureImporter:
       name: Village_ginnyLeanTo_d1
       rect:
         serializedVersion: 2
-        x: 388
-        y: 346
-        width: 388
-        height: 346
+        x: 402
+        y: 348
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -220,12 +220,12 @@ TextureImporter:
       name: Village_ginnyLeanTo_d2
       rect:
         serializedVersion: 2
-        x: 776
-        y: 346
-        width: 388
-        height: 346
+        x: 804
+        y: 348
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -242,12 +242,12 @@ TextureImporter:
       name: Village_ginnyLeanTo_d3
       rect:
         serializedVersion: 2
-        x: 1164
-        y: 346
-        width: 388
-        height: 346
+        x: 1206
+        y: 348
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -264,12 +264,12 @@ TextureImporter:
       name: Village_ginnyLeanTo_d4
       rect:
         serializedVersion: 2
-        x: 1552
-        y: 346
-        width: 388
-        height: 346
+        x: 1608
+        y: 348
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -288,10 +288,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 388
-        height: 346
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -308,12 +308,12 @@ TextureImporter:
       name: Village_ginnyLeanTo_d6
       rect:
         serializedVersion: 2
-        x: 388
+        x: 402
         y: 0
-        width: 388
-        height: 346
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -330,12 +330,12 @@ TextureImporter:
       name: Village_ginnyLeanTo_d7
       rect:
         serializedVersion: 2
-        x: 776
+        x: 804
         y: 0
-        width: 388
-        height: 346
+        width: 402
+        height: 348
       alignment: 9
-      pivot: {x: 0.5, y: 0.36127168}
+      pivot: {x: 0.5, y: 0.37068966}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

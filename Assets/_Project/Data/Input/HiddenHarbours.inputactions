@@ -1029,6 +1029,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Hud",
+            "id": "e92c714f-14c6-44e7-83ea-1c52b9baea4a",
+            "actions": [
+                {
+                    "name": "HideAll",
+                    "type": "Button",
+                    "id": "91ab72bf-2fec-4738-8fa7-bcd50630e541",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ccc9d04e-e038-4450-82d9-e26c4d1d9267",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "HideAll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

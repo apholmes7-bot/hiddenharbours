@@ -82,8 +82,19 @@ namespace HiddenHarbours.Tests.PlayMode
         /// seconds, and a fixture that gave up at twenty would be red on the wheel's own dice.</summary>
         const int PatienceTicks = 3600;
 
-        /// <summary>Well inside the working area (14 x 9 m about the camera) so the settled bird is not
-        /// re-homed onto the wheel by <c>OutsideWorkingArea</c> the moment she is down.</summary>
+        /// <summary>
+        /// The one place this fixture's flocks work (<see cref="GullFlock.PinFixtureHaunt"/>): a box
+        /// about the origin, the size of the old working area. The birds belong to places now, and
+        /// with no clock and no region the schedule has none of its own.
+        /// </summary>
+        static readonly Vector2 PlaceHalfSize = new Vector2(14f, 9f);
+
+        /// <summary>Birds at the fixture's place, round the clock. The shipped settled share wants two
+        /// of them down, which leaves at least three on the wheel for the descents to choose from.</summary>
+        const int BirdsOnShow = 5;
+
+        /// <summary>Well inside the fixture's place so the settled bird is not sent back to her wheel by
+        /// <c>OutsideItsPlace</c> the moment she is down.</summary>
         static readonly Vector2 GroundSpot = new Vector2(2.5f, -1.5f);
         static readonly Vector2 WaterSpot = new Vector2(-3.5f, 2f);
 
@@ -103,7 +114,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _camera = camGo.AddComponent<Camera>();
             _camera.orthographic = true;
             _camera.orthographicSize = 8f;
-            // Tick reads the camera's XY as the flock's centre, so the working area is about the origin.
+            // The camera chooses which birds are drawn, never where they are: here it frames the place.
             _camera.transform.position = new Vector3(0f, 0f, -10f);
 
             _tintBefore = Shader.GetGlobalColor("_DayNightTint");
@@ -196,6 +207,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             GullFlock flock = Spawn(name).AddComponent<GullFlock>();
             flock.enabled = false;   // ⚠ before its first Update: this fixture hands it every millisecond
+            flock.PinFixtureHaunt(Vector2.zero, PlaceHalfSize, BirdsOnShow);
             Assert.Greater(flock.BirdCount, 0, name + " built no birds");
             Assert.IsNotNull(flock.Behaviour, name + " has no state table");
             return flock;
@@ -211,8 +223,8 @@ namespace HiddenHarbours.Tests.PlayMode
         ///
         /// <para>⚠ Called again after every frame this fixture lets pass. The rest of the ambient world
         /// self-installs too, and <c>DayNightController</c> and the wind bridges rewrite these globals
-        /// in their own <c>Update</c>. The flock reads BOTH into its sim — a dim tint puts the whole
-        /// flock down to roost, and the wind offsets the wheel's centre — so a fixture that let them
+        /// in their own <c>Update</c>. The flock reads BOTH — a dim tint dims the birds, and the wind
+        /// offsets every wheel's centre and turns every run-in — so a fixture that let them
         /// drift across its frames would be varying the weather while claiming to vary the clock, and
         /// could not tell the two apart.</para>
         /// </summary>
@@ -293,6 +305,69 @@ namespace HiddenHarbours.Tests.PlayMode
         /// exactly rather than approximately, and it casts no ground-contact disc — that darkened patch
         /// belongs to a thing with mass overhead, not to a gull three metres up.
         /// </summary>
+        sealed class OfferedPerch : IGullPerch
+        {
+            public string Id => "test.wave1b.perch";
+            public Vector2 GroundPoint => Vector2.zero;
+            public Vector2 ScreenPoint => new Vector2(0f, 3f);
+            public float SortY => 0f;
+        }
+
+        [Test]
+        public void AnOfferedPerch_IsLandedOnAndLeft_ByTheFlocksOwnDecisions()
+        {
+            var perch = new OfferedPerch();
+            GullPerches.Register(perch);
+            try
+            {
+                GullFlock flock = NewFlock("PerchingFlock");
+                // The place IS the perch's search box, so any bird's spot there can claim it.
+                flock.PinFixtureHaunt(perch.GroundPoint, GullConfig.Default.PerchSearchHalfSize, BirdsOnShow);
+                int landed = -1;
+                for (int tick = 0; tick < PatienceTicks * 3 && landed < 0; tick++)
+                {
+                    Step(flock, 1);
+                    for (int bird = 0; bird < flock.BirdCount; bird++)
+                    {
+                        var state = flock.BirdState(bird);
+                        if (Id(flock, bird) == SeagullStates.Stand &&
+                            Vector2.Distance(new Vector2((float)state.X, (float)state.Y), perch.ScreenPoint) < 0.01f)
+                        { landed = bird; break; }
+                    }
+                }
+                Assert.GreaterOrEqual(landed, 0, "No bird reached the offered screen point.");
+                Assert.That(Lift(flock, landed), Is.EqualTo(0f).Within(0.01f));
+                bool left = false;
+                for (int tick = 0; tick < PatienceTicks && !left; tick++)
+                {
+                    Step(flock, 1);
+                    left = flock.Behaviour.SurfaceOf(flock.BirdState(landed).State) == SeagullSurface.None;
+                }
+                Assert.IsTrue(left, "A daytime perch must be left after the settle window.");
+
+                // ⚠ THE FIRST BIRD ON IT MAY HAVE APPEARED THERE: a bird the schedule shows sits where a
+                // sitting bird would be, perch and all. So the descent is proved by the NEXT bird on it.
+                // The five stay bound and none appears again, so the only way back onto the perch is
+                // the flock's own put-down. One place opens at a time, and a descent its deadline cuts
+                // short waits a settle window for the next try: hence the longer patience.
+                int relanded = -1;
+                for (int tick = 0; tick < PatienceTicks * 6 && relanded < 0; tick++)
+                {
+                    Step(flock, 1);
+                    for (int bird = 0; bird < flock.BirdCount; bird++)
+                    {
+                        var state = flock.BirdState(bird);
+                        if (Id(flock, bird) == SeagullStates.Stand &&
+                            Vector2.Distance(new Vector2((float)state.X, (float)state.Y), perch.ScreenPoint) < 0.01f)
+                        { relanded = bird; break; }
+                    }
+                }
+                Assert.GreaterOrEqual(relanded, 0, "No bird came back down onto the offered screen point.");
+                Assert.That(Lift(flock, relanded), Is.EqualTo(0f).Within(0.01f));
+            }
+            finally { GullPerches.Unregister(perch); }
+        }
+
         [Test]
         public void TheFlockInstallsItselfAndGivesEveryBirdItsOwnShadow()
         {

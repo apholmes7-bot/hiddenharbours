@@ -27,6 +27,155 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private const string DataRoot = "Assets/_Project/Data";
 
+        [Test]
+        public void NmcKeyScenes_Exist_AsUnplacedData_WithUniqueIdsAndResolvedRegion()
+        {
+            var regions = LoadAll<RegionDef>();
+            var scenes = LoadAll<KeySceneDef>().FindAll(s => s.RegionId == "region.nine_mile_creek");
+            Assert.That(scenes.Count, Is.EqualTo(12), "H1's twelve imported key scenes");
+            var seen = new Dictionary<string, string>();
+            foreach (var scene in scenes)
+            {
+                string path = AssetDatabase.GetAssetPath(scene);
+                RegisterUniqueId(seen, scene.Id, path, nameof(KeySceneDef));
+                Assert.That(regions.Exists(r => r.Id == scene.RegionId), Is.True, scene.Id + " region");
+                Assert.That(scene.Placed, Is.False, scene.Id);
+                Assert.That(scene.Source, Does.Contain("sha256"), scene.Id);
+                foreach (var piece in scene.Pieces)
+                {
+                    RegisterUniqueId(seen, piece.Id, path, nameof(KeyScenePiece));
+                    StringAssert.IsMatch(@"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$", piece.Id);
+                    Assert.That(piece.Owner, Is.Not.Empty, piece.Id);
+                    Assert.That(piece.Kit, Is.Not.Empty, piece.Id);
+                    Assert.That(piece.Variants, Is.Not.Empty, piece.Id);
+                    Assert.That(piece.Words, Is.Empty, "H1 creates no player-facing words: " + piece.Id);
+                    Assert.That(System.Array.IndexOf(scene.RetiredIds, piece.Id), Is.EqualTo(-1), piece.Id);
+                }
+                foreach (var light in scene.Lights)
+                    Assert.That(System.Array.Exists(scene.Pieces, p => p.Id == light.PieceId), Is.True, light.PieceId);
+            }
+        }
+
+        [Test]
+        public void VillagePlans_Exist_AndHaveUniqueIdsAndResolvedLists()
+        {
+            var plans = LoadAll<VillagePlanDef>();
+            Assert.That(plans.Count, Is.EqualTo(1), "V1 guard 19: village plans");
+            var seen = new Dictionary<string, string>();
+            foreach (var p in plans)
+            {
+                RegisterUniqueId(seen, p.Id, p.Id, "V1 guard 19: VillagePlanDef");
+                CollectionAssert.AreEquivalent(LoadAll<LotDef>().ConvertAll(x => x.Id), p.LotIds, "V1 guard 19: " + p.Id + " lots");
+                CollectionAssert.AreEquivalent(LoadAll<YardDef>().ConvertAll(x => x.Id), p.YardIds, "V1 guard 19: " + p.Id + " yards");
+                CollectionAssert.AreEquivalent(LoadAll<RouteDef>().ConvertAll(x => x.Id), p.RouteIds, "V1 guard 19: " + p.Id + " routes");
+                CollectionAssert.AreEquivalent(LoadAll<CommonsDef>().ConvertAll(x => x.Id), p.CommonsIds, "V1 guard 19: " + p.Id + " commons");
+                CollectionAssert.AreEquivalent(LoadAll<LightPostDef>().ConvertAll(x => x.Id), p.LightIds, "V1 guard 19: " + p.Id + " lights");
+                foreach (var row in p.Roadside)
+                    Assert.That(System.Array.Exists(p.Pieces, x => x.Id == row.PieceId), Is.True,
+                        "V1 guard 19: " + p.Id + "/" + row.PieceId + " roadside piece");
+            }
+        }
+
+        [Test]
+        public void VillageLots_Exist_AndHaveUniqueIdsAndResolvedStreets()
+        {
+            var lots = LoadAll<LotDef>(); var routes = LoadAll<RouteDef>();
+            Assert.That(lots.Count, Is.EqualTo(9), "V1 guard 20: lots");
+            var seen = new Dictionary<string, string>();
+            foreach (var lot in lots)
+            {
+                RegisterUniqueId(seen, lot.Id, lot.Id, "V1 guard 20: LotDef");
+                Assert.That(routes.Exists(r => r.Id == lot.StreetId), Is.True, "V1 guard 20: " + lot.Id + " street");
+                Assert.That(routes.Exists(r => r.Id == lot.WalkId && r.LotId == lot.Id), Is.True, "V1 guard 20: " + lot.Id + " walk");
+                Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Footprints, f => f.Id == lot.FootprintId)),
+                    Is.True, "V1 guard 20: " + lot.Id + " footprint");
+                Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Pieces, x => x.Id == lot.BuildingId)),
+                    Is.True, "V1 guard 20: " + lot.Id + " building");
+            }
+        }
+
+        [Test]
+        public void VillageYards_Exist_AndHaveUniqueIdsAndResolvedLots()
+        {
+            var yards = LoadAll<YardDef>(); var lots = LoadAll<LotDef>();
+            Assert.That(yards.Count, Is.EqualTo(9), "V1 guard 21: yards");
+            var seen = new Dictionary<string, string>();
+            foreach (var yard in yards)
+            {
+                RegisterUniqueId(seen, yard.Id, yard.Id, "V1 guard 21: YardDef");
+                Assert.That(lots.Exists(l => l.Id == yard.LotId), Is.True, "V1 guard 21: " + yard.Id + " lot");
+                Assert.That(yard.Outline.Length, Is.GreaterThanOrEqualTo(3), "V1 guard 21: " + yard.Id + " outline");
+                foreach (var row in yard.Dressing)
+                    Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Pieces, x => x.Id == row.PieceId)),
+                        Is.True, "V1 guard 21: " + yard.Id + "/" + row.PieceId + " dressing");
+            }
+        }
+
+        [Test]
+        public void VillageRoutes_Exist_AndHaveUniqueIdsAndResolvedWalkLots()
+        {
+            var routes = LoadAll<RouteDef>(); var lots = LoadAll<LotDef>();
+            Assert.That(routes.Count, Is.EqualTo(23), "V1 guard 22: routes");
+            var seen = new Dictionary<string, string>();
+            foreach (var route in routes)
+            {
+                RegisterUniqueId(seen, route.Id, route.Id, "V1 guard 22: RouteDef");
+                Assert.That(route.Points.Length, Is.GreaterThanOrEqualTo(2), "V1 guard 22: " + route.Id + " polyline");
+                Assert.That(route.WidthMetres, Is.GreaterThan(0), "V1 guard 22: " + route.Id + " width");
+                if (!string.IsNullOrEmpty(route.LotId))
+                    Assert.That(lots.Exists(l => l.Id == route.LotId), Is.True, "V1 guard 22: " + route.Id + " lot");
+            }
+        }
+
+        [Test]
+        public void VillageCommons_Exist_AndHaveUniqueIdsAndResolvedFurniture()
+        {
+            var commons = LoadAll<CommonsDef>(); var plans = LoadAll<VillagePlanDef>();
+            Assert.That(commons.Count, Is.EqualTo(3), "V1 guard 23: commons");
+            var seen = new Dictionary<string, string>();
+            foreach (var common in commons)
+            {
+                RegisterUniqueId(seen, common.Id, common.Id, "V1 guard 23: CommonsDef");
+                Assert.That(common.Outline.Length, Is.GreaterThanOrEqualTo(3), "V1 guard 23: " + common.Id + " outline");
+                foreach (var furniture in common.Furniture)
+                {
+                    Assert.That(plans.Exists(p => System.Array.Exists(p.Pieces, x => x.Id == furniture.PieceId)),
+                        Is.True, "V1 guard 23: " + common.Id + "/" + furniture.PieceId);
+                    if (!string.IsNullOrEmpty(furniture.RouteId))
+                        Assert.That(LoadAll<RouteDef>().Exists(r => r.Id == furniture.RouteId), Is.True,
+                            "V1 guard 23: " + common.Id + "/" + furniture.RouteId);
+                }
+                foreach (var station in common.Stations)
+                    Assert.That(plans.Exists(p => System.Array.Exists(p.Tree, n => n.Node == station.Node)), Is.True,
+                        "V1 guard 23: " + common.Id + "/" + station.Id + " routine node");
+            }
+        }
+
+        [Test]
+        public void VillageLights_Exist_AndHaveUniqueIdsAndResolvedOwners()
+        {
+            var lights = LoadAll<LightPostDef>(); var lots = LoadAll<LotDef>();
+            var commons = LoadAll<CommonsDef>(); var routes = LoadAll<RouteDef>();
+            Assert.That(lights.Count, Is.EqualTo(16), "V1 guard 24: lights");
+            var seen = new Dictionary<string, string>();
+            foreach (var light in lights)
+            {
+                RegisterUniqueId(seen, light.Id, light.Id, "V1 guard 24: LightPostDef");
+                Assert.That(!string.IsNullOrEmpty(light.LotId) || !string.IsNullOrEmpty(light.CommonsId),
+                    Is.True, "V1 guard 24: " + light.Id + " lot or commons owner");
+                if (!string.IsNullOrEmpty(light.LotId))
+                    Assert.That(lots.Exists(x => x.Id == light.LotId), Is.True, "V1 guard 24: " + light.Id + " lot");
+                if (!string.IsNullOrEmpty(light.CommonsId))
+                    Assert.That(commons.Exists(x => x.Id == light.CommonsId), Is.True, "V1 guard 24: " + light.Id + " commons");
+                if (!string.IsNullOrEmpty(light.RouteId))
+                    Assert.That(routes.Exists(x => x.Id == light.RouteId), Is.True, "V1 guard 24: " + light.Id + " route");
+                Assert.That(light.Reach, Is.GreaterThan(0), "V1 guard 24: " + light.Id + " reach");
+                Assert.That(light.LitBy, Is.Not.Empty, "V1 guard 24: " + light.Id + " lighter");
+                Assert.That(LoadAll<VillagePlanDef>().Exists(p => System.Array.Exists(p.Pieces, x => x.Id == light.Id && x.Position == light.Position)),
+                    Is.True, "V1 guard 24: " + light.Id + " package piece follows its light");
+            }
+        }
+
         // ---- reusable rules (the single source of truth) ------------------------------------
 
         /// <summary>Load every asset of type T under Data/.</summary>
@@ -441,6 +590,82 @@ namespace HiddenHarbours.Tests.EditMode
                 "matching loosely, and the validator above would condemn the whole fleet");
             Assert.IsFalse(RetiredContentIds.IsRetired(null), "a null id is not a retired id");
             Assert.IsFalse(RetiredContentIds.IsRetired("   "), "a blank id is not a retired id");
+        }
+
+        // ---- held props (ADR 0053) ----------------------------------------------------------
+
+        /// <summary>
+        /// Every id a <see cref="HeldPropMeshDef"/> has shipped with, in the bake's order: the rod's
+        /// three tiers, the spade, the seven fish held by the tail, then each bucket tier's thirteen
+        /// fill states. <b>Append-only</b>, like every content id. A held state the rigs stop making
+        /// keeps its line here and its id goes to <see cref="RetiredContentIds"/>; a new state is
+        /// appended. The bake mints these ids from the rigs' own variant names, so this ledger is what
+        /// stops a rig edit that renames a variant from quietly re-minting an old prop under a new id.
+        /// </summary>
+        private static readonly string[] ShippedHeldPropIds =
+        {
+            "heldprop.rod_cane", "heldprop.rod_coast", "heldprop.rod_deep",
+            "heldprop.shovel",
+            "heldprop.fish_cod", "heldprop.fish_haddock", "heldprop.fish_pollock", "heldprop.fish_mackerel",
+            "heldprop.fish_bass", "heldprop.fish_flounder", "heldprop.fish_herring",
+            "heldprop.bucket_pail_empty",
+            "heldprop.bucket_pail_few_fish", "heldprop.bucket_pail_few_shell", "heldprop.bucket_pail_few_crust",
+            "heldprop.bucket_pail_half_fish", "heldprop.bucket_pail_half_shell", "heldprop.bucket_pail_half_crust",
+            "heldprop.bucket_pail_full_fish", "heldprop.bucket_pail_full_shell", "heldprop.bucket_pail_full_crust",
+            "heldprop.bucket_pail_brim_fish", "heldprop.bucket_pail_brim_shell", "heldprop.bucket_pail_brim_crust",
+            "heldprop.bucket_tote_empty",
+            "heldprop.bucket_tote_few_fish", "heldprop.bucket_tote_few_shell", "heldprop.bucket_tote_few_crust",
+            "heldprop.bucket_tote_half_fish", "heldprop.bucket_tote_half_shell", "heldprop.bucket_tote_half_crust",
+            "heldprop.bucket_tote_full_fish", "heldprop.bucket_tote_full_shell", "heldprop.bucket_tote_full_crust",
+            "heldprop.bucket_tote_brim_fish", "heldprop.bucket_tote_brim_shell", "heldprop.bucket_tote_brim_crust",
+            "heldprop.bucket_tray_empty",
+            "heldprop.bucket_tray_few_fish", "heldprop.bucket_tray_few_shell", "heldprop.bucket_tray_few_crust",
+            "heldprop.bucket_tray_half_fish", "heldprop.bucket_tray_half_shell", "heldprop.bucket_tray_half_crust",
+            "heldprop.bucket_tray_full_fish", "heldprop.bucket_tray_full_shell", "heldprop.bucket_tray_full_crust",
+            "heldprop.bucket_tray_brim_fish", "heldprop.bucket_tray_brim_shell", "heldprop.bucket_tray_brim_crust",
+        };
+
+        /// <summary>
+        /// The held props' ids (ADR 0053) are well-formed (<c>heldprop.&lt;snake_case&gt;</c>), unique,
+        /// minted from the def's own family and variant, never a retired id, and STABLE: every id in
+        /// <see cref="ShippedHeldPropIds"/> is still carried by a def unless it was retired, and no def
+        /// carries an id the ledger has not been told about.
+        /// </summary>
+        [Test]
+        public void HeldPropIds_StableAndUnique()
+        {
+            var ledger = new HashSet<string>();
+            foreach (string id in ShippedHeldPropIds)
+            {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(id), "a blank entry in the held-prop id ledger");
+                Assert.IsTrue(ledger.Add(id), $"'{id}' is listed twice in the held-prop id ledger");
+            }
+
+            var seen = new Dictionary<string, string>();
+            foreach (var def in LoadAll<HeldPropMeshDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(def);
+                RegisterUniqueId(seen, def.Id, path, nameof(HeldPropMeshDef));
+                Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(def.Id, @"^heldprop\.[a-z0-9]+(_[a-z0-9]+)*$"),
+                    $"{path}: '{def.Id}' is not {HeldPropMeshDef.IdPrefix}<snake_case>");
+
+                // The bake's mint (HeldPropFleet.IdFor, in an editor assembly this one does not see).
+                string minted = HeldPropMeshDef.IdPrefix + def.Family +
+                                (string.IsNullOrEmpty(def.Variant) ? "" : "_" + def.Variant);
+                Assert.AreEqual(minted, def.Id,
+                    $"{path}: a held prop's id is minted from its family '{def.Family}' and variant '{def.Variant}'");
+                Assert.IsFalse(RetiredContentIds.IsRetired(def.Id),
+                    $"{path} authors '{def.Id}', a RETIRED content id. Mint a new one.");
+                Assert.IsTrue(ledger.Contains(def.Id),
+                    $"{path}: '{def.Id}' is a held-prop id the ledger does not know. Append it to " +
+                    $"{nameof(ShippedHeldPropIds)}; ids are append-only.");
+            }
+
+            foreach (string id in ShippedHeldPropIds)
+                if (!RetiredContentIds.IsRetired(id))
+                    Assert.IsTrue(seen.ContainsKey(id),
+                        $"'{id}' shipped and no {nameof(HeldPropMeshDef)} under {DataRoot} carries it any more. " +
+                        "An id is never dropped: re-bake the state, or retire the id in RetiredContentIds.");
         }
 
         // ---- the ASSET FILES themselves, not the objects they load into ----------------------

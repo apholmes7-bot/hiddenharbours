@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_143
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_143
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: SE
+  Batter: wall
+  Brow:
+  - {x: 215.75, y: 55.264435}
+  - {x: 215.72293, y: 55.543533}
+  - {x: 215.868, y: 55.75937}
+  - {x: 216.16089, y: 55.75}
+  - {x: 216.25, y: 55.91088}
+  - {x: 216.2445, y: 56.204754}
+  - {x: 216.55733, y: 56.25}
+  - {x: 216.75, y: 56.307327}
+  - {x: 216.75, y: 56.557327}
+  - {x: 216.75, y: 56.807327}
+  - {x: 216.7454, y: 57.062046}
+  Toe:
+  - {x: 216.25117, y: 54.775734}
+  - {x: 216.28206, y: 55.043655}
+  - {x: 216.38545, y: 55.216476}
+  - {x: 216.5835, y: 55.25614}
+  - {x: 216.76416, y: 55.513206}
+  - {x: 216.84076, y: 55.749783}
+  - {x: 217.2763, y: 55.796608}
+  - {x: 217.27582, y: 56.01834}
+  - {x: 217.27943, y: 56.18024}
+  - {x: 217.25046, y: 56.47635}
+  - {x: 217.42247, y: 56.739445}
+  DropMetres:
+  - 10.427509
+  - 10.367195
+  - 10.349775
+  - 10.348495
+  - 10.380293
+  - 10.356568
+  - 10.516611
+  - 10.501689
+  - 10.492873
+  - 10.398177
+  - 10.380217
+  ToeElevations:
+  - 0.57247573
+  - 0.63279
+  - 0.65020955
+  - 0.6514905
+  - 0.61969197
+  - 0.64341646
+  - 0.48337406
+  - 0.4982962
+  - 0.50711197
+  - 0.6018071
+  - 0.61976856
+  Stations:
+  - 252
+  - 253
+  - 254
+  - 255
+  - 256
+  - 257
+  - 258
+  - 259
+  - 260
+  - 261
+  - 262
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'SE wall: a new face: no St Peters wall wears SE wall'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 252 to 262; the ring''s own PR builds it.'

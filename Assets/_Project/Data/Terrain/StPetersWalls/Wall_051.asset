@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_051
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_051
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: steep
+  Brow:
+  - {x: 22.122337, y: -64.18716}
+  - {x: 21.880127, y: -64.125496}
+  - {x: 21.63802, y: -64.06349}
+  - {x: 21.395988, y: -64.00113}
+  - {x: 21.154064, y: -63.93843}
+  - {x: 20.912216, y: -63.875374}
+  - {x: 20.670483, y: -63.81197}
+  - {x: 20.428833, y: -63.74822}
+  Toe:
+  - {x: 21.667656, y: -65.97854}
+  - {x: 21.422606, y: -65.917274}
+  - {x: 21.177649, y: -65.85567}
+  - {x: 20.93276, y: -65.79371}
+  - {x: 20.68797, y: -65.73141}
+  - {x: 20.443249, y: -65.66874}
+  - {x: 20.198631, y: -65.60574}
+  - {x: 19.95409, y: -65.54239}
+  DropMetres:
+  - 7.7767797
+  - 7.5156927
+  - 7.2473254
+  - 6.9753084
+  - 6.703514
+  - 6.4356
+  - 6.1753974
+  - 5.9266562
+  ToeElevations:
+  - -1.7767798
+  - -1.5156926
+  - -1.2473255
+  - -0.97530836
+  - -0.7035142
+  - -0.4355996
+  - -0.17539744
+  - 0.07334387
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  BrowFrom: []
+  ToeFrom: []
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 51
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: the main beach opened its shore. The list''s row 051 (Weather Cliff): opened (opened). Its lines are the scene''s at 883f27b5, kept as a record; the id is never used again.'

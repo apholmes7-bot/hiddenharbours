@@ -28,6 +28,29 @@ namespace HiddenHarbours.Art
     /// </summary>
     public static class IsoFacetMath
     {
+        /// <summary>Mirror posed physical Z, before the rig's screen projection. Translation is
+        /// the posed mesh origin, including the calibrated depth/heave offset.</summary>
+        internal static Matrix4x4 HullReflectionMatrix(Vector3 origin, float elevation, float waterline)
+        {
+            Matrix4x4 s = RigToWorld(0, elevation);
+            Matrix4x4 j = Matrix4x4.Scale(new Vector3(1, 1, -1));
+            j.m23 = 2 * waterline;
+            return Matrix4x4.Translate(origin) * s * j * s * Matrix4x4.Translate(-origin);
+        }
+
+        internal static Vector4 HullReflectionPlane(Vector3 origin, float elevation, float waterline)
+        {
+            float e = elevation * Mathf.Deg2Rad;
+            Vector3 n = new Vector3(0, Mathf.Cos(e), -Mathf.Sin(e));
+            return new Vector4(n.x, n.y, n.z, -Vector3.Dot(n, origin) - waterline);
+        }
+
+        internal static float HullReflectionWaterline(float elevation, float lift, float heave, float depthHeave)
+        {
+            float s = Mathf.Sin(elevation * Mathf.Deg2Rad), c = Mathf.Cos(elevation * Mathf.Deg2Rad);
+            return s * (lift * (c + s) - depthHeave * s - heave * c);
+        }
+
         /// <summary>The constant mirror half of the rig→world decomposition. See the class doc.</summary>
         public static readonly Vector3 HullScale = new Vector3(1f, 1f, -1f);
 

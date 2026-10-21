@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c5c8d8bde28472b08b18470afc9976, type: 3}
+  m_Name: CoastRecipe_LedgePlatform
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastRecipeDef
+  Id: coast_recipe.ledge_platform
+  Type: ledge_platform
+  Bands:
+  - Below: -2.3
+    Zone: eelgrass
+  - Below: -1.43
+    Zone: irishmoss
+  - Below: -0.05
+    Zone: rockweed
+  - Below: 2.4
+    Zone: ledge
+  - Below: 4.2
+    Zone: shelf
+  - Below: 99
+    Zone: grass

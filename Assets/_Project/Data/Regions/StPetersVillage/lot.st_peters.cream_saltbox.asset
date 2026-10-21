@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8a1730c3b79fb7eb9873bdf343be0f, type: 3}
+  m_Name: lot.st_peters.cream_saltbox
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
+  Id: "lot.st_peters.cream_saltbox"
+  BuildingId: "building.stp_cream_saltbox"
+  BakeKey: "cream_saltbox"
+  StreetId: "route.stpeters.school_lane"
+  Position: {x: 28.5, y: 35.704}
+  DoorOffset: {x: 0.0, y: -2.722}
+  FootprintId: "footprint.st_peters.cream_saltbox"
+  FacingCell: 4
+  Entry: "front"
+  DoorFaces: "S"
+  RoofTop: 44.48
+  ArtBottom: 32.982
+  Gate: {x: 28.5, y: 29.985}
+  Approach: {x: 28.5, y: 28.3}
+  Outline:
+  - {x: 23.75, y: 29.985}
+  - {x: 34.0, y: 29.985}
+  - {x: 34.0, y: 41.0}
+  - {x: 23.75, y: 41.0}
+  SetbackMetres: 1.0
+  FrontageMetres: 10.25
+  DepthMetres: 17.136
+  WalkId: "route.stpeters.cream_saltbox_walk"

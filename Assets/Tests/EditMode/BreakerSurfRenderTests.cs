@@ -199,10 +199,11 @@ namespace HiddenHarbours.Tests.EditMode
             BuildTheShore();
             AimAtTheSurf(NineMileCreekMainland.SpringLowWater);
 
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
             BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
-                WaveFetch.Envelope01(0f, GameServices.WaveFetch), GameServices.Breakers);
+                WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch),
+                GameServices.Breakers);
 
             Color32[] red = Shoot("surf-red-contour-check", NineMileCreekMainland.SpringLowWater,
                                   surf: true, surfColor: new Color(1f, 0f, 0f, 1f));
@@ -303,11 +304,11 @@ namespace HiddenHarbours.Tests.EditMode
             RequireAGraphicsDevice();
             BuildTheShore();
 
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
             var settings = GameServices.Breakers;
             BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
-                WaveFetch.Envelope01(0f, GameServices.WaveFetch), settings);
+                WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch), settings);
             Assert.IsTrue(contour.Breaks, "the shot sea must break somewhere");
 
             float waterLevel = NineMileCreekMainland.SpringLowWater;
@@ -482,10 +483,11 @@ namespace HiddenHarbours.Tests.EditMode
 
         void AimAtTheSurf(float waterLevel)
         {
-            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            var terrain = _terrainGo.GetComponent<PaintedTidalTerrain>();
             WaveTrains trains = WaveMath.TrainsFrom(ShotWind, ShotSeaState, GameServices.WaveField);
             BreakerContour contour = BreakerMath.ContourFor(trains.Dominant,
-                WaveFetch.Envelope01(0f, GameServices.WaveFetch), GameServices.Breakers);
+                WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch),
+                GameServices.Breakers);
             Assert.IsTrue(contour.Breaks,
                 "the shot sea must break somewhere, or there is nothing to photograph");
 
@@ -498,9 +500,8 @@ namespace HiddenHarbours.Tests.EditMode
         void BuildTheShore()
         {
             _terrainGo = new GameObject("TidalTerrain");
-            var terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
-            GameServices.TidalTerrain = terrain;
+            // The scene's own ground (NMC H2): G3, registered by hand as its OnEnable registers it in play.
+            var terrain = NineMileCreekLiveGround.Register(_terrainGo);
 
             var region = AssetDatabase.LoadAssetAtPath<RegionDef>(
                 WaterSceneTemplate.RegionAssetPathFor("NineMileCreek"));
@@ -537,7 +538,9 @@ namespace HiddenHarbours.Tests.EditMode
                 NineMileCreekBuilder.NineMileCreekHeightResolution,
                 NineMileCreekBuilder.NineMileCreekHeightMin,
                 NineMileCreekBuilder.NineMileCreekHeightMax,
-                terrain.MaxShoreGradient());
+                NineMileCreekLiveGround.PremiseShoreGradient());
+            // …and the sea draws the G3 map it floats on, as the builder wires it.
+            NineMileCreekLiveGround.DrawUnder(_seaGo, terrain);
             _seaGo.SetActive(true);
 
             _camGo = new GameObject("SurfShotCam");

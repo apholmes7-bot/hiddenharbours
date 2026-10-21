@@ -105,21 +105,25 @@ namespace HiddenHarbours.UI
         /// <summary>
         /// How far (HUD reference units) the whole cluster rises to keep out of what the helm's UI
         /// covers, at <paramref name="placement"/>. Its five lines rise together, so its reading order
-        /// and its spacing never change; its bottom lands on the covered area's top (no gap — the
-        /// cluster's lowest box already hangs below its text). Exactly 0 with nothing covered.
+        /// and its spacing never change. Keep the same four-reference-pixel bottom inset above
+        /// a covered area, including room for the glyph descenders and outline. Exactly 0 with nothing covered.
         /// </summary>
         public static float NavClusterLiftRef(NavClusterPlacement placement, in HelmFootprintArea covered,
                                               float screenW, float screenH)
         {
             if (placement == NavClusterPlacement.Hidden || covered.IsNone) return 0f;
-            float px = covered.LiftToClear(NavClusterScreenRect(placement, screenW, screenH), 0f);
-            return px > 0f ? px / HudBandLayout.ScaleFactor(screenW, screenH) : 0f;
+            float scale = HudBandLayout.ScaleFactor(screenW, screenH);
+            float gap = (ApparentWindTopRef - HudController.LabelBoxHeightRef) * scale;
+            float px = covered.LiftToClear(NavClusterScreenRect(placement, screenW, screenH), gap);
+            // A tall card must never push the heading off the screen. A full-width band reserves
+            // far less than the screen's height, so this ceiling never compromises its clearance.
+            return Mathf.Clamp(px / scale, 0f, Mathf.Max(0f, screenH / scale - HeadingTopRef));
         }
 
         /// <summary>
         /// The cluster's box in SCREEN pixels (bottom-left origin) at <paramref name="placement"/>,
-        /// unlifted: the five label boxes together, from the apparent-wind line's box (which hangs
-        /// below the screen's edge) to the heading line's top. Empty when hidden.
+        /// unlifted: the five label boxes together, from the apparent-wind line's box
+        /// (four reference pixels above the bottom) to the heading line's top. Empty when hidden.
         /// </summary>
         public static Rect NavClusterScreenRect(NavClusterPlacement placement, float screenW, float screenH)
         {
@@ -141,14 +145,16 @@ namespace HiddenHarbours.UI
 
         /// <summary>Each line's top edge above the screen's bottom, lowest first: apparent wind,
         /// set-and-drift, the rose ribbon, the fixed needle, the heading.</summary>
-        public const float ApparentWindTopRef = 40f, SetDriftTopRef = 70f, RibbonTopRef = 118f,
-                           NeedleTopRef = 146f, HeadingTopRef = 188f;
+        // Port-drift descenders need four more units than the audit's resting COG line, including Outline.
+        public const float ApparentWindTopRef = 60f, SetDriftTopRef = 94f, RibbonTopRef = 142f,
+                           NeedleTopRef = 170f, HeadingTopRef = 212f;
 
         /// <summary>
         /// The moved cluster's column: its right anchor, as a fraction of the canvas width, and its left
-        /// margin. 0.42 is where the SMALL dash card's left edge lands at the shipped scales (a 600-wide
-        /// rig at DashSmallScale 0.5, centred), so the column stops short of it with room to spare;
-        /// left-aligned text then grows rightward from the margin only as far as its own length.
+        /// margin. It was set clear of the retired small dash card (whose left edge sat at 0.42); the
+        /// tiller's card (120 rig px at SmallScale, centred) sits further in still, and above a
+        /// full-width band the column is lifted clear instead (<see cref="NavClusterLiftRef"/>).
+        /// Left-aligned text then grows rightward from the margin only as far as its own length.
         /// </summary>
         public const float ClearWidth01 = 0.34f, ClearMarginXRef = 16f;
     }

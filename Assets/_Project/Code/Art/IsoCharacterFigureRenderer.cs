@@ -83,6 +83,11 @@ namespace HiddenHarbours.Art
         private int _gaze;
         private bool _inkApplied, _inkJoined;
 
+        // Rig 10's smooth normal (the rig 10 intake, Phase B). Null on a def whose mesh carries none.
+        private int[] _smoothFaces;               // the faces that carry one, as indices into _faceStarts
+        private Vector3[] _smoothBind;            // ... each one's normal in the bind frame
+        private Vector4[] _marks;                 // UV2 as posed: xyz the posed smooth normal, w the flags
+
         // stateKey -> the fenced frame map for that clip, built once at Configure.
         private readonly Dictionary<string, int[]> _honestFrames = new Dictionary<string, int[]>();
         private readonly List<string> _fenceReport = new List<string>();
@@ -115,6 +120,10 @@ namespace HiddenHarbours.Art
                 if (_meshRenderer != null) _meshRenderer.enabled = value;
                 if (_overlayRenderer != null) _overlayRenderer.enabled = value;
                 SyncInk();
+                // The pixel look's hand-in, on the call, as LateUpdate does it: a figure shown after her own
+                // LateUpdate (a presenter at order 100) or before it (a capture on the call) would otherwise draw
+                // one frame at full size. Play mode only, as LateUpdate is: edit mode hands nothing in.
+                if (Application.isPlaying && isActiveAndEnabled) IsoFacetFigureTarget.Sync(_facetMaterial, Visible);
             }
         }
 
@@ -205,6 +214,60 @@ namespace HiddenHarbours.Art
             SyncInk();
         }
 
+        /// <summary>
+        /// <b>Paint this figure from other ramps</b> (character PR 2b, ADR 0051): the builder's colours
+        /// for the player's recipe, one ramp per material in the def's order, each exactly as long as
+        /// the def's own. Only colour moves: the mesh, the bones, the clips, the tones and the ink stay
+        /// the def's, so this rebuilds and rebinds the ramp textures, on a change and never per frame.
+        /// Throws on ramps that are not the def's shape; the builder refuses those before they get here.
+        /// </summary>
+        public void Recolour(Color32[][] colours)
+        {
+            if (!IsConfigured)
+                throw new InvalidOperationException("Recolour before Configure: there is no def to paint.");
+            if (colours == null) throw new ArgumentNullException(nameof(colours));
+            if (colours.Length != _def.Materials.Length)
+                throw new ArgumentException(
+                    $"{colours.Length} ramps for '{_def.Id}', which paints {_def.Materials.Length} materials.",
+                    nameof(colours));
+
+            var copy = new Color32[colours.Length][];
+            for (int m = 0; m < colours.Length; m++)
+            {
+                int want = _def.Materials[m].Colors != null ? _def.Materials[m].Colors.Length : 0;
+                if (colours[m] == null || colours[m].Length != want)
+                    throw new ArgumentException(
+                        $"Material {m} ('{_def.Materials[m].Name}') of '{_def.Id}' takes {want} colours, not " +
+                        $"{(colours[m] == null ? "none" : colours[m].Length.ToString())}.", nameof(colours));
+                copy[m] = (Color32[])colours[m].Clone();
+            }
+            Repaint(RampsOf(_def, copy));
+            Recoloured = true;
+        }
+
+        /// <summary>Paint this figure from its def's own ramps again: the body as baked.</summary>
+        public void ResetColours()
+        {
+            if (!IsConfigured || !Recoloured) return;
+            Repaint(RampsOf(_def, null));
+            Recoloured = false;
+        }
+
+        /// <summary>True while the figure draws ramps other than its def's (<see cref="Recolour"/>).</summary>
+        public bool Recoloured { get; private set; }
+
+        /// <summary>The ramps drawn, material by material. The textures cannot be read back once
+        /// uploaded, so a test reads these.</summary>
+        internal Color32[][] ShownRamps { get; private set; }
+
+        private void Repaint(Color32[][] ramps)
+        {
+            DestroyRampTextures();
+            BuildRampTextures(_def, ramps);
+            _facetMaterial.SetTexture(IsoFacetShaderIds.RampTex, _rampTex);
+            _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTex, _inkApplied ? _stepRampTex : _darkRampTex);
+        }
+
         // ---------------------------------------------------------------- the bind mesh
 
         private void ReadBindMesh(CharacterSkinDef def)
@@ -251,6 +314,7 @@ namespace HiddenHarbours.Art
             _posedMesh.bounds = bind.bounds;
 
             ReadFaceRuns(def, bind);
+            ReadSmoothNormals(bind);
         }
 
         /// <summary>
@@ -270,6 +334,42 @@ namespace HiddenHarbours.Art
                     $"CharacterSkinDef '{def.Id}' carries rig 9's face, but its bind mesh is not one fan of " +
                     "consecutive vertices per face, so its faces cannot be culled whole. Re-bake it.");
         }
+
+        /// <summary>
+        /// <b>Rig 10's smooth normals</b> (the rig 10 intake, Phase B). On a rig 10 figure UV2's xyz is
+        /// each face's smooth normal in the bind frame, zero on a face with none. The rig's paint culls a
+        /// face on its own normal and lights it on this one, so every re-skin poses it
+        /// (<see cref="CharacterSkinPose.PoseSmoothNormals"/>) for the facet shader to light by, and the
+        /// cull keeps the Newell normal. Read only on a def with the face, whose faces are known runs;
+        /// any other def lights each face by its own normal, as before.
+        /// </summary>
+        private void ReadSmoothNormals(Mesh bind)
+        {
+            _smoothFaces = null;
+            _smoothBind = null;
+            _marks = null;
+            if (_faceStarts == null) return;
+            bind.GetUVs(IsoFacetFigureShaderIds.SmoothNormalUvChannel, s_Uv);
+            if (s_Uv.Count != _srcVerts.Length) return;
+
+            int smooth = 0;
+            foreach (int s in _faceStarts)
+                if (HasSmoothNormal(s_Uv[s])) smooth++;
+            if (smooth == 0) return;
+
+            _smoothFaces = new int[smooth];
+            _smoothBind = new Vector3[smooth];
+            for (int f = 0, i = 0; f < _faceStarts.Length; f++)
+            {
+                Vector4 m = s_Uv[_faceStarts[f]];
+                if (!HasSmoothNormal(m)) continue;
+                _smoothFaces[i] = f;
+                _smoothBind[i++] = new Vector3(m.x, m.y, m.z);
+            }
+            _marks = s_Uv.ToArray();
+        }
+
+        private static bool HasSmoothNormal(Vector4 m) => m.x != 0f || m.y != 0f || m.z != 0f;
 
         private static readonly List<Vector4> s_Uv = new List<Vector4>();
 
@@ -327,22 +427,36 @@ namespace HiddenHarbours.Art
 
         // ---------------------------------------------------------------- material
 
-        private void BuildRampTextures(CharacterSkinDef def)
+        private void BuildRampTextures(CharacterSkinDef def) => BuildRampTextures(def, RampsOf(def, null));
+
+        /// <summary>
+        /// The ramps the figure draws, one per material it can show: <paramref name="colours"/>' when
+        /// given (a recolour), else the def's own. A material with no colours is drawn in the keyline,
+        /// as it always has been.
+        /// </summary>
+        private static Color32[][] RampsOf(CharacterSkinDef def, Color32[][] colours)
         {
             int count = Mathf.Min(def.Materials.Length, CharacterSkinDef.MaxMaterials(def.ToneRule));
-            int maxLen = 1;
-            for (int m = 0; m < count; m++)
-                maxLen = Mathf.Max(maxLen, def.Materials[m].Colors != null ? def.Materials[m].Colors.Length : 1);
-
-            _rampTex = MakeRampTexture("HHCharRampTex", maxLen, count);
-            _darkRampTex = MakeRampTexture("HHCharDarkRampTex", maxLen, count);
-
             var ramps = new Color32[count][];
             for (int m = 0; m < count; m++)
             {
-                Color32[] c = def.Materials[m].Colors;
+                Color32[] c = colours != null ? colours[m] : def.Materials[m].Colors;
                 ramps[m] = c != null && c.Length > 0 ? c : new[] { def.Keyline };
             }
+            return ramps;
+        }
+
+        private void BuildRampTextures(CharacterSkinDef def, Color32[][] ramps)
+        {
+            int count = ramps.Length;
+            int maxLen = 1;
+            for (int m = 0; m < count; m++)
+                maxLen = Mathf.Max(maxLen, ramps[m].Length);
+
+            ShownRamps = ramps;
+            _rampTex = MakeRampTexture("HHCharRampTex", maxLen, count);
+            _darkRampTex = MakeRampTexture("HHCharDarkRampTex", maxLen, count);
+
             Color32[][] dark = IsoFacetMath.BuildDarkenedRamps(ramps);
 
             for (int m = 0; m < count; m++)
@@ -493,10 +607,15 @@ namespace HiddenHarbours.Art
 
             // Rig 9's face: the cull by role and the floor every face culls at, and whether this def
             // carries the face at all (y). A v9 def baked before the face writes y = 0, and the shader
-            // then gates, culls and snaps nothing: it draws exactly as it did.
+            // then gates, culls and snaps nothing: it draws exactly as it did. z is rig 10's mark
+            // floor: its point marks also cull by their own turn band (UV1.w); 0 on every rig 9 def.
+            // w is 1 while the mesh carries rig 10's smooth normals (UV2), which then light each face
+            // they belong to; 0 on every rig 9 def, whose faces light by their own normals.
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceMinT, def.FaceMinToward);
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureFaceParams,
-                                     new Vector4(def.FaceCullFloor, def.HasFace ? 1f : 0f, 0f, 0f));
+                                     new Vector4(def.FaceCullFloor, def.HasFace ? 1f : 0f,
+                                                 def.HasFace ? def.FaceMarkAzFloor : 0f,
+                                                 _smoothFaces != null ? 1f : 0f));
             _faceUniform = Vector4.zero;
             if (def.HasFace && def.RestFace != null && def.RestFace.Length == CharacterSkinDef.FaceSlots)
                 _faceUniform = new Vector4(def.RestFace[0], def.RestFace[1], def.RestFace[2], 0f);
@@ -552,6 +671,8 @@ namespace HiddenHarbours.Art
         /// uniform, so a blink never re-skins and never costs a second draw call.</item>
         /// <item><b>The head snap</b>'s point, the head's mid point after the turn, is taken on every
         /// re-skin.</item>
+        /// <item><b>Rig 10's smooth normals</b> are posed on every re-skin and uploaded in UV2, which the
+        /// facet shader lights each such face by (<see cref="CharacterSkinPose.PoseSmoothNormals"/>).</item>
         /// </list>
         /// </summary>
         public bool SetPose(string stateKey, int frame, in Life life)
@@ -583,6 +704,12 @@ namespace HiddenHarbours.Art
                 CharacterSkinPose.Skin(_skin, _weights, _srcVerts, _srcNorms, _outVerts, _outNorms);
                 if (_faceStarts != null)
                     CharacterSkinPose.NewellNormals(_faceStarts, _faceCounts, _outVerts, _outNorms);
+                if (_smoothFaces != null)
+                {
+                    CharacterSkinPose.PoseSmoothNormals(_smoothFaces, _smoothBind, _faceStarts, _faceCounts,
+                                                        _skin, _weights, _marks);
+                    _posedMesh.SetUVs(IsoFacetFigureShaderIds.SmoothNormalUvChannel, _marks);
+                }
                 _posedMesh.vertices = _outVerts;
                 _posedMesh.normals = _outNorms;
                 _posedMesh.RecalculateBounds();
@@ -668,6 +795,7 @@ namespace HiddenHarbours.Art
             if (IsAshore) WriteAshoreProperties();
             else WriteHullProperties();
             SyncInk();
+            IsoFacetFigureTarget.Sync(_facetMaterial, Visible);   // the figure pixel look; OFF: nothing
         }
 
         // ---------------------------------------------------------------- the rig's ink
@@ -679,6 +807,9 @@ namespace HiddenHarbours.Art
         /// <see cref="IsoFacetFigureInk"/>, which tells the resolve to ink flagged pixels by the rig's
         /// rules. Off, or a def without the ink: the RINDEX ramp and alpha 1, the hull's rules, exactly
         /// the picture before PR 2a. Two property writes when the switch flips; nothing otherwise.
+        /// A def whose rig draws no keyline unless asked (<see cref="CharacterSkinDef.KeylineDefault"/>
+        /// off: rig 10, owner ruling K4) is inked without its ring
+        /// (<see cref="IsoFacetFigureShaderIds.InkWithoutRing"/>): the rig's edge, and no keyline.
         /// </summary>
         private void SyncInk()
         {
@@ -687,7 +818,10 @@ namespace HiddenHarbours.Art
             if (on != _inkApplied && _facetMaterial != null)
             {
                 _facetMaterial.SetTexture(IsoFacetShaderIds.DarkRampTex, on ? _stepRampTex : _darkRampTex);
-                _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn, on ? 1f : 0f);
+                _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn,
+                                        !on ? 0f
+                                        : _def.KeylineDefault ? IsoFacetFigureShaderIds.InkWithRing
+                                        : IsoFacetFigureShaderIds.InkWithoutRing);
                 _inkApplied = on;
             }
 
@@ -823,20 +957,23 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Her overlay: the def's cell rectangle around the pivot, padded 1 px, built exactly as
-        /// <see cref="IsoFacetHullRenderer"/> builds a hull's from its setup — and, like it, under a
-        /// SortingGroup, because a mesh renderer does not sort against sprites without one.
+        /// Her overlay: the def's cell rectangle around the pivot, padded 1 px, and on each side as many
+        /// whole pixels again as the figure's measured reach passes the cell by there
+        /// (<see cref="CharacterSkinDef.ReachPx"/>: on rig 10.3 the mount clips reach furthest, 10.15 to
+        /// 11.14 px below it).
+        /// Built exactly as <see cref="IsoFacetHullRenderer"/> builds a hull's from its setup — and, like
+        /// it, under a SortingGroup, because a mesh renderer does not sort against sprites without one.
         /// </summary>
         private void BuildAshoreOverlay(Shader overlayShader)
         {
             _overlayMaterial = new Material(overlayShader) { hideFlags = HideFlags.HideAndDontSave };
 
             float ppu = _def.PxPerMetre;
-            float pad = 1f / ppu;
-            float left = -_def.PivotPx.x / ppu - pad;
-            float right = (_def.CellW - _def.PivotPx.x) / ppu + pad;
-            float top = _def.PivotPx.y / ppu + pad;
-            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - pad;
+            Vector4 reach = _def.ReachPx;
+            float left = -_def.PivotPx.x / ppu - OverlayPad(reach.x, ppu);
+            float right = (_def.CellW - _def.PivotPx.x) / ppu + OverlayPad(reach.z, ppu);
+            float top = _def.PivotPx.y / ppu + OverlayPad(reach.y, ppu);
+            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - OverlayPad(reach.w, ppu);
 
             _overlayQuad = new Mesh { name = "HHFigureOverlayQuad", hideFlags = HideFlags.HideAndDontSave };
             _overlayQuad.SetVertices(new[]
@@ -859,6 +996,12 @@ namespace HiddenHarbours.Art
             _overlayChild = go.transform;
         }
 
+        /// <summary>One side's overlay pad, in metres: the pixel the overlay always kept past the cell,
+        /// and the whole pixels the figure's reach passes the cell by on that side (none while it stays
+        /// inside).</summary>
+        private static float OverlayPad(float reachPx, float ppu) =>
+            (1f + (reachPx > 0f ? Mathf.Ceil(reachPx) : 0f)) / ppu;
+
         /// <summary>
         /// <b>Ashore, what a hull writes for itself</b> — for her own root, with her own id: the
         /// dither origin, the depth shear, the id with NO fore block, the frame's calibrated depth
@@ -871,6 +1014,7 @@ namespace HiddenHarbours.Art
             if (!IsAshore || _meshRenderer == null || _overlayRenderer == null) return;
 
             Vector3 p = transform.position;
+            p = FigurePixelGrid.SnapDrawnRoot(p, GameServices.FigurePixelTarget, GameServices.WorldUnitsPerRenderedPixel);
             Vector4 shear = Vector4.zero;
             Vector3 framePosition = p;
             if (DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame frame))
@@ -930,10 +1074,22 @@ namespace HiddenHarbours.Art
 
         // Unity forbids SetParent during hierarchy deactivation. Return the id now, but keep the
         // frame (and its posed mesh) until a safe hand-over or teardown. The caller re-enters.
+        private void OnEnable() => HullMeshReflection.Register(this);
+
         private void OnDisable()
         {
+            HullMeshReflection.Unregister(this);
             ReleaseAshoreId();
             SyncInk();   // disabled: out of the ink registry until it is enabled and shown again
+        }
+
+        internal MeshRenderer ReflectionRenderer => _meshRenderer;
+        internal Mesh ReflectionMesh => _posedMesh;
+        internal void PrepareReflection()
+        {
+            if (_figureId != 0) return;
+            WriteHullProperties();
+            SyncInk();
         }
 
         private void OnDestroy() => Teardown(keepDef: false);
@@ -948,21 +1104,31 @@ namespace HiddenHarbours.Art
             DestroyAshoreObjects();
             if (_posedMesh != null) DestroySafely(_posedMesh);
             if (_facetMaterial != null) DestroySafely(_facetMaterial);
-            if (_rampTex != null) DestroySafely(_rampTex);
-            if (_darkRampTex != null) DestroySafely(_darkRampTex);
-            if (_stepRampTex != null) DestroySafely(_stepRampTex);
+            DestroyRampTextures();
             _meshChild = null;
             _meshRenderer = null;
             _meshFilter = null;
             _posedMesh = null;
             _facetMaterial = null;
-            _rampTex = null;
-            _darkRampTex = null;
-            _stepRampTex = null;
+            ShownRamps = null;
+            Recoloured = false;
             _faceStarts = _faceCounts = null;
+            _smoothFaces = null;
+            _smoothBind = null;
+            _marks = null;
             _faceUniform = Vector4.zero;
             HeadSnapPoint = Vector4.zero;
             if (!keepDef) { _def = null; _hull = null; _honestFrames.Clear(); _fenceReport.Clear(); }
+        }
+
+        private void DestroyRampTextures()
+        {
+            if (_rampTex != null) DestroySafely(_rampTex);
+            if (_darkRampTex != null) DestroySafely(_darkRampTex);
+            if (_stepRampTex != null) DestroySafely(_stepRampTex);
+            _rampTex = null;
+            _darkRampTex = null;
+            _stepRampTex = null;
         }
 
         private static void DestroySafely(UnityEngine.Object o)
@@ -1006,12 +1172,32 @@ namespace HiddenHarbours.Art
         public static readonly int FigureFaceMinT = Shader.PropertyToID("_HHFigureFaceMinT");
 
         /// <summary><c>float4</c>, per material: x the floor every face culls at
-        /// (<see cref="CharacterSkinDef.FaceCullFloor"/>), y 1 when the def carries the face.</summary>
+        /// (<see cref="CharacterSkinDef.FaceCullFloor"/>), y 1 when the def carries the face, z rig 10's
+        /// mark floor (<see cref="CharacterSkinDef.FaceMarkAzFloor"/>; 0 = no marks), below which a
+        /// mark's flattened normal is too short to ask its turn band, w 1 while the mesh carries rig 10's
+        /// smooth normals (<see cref="SmoothNormalUvChannel"/>), which then light their faces.</summary>
         public static readonly int FigureFaceParams = Shader.PropertyToID("_HHFigureFaceParams");
 
-        /// <summary><c>float</c>, per material: 1 while the rig's ink is live for this figure, which
-        /// flags its pixels in the dark target's alpha (0 = the figure's rules).</summary>
+        /// <summary>The mesh channel of rig 10's smooth normal: UV2, <c>TEXCOORD2</c> in the
+        /// <see cref="FigureKeyword"/> variant. xyz is the face's smooth normal, which the bake writes in
+        /// the bind frame (zero on a face with none) and the renderer poses on every re-skin; w is the
+        /// face's mark flags, which only the bake reads.</summary>
+        public const int SmoothNormalUvChannel = 2;
+
+        /// <summary><c>float</c>, per material: <see cref="InkWithRing"/> or <see cref="InkWithoutRing"/>
+        /// while the rig's ink is live for this figure, 0 when it is not. The facet pass flags the
+        /// figure's pixels with 1 minus it in the dark target's alpha: 0 the figure's rules with its
+        /// keyline ring, 0.25 its rules without the ring, 1 the hull's.</summary>
         public static readonly int FigureInkOn = Shader.PropertyToID("_HHFigureInkOn");
+
+        /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's rules, keyline ring and all
+        /// (rig 9).</summary>
+        public const float InkWithRing = 1f;
+
+        /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's edge rule with no keyline
+        /// ring (rig 10: the game follows the rig and draws no keyline, owner ruling K4). The resolve
+        /// tells the two apart at <c>HH_FIGURE_RING_MAX</c>.</summary>
+        public const float InkWithoutRing = 0.75f;
 
         /// <summary><c>float4</c> on the RESOLVE material: <c>(edge, keylineMix, live, 0)</c> —
         /// <see cref="IsoFacetFigureInk"/>.</summary>

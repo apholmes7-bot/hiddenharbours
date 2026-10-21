@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca6bb171a29c3df5a70966f336a31471, type: 3}
+  m_Name: light.st_peters.lantern_post_bluff_walk
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LightPostDef
+  Id: "light.st_peters.lantern_post_bluff_walk"
+  LotId: ""
+  CommonsId: "commons.st_peters.west_garden"
+  RouteId: "route.stpeters.bluff_walk"
+  KitPiece: "lanternPost"
+  Position: {x: -16.08, y: 26.515}
+  Preset: "Lightpost"
+  LitBy: "lit at dusk by Junior or Basil, whoever is home first"
+  Reach: 3.6
+  CastsShadow: 1

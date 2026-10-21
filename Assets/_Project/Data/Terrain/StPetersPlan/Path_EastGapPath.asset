@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_EastGapPath
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_east_gap_path
+  DisplayName: East Gap path
+  Kind: 0
+  Width: 0.9
+  Points:
+  - {x: 158.5, y: -39}
+  - {x: 160.6, y: -43.2}
+  - {x: 162.4, y: -46.6}
+  - {x: 165.5, y: -49.5}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: path.stp_east_gap_path
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'Down the East Gap ramp beside the brook (2.3 m north-east of it) to the pocket beach and the spit. The package''s line (island.json).'

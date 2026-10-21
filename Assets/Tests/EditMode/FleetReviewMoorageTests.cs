@@ -19,22 +19,21 @@ namespace HiddenHarbours.Tests.EditMode
     /// A berth on land, two boats in the same water, a hull whose art never baked, or the roster
     /// quietly covering twenty-one of twenty-three: every one of those builds a scene that looks
     /// finished. So the layout is re-derived here against the region's OWN terrain rather than trusted
-    /// as authored — this fixture samples the same <see cref="MainlandTidalTerrain"/> the region is
-    /// built from, at every position in the table.</para>
+    /// as authored — this fixture samples the same ground the region's scene stands on (since NMC H2 the
+    /// G3 map, <see cref="NineMileCreekLiveGround"/>), at every position in the table.</para>
     ///
     /// <para>CPU-only apart from the AssetDatabase, so CI adjudicates all of it.</para>
     /// </summary>
     public class FleetReviewMoorageTests
     {
         private GameObject _terrainGo;
-        private MainlandTidalTerrain _terrain;
+        private PaintedTidalTerrain _terrain;
 
         [SetUp]
         public void SetUp()
         {
             _terrainGo = new GameObject("NineMileCreekMainland_MoorageTest");
-            _terrain = _terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(_terrain);
+            _terrain = NineMileCreekLiveGround.AddTo(_terrainGo);   // the scene's ground (NMC H2)
         }
 
         [TearDown]
@@ -96,7 +95,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para>This is the assert that would have caught the layout being written against a guess.
         /// The measured water here is a flat −6.00 m shelf east of the wharf basin; the basin itself is
         /// −1.60 m and there is LAND at x 120–160 / y 35–40, so "somewhere off the wharf" is not
-        /// automatically wet.</para>
+        /// automatically wet. (On G3, NMC H2, every hull's whole footprint reads the −6.00 m shelf; the
+        /// basin inside the arms reads −4.4 m off the quay and shoals to −3.0 m toward the east arm, whose
+        /// crest stands above spring high water from x 209 to 215.)</para>
         /// </summary>
         [Test]
         public void EveryHull_LiesInWaterDeepEnoughToFloatHer()

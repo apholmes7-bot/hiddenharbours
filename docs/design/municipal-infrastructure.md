@@ -358,7 +358,7 @@ household and each trade solved the problem its own way, and the mixture is the 
 | working after dark in a dooryard | **a hurricane lantern** — portable, which is the whole point | `lanternPost` | **a 4th preset — §6.2 #2** |
 | the slip head | **one lantern**, lit by whoever is last off the water | `lanternPost` | small, warm |
 | ⭐ radio, a light in a boat shed, a trickle charge | **battery + a small charging set** — the modern layer, and the one the first draft missed | `genset` (small), `pedestal` | steady, tiny |
-| the wharf | **nothing standing** — you bring your own light | — | — |
+| the wharf | **its two lantern posts, lit at night** — the slip head's and the pier head's, lit as the game lights them today (the owner's ruling of 27 Sept; the pier head's lights the ladder at low water) | `lanternPost` ×2 | small, warm |
 
 ⭐ **The genset is still the trick, and the ruling makes it a better one.** It is not the island's *only*
 electricity now — it is its **loudest**. One at the parish hall, run for a hall night; a small one behind

@@ -25,8 +25,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// </list>
     ///
     /// <para>Every one is checked at the six screens the band is sized for, against a band of 144·k
-    /// (k = max(1, H div 1080)) and against the tiller's 120×244 card at ×1 with its title strip — the
-    /// card the host publishes for it. With nothing covered, each is where it is on 91ff97f2, bit-exact.
+    /// (k = max(1, H div 1080)) and against the tiller's 120×244 card where the host puts it — the
+    /// card the host publishes for it, the card alone since H2. With nothing covered, each is where it is on 91ff97f2, bit-exact.
     /// The last test is rule 4: every reader reaches the seam through Core, never UI.</para>
     /// </summary>
     public class HelmFootprintOverlayTests
@@ -65,12 +65,13 @@ namespace HiddenHarbours.Tests.EditMode
         private static HelmFootprintArea Band(Vector2Int s)
             => HelmFootprintArea.FullWidthBand(144f * Mathf.Max(1, s.y / 1080));
 
-        /// <summary>The tiller's card at ×1 where the host puts it, with its title strip — exactly what
-        /// <see cref="HelmOverlayHost"/> publishes for it.</summary>
+        /// <summary>The tiller's card where the host puts it — exactly what <see cref="HelmOverlayHost"/>
+        /// publishes for it (the card alone; its title strip retired with the windows, H2).</summary>
         private static HelmFootprintArea TillerCard(GameConfig cfg, Vector2Int s)
             => HelmOverlayHost.FootprintOf(
-                HelmOverlayLayout.CardRect(false, TillerRigRender.W, TillerRigRender.H, cfg.HelmOverlay, s.x, s.y),
-                cfg.BoatUiWindows.TitleBarPx);
+                HelmOverlayHost.HelmCardKind.Tiller,
+                HelmOverlayLayout.CardRect(TillerRigRender.W, TillerRigRender.H, cfg.HelmOverlay, s.x, s.y),
+                s.y);
 
         private static bool Meets(in HelmFootprintArea covered, Rect box)
             => covered.Overlaps(Rect.MinMaxRect(box.xMin + Eps, box.yMin + Eps, box.xMax - Eps, box.yMax - Eps));
@@ -151,9 +152,10 @@ namespace HiddenHarbours.Tests.EditMode
                 }
             }
             CollectionAssert.IsEmpty(failures, string.Join("\n", failures));
-            CollectionAssert.AreEqual(new[] { "1280x720", "1280x800" }, moved,
-                "the stack reaches the tiller's card only where the canvas scale keeps it low; everywhere " +
-                "else it already clears it and stays put");
+            CollectionAssert.AreEqual(new[] { "1280x720", "1280x800", "1920x1080", "2560x1440",
+                                              "3440x1440", "3840x2160" }, moved,
+                "2026-10-07 moved premise: the tiller now follows the same HUD scale as the toast, " +
+                "so their overlap persists at every size; the toast must clear it at every size too");
         }
 
         // ===== the interact popup ====================================================================
@@ -253,8 +255,8 @@ namespace HiddenHarbours.Tests.EditMode
                     if (p != want) { failures.Add($"{Name(s)} {style}: placed {p}, want {want}"); continue; }
                     Rect placed = NavPlaced(p, in band, s);
                     if (Meets(in band, placed)) failures.Add($"{Name(s)} {p}: on the band ({placed})");
-                    if (Mathf.Abs(placed.yMin - band.TopPx) > Eps)
-                        failures.Add($"{Name(s)} {p}: its lowest box at {placed.yMin}, not on the band's " +
+                    if (Mathf.Abs(placed.yMin - (band.TopPx + 4f * HudBandLayout.ScaleFactor(s.x, s.y))) > Eps)
+                        failures.Add($"{Name(s)} {p}: its lowest box at {placed.yMin}, not four reference pixels above the band's " +
                                      $"top {band.TopPx}");
                 }
             }
@@ -348,22 +350,22 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheNavClustersGeometry_IsMainsNumbers_GivenOneHome()
         {
-            // HudController built the five lines from literals on main; they now live beside the rule
-            // that reads them, and must be the same numbers.
+            // 2026-10-08 moved premise: wind rises 20; the other four rise 24 reference pixels.
+            // The port-drift descenders also need four pixels between the two outlined rows.
             Assert.AreEqual(0.2f, HelmHudSuppression.HomeMinX01);
             Assert.AreEqual(0.8f, HelmHudSuppression.HomeMaxX01);
-            Assert.AreEqual(40f, HelmHudSuppression.ApparentWindTopRef);
-            Assert.AreEqual(70f, HelmHudSuppression.SetDriftTopRef);
-            Assert.AreEqual(118f, HelmHudSuppression.RibbonTopRef);
-            Assert.AreEqual(146f, HelmHudSuppression.NeedleTopRef);
-            Assert.AreEqual(188f, HelmHudSuppression.HeadingTopRef);
+            Assert.AreEqual(60f, HelmHudSuppression.ApparentWindTopRef);
+            Assert.AreEqual(94f, HelmHudSuppression.SetDriftTopRef);
+            Assert.AreEqual(142f, HelmHudSuppression.RibbonTopRef);
+            Assert.AreEqual(170f, HelmHudSuppression.NeedleTopRef);
+            Assert.AreEqual(212f, HelmHudSuppression.HeadingTopRef);
             Assert.AreEqual(0.34f, HelmHudSuppression.ClearWidth01);
             Assert.AreEqual(16f, HelmHudSuppression.ClearMarginXRef);
             // …and the label box main gave each line, 56 tall and pivoted on its top, which is why the
-            // lowest box hangs 16 below the screen's edge on the 1280×720 canvas.
-            Assert.AreEqual(Rect.MinMaxRect(256f, -16f, 1024f, 188f),
+            // lowest box now clears the screen by four reference pixels (was 16 below it).
+            Assert.AreEqual(Rect.MinMaxRect(256f, 4f, 1024f, 212f),
                             HelmHudSuppression.NavClusterScreenRect(NavClusterPlacement.BottomCentre, 1280, 720));
-            Assert.AreEqual(Rect.MinMaxRect(16f, -16f, 0.34f * 1280f + 16f, 188f),
+            Assert.AreEqual(Rect.MinMaxRect(16f, 4f, 0.34f * 1280f + 16f, 212f),
                             HelmHudSuppression.NavClusterScreenRect(NavClusterPlacement.ClearOfTheDash, 1280, 720));
             Assert.AreEqual(default(Rect),
                             HelmHudSuppression.NavClusterScreenRect(NavClusterPlacement.Hidden, 1280, 720));

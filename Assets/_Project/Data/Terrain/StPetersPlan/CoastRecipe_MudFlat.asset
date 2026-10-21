@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c5c8d8bde28472b08b18470afc9976, type: 3}
+  m_Name: CoastRecipe_MudFlat
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CoastRecipeDef
+  Id: coast_recipe.mud_flat
+  Type: mud_flat
+  Bands:
+  - Below: -1.8
+    Zone: ripple
+  - Below: -0.3
+    Zone: mud
+  - Below: 0.6
+    Zone: silt
+  - Below: 1.5
+    Zone: marsh
+  - Below: 2.6
+    Zone: shingle
+  - Below: 3.4
+    Zone: sedge
+  - Below: 99
+    Zone: grass

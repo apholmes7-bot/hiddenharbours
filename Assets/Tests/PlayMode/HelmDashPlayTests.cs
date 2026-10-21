@@ -12,10 +12,10 @@ using HiddenHarbours.UI;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// On-water integration for the ADR 0025 S2a composed skiff dash: the overlay host swaps to the
-    /// COMPOSED DASH the same frame a console-rig hull goes live (the dev F-cycle contract), the
-    /// wheel MIRRORS <c>BoatController.Steer</c> (one state, one owner), a focused wheel steer
-    /// session writes steer through <c>DragSteer</c> and HOLDS against the key layer's per-frame
+    /// On-water integration for the console helms' wheel: the overlay host raises the BAND (H2, which
+    /// retired ADR 0025's composed dash) the same frame a console-rig hull goes live (the dev F-cycle
+    /// contract), the band's wheel MIRRORS <c>BoatController.Steer</c> (one state, one owner), a wheel
+    /// steer session writes steer through <c>DragSteer</c> and HOLDS against the key layer's per-frame
     /// zero writes (the S2a arbitration: preserve on zero, keys win on a real press), and the S1
     /// lever detents still step on a console hull. Real frames, never a mocked tick — and never
     /// frame-count-as-time (only order/holding is asserted, no duration).
@@ -116,10 +116,10 @@ namespace HiddenHarbours.Tests.PlayMode
             return host;
         }
 
-        // ---- the composed dash appears with the hull, same frame ----------------------------------
+        // ---- the band appears with the hull, same frame --------------------------------------------
 
         [UnityTest]
-        public IEnumerator EveryConsoleRigHull_ShowsTheComposedDash()
+        public IEnumerator EveryConsoleRigHull_ShowsItsBand()
         {
             HelmOverlayHost host = Host();
             var (_, boat) = NewBoat();
@@ -131,38 +131,41 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(GameServices.HelmControl.Fit.Compass, Is.EqualTo(CompassMount.Dome));
             Assert.That(GameServices.HelmControl.WheelRim, Is.EqualTo(HelmWheelRim.Rubber));
             yield return null;   // one host Update
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
-                        "a console-rig hull earns the composed dash");
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band),
+                        "a console-rig hull earns the band");
+            Assert.That(host.BandController.Rig, Is.EqualTo(ConsoleRigKind.Console), "…its own piece list");
 
             boat.SetHull(NewConsoleHull("boat.test_dash_sport", ConsoleRigKind.Sport, HelmWheelRim.Steel));
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash), "sport too");
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band), "sport too");
+            Assert.That(host.BandController.Rig, Is.EqualTo(ConsoleRigKind.Sport));
             Assert.That(GameServices.HelmControl.WheelRim, Is.EqualTo(HelmWheelRim.Steel));
 
-            // S4: the two wheelhouses were on the lone lever card until their renderers landed. They
-            // cross a CANVAS boundary as well as a rig one (600×548 vs the skiffs' 600×510), so the
-            // swap also exercises the compositor's surface re-allocation.
+            // The two wheelhouses' bands carry other pieces than the skiffs' (their piece lists are
+            // their own), so the swap also exercises the controller's per-piece re-allocation.
             boat.SetHull(NewConsoleHull("boat.test_dash_novi", ConsoleRigKind.Novi, HelmWheelRim.Rubber));
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
-                        "the Novi has its own dash now");
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band), "the Novi has its band");
+            Assert.That(host.BandController.Rig, Is.EqualTo(ConsoleRigKind.Novi));
 
             boat.SetHull(NewConsoleHull("boat.test_dash_cape", ConsoleRigKind.Cape, HelmWheelRim.Steel));
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band),
                         "and so does the Cape Islander");
+            Assert.That(host.BandController.Rig, Is.EqualTo(ConsoleRigKind.Cape));
 
-            // Back to a skiff — the canvas shrinks again without a stale surface or a stale key.
+            // Back to a skiff — the piece list changes back without a stale texture or a stale key.
             boat.SetHull(NewConsoleHull("boat.test_dash_back", ConsoleRigKind.Console, HelmWheelRim.Rubber));
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash));
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band));
+            Assert.That(host.BandController.Rig, Is.EqualTo(ConsoleRigKind.Console));
         }
 
         [UnityTest]
         public IEnumerator AWheelhouseHull_SteersThroughItsOwnWheelMount()
         {
-            // The pilothouse wheel hub sits 86 px lower on the card than the skiffs' (382 vs 296). If
-            // the compositor hit-tested against the skiff table, a wheel grab on these hulls would miss.
+            // A wheelhouse's band is its own piece list (H2): the press must find the wheel in THAT
+            // list, laid out at the live screen, or a wheel grab on these hulls would miss.
             HelmOverlayHost host = Host();
             var (_, boat) = NewBoat();
             yield return null;
@@ -172,17 +175,20 @@ namespace HiddenHarbours.Tests.PlayMode
             boat.SetControl(0f, 0.4f);
             yield return null;
             double expected = WheelRigGeometry.DegFromSteer(0.4, GameServices.HelmWheel.Turns);
-            Assert.That(host.DashController.WheelDeg, Is.EqualTo(expected).Within(1e-4),
+            HelmBandController band = host.BandController;
+            Assert.That(band.WheelDeg, Is.EqualTo(expected).Within(1e-4),
                         "the wheelhouse wheel mirrors the one steer owner too");
 
+            // The rim's top, from the hub on the band's bottom edge (the band's own geometry).
             IHelmControl helm = GameServices.HelmControl;
-            host.DashController.Press(helm, new Vector2(HelmDashGeometry.PilotWheelCx,
-                                                        HelmDashGeometry.PilotWheelCy
-                                                        + HelmDashGeometry.PilotTOPPAD),
-                                      GameServices.HelmOverlay);
-            Assert.That(host.DashController.SteerSession, Is.True,
-                        "a press on the wheelhouse hub opens the steer session");
-            host.DashController.Deactivate(helm);
+            Rect wheel = band.PieceRect(HelmBandGeometry.WheelIndex(ConsoleRigKind.Novi));
+            int k = band.K;
+            var rimTop = new Vector2(wheel.xMin + HelmBandGeometry.HubX * k,
+                                     wheel.yMax - HelmBandGeometry.HubY * k + (float)(WheelRigGeometry.R * k));
+            Assert.That(band.PressControls(helm, rimTop, GameServices.HelmOverlay), Is.True,
+                        "the wheelhouse wheel's rim takes the press");
+            Assert.That(band.SteerSession, Is.True, "…and opens the steer session");
+            band.Deactivate(helm);
         }
 
         // ---- the wheel mirrors the one steer owner -------------------------------------------------
@@ -198,9 +204,9 @@ namespace HiddenHarbours.Tests.PlayMode
             boat.SetControl(0f, 0.4f);   // what a held key writes
             yield return null;           // host Update mirrors
             double expected = WheelRigGeometry.DegFromSteer(0.4, GameServices.HelmWheel.Turns);
-            Assert.That(host.DashController.WheelDeg, Is.EqualTo(expected).Within(1e-4),
+            Assert.That(host.BandController.WheelDeg, Is.EqualTo(expected).Within(1e-4),
                         "the wheel renders BoatController.Steer — a mirror, not a copy");
-            Assert.That(host.DashController.SteerSession, Is.False, "no session while keys steer");
+            Assert.That(host.BandController.SteerSession, Is.False, "no session while keys steer");
         }
 
         // ---- the steer session: DragSteer writes, holds against the zeroing key layer -------------
@@ -312,7 +318,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(boat.Steer, Is.EqualTo(0f));
         }
 
-        // ---- the lever still steps detents on the composed dash's hull ----------------------------
+        // ---- the lever still steps detents on a band's hull ---------------------------------------
 
         [UnityTest]
         public IEnumerator LeverDetents_StillStep_OnAConsoleHull()
