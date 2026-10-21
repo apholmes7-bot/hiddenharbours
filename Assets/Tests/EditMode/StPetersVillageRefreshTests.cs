@@ -113,6 +113,49 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void NewHomesPatch_PreservesEveryExistingBuilding_AndKeepsRoomsEmpty()
+        {
+            var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
+            var assets = new Assets();
+            var homes = StPetersVillage.Sites.Where(s => s.Key == "creamSaltbox" || s.Key == "harbourGable" || s.Key == "whiteGable")
+                .Select(s => new VillageHome
+                {
+                    Key = s.Key, Position = s.Position, Shell = assets.Post, Room = assets.Post, UpperRoom = assets.Post,
+                    ShellMaterial = assets.Material, RoomMaterial = assets.Material, Mask = assets.Post.Sprite,
+                    Normal = assets.Post.Sprite, Emit = assets.Post.Sprite,
+                    Width = 7, Length = 8, DoorSign = 1, DoorAcross = .2f, StoreyHeight = 3.1f, RoomFacing = 4, Facings = 8,
+                }).ToArray();
+            var patch = NewVillageHomes(scene, homes, assets);
+            var after = patch.Apply(scene);
+            long rootTr = scene.TransformOf(scene.RootNamed(StPetersVillage.RootName)).FileId;
+            foreach (var doc in scene.Docs.Where(d => d.FileId != rootTr))
+                Assert.That(after.Get(doc.FileId).Text, Is.EqualTo(doc.Text));
+            foreach (var home in homes)
+            {
+                var go = after.Docs.Single(d => d.ClassId == 1 && d.Field("m_Name") == home.Key);
+                var tr = after.TransformOf(go);
+                Assert.That(ParseVec3(tr.Field("m_LocalPosition")), Is.EqualTo(new Vector3(home.Position.x, home.Position.y, 0)));
+                var interior = after.ComponentsOf(go).Single(d => d.IsScript(typeof(BuildingInterior).FullName));
+                Assert.That(interior.FieldRef("_occupant"), Is.Zero);
+                Assert.That(ParseFloat(interior.Field("_upperLevelY")), Is.EqualTo(3.1f * .76604444f).Within(.000001f));
+                foreach (string part in new[] { "Furniture", "FurnitureUpper" })
+                {
+                    var child = after.ChildNamed(tr, part);
+                    Assert.That(after.TransformOf(child).FieldRefs("m_Children"), Is.Empty);
+                    Assert.That(child.Field("m_IsActive"), Is.EqualTo("0"));
+                }
+                var inside = after.SubtreeOf(go.FileId);
+                Assert.That(after.Docs.Count(d => inside.Contains(d.FileId) && d.ClassId == 60), Is.EqualTo(6));
+                Assert.That(after.Docs.Count(d => inside.Contains(d.FileId) && d.ClassId == 212), Is.EqualTo(3));
+                Assert.That(inside.Select(after.Get).Any(d => d.IsScript(typeof(PreconfiguredLight).FullName)), Is.False);
+            }
+            Assert.That(NewVillageHomes(after, homes, assets).IsEmpty, Is.True);
+            Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));
+            homes[0].StoreyHeight = 0;
+            Assert.Throws<Refusal>(() => NewVillageHomes(scene, homes, assets));
+        }
+
+        [Test]
         public void DressingPatch_NamesDeletions_AndRefusesHeldActivation()
         {
             var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
