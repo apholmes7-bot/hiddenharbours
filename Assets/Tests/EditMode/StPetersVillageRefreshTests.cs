@@ -156,6 +156,67 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void BuildingMoves_KeepIdsAndLinks_ReframeFurniture_AndReplanToNothing()
+        {
+            var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
+            var assets = new Assets();
+            var moves = new[]
+            {
+                new VillageMove { Root = "IslandVillage", Key = "school", Position = StPetersVillage.Sites.Single(s => s.Key == "school").Position },
+                new VillageMove { Root = "IslandVillage", Key = "sageCottage", Position = StPetersVillage.Sites.Single(s => s.Key == "sageCottage").Position },
+                new VillageMove { Root = "IslandShops", Key = "generalStore", Position = StPetersShops.Sites.Single(s => s.Key == "generalStore").Position },
+            };
+            var owned = new System.Collections.Generic.HashSet<long>();
+            foreach (var move in moves)
+            {
+                var go = scene.ChildNamed(scene.TransformOf(scene.RootNamed(move.Root)), move.Key);
+                owned.UnionWith(scene.SubtreeOf(go.FileId));
+                move.Shell = assets.Post; move.Room = assets.Post;
+                move.Footprint = new InteriorFootprint(Vector2.zero, 7, 8, 4, 8, SpriteLightMath.GroundDepthScale, 1, .25f);
+                if (move.Key == "generalStore") continue;
+                var furniture = scene.ChildNamed(scene.TransformOf(go), "Furniture");
+                move.Props = scene.TransformOf(furniture).FieldRefs("m_Children").Select((id, i) =>
+                {
+                    var prop = scene.Get(scene.Get(id).FieldRef("m_GameObject"));
+                    return new VillageRoomProp { Name = prop.Field("m_Name"), LocalPosition = new Vector2(i * .1f, -1),
+                        Sprite = assets.Post, Quad = new[] { new Vector2(-.2f, -.3f), new Vector2(.2f, -.3f),
+                            new Vector2(.2f, .3f), new Vector2(-.2f, .3f) } };
+                }).ToArray();
+            }
+            var patches = MoveVillageBuildings(scene, moves);
+            var after = scene;
+            foreach (var patch in patches) after = patch.Apply(after);
+            Assert.That(after.Docs.Select(d => d.FileId), Is.EqualTo(scene.Docs.Select(d => d.FileId)));
+            foreach (var doc in scene.Docs.Where(d => !owned.Contains(d.FileId)))
+                Assert.That(after.Get(doc.FileId).Text, Is.EqualTo(doc.Text));
+            foreach (var move in moves)
+            {
+                var go = scene.ChildNamed(scene.TransformOf(scene.RootNamed(move.Root)), move.Key);
+                Assert.That(ParseVec3(after.TransformOf(go).Field("m_LocalPosition")), Is.EqualTo(new Vector3(move.Position.x, move.Position.y, 0)));
+                var before = scene.ComponentsOf(go).Single(d => d.IsScript(typeof(BuildingInterior).FullName));
+                var updated = after.Get(before.FileId);
+                foreach (string field in new[] { "_shell", "_room", "_props", "_occupant", "_upperRoom", "_upperProps", "_upperWalls" })
+                    Assert.That(updated.Field(field), Is.EqualTo(before.Field(field)));
+                Assert.That(updated.Field("_facing"), Is.EqualTo("4"));
+                Assert.That(updated.Field("_doorOnPlusY"), Is.EqualTo("1"));
+                var walls = scene.ChildNamed(scene.TransformOf(go), "Walls");
+                foreach (var wall in scene.ComponentsOf(walls).Where(d => d.ClassId == 60))
+                    Assert.That(after.Get(wall.FileId).Text, Is.Not.EqualTo(wall.Text));
+                if (move.Key == "generalStore") continue;
+                var furniture = scene.ChildNamed(scene.TransformOf(go), "Furniture");
+                foreach (var prop in move.Props)
+                {
+                    var obj = after.ChildNamed(after.TransformOf(furniture), prop.Name);
+                    Assert.That(ParseVec3(after.TransformOf(obj).Field("m_LocalPosition")), Is.EqualTo(new Vector3(prop.LocalPosition.x, prop.LocalPosition.y, 0)));
+                }
+            }
+            Assert.That(MoveVillageBuildings(after, moves).All(p => p.IsEmpty), Is.True);
+            foreach (var patch in patches) Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));
+            moves[0].Key = "redSaltbox";
+            Assert.Throws<Refusal>(() => MoveVillageBuildings(scene, moves));
+        }
+
+        [Test]
         public void DressingPatch_NamesDeletions_AndRefusesHeldActivation()
         {
             var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
