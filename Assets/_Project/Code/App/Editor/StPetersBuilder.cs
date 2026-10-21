@@ -785,23 +785,9 @@ namespace HiddenHarbours.App.Editor
         public const string StoreSellerId = "seller.leblancs";
 
         /// <summary>
-        /// Where the general store's counter stands: DERIVED from the store's own site, out its door
-        /// toward <see cref="VillageGreen"/> and a stride past the dooryard its keeper stands in. Never
-        /// typed in — move the store and its counter, its keeper and its door all move together (#345's
-        /// standing lesson: a copied coordinate is a coordinate that will stop agreeing).
+        /// The counter keeps its offset in the store's drawn door frame.
         /// </summary>
-        public static Vector3 GeneralStoreCounterPos
-        {
-            get
-            {
-                Vector2 door = StPetersInhabitants.Dooryard(GeneralStorePos);
-                Vector2 outward = VillageGreen - door;
-                Vector2 spot = outward.sqrMagnitude < 1e-6f
-                    ? door
-                    : door + outward.normalized * StoreCounterStrideMetres;
-                return new Vector3(spot.x, spot.y, 0f);
-            }
-        }
+        public static Vector3 GeneralStoreCounterPos => StPetersVillageStations.Current["GeneralStoreCounter"].Position;
 
         /// <summary>
         /// Dresses the general store's counter in the REAL baked fixture, turned so its service face

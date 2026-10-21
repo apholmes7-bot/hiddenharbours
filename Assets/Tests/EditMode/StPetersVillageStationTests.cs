@@ -22,6 +22,25 @@ namespace HiddenHarbours.Tests.EditMode
             new Vector2(x0,y0), new Vector2(x1,y0), new Vector2(x1,y1), new Vector2(x0,y1) });
 
         [Test]
+        public void BuilderBindings_UseCheckedStands_AndKeepHeldSites()
+        {
+            Invalidate();
+            Assert.That(StPetersInhabitants.Dooryard(StPetersBuilder.SchoolPos), Is.EqualTo(new Vector2(-11.4f,29.985f)));
+            Assert.That(StPetersInhabitants.Dooryard(StPetersBuilder.SageCottagePos), Is.EqualTo(new Vector2(-21.5f,35.38f)));
+            Assert.That(StPetersInhabitants.Dooryard(StPetersBuilder.GeneralStorePos), Is.EqualTo(Current[StPetersRoutines.StationStoreCounter].Position));
+            Assert.That((Vector2)StPetersBuilder.GeneralStoreCounterPos, Is.EqualTo(Current["GeneralStoreCounter"].Position));
+            for (int slot = -1; slot <= 1; slot++)
+                Assert.That(StPetersRoutines.CustomerSlot(slot), Is.EqualTo(Current[StPetersRoutines.CustomerSlotIds[slot+1]].Position));
+            Assert.Throws<ArgumentOutOfRangeException>(() => StPetersRoutines.CustomerSlot(2));
+            foreach (Vector3 held in new[] { StPetersBuilder.RedSaltboxPos, StPetersBuilder.WhiteFarmhousePos, StPetersShops.PostOfficePos })
+            {
+                Assert.That(TryDooryard(held,out _), Is.False);
+                Vector2 site = held;
+                Assert.That(StPetersInhabitants.Dooryard(held), Is.EqualTo(site + (StPetersBuilder.VillageGreen-site).normalized * StPetersInhabitants.DoorstepMetres));
+            }
+        }
+
+        [Test]
         public void CommittedFrames_KeepStreetRowAndResolveBothOwnWalks()
         {
             var rows = Read();
