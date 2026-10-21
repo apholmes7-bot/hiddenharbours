@@ -18,7 +18,7 @@ MonoBehaviour:
   RouteId: "route.stpeters.bluff_walk"
   KitPiece: "lanternPost"
   Position: {x: -16.08, y: 26.515}
-  Preset: "Lightpost"
+  Preset: "HungLantern"
   LitBy: "lit at dusk by Junior or Basil, whoever is home first"
   Reach: 3.6
   CastsShadow: 1

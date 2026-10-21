@@ -17,8 +17,8 @@ MonoBehaviour:
   CommonsId: ""
   RouteId: ""
   KitPiece: "entry.lantern"
-  Position: {x: -5.35, y: 43.77}
-  Preset: "WindowGlow"
+  Position: {x: -5.22, y: 43.322446}
+  Preset: "HungLantern"
   LitBy: "dusk to bedtime, by the household"
   Reach: 3.4
   CastsShadow: 1

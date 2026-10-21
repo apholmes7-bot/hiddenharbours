@@ -18,7 +18,7 @@ MonoBehaviour:
   RouteId: "route.stpeters.farm_walk"
   KitPiece: "lanternPost"
   Position: {x: 32.58, y: 26.515}
-  Preset: "Lightpost"
+  Preset: "HungLantern"
   LitBy: "lit at dusk by Eileen, home from the school"
   Reach: 3.6
   CastsShadow: 1

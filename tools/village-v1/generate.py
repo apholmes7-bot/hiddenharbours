@@ -18,6 +18,22 @@ DATA = Path('Assets/_Project/Data/Regions/StPetersVillage')
 CODE = Path('Assets/_Project/Code/World/Village')
 MAP = Path('docs/design/st-peters-village-plan/village-id-map.json')
 
+# Ground positions of the drawn doorstep fittings, measured from the committed rigs.
+# West houses retain their main positions and facings; the other sites face south.
+DOORSTEP_FITTINGS = {
+    'sage_cottage': [-20.47, 38.907939],
+    'school': [-10.37, 32.822924],
+    'harbour_gable': [-5.22, 43.322446],
+    'cream_saltbox': [29.53, 32.833953],
+    'white_gable': [54.03, 32.333953],
+    'red_saltbox': [20.43, 7.337929],
+    'white_farmhouse': [18.051365, 23.168344],
+    'general_store': [1.64, 32.047365],
+    'post_office': [17.3728, 32.825247],
+}
+HOME_BAKE_KEYS = {'harbour_gable': 'harbourGable', 'cream_saltbox': 'creamSaltbox',
+                  'white_gable': 'whiteGable'}
+
 
 def snake(value):
     return re.sub(r'(?<=[a-z0-9])([A-Z])', r'_\1', value).lower()
@@ -203,6 +219,7 @@ def build(plan, scene):
         preset = b['preset']
         bake_key = preset[len('new: '):] if preset.startswith('new: ') else (
             preset.removeprefix('(bake: Buildings.json ').removesuffix(')') if preset.startswith('(bake:') else preset)
+        bake_key = HOME_BAKE_KEYS.get(name, bake_key)
         lot = add('LotDef', Id=src['id'], BuildingId='building.stp_' + name, BakeKey=bake_key,
                   StreetId=src['street'], Position=point(pos), DoorOffset=point([b['door'][i]-pos[i] for i in range(2)]),
                   FootprintId=foot_id, FacingCell=b['cell'], Entry=b['entry'], DoorFaces=b['doorFaces'],
@@ -257,11 +274,15 @@ def build(plan, scene):
             old_door = next(b['door'] for b in plan['buildings'] if b['id']==r['of'])
             pos = [round(door[i]+r['at'][i]-old_door[i],6) for i in range(2)]
         lamp = lamp_by_key[(r['k'],r['of'])]
+        if r['k'] == 'doorstepLantern' and r['of'] in DOORSTEP_FITTINGS:
+            pos = DOORSTEP_FITTINGS[r['of']][:]
         lot_id = lots[r['of']]['Id'] if r['of'] in lots else ''
         commons = 'square' if r['of'] in ('square','green','green_walk') else 'west_garden' if r['of']=='bluff_walk' else 'flake_yard'
         add('LightPostDef', Id=renames[old], LotId=lot_id, CommonsId='' if lot_id else 'commons.st_peters.'+commons,
             RouteId='route.stpeters.'+r['of'] if any(x['id']=='route.stpeters.'+r['of'] for x in plan['lanes']) else '',
-            KitPiece=piece_by_old[old]['Piece'], Position=point(pos), Preset=lamp['kind'], LitBy=r['lit'], Reach=lamp['reach'], CastsShadow=True)
+            KitPiece=piece_by_old[old]['Piece'], Position=point(pos),
+            Preset='HungLantern' if r['k'] in ('lanternPost', 'doorstepLantern') else lamp['kind'],
+            LitBy=r['lit'], Reach=lamp['reach'], CastsShadow=True)
         light_changes.append(dict(id=renames[old], plan_position=r['at'], position=pos,
                                   package_position=list(piece_by_old[old]['Position'].values())))
         piece_by_old[old]['Position'] = point(pos)

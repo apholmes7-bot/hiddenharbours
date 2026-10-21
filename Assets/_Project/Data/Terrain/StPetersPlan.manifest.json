@@ -5,7 +5,7 @@
   "part2Seed": 9209,
   "heightRange": [-4, 12],
   "grid": {"w": 1520, "h": 1040, "mpp": 0.5, "x0": -380, "y1": 260},
-  "sources": {"path": "Assets/_Project/Data/Terrain/StPetersPlan.sources.json", "sha256": "95357ead978d5d4aee06659a032732e15ed9be87e058988538e0488ff33097bb"},
+  "sources": {"path": "Assets/_Project/Data/Terrain/StPetersPlan.sources.json", "sha256": "4f8d42d7f1791d753b584d9d73bd80a95ce41081daf7c23a5786c0c261d28243"},
   "base": {"from": "TidalTerrain.ElevationAt after StPetersBuilder.ConfigureTidalTerrain, float32, at each cell centre", "sha256": "7ba9988d25c13ba167e01bb5d8fafe69d61ca755994ba79167b747be454ad842"},
   "ground": {"id": "ground.stp_island", "file": "0c16426af980dcbb593f5f62bd3f458103e39e1a99ad46e134bafbe4909378ad", "basePixels": "8c077ea1eb31fa93bac381c8936c667dcb6e5bda1f77ed156a8833efef844544", "codes": "d2a2bab9c2963abfe671cc0af2b561b7f164430f46414c6f753879216681c41a", "patches": [["ground.stp_alder_fall_cut", "96c4d7971ee8d8ec43fd080ed96119a7ff3be78b1349daff21e1f8688cfbc056"], ["ground.stp_ne_head", "f21214e27542ed37fa8f0eb058a8a3aaa8e2858ce017ca3af0a2f4da4820d1e3"], ["ground.stp_gap_bridge", "0a2d7694b6115dfff5743f6a85fbf7b01d68c4afba0396e65348c6151bf88c3d"], ["ground.stp_west_ledges_broken", "bbdfafa06b37ff6060f6e29986ddd48999650248e46bad7e9958716bf8103db5"], ["ground.stp_east_ledges_broken", "af9cdcf21f9ff6bdf7d26359de305a46b291a77e145ac138384c7e36519af3da"], ["ground.stp_main_beach", "0133279ae9e1f6b3790873d282a0c5166910db861e11507da564f20a165c0195"]]},
   "defs": [
@@ -106,7 +106,7 @@
     ["path.stp_ginnys_track", "Assets/_Project/Data/Terrain/StPetersPlan/Path_GinnysTrack.asset", "1dd8451a2b20b2f63239e55bb961b11b9cb96dd5271a5298f2aa48960c221b04", "path.stp_ginnys_track"],
     ["path.stp_ginnys_woodshed_walk", "Assets/_Project/Data/Terrain/StPetersPlan/Path_GinnysWoodshedWalk.asset", "9b7bfe4c86f12e093eeb0588b1605017f6ae9cebdd01189d0b74e7fec59adaf8", "walk.ginny.woodshed"],
     ["path.stp_heath_path", "Assets/_Project/Data/Terrain/StPetersPlan/Path_HeathPath.asset", "59585d7d3b9f103c886a0e952ab3b3b50ec0aa7b23aed33dd38e49cb4030eedb", "path.stp_heath_path"],
-    ["path.stp_loft_spur", "Assets/_Project/Data/Terrain/StPetersPlan/Path_StpLoftSpur.asset", "d0b088da5f8deb5ed879cdb80c9bdf69f17a426a80917d72a01a518ad34fb26b", "path.stp_loft_spur"],
+    ["path.stp_loft_spur", "Assets/_Project/Data/Terrain/StPetersPlan/Path_StpLoftSpur.asset", "2d414cc66b4bac280846a855d28971b1c1689bc32a8f704c0caa7a129becc03f", "path.stp_loft_spur"],
     ["path.stp_lookout_spur", "Assets/_Project/Data/Terrain/StPetersPlan/Path_LookoutSpur.asset", "66057451b3a841daa52d9919d8a5bd4b4c7269f1303b6b66a83cc72cfe39c413", "path.stp_lookout_spur"],
     ["path.stp_reef_walk", "Assets/_Project/Data/Terrain/StPetersPlan/Path_ReefWalk.asset", "1377e007d8915f5ddaf20badfa56566768b08f25b33168e83f4e95d20eefa97e", "path.stp_reef_walk"],
     ["path.stp_shore_path", "Assets/_Project/Data/Terrain/StPetersPlan/Path_ShorePath.asset", "7828ab111dc4d5895992578172aca6fb37ca886ab79b5267b376804ae7ab5ed3", ""],
@@ -199,7 +199,7 @@
     ["stream.stp_storm_brook", "Assets/_Project/Data/Terrain/StPetersPlan/Stream_StormBrook.asset", "074cb43581e2de5eaba4ebc9027b8f84b85241167dbfb5d48dca789b0026e3b3", ""],
     ["terrain_plan.st_peters", "Assets/_Project/Data/Terrain/StPetersPlan/TerrainPlan_StPeters.asset", "575690c334aefbead54821d952710e7ec549ce39bd82da1b076e7c803f19b53a", ""]
   ],
-  "derivation": "f85700a9fcfd0fb55b1a0b8ade170fc05e312d4c1d38a411f0794d74c0dd69b4",
+  "derivation": "f5c5f9979ca193e5df805915684eebcc43567663b8d2452d748357d94c6fc09a",
   "order": [
     "01 part 1: bay.stp_main_beach: 10547 cells by its bands on the import (227 at its back)",
     "02 part 1: pass 9's plan: 7 sections, 5 ponds, 6 streams, 2 creeks, 4 pans, 7 paths",
@@ -208,13 +208,13 @@
     "05 key scenes: the Head (tier 3, max(plan, piece)): ground.stp_ne_neck 1555 cells (nearest 21.18 m from its guard, which keeps 21.06); form.stp_ne_head's top at 11 m: 2971 cells, 9483 m³ of fill; ground.stp_ne_platform 3604 cells; bar.stp_ne_bar 4009 cells (its crest 53.57 m); form.stp_lantern_stack's plinth at -0.7 m: 72 cells; 11298 cells painted by their recipes",
     "06 key scenes: ground.stp_ne_platform's rock pools (tier 3): 0 basins along its 94.5 m brow, 0.0 m² of water, painted irishmoss",
     "07 key scenes: fall.stp_alder_fall (tier 3, the fall): its cut in x 98.8..113.8, y 55..69.4 moved 308 cells (-2.42..+0.71 m); its water at flow 0.4: glide 10, slide 10, sill 3, pool 42, chute 17 cells",
-    "08 key scenes: tier 2 (the key scenes' frozen pieces, at part 1's plan heights and paint): 9 pieces, 5628 core cells, 4048 of them already in pass 9's frozen mask; 5788 cells take part 1's paint",
+    "08 key scenes: tier 2 (the key scenes' frozen pieces, at part 1's plan heights and paint): 9 pieces, 5628 core cells, 4104 of them already in pass 9's frozen mask; 5788 cells take part 1's paint",
     "09 key scenes: the lots: 2 lots, 705 cells",
     "10 key scenes: the key scenes' paths: 17 paths, 2169 cells painted, 158 cells of worn grass (path at a light weight), 12 cells left to the water",
-    "11 key scenes: tier 1 (pass 9's frozen mask at today's heights; the keep's paint; the roads): 916692 cells held, at most 2.6052 m off today's ground; 2721 of them under a key scene; the keep repaints 684 cells of the key scenes' paths and lots",
+    "11 key scenes: tier 1 (pass 9's frozen mask at today's heights; the keep's paint; the roads): 919011 cells held, at most 2.6052 m off today's ground; 2844 of them under a key scene; the keep repaints 702 cells of the key scenes' paths and lots",
     "12 finish: the ground file's import is the map's ground; the still water stands on it: pond.stp_bog_pond at 5.3000, 245 cells; pond.stp_gap_pond at 5.3000, 179 cells; pond.stp_heath_pond at 5.3000, 181 cells; pond.stp_storm_pond at 5.3000, 148 cells; pond.stp_fen_pool at 5.2500, 347 cells; pool.stp_gap_dipping_pool at 4.9600, 6 cells; pool.stp_ne_platform_01 at -0.2830, 15 cells; pool.stp_ne_platform_02 at -0.1802 (1 steps down), 20 cells; pool.stp_ne_platform_03 at -0.8940, 9 cells; pool.stp_ne_platform_04 at -0.7175 (2 steps down), 7 cells; pool.stp_ne_platform_05 at 0.1190, 8 cells; pool.stp_ne_platform_06 at -0.3520, 7 cells; pool.stp_ne_platform_07 at 0.5805 (2 steps down), 18 cells; pool.stp_ne_platform_08 at 0.0775 (2 steps down), 6 cells; pool.stp_ne_platform_09 at -0.3652 (1 steps down), 9 cells; pool.stp_ne_platform_10 at -0.2090, 9 cells; pool.stp_ne_platform_11 at -0.7070, 15 cells; pool.stp_ne_platform_12 at -1.3480, 15 cells; pool.stp_ne_platform_13 at -1.0652 (1 steps down), 18 cells; pool.stp_ne_platform_14 at -0.8545 (2 steps down), 7 cells; pool.stp_east_ledges_01 at -0.7520, 49 cells; pool.stp_east_ledges_02 at -1.3040, 11 cells; pool.stp_east_ledges_03 at -0.5500, 11 cells; pool.stp_east_ledges_04 at -0.6700, 8 cells; pool.stp_east_ledges_05 at -1.3120, 10 cells; pool.stp_west_ledges_01 at -0.8320, 3 cells; pool.stp_west_ledges_02 at -0.8962 (1 steps down), 17 cells; pool.stp_west_ledges_03 at -1.1245 (2 steps down), 14 cells; pool.stp_west_ledges_04 at -0.6030, 26 cells; pool.stp_west_ledges_05 at -0.5212 (1 steps down), 9 cells; 6 brooks 1354 cells; 4 pans 70 cells; 23 crossing pools 1634 cells; fall.stp_alder_fall: its pool at 2.0620, 38 cells, its reaches 46 cells; hollows: 84 basins at least 0.1 m deep and 4 m², 18 a pond's or pool's own, 66 kept (2024.8 m²; 30 with other water in them); 1 cells at or under the ground, e.g. (11.25, -76.75)",
-    "13 key scenes: the village's routes: 23 routes, 1778 cells, 1052 of them over the keep's paint and 104 already their slot; 0 cells left to the water",
-    "14 finish: still water where it stands above the ground (1 cells dropped); biomes on the final ground; 916692 tier-1 and 1524 tier-2 cells in the frozen map"
+    "13 key scenes: the village's routes: 23 routes, 1778 cells, 1018 of them over the keep's paint and 86 already their slot; 0 cells left to the water",
+    "14 finish: still water where it stands above the ground (1 cells dropped); biomes on the final ground; 919011 tier-1 and 1468 tier-2 cells in the frozen map"
   ],
   "numbers": {
     "bar.stp_ne_bar.cells_moved": "4009",
@@ -230,8 +230,8 @@
     "form.stp_lantern_stack.plinth_cells": "72",
     "form.stp_ne_head.top_cells": "2971",
     "form.stp_ne_head.top_fill_m3": "9482.7863557867986",
-    "frozen.tier1_cells": "916692",
-    "frozen.tier2_cells": "1524",
+    "frozen.tier1_cells": "919011",
+    "frozen.tier2_cells": "1468",
     "ground.stp_ne_neck.cells_moved": "1555",
     "ground.stp_ne_neck.nearest_to_guard_m": "21.180769579975134",
     "ground.stp_ne_platform.cells_moved": "3604",
@@ -483,7 +483,7 @@
     "route.stpeters.white_farmhouse_walk.cells": "22",
     "route.stpeters.white_gable_walk.cells": "20",
     "routes.cells": "1778",
-    "routes.over_keep": "1052",
+    "routes.over_keep": "1018",
     "routes.wet": "0",
     "south.feet_cells": "1549",
     "south.flats_cells": "42511",
@@ -498,9 +498,9 @@
     "stream.stp_gap_brook.ground_cells": "126",
     "stream.stp_heath_brook.ground_cells": "173",
     "stream.stp_storm_brook.ground_cells": "197",
-    "tier1.cells": "916692",
-    "tier1.key_paint_overridden": "684",
-    "tier1.key_scene_cells": "2721",
+    "tier1.cells": "919011",
+    "tier1.key_paint_overridden": "702",
+    "tier1.key_scene_cells": "2844",
     "tier1.max_off_today_m": "2.6051587512738141"
   },
   "pools": [
@@ -537,16 +537,16 @@
     {"id": "prop.stp_gp_freezer", "cells": 820, "alreadyHeld": 820, "centreHeld": true, "maxMove": 0},
     {"id": "ginnys_plot.of_step", "cells": 121, "alreadyHeld": 121, "centreHeld": true, "maxMove": 0},
     {"id": "path.stp_ginnys_track", "cells": 335, "alreadyHeld": 59, "centreHeld": false, "maxMove": 2.9366620910020735E-07},
-    {"id": "path.stp_ginnys_path", "cells": 252, "alreadyHeld": 75, "centreHeld": false, "maxMove": 0}
+    {"id": "path.stp_ginnys_path", "cells": 252, "alreadyHeld": 131, "centreHeld": false, "maxMove": 0}
   ],
   "maps": [
     {"role": "height", "path": "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png", "values": "d2a2bab9c2963abfe671cc0af2b561b7f164430f46414c6f753879216681c41a", "file": "09c7139b072de205c32cd4fd87922a8b6dc6771b6eb9f07a5332c0ca25348770"},
-    {"role": "splatA", "path": "Assets/_Project/Data/Terrain/StPetersSplatA.png", "values": "ac271b1d60dd0696a4f2addaae156b167aee667040c35406cc86913dc34ae472", "file": "df17a93affff171e7504d2d44f561743d31ea41ed6877e9749bd6302744997d9"},
-    {"role": "splatB", "path": "Assets/_Project/Data/Terrain/StPetersSplatB.png", "values": "e3d80e33d1f835c12d724cc821018f293f7f9b2562723da4f0a0bcd3d8433afc", "file": "430776264dd6bfddf83bc3780db6d6d300cad3dcd2bf7f74ad2c15c6686c671b"},
-    {"role": "splatC", "path": "Assets/_Project/Data/Terrain/StPetersSplatC.png", "values": "6ba67b36006e9e1935101b20f144650319fc22be0e9e3e2ea2a1e43b33609743", "file": "9851c7e54075c97f9bc7b97887a4734b6200da5ee88a9ae2d1b1ed4374ed98c0"},
+    {"role": "splatA", "path": "Assets/_Project/Data/Terrain/StPetersSplatA.png", "values": "9518621a1922d86f24ba582848e9100828c91c43b3b816aa6577d1e984f3edab", "file": "95b9e59870ed24ae1b1755cd60131b0526dcf55e810e955a4a2679a92a88f480"},
+    {"role": "splatB", "path": "Assets/_Project/Data/Terrain/StPetersSplatB.png", "values": "1c02679aa11412c63c0db37dd16316717a8c74ea2713d3b01a74d712aa092bb8", "file": "3450a6b2d04e294f95bed2dd2bffb1d89031be2f2fe38b6a1c63f102048d5d5b"},
+    {"role": "splatC", "path": "Assets/_Project/Data/Terrain/StPetersSplatC.png", "values": "85f86dec05c4c376a90408ca9c3125593ab31c20cbf4605ab265740cbade1336", "file": "12f3c60639150b30ccaa4774267efc0d265e835ac2e4220cfa6b6161bd36feca"},
     {"role": "splatD", "path": "Assets/_Project/Data/Terrain/StPetersSplatD.png", "values": "40d4c1a9f5e6b347774f47d6b47f715f1ca668f07d62a39f11225416facd22ec", "file": "73e8b53bdda5706e31d8ba815dc61d811c5429eaa727ad91fc0abddea8890655"},
-    {"role": "splatE", "path": "Assets/_Project/Data/Terrain/StPetersSplatE.png", "values": "4d3d3c38524017c5e85195f36b7096083ac70370eb1d0df91061eb82d292032c", "file": "22aec8314bd5e533783267a03eda6991cea4080d1e1acc9dca1876e144ba5d8e"},
-    {"role": "splatF", "path": "Assets/_Project/Data/Terrain/StPetersSplatF.png", "values": "3a5cb93be26e5a472453fba465d0e983642bda375a1aa4c3f6215bd10cbcdec8", "file": "0563d67578ebd03e9654f6cd2c3ec940502b6d6118e7e508ba0df87dc4ade500"},
+    {"role": "splatE", "path": "Assets/_Project/Data/Terrain/StPetersSplatE.png", "values": "ffd2c7cf9f581e62b6a0322cb546aed937f6bfe817b0927fa5cacbd78d1ee38f", "file": "92894a492e0f15b929da656bbe9560759611aa4564614277675983e8ffce1c17"},
+    {"role": "splatF", "path": "Assets/_Project/Data/Terrain/StPetersSplatF.png", "values": "08f157832b750f17315f2cf9174b927cf9bf08cd98d04ecdf31527c49c5e4007", "file": "e123c0a721d7ee38d5d303e2be1490c795d40f3c7bfb9879ace9411438412b12"},
     {"role": "still", "path": "Assets/_Project/Data/Terrain/StPetersStillWater.png", "values": "dd57083971fe20e632f8c37aef2ea9f9eaf60c5c3e28a1b6143cf6b46a0d21c1", "file": "0441b1e95f8d8451ddcb550eda824fdc1317f4ce7cb72f9455bc7b80804abd43"}
   ]
 }

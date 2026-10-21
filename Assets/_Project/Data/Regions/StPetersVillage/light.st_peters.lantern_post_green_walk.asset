@@ -18,7 +18,7 @@ MonoBehaviour:
   RouteId: "route.stpeters.green_walk"
   KitPiece: "lanternPost"
   Position: {x: 3.92, y: 26.515}
-  Preset: "Lightpost"
+  Preset: "HungLantern"
   LitBy: "lit at dusk by Marguerite, closing up (a routine block)"
   Reach: 3.6
   CastsShadow: 1
