@@ -9,6 +9,7 @@ using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEngine;
 using static HiddenHarbours.App.Editor.StPetersLayerRefresh;
+using VillageStation = HiddenHarbours.App.Editor.StPetersLayerRefresh.VillageStation;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -266,6 +267,62 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));
             rows[0].Yard = new Yard("WhiteFarmhouse", Vector2.zero, 1, rows[0].Yard.Polygon, YardFence.None, null, "test");
             Assert.Throws<Refusal>(() => VillageYardBoundaries(scene, rows, assets));
+        }
+
+        [Test]
+        public void RoutinePatch_KeepsHeldStationsAndLinks_AndReplansToNothing()
+        {
+            var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
+            var stations = new[] { new VillageStation(StPetersRoutines.StationStoreCounter, new Vector2(2.032163f, 27.905405f), 180),
+                new VillageStation(StPetersRoutines.StationSageDooryard, new Vector2(-21.5f, 35.38f), 180) };
+            var lanes = new System.Collections.Generic.Dictionary<string, Vector2> { [StPetersRoutines.LaneStore] = stations[0].Position,
+                [StPetersRoutines.LaneSageCottage] = stations[1].Position };
+            var patch = VillageRoutines(scene, stations, lanes);
+            var after = patch.Apply(scene);
+            Assert.That(patch.Ops.Count, Is.EqualTo(2));
+            var changed = patch.Ops.Select(o => new Doc(o.Before).FileId).ToArray();
+            foreach (var doc in scene.Docs.Where(d => !changed.Contains(d.FileId)))
+                Assert.That(after.Get(doc.FileId).Text, Is.EqualTo(doc.Text));
+            var oldStations = scene.Docs.Single(d => d.IsScript(typeof(RoutineStations).FullName));
+            var newStations = after.Get(oldStations.FileId);
+            Assert.That(newStations.Lines.Length, Is.EqualTo(oldStations.Lines.Length));
+            string id = "";
+            for (int i = 0; i < oldStations.Lines.Length; i++)
+            {
+                string line = oldStations.Lines[i];
+                if (line.StartsWith("  - Id: ", StringComparison.Ordinal)) id = line.Substring(8);
+                bool moves = stations.Any(s => s.Id == id) && (line.StartsWith("    Position:", StringComparison.Ordinal) || line.StartsWith("    StandHeadingDegrees:", StringComparison.Ordinal));
+                if (!moves) Assert.That(newStations.Lines[i], Is.EqualTo(line));
+            }
+            var oldLanes = scene.Docs.Single(d => d.IsScript(typeof(RoutineLanes).FullName));
+            var newLanes = after.Get(oldLanes.FileId);
+            foreach (string field in new[] { "_nodeParents", "_viaStart", "_viaCount" })
+                Assert.That(newLanes.Field(field), Is.EqualTo(oldLanes.Field(field)));
+            Assert.That(VillageRoutines(after, stations, lanes).IsEmpty, Is.True);
+            Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));
+            Assert.Throws<Refusal>(() => VillageRoutines(scene, new[] { new VillageStation(StPetersRoutines.StationFarmhouseDooryard, Vector2.zero, 0) }, lanes));
+        }
+
+        [Test]
+        public void PeopleCounterAndMachines_KeepComponentsAndIds_AndReplanToNothing()
+        {
+            var scene = SceneYaml.Parse(File.ReadAllText("Assets/_Project/Scenes/StPeters.unity"));
+            var root = scene.RootNamed(StPetersInhabitants.RootName);
+            var people = scene.TransformOf(root).FieldRefs("m_Children").Select(scene.Get).ToDictionary(
+                t => scene.Get(t.FieldRef("m_GameObject")).Field("m_Name"), t => (Vector2)ParseVec3(t.Field("m_LocalPosition")) + Vector2.right);
+            var counter = new Vector2(1.9385955f, 26.408327f);
+            var places = StPetersMachines.Row.Select(r => (Vector2)ParseVec3(scene.TransformOf(scene.RootNamed(r.Name)).Field("m_LocalPosition")) + Vector2.right).ToArray();
+            var patches = new[] { VillageInhabitants(scene, people), VillageCounter(scene, counter) }
+                .Concat(VillageMachines(scene, places, new Quaternion(0, 0, 1, 0))).ToArray();
+            var after = scene;
+            foreach (var patch in patches) after = patch.Apply(after);
+            Assert.That(after.Docs.Select(d => d.FileId), Is.EqualTo(scene.Docs.Select(d => d.FileId)));
+            foreach (var doc in scene.Docs.Where(d => d.ClassId != 4 && d.ClassId != 212))
+                Assert.That(after.Get(doc.FileId).Text, Is.EqualTo(doc.Text));
+            Assert.That(VillageInhabitants(after, people).IsEmpty, Is.True);
+            Assert.That(VillageCounter(after, counter).IsEmpty, Is.True);
+            Assert.That(VillageMachines(after, places, new Quaternion(0, 0, 1, 0)).All(p => p.IsEmpty), Is.True);
+            foreach (var patch in patches) Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));
         }
 
         [Test]
