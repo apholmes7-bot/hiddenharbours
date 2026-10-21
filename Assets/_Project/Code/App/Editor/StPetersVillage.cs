@@ -289,7 +289,8 @@ namespace HiddenHarbours.App.Editor
 
                 // THE INSIDE. Does nothing at all unless the interior kit has baked a room under this
                 // building's own key, so four of the five stay solid shells and the pilot cottage opens.
-                bool enterable = StPetersInteriors.Stand(go, shell, site.Key, facing, occupant);
+                bool enterable = StPetersInteriors.Stand(go, shell, site.Key, facing, occupant,
+                    StPetersInteriors.VillageUpperPlan(site.Key));
 
                 placed++;
                 report.Add($"{site.Key} d{facing} at ({site.Position.x:0.#},{site.Position.y:0.#}) " +

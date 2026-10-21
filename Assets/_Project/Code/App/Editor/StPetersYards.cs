@@ -6,51 +6,10 @@ using HiddenHarbours.World;
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// <b>ST PETERS' YARDS — the ground each property holds, and what encloses it.</b> The island's yard
-    /// table: one <see cref="Yard"/> row per property, and the single authored fact the mown lawn, the
-    /// wild-grass suppression and the fence line all read (lead-architect's lawn ruling, 2026-08-20).
-    ///
-    /// <para><b>⭐ WHY A YARD IS NOT JUST A BIGGER CLEARANCE DISC.</b> Every building on this island
-    /// already reserves a <see cref="StPetersGrass.BuildingClearanceMetres"/> circle so the meadow cannot
-    /// grow through its floor. That disc is a SAFETY radius — it says "no grass here" and nothing else. A
-    /// yard says something different and visible: <i>this ground belongs to that house, and somebody mows
-    /// it.</i> The difference between a wild plain and a kept village is the difference between a circle
-    /// nobody drew and an EDGE you can see, which is why the boundary is a polygon and why the fence
-    /// stands on it.</para>
-    ///
-    /// <para><b>⚠ THE YARDS ADD; THEY DO NOT REPLACE.</b> The clearance discs stay exactly as they were.
-    /// A property with no row here behaves as it did before this file existed — same disc, same meadow,
-    /// site for site — and <c>StPetersYardTests</c> pins that against a legacy predicate rebuilt from the
-    /// same constants rather than asking you to believe it. A yard is therefore always safe to add and
-    /// always safe to leave out, which is what makes this a table the owner can edit one row at a time.
-    /// </para>
-    ///
-    /// <para><b>Every shape is DERIVED from what it faces.</b> No row carries an angle. Each states the
-    /// building it belongs to, how much ground it holds and what it faces — and on this island every door
-    /// already faces <see cref="StPetersBuilder.VillageGreen"/> (see
-    /// <see cref="StPetersGinnyPlot.Approach"/>), so the yards turn with the village rather than being
-    /// fitted to it by eye (rule 6).</para>
-    ///
-    /// <para><b>⚠⚠ THIS VILLAGE IS TOO TIGHT FOR GENEROUS YARDS, AND THAT IS A MEASUREMENT, NOT A TASTE.
-    /// </b> The five doors on the green stand 16–18 m apart. A yard has to hold its building's own
-    /// footprint (<see cref="DwellingFootprintRadiusMetres"/>, 6.40 m) so the lawn reaches the walls,
-    /// which puts a floor of ~12.9 m on any yard's frontage — and two 12.9 m yards whose owners are
-    /// 16 m apart very nearly touch. The sizes below are the largest that hold every building and leave
-    /// clear ground between every pair; <c>StPetersYardTests</c> asserts both, so growing one by a metre
-    /// fails with the neighbour it hit rather than shipping two lawns claiming one strip.</para>
-    ///
-    /// <para><b>⚠ THE POST OFFICE HAS NO YARD, AND THAT IS THE SAME MEASUREMENT.</b> It stands 16.3 m
-    /// behind the general store, and at the smallest size that would hold its own walls its yard overlaps
-    /// the store's. Rather than shrink one below what it must hold, this pass leaves the post office's
-    /// door on the open green — which is what a village post office beside a shop actually looks like.
-    /// <b>Owner's call to overturn</b>: the alternatives are a smaller measured footprint for the shop
-    /// kit's post office (it is not the 8 × 10 m general store, so this may simply be a number nobody has
-    /// measured yet) or moving the building.</para>
-    ///
-    /// <para><b>⚠ OTHER OWNER DECISIONS PROPOSED HERE, NOT SETTLED.</b> Picket versus rail per property is
-    /// his call on his walk. The two SHOPS are deliberately <see cref="YardFence.None"/>: a shop front open
-    /// to the lane is what a working village looks like, and fencing the store would read as a suburb.
-    /// </para>
+    /// The built yard table used by mowing, grass suppression and boundary placement.
+    /// Five rows use V1 outlines. The two west homes, the cottage plot and camper lot keep
+    /// their existing geometry. The post office and cream saltbox outlines stay unbound.
+    /// Active V1 rows hold their hulls with a .6 m margin; held rows retain the circle check.
     /// </summary>
     public static class StPetersYards
     {
