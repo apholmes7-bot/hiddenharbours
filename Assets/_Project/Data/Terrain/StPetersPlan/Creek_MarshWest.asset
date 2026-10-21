@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9ddd201d40068c5900a1b822ead6478, type: 3}
+  m_Name: Creek_MarshWest
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.TidalCreekDef
+  Id: creek.stp_marsh_west
+  DisplayName: West Creek
+  Joins: {fileID: 11400000, guid: ee06fd0a706d1ef911a87367bfa4e471, type: 2}
+  Points:
+  - {x: -5, y: 81}
+  - {x: -10, y: 78}
+  - {x: -15, y: 76}
+  - {x: -19, y: 72.5}
+  BedZ:
+  - 0.45
+  - 0.85
+  - 1.2
+  - 1.5
+  Widths:
+  - 1.2
+  - 1
+  - 0.9
+  - 0.8
+  Bank: 0.6

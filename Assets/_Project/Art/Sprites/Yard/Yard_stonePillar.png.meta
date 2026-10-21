@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Yard_stonePillar_d1
       rect:
         serializedVersion: 2
-        x: 32
+        x: 30
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Yard_stonePillar_d2
       rect:
         serializedVersion: 2
-        x: 64
+        x: 60
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Yard_stonePillar_d3
       rect:
         serializedVersion: 2
-        x: 96
+        x: 90
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Yard_stonePillar_d4
       rect:
         serializedVersion: 2
-        x: 128
+        x: 120
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Yard_stonePillar_d5
       rect:
         serializedVersion: 2
-        x: 160
+        x: 150
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Yard_stonePillar_d6
       rect:
         serializedVersion: 2
-        x: 192
+        x: 180
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Yard_stonePillar_d7
       rect:
         serializedVersion: 2
-        x: 224
+        x: 210
         y: 0
-        width: 32
-        height: 51
+        width: 30
+        height: 49
       alignment: 9
-      pivot: {x: 0.5, y: 0.1764706}
+      pivot: {x: 0.5, y: 0.1632653}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

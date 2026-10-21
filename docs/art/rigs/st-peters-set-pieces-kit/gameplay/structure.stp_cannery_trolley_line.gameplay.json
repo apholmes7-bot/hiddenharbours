@@ -1,0 +1,192 @@
+{
+ "schema": "hidden-harbours/st-peters-set-piece@1",
+ "generatedBy": "StPetersSetPieces 1.0.0",
+ "key": "trolleyLine",
+ "id": "structure.stp_cannery_trolley_line",
+ "name": "Trolley line",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.stp_cannery",
+ "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -0.224,
+   12.22
+  ],
+  "y": [
+   -4.8,
+   0.673
+  ],
+  "z": [
+   0,
+   0.465
+  ]
+ },
+ "layer": "floor",
+ "walk": "on",
+ "mount": "ground",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 406,
+   "h": 120,
+   "pivot": [
+    11,
+    17
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 393,
+   "h": 151,
+   "pivot": [
+    14,
+    134
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 183,
+   "h": 272,
+   "pivot": [
+    25,
+    264
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 223,
+   "h": 258,
+   "pivot": [
+    199,
+    248
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 406,
+   "h": 120,
+   "pivot": [
+    395,
+    102
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 393,
+   "h": 146,
+   "pivot": [
+    379,
+    17
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 183,
+   "h": 263,
+   "pivot": [
+    157,
+    8
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 223,
+   "h": 255,
+   "pivot": [
+    24,
+    10
+   ]
+  }
+ ],
+ "anchors": {
+  "path": [
+   [
+    0,
+    0
+   ],
+   [
+    6,
+    -2
+   ],
+   [
+    12,
+    -4.2
+   ]
+  ],
+  "words": [],
+  "px": {}
+ },
+ "options": {
+  "path": [
+   [
+    0,
+    0
+   ],
+   [
+    6,
+    -2
+   ],
+   [
+    12,
+    -4.2
+   ]
+  ],
+  "gauge": 0.6,
+  "decay": "derelict",
+  "seed": 7
+ },
+ "light": null,
+ "animated": null,
+ "notes": "A floor piece, walked on; the path is in the piece's own metres from its origin (the cannery door end)."
+}

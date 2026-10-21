@@ -16,7 +16,7 @@ namespace HiddenHarbours.Boats
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(CapsuleCollider2D))]   // hull collider: bumps shore + dock pilings (cozy, no damage)
     [RequireComponent(typeof(BoatMooring))]         // the rope/mooring (tie-up vs drift) rides on every boat
-    public class BoatController : MonoBehaviour
+    public class BoatController : MonoBehaviour, IHullTrimSource
     {
         /// <summary>Astern thrust as a fraction of ahead, like a real prop pushes backward weaker (~40%).</summary>
         public const float DefaultAsternFactor = 0.4f;
@@ -56,7 +56,7 @@ namespace HiddenHarbours.Boats
         private const float RudderFeelScale = 0.01f;
 
         [SerializeField] private BoatHullDef _hull;
-        [Tooltip("Placeholder local seabed depth (m). Replaced by a real seabed/depth map later.")]
+        [Tooltip("Fallback seabed depth below chart datum (m), used only where terrain/environment is absent.")]
         [SerializeField] private float _localSeabedDepth = 3f;
 
         [Header("Seakeeping (ADR 0018 B3 — the sea pushes the boat)")]
@@ -304,6 +304,35 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public SurfState SurfUnderHull => _surfUnderHull;
 
+        // --- Trim (owner 2026-09-21: "trim added to the boats depending on speed and deacceleration").
+        // The along-keel force this step's DRIVE put on her, and the along-keel part of what her own
+        // drag, brace and holds put on her — summed where each force is applied below, in the body's
+        // force units, so the trim reads exactly the forces the physics got. Scratch for one step.
+        private float _trimDrive, _trimResist;
+        private float _trimTargetDegrees;
+        private float _trimResponseSeconds;
+        private int _trimRestSerial;
+
+        /// <summary>
+        /// <b>The bow angle her speed and her own drive ask for</b> (degrees, + = bow up), as of her
+        /// last physics tick — <see cref="HullTrimMath.TargetDegrees"/> over her speed through the
+        /// water, the speed her drive holds, and the along-keel acceleration her drive and drag
+        /// produce. Published for the ONE drawer of her attitude (<see cref="MeshHullDriver"/>), which
+        /// eases the picture after it; the physics never reads it. 0 with the policy off, on a hull
+        /// that authors no trim, on a tick that returned before the forces, and while the helm is
+        /// left (<c>OnDisable</c>) until the unmanned drift tick republishes it.
+        /// </summary>
+        public float TrimTargetDegrees => _trimTargetDegrees;
+
+        /// <summary>Her drawn trim's lag, seconds — her hull's, else the policy default.</summary>
+        public float TrimResponseSeconds => _trimResponseSeconds;
+
+        /// <summary>Bumped by <see cref="Stop()"/> (a stop, a teleport, an arrival, a mooring) and
+        /// <see cref="SetHull"/> (a swap, a load): the drawer puts her level AT ONCE rather than easing
+        /// there. The helm let go under way (<see cref="Stop(bool)"/>, <c>levelAtOnce: false</c>) leaves
+        /// it alone, so the bow she was carrying settles on her lag.</summary>
+        public int TrimRestSerial => _trimRestSerial;
+
         /// <summary>
         /// Set helm input. Throttle is -1..1: ahead (forward) or astern (reverse, for backing onto the
         /// dock). Called by DevBoatInput now, by the InputService later.
@@ -377,8 +406,13 @@ namespace HiddenHarbours.Boats
         /// honest, recoverable feel; it is not zeroed by a grounding flag.
         /// </summary>
         public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec)
+            => RudderTorque(helm, rudderAuthority, wayMetersPerSec, 2f);
+
+        /// <summary>Sail hulls share their Def's full-way threshold with the irons assist.</summary>
+        public static float RudderTorque(float helm, float rudderAuthority, float wayMetersPerSec,
+                                        float fullAuthorityWayMs)
             => -Mathf.Clamp(helm, -1f, 1f) * rudderAuthority
-               * Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / 2f);
+               * (fullAuthorityWayMs > 0f ? Mathf.Clamp01(Mathf.Abs(wayMetersPerSec) / fullAuthorityWayMs) : 0f);
 
         /// <summary>
         /// Set per-oar rowing input (Propulsion = Oars). leftOar/rightOar in -1..1 (forward pull positive,
@@ -464,8 +498,19 @@ namespace HiddenHarbours.Boats
         /// doesn't coast on after the helm is dropped (the disembark-anywhere safety: an un-crewed boat is
         /// safe-moored, never strands itself). This is NOT the wind/tide mooring-drift mechanic (a separate
         /// follow-up); it is the deliberate "boat stays put" guarantee. Null-safe before <see cref="Awake"/>.
+        /// Her drawn trim goes level AT ONCE with her way (a teleport arrives level).
         /// </summary>
-        public void Stop()
+        public void Stop() => Stop(levelAtOnce: true);
+
+        /// <summary>
+        /// <see cref="Stop()"/>, saying how her drawn trim goes level. The physics is the same either way:
+        /// the way, the drive and the held controls go at once, and she asks for level.
+        /// </summary>
+        /// <param name="levelAtOnce">True for a stop that moves her or starts her fresh (a teleport, a
+        /// region arrival, a mooring, stepping ashore): the drawer puts her level at once. False when the
+        /// helm is let go under way (<c>ControlSwitcher.LeaveHelm</c>): the bow she was carrying settles
+        /// on her own lag instead of snapping level in one frame.</param>
+        public void Stop(bool levelAtOnce)
         {
             _throttle = 0f; _steer = 0f;
             _leftOar = 0f; _rightOar = 0f; _brace = false;
@@ -477,6 +522,11 @@ namespace HiddenHarbours.Boats
                 rb.linearVelocity = Vector2.zero;
                 rb.angularVelocity = 0f;
             }
+            // …and she asks for level: the trim her way asked for goes with the way. At once for a
+            // teleport, so she arrives level instead of nodding at the speed she left at; eased when
+            // the helm is let go, where she has not moved.
+            _trimTargetDegrees = 0f;
+            if (levelAtOnce) _trimRestSerial++;
         }
 
         /// <summary>
@@ -486,7 +536,7 @@ namespace HiddenHarbours.Boats
         /// shove around like a 400 kg dory. A small public setter so the swapper doesn't reach into the
         /// private serialized field.
         ///
-        /// <para>Resolves the body LAZILY, exactly as <see cref="Stop"/> does and for the same reason:
+        /// <para>Resolves the body LAZILY, exactly as <see cref="Stop(bool)"/> does and for the same reason:
         /// <see cref="Awake"/> may not have cached <c>_rb</c> yet (EditMode, or a swap wired up before the
         /// first tick). Going through the cache alone would silently drop the mass write in those cases —
         /// no throw, no warning, just a boat that weighs whatever the last one did.</para>
@@ -494,6 +544,10 @@ namespace HiddenHarbours.Boats
         public void SetHull(BoatHullDef hull)
         {
             _hull = hull;
+            // A new hull (a swap, a load) starts level: her trim is recomputed from her own data on the
+            // next physics tick, never carried over from the last hull's.
+            _trimTargetDegrees = 0f;
+            _trimRestSerial++;
             if (_hull == null) return;
             var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
             if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
@@ -531,18 +585,18 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Set the depth of water this hull believes is under her at chart datum, in metres — the
-        /// grounding read's only input besides the tide (<c>waterDepth = this + TideHeight</c>).
-        ///
-        /// <para>⚠ <b>It is a flat per-hull number, not a per-position sounding</b>, and the field's own
-        /// note says so: the real per-position gate is <c>BoatCrossing</c>. So a hull placed somewhere
-        /// with a known bed should be TOLD it, or she carries the component default (3 m) and reads
-        /// aground wherever the tide is lower than that leaves her draught. Exposed for the same reason
-        /// <see cref="SetHull"/> is: a boat spawned at runtime has no inspector to be authored in.</para>
+        /// Set the fallback depth below chart datum, in metres, for scenes without terrain.
+        /// ArrivalOpening's runtime channel-bed setting remains effective in those scenes.
+        /// Authored terrain takes precedence whenever it is available; this is not a terrain override.
         /// </summary>
         public void SetLocalSeabedDepth(float metres) => _localSeabedDepth = metres;
 
         private void FixedUpdate() => StepPhysics();
+
+        // The helm is left (this component is disabled while she drifts unmanned): the trim her drive
+        // asked for goes with the hand on the throttle, so the drawer eases her back to level even
+        // where no drift tick runs. TickUnmannedDrift republishes it from her next drift tick.
+        private void OnDisable() => _trimTargetDegrees = 0f;
 
         /// <summary>
         /// One physics tick of the sea working an <b>unmanned</b> hull — the "leave the helm to haul /
@@ -553,22 +607,29 @@ namespace HiddenHarbours.Boats
         /// instead. It runs the exact same force pass the manned helm runs — hull drag against the
         /// current (she SETS with the tide), wind shove, the seakeeping push + yaw (the weathervane the
         /// deck angler fights against), grounding/shallows — just with the controls at rest
-        /// (<see cref="Stop"/> zeroed them when the helm was left), so propulsion contributes nothing.
+        /// (<see cref="Stop(bool)"/> zeroed them when the helm was left). Oar/motor propulsion is zero;
+        /// sail propulsion remains live, with the hull's optional windward round-up opposing its pay-off.
         /// One force model, never a parallel drift copy. No-op while enabled (FixedUpdate already runs
         /// the pass — never double-integrate) and before a hull is wired.
         /// </summary>
         public void TickUnmannedDrift()
         {
             if (enabled) return;   // manned — the normal FixedUpdate owns the pass this tick
-            StepPhysics();
+            StepPhysicsForHelm(unmanned: true);
         }
 
-        private void StepPhysics()
+        private void StepPhysics() => StepPhysicsForHelm(unmanned: false);
+
+        private void StepPhysicsForHelm(bool unmanned)
         {
             // The surf under her is re-solved from scratch every tick (rule 5 — nothing accumulates), so
             // clear it FIRST: a tick that never reaches the seakeeping pass (no hull, no body, the policy
             // switched off) must not leave last tick's bore lifting a boat that is no longer in it.
             _surfUnderHull = SurfState.Calm;
+            // The trim target likewise: a tick that returns before the forces asks for level, never
+            // for last tick's bow. The accumulators start empty and fill as each force is applied.
+            _trimTargetDegrees = 0f;
+            _trimDrive = 0f; _trimResist = 0f;
             if (_hull == null) return;
             // Resolve the body lazily (the Stop()/SetHull precedent): the unmanned drift tick can run
             // through the disabled component in rigs where Awake hasn't cached it yet.
@@ -578,15 +639,13 @@ namespace HiddenHarbours.Boats
                 ? GameServices.Environment.Sample()
                 : default;
 
-            // --- Grounding: water depth = seabed depth + tide height; aground if draught exceeds it (P5). ---
+            // --- Grounding: current terrain depth through Core, flat-bed fallback in unwired scenes. ---
             // NOTE: grounding is NON-killing. It SLOWS the boat (the grounded-slowdown drag below) so the
             // shallows feel heavy and sluggish — the "teeth" — but it NEVER zeroes thrust or cuts the rudder.
-            // The helm/throttle/oars stay fully responsive so the player can always steer/power their way back
-            // to deep water (P5, never-punishing). This matters under St Peters' big tide: at low water the
-            // region-wide TideHeight alone can trip this (the depth here is still flat & time-based, not
-            // per-position) — so it MUST stay a slowdown, not a helm-cut, or a transient tide phase would kill
-            // control independent of where you are.
-            float waterDepth = _localSeabedDepth + env.TideHeight;
+            // The helm/throttle/oars stay responsive so the player can work back into deep water.
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            float waterDepth = BoatCrossing.GroundingDepthAt(GameServices.TidalTerrain,
+                GameServices.Environment, now, _rb.position, _localSeabedDepth, env.TideHeight);
             bool agroundNow = waterDepth < _hull.DraughtMeters;
             if (agroundNow && !IsAground)
                 EventBus.Publish(new BoatGrounded(this, Mathf.Clamp01(_hull.DraughtMeters - waterDepth)));
@@ -602,7 +661,7 @@ namespace HiddenHarbours.Boats
             // declared Sail with no polar is not sailable, and falling through to her auxiliary is a
             // better answer than sitting still with no explanation.
             if (_hull.HasSailPlan)
-                ApplySailDrive(fwd, vel, env);
+                ApplySailDrive(fwd, vel, env, unmanned);
             else if (UsesEngineHelm(_hull.Propulsion))
                 ApplyEngineDrive(fwd, vel, env);
             else
@@ -614,11 +673,16 @@ namespace HiddenHarbours.Boats
             Vector2 sideways = throughWater - along;
             Vector2 drag = -(along * (_hull.ForwardDrag * ForceFeelScale) + sideways * (_hull.LateralDrag * ForceFeelScale));
             _rb.AddForce(drag, ForceMode2D.Force);
+            _trimResist += Vector2.Dot(drag, fwd);
 
             // --- Grounded slowdown (P5 teeth, NOT a kill): aground → an extra through-water drag makes the
             // hull heavy and sluggish in the shallows, but input authority is untouched. Forgiving by design. ---
             Vector2 groundedSlow = GroundedSlowdownForce(throughWater, IsAground, _groundedSlowdownDrag);
-            if (groundedSlow != Vector2.zero) _rb.AddForce(groundedSlow * ForceFeelScale, ForceMode2D.Force);
+            if (groundedSlow != Vector2.zero)
+            {
+                _rb.AddForce(groundedSlow * ForceFeelScale, ForceMode2D.Force);
+                _trimResist += Vector2.Dot(groundedSlow * ForceFeelScale, fwd);
+            }
 
             // --- Wind shove (Pillar 1: the dory gets pushed around) ---
             _rb.AddForce(env.WindVector * (_hull.WindExposure * ForceFeelScale), ForceMode2D.Force);
@@ -641,8 +705,56 @@ namespace HiddenHarbours.Boats
                 Vector2 ahead = _rb.position + fwd * Mathf.Max(0.5f, _hull.LengthMeters * 0.5f);
                 bool aheadShallow = !BoatCrossing.CanFloatNow(ahead, _hull.DraughtMeters);
                 Vector2 hold = ShallowsHoldForce(vel, aheadShallow, ahead - _rb.position, _shallowsHoldDrag);
-                if (hold != Vector2.zero) _rb.AddForce(hold * ForceFeelScale, ForceMode2D.Force);
+                if (hold != Vector2.zero)
+                {
+                    _rb.AddForce(hold * ForceFeelScale, ForceMode2D.Force);
+                    _trimResist += Vector2.Dot(hold * ForceFeelScale, fwd);
+                }
             }
+
+            // --- Trim (owner 2026-09-21): the bow angle her speed and her own drive ask for, published for
+            // the one drawer of her attitude (MeshHullDriver). It READS the forces above and applies
+            // nothing, so her physics is identical with trim on or off. The wind and the seakeeping
+            // shove are deliberately not in it — see PublishTrimTarget. ---
+            PublishTrimTarget(fwd, vel, env);
+        }
+
+        /// <summary>
+        /// Resolve this tick's trim target (<see cref="TrimTargetDegrees"/>) from the forces the step
+        /// just applied. The design is <c>boats-and-navigation.md</c> §2.7.3; the pure law is
+        /// <see cref="HullTrimMath"/>.
+        ///
+        /// <para><b>The signals.</b> Her speed is the along-keel component of her velocity THROUGH THE
+        /// WATER (less the current), so a tide under her does not trim her. Her acceleration is the
+        /// along-keel sum of her DRIVE (engine, oars or sail thrust as applied) and her own RESISTANCE
+        /// (hull drag, brace, the grounded and shallows holds, as applied) over her body mass, less the
+        /// body's own damping — computed, not differenced from velocity, so nothing that is not drive
+        /// or braking reaches the bow: the wind shove and the seakeeping push, yaw and damping (the
+        /// sea's forces) are left out on purpose. The wave pitch stays the rock channel's.</para>
+        ///
+        /// <para><b>Known small biases, recorded rather than hidden.</b> A force from outside this sum —
+        /// the wind, the sea, the anchor's or the mooring's line, a quay she is pressed against — that
+        /// holds her away from the speed her own drive and drag balance at reads as the difference: a
+        /// headwind holding her below her throttle's speed is a slight steady push (bow up), a line
+        /// towing her or holding her against a stream reads her own drag as a slight check (bow down,
+        /// faded by her low Froude number), and a hull pressed on a quay with the throttle open sits
+        /// squatted as if gathering way. In a turn, her keel swinging across her way reads as a small
+        /// push: the along-keel share of the turn is her yaw rate times her sideways slip.</para>
+        /// </summary>
+        private void PublishTrimTarget(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        {
+            HullTrimSettings policy = _config != null ? _config.HullTrim : GameServices.HullTrim;
+            HullTrimProfile profile = HullTrimMath.Resolve(_hull, policy);
+            _trimResponseSeconds = profile.ResponseSeconds;
+            if (profile.IsNeutral) return;   // level — the target was cleared at the top of the step
+
+            float waterSpeed = Vector2.Dot(vel - env.CurrentVector, fwd);
+            float acceleration = HullTrimMath.DriveAcceleration(_trimDrive + _trimResist, _rb.mass,
+                                                                _rb.linearDamping, Vector2.Dot(vel, fwd));
+            float resistance = SailDrive.LinearResistance(_hull.ForwardDrag, _rb.mass, _rb.linearDamping,
+                                                          ForceFeelScale) * ForceFeelScale;
+            float heldSpeed = HullTrimMath.HeldSpeed(_trimDrive, resistance);
+            _trimTargetDegrees = HullTrimMath.TargetDegrees(profile, waterSpeed, heldSpeed, acceleration);
         }
 
         /// <summary>
@@ -661,6 +773,7 @@ namespace HiddenHarbours.Boats
             // --- Engine thrust along the hull. Ahead full, astern weaker. Always live (never killed by ground). ---
             float thrust = EngineThrust(_throttle, _hull.EnginePower, _asternThrustFactor) * ForceFeelScale;
             _rb.AddForce(fwd * thrust, ForceMode2D.Force);
+            _trimDrive += thrust;
 
             // --- Rudder: authority scales with WAY (forward speed through the water, §2) — nil at rest. ---
             float way = Vector2.Dot(vel - env.CurrentVector, fwd);   // forward way through the moving water
@@ -694,7 +807,7 @@ namespace HiddenHarbours.Boats
         /// negative branch here and none is wanted; a sloop backing out of a berth is her AUXILIARY,
         /// which is the engine seam, untouched.</para>
         /// </summary>
-        private void ApplySailDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        private void ApplySailDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env, bool unmanned)
         {
             // The wind she is actually in — true for the physics, apparent for the picture. One wind:
             // this reads the sim's WindVector and Core's own apparent maths, and adds neither.
@@ -712,7 +825,11 @@ namespace HiddenHarbours.Boats
             float resistance = SailDrive.LinearResistance(_hull.ForwardDrag, _rb.mass, _rb.linearDamping,
                                                           ForceFeelScale);
             float thrust = SailDrive.ThrustFor(SailDrive.ToMetresPerSecond(targetKn), resistance);
-            if (thrust > 0f) _rb.AddForce(fwd * (thrust * ForceFeelScale), ForceMode2D.Force);
+            if (thrust > 0f)
+            {
+                _rb.AddForce(fwd * (thrust * ForceFeelScale), ForceMode2D.Force);
+                _trimDrive += thrust * ForceFeelScale;
+            }
 
             // The sheets a player who never touches one is sailing at. Held state, so a player who DOES
             // touch one keeps their trim until they change it (the sidecar's AUTO_TRIM is the default,
@@ -723,7 +840,13 @@ namespace HiddenHarbours.Boats
             // on cannot steer, under sail every bit as much as under power. In irons she loses steerage
             // exactly as she should, because the polar has taken her way off. ---
             float way = Vector2.Dot(vel - env.CurrentVector, fwd);
-            _rb.AddTorque(RudderTorque(_steer, _hull.RudderAuthority, way) * RudderFeelScale);
+            float rudder = RudderTorque(_steer, _hull.RudderAuthority, way, _hull.RudderFullAuthorityWayMs);
+            float payOff = SailDrive.IronsPayOffTorque(DrawnInIrons, wind.TrueAngleDeg, _steer, way,
+                _hull.IronsPayOffTorque, _hull.RudderFullAuthorityWayMs, wind.TrueKn, _hull.SailYawReferenceWindKn);
+            float roundUp = SailDrive.UnmannedRoundUpTorque(unmanned, wind.TrueAngleDeg, targetKn,
+                _hull.UnmannedRoundUpTorque, _hull.NoGoTrueWindDeg, _hull.RoundUpReferenceDriveKn,
+                wind.TrueKn, _hull.SailYawReferenceWindKn);
+            _rb.AddTorque((rudder + payOff + roundUp) * RudderFeelScale);
         }
 
         /// <summary>
@@ -744,13 +867,16 @@ namespace HiddenHarbours.Boats
                 float yaw    = OarYawTorque(_leftOar, _rightOar, _hull.OarPower, _hull.OarLateralOffset) * ForceFeelScale;
                 _rb.AddForce(fwd * thrust, ForceMode2D.Force);
                 _rb.AddTorque(yaw);
+                _trimDrive += thrust;
             }
 
             // Brace: oars planted = a strong extra drag relative to the water (brake/stop). Forgiving.
             if (_brace)
             {
                 Vector2 throughWater = vel - env.CurrentVector;
-                _rb.AddForce(BraceDragForce(throughWater, _hull.OarBraceDrag) * ForceFeelScale, ForceMode2D.Force);
+                Vector2 brace = BraceDragForce(throughWater, _hull.OarBraceDrag) * ForceFeelScale;
+                _rb.AddForce(brace, ForceMode2D.Force);
+                _trimResist += Vector2.Dot(brace, fwd);
             }
         }
 
@@ -774,7 +900,7 @@ namespace HiddenHarbours.Boats
         /// the state comes back <see cref="SurfState.Calm"/>.</para>
         /// </summary>
         private static SurfState SurfUnderTheHull(Vector2 pos, double now, in WaveTrains trains,
-                                                  float gravity, float freqScale)
+                                                  float gravity, float freqScale, bool published)
         {
             ITidalTerrain terrain = GameServices.TidalTerrain;
             if (terrain == null) return SurfState.Calm;
@@ -787,7 +913,7 @@ namespace HiddenHarbours.Boats
             WaveTrain dominant = trains.Dominant;
 
             BreakerContour contour = BreakerMath.ContourFor(
-                in dominant, WaveFetch.Envelope01(0f, in fetch), in breakers);
+                in dominant, WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
             if (!contour.Breaks) return SurfState.Calm;
 
             float waterLevel = environment.WaterLevelAt(now);
@@ -803,13 +929,10 @@ namespace HiddenHarbours.Boats
             // scale 1 while the surface draws it at 2.8 would be shoved by a crest that is not the one on
             // her — the _OceanSwellScale incident that already cost the ride and the watertight clamp.
             //
-            // …and `now`, which is NOT optional on this path. These trains come from WaveMath.TrainsFrom,
-            // whose phase offset is a hash of (index, seed) and carries no time at all; the published
-            // trains the renderer reads carry it inside their own PhaseOffset, which is why the parameter
-            // defaults to 0 for them. Pass 0 here and the bore stands still: a pulse that varies across
-            // the beach and never ARRIVES, which is the steady state this whole revision exists to end.
+            // Published trains already carry travel in PhaseOffset, just as in the swell read.
+            // Raw fallback trains still need the clock. Tide above always needs world time.
             return BreakerMath.SurfAt(pos, waterLevel, terrain, in contour, envelope,
-                                      in trains, gravity, in breakers, freqScale, now);
+                                      in trains, gravity, in breakers, freqScale, published ? 0.0 : now);
         }
 
         /// <summary>
@@ -844,13 +967,14 @@ namespace HiddenHarbours.Boats
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             Vector2 pos = _rb.position;
 
-            // The field this tick (SIM path — pure function of the deterministic wind + sea state).
             WaveFieldSettings waveField = GameServices.WaveField;
-            WaveTrains trains = WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
-            // The SIM path reads the pure WaveMath at game time (it never eases), through the same
-            // wind-fetch envelope the drawn sea uses — so the seakeeping forces in a lee match the calm
-            // water the player sees there. Exactly 1 while the model is off (ADR 0027 #1).
-            WaveSample wave = WaveMath.Sample(pos, now, in trains, GameServices.FetchEnvelopeAt(pos));
+            bool published = SharedWaveField.TryGet(out WaveTrains trains);
+            if (!published)
+                trains = GameServices.Environment is IWaveWindSource history
+                    ? WaveMemory.TrainsAt(history, now, in waveField)
+                    : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
+            // Published travel is baked; a first-frame fallback carries raw phases at the clock.
+            WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
 
             // Exposure (PLACE): deeper/further offshore = full sea; the shallow lee = sheltered. Uses the
             // same depth the boat-cross gate reads; open water (no seabed map) = +Inf depth = fully exposed.
@@ -895,7 +1019,7 @@ namespace HiddenHarbours.Boats
             // (and a second contour inversion every frame). One computation, two consumers — the same
             // discipline SharedWaveField enforces one layer out.
             _surfUnderHull = SurfUnderTheHull(pos, now, in trains, waveField.Gravity,
-                                              displacedActive ? displaced.FreqScale : 1f);
+                                              displacedActive ? displaced.FreqScale : 1f, published);
             SeakeepingForce surfPush = SeakeepingForcesMath.SurfShove(in _surfUnderHull, fwd, in response, in _seakeeping);
             seaForce += surfPush.Force;
             seaTorque += surfPush.Torque;

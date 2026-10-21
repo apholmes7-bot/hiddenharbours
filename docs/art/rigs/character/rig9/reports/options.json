@@ -1,0 +1,28 @@
+{
+  "tool": "check-options",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "dataFile": "data/options.v9.json",
+  "dataIdentical": true,
+  "axes": 18,
+  "options": 140,
+  "budget": {
+    "formulaChecked": 610,
+    "maxTris": 1150,
+    "maxAt": {
+      "garment": "overalls",
+      "bottom": "trousers",
+      "hat": "hood",
+      "hairStyle": "crop",
+      "beard": "long",
+      "eyeShape": "lidded",
+      "headDims": 0
+    },
+    "overRows": 34688,
+    "overCells": 17736285,
+    "overCellsCreator": 11807672,
+    "cells": 32760000
+  }
+}

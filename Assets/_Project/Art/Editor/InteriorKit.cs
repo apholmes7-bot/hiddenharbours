@@ -228,12 +228,13 @@ namespace HiddenHarbours.Art.Editor
         /// <c>InteriorKitTests</c> asserts the sizes agree without baking anything.</para>
         ///
         /// <para><b>⚠️ A ROOM IS ONLY HALF THE PROMISE — THE SHELL HAS TO DRAW ITS DOOR WHERE THIS
-        /// ROOM OPENS.</b> A doorway registers to <c>houseIsoRig.anchors().door</c>, which is
-        /// DECLARED at the <c>+Y</c> gable centre for every shape and does not follow where the rig
-        /// actually draws the door. Three of these four shells had to be re-dialled before they could
-        /// be entered at all — see <see cref="VillageBuildingKit.DrawsDoorOnGable"/>, which is the
-        /// rule and the measurement. Adding a room to a building that fails that predicate ships a
-        /// house whose visible door is solid wall and whose walk-in gap is blank clapboard.</para>
+        /// ROOM OPENS.</b> A doorway registers to its own shell's <c>houseIsoRig.anchors().door</c>.
+        /// Before the village return (drop 14) that anchor was DECLARED at the <c>+Y</c> gable centre
+        /// whatever the rig drew, and three of these four shells had to be re-dialled before they could
+        /// be entered at all. The returned rig's anchor follows the door it draws, so a room added under
+        /// a shell whose door it cannot open onto is refused by the bake's registration probe
+        /// (<c>InteriorRigAzimuthProbe.MeasureRegistration</c>) rather than shipped as a visible door
+        /// in solid wall.</para>
         ///
         /// <para><b>⚠️ <c>dividers</c> is 0 on every row, and that is a COLLISION constraint, not a
         /// taste one.</b> The rig draws a partition as a full-width wall with its own 1.15 m doorway

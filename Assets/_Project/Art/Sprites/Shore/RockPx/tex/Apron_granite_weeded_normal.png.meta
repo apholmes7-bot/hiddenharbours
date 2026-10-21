@@ -1,0 +1,793 @@
+fileFormatVersion: 2
+guid: 204813124f77ec642ba0528dd0e0094e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8467735708201234499
+    second: Apron_granite_weeded_normal_0
+  - first:
+      213: 7011543028097947669
+    second: Apron_granite_weeded_normal_1
+  - first:
+      213: 2405779208750219974
+    second: Apron_granite_weeded_normal_2
+  - first:
+      213: 2051790914311185257
+    second: Apron_granite_weeded_normal_3
+  - first:
+      213: -1281959343434426436
+    second: Apron_granite_weeded_normal_4
+  - first:
+      213: -7162153935530477212
+    second: Apron_granite_weeded_normal_5
+  - first:
+      213: -1205240338227520383
+    second: Apron_granite_weeded_normal_6
+  - first:
+      213: 7291851406969597983
+    second: Apron_granite_weeded_normal_7
+  - first:
+      213: 6012335018359416039
+    second: Apron_granite_weeded_normal_8
+  - first:
+      213: -416934726414894781
+    second: Apron_granite_weeded_normal_9
+  - first:
+      213: -7971048575227784196
+    second: Apron_granite_weeded_normal_10
+  - first:
+      213: -5190053370367617918
+    second: Apron_granite_weeded_normal_11
+  - first:
+      213: 3109842252268286457
+    second: Apron_granite_weeded_normal_12
+  - first:
+      213: 7383534584543591245
+    second: Apron_granite_weeded_normal_13
+  - first:
+      213: -6246393266763035110
+    second: Apron_granite_weeded_normal_14
+  - first:
+      213: 5919107508250599118
+    second: Apron_granite_weeded_normal_15
+  - first:
+      213: 6940618040160279303
+    second: Apron_granite_weeded_normal_16
+  - first:
+      213: 3326940288648770222
+    second: Apron_granite_weeded_normal_17
+  - first:
+      213: 3996249881965796810
+    second: Apron_granite_weeded_normal_18
+  - first:
+      213: -940979100895722048
+    second: Apron_granite_weeded_normal_19
+  - first:
+      213: -143555817293113535
+    second: Apron_granite_weeded_normal_20
+  - first:
+      213: -3720294562510718617
+    second: Apron_granite_weeded_normal_21
+  - first:
+      213: 4949351758013319543
+    second: Apron_granite_weeded_normal_22
+  - first:
+      213: -9047066761123123643
+    second: Apron_granite_weeded_normal_23
+  - first:
+      213: 7722560314731813869
+    second: Apron_granite_weeded_normal_24
+  - first:
+      213: -4050111749956713734
+    second: Apron_granite_weeded_normal_25
+  - first:
+      213: -17941098837223864
+    second: Apron_granite_weeded_normal_26
+  - first:
+      213: -8974709902010436108
+    second: Apron_granite_weeded_normal_27
+  - first:
+      213: -1426648365590553328
+    second: Apron_granite_weeded_normal_28
+  - first:
+      213: -8844707845286598361
+    second: Apron_granite_weeded_normal_29
+  - first:
+      213: -7218138172189952067
+    second: Apron_granite_weeded_normal_30
+  - first:
+      213: 6837989005450438637
+    second: Apron_granite_weeded_normal_31
+  - first:
+      213: -3039055104771582132
+    second: Apron_granite_weeded_normal_32
+  - first:
+      213: -7374330821104310992
+    second: Apron_granite_weeded_normal_33
+  - first:
+      213: -3204224289775601656
+    second: Apron_granite_weeded_normal_34
+  - first:
+      213: 7251545614904851250
+    second: Apron_granite_weeded_normal_35
+  - first:
+      213: -4694535961109421395
+    second: Apron_granite_weeded_normal_36
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7064ce5d453754499e75cce98424a49
+      internalID: -1477501382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a3318d9b10df3046a1e10e10cb061f6
+      internalID: 1209465806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf014b4322643a941a798f44826b8038
+      internalID: -818720797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4253d0dbdaf55af4f91065e0b06eb70f
+      internalID: 355914489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f97734491d8101943a48350aa3c3f5ae
+      internalID: -320906977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcedbd33d2b508949bb4ad85d50f6ec7
+      internalID: -1732273094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15328dd4a491b0649be9b6598ead005e
+      internalID: 311830338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ecfe0a7ae66a8146bc9bfb0bcb464b8
+      internalID: 510296559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eae9b17c2a0b1f346b2fccbdf052dd33
+      internalID: -720289243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8aaf36aaad23f6419514a0227ba7896
+      internalID: 1481208235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53b7ee5f02f1a5a4f9557e03d74f2fae
+      internalID: 1500551591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a196816978db9114493aaade749c130a
+      internalID: 1469845446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ba4d305cd5921e45afbca6605433d8b
+      internalID: -1687433754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 190c42c67f7ce654b9a307808a53f49d
+      internalID: -1568138931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b50049b775c80c54e8988f8bbc7fb133
+      internalID: -1035641819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50c546b8b280c80419ef3e6d19591763
+      internalID: 231557318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1460087d8338b94459b00784899ccb11
+      internalID: -26133620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70e8088c6859e4148bafcb5797d3bcb2
+      internalID: -1965450636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 430248cd3acf6b840aef4485072d5c08
+      internalID: 1677190351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26aa54fac8f9e244a8d78019c34287a5
+      internalID: -1266443048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 687f1dc8620254845ae5afe4bd8c56c0
+      internalID: -2047144750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99ea92fe4b8bc654c8198aa0547d1753
+      internalID: -1298203720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e89767713d47b66448df4bb812766eb1
+      internalID: -1447332928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20fca288ac1c8e644a9f27957f6a7253
+      internalID: 1985053267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 9235d0900b37de74e94bd7ee3ee25ca3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Apron_granite_weeded_normal_c0_r0: -1477501382
+      Apron_granite_weeded_normal_c0_r1: -720289243
+      Apron_granite_weeded_normal_c0_r2: -26133620
+      Apron_granite_weeded_normal_c1_r0: 1209465806
+      Apron_granite_weeded_normal_c1_r1: 1481208235
+      Apron_granite_weeded_normal_c1_r2: -1965450636
+      Apron_granite_weeded_normal_c2_r0: -818720797
+      Apron_granite_weeded_normal_c2_r1: 1500551591
+      Apron_granite_weeded_normal_c2_r2: 1677190351
+      Apron_granite_weeded_normal_c3_r0: 355914489
+      Apron_granite_weeded_normal_c3_r1: 1469845446
+      Apron_granite_weeded_normal_c3_r2: -1266443048
+      Apron_granite_weeded_normal_c4_r0: -320906977
+      Apron_granite_weeded_normal_c4_r1: -1687433754
+      Apron_granite_weeded_normal_c4_r2: -2047144750
+      Apron_granite_weeded_normal_c5_r0: -1732273094
+      Apron_granite_weeded_normal_c5_r1: -1568138931
+      Apron_granite_weeded_normal_c5_r2: -1298203720
+      Apron_granite_weeded_normal_c6_r0: 311830338
+      Apron_granite_weeded_normal_c6_r1: -1035641819
+      Apron_granite_weeded_normal_c6_r2: -1447332928
+      Apron_granite_weeded_normal_c7_r0: 510296559
+      Apron_granite_weeded_normal_c7_r1: 231557318
+      Apron_granite_weeded_normal_c7_r2: 1985053267
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

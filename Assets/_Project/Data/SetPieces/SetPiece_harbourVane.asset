@@ -1,0 +1,271 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_harbourVane
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_harbour_vane
+  DisplayName: Harbour vane
+  RigKey: harbourVane
+  SceneId: keyscene.stp_landing
+  BakedOptionsJson: '{"height":4.6,"windFromDeg":270}'
+  Layer: raised
+  Walk: behind
+  Mount: ground
+  BoundsMin: {x: -0.465, y: -0.455, z: 0}
+  BoundsMax: {x: 0.485, y: 0.455, z: 5.16}
+  Frames:
+  - Sprite: {fileID: -5591951899898765398, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 38, y: 143}
+    NativePivot: {x: 18, y: 130}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 15, y: 127}
+  - Sprite: {fileID: 4883061996591176990, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 46, y: 150}
+    NativePivot: {x: 23, y: 134}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 19, y: 130}
+  - Sprite: {fileID: 2398539416382884668, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 37, y: 149}
+    NativePivot: {x: 18, y: 136}
+    Crop: {x: 3, y: 6}
+    Pivot: {x: 15, y: 130}
+  - Sprite: {fileID: 4135009450577304023, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 46, y: 150}
+    NativePivot: {x: 23, y: 134}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 19, y: 130}
+  - Sprite: {fileID: -7431376083720410962, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 38, y: 143}
+    NativePivot: {x: 19, y: 130}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 16, y: 127}
+  - Sprite: {fileID: -4596109886088544554, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 46, y: 153}
+    NativePivot: {x: 23, y: 137}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 19, y: 134}
+  - Sprite: {fileID: 9116685272212472832, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 37, y: 153}
+    NativePivot: {x: 18, y: 140}
+    Crop: {x: 3, y: 15}
+    Pivot: {x: 15, y: 125}
+  - Sprite: {fileID: -1119576408891683802, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 46, y: 153}
+    NativePivot: {x: 23, y: 137}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 19, y: 134}
+  CellSize: {x: 38, y: 146}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -0.42, y: -0.42}
+    - {x: 0.42, y: -0.42}
+    - {x: 0.42, y: 0.42}
+    - {x: -0.42, y: 0.42}
+  Anchors:
+  - Name: top
+    Position: {x: 0, y: 0, z: 5.2}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 1
+  Animated:
+    Part: vane.cod
+    Input: windFromDeg
+    Steps: 16
+    BakedAtDeg: 270
+    RigDir: 0
+    Headings:
+    - Sprite: {fileID: -3916223513125962853, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 149}
+      NativePivot: {x: 18, y: 136}
+      Crop: {x: 3, y: 6}
+      Pivot: {x: 15, y: 130}
+    - Sprite: {fileID: -8671919366774297793, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 148}
+      NativePivot: {x: 18, y: 135}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 132}
+    - Sprite: {fileID: -1243871487060560880, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 147}
+      NativePivot: {x: 18, y: 134}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 15, y: 130}
+    - Sprite: {fileID: 306829744267495452, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 145}
+      NativePivot: {x: 18, y: 132}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 129}
+    - Sprite: {fileID: -8150446436295618710, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 38, y: 143}
+      NativePivot: {x: 19, y: 130}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 16, y: 127}
+    - Sprite: {fileID: -873561846181235601, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 147}
+      NativePivot: {x: 18, y: 134}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 15, y: 130}
+    - Sprite: {fileID: -2218537281077134318, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 150}
+      NativePivot: {x: 18, y: 137}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 134}
+    - Sprite: {fileID: -7925838609527432927, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 152}
+      NativePivot: {x: 18, y: 139}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 136}
+    - Sprite: {fileID: 4222196677911891471, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 153}
+      NativePivot: {x: 18, y: 140}
+      Crop: {x: 3, y: 15}
+      Pivot: {x: 15, y: 125}
+    - Sprite: {fileID: 4162397679467566926, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 152}
+      NativePivot: {x: 18, y: 139}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 136}
+    - Sprite: {fileID: 6114924985304591662, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 150}
+      NativePivot: {x: 18, y: 137}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 134}
+    - Sprite: {fileID: 8981785956306949141, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 147}
+      NativePivot: {x: 18, y: 134}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 15, y: 130}
+    - Sprite: {fileID: 6560954254909137947, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 38, y: 143}
+      NativePivot: {x: 18, y: 130}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 127}
+    - Sprite: {fileID: -5900113541016874680, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 145}
+      NativePivot: {x: 18, y: 132}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 129}
+    - Sprite: {fileID: 6794311047171466708, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 147}
+      NativePivot: {x: 18, y: 134}
+      Crop: {x: 3, y: 4}
+      Pivot: {x: 15, y: 130}
+    - Sprite: {fileID: -4905462807252781164, guid: b4109267f7abaaf498a4b3f910f2d1e0, type: 3}
+      RigDir: 0
+      ShowFaces: N
+      BearingDeg: 0
+      CameraSees: its back
+      NativeSize: {x: 37, y: 148}
+      NativePivot: {x: 18, y: 135}
+      Crop: {x: 3, y: 3}
+      Pivot: {x: 15, y: 132}

@@ -134,27 +134,44 @@ namespace HiddenHarbours.Core
         /// <para>Returns <see cref="float.NegativeInfinity"/> ("as dry as can be") when either service is
         /// absent: the region simply isn't tide-gated, so the gate is off rather than trapping the walker.
         /// This is the established gate-off contract — do not change it to 0.</para>
+        ///
+        /// <para>This overload is the TIDE alone (no still water). The on-foot readers take the overload
+        /// with an <see cref="IStillWater"/>; this one stays for the callers that mean the tide.</para>
         /// </summary>
         public static float OnFootDepth(ITidalTerrain terrain, IEnvironmentService environment,
                                         IReadOnlyList<IStandableSurface> surfaces,
                                         double totalSeconds, Vector2 worldPos)
+            => OnFootDepth(terrain, environment, null, surfaces, totalSeconds, worldPos);
+
+        /// <summary>
+        /// The on-foot water depth with the region's <b>still water</b> (ADR 0046): the water over the
+        /// standing surface is <b>max(tide, still)</b> at the position
+        /// (<see cref="StillWaterLevels.WaterLevelAt"/>), so a pond above the tide is waded and swum like the
+        /// sea. A null or empty <paramref name="still"/> returns exactly the tide-only depth.
+        /// </summary>
+        public static float OnFootDepth(ITidalTerrain terrain, IEnvironmentService environment,
+                                        IStillWater still, IReadOnlyList<IStandableSurface> surfaces,
+                                        double totalSeconds, Vector2 worldPos)
         {
             if (terrain == null || environment == null) return float.NegativeInfinity;
             float standing = StandingElevation(terrain.ElevationAt(worldPos), surfaces, worldPos);
-            return TidalExposure.WaterDepth(environment.WaterLevelAt(totalSeconds), standing);
+            float water = StillWaterLevels.WaterLevelAt(environment, still, totalSeconds, worldPos);
+            return TidalExposure.WaterDepth(water, standing);
         }
 
         /// <summary>
-        /// The <c>Now</c> twin of <see cref="OnFootDepth"/>: the live on-foot depth over a position, read
-        /// off the Core services (<see cref="GameServices.TidalTerrain"/> /
-        /// <see cref="GameServices.Environment"/> at the current <see cref="IGameClock.TotalSeconds"/>) and
-        /// the live surface registry. The one entry point runtime consumers call.
+        /// The <c>Now</c> twin of <see cref="OnFootDepth(ITidalTerrain,IEnvironmentService,IStillWater,IReadOnlyList{IStandableSurface},double,Vector2)"/>:
+        /// the live on-foot depth over a position, read off the Core services
+        /// (<see cref="GameServices.TidalTerrain"/> / <see cref="GameServices.Environment"/> at the current
+        /// <see cref="IGameClock.TotalSeconds"/>, composed with <see cref="GameServices.StillWater"/>) and the
+        /// live surface registry. The one entry point runtime consumers call.
         /// </summary>
         public static float OnFootDepthNow(Vector2 worldPos)
         {
             IGameClock clock = GameServices.Clock;
             double now = clock != null ? clock.TotalSeconds : 0.0;
-            return OnFootDepth(GameServices.TidalTerrain, GameServices.Environment, Surfaces, now, worldPos);
+            return OnFootDepth(GameServices.TidalTerrain, GameServices.Environment, GameServices.StillWater,
+                               Surfaces, now, worldPos);
         }
     }
 }

@@ -280,12 +280,12 @@ present · Authored vs simulated · Role in progression.**
 > [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1.)*
 
 **Identity & mood.** Where the game begins. A tiny, weathered **home island** off the mainland —
-three clapboard houses, a one-room **school**, and a **general store**. Cut off from the mainland
+six clapboard homes, a one-room **school**, and a **general store**. Cut off from the mainland
 **except when the tide bares the sandbar**. Quiet, close, the whole world the size of a low-tide
 walk. The mood is childhood's-end and first independence: you learn the sea here in miniature before
 you ever leave home. Cozy, safe, formative.
 
-**Physical layout & landmarks.** A small island holding: the **village** (3 houses + the **school**
+**Physical layout & landmarks.** A small island holding: the **village** (6 homes + the **school**
 where the aunt teaches the compass and hand skills + the **general store** for basic gear); **clam
 flats** that bare at low water; and the **tide-gated SANDBAR** (a cobble-and-sand bar) that bares as
 a **walking path to Nine Mile Creek** only near low water. Everything within an easy walk; shallow,

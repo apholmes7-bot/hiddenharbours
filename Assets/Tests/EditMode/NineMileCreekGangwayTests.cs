@@ -33,6 +33,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para>The float's own mechanics — deck = tide, grounding, the brow's lerp — are
     /// <c>FloatingPlatformTests</c>'; this harbour's water under her is
     /// <c>NineMileCreekFloatTests</c>'. This file is about the PICTURE agreeing with itself.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> This is the builder's brow, on the plan's analytic ground and the
+    /// plan's apron. The scene's brow runs from <see cref="NineMileCreekGroundPlan.GangwayShoreEnd"/> to
+    /// <see cref="NineMileCreekGroundPlan.GangwayFloatEnd"/> (step 05) and stays undrawn; its numbers are
+    /// <c>NineMileCreekSceneQuayTests</c>'. None of these tests claims the scene's brow.</para>
     /// </summary>
     public class NineMileCreekGangwayTests
     {

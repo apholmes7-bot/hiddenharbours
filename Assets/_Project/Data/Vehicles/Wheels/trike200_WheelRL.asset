@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-1076596975300162400
+--- !u!43 &-3760066288974234453
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,23 +192,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPropMeshDef
   Id: vehicleprop.trike200_wheel_rl
   SourceRigPath: docs/art/rigs/atv-pack/atvIsoRig.js
-  SourceFaceBuilder: build(AtvIso.resolve({body:'trike'}))
-  Mesh: {fileID: -1076596975300162400}
+  SourceFaceBuilder: build(AtvIso.resolve({body:'trike',paint:'gold'}))
+  Mesh: {fileID: -3760066288974234453}
   FixedMesh: {fileID: 0}
   Ramps:
   - Colors:
     - serializedVersion: 2
-      rgba: 4279375175
+      rgba: 4279716187
     - serializedVersion: 2
-      rgba: 4279705185
+      rgba: 4280246136
     - serializedVersion: 2
-      rgba: 4280232320
+      rgba: 4281104274
     - serializedVersion: 2
-      rgba: 4280824985
+      rgba: 4282749100
     - serializedVersion: 2
-      rgba: 4281615537
+      rgba: 4284655297
     - serializedVersion: 2
-      rgba: 4282735557
+      rgba: 4286823379
     Offset: 0
   - Colors:
     - serializedVersion: 2

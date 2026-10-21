@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_119
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_119
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: wall
+  Brow:
+  - {x: 205.36063, y: 48.75}
+  - {x: 205.61063, y: 48.75}
+  Toe:
+  - {x: 205.74855, y: 45.32188}
+  - {x: 205.71387, y: 48.209774}
+  DropMetres:
+  - 11.731115
+  - 10.468044
+  ToeElevations:
+  - -0.7311308
+  - 0.5319403
+  Stations:
+  - 192
+  - 193
+  BrowFrom:
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'S wall: a new face: no St Peters wall wears S wall'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 192 to 193; the ring''s own PR builds it.'

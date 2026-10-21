@@ -71,8 +71,8 @@ namespace HiddenHarbours.Tests.EditMode
         //  pins parse the shader source (batch-safe, no compile needed) and hold all three together.
         // =========================================================================================
 
-        /// <summary>Canonical material order 0..19 — the shader header's list and the splat channel
-        /// packing (A.rgba, B.rgba, C.rgba, D.rgba, E.rgba) both follow it. Written out as a LITERAL on
+        /// <summary>Canonical material order 0..20 — the shader header's list and the splat channel
+        /// packing (A.rgba, B.rgba, C.rgba, D.rgba, E.rgba, F.r) both follow it. Written out as a LITERAL on
         /// purpose: deriving it from the code under test would pin nothing.</summary>
         private static readonly string[] CanonicalOrder =
         {
@@ -81,6 +81,7 @@ namespace HiddenHarbours.Tests.EditMode
             "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
             "Lawn",                                    // kit v4, 2026-08-26 — the mown dooryard
             "Mud",                                     // the px kit, 2026-09-17 — owner ruling M1, E.a
+            "Path",                                    // terrain pass 9, 2026-09-25 — F.r, the sixth map
         };
 
         /// <summary>The order as SHIPPED before kit v3 — indices 0..13 can never move, because
@@ -170,10 +171,10 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SplatMapCount_CoversEveryMaterialChannel()
         {
-            // Five RGBA maps = 20 channels for 20 materials: Mud took E.a, the last free slot
-            // (2026-09-17, owner ruling M1). The moment a 21st material is wanted (the px kit's Path
-            // is waiting for its _SplatF PR)
-            // this fails, which is the point: a sixth map is a deliberate decision, not a surprise.
+            // Six RGBA maps = 24 channels for 21 materials: Mud took E.a, the last slot of the five
+            // (2026-09-17, owner ruling M1), and Path opened the sixth at F.r (terrain pass 9,
+            // 2026-09-25). The moment a 25th material is wanted this fails, which is the point: a
+            // seventh map is a deliberate decision, not a surprise.
             // (It fired for real on kit v3 — 14 + 4 beds did not fit four maps, and this is where
             // that was found rather than in a silently-unpainted eelgrass meadow.)
             Assert.LessOrEqual(TerrainSplatBrush.MaterialCount, TerrainSplatBrush.TextureCount * 4,
@@ -258,22 +259,17 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (string step in TerrainTexArrayBuilder.LadderSteps)
             {
                 string path = $"{TerrainTexArrayBuilder.TexDir}/{name}{step}.png";
-                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-                Assert.IsNotNull(tex, $"Kit texture missing: '{path}' — the array builder would skip the pack.");
-
-                // BuildArray hard-rejects any other size and then builds NOTHING ("never half a
-                // kit"), so a wrong-sized import costs the whole ground, not one material.
-                Assert.AreEqual(size, tex.width, $"'{path}' is {tex.width}px wide, not {size}px.");
-                Assert.AreEqual(size, tex.height, $"'{path}' is {tex.height}px tall, not {size}px.");
+                TerrainPass9Bake.Decode(path, out int width, out int height);
+                Assert.AreEqual(size, width, $"'{path}' is {width}px wide, not {size}px.");
+                Assert.AreEqual(size, height, $"'{path}' is {height}px tall, not {size}px.");
             }
         }
 
         [Test]
-        public void KitTextures_CarryTheLoadBearingImportSettings()
+        public void KitTextures_KeepTheirStandaloneArtSettings()
         {
-            // These four are not cosmetic. isReadable off makes the array pack fail; sRGB off
-            // gamma-warps every albedo; a compressed or filtered import is DXT blocking and
-            // blur on a kit whose whole contract is "Repeat + Point, exactly periodic".
+            // Standalone source previews keep their art settings. The recipe reads PNG bytes,
+            // so source readability no longer participates in packing (ADR 0047).
             foreach (string name in TerrainTexArrayBuilder.Order256)
             foreach (string step in TerrainTexArrayBuilder.LadderSteps)
             {
@@ -281,8 +277,6 @@ namespace HiddenHarbours.Tests.EditMode
                 var importer = AssetImporter.GetAtPath(path) as TextureImporter;
                 Assert.IsNotNull(importer, $"No TextureImporter for '{path}'.");
 
-                Assert.IsTrue(importer.isReadable,
-                    $"'{path}' is not readable — TerrainTexArrayBuilder.BuildArray reads its pixels.");
                 Assert.IsTrue(importer.sRGBTexture,
                     $"'{path}' is not sRGB — the kit is albedo (note this is the OPPOSITE of the " +
                     "splat weight maps, which are linear data).");

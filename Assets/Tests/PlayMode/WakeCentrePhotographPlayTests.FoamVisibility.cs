@@ -26,23 +26,15 @@ namespace HiddenHarbours.Tests.PlayMode
         static readonly int FoamLaceId = Shader.PropertyToID("_WakeFoamLace");
         static readonly FieldInfo FoamMembers = typeof(FoamInjectionRegistry).GetField(
             "s_Live", BindingFlags.Static | BindingFlags.NonPublic);
-        static readonly FieldInfo FoamPending = typeof(FoamInjector).GetField(
-            "_pending", BindingFlags.Instance | BindingFlags.NonPublic);
-        static readonly FieldInfo FoamHasPending = typeof(FoamInjector).GetField(
-            "_hasPending", BindingFlags.Instance | BindingFlags.NonPublic);
-        static readonly FieldInfo FoamPendingFrame = typeof(FoamInjector).GetField(
-            "_pendingFrame", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [UnityTest]
         public IEnumerator TheCape_FoamSheet_ReachesTheDrawingChannelOrNamesTheMissingInput()
         {
             RequireAGraphicsDevice();
             Assert.NotNull(FoamMembers, "registry inspection seam changed");
-            Assert.NotNull(FoamPending, "injection inspection seam changed");
-            Assert.NotNull(FoamHasPending, "injection inspection seam changed");
-            Assert.NotNull(FoamPendingFrame, "injection inspection seam changed");
             _probeFoamVisibility = true;
-            RenderPipelineManager.beginCameraRendering += ObserveFoamPacking;
+            RenderPipelineManager.beginCameraRendering += PromoteFoamSubject;
+            FoamInjectionRegistry.InjectionSelectionObserved += ObserveFoamPacking;
             try
             {
                 yield return Photograph(_prioritizeFoamSubject ? "foam-priority-probe" : "foam-visibility",
@@ -50,7 +42,8 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             finally
             {
-                RenderPipelineManager.beginCameraRendering -= ObserveFoamPacking;
+                RenderPipelineManager.beginCameraRendering -= PromoteFoamSubject;
+                FoamInjectionRegistry.InjectionSelectionObserved -= ObserveFoamPacking;
                 RestoreFoamPackingOrder();
                 _probeFoamVisibility = false;
                 _foamProbeSubject = null;
@@ -93,10 +86,10 @@ namespace HiddenHarbours.Tests.PlayMode
             _foamLastPacking = "no eligible injection observed";
         }
 
-        void ObserveFoamPacking(ScriptableRenderContext context, Camera camera)
+        void PromoteFoamSubject(ScriptableRenderContext context, Camera camera)
         {
-            // After LateUpdate, before the feature collects. The baseline only inspects.
-            // The explicitly labelled counterfactual promotes this subject before inspection.
+            // Keep the historical registration-order counterfactual before collection.
+            // F1 should make this reorder irrelevant; ObserveFoamPacking reads the actual result.
             if (camera != _cam || _foamProbeSubject == null || Time.deltaTime <= 0f) return;
             var members = (IList)FoamMembers.GetValue(null);
             if (_prioritizeFoamSubject && _foamOriginalIndex < 0)
@@ -110,25 +103,20 @@ namespace HiddenHarbours.Tests.PlayMode
                     _rows.Add($"DIAGNOSTIC COUNTERFACTUAL: subject promoted from registration index {index} to 0; restored after capture");
                 }
             }
-            int eligible = 0, subjectRank = -1;
-            var packing = new List<string>();
-            foreach (FoamInjector injector in members)
-            {
-                if (injector == null || !(bool)FoamHasPending.GetValue(injector) ||
-                    (int)FoamPendingFrame.GetValue(injector) != Time.frameCount) continue;
-                var injection = (FoamInjection)FoamPending.GetValue(injector);
-                if (injector == _foamProbeSubject) subjectRank = eligible;
-                packing.Add($"{eligible}: {HierarchyPath(injector.transform)} " +
-                            $"to={injection.To} amount={injection.Amount:R}");
-                eligible++;
-            }
-            if (subjectRank < 0) return;
-            _foamEligibleFrames++;
-            if (subjectRank < FoamBuffer.MaxInjectors) _foamSelectedFrames++;
-            if (eligible > FoamBuffer.MaxInjectors) _foamOverflowFrames++;
-            _foamLastPacking = $"frame={Time.frameCount} registered={members.Count} " +
-                               $"eligible={eligible} cap={FoamBuffer.MaxInjectors} subjectRank={subjectRank}\n" +
-                               string.Join("\n", packing);
+        }
+
+        void ObserveFoamPacking(Camera camera, FoamInjector injector, bool overlapsWindow,
+                                int selectedRank, int eligible, int selected)
+        {
+            // Emitted by production collection, after ranking, only on the first render this frame.
+            // A same-frame re-render intentionally injects nothing and must not duplicate observations.
+            if (camera != _cam || injector != _foamProbeSubject || Time.deltaTime <= 0f) return;
+            if (overlapsWindow) _foamEligibleFrames++;
+            if (selectedRank >= 0) _foamSelectedFrames++;
+            if (eligible > selected) _foamOverflowFrames++;
+            _foamLastPacking = $"frame={Time.frameCount} registered={FoamInjectionRegistry.Count} " +
+                               $"eligible={eligible} selected={selected} cap={FoamBuffer.MaxInjectors} " +
+                               $"subjectOverlaps={overlapsWindow} subjectRank={selectedRank}";
         }
 
         sealed class FoamProbeSlot

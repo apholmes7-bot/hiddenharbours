@@ -879,12 +879,18 @@ namespace HiddenHarbours.Tests.EditMode
             // ⚠️ THE REGION'S OPENING BEAT. NineMileCreekDory measures this line and the whole §7.2 exit
             // condition hangs off it: you step ashore and you SEE the boat you are going to buy. A first
             // draft of this pass put the fuel pump 0.28 m off it.
+            //
+            // ⚠️ LEGACY GEOMETRY: the plan's landing, not the activated scene's. These props were laid for
+            // NineMileCreekMainland.DisembarkPos, so the line is measured from there. The activated scene
+            // lands the player at NineMileCreekGroundPlan's step-off (NineMileCreekDory.ArrivalStandingPos
+            // follows it), and from there the plan's fuel pump and oil tank stand on the line: they move
+            // with their decorative wave. This test does not prove the activated scene.
+            Vector2 landing = NineMileCreekMainland.DisembarkPos;
             foreach (var prop in Props())
                 Assert.That(
-                    NineMileCreekDory.SightlineIsClear(NineMileCreekDory.HaulOutPos, prop.Position,
-                                                       NineMileCreekDressing.DoryYardClearanceMetres),
-                    Is.True,
-                    $"'{prop.Key}' at {prop.Position} stands on the line from where the player lands to " +
+                    NineMileCreekDory.DistancePointToSegment(prop.Position, landing, NineMileCreekDory.HaulOutPos),
+                    Is.GreaterThan(NineMileCreekDressing.DoryYardClearanceMetres),
+                    $"'{prop.Key}' at {prop.Position} stands on the line from the plan's landing {landing} to " +
                     "the derelict. Move the prop; the beat is not negotiable");
         }
 

@@ -1,0 +1,799 @@
+fileFormatVersion: 2
+guid: 0db856a7ec67fb742bc4803bc4a49796
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8085849199927568489
+    second: Apron_quartzite_unlit_0
+  - first:
+      213: 2679020395674296926
+    second: Apron_quartzite_unlit_1
+  - first:
+      213: 4985075664948538699
+    second: Apron_quartzite_unlit_2
+  - first:
+      213: -8909518589414241369
+    second: Apron_quartzite_unlit_3
+  - first:
+      213: -371655636908583192
+    second: Apron_quartzite_unlit_4
+  - first:
+      213: 6039490887479906896
+    second: Apron_quartzite_unlit_5
+  - first:
+      213: -4641665961738349097
+    second: Apron_quartzite_unlit_6
+  - first:
+      213: -3689183736250187281
+    second: Apron_quartzite_unlit_7
+  - first:
+      213: -4538497438831373404
+    second: Apron_quartzite_unlit_8
+  - first:
+      213: 1692772712684316492
+    second: Apron_quartzite_unlit_9
+  - first:
+      213: -5908686143310402723
+    second: Apron_quartzite_unlit_10
+  - first:
+      213: -3976012885051319019
+    second: Apron_quartzite_unlit_11
+  - first:
+      213: 4665530110756660776
+    second: Apron_quartzite_unlit_12
+  - first:
+      213: 7592076714973014147
+    second: Apron_quartzite_unlit_13
+  - first:
+      213: 8804593845754366891
+    second: Apron_quartzite_unlit_14
+  - first:
+      213: 5171723007328138863
+    second: Apron_quartzite_unlit_15
+  - first:
+      213: -7481461525491037509
+    second: Apron_quartzite_unlit_16
+  - first:
+      213: 20880807008966705
+    second: Apron_quartzite_unlit_17
+  - first:
+      213: -1738781811866740897
+    second: Apron_quartzite_unlit_18
+  - first:
+      213: 8566669447993131913
+    second: Apron_quartzite_unlit_19
+  - first:
+      213: -8333403461535570791
+    second: Apron_quartzite_unlit_20
+  - first:
+      213: 8702319234019982554
+    second: Apron_quartzite_unlit_21
+  - first:
+      213: 3775281083396223121
+    second: Apron_quartzite_unlit_22
+  - first:
+      213: 6214538362021054153
+    second: Apron_quartzite_unlit_23
+  - first:
+      213: -3221230372567271911
+    second: Apron_quartzite_unlit_24
+  - first:
+      213: 8625873574006671870
+    second: Apron_quartzite_unlit_25
+  - first:
+      213: -2972001844323453596
+    second: Apron_quartzite_unlit_26
+  - first:
+      213: -4676421849116849257
+    second: Apron_quartzite_unlit_27
+  - first:
+      213: 7215352294038676406
+    second: Apron_quartzite_unlit_28
+  - first:
+      213: 1818091723012445675
+    second: Apron_quartzite_unlit_29
+  - first:
+      213: 8304071331280003276
+    second: Apron_quartzite_unlit_30
+  - first:
+      213: 7882615954056185189
+    second: Apron_quartzite_unlit_31
+  - first:
+      213: 9156361269723194053
+    second: Apron_quartzite_unlit_32
+  - first:
+      213: 56669739283066434
+    second: Apron_quartzite_unlit_33
+  - first:
+      213: 8219588897306599033
+    second: Apron_quartzite_unlit_34
+  - first:
+      213: 5063777856571581495
+    second: Apron_quartzite_unlit_35
+  - first:
+      213: 9121366296603331727
+    second: Apron_quartzite_unlit_36
+  - first:
+      213: -6577960127877099090
+    second: Apron_quartzite_unlit_37
+  - first:
+      213: 2507924290321498965
+    second: Apron_quartzite_unlit_38
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 619fd4ef7f0514440b9b8e67afdb2ab1
+      internalID: 928125403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8ca8b2249011714798a771dfa1fc3a1
+      internalID: 715403868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb185058688b19a4b87459a75fe67857
+      internalID: 221530375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7db5b79c96ea1a947b2e667d62c8bc02
+      internalID: 1821586287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1a13d26aa7011645962a1b42a3f88c5
+      internalID: 1258563608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28968fa9ec92ad2458b70b074e29db70
+      internalID: -377193559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b28165f8235a8d943b08df56c711ceb1
+      internalID: 684578366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16bb0b134639ca44c90da2542149ccc6
+      internalID: 1406510535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 299e5e59b988a794e99f30ea8ade66d0
+      internalID: -1829224721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b3deb1fe5f749b40941463efef96979
+      internalID: 398526668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f07c6df67b1e6942a7d12c22501a326
+      internalID: 2117690459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b00f485a63234e4aabcc9d0373a356a
+      internalID: 904789928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f96042a24bdcf94c8c2e227cbeada4e
+      internalID: -308063793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6b9d48b8fefd7149a23d847a6625769
+      internalID: -742937453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9b3c3ff94d91fd41b76fa22ad277194
+      internalID: 1674735050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fed7608ad0b077409ddaa3e5a18e61c
+      internalID: 740640832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31defa6783f00a1458b6c059c4a4c983
+      internalID: 991024898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e557836d27cd19b4c81e1ec3ddd656f3
+      internalID: 900267349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7dc318d657acd54eb56cdb120d55c72
+      internalID: -1986193957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d8a3635c50cb464ab04184d3ae32366
+      internalID: 264690974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97f69aca42f7aad43aa379e4a0e17668
+      internalID: -1199141156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3326045eced47a94ba12b4cffc80aa7a
+      internalID: 398693707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 058f12be9ab11834393cfbc34ebbef5e
+      internalID: 194071322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_quartzite_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc387b2a465ac0c478064e3c6c1752dd
+      internalID: -366889323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 48fe6bf93b99861449b6328cc91758d4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Apron_quartzite_unlit_c0_r0: 928125403
+      Apron_quartzite_unlit_c0_r1: -1829224721
+      Apron_quartzite_unlit_c0_r2: 991024898
+      Apron_quartzite_unlit_c1_r0: 715403868
+      Apron_quartzite_unlit_c1_r1: 398526668
+      Apron_quartzite_unlit_c1_r2: 900267349
+      Apron_quartzite_unlit_c2_r0: 221530375
+      Apron_quartzite_unlit_c2_r1: 2117690459
+      Apron_quartzite_unlit_c2_r2: -1986193957
+      Apron_quartzite_unlit_c3_r0: 1821586287
+      Apron_quartzite_unlit_c3_r1: 904789928
+      Apron_quartzite_unlit_c3_r2: 264690974
+      Apron_quartzite_unlit_c4_r0: 1258563608
+      Apron_quartzite_unlit_c4_r1: -308063793
+      Apron_quartzite_unlit_c4_r2: -1199141156
+      Apron_quartzite_unlit_c5_r0: -377193559
+      Apron_quartzite_unlit_c5_r1: -742937453
+      Apron_quartzite_unlit_c5_r2: 398693707
+      Apron_quartzite_unlit_c6_r0: 684578366
+      Apron_quartzite_unlit_c6_r1: 1674735050
+      Apron_quartzite_unlit_c6_r2: 194071322
+      Apron_quartzite_unlit_c7_r0: 1406510535
+      Apron_quartzite_unlit_c7_r1: 740640832
+      Apron_quartzite_unlit_c7_r2: -366889323
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

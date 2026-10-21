@@ -1,0 +1,799 @@
+fileFormatVersion: 2
+guid: 98835deed93229b499ca5c4feb87869b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6001747603895169063
+    second: Apron_granite_barnacled_unlit_0
+  - first:
+      213: 3631547507525907512
+    second: Apron_granite_barnacled_unlit_1
+  - first:
+      213: -7032951889968847145
+    second: Apron_granite_barnacled_unlit_2
+  - first:
+      213: 6467344912853602457
+    second: Apron_granite_barnacled_unlit_3
+  - first:
+      213: -1062259322722682093
+    second: Apron_granite_barnacled_unlit_4
+  - first:
+      213: -612698741069362814
+    second: Apron_granite_barnacled_unlit_5
+  - first:
+      213: 3962195001349588165
+    second: Apron_granite_barnacled_unlit_6
+  - first:
+      213: -1781341934566896261
+    second: Apron_granite_barnacled_unlit_7
+  - first:
+      213: -2264593236190562505
+    second: Apron_granite_barnacled_unlit_8
+  - first:
+      213: 1511901827090647822
+    second: Apron_granite_barnacled_unlit_9
+  - first:
+      213: -4262322681916695679
+    second: Apron_granite_barnacled_unlit_10
+  - first:
+      213: -5837799503649528961
+    second: Apron_granite_barnacled_unlit_11
+  - first:
+      213: -2945584235957374289
+    second: Apron_granite_barnacled_unlit_12
+  - first:
+      213: 8713336117440855371
+    second: Apron_granite_barnacled_unlit_13
+  - first:
+      213: -6111557355150344263
+    second: Apron_granite_barnacled_unlit_14
+  - first:
+      213: 7356110717979917365
+    second: Apron_granite_barnacled_unlit_15
+  - first:
+      213: 5921564939124208830
+    second: Apron_granite_barnacled_unlit_16
+  - first:
+      213: -7137643339612174891
+    second: Apron_granite_barnacled_unlit_17
+  - first:
+      213: -8086477576519309658
+    second: Apron_granite_barnacled_unlit_18
+  - first:
+      213: -4107297181799330771
+    second: Apron_granite_barnacled_unlit_19
+  - first:
+      213: -6586597900014319988
+    second: Apron_granite_barnacled_unlit_20
+  - first:
+      213: 1055097127369212009
+    second: Apron_granite_barnacled_unlit_21
+  - first:
+      213: -3846602800348609663
+    second: Apron_granite_barnacled_unlit_22
+  - first:
+      213: -912621980508863913
+    second: Apron_granite_barnacled_unlit_23
+  - first:
+      213: 4654987304321607920
+    second: Apron_granite_barnacled_unlit_24
+  - first:
+      213: 4510276799419051161
+    second: Apron_granite_barnacled_unlit_25
+  - first:
+      213: 7502893761816524586
+    second: Apron_granite_barnacled_unlit_26
+  - first:
+      213: 7057560743227490994
+    second: Apron_granite_barnacled_unlit_27
+  - first:
+      213: 4020400900919667185
+    second: Apron_granite_barnacled_unlit_28
+  - first:
+      213: 639616249718855409
+    second: Apron_granite_barnacled_unlit_29
+  - first:
+      213: -1690339315355049302
+    second: Apron_granite_barnacled_unlit_30
+  - first:
+      213: -6215271625594745384
+    second: Apron_granite_barnacled_unlit_31
+  - first:
+      213: 7057955517644373012
+    second: Apron_granite_barnacled_unlit_32
+  - first:
+      213: 912706844345220372
+    second: Apron_granite_barnacled_unlit_33
+  - first:
+      213: -1802269702809902461
+    second: Apron_granite_barnacled_unlit_34
+  - first:
+      213: 1564821788803093430
+    second: Apron_granite_barnacled_unlit_35
+  - first:
+      213: 2741628763166994842
+    second: Apron_granite_barnacled_unlit_36
+  - first:
+      213: 6275461244679299062
+    second: Apron_granite_barnacled_unlit_37
+  - first:
+      213: 7158159008899688308
+    second: Apron_granite_barnacled_unlit_38
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db0438b3aa601314782bcccb3a057c9d
+      internalID: -1614791053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b53823671f5ece04fb91c18293876238
+      internalID: 840616236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cdc7b02e93ff1347be1e8dc8f879ba6
+      internalID: -1670634068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e6982c2771f66146846bb516e3e6fdc
+      internalID: -694286271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae179ecfd798194409a2058f65087db6
+      internalID: -1235373327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd62bcd851598e042bdbacaea313ce03
+      internalID: 1927527114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 717f19da3237e2f4ebb09041a0437527
+      internalID: -293752492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b3aea17d622573449e8e0642c409bd6
+      internalID: -1411379679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c66a10ceb5d18c847af20df0e1b5b718
+      internalID: -946290894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a141a070206a89d41af6022057422099
+      internalID: 519588616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 618d7943cb3f5db498e65993db6d08ed
+      internalID: -10883798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e464a39912fd3c14594dd697d8de64f2
+      internalID: -1822672277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c758cf4759c56d408f5cd532feba150
+      internalID: 1014550195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9420b7e3ddda3684dac61ffcd2754c1e
+      internalID: -1235921268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b51f408f8562b614b8cb5a7884245b76
+      internalID: -1684635880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b78cceba7a6736b469d886549541ee83
+      internalID: 443265423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a1a292500c515a47a5382bfd665d230
+      internalID: -17043862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44baaa28850be0744b1c6cf40ae6a844
+      internalID: -1544940216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52c0cda90b4363648a3a6b79b8ded6b8
+      internalID: -1124176070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b99d9e783f9f22d40add793726f04d2f
+      internalID: -996252402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a83a473983837ce41bb7695e3054ec67
+      internalID: -374115868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0dfe460c907b41343a225699d5266a24
+      internalID: -258213901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9a4c065226e17f48a76dabdd834ca6b
+      internalID: -1202307364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_granite_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe7ef520c30de9444be552db65085bac
+      internalID: -607282899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f19aad2535104244d94eb8cbf81dd7ae
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Apron_granite_barnacled_unlit_c0_r0: -1614791053
+      Apron_granite_barnacled_unlit_c0_r1: -946290894
+      Apron_granite_barnacled_unlit_c0_r2: -17043862
+      Apron_granite_barnacled_unlit_c1_r0: 840616236
+      Apron_granite_barnacled_unlit_c1_r1: 519588616
+      Apron_granite_barnacled_unlit_c1_r2: -1544940216
+      Apron_granite_barnacled_unlit_c2_r0: -1670634068
+      Apron_granite_barnacled_unlit_c2_r1: -10883798
+      Apron_granite_barnacled_unlit_c2_r2: -1124176070
+      Apron_granite_barnacled_unlit_c3_r0: -694286271
+      Apron_granite_barnacled_unlit_c3_r1: -1822672277
+      Apron_granite_barnacled_unlit_c3_r2: -996252402
+      Apron_granite_barnacled_unlit_c4_r0: -1235373327
+      Apron_granite_barnacled_unlit_c4_r1: 1014550195
+      Apron_granite_barnacled_unlit_c4_r2: -374115868
+      Apron_granite_barnacled_unlit_c5_r0: 1927527114
+      Apron_granite_barnacled_unlit_c5_r1: -1235921268
+      Apron_granite_barnacled_unlit_c5_r2: -258213901
+      Apron_granite_barnacled_unlit_c6_r0: -293752492
+      Apron_granite_barnacled_unlit_c6_r1: -1684635880
+      Apron_granite_barnacled_unlit_c6_r2: -1202307364
+      Apron_granite_barnacled_unlit_c7_r0: -1411379679
+      Apron_granite_barnacled_unlit_c7_r1: 443265423
+      Apron_granite_barnacled_unlit_c7_r2: -607282899
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

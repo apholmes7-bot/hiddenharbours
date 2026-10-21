@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c7fa69da25f097ee68bd1ab3825272, type: 3}
+  m_Name: yard.st_peters.red_saltbox
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.YardDef
+  Id: "yard.st_peters.red_saltbox"
+  LotId: "lot.st_peters.red_saltbox"
+  Fence: 2
+  Mown: 1
+  Outline:
+  - {x: 14.4, y: 8.93}
+  - {x: 32.0, y: 8.93}
+  - {x: 32.0, y: 26.615}
+  - {x: 14.4, y: 26.615}
+  Gate: {x: 14.4, y: 20.3}
+  Dressing:
+  - PieceId: "prop.stp_vl_red_saltbox_border_bed"
+    Kind: "borderBed"
+    Position: {x: 15.05, y: 23.8}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":2,\"why\":\"Rose's flower border along the front fence\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_birdbath"
+    Kind: "birdbath"
+    Position: {x: 15.1, y: 17.8}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a birdbath\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_rose_bush"
+    Kind: "roseBush"
+    Position: {x: 28.8, y: 23.2}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a rugosa rose\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_rain_barrel"
+    Kind: "rainBarrel"
+    Position: {x: 27.9, y: 19.0}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a rain barrel at the back corner\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_rhubarb"
+    Kind: "rhubarb"
+    Position: {x: 28.6, y: 17.4}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"a rhubarb patch\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_woodpile"
+    Kind: "woodpile"
+    Position: {x: 30.7, y: 25.6}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the woodpile, tarped\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_veg_rows"
+    Kind: "vegRows"
+    Position: {x: 18.6, y: 14.9}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the kitchen garden in rows, bean poles: the big lot south of the house\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_veg_rows_2"
+    Kind: "vegRows"
+    Position: {x: 18.6, y: 13.2}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_potato_drills"
+    Kind: "potatoDrills"
+    Position: {x: 22.8, y: 13.9}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"potato drills\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_clothesline"
+    Kind: "clothesline"
+    Position: {x: 27.0, y: 13.7}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the washing line, where the house cannot shade it\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_raspberry_row"
+    Kind: "raspberryRow"
+    Position: {x: 27.0, y: 10.5}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"raspberry canes along the south fence\"}"
+  - PieceId: "prop.stp_vl_red_saltbox_compost_bin"
+    Kind: "compostBin"
+    Position: {x: 30.7, y: 10.7}
+    RouteId: ""
+    Road: ""
+    MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"the compost bin in the far corner\"}"
+  FenceSummary:
+    Panels: 27
+    Posts: 0
+    Gates: 0
+    Offcuts: 0
+    OffcutMetres: 0.0
+    Metres: 68.77

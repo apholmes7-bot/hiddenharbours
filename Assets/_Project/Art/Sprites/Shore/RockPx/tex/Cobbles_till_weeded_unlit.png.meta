@@ -1,0 +1,835 @@
+fileFormatVersion: 2
+guid: 9ec443d5bdb4e22458c1de73f091d194
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 907703163855438000
+    second: Cobbles_till_weeded_unlit_0
+  - first:
+      213: -5885782536914357408
+    second: Cobbles_till_weeded_unlit_1
+  - first:
+      213: 4824688342157299731
+    second: Cobbles_till_weeded_unlit_2
+  - first:
+      213: -7517939948958848158
+    second: Cobbles_till_weeded_unlit_3
+  - first:
+      213: -3104287745037061428
+    second: Cobbles_till_weeded_unlit_4
+  - first:
+      213: 816923334559160419
+    second: Cobbles_till_weeded_unlit_5
+  - first:
+      213: -1643266514803182903
+    second: Cobbles_till_weeded_unlit_6
+  - first:
+      213: 3034497671217372849
+    second: Cobbles_till_weeded_unlit_7
+  - first:
+      213: 2381685711589341449
+    second: Cobbles_till_weeded_unlit_8
+  - first:
+      213: 2986512479966747859
+    second: Cobbles_till_weeded_unlit_9
+  - first:
+      213: -7383023878173668913
+    second: Cobbles_till_weeded_unlit_10
+  - first:
+      213: -7363396898567030946
+    second: Cobbles_till_weeded_unlit_11
+  - first:
+      213: 2068287231030974350
+    second: Cobbles_till_weeded_unlit_12
+  - first:
+      213: -217360971951786009
+    second: Cobbles_till_weeded_unlit_13
+  - first:
+      213: 7445780305524086806
+    second: Cobbles_till_weeded_unlit_14
+  - first:
+      213: 6332041653590802246
+    second: Cobbles_till_weeded_unlit_15
+  - first:
+      213: 8398086820371713748
+    second: Cobbles_till_weeded_unlit_16
+  - first:
+      213: 6945288403957303676
+    second: Cobbles_till_weeded_unlit_17
+  - first:
+      213: -457409044119948280
+    second: Cobbles_till_weeded_unlit_18
+  - first:
+      213: -4020865075156997529
+    second: Cobbles_till_weeded_unlit_19
+  - first:
+      213: 8303697337226283968
+    second: Cobbles_till_weeded_unlit_20
+  - first:
+      213: -314185731785824787
+    second: Cobbles_till_weeded_unlit_21
+  - first:
+      213: -2387600828310429517
+    second: Cobbles_till_weeded_unlit_22
+  - first:
+      213: -663896553562534684
+    second: Cobbles_till_weeded_unlit_23
+  - first:
+      213: 6708657092162702983
+    second: Cobbles_till_weeded_unlit_24
+  - first:
+      213: -66153495176331498
+    second: Cobbles_till_weeded_unlit_25
+  - first:
+      213: -6809431031516921311
+    second: Cobbles_till_weeded_unlit_26
+  - first:
+      213: -3203967359943111278
+    second: Cobbles_till_weeded_unlit_27
+  - first:
+      213: 623680719886048412
+    second: Cobbles_till_weeded_unlit_28
+  - first:
+      213: 550494857351729734
+    second: Cobbles_till_weeded_unlit_29
+  - first:
+      213: -7528294324185982170
+    second: Cobbles_till_weeded_unlit_30
+  - first:
+      213: -2288249197463409665
+    second: Cobbles_till_weeded_unlit_31
+  - first:
+      213: -5550998441560077708
+    second: Cobbles_till_weeded_unlit_32
+  - first:
+      213: -2017404820945535743
+    second: Cobbles_till_weeded_unlit_33
+  - first:
+      213: -2634639614696734871
+    second: Cobbles_till_weeded_unlit_34
+  - first:
+      213: -5301763134308105246
+    second: Cobbles_till_weeded_unlit_35
+  - first:
+      213: -6827412844893789172
+    second: Cobbles_till_weeded_unlit_36
+  - first:
+      213: 4428941686848956422
+    second: Cobbles_till_weeded_unlit_37
+  - first:
+      213: -1979738095303036363
+    second: Cobbles_till_weeded_unlit_38
+  - first:
+      213: 8464257655363849598
+    second: Cobbles_till_weeded_unlit_39
+  - first:
+      213: 6078553184844161146
+    second: Cobbles_till_weeded_unlit_40
+  - first:
+      213: -8008866776755336207
+    second: Cobbles_till_weeded_unlit_41
+  - first:
+      213: -4530212453145426979
+    second: Cobbles_till_weeded_unlit_42
+  - first:
+      213: -8835718267077058216
+    second: Cobbles_till_weeded_unlit_43
+  - first:
+      213: -4765422788908478117
+    second: Cobbles_till_weeded_unlit_44
+  - first:
+      213: 2901419434340988295
+    second: Cobbles_till_weeded_unlit_45
+  - first:
+      213: 5666041547113575899
+    second: Cobbles_till_weeded_unlit_46
+  - first:
+      213: -1375828481319888831
+    second: Cobbles_till_weeded_unlit_47
+  - first:
+      213: -5967809292690781222
+    second: Cobbles_till_weeded_unlit_48
+  - first:
+      213: -4962982893871547066
+    second: Cobbles_till_weeded_unlit_49
+  - first:
+      213: 9175216134098312523
+    second: Cobbles_till_weeded_unlit_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecb386b054ba6fb4da602b06f01a5e6d
+      internalID: 286814077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 076e2fbe782b9724eb7ee34a49f84f2b
+      internalID: 216623973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e3c9996dbb43a3429a481b49c21662a
+      internalID: -684196146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8ee01d4a667d634ab337e224ff59f8d
+      internalID: 810026573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90eda74711a73d04888f334c92d1d3c8
+      internalID: -80806843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3acfc4f11aa20e4baf414187ca43a47
+      internalID: 78748254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8402c80781d888498b808fc699a4b2f
+      internalID: 786667506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 863f8bb16f1aeca40a9757d834341721
+      internalID: 1255403533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1131edd0125b30f4bab415a03e8a105b
+      internalID: 1251054040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54cb4358282cef64b8c0b81d08b33c35
+      internalID: 339870012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0ac4c89ec34cf941b62c35389559780
+      internalID: -1457019238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2790af2778681245b456c43f9a1b92c
+      internalID: -1433267673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34722ded7e3071b49936feb0ae86e91d
+      internalID: 1539656623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9ff08c4b0b12a843b656c8a2472be22
+      internalID: -495911863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d4afac3d9aa178489b9c64b3cc239f2
+      internalID: 2139144759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb177988bede7c44ab211cef61258296
+      internalID: 493994395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d208625422f47e049ab525fd5ae93914
+      internalID: 2129459883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc024f701d4d1174fa2bc82212e0b81a
+      internalID: 136893354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3529a96286c2ad4eab7b59e2cb20c20
+      internalID: -1446273163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09f495731516b1944b216cd67b72d9a5
+      internalID: 614264274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 627febda56b0df2419afc93df7e4c04a
+      internalID: -2066597895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62149b24b4b47464a99616b69508d990
+      internalID: 1332168934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3e048fb0bafeae439b9baf3a5f0aaaa
+      internalID: -535388945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab2be395b96f5ae4488482e70c3880bd
+      internalID: -298615075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 10244106fe441ff4c8012b16aac9c3d3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_till_weeded_unlit_c0_r0: 286814077
+      Cobbles_till_weeded_unlit_c0_r1: 1251054040
+      Cobbles_till_weeded_unlit_c0_r2: 2129459883
+      Cobbles_till_weeded_unlit_c1_r0: 216623973
+      Cobbles_till_weeded_unlit_c1_r1: 339870012
+      Cobbles_till_weeded_unlit_c1_r2: 136893354
+      Cobbles_till_weeded_unlit_c2_r0: -684196146
+      Cobbles_till_weeded_unlit_c2_r1: -1457019238
+      Cobbles_till_weeded_unlit_c2_r2: -1446273163
+      Cobbles_till_weeded_unlit_c3_r0: 810026573
+      Cobbles_till_weeded_unlit_c3_r1: -1433267673
+      Cobbles_till_weeded_unlit_c3_r2: 614264274
+      Cobbles_till_weeded_unlit_c4_r0: -80806843
+      Cobbles_till_weeded_unlit_c4_r1: 1539656623
+      Cobbles_till_weeded_unlit_c4_r2: -2066597895
+      Cobbles_till_weeded_unlit_c5_r0: 78748254
+      Cobbles_till_weeded_unlit_c5_r1: -495911863
+      Cobbles_till_weeded_unlit_c5_r2: 1332168934
+      Cobbles_till_weeded_unlit_c6_r0: 786667506
+      Cobbles_till_weeded_unlit_c6_r1: 2139144759
+      Cobbles_till_weeded_unlit_c6_r2: -535388945
+      Cobbles_till_weeded_unlit_c7_r0: 1255403533
+      Cobbles_till_weeded_unlit_c7_r1: 493994395
+      Cobbles_till_weeded_unlit_c7_r2: -298615075
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

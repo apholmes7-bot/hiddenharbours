@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_fallenSign
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_cannery_fallen_sign
+  DisplayName: Fallen company sign
+  RigKey: fallenSign
+  SceneId: keyscene.stp_cannery
+  BakedOptionsJson: '{"length":5,"height":0.95,"lean":0.62,"text":"ST PETERS PACKING
+    CO."}'
+  Layer: raised
+  Walk: behind
+  Mount: ground
+  BoundsMin: {x: -2.5, y: -0.624, z: 0}
+  BoundsMax: {x: 2.5, y: 0.112, z: 1.493}
+  Frames:
+  - Sprite: {fileID: -3033904543500255711, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 167, y: 45}
+    NativePivot: {x: 83, y: 31}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 80, y: 28}
+  - Sprite: {fileID: -7142634873674515957, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 135, y: 95}
+    NativePivot: {x: 71, y: 54}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 68, y: 50}
+  - Sprite: {fileID: -1839722047274833265, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 31, y: 123}
+    NativePivot: {x: 23, y: 75}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 20, y: 72}
+  - Sprite: {fileID: 2086325709374465510, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 135, y: 99}
+    NativePivot: {x: 72, y: 67}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 68, y: 64}
+  - Sprite: {fileID: -3565644445150536158, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 167, y: 56}
+    NativePivot: {x: 83, y: 50}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 80, y: 47}
+  - Sprite: {fileID: -9205033016120704712, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 135, y: 125}
+    NativePivot: {x: 63, y: 84}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 59, y: 80}
+  - Sprite: {fileID: -8309232301810026691, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 31, y: 146}
+    NativePivot: {x: 7, y: 92}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 4, y: 88}
+  - Sprite: {fileID: 8676355190657447485, guid: 3ac2016b9737e4d4e9800f7281b11b2f, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 135, y: 109}
+    NativePivot: {x: 63, y: 70}
+    Crop: {x: 14, y: 4}
+    Pivot: {x: 49, y: 66}
+  CellSize: {x: 160, y: 138}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -2.6, y: 0.45}
+    - {x: 2.6, y: 0.45}
+    - {x: 2.6, y: -0.45}
+    - {x: -2.6, y: -0.45}
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words:
+  - Id: words.cannery_sign
+    BodyId: 
+    Corners:
+    - {x: -2.38, y: 0.03027578, z: 0.16374542}
+    - {x: 2.38, y: 0.03027578, z: 0.80158544}
+    - {x: 2.38, y: -0.3822592, z: 1.3794391}
+    - {x: -2.38, y: -0.3822592, z: 0.74159914}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []

@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb11aca9151bc16fc634998c41a2c3fa, type: 3}
+  m_Name: Form_NeHead
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.FormDef
+  Id: form.stp_ne_head
+  DisplayName: The Head
+  Kind: headland
+  Stone: red sandstone
+  BatterDeg: 86
+  Brow:
+  - {x: 181.5, y: 39}
+  - {x: 188, y: 41.8}
+  - {x: 195, y: 45.2}
+  - {x: 201.5, y: 47.6}
+  - {x: 207, y: 49}
+  - {x: 212.5, y: 51.8}
+  - {x: 216.8, y: 55.6}
+  - {x: 218.2, y: 60.2}
+  - {x: 215.6, y: 64.4}
+  - {x: 209.5, y: 66.6}
+  - {x: 202, y: 67.4}
+  - {x: 194.5, y: 66.2}
+  - {x: 187, y: 63.6}
+  - {x: 180, y: 59.2}
+  - {x: 174, y: 54.6}
+  TopInset: 0.4
+  Top: 11
+  LedgeHeight: 1.25
+  LedgeOut: 1.9
+  LedgeEastOf: 197
+  Centre: {x: 0, y: 0}
+  Radii: {x: 0, y: 0}
+  RotationDeg: 0
+  PlinthRadii: {x: 0, y: 0}
+  PlinthTop: 0
+  PlinthFall: 0
+  PlinthSkirt: {x: 0.85, y: 1.9}
+  SkirtLedgeRadii: {x: 0, y: 0}
+  SkirtLedgeTop: 0
+  Recipe: {fileID: 11400000, guid: fc1bfaec209c0f7f0ce33a25bbe3c17a, type: 2}
+  SourceId: terrain_change.stp_ne_head
+  Why: 'The NE light''s headland, flat at +11 inside its brow (neGround.js HEAD). Its face and ledge tier are PR 5b''s.'

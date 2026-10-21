@@ -1,0 +1,22 @@
+check berths — OK
+
+harbour:fishing · 7 berths
+  crib.water.berth0           7.3 m Hurricane           bed 0.57   dries, floats from 1.32 m     ties 4 · ladder
+  pier.water.berth0           console skiff             bed 0.52   dries, floats from 1.24 m     ties 4 · ladder
+  pier.water.berth1           Cape Islander             bed -2.59  afloat at datum               ties 4 · ladder
+  float.water.berth0          7.3 m Hurricane           bed -1.79  afloat at datum               ties 4
+  finger0.water.berth0        console skiff             bed -1.27  afloat at datum               ties 3
+  finger1.water.berth0        console skiff             bed -2.69  afloat at datum               ties 3
+  finger2.water.berth0        console skiff             bed -3.7   afloat at datum               ties 3
+harbour:cove · 3 berths
+  pier.water.berth0           bowrider                  bed -0.03  dries, floats from 0.67 m     ties 3 · ladder
+  finger0.water.berth0        console skiff             bed -2.6   afloat at datum               ties 3
+  finger1.water.berth0        console skiff             bed -1.31  afloat at datum               ties 3
+harbour:commercial · 3 berths
+  quay0.water.berth0          coastal packet            bed -5.6   afloat at datum               ties 3 · ladder
+  quay1.water.berth1          stern trawler             bed -5.6   afloat at datum               ties 2 · ladder
+  quay2.water.berth2          side dragger              bed -5.6   afloat at datum               ties 4 · ladder
+harbour:jetty · 1 berths
+  platform.water.berth0       gas tanker                bed -9     afloat at datum               ties 4 · ladder
+
+14 berths, 0 problems

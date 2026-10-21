@@ -48,7 +48,8 @@ before it. See §6 for the order.
 1. **Analog throttle** — a held, notched single-lever throttle+shift replacing the on/off keys. (§2)
 2. **The watch** — the game clock/date, readable only once you own a watch. (§3)
 3. **Per-boat consoles + upgradable equipment** — each engine hull's dash, with slots you upgrade. (§4)
-4. **Resizable / free-drag / minimizable console windows** — the dash as an on-screen window. (§5)
+4. **Resizable / free-drag / minimizable console windows** — the dash as an on-screen window. (§5; on the
+   helm, the band since H2, 2026-10-17)
 5. **The render pipeline** — how the rigs draw in-game (ADR 0025); underpins 2–4.
 
 ---
@@ -196,7 +197,32 @@ that does. (The **fish finder** has since landed: its glass shipped with ADR 002
 
 ---
 
-## 5. Resizable / free-drag / minimizable console windows
+## 5. Resizable / free-drag / minimizable console windows — on the helm, the band (H2)
+
+> **✅ The band replaces the windows on every helm with a wheel (H2, 2026-10-17; ADR 0025's dated
+> note).** The console is a full-width strip along the bottom edge of the screen, 144 native px tall at
+> a whole scale (k = max(1, ⌊H / 1080⌋)): one panel, the wheel at its centre, and each instrument the
+> fit carries as a plate in its housing, laid out by the helm's rig (`HelmBandGeometry`). A click on a
+> plate raises that instrument's card, one at a time; Esc, a click away or a second click lowers it.
+> The owner's Q1 (B): where no whole scale fits between the band and the top HUD band (720p, 800p), a
+> raised card keeps today's scale and reaches down over the band, centred, the wheel included; the keys
+> still steer. M hides the helm's UI and brings it back (the bindings asset's `Hud` map, ADR 0043), and
+> the camera eases her back to centre. The drag, the resize, the collapse and the × are retired with the
+> dash's focus; the tiller and the lone lever keep their cards. The nav cluster hides where the band
+> carries its read and stands above the band where it does not.
+>
+> - **Still standing from below:** the pointer → rig-space mapping (each piece and each raised card
+>   hit-tests its own rig's geometry), the non-modal rule (nothing sets `InteractionGate.IsBlocked`),
+>   and **the coexistence risk, NOT retired and unchanged**: `DevFishingInput`, `PotDeckWorkController`
+>   and `TrapHaulController` still read `Mouse.leftButton` directly, so a press on the band can still
+>   reach them, as a press on the dash could. It is still the cross-lane Fishing change it was.
+> - **Persistence is moot on the helm:** the band has no layout to remember and a raised card is never
+>   saved, so the UI-prefs store stays unbuilt (open question 6 stays open for anything that needs one).
+> - **For the plates, not the game:** every overlay over the helm lays itself out on Core's
+>   `HudScreen`, which is the player's screen unless a plate hands it the size it shoots at. Nothing in
+>   the game sets it.
+>
+> The windows' text below is kept as the record.
 
 The console takes screen space, so — per the owner — it's a **window you drag and resize freely, remembered
 per boat**, that you can **minimize** and reopen, clickable to work the controls (turn the key, flip
@@ -222,9 +248,15 @@ switches, swing the lever, tap the sounder to swap depth↔fish).
 > Shipped alongside it: the always-on HUD **yields the helm** (`HelmHudSuppression`) — the VS-19 nav
 > cluster hides where the dash carries a compass and moves clear where it does not — and the dash and any
 > expanded instrument now size themselves **below the HUD band** instead of under it (`HudBandLayout`).
-> ⚠ Four bottom-centre hint overlays in the **Player** and **World** modules still overlap the dash and
+> ~~⚠ Four bottom-centre hint overlays in the **Player** and **World** modules still overlap the dash and
 > could not be fixed from the UI lane (rule 4); see the S4.5 PR for the measurements and the Core seam
-> they would need.
+> they would need.~~ **✅ FIXED (2026-09-28, [ADR 0050](../adr/0050-helm-footprint-seam.md))** — the
+> Core seam is `HelmFootprint`: the helm host says what its card covers (the card and its title strip),
+> and every overlay keeps out of it through Core. Three of the four had already stopped drawing their
+> own (the helm hint and the interact prompt into the interact popup, 2026-08-19; the onboarding banner
+> into the quest note, 2026-08-22). The dev toast, the popup and the note step above a card that
+> reaches them; the nav cluster steps beside it (the tiller's card too) and above it only if it still
+> meets it. With nothing covered, all of them stand where they did.
 
 **Design (M2/M3, ui-ux):**
 - **Host:** a screen-space uGUI window with a `RawImage` over a C#-filled `Texture2D` (`FilterMode.Point`),

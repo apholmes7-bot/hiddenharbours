@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Art.Editor;
@@ -10,116 +8,108 @@ using HiddenHarbours.Art.Editor;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// <b>THE PX FLIP (PR 1 of 3, 2026-09-17): the live terrain albedo IS the kit's bytes.</b>
+    /// <b>TERRAIN PASS 9, PR 2 (2026-09-26): the live terrain albedo IS the light's unlit, as the rig baked it.</b>
     ///
-    /// <para>The greenery px kit ships BAKES, and its bakers are absent by design: the PNGs are the
-    /// artifact. So the flip is a byte copy from <see cref="KitDir"/> over the files in
-    /// <see cref="TerrainTexArrayBuilder.TexDir"/>, keeping every existing <c>.meta</c> (the import
-    /// settings and the guids stay). This proves the copy and keeps proving it: a tile re-saved by an
-    /// image editor, "fixed" by hand, or re-baked from a rig this repo does not have reads red here,
-    /// by file name, instead of drifting quietly away from the kit it claims to be.</para>
+    /// <para>The px flip (PR 1 of 3, 2026-09-17) copied each px material's albedo from the greenery kit's
+    /// bakes, and this test proved that copy. Terrain pass 9 re-bakes the albedo instead:
+    /// <c>docs/art/rigs/terrain/pass9/bakePass9.js</c> runs the kit's TerrainLight6 on Node and writes each
+    /// tile's albedo as the light's <c>unlit</c> view, beside the tile's relight maps. The PNGs and the bake's
+    /// manifest are copied into <see cref="TerrainTexArrayBuilder.TexDir"/> as the bake wrote them, so the
+    /// albedo the arrays pack and the maps the relight reads are one bake. This proves the copy and keeps
+    /// proving it: a tile re-saved by an image editor, "fixed" by hand, left over from the flip, or re-baked
+    /// from a rig this repo does not commit reads red here, by file name.</para>
     ///
-    /// <para>No hash is restated: both sides are hashed out of the checkout. A file still in its Git
-    /// LFS pointer form is compared by the pointer's own <c>oid sha256</c>, which IS the hash of the
-    /// content it stands for, so a checkout that did not smudge one side verifies truthfully instead
-    /// of comparing a 130-byte pointer against a PNG.</para>
+    /// <para>The expectations are the rig's. The manifest holds each tile's albedo hash (raw RGBA, rows
+    /// top-down: <see cref="TerrainPass9Bake"/>), names <see cref="TerrainPass9Bake.Light"/> as its light, and
+    /// stamps that light's sha256, which must be the bytes committed in <see cref="TerrainPass9Bake.RigDir"/>.
+    /// Each live PNG is decoded as the file holds it, not through its importer, and hashed the same way.</para>
     ///
-    /// <para>The list is the flip's, written out: what PR 1 claims to have copied, not what the array
-    /// builder happens to pack (a guard that asks the code for its list is a mirror). Lawn and
-    /// Sandstone are NOT here: the kit has no Lawn, and PR 1 leaves both untouched. Mud IS here
-    /// although nothing drew it before: the flip adds it (owner ruling M1), and because the kit
-    /// ships no metas, its three are Dirt's import settings under fresh guids.</para>
+    /// <para>The list is the bake's, written out: what PR 2 claims to have baked, not what the array builder
+    /// happens to pack. It is every material whose <c>"px"</c> is true in <c>materials.json</c>: the flip's
+    /// twenty, and Path. Lawn and Sandstone are NOT here: the kit has neither, and this PR leaves both
+    /// untouched. Path is new with terrain pass 9; its three metas are Dirt's import settings under fresh
+    /// guids, as Mud's were.</para>
     /// </summary>
     public class TerrainKitAlbedoBytesTests
     {
-        const string KitDir = "docs/art/rigs/px-greenery-harmony-kit/Art/Textures/TerrainPx";
-        const string LfsPointerPrefix = "version https://git-lfs";
-        const string LfsOidPrefix = "oid sha256:";
-
-        /// <summary>Every material whose albedo the flip replaced, all three ladder steps each.</summary>
-        static readonly string[] Flipped =
+        /// <summary>Every material the bake re-baked, all three ladder steps each.</summary>
+        static readonly string[] Baked =
         {
             "Grass", "Marram", "Sand", "Shelf", "Dirt", "Marsh", "Sedge", "Ledge", "Rockweed",
             "Eelgrass", "Irishmoss",
-            "Bank",   // a face material: in no array and drawn by nothing yet, but it is the kit's
-            // The seven that left the retired 512 array for the 256 array (owner ruling A2): the kit
-            // ships them at 256 px / 8 m, so their live PNGs changed size as well as bytes.
+            "Bank",   // a face material: in no array and drawn by nothing yet, but the bake makes it
             "Shingle", "Ripple", "Silt", "Foreshore", "Talus", "Musselbed", "Oysterreef",
-            "Mud",    // new with the kit (owner ruling M1): splat index 19, E.a
+            "Mud",    // new with the px kit (owner ruling M1): splat index 19, E.a
+            "Path",   // new with terrain pass 9 (2026-09-25): splat index 20, F.r
         };
 
         static readonly string[] Steps = { "_Lo", "", "_Hi" };
 
         [Test]
-        public void LiveAlbedo_IsTheKitsBytes_ForEveryFlippedMaterial()
+        public void LiveAlbedo_IsTheLightsUnlit_ForEveryBakedMaterial()
         {
-            string root = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-            var faults = new List<string>();
-            var kitHashes = new Dictionary<string, string>();
+            var manifest = TerrainPass9Bake.Load(out var byName, out string json);
+            Assert.AreEqual(TerrainPass9Bake.Light, manifest.light,
+                $"the bake's albedo is not {TerrainPass9Bake.Light}'s unlit");
+            TerrainPass9Bake.RigStamps(json).TryGetValue(TerrainPass9Bake.Light, out string stamped);
+            string rig = Path.Combine(TerrainPass9Bake.Root, TerrainPass9Bake.RigDir, TerrainPass9Bake.Light);
+            Assert.IsTrue(File.Exists(rig), $"{TerrainPass9Bake.RigDir}/{TerrainPass9Bake.Light} is missing");
+            Assert.AreEqual(TerrainPass9Bake.FileSha256(rig), stamped,
+                $"the bake ran a {TerrainPass9Bake.Light} that is not the one committed in {TerrainPass9Bake.RigDir}");
 
-            foreach (string name in Flipped)
+            string root = TerrainPass9Bake.Root;
+            var faults = new List<string>();
+            var liveHashes = new Dictionary<string, string>();
+
+            foreach (string name in Baked)
             foreach (string step in Steps)
             {
                 string file = name + step + ".png";
-                string kit = Path.Combine(root, KitDir, file);
                 string live = Path.Combine(root, TerrainTexArrayBuilder.TexDir, file);
 
-                if (!File.Exists(kit)) { faults.Add($"{file}: not in the kit ({KitDir})."); continue; }
+                if (!byName.TryGetValue(name + step, out var tile))
+                {
+                    faults.Add($"{file}: the bake has no tile '{name + step}'.");
+                    continue;
+                }
                 if (!File.Exists(live))
                 {
                     faults.Add($"{file}: not live in {TerrainTexArrayBuilder.TexDir}.");
                     continue;
                 }
                 if (!File.Exists(live + ".meta"))
-                    faults.Add($"{file}: the live PNG has no .meta — the flip keeps every existing meta, " +
-                               "and a regenerated one moves the guid the arrays and scenes resolve.");
+                    faults.Add($"{file}: the live PNG has no .meta, and a regenerated one moves the guid the " +
+                               "arrays and scenes resolve.");
 
-                string kitSha = ContentSha256(kit);
-                string liveSha = ContentSha256(live);
-                kitHashes[file] = kitSha;
-                if (kitSha != liveSha)
-                    faults.Add($"{file}: live {liveSha.Substring(0, 12)}… is not the kit's " +
-                               $"{kitSha.Substring(0, 12)}…");
+                Color32[] px = TerrainPass9Bake.Decode(live, out int w, out int h);
+                if (w != manifest.size || h != manifest.size)
+                {
+                    faults.Add($"{file}: {w} x {h} px, not the bake's {manifest.size}.");
+                    continue;
+                }
+                string liveSha = TerrainPass9Bake.PixelSha256(px, w, h);
+                liveHashes[file] = liveSha;
+                string bakeSha = tile.sha256?.albedo ?? "";
+                if (liveSha != bakeSha)
+                    faults.Add($"{file}: live pixels {liveSha.Substring(0, 12)}… are not the bake's " +
+                               $"{(bakeSha.Length >= 12 ? bakeSha.Substring(0, 12) : "(none)")}…");
             }
 
             Assert.IsEmpty(faults,
-                $"The live terrain albedo is not the kit's bytes ({faults.Count} fault(s)):\n  " +
+                $"The live terrain albedo is not the light's unlit as the rig baked it ({faults.Count} fault(s)):\n  " +
                 string.Join("\n  ", faults) +
-                "\nCopy the file from the kit again; never re-bake, hand-edit or 'fix' a tile here — a " +
-                "fault in a tile is a written finding for the kit's author.");
+                "\nCopy the tile from the bake again (node docs/art/rigs/terrain/pass9/bakePass9.js); never " +
+                "hand-edit or 'fix' a tile here. A fault in a tile is a written finding for the rig's author.");
 
-            // SABOTAGE PROOF: a hash helper that returned one constant (an empty pointer parse, say)
-            // would pass the comparison above for every file. Real content gives 64 hex characters,
-            // and the kit's files are all different images.
-            foreach (var kv in kitHashes)
-                Assert.IsTrue(kv.Value.Length == 64 && kv.Value.All(c => "0123456789abcdef".IndexOf(c) >= 0),
-                    $"{kv.Key}: '{kv.Value}' is not a sha256 — the guard above compared nothing.");
-            Assert.AreEqual(Flipped.Length * Steps.Length, kitHashes.Values.Distinct().Count(),
-                "Two kit tiles hash the same — either the kit shipped a duplicate or the hash helper " +
-                "is not reading the files.");
-        }
-
-        /// <summary>The sha256 of the content a file carries: the pointer's own oid for a Git LFS
-        /// pointer, otherwise the hash of the bytes on disk.</summary>
-        static string ContentSha256(string path)
-        {
-            byte[] bytes = File.ReadAllBytes(path);
-            if (bytes.Length < 1024)
-            {
-                string text = Encoding.ASCII.GetString(bytes);
-                if (text.StartsWith(LfsPointerPrefix))
-                {
-                    foreach (string line in text.Split('\n'))
-                        if (line.StartsWith(LfsOidPrefix))
-                            return line.Substring(LfsOidPrefix.Length).Trim();
-                    return "";   // a pointer with no oid: the length check above reports it
-                }
-            }
-
-            using var sha = SHA256.Create();
-            var sb = new StringBuilder(64);
-            foreach (byte x in sha.ComputeHash(bytes)) sb.Append(x.ToString("x2"));
-            return sb.ToString();
+            // SABOTAGE PROOF: the comparison above is only as good as the hashes on both sides. Real pixels give
+            // 64 hex characters, and the bake's tiles are all different images, so no two live hashes are equal;
+            // a manifest of copied tiles, or a helper that read no pixels, would make them so.
+            foreach (var kv in liveHashes)
+                Assert.IsTrue(TerrainPass9Bake.IsSha256(kv.Value),
+                    $"{kv.Key}: '{kv.Value}' is not a sha256, so the guard above compared nothing.");
+            Assert.AreEqual(Baked.Length * Steps.Length, liveHashes.Values.Distinct().Count(),
+                "Two live tiles hash the same: either the bake made a duplicate or the hash helper is not " +
+                "reading the pixels.");
         }
     }
 }

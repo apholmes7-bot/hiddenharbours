@@ -943,7 +943,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Place() looks its sprite up BY NAME and SKIPS on a miss, so a naming mismatch does not throw
             // — it builds a village with no buildings in it. The two ends of the name come from different
             // places (the slicer writes them; the catalog composes them), and there is no way to catch it
-            // with a scene build: RegionBuildGuard.ConfirmOverwrite cancels in batch mode and still exits 0.
+            // with a scene build: RegionBuildGuard.ConfirmOverwrite refuses in batch mode, logs an error and exits non-zero.
             foreach (var site in Sites)
             {
                 var p = VillageBuildingCatalog.Find(site.Key);

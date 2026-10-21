@@ -1,0 +1,835 @@
+fileFormatVersion: 2
+guid: be0e3b5be000c4045b8ab98406776cb8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2662250411192021808
+    second: Cobbles_granite_weeded_normal_0
+  - first:
+      213: 4126596446559614771
+    second: Cobbles_granite_weeded_normal_1
+  - first:
+      213: -7882502870871219877
+    second: Cobbles_granite_weeded_normal_2
+  - first:
+      213: -3391056641584716964
+    second: Cobbles_granite_weeded_normal_3
+  - first:
+      213: -5724425579189004874
+    second: Cobbles_granite_weeded_normal_4
+  - first:
+      213: 2481875069505452498
+    second: Cobbles_granite_weeded_normal_5
+  - first:
+      213: -5320445367518282577
+    second: Cobbles_granite_weeded_normal_6
+  - first:
+      213: 5633531572377350758
+    second: Cobbles_granite_weeded_normal_7
+  - first:
+      213: 7100082483667112648
+    second: Cobbles_granite_weeded_normal_8
+  - first:
+      213: 7999860478568218019
+    second: Cobbles_granite_weeded_normal_9
+  - first:
+      213: -6793670586423774386
+    second: Cobbles_granite_weeded_normal_10
+  - first:
+      213: 3882052110207550471
+    second: Cobbles_granite_weeded_normal_11
+  - first:
+      213: -8240308192120446772
+    second: Cobbles_granite_weeded_normal_12
+  - first:
+      213: -5771905864296076787
+    second: Cobbles_granite_weeded_normal_13
+  - first:
+      213: -8239053029227544573
+    second: Cobbles_granite_weeded_normal_14
+  - first:
+      213: 6373767109447339873
+    second: Cobbles_granite_weeded_normal_15
+  - first:
+      213: -3972040654986582555
+    second: Cobbles_granite_weeded_normal_16
+  - first:
+      213: -3062941791582758286
+    second: Cobbles_granite_weeded_normal_17
+  - first:
+      213: 5117756593045643963
+    second: Cobbles_granite_weeded_normal_18
+  - first:
+      213: 631485506554777760
+    second: Cobbles_granite_weeded_normal_19
+  - first:
+      213: 7178673491622932234
+    second: Cobbles_granite_weeded_normal_20
+  - first:
+      213: 6967967017845486964
+    second: Cobbles_granite_weeded_normal_21
+  - first:
+      213: -8182969166074746591
+    second: Cobbles_granite_weeded_normal_22
+  - first:
+      213: 2128747321114009550
+    second: Cobbles_granite_weeded_normal_23
+  - first:
+      213: 3299539575474130195
+    second: Cobbles_granite_weeded_normal_24
+  - first:
+      213: 246205727316511185
+    second: Cobbles_granite_weeded_normal_25
+  - first:
+      213: -3596295194272784224
+    second: Cobbles_granite_weeded_normal_26
+  - first:
+      213: -27710776498429772
+    second: Cobbles_granite_weeded_normal_27
+  - first:
+      213: -2222225161610452149
+    second: Cobbles_granite_weeded_normal_28
+  - first:
+      213: -3275659894626899381
+    second: Cobbles_granite_weeded_normal_29
+  - first:
+      213: 4102147195424838339
+    second: Cobbles_granite_weeded_normal_30
+  - first:
+      213: -3318023877259912821
+    second: Cobbles_granite_weeded_normal_31
+  - first:
+      213: -3568090490324805094
+    second: Cobbles_granite_weeded_normal_32
+  - first:
+      213: -6163287418500210916
+    second: Cobbles_granite_weeded_normal_33
+  - first:
+      213: 4387259131453878510
+    second: Cobbles_granite_weeded_normal_34
+  - first:
+      213: -4222381214893156747
+    second: Cobbles_granite_weeded_normal_35
+  - first:
+      213: -5211183651761491861
+    second: Cobbles_granite_weeded_normal_36
+  - first:
+      213: -2044566958773689992
+    second: Cobbles_granite_weeded_normal_37
+  - first:
+      213: 7766116298637069635
+    second: Cobbles_granite_weeded_normal_38
+  - first:
+      213: 4694513705677315600
+    second: Cobbles_granite_weeded_normal_39
+  - first:
+      213: -1929801510553479896
+    second: Cobbles_granite_weeded_normal_40
+  - first:
+      213: 2683826155213052512
+    second: Cobbles_granite_weeded_normal_41
+  - first:
+      213: -2468743931762037119
+    second: Cobbles_granite_weeded_normal_42
+  - first:
+      213: 2524273379623666431
+    second: Cobbles_granite_weeded_normal_43
+  - first:
+      213: -7259569420705330915
+    second: Cobbles_granite_weeded_normal_44
+  - first:
+      213: 2539531256683740583
+    second: Cobbles_granite_weeded_normal_45
+  - first:
+      213: 6598087666207344223
+    second: Cobbles_granite_weeded_normal_46
+  - first:
+      213: -2791809764477510210
+    second: Cobbles_granite_weeded_normal_47
+  - first:
+      213: -4278116696428947982
+    second: Cobbles_granite_weeded_normal_48
+  - first:
+      213: 5695530625282994551
+    second: Cobbles_granite_weeded_normal_49
+  - first:
+      213: -5913489581486088242
+    second: Cobbles_granite_weeded_normal_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1da739cd58c8cc243a7465343ce583e5
+      internalID: 1149068572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee6be26d64df77e4993e6630d96ddebd
+      internalID: -394853400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f968fd373c5a94458c9e28e26609e5b
+      internalID: 1579944338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8b2b583074164b40be0a134f290faee
+      internalID: 394390813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2091443e606adef4ba5c7444b8ca9332
+      internalID: -1679244272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64a07e04482981c4fbfad60a06ed71f6
+      internalID: 1891769593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b908c4c3b8fe1f342acf9a5e2e140e84
+      internalID: -1815783220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be3400437e5e1574a841e9f6f83c53ce
+      internalID: 1245317237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b992bd6d9efcfaa498b15f29a02fef5c
+      internalID: 99435713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e69e1c8408c9bb46ab133220a063831
+      internalID: -1786787566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0b6526036ea9e24ab8d60fa19e8fa6c
+      internalID: -770401633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f23259375465c64fab767a857c5f379
+      internalID: -1167434542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31f389ce362f4614bbd887b0d7b605b5
+      internalID: -1163655346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6db1b4d65cede36449d54614889f546b
+      internalID: -385811001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aeb3df4acff97074faab439b0a4eb976
+      internalID: -649971403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10887c493723641429e5324f574fa865
+      internalID: 330843537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d6a64db423f20a45a999bff42d16642
+      internalID: -585641330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a394f73d10496e046b0e7ecab14ca0b3
+      internalID: 1713339510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd9f203f36126524b938536a114203f8
+      internalID: 369535844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2975848f22191cc469468ecb32a43156
+      internalID: 406657285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 690866d9d5b392b4a8be8b616357fa46
+      internalID: -1358475073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e989b32c099d7c749bc18672abbd103f
+      internalID: -1166338111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 705c172e2ac8fdf4db59c8d948a18899
+      internalID: -978266436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68e46bdd12b395242abf9a28a2e5e0de
+      internalID: 459970215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3256d37be438b6e4ca45907deedab9a6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_granite_weeded_normal_c0_r0: 1149068572
+      Cobbles_granite_weeded_normal_c0_r1: 99435713
+      Cobbles_granite_weeded_normal_c0_r2: -585641330
+      Cobbles_granite_weeded_normal_c1_r0: -394853400
+      Cobbles_granite_weeded_normal_c1_r1: -1786787566
+      Cobbles_granite_weeded_normal_c1_r2: 1713339510
+      Cobbles_granite_weeded_normal_c2_r0: 1579944338
+      Cobbles_granite_weeded_normal_c2_r1: -770401633
+      Cobbles_granite_weeded_normal_c2_r2: 369535844
+      Cobbles_granite_weeded_normal_c3_r0: 394390813
+      Cobbles_granite_weeded_normal_c3_r1: -1167434542
+      Cobbles_granite_weeded_normal_c3_r2: 406657285
+      Cobbles_granite_weeded_normal_c4_r0: -1679244272
+      Cobbles_granite_weeded_normal_c4_r1: -1163655346
+      Cobbles_granite_weeded_normal_c4_r2: -1358475073
+      Cobbles_granite_weeded_normal_c5_r0: 1891769593
+      Cobbles_granite_weeded_normal_c5_r1: -385811001
+      Cobbles_granite_weeded_normal_c5_r2: -1166338111
+      Cobbles_granite_weeded_normal_c6_r0: -1815783220
+      Cobbles_granite_weeded_normal_c6_r1: -649971403
+      Cobbles_granite_weeded_normal_c6_r2: -978266436
+      Cobbles_granite_weeded_normal_c7_r0: 1245317237
+      Cobbles_granite_weeded_normal_c7_r1: 330843537
+      Cobbles_granite_weeded_normal_c7_r2: 459970215
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

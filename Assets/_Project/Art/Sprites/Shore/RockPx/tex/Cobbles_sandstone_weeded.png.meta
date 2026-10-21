@@ -1,0 +1,835 @@
+fileFormatVersion: 2
+guid: b7ebf7cf91b870845a7cf3aebcda5cb2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3986261288054785911
+    second: Cobbles_sandstone_weeded_0
+  - first:
+      213: 2123150433780476484
+    second: Cobbles_sandstone_weeded_1
+  - first:
+      213: 5382380778699070529
+    second: Cobbles_sandstone_weeded_2
+  - first:
+      213: 8803982591427268911
+    second: Cobbles_sandstone_weeded_3
+  - first:
+      213: 7859284029734630181
+    second: Cobbles_sandstone_weeded_4
+  - first:
+      213: 6611685275338326495
+    second: Cobbles_sandstone_weeded_5
+  - first:
+      213: 719113329123741123
+    second: Cobbles_sandstone_weeded_6
+  - first:
+      213: -2566544740387972713
+    second: Cobbles_sandstone_weeded_7
+  - first:
+      213: -4371231652649974711
+    second: Cobbles_sandstone_weeded_8
+  - first:
+      213: 8172669720039150588
+    second: Cobbles_sandstone_weeded_9
+  - first:
+      213: -3953704728462444005
+    second: Cobbles_sandstone_weeded_10
+  - first:
+      213: -8871467519923164771
+    second: Cobbles_sandstone_weeded_11
+  - first:
+      213: 5222680253310280297
+    second: Cobbles_sandstone_weeded_12
+  - first:
+      213: -8898931396348554255
+    second: Cobbles_sandstone_weeded_13
+  - first:
+      213: 8004692122765510377
+    second: Cobbles_sandstone_weeded_14
+  - first:
+      213: -8116920226246790752
+    second: Cobbles_sandstone_weeded_15
+  - first:
+      213: 5948835739901326023
+    second: Cobbles_sandstone_weeded_16
+  - first:
+      213: 5521976849120567982
+    second: Cobbles_sandstone_weeded_17
+  - first:
+      213: -846006502506553761
+    second: Cobbles_sandstone_weeded_18
+  - first:
+      213: 7667215626754197216
+    second: Cobbles_sandstone_weeded_19
+  - first:
+      213: 7332069927719128713
+    second: Cobbles_sandstone_weeded_20
+  - first:
+      213: 6770309965392737354
+    second: Cobbles_sandstone_weeded_21
+  - first:
+      213: 1244592860462151829
+    second: Cobbles_sandstone_weeded_22
+  - first:
+      213: 501539098225032321
+    second: Cobbles_sandstone_weeded_23
+  - first:
+      213: 2096530851829127226
+    second: Cobbles_sandstone_weeded_24
+  - first:
+      213: -635275611792904202
+    second: Cobbles_sandstone_weeded_25
+  - first:
+      213: -8430016142950290362
+    second: Cobbles_sandstone_weeded_26
+  - first:
+      213: -2961637110837325131
+    second: Cobbles_sandstone_weeded_27
+  - first:
+      213: -1579135867350416297
+    second: Cobbles_sandstone_weeded_28
+  - first:
+      213: -1919082051416508120
+    second: Cobbles_sandstone_weeded_29
+  - first:
+      213: 6749617847232826727
+    second: Cobbles_sandstone_weeded_30
+  - first:
+      213: -4514316774334364928
+    second: Cobbles_sandstone_weeded_31
+  - first:
+      213: -2279970169801885228
+    second: Cobbles_sandstone_weeded_32
+  - first:
+      213: -4161388689609384095
+    second: Cobbles_sandstone_weeded_33
+  - first:
+      213: 1774452121234190108
+    second: Cobbles_sandstone_weeded_34
+  - first:
+      213: 5715584404028976668
+    second: Cobbles_sandstone_weeded_35
+  - first:
+      213: 8566077875774555243
+    second: Cobbles_sandstone_weeded_36
+  - first:
+      213: -463061130231689033
+    second: Cobbles_sandstone_weeded_37
+  - first:
+      213: -2944774927366526008
+    second: Cobbles_sandstone_weeded_38
+  - first:
+      213: 521088289836817782
+    second: Cobbles_sandstone_weeded_39
+  - first:
+      213: 7446594435494677231
+    second: Cobbles_sandstone_weeded_40
+  - first:
+      213: -968787518671406021
+    second: Cobbles_sandstone_weeded_41
+  - first:
+      213: -6163519398496387617
+    second: Cobbles_sandstone_weeded_42
+  - first:
+      213: -3369322734653486165
+    second: Cobbles_sandstone_weeded_43
+  - first:
+      213: 7641800430231384338
+    second: Cobbles_sandstone_weeded_44
+  - first:
+      213: -8988748067201550398
+    second: Cobbles_sandstone_weeded_45
+  - first:
+      213: 8389890725771782089
+    second: Cobbles_sandstone_weeded_46
+  - first:
+      213: -4548286338935893110
+    second: Cobbles_sandstone_weeded_47
+  - first:
+      213: 6538531897716556895
+    second: Cobbles_sandstone_weeded_48
+  - first:
+      213: -5728882122600474782
+    second: Cobbles_sandstone_weeded_49
+  - first:
+      213: -62182675635638909
+    second: Cobbles_sandstone_weeded_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 978cff3a5af85774b8fb23795f5eea10
+      internalID: -709698694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6192826b7d922434e8544939a5d1ace1
+      internalID: 566980133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62ab827dcba25604b93c1e15a5737513
+      internalID: 1870823207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11517e0d9032e6943bc3e96ad58b6bc2
+      internalID: -1544657578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df844495db20a0040a4227f626425b4f
+      internalID: 870152134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f751224112a2e004e8729b4b5802d670
+      internalID: 2120968785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cda11a2bf0d67e4ebe08d529202d48d
+      internalID: 1332324964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f252f1c99cc3e8428f89066fdcb24d4
+      internalID: 784301115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cf41e8489b571e48a75fc3ec4cc0e90
+      internalID: -2051158513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f158595de73c1e45a5617d58aade441
+      internalID: 1935863426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3aca3583025a92a4ea2d34bc866c4db9
+      internalID: -84584839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94a909c415ec42e4094d4e46c9696315
+      internalID: 865110568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1178edb2bbcff04084a12ec29bf8351
+      internalID: 1470955590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5a894a5371c62c4a9dcb9be06841d64
+      internalID: 1085166616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d04eb02e1d72e64fbda612357071eff
+      internalID: 1249089283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4bed4f454b6d9df43bdb11948fa6f6eb
+      internalID: -1647378945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2163f3f193cac044b79e72834b3d96b
+      internalID: 1144785449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 795bfef4563e3f14197d75e4de3745a4
+      internalID: 1183107414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10da2e029deb64f43991c47e38e526a0
+      internalID: -1897357592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b768ae6d44a2a574b95d2ea7aeda065a
+      internalID: -148684354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2579e58e1b076a44adaed0966f7832a
+      internalID: -1519501574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2658ed82342d08f4582cd6a1e293a0e4
+      internalID: -508053554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d21a36564b9bc64984c808781412457
+      internalID: 1493667462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_weeded_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8807f512eafd544a9d775b68fd68d52
+      internalID: 1195939635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 825ca97dce470f34a95a3aa91c482b33
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_sandstone_weeded_c0_r0: -709698694
+      Cobbles_sandstone_weeded_c0_r1: -2051158513
+      Cobbles_sandstone_weeded_c0_r2: 1144785449
+      Cobbles_sandstone_weeded_c1_r0: 566980133
+      Cobbles_sandstone_weeded_c1_r1: 1935863426
+      Cobbles_sandstone_weeded_c1_r2: 1183107414
+      Cobbles_sandstone_weeded_c2_r0: 1870823207
+      Cobbles_sandstone_weeded_c2_r1: -84584839
+      Cobbles_sandstone_weeded_c2_r2: -1897357592
+      Cobbles_sandstone_weeded_c3_r0: -1544657578
+      Cobbles_sandstone_weeded_c3_r1: 865110568
+      Cobbles_sandstone_weeded_c3_r2: -148684354
+      Cobbles_sandstone_weeded_c4_r0: 870152134
+      Cobbles_sandstone_weeded_c4_r1: 1470955590
+      Cobbles_sandstone_weeded_c4_r2: -1519501574
+      Cobbles_sandstone_weeded_c5_r0: 2120968785
+      Cobbles_sandstone_weeded_c5_r1: 1085166616
+      Cobbles_sandstone_weeded_c5_r2: -508053554
+      Cobbles_sandstone_weeded_c6_r0: 1332324964
+      Cobbles_sandstone_weeded_c6_r1: 1249089283
+      Cobbles_sandstone_weeded_c6_r2: 1493667462
+      Cobbles_sandstone_weeded_c7_r0: 784301115
+      Cobbles_sandstone_weeded_c7_r1: -1647378945
+      Cobbles_sandstone_weeded_c7_r2: 1195939635
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

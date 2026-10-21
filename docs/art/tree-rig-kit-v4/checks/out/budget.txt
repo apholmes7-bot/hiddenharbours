@@ -1,0 +1,22 @@
+# budget — passed
+
+BAKED FRAMES (the 4.1 contract): a 4 × 4 sheet of 16 frames per species × stage × season × variant × wind level × direction × map
+  maps _unlit _normal _light _detail (4; _lit optional, +25%) · levels calm breeze wind gale (4) · directions 2 · RGBA8, uncompressed
+  sheet pixels, all 40 species × stages, one map · variant · level · direction · season: 22,490,864 = 90.0 MB
+  one variant:   3,840 sheets · 8.64 GB (8.04 GiB)
+  four variants: 15,360 sheets · 34.55 GB (32.17 GiB)
+  per season, four variants: 5,120 sheets · 11.52 GB (10.72 GiB)
+  autumn shares _normal _light _detail with summer (see seasons), and _unlit too on the five species with no fall colour,
+  so it adds _unlit for the other five only: 640 sheets · 1.56 GB (1.46 GiB)
+  with that sharing: summer 11.52 GB (10.72 GiB) + autumn 1.56 GB (1.46 GiB) + winter 11.52 GB (10.72 GiB) = 24.59 GB (22.91 GiB)
+
+REST POSE + WEIGHTS (treeMaps4.js): a 4 × 1 sheet of the four variants at rest per species × stage × season × map
+  maps _unlit _normal _light _detail _snow _wind _phase (7) · any wind level, direction, gust and frame from the shader · any snow cover from _snow
+  sheet pixels, all 40 species × stages, one map · season: 5,622,716 = 22.5 MB
+  summer: 280 sheets · 157.4 MB
+  autumn: +20 sheets (_unlit of the five fall-colour species; everything else is summer's) · +12.2 MB
+  winter: +280 sheets · +157.4 MB (bare broadleaves and larch are new geometry; winter also reseeds the evergreens — build() adds 31 to the seed)
+  total: 580 sheets · 327.1 MB · _snow as one channel (R8) saves 33.7 MB of that
+  _lit (optional, per sky you bake): 22.5 MB per season per sky
+
+ratio, four variants, all seasons: 106× smaller than the naive bake (75× against the bake with autumn shared)

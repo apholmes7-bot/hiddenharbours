@@ -43,6 +43,19 @@ namespace HiddenHarbours.Tools.RigBaking
     /// It uses no colour heuristics and no PCA: just how wide the drawn thing is. If those disagree the
     /// probe REFUSES, because the door reading would no longer be evidence of anything.</para>
     ///
+    /// <para><b>⭐ The eave door (the village return, drop 14, #898).</b> The returned house rig draws the
+    /// door where its porch and bay route it, and says so: <c>anchors().doorWall</c>. On the general
+    /// store that is the <c>+X</c> eave, so at a quarter turn the door faces the camera or faces away and
+    /// lands ON the pivot — the reading above has no side to give. What it still has is the LOOP: the rig
+    /// turns the whole building, so every point on it, the door included, circles the pivot the same way
+    /// as the cells advance, whichever wall it is on. The signed area of the door's four quarter-turn
+    /// positions is that direction. It is read only when the rig itself reports an eave door and the
+    /// side reading is degenerate; a door on the pivot that the rig does NOT place on an eave (the
+    /// camper's curb door) is still refused, and everything that reads today reads exactly as it did.
+    /// Calibrated, not assumed: on the 13 builds whose side the probe can read (main's five houses, the
+    /// returned house's four gable doors, the four wharf buildings) a counter-clockwise side reading
+    /// is a NEGATIVE loop, every one — pinned by <c>VillageReturnIntakeTests</c>.</para>
+    ///
     /// <para><b>What this deliberately does NOT claim.</b> The handedness itself is not independently
     /// re-derived from pixels — there is no building feature as unambiguous as a bow taper. It rests on
     /// the shared-projection argument above, guarded by the width check. Stated plainly so nobody later
@@ -87,6 +100,13 @@ namespace HiddenHarbours.Tools.RigBaking
         public const double MinDoorOffsetPx = 16.0;
 
         /// <summary>
+        /// The eave-door reading's floor: the door must sweep at least this much screen area around the
+        /// pivot (px², the shoelace area of its positions at dirs 0, 2, 4 and 6). A door on a wall sweeps
+        /// thousands — the general store's sweeps 16 497 — and a door on the pivot sweeps none.
+        /// </summary>
+        public const double MinDoorLoopAreaPx2 = MinDoorOffsetPx * MinDoorOffsetPx;
+
+        /// <summary>
         /// Measure a building rig loaded into <paramref name="host"/>.
         /// <paramref name="optsJs"/> is the JS options literal (e.g. <c>{type:'shack'}</c>) — the SAME
         /// one the bake will use, so the probe measures the build actually being baked and not a default
@@ -120,12 +140,30 @@ namespace HiddenHarbours.Tools.RigBaking
             Check(broadside, ln, "broadside", "Ln", sb);
 
             if (Math.Abs(offset) < MinDoorOffsetPx)
-                throw new InvalidOperationException(
-                    "BUILDING AZIMUTH PROBE REFUSED: the door sits essentially ON the pivot at a " +
-                    $"quarter turn (offset {offset:F1} px, need ≥{MinDoorOffsetPx:F0}).\n\n" + sb +
-                    "\nThis probe reads the door's side to tell which way the rig turns, so a centred " +
-                    "door means the rig is not shaped the way it assumes — refusing rather than " +
-                    "coin-flipping a convention.");
+            {
+                // ⭐ The eave door: at a quarter turn it faces the camera or away, so its side says
+                // nothing — but it still circles the pivot the way the whole building turns.
+                string wall = DoorWall(host, g, o);
+                double loop = DoorLoopAreaPx2(host, g, o);
+                sb.AppendLine($"  door wall (rig)  : {(wall.Length > 0 ? wall : "not reported")}");
+                sb.AppendLine($"  door loop        : {loop:+0;-0} px² over dirs 0/2/4/6 (need |loop| ≥ " +
+                              $"{MinDoorLoopAreaPx2:F0}; negative = counter-clockwise, calibrated)");
+
+                if (!IsEave(wall) || Math.Abs(loop) < MinDoorLoopAreaPx2)
+                    throw new InvalidOperationException(
+                        "BUILDING AZIMUTH PROBE REFUSED: the door sits essentially ON the pivot at a " +
+                        $"quarter turn (offset {offset:F1} px, need ≥{MinDoorOffsetPx:F0}).\n\n" + sb +
+                        "\nThis probe reads the door's side to tell which way the rig turns, so a centred " +
+                        "door means the rig is not shaped the way it assumes — refusing rather than " +
+                        "coin-flipping a convention. (The loop reading covers a door the rig itself " +
+                        "places on an eave, and only that.)");
+
+                var byLoop = loop < 0 ? AzimuthConvention.CounterClockwise : AzimuthConvention.Clockwise;
+                sb.AppendLine($"  ⇒ the door is on the {wall} eave, so its side at a quarter turn is no " +
+                              $"answer; it circles the pivot {(loop < 0 ? "as a counter-clockwise" : "as a clockwise")} " +
+                              $"rig's doors do ⇒ {byLoop}");
+                return new Result(byLoop, offset, wd, ln, faceOn, broadside, sb.ToString());
+            }
 
             // ---- 4. the answer ---------------------------------------------------------------------
             // Cell 2 is labelled 'E'. Door to screen-LEFT (−x, west) ⇒ the label is a lie by −90° ⇒ CCW.
@@ -138,6 +176,44 @@ namespace HiddenHarbours.Tools.RigBaking
 
             return new Result(convention, offset, wd, ln, faceOn, broadside, sb.ToString());
         }
+
+        /// <summary>
+        /// The signed shoelace area (px², screen y down) of the door anchor's positions at dirs 0, 2, 4
+        /// and 6: which way the door circles the pivot as the cells advance. Negative on a
+        /// counter-clockwise rig, measured on every building the side reading can read.
+        /// </summary>
+        public static double DoorLoopAreaPx2(IRigScriptHost host, string globalName, string optsJs)
+        {
+            string g = globalName;
+            string o = string.IsNullOrWhiteSpace(optsJs) ? "{}" : optsJs;
+            var x = new double[4];
+            var y = new double[4];
+            for (int i = 0; i < 4; i++)
+            {
+                x[i] = host.EvaluateNumber($"{g}.anchors({2 * i},{o}).door.x");
+                y[i] = host.EvaluateNumber($"{g}.anchors({2 * i},{o}).door.y");
+            }
+
+            double twice = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                int j = (i + 1) % 4;
+                twice += x[i] * y[j] - x[j] * y[i];
+            }
+            return twice / 2;
+        }
+
+        /// <summary>The wall the rig says it drew the door on (<c>anchors().doorWall</c>, e.g.
+        /// <c>+Y</c>), or empty for a rig that does not say.</summary>
+        public static string DoorWall(IRigScriptHost host, string globalName, string optsJs)
+        {
+            string o = string.IsNullOrWhiteSpace(optsJs) ? "{}" : optsJs;
+            return host.EvaluateString(
+                $"(function(){{var a={globalName}.anchors(0,{o});" +
+                "return a&&typeof a.doorWall==='string'?a.doorWall:'';})()");
+        }
+
+        static bool IsEave(string wall) => wall == "+X" || wall == "-X";
 
         static void Check(int measuredPx, double meters, string what, string field, StringBuilder sb)
         {

@@ -36,6 +36,11 @@
 // term on the same line and the same published freqScale/exaggeration in _HHSeaLevelWorld.yz; adding
 // it by transcribing the train loop a second time is what CliffWaterlineMath forbids.
 //
+// ⭐ STILL WATER (ADR 0046). Where a pond or a brook's fresh reach stands ABOVE the tide, the water over
+// the face is max(tide, still) at the pixel, read from the same still map the water shader and the
+// on-foot sim read (Include/StillWater.hlsl). TidalFaceWaterline's C# stays on the tide — it configures
+// the lip and never samples a level per pixel. With no still map the read is -1e30 and nothing changes.
+//
 // ⚠️ EVERYTHING ELSE IS URP'S OWN Sprite-Unlit-Default, structurally verbatim — the same Core2D /
 // 2DCommon includes, the same UnityFlipSprite and SetUpSpriteInstanceProperties, the same
 // `input.color * _Color * unity_SpriteColor`, the same blend, the same legacy fallback properties.
@@ -103,11 +108,12 @@ Shader "HiddenHarbours/TidalFace"
             {
                 COMMON_2D_OUTPUTS
                 half4 color : COLOR;
-                // The fragment's WORLD Y, which is the axis the whole rule is stated on: this camera
+                // The fragment's WORLD XY. Y is the axis the whole rule is stated on: this camera
                 // draws the ground unforeshortened in y (a flat quad's world y IS its screen y), so a
-                // world-y threshold is a screen row. TEXCOORD4 because COMMON_2D_OUTPUTS itself takes
-                // 2 and 3 under DEBUG_DISPLAY.
-                float faceWorldY : TEXCOORD4;
+                // world-y threshold is a screen row. X joins it only so the still water (ADR 0046) is
+                // read at this pixel — the same place the water shader beneath reads it. TEXCOORD4
+                // because COMMON_2D_OUTPUTS itself takes 2 and 3 under DEBUG_DISPLAY.
+                float2 faceWorldXY : TEXCOORD4;
             };
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/2DCommon.hlsl"
@@ -120,6 +126,12 @@ Shader "HiddenHarbours/TidalFace"
             // being it: x = the eased sea level in metres above the game's datum, w = 1 once published.
             // All-zero is the unset state and means there is no sea here.
             float4 _HHSeaLevelWorld;
+
+            // THE STILL WATER above the tide (ADR 0046), the water shader's own read: ponds and a
+            // brook's fresh reach stand ABOVE the sea, and a face standing in one is wet to the pond's
+            // level, not the tide's. Globals outside the CBUFFER; unset answers -1e30, so the face
+            // draws exactly today's picture in every region without a still map.
+            #include "Assets/_Project/Art/Shaders/Include/StillWater.hlsl"
 
             // NOTE: Do not ifdef the properties here as SRP batcher can not handle different layouts.
             CBUFFER_START(UnityPerMaterial)
@@ -139,7 +151,7 @@ Shader "HiddenHarbours/TidalFace"
 
                 Varyings o = CommonUnlitVertex(input);
                 o.color = input.color *_Color * unity_SpriteColor;
-                o.faceWorldY = TransformObjectToWorld(input.positionOS).y;
+                o.faceWorldXY = TransformObjectToWorld(input.positionOS).xy;
                 return o;
             }
 
@@ -150,9 +162,12 @@ Shader "HiddenHarbours/TidalFace"
                 // picture rather than a wall cut at zero.
                 if (_HHFaceTide.w > 0.5 && _HHSeaLevelWorld.w > 0.5)
                 {
+                    // The water over this pixel is max(tide, still) — the level the water shader
+                    // draws beneath it (ADR 0046). No still water: -1e30, and sea IS the tide.
+                    float sea = max(_HHSeaLevelWorld.x, StillLevelAt(input.faceWorldXY));
                     float waterlineWorldY =
-                        _HHFaceTide.x + (_HHSeaLevelWorld.x - _HHFaceTide.y) * _HHFaceTide.z;
-                    if (input.faceWorldY < waterlineWorldY) discard;
+                        _HHFaceTide.x + (sea - _HHFaceTide.y) * _HHFaceTide.z;
+                    if (input.faceWorldXY.y < waterlineWorldY) discard;
                 }
 
                 return CommonUnlitFragment(input, input.color);

@@ -435,6 +435,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
                 Assert.AreEqual(1, go.GetComponents<SpriteRenderer>().Length);
                 Assert.AreEqual(1, go.GetComponents<YSortSprite>().Length);
+                Assert.LessOrEqual(go.GetComponents<SpriteLightBinder>().Length, 1,
+                                   "a house binds its light once, however often it is rebuilt");
             }
             finally { Object.DestroyImmediate(go); }
         }
@@ -450,6 +452,92 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     "placing on a plausible default pivot is exactly the reading this contract replaces");
             }
             finally { Object.DestroyImmediate(go); }
+        }
+
+        // ---- Configure: a house lights (drop 14, #898 — "L2, houses first") ---------------------
+
+        [Test]
+        public void ConfigureLightsEveryHouse_OnItsOwnThreeChannelSheets()
+        {
+            RequireSheetsOnDisk();
+            VillageBuildingKit.Entry[] houses =
+                _contract.buildings.Where(VillageBuildingKit.HasLightChannels).ToArray();
+            Assert.IsNotEmpty(houses, "the contract lists no house, so nothing in the village lights");
+
+            Material lit = VillageBuildingCatalog.LoadLitMaterial();
+            Assert.IsNotNull(lit, $"{VillageBuildingCatalog.LitMaterialPath} is not on disk");
+
+            foreach (VillageBuildingKit.Entry entry in houses)
+            {
+                var placement = VillageBuildingCatalog.Find(entry.key);
+                var sprite = VillageBuildingCatalog.LoadFacing(placement, placement.FrontFacing);
+                var go = new GameObject("village-house-lit");
+                try
+                {
+                    var sr = VillageBuildingCatalog.Configure(go, placement, sprite);
+                    Assert.AreSame(lit, sr.sharedMaterial, $"{entry.key} draws with the lit house material");
+
+                    var binder = go.GetComponent<SpriteLightBinder>();
+                    Assert.IsNotNull(binder, $"{entry.key} is a house and has no light binder");
+                    Assert.IsTrue(binder.HasLightSheet && binder.HasNormalSheet && binder.HasEmitSheet,
+                                  $"{entry.key} must bind all three channels: mask {binder.HasLightSheet}, " +
+                                  $"normal {binder.HasNormalSheet}, emit {binder.HasEmitSheet}");
+
+                    // Read back off the RENDERER, which is what the shader sees: each slot holds THIS
+                    // house's sheet, on the albedo's own pixels, and both the response and the glow are on.
+                    var block = new MaterialPropertyBlock();
+                    sr.GetPropertyBlock(block);
+                    AssertChannelBound(block, SpriteLightBinding.MaskProperty, entry.key,
+                                       VillageBuildingKit.Channel.Mask, sprite.texture);
+                    AssertChannelBound(block, SpriteLightBinding.NormalProperty, entry.key,
+                                       VillageBuildingKit.Channel.Normal, sprite.texture);
+                    AssertChannelBound(block, SpriteLightBinding.EmitProperty, entry.key,
+                                       VillageBuildingKit.Channel.Emit, sprite.texture);
+                    Assert.AreEqual(1f, block.GetFloat(SpriteLightBinding.ChannelsProperty),
+                                    $"{entry.key}: the response is off");
+                    Assert.AreEqual(1f, block.GetFloat(SpriteLightBinding.EmitChannelsProperty),
+                                    $"{entry.key}: the window glow is off");
+                }
+                finally { Object.DestroyImmediate(go); }
+            }
+        }
+
+        [Test]
+        public void ConfigureLeavesABuildingWithoutChannelsAsItWas()
+        {
+            // The wharf buildings' sheets do not move in drop 14 — L2 for them is a later step. So they
+            // keep the default sprite material and get no binder, and draw exactly as they did.
+            RequireSheetsOnDisk();
+            VillageBuildingKit.Entry[] others =
+                _contract.buildings.Where(e => !VillageBuildingKit.HasLightChannels(e)).ToArray();
+            Assert.IsNotEmpty(others, "every building lights now — this test has outlived its subject");
+
+            Material lit = VillageBuildingCatalog.LoadLitMaterial();
+            foreach (VillageBuildingKit.Entry entry in others)
+            {
+                var placement = VillageBuildingCatalog.Find(entry.key);
+                var sprite = VillageBuildingCatalog.LoadFacing(placement, placement.FrontFacing);
+                var go = new GameObject("village-building-unlit");
+                try
+                {
+                    var sr = VillageBuildingCatalog.Configure(go, placement, sprite);
+                    Assert.IsNull(go.GetComponent<SpriteLightBinder>(), $"{entry.key} has no channels to bind");
+                    Assert.AreNotSame(lit, sr.sharedMaterial,
+                                      $"{entry.key} would draw the lit response on no light sheet");
+                }
+                finally { Object.DestroyImmediate(go); }
+            }
+        }
+
+        static void AssertChannelBound(MaterialPropertyBlock block, string property, string key,
+                                       VillageBuildingKit.Channel channel, Texture albedo)
+        {
+            string expected = VillageBuildingKit.StemFor(key, channel);
+            Texture bound = block.GetTexture(property);
+            Assert.IsNotNull(bound, $"{key}: {property} is unbound");
+            Assert.AreEqual(expected, bound.name, $"{key}: {property} holds another sheet");
+            Assert.AreEqual(albedo.width, bound.width, $"{key}: {expected} is not on the albedo's grid");
+            Assert.AreEqual(albedo.height, bound.height, $"{key}: {expected} is not on the albedo's grid");
         }
 
         [Test]

@@ -1,0 +1,781 @@
+fileFormatVersion: 2
+guid: fc9629017181cdc4bad52a5f1c2317e1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -299049835844235050
+    second: Slab_quartzite_barnacled_normal_0
+  - first:
+      213: -2368078043949054839
+    second: Slab_quartzite_barnacled_normal_1
+  - first:
+      213: -3325993282815826018
+    second: Slab_quartzite_barnacled_normal_2
+  - first:
+      213: -2183673288681970340
+    second: Slab_quartzite_barnacled_normal_3
+  - first:
+      213: 5269503280315974501
+    second: Slab_quartzite_barnacled_normal_4
+  - first:
+      213: 4713161047525605599
+    second: Slab_quartzite_barnacled_normal_5
+  - first:
+      213: -7006802553509730675
+    second: Slab_quartzite_barnacled_normal_6
+  - first:
+      213: 7925612169856864011
+    second: Slab_quartzite_barnacled_normal_7
+  - first:
+      213: 3244274665756297960
+    second: Slab_quartzite_barnacled_normal_8
+  - first:
+      213: 7655324869496320968
+    second: Slab_quartzite_barnacled_normal_9
+  - first:
+      213: 3647524990664872023
+    second: Slab_quartzite_barnacled_normal_10
+  - first:
+      213: 6958457602514991305
+    second: Slab_quartzite_barnacled_normal_11
+  - first:
+      213: 7512533553659928312
+    second: Slab_quartzite_barnacled_normal_12
+  - first:
+      213: 948959716284687902
+    second: Slab_quartzite_barnacled_normal_13
+  - first:
+      213: 4007109008961210889
+    second: Slab_quartzite_barnacled_normal_14
+  - first:
+      213: 4261615358334033712
+    second: Slab_quartzite_barnacled_normal_15
+  - first:
+      213: 5563202870073049471
+    second: Slab_quartzite_barnacled_normal_16
+  - first:
+      213: 4037195872826753268
+    second: Slab_quartzite_barnacled_normal_17
+  - first:
+      213: 2105101574948444603
+    second: Slab_quartzite_barnacled_normal_18
+  - first:
+      213: -6996400099167285857
+    second: Slab_quartzite_barnacled_normal_19
+  - first:
+      213: -8032935773969004810
+    second: Slab_quartzite_barnacled_normal_20
+  - first:
+      213: 3916152525622033144
+    second: Slab_quartzite_barnacled_normal_21
+  - first:
+      213: -411624284609075787
+    second: Slab_quartzite_barnacled_normal_22
+  - first:
+      213: 5620960888346626830
+    second: Slab_quartzite_barnacled_normal_23
+  - first:
+      213: 6398669702034590150
+    second: Slab_quartzite_barnacled_normal_24
+  - first:
+      213: 269235479495986238
+    second: Slab_quartzite_barnacled_normal_25
+  - first:
+      213: 350429003920944945
+    second: Slab_quartzite_barnacled_normal_26
+  - first:
+      213: 3008809385737231265
+    second: Slab_quartzite_barnacled_normal_27
+  - first:
+      213: 5737504214789606243
+    second: Slab_quartzite_barnacled_normal_28
+  - first:
+      213: 8196668830742702508
+    second: Slab_quartzite_barnacled_normal_29
+  - first:
+      213: -2475620738466511232
+    second: Slab_quartzite_barnacled_normal_30
+  - first:
+      213: 6208254090592836115
+    second: Slab_quartzite_barnacled_normal_31
+  - first:
+      213: 7478538722371723066
+    second: Slab_quartzite_barnacled_normal_32
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f5d326e3aa2e244abf98c065a4df6a5
+      internalID: -2011305780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33ebd64cecd5bc94282a1aae8e511e20
+      internalID: -797693645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9baf3dd95c4f67643af2b934f03a7b80
+      internalID: 973374888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9664475ddf81bdd429b59ff98ccea684
+      internalID: 1148717850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c3cfb59a65aed84ab215e002d86e64d
+      internalID: 1324404996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1ef7ac5ea709d74fb402dcc66d81b8c
+      internalID: -1078145540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5624175fbcbc47045aeba5c92ab0a41e
+      internalID: 1012289593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 84
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7aa1a4f5fd4458142a82d64cfe479b38
+      internalID: 2090528017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e109c8f6caa56a648a54312b343ac022
+      internalID: -1434827455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb79a8a0626da7a43974b52652cd306a
+      internalID: -1619579585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e8f082c87c4910468d2db90a1412bec
+      internalID: -1312950467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fab34b59eaf27642ab2e71ddaf5fad3
+      internalID: -222342837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdd1976a9a825c842b1b247179b48a1f
+      internalID: 1417660183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc69fd3455c64d34abe1a4180d93593b
+      internalID: 1772094616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a4156dcd7789fa4a9e6e8927d7e5473
+      internalID: -1734061512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 42
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bff159588b85934998a3494c43bf780
+      internalID: -2097994468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a902583e06c5de04a92b06877371604d
+      internalID: -481727385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a481138843046a8469dfefec45afd8a0
+      internalID: 399465372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89409389333837e44966ea30f2df82aa
+      internalID: -1006110736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cbb7200dc9cd4742aad078a03f7e1cb
+      internalID: 2097763394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.30952382}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 884c24a77b7a74c4e8d4111a763dee32
+      internalID: 347827422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf45fca398ae83f4dad5323016223aee
+      internalID: 702598550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 502ffd2204ec2584cbd0deeaab0f6944
+      internalID: -1359576889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Slab_quartzite_barnacled_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 74
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67b64661eab9d434fafb00e3ded3f92e
+      internalID: 193076446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a040d85dd2b72fd4cbfcc00dc81e9b00
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Slab_quartzite_barnacled_normal_c0_r0: -2011305780
+      Slab_quartzite_barnacled_normal_c0_r1: -1434827455
+      Slab_quartzite_barnacled_normal_c0_r2: -481727385
+      Slab_quartzite_barnacled_normal_c1_r0: -797693645
+      Slab_quartzite_barnacled_normal_c1_r1: -1619579585
+      Slab_quartzite_barnacled_normal_c1_r2: 399465372
+      Slab_quartzite_barnacled_normal_c2_r0: 973374888
+      Slab_quartzite_barnacled_normal_c2_r1: -1312950467
+      Slab_quartzite_barnacled_normal_c2_r2: -1006110736
+      Slab_quartzite_barnacled_normal_c3_r0: 1148717850
+      Slab_quartzite_barnacled_normal_c3_r1: -222342837
+      Slab_quartzite_barnacled_normal_c3_r2: 2097763394
+      Slab_quartzite_barnacled_normal_c4_r0: 1324404996
+      Slab_quartzite_barnacled_normal_c4_r1: 1417660183
+      Slab_quartzite_barnacled_normal_c4_r2: 347827422
+      Slab_quartzite_barnacled_normal_c5_r0: -1078145540
+      Slab_quartzite_barnacled_normal_c5_r1: 1772094616
+      Slab_quartzite_barnacled_normal_c5_r2: 702598550
+      Slab_quartzite_barnacled_normal_c6_r0: 1012289593
+      Slab_quartzite_barnacled_normal_c6_r1: -1734061512
+      Slab_quartzite_barnacled_normal_c6_r2: -1359576889
+      Slab_quartzite_barnacled_normal_c7_r0: 2090528017
+      Slab_quartzite_barnacled_normal_c7_r1: -2097994468
+      Slab_quartzite_barnacled_normal_c7_r2: 193076446
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

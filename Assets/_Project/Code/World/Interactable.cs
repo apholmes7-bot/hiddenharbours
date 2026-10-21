@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.World
@@ -17,6 +18,10 @@ namespace HiddenHarbours.World
     /// in via <see cref="Npc"/> — so the lines live in an asset the owner can edit, not in code. The
     /// legacy per-field string path (<see cref="ConversationId"/> → <see cref="WorldStrings"/>) remains
     /// as a fallback for the older Coddle Cove wiring; when an <see cref="NpcDef"/> is set it wins.</para>
+    ///
+    /// <para>Its one piece of behaviour is at <c>Awake</c>: a person (an <see cref="NpcDef"/> and an
+    /// <see cref="IsoCharacterSprite"/>) is given an <see cref="NpcFigureStand"/>, so she can draw as her
+    /// mesh (ADR 0044, amendment 2026-09-27).</para>
     /// </summary>
     public class Interactable : MonoBehaviour
     {
@@ -97,6 +102,26 @@ namespace HiddenHarbours.World
         /// </summary>
         public string[] DialogueLines(bool metBefore, IFlagStore flags)
             => HasNpcData ? _npc.Dialogue.Lines(metBefore, flags) : null;
+
+        /// <summary>
+        /// <b>A villager's mesh figure</b> (ADR 0044, amendment 2026-09-27). A host that names an
+        /// <see cref="NpcDef"/> and carries an <see cref="IsoCharacterSprite"/> is a person, and is given an
+        /// <see cref="NpcFigureStand"/>, which asks Core for her figure. A thing (NedsLetter: an NpcDef and no
+        /// body) is given nothing, and a host that already carries a figure is left alone.
+        ///
+        /// <para><b>⚠ Awake, not Start or OnEnable.</b> <c>VillagerRoutine</c> switches this component off
+        /// while she is sheltered, and Start never runs on a disabled component. Awake runs on every
+        /// component of an active GameObject, enabled or not, so a villager who begins the day indoors still
+        /// gets her figure. Edit-time builders run no Awake, so no scene ever serialises a stand.</para>
+        /// </summary>
+        private void Awake()
+        {
+            if (_npc == null) return;
+            if (!TryGetComponent(out IsoCharacterSprite _)) return;
+            if (TryGetComponent(out ICharacterFigure _)) return;
+            if (TryGetComponent(out NpcFigureStand _)) return;
+            gameObject.AddComponent<NpcFigureStand>();
+        }
 
         /// <summary>Wire the legacy (WorldStrings) path in one call (tests / older cove builder).</summary>
         public void Configure(InteractKind kind, string speaker, string conversationId,

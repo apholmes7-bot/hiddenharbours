@@ -76,6 +76,20 @@ namespace HiddenHarbours.Core
         [Header("The seven colour axes, in the kit's order")]
         public CharacterRampAxis[] Axes = Array.Empty<CharacterRampAxis>();
 
+        [Header("The rig's fixed ramps (rig 10 on)")]
+        [Tooltip("Colours no build chooses (the leather, the boots, the brass, the inks, the eye white), " +
+                 "each keyed by the plainest role that wears it. Empty on an asset lifted before rig 10.")]
+        public CharacterRamp[] Fixed = Array.Empty<CharacterRamp>();
+
+        /// <summary>The fixed ramp keyed <paramref name="key"/>, or null. Ordinal match.</summary>
+        public CharacterRamp FixedRamp(string key)
+        {
+            if (Fixed == null || string.IsNullOrEmpty(key)) return null;
+            foreach (var r in Fixed)
+                if (r != null && string.Equals(r.Key, key, StringComparison.Ordinal)) return r;
+            return null;
+        }
+
         /// <summary>The axis block for a build key, or null. Ordinal match — these are ids, not prose.</summary>
         public CharacterRampAxis Axis(string axis)
         {

@@ -64,6 +64,7 @@ namespace HiddenHarbours.Boats
     /// tick. Mobile-portable.</para>
     /// </summary>
     [DisallowMultipleComponent]
+    [DefaultExecutionOrder(20)]
     public sealed class BoatWakeEmitter : MonoBehaviour
     {
         [Header("Wake feel (all tunable — no magic numbers, rule 6)")]
@@ -117,10 +118,11 @@ namespace HiddenHarbours.Boats
         [SerializeField] private WakeWaveConfig _wave = WakeWaveConfig.Default;
 
         [Header("THE AGE RAMP (owner ask 2026-08-27: churn white, then through the sea's blues)")]
-        [Tooltip("How churned water AGES in COLOUR: born at the sea's own foam anchor, then walking down " +
-                 "the water's palette — foam to shallow to mid — over each element's life, with a " +
+        [Tooltip("How churned water AGES in COLOUR: born at the sea's own foam anchor, then walking into " +
+                 "the water it rides on — foam, the lifted water, then the water itself at its own depth " +
+                 "(W4-1) — over each element's life, with a " +
                  "per-particle scatter so one churn holds many ages at once instead of reading as a " +
-                 "single sheet. The anchors are the LIVE ones the water is drawing itself with (ADR 0015), " +
+                 "single sheet. Foam and water are the LIVE ones the sea is drawing itself with (ADR 0015), " +
                  "read through the Core SeaPalette seam — never invented here. Strength = 0 restores the " +
                  "flat serialized tints below, bit-exact (the A/B).")]
         [SerializeField] private WakeAgeRamp _ageRamp = WakeAgeRamp.Default;
@@ -331,9 +333,10 @@ namespace HiddenHarbours.Boats
             _rigs.Clear();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             float dt = Time.deltaTime;
+            if (dt <= 0f) return;
 
             _rescanTimer -= dt;
             if (_rescanTimer <= 0f)
@@ -394,9 +397,12 @@ namespace HiddenHarbours.Boats
                 WaveFieldAnimatorSettings waveSmoothing = GameServices.WaveFieldAnimator;
                 _seaAnimator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
                                   s.WindVector, s.SeaState01, in waveField, in waveSmoothing);
-                if (displaced)
-                    lift = new SeaLift(_seaAnimator, GameServices.TidalTerrain, env, totalSeconds,
-                                       sea.ShoreFadeBandMeters, sea.Exaggeration);
+                // Not displaced: no animator, so every lift stays exactly 0 — but the context still answers
+                // DEPTH, which the age ramp needs to end each element on the water under it (W4-1, 3A).
+                lift = displaced
+                    ? new SeaLift(_seaAnimator, GameServices.TidalTerrain, env, totalSeconds,
+                                  sea.ShoreFadeBandMeters, sea.Exaggeration)
+                    : new SeaLift(null, GameServices.TidalTerrain, env, totalSeconds, 0f, 0f);
             }
 
             // THE SEA'S OWN PALETTE (ADR 0015, owner ask 2026-08-27): the anchors the water is drawing
@@ -456,15 +462,41 @@ namespace HiddenHarbours.Boats
 
             /// <summary>Metres of screen lift for an element at <paramref name="worldPos"/> — 0 when inactive.</summary>
             public float LiftAt(Vector2 worldPos)
+                => Active ? LiftAt(worldPos, DepthAt(worldPos)) : 0f;
+
+            /// <summary>The same lift, on a <paramref name="depth"/> the caller has already read at
+            /// <paramref name="worldPos"/>: an aged element reads its depth once, for its ride and its body
+            /// both (<see cref="DepthUnder"/>; W4-1 Q8).</summary>
+            public float LiftAt(Vector2 worldPos, float depth)
             {
                 if (!Active) return 0f;
                 // Per-element fetch (ADR 0027 #1): a wake trail spreads over tens of metres — the fetch
                 // scale — so unlike a hull or a weed bed this one genuinely varies along its own length.
-                float height = _animator.Sample(worldPos, GameServices.FetchEnvelopeAt(worldPos)).Height;
-                float depth = BoatCrossing.DepthAt(_terrain, _environment, _totalSeconds, worldPos);
+                float height = _animator.Sample(worldPos, GameServices.FetchAt(worldPos)).Height;
                 return ShoreFadeMath.DisplacedHeight(height, depth, _bandMeters, _exaggeration);
             }
+
+            /// <summary>Water depth (m) at <paramref name="worldPos"/> by the game's one depth rule, displaced
+            /// sea or not — +∞ off the terrain or with no context (open water: the deep end of the ramp).</summary>
+            public float DepthAt(Vector2 worldPos)
+                => BoatCrossing.DepthAt(_terrain, _environment, _totalSeconds, worldPos);
         }
+
+        /// <summary>
+        /// The depth under an aged element, read ONCE for both of its uses (W4-1 Q8): its ride
+        /// (<see cref="SeaLift.LiftAt(Vector2, float)"/>) and its body (<see cref="BodyUnder"/>). Not read
+        /// at all when neither wants it — no displaced sea and the ramp off — so the A/B still costs nothing.
+        /// </summary>
+        private static float DepthUnder(in SeaLift lift, in WakeAgeRamp ramp, Vector2 worldPos)
+            => lift.Active || ramp.Strength > 0f ? lift.DepthAt(worldPos) : float.PositiveInfinity;
+
+        /// <summary>
+        /// The water an aged element rides on (W4-1, design 3A): the sea's own body colour at the element's
+        /// <paramref name="depth"/> (<see cref="DepthUnder"/>), where the age ramp ends. Only while the ramp
+        /// is on — at strength 0 the shade returns the legacy colour before it looks.
+        /// </summary>
+        private static Color BodyUnder(in WakeAgeRamp ramp, in SeaPaletteState palette, float depth)
+            => ramp.Strength > 0f ? palette.BodyAt(depth) : palette.Mid;
 
         /// <summary>
         /// Re-scan for boats. Adds a rig for any new <see cref="BoatController"/> (up to <see cref="_maxBoats"/>)
@@ -939,6 +971,11 @@ namespace HiddenHarbours.Boats
             // draws no tide under her picture, so her wake gets none either.
             private HullTideRide _tideRide;
             private float _tideRise;            // this tick's drawn rise of the water under her (m, screen-up)
+            private IHullWakePoseSource _wakePoseSource;
+            private Vector2 _posedStern;
+            private bool _hasPosedStern;
+            private BoatHullDef _lastHull;
+            private float _driveStrength;
 
             /// <summary>The elevation that means "a plan view": no foreshortening, today's placement. What a
             /// boat with no directional skin reads.</summary>
@@ -1162,7 +1199,7 @@ namespace HiddenHarbours.Boats
 
                 Vector2 pos = Boat.transform.position;
                 Vector2 bow = Boat.transform.up;
-                float speed = Boat.Velocity.magnitude;
+                float speed = (Boat.Velocity - current).magnitude;
                 bool aground = Boat.IsAground;
                 float bakeElev = BakeElevationDegrees();
 
@@ -1174,12 +1211,30 @@ namespace HiddenHarbours.Boats
                     ? TidalRide.ScreenRise(waterLevel, _tideRide.BakedWaterlineElevation)
                     : 0f;
 
+                if (_lastHull != Boat.Hull)
+                {
+                    _lastHull = Boat.Hull;
+                    _hasPrevStern = false;
+                    _hasPrevBow = false;
+                    _depositCarry = 0f;
+                    _wakePoseSource = null;
+                }
+                if (_wakePoseSource == null) _wakePoseSource = Boat.GetComponent<IHullWakePoseSource>();
+                _hasPosedStern = _wakePoseSource != null && _wakePoseSource.TryGetWakePose(out _);
+                if (_hasPosedStern && _wakePoseSource.TryGetWakePose(out HullWakePose pose))
+                {
+                    Vector2 datum = pose.DrawnStern - Vector2.up * _tideRise;
+                    _posedStern = datum;
+                    for (int i = 0; i < 3; i++) _posedStern = datum - Vector2.up * lift.LiftAt(_posedStern);
+                }
+
                 // --- GRADE the wake by hull SIZE + WEIGHT + SPEED (the owner's brief). Static hull stats come
                 // through the boat's public seam (rule 4); speed is live. The magnitude drives BOTH the plume
                 // tier/scale AND a coherent growth of the foam footprint so the whole wake scales with the boat. ---
                 float length = Boat.Hull != null ? Boat.Hull.LengthMeters : grade.LengthRefMin;
                 float mass = Boat.Hull != null ? Boat.Hull.MassKg : grade.MassRefMin;
                 float magnitude = WakeGrading.Magnitude01(length, mass, speed, grade);
+                _driveStrength = WakeGrading.DriveStrength(speed, in grade);
                 int tier = WakeGrading.TierIndex(magnitude, grade);
                 float foamFactor = WakeGrading.FoamExtentFactor(magnitude, grade);
 
@@ -1323,7 +1378,7 @@ namespace HiddenHarbours.Boats
 
                 // The stern cluster forms just ABAFT the transom — in the water the hull has already left,
                 // not on the transom itself. The stem cluster forms right at the cutwater.
-                Vector2 sternPoint = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), sternScatter * 0.5f,
+                Vector2 sternPoint = SternAnchor(pos, bow, sternScatter * 0.5f,
                                                              bakeElevationDegrees);
                 Vector2 stemPoint = BowSprayGrading.BowAnchor(pos, bow, hull, 0f, bakeElevationDegrees);
 
@@ -1377,7 +1432,7 @@ namespace HiddenHarbours.Boats
             {
                 // The trail is laid at the drawn transom: the same projected stern anchor the plume pins to
                 // (hull half-length + nudge, foreshortened per artwork) — never the boat's centre.
-                Vector2 stern = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), trail.DepositAsternOffset,
+                Vector2 stern = SternAnchor(pos, bow, trail.DepositAsternOffset,
                                                         bakeElevationDegrees);
 
                 if (!_hasPrevStern)
@@ -1435,19 +1490,24 @@ namespace HiddenHarbours.Boats
                 // Row 29: ONE width, from the hull's own beam through the presenter seam.
                 float wakeHalf = WakeHalfWidthMeters(hullLength, trail.ShoulderHalfWidthFraction);
                 float halfWidth = WakeTrailMath.ShoulderHalfWidthFrom(wakeHalf, magnitude, in trail);
+                halfWidth *= Mathf.Sqrt(_driveStrength);
                 float lifeScale = WakeTrailMath.Graded(trail.LifetimeScaleAtMagnitude0,
                                                        trail.LifetimeScaleAtMagnitude1, magnitude);
                 float sizeScale = WakeTrailMath.Graded(trail.SizeScaleAtMagnitude0,
                                                        trail.SizeScaleAtMagnitude1, magnitude);
+                sizeScale *= Mathf.Sqrt(_driveStrength);
                 // Birth strength: the crest lines' own speed-onset ramp, baked at emit — a trail laid at
                 // speed keeps reading at the strength it was laid with after the boat slows (the persistence
                 // the owner asked for), while a barely-moving boat lays a faint trail.
                 float lineBirth = WakeLineGeometry.SpeedOnset(speed, in lineCfg);
+                lineBirth *= _driveStrength;
                 float foamBirth = Mathf.Clamp01(WakeGrading.Ramp01(speed, fcfg.SpeedThreshold,
                                                                    Mathf.Max(0.2f, fcfg.SpeedThreshold)));
+                foamBirth *= _driveStrength;
 
                 int churnPuffs = WakeTrailMath.ChurnPuffCount(in trail);
                 float churnHalf = WakeTrailMath.ChurnHalfWidthFrom(wakeHalf, in trail);
+                churnHalf *= Mathf.Sqrt(_driveStrength);
 
                 // The WAKE WAVE's birth amplitude, in METRES of displaced water — baked into each crest at
                 // emit for the same reason the birth strength is: a wave laid at speed must keep the height
@@ -1685,6 +1745,11 @@ namespace HiddenHarbours.Boats
                 return HiddenHarbours.Core.WakeRootMath.SternOffsetMeters(rigged, length);
             }
 
+            private Vector2 SternAnchor(Vector2 pos, Vector2 bow, float asternOffset, float elevation)
+                => _hasPosedStern
+                    ? WakeRootMath.ProjectAlongHeading(_posedStern, bow, -asternOffset, elevation)
+                    : WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(), asternOffset, elevation);
+
             /// <summary>Row 29 — the ONE width, from the same seam. A hull with no rig reports 0 and the
             /// legacy length fraction answers for her.</summary>
             private float WakeHalfWidthMeters(float hullLengthMeters, float lengthFraction)
@@ -1764,7 +1829,7 @@ namespace HiddenHarbours.Boats
 
                 _plume.sprite = sprite;
 
-                Vector2 apex = WakeGrading.SternAnchorFromRoot(pos, bow, SternOffsetMeters(),
+                Vector2 apex = SternAnchor(pos, bow,
                                                                grade.PlumeAsternOffset, bakeElevationDegrees);
                 // The churn pulse: the transom wash BOILS (bounded, deterministic) instead of sitting glued.
                 float scalePulse = WakeTrailMath.ChurnPulse(time, _pulseSeed, trail.PlumePulseHz,
@@ -1772,6 +1837,7 @@ namespace HiddenHarbours.Boats
                 float alphaPulse = WakeTrailMath.ChurnPulse(time, _pulseSeed + 0.37f, trail.PlumePulseHz,
                                                             trail.PlumePulseAlphaAmount);
                 float scale = WakeGrading.PlumeScale(magnitude, in grade) * scalePulse;
+                scale *= Mathf.Sqrt(_driveStrength);
                 float angleDeg = WakeGrading.OrientAngleDeg(bow, grade.PlumeFlip);
                 // Ride the displaced sea at the transom (0 when the displaced sea is off — the flat plane).
                 float ride = lift.LiftAt(apex);
@@ -1783,7 +1849,7 @@ namespace HiddenHarbours.Boats
                 // The plume IS the moment of churn, continuously — so it draws at the ramp's fresh end:
                 // the sea's own foam anchor rather than a component constant that happened to be white.
                 var col = WakeFoamAgeing.ShadeFresh(tint, in ramp, in palette);
-                col.a = Mathf.Clamp01(Mathf.Clamp01(grade.PlumeStartAlpha) * onset * turnFade * alphaPulse);
+                col.a = Mathf.Clamp01(Mathf.Clamp01(grade.PlumeStartAlpha) * _driveStrength * turnFade * alphaPulse);
                 _plume.color = col;
                 if (!_plume.gameObject.activeSelf) _plume.gameObject.SetActive(true);
             }
@@ -1915,7 +1981,8 @@ namespace HiddenHarbours.Boats
                                                                    trail.FoamDispersalMetersPerSecond);
                     // Ride the displaced sea at the FOAM'S OWN position — laid foam heaves with the swell
                     // passing under it (display-only; the integrated position is untouched).
-                    float ride = lift.LiftAt(p.Pos);
+                    float depth = DepthUnder(in lift, in ramp, p.Pos);
+                    float ride = lift.LiftAt(p.Pos, depth);
 
                     var t = sr.transform;
                     t.position = new Vector3(renderPos.x, renderPos.y + ride + _tideRise, 0f);
@@ -1923,7 +1990,8 @@ namespace HiddenHarbours.Boats
                     // THE AGE RAMP (owner ask 2026-08-27): white only at the churn, then down the sea's own
                     // palette. This is the line the old defect lived on — the tint used to be the same
                     // serialized white for the whole life, and only `alpha` ever moved.
-                    var col = WakeFoamAgeing.Shade(foamColor, life, p.Seed, in ramp, in palette);
+                    var col = WakeFoamAgeing.Shade(foamColor, life, p.Seed, in ramp, in palette,
+                                                   BodyUnder(in ramp, in palette, depth));
                     col.a = alpha;
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
@@ -1966,13 +2034,15 @@ namespace HiddenHarbours.Boats
                     float sizeM = impact.Enabled
                         ? BowImpactMath.SizeOverLife(p.BaseSize, life, in impact)
                         : WakeParticleSystem.LifeSpread(p.BaseSize, life, rcfg);
-                    float ride = lift.LiftAt(p.Pos);
+                    float depth = DepthUnder(in lift, in ramp, p.Pos);
+                    float ride = lift.LiftAt(p.Pos, depth);
 
                     var t = sr.transform;
                     t.position = new Vector3(p.Pos.x, p.Pos.y + ride + _tideRise, 0f);
                     t.localScale = new Vector3(sizeM, sizeM, 1f);
                     // A thrown droplet ages too: bright at the stem, then the sea's blues as it falls back.
-                    var col = WakeFoamAgeing.Shade(sprayColor, life, p.Seed, in ramp, in palette);
+                    var col = WakeFoamAgeing.Shade(sprayColor, life, p.Seed, in ramp, in palette,
+                                                   BodyUnder(in ramp, in palette, depth));
                     col.a = alpha;
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
@@ -2011,7 +2081,8 @@ namespace HiddenHarbours.Boats
                     float alpha = WakeBubbleSystem.AlphaAt(life, in cfg)
                                   * Mathf.Clamp01(cfg.Opacity) * b.Strength;
                     float sizeM = WakeBubbleSystem.SizeOverLife(b.BaseSize, life, in cfg);
-                    float ride = lift.LiftAt(b.Pos);
+                    float depth = DepthUnder(in lift, in ramp, b.Pos);
+                    float ride = lift.LiftAt(b.Pos, depth);
 
                     var t = sr.transform;
                     t.position = new Vector3(b.Pos.x, b.Pos.y + ride + _tideRise, 0f);
@@ -2019,7 +2090,8 @@ namespace HiddenHarbours.Boats
                     // metres and never magnified past its texels.
                     float s = sizeM / BubbleNativeSize;
                     t.localScale = new Vector3(s, s, 1f);
-                    var col = WakeFoamAgeing.Shade(foamColor, life, b.Seed, in ramp, in palette);
+                    var col = WakeFoamAgeing.Shade(foamColor, life, b.Seed, in ramp, in palette,
+                                                   BodyUnder(in ramp, in palette, depth));
                     col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
@@ -2075,7 +2147,8 @@ namespace HiddenHarbours.Boats
                     // was laid instead of dimming with the boat's LIVE speed (the trail must survive the boat).
                     float alpha = WakeParticleSystem.LifeFade(life, arm) * opacity * p.BirthStrength;
                     Vector2 renderPos = WakeParticleSystem.RenderPosition(in p, time, roughness, arm);
-                    float ride = lift.LiftAt(p.Pos);
+                    float depth = DepthUnder(in lift, in ramp, p.Pos);
+                    float ride = lift.LiftAt(p.Pos, depth);
 
                     // Orient along the BAKED direction (p.OrientDeg — the emergent V's analytic locus for an
                     // arm, across the track for the stern roll). World-locked, so it never drifts as the
@@ -2084,6 +2157,8 @@ namespace HiddenHarbours.Boats
                     float lengthM = trail.Enabled
                         ? lengthMeters
                         : WakeLineGeometry.StreakLength(p.BirthStrength, life, in lineCfg);
+                    if (trail.Enabled)
+                        lengthM *= Mathf.Sqrt(p.BirthStrength) * Mathf.Lerp(1f, arm.SpreadFactor, life);
                     // PER-CREST VARIANCE (owner eyeball 2026-08-27): the crests were the one wake stream
                     // with no per-thing variation at all — same sprite, same angle, same length, every
                     // deposit. Off each crest's own birth seed, so a run of them reads as water standing
@@ -2125,9 +2200,10 @@ namespace HiddenHarbours.Boats
                     // from the ramp, and why the owner's next look found them "baked statically … never
                     // manipulated". ShadeMultiply SCALES the sprite's own light and dark together, so
                     // the profile survives intact while the crest walks down the sea's blues.
+                    Color body = BodyUnder(in ramp, in palette, depth);
                     var col = asWave
-                        ? WakeFoamAgeing.ShadeMultiply(tint, life, p.Seed, wave.AgeStrength, in ramp, in palette)
-                        : WakeFoamAgeing.Shade(tint, life, p.Seed, in ramp, in palette);
+                        ? WakeFoamAgeing.ShadeMultiply(tint, life, p.Seed, wave.AgeStrength, in ramp, in palette, body)
+                        : WakeFoamAgeing.Shade(tint, life, p.Seed, in ramp, in palette, body);
                     col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);

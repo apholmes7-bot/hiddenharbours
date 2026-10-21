@@ -59,10 +59,12 @@ namespace HiddenHarbours.Tests.PlayMode
         const int Facings = 8;
         const float GroundDepthScale = 0.6427876f;   // sin 40° at the shared bake camera
 
-        /// <summary>How far apart sageCottage's two floors are, in metres of HEIGHT —
-        /// <c>interiorIsoRig</c>'s declared <c>storeyZ</c> (its ceiling plus 0.34 m of joists), which the
-        /// bake writes into the interiors contract. Restated here for the same reason the footprint is:
-        /// this assembly cannot see the editor-side kit that reads it.</summary>
+        /// <summary>How far apart sageCottage's two floors are, in metres of HEIGHT — the declared
+        /// <c>storeyZ</c> of the room rig before the village return (its ceiling plus 0.34 m of joists),
+        /// which Ginny's placed cottage still stands at. The returned rig of drop 14 measures 2.65 m and
+        /// the contract carries that since #898; the mechanism under test is the same at either. Restated
+        /// here for the same reason the footprint is: this assembly cannot see the editor-side kit that
+        /// reads it.</summary>
         const float StoreyHeightMetres = 3.1025f;
 
         // The upstairs, in the room's model frame. A landing up the right-hand side, a bedroom either

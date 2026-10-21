@@ -1,0 +1,688 @@
+checks.txt - hh-village-return, phase 1 (houses), 2026-09-25
+
+How these were run: this workspace has no node binary, so every checker ran unmodified through a Node-18 host shim
+(fs, path, vm, crypto) in a V8 sandbox; the one change is that each entry script runs as require.main. We re-run on
+real node when this lands; counts may differ, RESULT lines should not. camera-shells.cjs was run in three chunks
+(--only) to fit the sandbox's 30 s budget; on node one plain run covers all of them.
+
+09-16 checkers, run from 1-houses/hh-houses-coastal-heritage/ against houses-kit/ as its kit/ (each checker's own output below):
+  rigs-intact        OK    24 of 24
+  door-registration  OK    18 of 18   (Job 1: verify)
+  floor-option       OK     4 of 4    (Job 2: owner ruled "a named floor wins")
+  room-anchors       FAIL  32 of 40 failed - Job 3 (roomH / storeyRise) was not in this phase's scope; its 8 guards pass (stair traps, byte pins)
+  manor-surface      FAIL  80 of 94 failed - Job 4 (the manor surface) was not in this phase's scope; its 14 guards pass (7 byte pins among them)
+  restamp-kit --check OK   all 14 stamped files match the rigs
+So node check/all.cjs ends: RESULT: FAIL - 2 of 5 checkers failed: room-anchors, manor-surface (the same two jobs that fail at the cut).
+
+ours:
+  checks/camera-shells.cjs  OK  308 of 308 (128 village shells + 27 HouseIso {} + 153 presets)
+
+
+====================================================================================================
+$ node check/rigs-intact.cjs ; door-registration ; floor-option ; room-anchors ; restamp --check
+EVERY JOB - rigs load, exports kept, stamps agree
+  PASS  interiorPropRig.js: UTF-8 without BOM, LF line endings only
+  PASS  coastalPass.js: UTF-8 without BOM, LF line endings only
+  PASS  building-lifecycle-kit/buildingLifecycleRig.js: UTF-8 without BOM, LF line endings only
+  PASS  houseIsoRig.js: UTF-8 without BOM, LF line endings only
+  PASS  interiorIsoRig.js: UTF-8 without BOM, LF line endings only
+  PASS  manorIsoRig.js: UTF-8 without BOM, LF line endings only
+  PASS  manorUnitIsoRig.js: UTF-8 without BOM, LF line endings only
+  PASS  wharfBuildingRig.js: UTF-8 without BOM, LF line endings only
+  PASS  all eight rigs load into one context in the game's order (interiorProp > coastalPass > buildingLifecycle > house > interior > manorIso > manorUnitIso > wharfBuilding)
+  PASS  PropIso: every export from the cut is still there (27)
+  PASS  CoastalPass: every export from the cut is still there (8); added: light
+  PASS  BuildingLifecycle: every export from the cut is still there (11)
+  PASS  HouseIso: every export from the cut is still there (20); added: ENTRIES, SCHEDULES, CHAR, layout, placement, footprint, dooryard, stations, lightsOn, lights, frame, relight, castShadow, view, renderLive
+  PASS  InteriorIso: every export from the cut is still there (33); added: frame, relight, renderLive, CUTAWAYS
+  PASS  ManorIso: every export from the cut is still there (28)
+  PASS  ManorUnitIso: every export from the cut is still there (20)
+  PASS  WharfBuilding: every export from the cut is still there (29)
+  PASS  wharfBuildingRig.js is unchanged (no job edits it)
+  PASS  building-lifecycle-kit/buildingLifecycleRig.js is unchanged (no job edits it)
+  PASS  kit/manifest.json rigHashes match the seven rigs (the game's TheSevenSourcesHashAsTheManifestSays)
+  PASS  kit/manifest.json renderSignatureSha256 is the hash of rigHashes
+  PASS  all 14 stamped files (manifest, 7 sidecars, 5 layouts, stair-contracts) match the rigs
+  PASS  the five designs (manifest dcRigs and their <script> tags) name files that exist
+  PASS  Manor Interiors.dc.html loads manorIsoRig.js before manorUnitIsoRig.js
+          
+          render signature ae130cf7123563a1d42ce8988740e9f27fdc7a90bbae4a04bd24c1de59e96c70
+            eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241  Art/manorIsoRig.js
+            a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6  Art/interiorPropRig.js
+            d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b  Art/manorUnitIsoRig.js
+            2a53a1684b057e1c771d2d0f743cb8697816f80d8f5bb920b0db3bb3891d1adb  Art/houseIsoRig.js
+            d25e83bf1333ba5f23ada975a23268b6cf63b5144c62b573f60e714fc46bc166  Art/interiorIsoRig.js
+            76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163  Art/wharfBuildingRig.js
+            926752ca76360c239d21967f3ba84d5cba7bf2a180e7f5e12b2dff8f04ad619e  Art/coastalPass.js
+RESULT: OK - all 24 checks pass
+
+JOB 1 - door anchors and room/house registration
+  PASS  HouseIso {}: door drawn where the anchor says (+X wall, x=3.480, along 0.000, z 0.55)
+  PASS  HouseIso.PRESETS.shingleCottage: door drawn where the anchor says (+Y wall, y=3.815, along 0.000, z 0.55)
+  PASS  HouseIso.PRESETS.whiteFarmhouse: door drawn where the anchor says (+Y wall, y=9.145, along -1.209, z 0.55)
+  PASS  HouseIso.PRESETS.redSaltbox: door drawn where the anchor says (+X wall, x=3.480, along 0.000, z 0.55)
+  PASS  HouseIso.PRESETS.gothicRevival: door drawn where the anchor says (+Y wall, y=5.180, along 0.000, z 0.55)
+  PASS  HouseIso.PRESETS.dormerCape: door drawn where the anchor says (+X wall, x=3.600, along 0.000, z 0.55)
+  PASS  sageCottage shell: door drawn where the anchor says (+Y wall, y=4.025, along 0.000, z 0.55)
+  PASS  school shell: door drawn where the anchor says (+Y wall, y=3.815, along 0.000, z 0.55)
+  PASS  redSaltbox shell: door drawn where the anchor says (+Y wall, y=4.340, along 0.000, z 0.55)
+  PASS  whiteFarmhouse shell: door drawn where the anchor says (+Y wall, y=4.970, along 0.000, z 0.55)
+  PASS  sageCottage room: door drawn where the anchor says (+Y wall, y=4.025 less wall 0.16, x 0, z 0)
+  PASS  school room: door drawn where the anchor says (+Y wall, y=3.815 less wall 0.16, x 0, z 0)
+  PASS  redSaltbox room: door drawn where the anchor says (+Y wall, y=4.340 less wall 0.16, x 0, z 0)
+  PASS  whiteFarmhouse room: door drawn where the anchor says (+Y wall, y=4.970 less wall 0.16, x 0, z 0)
+  PASS  sageCottage: room registers with its house - facing offset 0, gap -38.0 px, gables 1/1, footprint 6.6 x 8.05 m
+  PASS  school: room registers with its house - facing offset 0, gap -38.0 px, gables 1/1, footprint 6.36 x 7.63 m
+  PASS  redSaltbox: room registers with its house - facing offset 0, gap -38.0 px, gables 1/1, footprint 6.96 x 8.68 m
+  PASS  whiteFarmhouse: room registers with its house - facing offset 0, gap -38.0 px, gables 1/1, footprint 7.68 x 9.94 m
+          
+          INFO (game side, not a rig failure) - the baker today measures against HouseIso {size} only:
+            sageCottage: REFUSED - shell door anchor travels 0.0 px from dir 0 to dir 4 (needs 32)
+            school: REFUSED - shell door anchor travels 0.0 px from dir 0 to dir 4 (needs 32)
+            redSaltbox: REFUSED - shell door anchor travels 0.0 px from dir 0 to dir 4 (needs 32)
+            whiteFarmhouse: REFUSED - shell door anchor travels 0.0 px from dir 0 to dir 4 (needs 32)
+            Fix in the game: InteriorRigBaker.ExteriorOptsFor should pass the village shell options above.
+RESULT: OK - all 18 checks pass
+
+JOB 2 - the `floor` option with the companion pass on (owner's call)
+  PASS  InteriorIso.render(0, {}) with the pass on is unchanged from the cut
+  PASS  pass ON: the 5 floors (plank, wideBoard, checker, stoneFlag, painted) draw 5 different pictures
+  PASS  pass OFF (control): the 5 floors draw 5 different pictures
+  PASS  rendering is deterministic (same options, same bytes)
+          
+          If this job lands, the four shipped rooms (which name plank / wideBoard) change picture and need a re-bake:
+            sageCottage: plank  render(0) 6dfa9dbd4c0e54b8...
+            school: wideBoard  render(0) 72c2cac0ccca13d6...
+            redSaltbox: plank  render(0) 854759d4a32879ba...
+            whiteFarmhouse: plank  render(0) c22ab229dc657956...
+RESULT: OK - all 4 checks pass
+
+JOB 3 - roomH and storeyRise on InteriorIso.anchors() and dims()
+  PASS  sageCottage: the stair climbs exactly one storey, measured from the ground floor (top.z = floorRise = steps x riser = 2.6500 m)
+  FAIL  sageCottage ground anchors().storeyRise = 2.6500 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  sageCottage ground anchors().roomH = 2.4100 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  sageCottage ground dims().storeyRise = 2.6500 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  sageCottage ground dims().roomH = 2.4100 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  sageCottage upper anchors().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  sageCottage upper anchors().roomH is between 2.0 and peakZ 4.083 m
+          roomH is absent
+  FAIL  sageCottage upper dims().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  sageCottage upper dims().roomH is between 2.0 and peakZ 4.083 m
+          roomH is absent
+  PASS  sageCottage: ground and upper render(0) are unchanged from the cut
+          sageCottage: at the cut the ground wall plate is 2.41 m and rise - slab is 2.4100 m
+  PASS  school: the stair climbs exactly one storey, measured from the ground floor (top.z = floorRise = steps x riser = 2.5900 m)
+  FAIL  school ground anchors().storeyRise = 2.5900 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  school ground anchors().roomH = 2.3500 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  school ground dims().storeyRise = 2.5900 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  school ground dims().roomH = 2.3500 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  school upper anchors().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  school upper anchors().roomH is between 2.0 and peakZ 3.848 m
+          roomH is absent
+  FAIL  school upper dims().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  school upper dims().roomH is between 2.0 and peakZ 3.848 m
+          roomH is absent
+  PASS  school: ground and upper render(0) are unchanged from the cut
+          school: at the cut the ground wall plate is 2.3499999999999996 m and rise - slab is 2.3500 m
+  PASS  redSaltbox: the stair climbs exactly one storey, measured from the ground floor (top.z = floorRise = steps x riser = 2.7400 m)
+  FAIL  redSaltbox ground anchors().storeyRise = 2.7400 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  redSaltbox ground anchors().roomH = 2.5000 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  redSaltbox ground dims().storeyRise = 2.7400 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  redSaltbox ground dims().roomH = 2.5000 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  redSaltbox upper anchors().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  redSaltbox upper anchors().roomH is between 2.0 and peakZ 4.277 m
+          roomH is absent
+  FAIL  redSaltbox upper dims().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  redSaltbox upper dims().roomH is between 2.0 and peakZ 4.277 m
+          roomH is absent
+  PASS  redSaltbox: ground and upper render(0) are unchanged from the cut
+          redSaltbox: at the cut the ground wall plate is 2.5 m and rise - slab is 2.5000 m
+  PASS  whiteFarmhouse: the stair climbs exactly one storey, measured from the ground floor (top.z = floorRise = steps x riser = 2.9200 m)
+  FAIL  whiteFarmhouse ground anchors().storeyRise = 2.9200 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  whiteFarmhouse ground anchors().roomH = 2.6800 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  whiteFarmhouse ground dims().storeyRise = 2.9200 m (upper storeyZ - ground storeyZ = stair.floorRise)
+          storeyRise is absent
+  FAIL  whiteFarmhouse ground dims().roomH = 2.6800 m (storeyRise - slab 0.24; between 2.0 and storeyRise)
+          roomH is absent
+  FAIL  whiteFarmhouse upper anchors().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  whiteFarmhouse upper anchors().roomH is between 2.0 and peakZ 4.564 m
+          roomH is absent
+  FAIL  whiteFarmhouse upper dims().storeyRise is null (no storey above)
+          storeyRise is absent
+  FAIL  whiteFarmhouse upper dims().roomH is between 2.0 and peakZ 4.564 m
+          roomH is absent
+  PASS  whiteFarmhouse: ground and upper render(0) are unchanged from the cut
+          whiteFarmhouse: at the cut the ground wall plate is 2.6799999999999997 m and rise - slab is 2.6800 m
+RESULT: FAIL - 32 of 40 checks failed
+
+$ node tools/restamp-kit.cjs --check
+render signature ae130cf7123563a1d42ce8988740e9f27fdc7a90bbae4a04bd24c1de59e96c70
+  eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241  Art/manorIsoRig.js
+  a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6  Art/interiorPropRig.js
+  d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b  Art/manorUnitIsoRig.js
+  2a53a1684b057e1c771d2d0f743cb8697816f80d8f5bb920b0db3bb3891d1adb  Art/houseIsoRig.js
+  d25e83bf1333ba5f23ada975a23268b6cf63b5144c62b573f60e714fc46bc166  Art/interiorIsoRig.js
+  76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163  Art/wharfBuildingRig.js
+  926752ca76360c239d21967f3ba84d5cba7bf2a180e7f5e12b2dff8f04ad619e  Art/coastalPass.js
+RESULT: OK - all 14 stamped files match the rigs
+
+====================================================================================================
+$ node check/manor-surface.cjs
+JOB 4 - ManorUnitIso: a per-level surface the game can bake
+  PASS  mansardSeat: anchors() still returns anchors[], openings[] and dims (the designs read them)
+  FAIL  mansardSeat level 0 (reception): top-level door, floor, hearth, Wd, Ln, storeyZ 1.05, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.25 x 18.5; storeyZ is absent, want 1.05; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  mansardSeat level 0 (reception): every flight has steps x rise = floorRise = the rise to level 1, and tops out on that floor
+          main_l0: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l0: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  mansardSeat level 0 (reception): floorAtPivot:true draws the floor at z = 0 (anchors drop 1.05 m = 25.7 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l0_dining","level":0,"x":717,"y":803,"z":1.5,"seat":"window"} -> {"verb":"sit","room":"l0_dining","level":0,"x":717,"y":803,"z":1.5,"seat":"window"}, want z 0.450 and y +25.7 px
+  FAIL  mansardSeat level 0 (reception): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  mansardSeat level 1 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 4.6, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.25 x 18.5; storeyZ is absent, want 4.6; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  mansardSeat level 1 (chamber): every flight has steps x rise = floorRise = the rise to level 2, and tops out on that floor
+          main_l1: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l1: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  mansardSeat level 1 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 4.6 m = 112.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l1_bath","level":1,"x":717,"y":716,"z":5.05,"seat":"window"} -> {"verb":"sit","room":"l1_bath","level":1,"x":717,"y":716,"z":5.05,"seat":"window"}, want z 0.450 and y +112.8 px
+  FAIL  mansardSeat level 2 (attic): top-level door, floor, hearth, Wd, Ln, storeyZ 8.15, roomH 2.55, storeyRise null
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.25 x 18.5; storeyZ is absent, want 8.15; roomH is absent, want 2.55; storeyRise is absent, want null
+  FAIL  mansardSeat level 2 (attic): floorAtPivot:true draws the floor at z = 0 (anchors drop 8.15 m = 199.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l2_hallF","level":2,"x":480,"y":446,"z":8.59,"at":"tower"} -> {"verb":"sit","room":"l2_hallF","level":2,"x":480,"y":446,"z":8.59,"at":"tower"}, want z 0.440 and y +199.8 px
+  PASS  mansardSeat: render(0) is unchanged from the cut
+  PASS  mansardGrand: anchors() still returns anchors[], openings[] and dims (the designs read them)
+  FAIL  mansardGrand level 0 (reception): top-level door, floor, hearth, Wd, Ln, storeyZ 1.05, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.175 x 20.95; storeyZ is absent, want 1.05; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  mansardGrand level 0 (reception): every flight has steps x rise = floorRise = the rise to level 1, and tops out on that floor
+          main_l0: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l0: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  mansardGrand level 0 (reception): floorAtPivot:true draws the floor at z = 0 (anchors drop 1.05 m = 25.7 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l0_dining","level":0,"x":748,"y":803,"z":1.5,"seat":"window"} -> {"verb":"sit","room":"l0_dining","level":0,"x":748,"y":803,"z":1.5,"seat":"window"}, want z 0.450 and y +25.7 px
+  FAIL  mansardGrand level 0 (reception): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  mansardGrand level 1 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 4.6, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.175 x 20.95; storeyZ is absent, want 4.6; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  mansardGrand level 1 (chamber): every flight has steps x rise = floorRise = the rise to level 2, and tops out on that floor
+          main_l1: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l1: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  mansardGrand level 1 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 4.6 m = 112.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l1_bath","level":1,"x":748,"y":716,"z":5.05,"seat":"window"} -> {"verb":"sit","room":"l1_bath","level":1,"x":748,"y":716,"z":5.05,"seat":"window"}, want z 0.450 and y +112.8 px
+  FAIL  mansardGrand level 1 (chamber): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  mansardGrand level 2 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 8.15, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.175 x 20.95; storeyZ is absent, want 8.15; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  mansardGrand level 2 (chamber): every flight has steps x rise = floorRise = the rise to level 3, and tops out on that floor
+          main_l2: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l2: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  mansardGrand level 2 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 8.15 m = 199.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l2_bath","level":2,"x":748,"y":629,"z":8.6,"seat":"window"} -> {"verb":"sit","room":"l2_bath","level":2,"x":748,"y":629,"z":8.6,"seat":"window"}, want z 0.450 and y +199.8 px
+  FAIL  mansardGrand level 2 (chamber): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  mansardGrand level 3 (attic): top-level door, floor, hearth, Wd, Ln, storeyZ 11.7, roomH 2.55, storeyRise null
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.175 x 20.95; storeyZ is absent, want 11.7; roomH is absent, want 2.55; storeyRise is absent, want null
+  FAIL  mansardGrand level 3 (attic): floorAtPivot:true draws the floor at z = 0 (anchors drop 11.7 m = 286.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l3_hallF","level":3,"x":480,"y":334,"z":12.14,"at":"tower"} -> {"verb":"sit","room":"l3_hallF","level":3,"x":480,"y":334,"z":12.14,"at":"tower"}, want z 0.440 and y +286.8 px
+  FAIL  mansardGrand level 3 (attic): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  mansardGrand: every level registers at the same gap (each is drawn with its floor at the pivot; the game lifts it by storeyZ)
+          0 of 4 levels registered
+  PASS  mansardGrand: render(0) is unchanged from the cut
+  PASS  stoneSeat: anchors() still returns anchors[], openings[] and dims (the designs read them)
+  FAIL  stoneSeat level 0 (reception): top-level door, floor, hearth, Wd, Ln, storeyZ 0.95, roomH 3.03, storeyRise 3.350
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.25 x 18.5; storeyZ is absent, want 0.95; roomH is absent, want 3.03; storeyRise is absent, want 3.3500
+  FAIL  stoneSeat level 0 (reception): every flight has steps x rise = floorRise = the rise to level 1, and tops out on that floor
+          main_l0: 17 x 0.197 = 3.3490, floorRise 3.35; svc_l0: 17 x 0.197 = 3.3490, floorRise 3.35
+  FAIL  stoneSeat level 0 (reception): floorAtPivot:true draws the floor at z = 0 (anchors drop 0.95 m = 23.3 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] read: {"verb":"read","room":"l0_library","level":0,"x":692,"y":627,"z":1.37,"at":"turret"} -> {"verb":"read","room":"l0_library","level":0,"x":692,"y":627,"z":1.37,"at":"turret"}, want z 0.420 and y +23.3 px
+  FAIL  stoneSeat level 0 (reception): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  stoneSeat level 1 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 4.3, roomH 3.03, storeyRise 3.350
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.25 x 18.5; storeyZ is absent, want 4.3; roomH is absent, want 3.03; storeyRise is absent, want 3.3500
+  FAIL  stoneSeat level 1 (chamber): every flight has steps x rise = floorRise = the rise to level 2, and tops out on that floor
+          main_l1: 17 x 0.197 = 3.3490, floorRise 3.35; svc_l1: 17 x 0.197 = 3.3490, floorRise 3.35
+  FAIL  stoneSeat level 1 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 4.3 m = 105.4 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l1_bed2","level":1,"x":580,"y":524,"z":4.75,"seat":"window"} -> {"verb":"sit","room":"l1_bed2","level":1,"x":580,"y":524,"z":4.75,"seat":"window"}, want z 0.450 and y +105.4 px
+  FAIL  stoneSeat level 2 (attic): top-level door, floor, hearth, Wd, Ln, storeyZ 7.65, roomH 2.55, storeyRise null
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.25 x 18.5; storeyZ is absent, want 7.65; roomH is absent, want 2.55; storeyRise is absent, want null
+  FAIL  stoneSeat level 2 (attic): floorAtPivot:true draws the floor at z = 0 (anchors drop 7.65 m = 187.5 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] read: {"verb":"read","room":"l2_serv_c","level":2,"x":692,"y":462,"z":8.07,"at":"turret"} -> {"verb":"read","room":"l2_serv_c","level":2,"x":692,"y":462,"z":8.07,"at":"turret"}, want z 0.420 and y +187.5 px
+  PASS  stoneSeat: render(0) is unchanged from the cut
+  PASS  stoneGrand: anchors() still returns anchors[], openings[] and dims (the designs read them)
+  FAIL  stoneGrand level 0 (reception): top-level door, floor, hearth, Wd, Ln, storeyZ 0.95, roomH 3.03, storeyRise 3.350
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.45 x 21.3; storeyZ is absent, want 0.95; roomH is absent, want 3.03; storeyRise is absent, want 3.3500
+  FAIL  stoneGrand level 0 (reception): every flight has steps x rise = floorRise = the rise to level 1, and tops out on that floor
+          main_l0: 17 x 0.197 = 3.3490, floorRise 3.35; svc_l0: 17 x 0.197 = 3.3490, floorRise 3.35
+  FAIL  stoneGrand level 0 (reception): floorAtPivot:true draws the floor at z = 0 (anchors drop 0.95 m = 23.3 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] read: {"verb":"read","room":"l0_library","level":0,"x":727,"y":598,"z":1.37,"at":"turret"} -> {"verb":"read","room":"l0_library","level":0,"x":727,"y":598,"z":1.37,"at":"turret"}, want z 0.420 and y +23.3 px
+  FAIL  stoneGrand level 0 (reception): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  stoneGrand level 1 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 4.3, roomH 3.03, storeyRise 3.350
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.45 x 21.3; storeyZ is absent, want 4.3; roomH is absent, want 3.03; storeyRise is absent, want 3.3500
+  FAIL  stoneGrand level 1 (chamber): every flight has steps x rise = floorRise = the rise to level 2, and tops out on that floor
+          main_l1: 17 x 0.197 = 3.3490, floorRise 3.35; svc_l1: 17 x 0.197 = 3.3490, floorRise 3.35
+  FAIL  stoneGrand level 1 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 4.3 m = 105.4 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l1_bed2","level":1,"x":596,"y":495,"z":4.75,"seat":"window"} -> {"verb":"sit","room":"l1_bed2","level":1,"x":596,"y":495,"z":4.75,"seat":"window"}, want z 0.450 and y +105.4 px
+  FAIL  stoneGrand level 1 (chamber): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  stoneGrand level 2 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 7.65, roomH 3.03, storeyRise 3.350
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.45 x 21.3; storeyZ is absent, want 7.65; roomH is absent, want 3.03; storeyRise is absent, want 3.3500
+  FAIL  stoneGrand level 2 (chamber): every flight has steps x rise = floorRise = the rise to level 3, and tops out on that floor
+          main_l2: 17 x 0.197 = 3.3490, floorRise 3.35; svc_l2: 17 x 0.197 = 3.3490, floorRise 3.35
+  FAIL  stoneGrand level 2 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 7.65 m = 187.5 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] read: {"verb":"read","room":"l2_bed2","level":2,"x":727,"y":434,"z":8.07,"at":"turret"} -> {"verb":"read","room":"l2_bed2","level":2,"x":727,"y":434,"z":8.07,"at":"turret"}, want z 0.420 and y +187.5 px
+  FAIL  stoneGrand level 2 (chamber): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  stoneGrand level 3 (attic): top-level door, floor, hearth, Wd, Ln, storeyZ 11, roomH 2.55, storeyRise null
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 16.45 x 21.3; storeyZ is absent, want 11; roomH is absent, want 2.55; storeyRise is absent, want null
+  FAIL  stoneGrand level 3 (attic): floorAtPivot:true draws the floor at z = 0 (anchors drop 11 m = 269.6 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] read: {"verb":"read","room":"l3_serv_c","level":3,"x":727,"y":352,"z":11.42,"at":"turret"} -> {"verb":"read","room":"l3_serv_c","level":3,"x":727,"y":352,"z":11.42,"at":"turret"}, want z 0.420 and y +269.6 px
+  FAIL  stoneGrand level 3 (attic): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  stoneGrand: every level registers at the same gap (each is drawn with its floor at the pivot; the game lifts it by storeyZ)
+          0 of 4 levels registered
+  PASS  stoneGrand: render(0) is unchanged from the cut
+  PASS  receptionOnly: anchors() still returns anchors[], openings[] and dims (the designs read them)
+  FAIL  receptionOnly level 0 (reception): top-level door, floor, hearth, Wd, Ln, storeyZ 1.05, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 1.05; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  receptionOnly level 0 (reception): every flight has steps x rise = floorRise = the rise to level 1, and tops out on that floor
+          main_l0: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l0: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  receptionOnly level 0 (reception): floorAtPivot:true draws the floor at z = 0 (anchors drop 1.05 m = 25.7 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l0_dining","level":0,"x":726,"y":803,"z":1.5,"seat":"window"} -> {"verb":"sit","room":"l0_dining","level":0,"x":726,"y":803,"z":1.5,"seat":"window"}, want z 0.450 and y +25.7 px
+  FAIL  receptionOnly level 0 (reception): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  receptionOnly level 1 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 4.6, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 4.6; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  receptionOnly level 1 (chamber): every flight has steps x rise = floorRise = the rise to level 2, and tops out on that floor
+          main_l1: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l1: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  receptionOnly level 1 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 4.6 m = 112.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l1_bath","level":1,"x":726,"y":716,"z":5.05,"seat":"window"} -> {"verb":"sit","room":"l1_bath","level":1,"x":726,"y":716,"z":5.05,"seat":"window"}, want z 0.450 and y +112.8 px
+  FAIL  receptionOnly level 2 (attic): top-level door, floor, hearth, Wd, Ln, storeyZ 8.15, roomH 2.55, storeyRise null
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 8.15; roomH is absent, want 2.55; storeyRise is absent, want null
+  FAIL  receptionOnly level 2 (attic): floorAtPivot:true draws the floor at z = 0 (anchors drop 8.15 m = 199.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l2_hallF","level":2,"x":480,"y":439,"z":8.59,"at":"tower"} -> {"verb":"sit","room":"l2_hallF","level":2,"x":480,"y":439,"z":8.59,"at":"tower"}, want z 0.440 and y +199.8 px
+  PASS  receptionOnly: render(0) is unchanged from the cut
+  FAIL  receptionOnly: with floorAtPivot:true the picture moves down 25.7 px and not sideways, and still fits the 960x1180 canvas
+          opaque bounds {"x0":243,"y0":502,"x1":737,"y1":1018} -> {"x0":243,"y0":502,"x1":737,"y1":1018}
+  PASS  chamberFloor: anchors() still returns anchors[], openings[] and dims (the designs read them)
+  FAIL  chamberFloor level 0 (reception): top-level door, floor, hearth, Wd, Ln, storeyZ 1.05, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 1.05; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  chamberFloor level 0 (reception): every flight has steps x rise = floorRise = the rise to level 1, and tops out on that floor
+          main_l0: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l0: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  chamberFloor level 0 (reception): floorAtPivot:true draws the floor at z = 0 (anchors drop 1.05 m = 25.7 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l0_dining","level":0,"x":726,"y":803,"z":1.5,"seat":"window"} -> {"verb":"sit","room":"l0_dining","level":0,"x":726,"y":803,"z":1.5,"seat":"window"}, want z 0.450 and y +25.7 px
+  FAIL  chamberFloor level 1 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 4.6, roomH 3.23, storeyRise 3.550
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 4.6; roomH is absent, want 3.23; storeyRise is absent, want 3.5500
+  FAIL  chamberFloor level 1 (chamber): every flight has steps x rise = floorRise = the rise to level 2, and tops out on that floor
+          main_l1: 18 x 0.197 = 3.5460, floorRise 3.55; svc_l1: 18 x 0.197 = 3.5460, floorRise 3.55
+  FAIL  chamberFloor level 1 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 4.6 m = 112.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l1_bath","level":1,"x":726,"y":716,"z":5.05,"seat":"window"} -> {"verb":"sit","room":"l1_bath","level":1,"x":726,"y":716,"z":5.05,"seat":"window"}, want z 0.450 and y +112.8 px
+  FAIL  chamberFloor level 1 (chamber): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  FAIL  chamberFloor level 2 (attic): top-level door, floor, hearth, Wd, Ln, storeyZ 8.15, roomH 2.55, storeyRise null
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 8.15; roomH is absent, want 2.55; storeyRise is absent, want null
+  FAIL  chamberFloor level 2 (attic): floorAtPivot:true draws the floor at z = 0 (anchors drop 8.15 m = 199.8 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l2_hallF","level":2,"x":480,"y":439,"z":8.59,"at":"tower"} -> {"verb":"sit","room":"l2_hallF","level":2,"x":480,"y":439,"z":8.59,"at":"tower"}, want z 0.440 and y +199.8 px
+  PASS  chamberFloor: render(0) is unchanged from the cut
+  FAIL  chamberFloor: with floorAtPivot:true the picture moves down 112.8 px and not sideways, and still fits the 960x1180 canvas
+          opaque bounds {"x0":243,"y0":415,"x1":737,"y1":931} -> {"x0":243,"y0":415,"x1":737,"y1":931}
+  PASS  atticFloor: anchors() still returns anchors[], openings[] and dims (the designs read them)
+  FAIL  atticFloor level 0 (reception): top-level door, floor, hearth, Wd, Ln, storeyZ 0.95, roomH 3.03, storeyRise 3.350
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 0.95; roomH is absent, want 3.03; storeyRise is absent, want 3.3500
+  FAIL  atticFloor level 0 (reception): every flight has steps x rise = floorRise = the rise to level 1, and tops out on that floor
+          main_l0: 17 x 0.197 = 3.3490, floorRise 3.35; svc_l0: 17 x 0.197 = 3.3490, floorRise 3.35
+  FAIL  atticFloor level 0 (reception): floorAtPivot:true draws the floor at z = 0 (anchors drop 0.95 m = 23.3 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] read: {"verb":"read","room":"l0_library","level":0,"x":700,"y":619,"z":1.37,"at":"turret"} -> {"verb":"read","room":"l0_library","level":0,"x":700,"y":619,"z":1.37,"at":"turret"}, want z 0.420 and y +23.3 px
+  FAIL  atticFloor level 1 (chamber): top-level door, floor, hearth, Wd, Ln, storeyZ 4.3, roomH 3.03, storeyRise 3.350
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 4.3; roomH is absent, want 3.03; storeyRise is absent, want 3.3500
+  FAIL  atticFloor level 1 (chamber): every flight has steps x rise = floorRise = the rise to level 2, and tops out on that floor
+          main_l1: 17 x 0.197 = 3.3490, floorRise 3.35; svc_l1: 17 x 0.197 = 3.3490, floorRise 3.35
+  FAIL  atticFloor level 1 (chamber): floorAtPivot:true draws the floor at z = 0 (anchors drop 4.3 m = 105.4 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] sit: {"verb":"sit","room":"l1_bed2","level":1,"x":584,"y":517,"z":4.75,"seat":"window"} -> {"verb":"sit","room":"l1_bed2","level":1,"x":584,"y":517,"z":4.75,"seat":"window"}, want z 0.450 and y +105.4 px
+  FAIL  atticFloor level 2 (attic): top-level door, floor, hearth, Wd, Ln, storeyZ 7.65, roomH 2.55, storeyRise null
+          door is absent; floor is absent; hearth is absent; Wd x Ln is absent x absent, want the shell's 14.8 x 19.2; storeyZ is absent, want 7.65; roomH is absent, want 2.55; storeyRise is absent, want null
+  FAIL  atticFloor level 2 (attic): floorAtPivot:true draws the floor at z = 0 (anchors drop 7.65 m = 187.5 px; floor anchor at the pivot)
+          floor is absent, want project(0,[0,0,0]) = {"x":480,"y":840}; anchors[0] read: {"verb":"read","room":"l2_serv_c","level":2,"x":700,"y":455,"z":8.07,"at":"turret"} -> {"verb":"read","room":"l2_serv_c","level":2,"x":700,"y":455,"z":8.07,"at":"turret"}, want z 0.420 and y +187.5 px
+  FAIL  atticFloor level 2 (attic): registers inside ManorIso's shell by the door anchors
+          refused: the room's anchors() has no top-level Wd/Ln
+  PASS  atticFloor: render(0) is unchanged from the cut
+  FAIL  atticFloor: with floorAtPivot:true the picture moves down 187.5 px and not sideways, and still fits the 960x1180 canvas
+          opaque bounds {"x0":263,"y0":378,"x1":738,"y1":856} -> {"x0":263,"y0":378,"x1":738,"y1":856}
+RESULT: FAIL - 80 of 94 checks failed
+
+====================================================================================================
+$ node checks/camera-shells.cjs --only "shell"
+JOB 1 (houses) - camera-first shells: show face, entry, placement, approach, verbs, lamps
+  PASS  sageCottage shell entry:front: show +Y, door on +Y; facings 3 SW (door), 4 S (door), 5 SE (door)
+  PASS  sageCottage shell entry:front @3: door leaf 75 % unhidden, 1186 px alone vs 1664 square-on
+  PASS  sageCottage shell entry:front @3: show.porch 94 % unhidden (want 50)
+  PASS  sageCottage shell entry:front @3: approach 2.25 m out (SW), entryPath 2 points clear of the footprint
+  PASS  sageCottage shell entry:front @4: door leaf 100 % unhidden, 1664 px alone vs 1664 square-on
+  PASS  sageCottage shell entry:front @4: show.porch 94 % unhidden (want 25)
+  PASS  sageCottage shell entry:front @4: approach 2.25 m out (S), entryPath 2 points clear of the footprint
+  PASS  sageCottage shell entry:front @5: door leaf 75 % unhidden, 1186 px alone vs 1664 square-on
+  PASS  sageCottage shell entry:front @5: show.porch 94 % unhidden (want 25)
+  PASS  sageCottage shell entry:front @5: approach 2.25 m out (SE), entryPath 2 points clear of the footprint
+  PASS  sageCottage shell entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  sageCottage shell entry:left: show +Y, door on +X; facings 5 SW (door), 4 W (signpost)
+  PASS  sageCottage shell entry:left @5: door leaf 78 % unhidden, 1187 px alone vs 1664 square-on
+  PASS  sageCottage shell entry:left @5: show.porch 94 % unhidden (want 50)
+  PASS  sageCottage shell entry:left @5: approach 2.20 m out (SW), entryPath 3 points clear of the footprint
+  PASS  sageCottage shell entry:left @4: signpost 4354 px, 90 % unhidden (leaf square-on 1664 px)
+  PASS  sageCottage shell entry:left @4: show.porch 94 % unhidden (want 25)
+  PASS  sageCottage shell entry:left @4: approach 2.20 m out (W), entryPath 3 points clear of the footprint
+  PASS  sageCottage shell entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  sageCottage shell entry:right: show +Y, door on -X; facings 3 SE (door), 4 E (signpost)
+  PASS  sageCottage shell entry:right @3: door leaf 78 % unhidden, 1187 px alone vs 1664 square-on
+  PASS  sageCottage shell entry:right @3: show.porch 94 % unhidden (want 50)
+  PASS  sageCottage shell entry:right @3: approach 2.20 m out (SE), entryPath 3 points clear of the footprint
+  PASS  sageCottage shell entry:right @4: signpost 4354 px, 90 % unhidden (leaf square-on 1664 px)
+  PASS  sageCottage shell entry:right @4: show.porch 94 % unhidden (want 25)
+  PASS  sageCottage shell entry:right @4: approach 2.20 m out (E), entryPath 3 points clear of the footprint
+  PASS  sageCottage shell entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  school shell entry:front: show +Y, door on +Y; facings 3 SW (door), 4 S (door), 5 SE (door)
+  PASS  school shell entry:front @3: door leaf 66 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  school shell entry:front @3: show.porch 94 % unhidden (want 50)
+  PASS  school shell entry:front @3: approach 2.25 m out (SW), entryPath 2 points clear of the footprint
+  PASS  school shell entry:front @4: door leaf 94 % unhidden, 1632 px alone vs 1632 square-on
+  PASS  school shell entry:front @4: show.porch 94 % unhidden (want 25)
+  PASS  school shell entry:front @4: approach 2.25 m out (S), entryPath 2 points clear of the footprint
+  PASS  school shell entry:front @5: door leaf 66 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  school shell entry:front @5: show.porch 94 % unhidden (want 25)
+  PASS  school shell entry:front @5: approach 2.25 m out (SE), entryPath 2 points clear of the footprint
+  PASS  school shell entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  school shell entry:left: show +Y, door on +X; facings 5 SW (door), 4 W (signpost)
+  PASS  school shell entry:left @5: door leaf 78 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  school shell entry:left @5: show.porch 94 % unhidden (want 50)
+  PASS  school shell entry:left @5: approach 2.20 m out (SW), entryPath 3 points clear of the footprint
+  PASS  school shell entry:left @4: signpost 4281 px, 89 % unhidden (leaf square-on 1632 px)
+  PASS  school shell entry:left @4: show.porch 94 % unhidden (want 25)
+  PASS  school shell entry:left @4: approach 2.20 m out (W), entryPath 3 points clear of the footprint
+  PASS  school shell entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  school shell entry:right: show +Y, door on -X; facings 3 SE (door), 4 E (signpost)
+  PASS  school shell entry:right @3: door leaf 78 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  school shell entry:right @3: show.porch 94 % unhidden (want 50)
+  PASS  school shell entry:right @3: approach 2.20 m out (SE), entryPath 3 points clear of the footprint
+  PASS  school shell entry:right @4: signpost 4281 px, 89 % unhidden (leaf square-on 1632 px)
+  PASS  school shell entry:right @4: show.porch 94 % unhidden (want 25)
+  PASS  school shell entry:right @4: approach 2.20 m out (E), entryPath 3 points clear of the footprint
+  PASS  school shell entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  redSaltbox shell entry:front: show +Y, door on +Y; facings 3 SW (door), 4 S (door), 5 SE (door)
+  PASS  redSaltbox shell entry:front @3: door leaf 89 % unhidden, 1187 px alone vs 1632 square-on
+  PASS  redSaltbox shell entry:front @3: show.porch 94 % unhidden (want 50)
+  PASS  redSaltbox shell entry:front @3: approach 2.25 m out (SW), entryPath 2 points clear of the footprint
+  PASS  redSaltbox shell entry:front @4: door leaf 100 % unhidden, 1632 px alone vs 1632 square-on
+  PASS  redSaltbox shell entry:front @4: show.porch 95 % unhidden (want 25)
+  PASS  redSaltbox shell entry:front @4: approach 2.25 m out (S), entryPath 2 points clear of the footprint
+  PASS  redSaltbox shell entry:front @5: door leaf 89 % unhidden, 1187 px alone vs 1632 square-on
+  PASS  redSaltbox shell entry:front @5: show.porch 95 % unhidden (want 25)
+  PASS  redSaltbox shell entry:front @5: approach 2.25 m out (SE), entryPath 2 points clear of the footprint
+  PASS  redSaltbox shell entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  redSaltbox shell entry:left: show +Y, door on +X; facings 5 SW (door), 4 W (signpost)
+  PASS  redSaltbox shell entry:left @5: door leaf 78 % unhidden, 1186 px alone vs 1664 square-on
+  PASS  redSaltbox shell entry:left @5: show.porch 95 % unhidden (want 50)
+  PASS  redSaltbox shell entry:left @5: approach 2.20 m out (SW), entryPath 3 points clear of the footprint
+  PASS  redSaltbox shell entry:left @4: signpost 4335 px, 90 % unhidden (leaf square-on 1664 px)
+  PASS  redSaltbox shell entry:left @4: show.porch 95 % unhidden (want 25)
+  PASS  redSaltbox shell entry:left @4: approach 2.20 m out (W), entryPath 3 points clear of the footprint
+  PASS  redSaltbox shell entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  redSaltbox shell entry:right: show +Y, door on -X; facings 3 SE (door), 4 E (signpost)
+  PASS  redSaltbox shell entry:right @3: door leaf 78 % unhidden, 1186 px alone vs 1664 square-on
+  PASS  redSaltbox shell entry:right @3: show.porch 94 % unhidden (want 50)
+  PASS  redSaltbox shell entry:right @3: approach 2.20 m out (SE), entryPath 3 points clear of the footprint
+  PASS  redSaltbox shell entry:right @4: signpost 4271 px, 88 % unhidden (leaf square-on 1664 px)
+  PASS  redSaltbox shell entry:right @4: show.porch 95 % unhidden (want 25)
+  PASS  redSaltbox shell entry:right @4: approach 2.20 m out (E), entryPath 3 points clear of the footprint
+  PASS  redSaltbox shell entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  whiteFarmhouse shell entry:front: show +Y, door on +Y; facings 3 SW (door), 4 S (door), 5 SE (door)
+  PASS  whiteFarmhouse shell entry:front @3: door leaf 100 % unhidden, 1135 px alone vs 1632 square-on
+  PASS  whiteFarmhouse shell entry:front @3: show.dormers 94 % unhidden (want 50)
+  PASS  whiteFarmhouse shell entry:front @3: show.porch 79 % unhidden (want 50)
+  PASS  whiteFarmhouse shell entry:front @3: approach 2.25 m out (SW), entryPath 2 points clear of the footprint
+  PASS  whiteFarmhouse shell entry:front @4: door leaf 100 % unhidden, 1632 px alone vs 1632 square-on
+  PASS  whiteFarmhouse shell entry:front @4: show.dormers 94 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:front @4: show.porch 91 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:front @4: approach 2.25 m out (S), entryPath 2 points clear of the footprint
+  PASS  whiteFarmhouse shell entry:front @5: door leaf 100 % unhidden, 1135 px alone vs 1632 square-on
+  PASS  whiteFarmhouse shell entry:front @5: show.dormers 93 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:front @5: show.porch 91 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:front @5: approach 2.25 m out (SE), entryPath 2 points clear of the footprint
+  PASS  whiteFarmhouse shell entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  whiteFarmhouse shell entry:left: show +Y, door on +X; facings 5 SW (door), 4 W (signpost)
+  PASS  whiteFarmhouse shell entry:left @5: door leaf 63 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  whiteFarmhouse shell entry:left @5: show.dormers 93 % unhidden (want 50)
+  PASS  whiteFarmhouse shell entry:left @5: show.porch 88 % unhidden (want 50)
+  PASS  whiteFarmhouse shell entry:left @5: approach 2.25 m out (SW), entryPath 3 points clear of the footprint
+  PASS  whiteFarmhouse shell entry:left @4: signpost 3317 px, 69 % unhidden (leaf square-on 1664 px)
+  PASS  whiteFarmhouse shell entry:left @4: show.dormers 94 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:left @4: show.porch 86 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:left @4: approach 2.25 m out (W), entryPath 3 points clear of the footprint
+  PASS  whiteFarmhouse shell entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  whiteFarmhouse shell entry:right: show +Y, door on -X; facings 3 SE (door), 4 E (signpost)
+  PASS  whiteFarmhouse shell entry:right @3: door leaf 78 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  whiteFarmhouse shell entry:right @3: show.dormers 94 % unhidden (want 50)
+  PASS  whiteFarmhouse shell entry:right @3: show.porch 79 % unhidden (want 50)
+  PASS  whiteFarmhouse shell entry:right @3: approach 2.25 m out (SE), entryPath 3 points clear of the footprint
+  PASS  whiteFarmhouse shell entry:right @4: signpost 4189 px, 87 % unhidden (leaf square-on 1664 px)
+  PASS  whiteFarmhouse shell entry:right @4: show.dormers 94 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:right @4: show.porch 91 % unhidden (want 25)
+  PASS  whiteFarmhouse shell entry:right @4: approach 2.25 m out (E), entryPath 3 points clear of the footprint
+  PASS  whiteFarmhouse shell entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  lamps: 20:30 family home - parlour 1, lantern 1
+  PASS  lamps: 23:24 asleep - every room dark
+  PASS  lamps: the game says 'away' - rooms dark, the lantern left burning
+  PASS  lamps: 04:36 fishing household - the kitchen is lit before the boats
+  PASS  lamps: 14:00 - no lamps in daylight
+  PASS  sageCottage shell@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  sageCottage shell@6: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  school shell@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  school shell@6: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  redSaltbox shell@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  redSaltbox shell@6: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  whiteFarmhouse shell@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  whiteFarmhouse shell@6: classic:true is byte-identical to the 2026-09-16 cut
+RESULT: OK - all 128 checks pass
+
+$ node checks/camera-shells.cjs --only "HouseIso {}"
+JOB 1 (houses) - camera-first shells: show face, entry, placement, approach, verbs, lamps
+  PASS  HouseIso {} entry:front: show +X, door on +X; facings 5 SW (door), 6 S (door), 7 SE (door)
+  PASS  HouseIso {} entry:front @5: door leaf 77 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  HouseIso {} entry:front @5: approach 2.20 m out (SW), entryPath 2 points clear of the footprint
+  PASS  HouseIso {} entry:front @6: door leaf 81 % unhidden, 1664 px alone vs 1664 square-on
+  PASS  HouseIso {} entry:front @6: approach 2.20 m out (S), entryPath 2 points clear of the footprint
+  PASS  HouseIso {} entry:front @7: door leaf 77 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  HouseIso {} entry:front @7: approach 2.20 m out (SE), entryPath 2 points clear of the footprint
+  PASS  HouseIso {} entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  HouseIso {} entry:left: show +X, door on -Y; facings 7 SW (door), 6 W (signpost)
+  PASS  HouseIso {} entry:left @7: door leaf 78 % unhidden, 1188 px alone vs 1632 square-on
+  PASS  HouseIso {} entry:left @7: approach 2.25 m out (SW), entryPath 3 points clear of the footprint
+  PASS  HouseIso {} entry:left @6: signpost 3668 px, 90 % unhidden (leaf square-on 1632 px)
+  PASS  HouseIso {} entry:left @6: approach 2.25 m out (W), entryPath 3 points clear of the footprint
+  PASS  HouseIso {} entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  HouseIso {} entry:right: show +X, door on +Y; facings 5 SE (door), 6 E (signpost)
+  PASS  HouseIso {} entry:right @5: door leaf 77 % unhidden, 1188 px alone vs 1632 square-on
+  PASS  HouseIso {} entry:right @5: approach 2.25 m out (SE), entryPath 3 points clear of the footprint
+  PASS  HouseIso {} entry:right @6: signpost 3856 px, 90 % unhidden (leaf square-on 1632 px)
+  PASS  HouseIso {} entry:right @6: approach 2.25 m out (E), entryPath 3 points clear of the footprint
+  PASS  HouseIso {} entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  lamps: 20:30 family home - parlour 1, lantern 1
+  PASS  lamps: 23:24 asleep - every room dark
+  PASS  lamps: the game says 'away' - rooms dark, the lantern left burning
+  PASS  lamps: 04:36 fishing household - the kitchen is lit before the boats
+  PASS  lamps: 14:00 - no lamps in daylight
+  PASS  HouseIso {}@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  HouseIso {}@6: classic:true is byte-identical to the 2026-09-16 cut
+RESULT: OK - all 27 checks pass
+
+$ node checks/camera-shells.cjs --only "PRESETS"
+JOB 1 (houses) - camera-first shells: show face, entry, placement, approach, verbs, lamps
+  PASS  PRESETS.shingleCottage entry:front: show +Y, door on +Y; facings 3 SW (door), 4 S (door), 5 SE (door)
+  PASS  PRESETS.shingleCottage entry:front @3: door leaf 66 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  PRESETS.shingleCottage entry:front @3: show.porch 94 % unhidden (want 50)
+  PASS  PRESETS.shingleCottage entry:front @3: approach 2.25 m out (SW), entryPath 2 points clear of the footprint
+  PASS  PRESETS.shingleCottage entry:front @4: door leaf 94 % unhidden, 1632 px alone vs 1632 square-on
+  PASS  PRESETS.shingleCottage entry:front @4: show.porch 94 % unhidden (want 25)
+  PASS  PRESETS.shingleCottage entry:front @4: approach 2.25 m out (S), entryPath 2 points clear of the footprint
+  PASS  PRESETS.shingleCottage entry:front @5: door leaf 66 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  PRESETS.shingleCottage entry:front @5: show.porch 94 % unhidden (want 25)
+  PASS  PRESETS.shingleCottage entry:front @5: approach 2.25 m out (SE), entryPath 2 points clear of the footprint
+  PASS  PRESETS.shingleCottage entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.shingleCottage entry:left: show +Y, door on +X; facings 5 SW (door), 4 W (signpost)
+  PASS  PRESETS.shingleCottage entry:left @5: door leaf 78 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  PRESETS.shingleCottage entry:left @5: show.porch 94 % unhidden (want 50)
+  PASS  PRESETS.shingleCottage entry:left @5: approach 2.20 m out (SW), entryPath 3 points clear of the footprint
+  PASS  PRESETS.shingleCottage entry:left @4: signpost 4281 px, 89 % unhidden (leaf square-on 1632 px)
+  PASS  PRESETS.shingleCottage entry:left @4: show.porch 94 % unhidden (want 25)
+  PASS  PRESETS.shingleCottage entry:left @4: approach 2.20 m out (W), entryPath 3 points clear of the footprint
+  PASS  PRESETS.shingleCottage entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.shingleCottage entry:right: show +Y, door on -X; facings 3 SE (door), 4 E (signpost)
+  PASS  PRESETS.shingleCottage entry:right @3: door leaf 78 % unhidden, 1186 px alone vs 1632 square-on
+  PASS  PRESETS.shingleCottage entry:right @3: show.porch 94 % unhidden (want 50)
+  PASS  PRESETS.shingleCottage entry:right @3: approach 2.20 m out (SE), entryPath 3 points clear of the footprint
+  PASS  PRESETS.shingleCottage entry:right @4: signpost 4281 px, 89 % unhidden (leaf square-on 1632 px)
+  PASS  PRESETS.shingleCottage entry:right @4: show.porch 94 % unhidden (want 25)
+  PASS  PRESETS.shingleCottage entry:right @4: approach 2.20 m out (E), entryPath 3 points clear of the footprint
+  PASS  PRESETS.shingleCottage entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.whiteFarmhouse entry:front: show +Y, door on +Y; facings 4 S (door), 5 SE (door)
+  PASS  PRESETS.whiteFarmhouse entry:front @4: door leaf 100 % unhidden, 1550 px alone vs 1550 square-on
+  PASS  PRESETS.whiteFarmhouse entry:front @4: show.wing 86 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:front @4: show.dormers 94 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:front @4: show.porch 54 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:front @4: approach 1.50 m out (S), entryPath 2 points clear of the footprint
+  PASS  PRESETS.whiteFarmhouse entry:front @5: door leaf 100 % unhidden, 1107 px alone vs 1550 square-on
+  PASS  PRESETS.whiteFarmhouse entry:front @5: show.wing 82 % unhidden (want 25)
+  PASS  PRESETS.whiteFarmhouse entry:front @5: show.dormers 93 % unhidden (want 25)
+  PASS  PRESETS.whiteFarmhouse entry:front @5: show.porch 58 % unhidden (want 25)
+  PASS  PRESETS.whiteFarmhouse entry:front @5: approach 1.50 m out (SE), entryPath 2 points clear of the footprint
+  PASS  PRESETS.whiteFarmhouse entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.whiteFarmhouse entry:left: show +Y, door on +X; facings 5 SW (door)
+  PASS  PRESETS.whiteFarmhouse entry:left @5: door leaf 63 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  PRESETS.whiteFarmhouse entry:left @5: show.wing 87 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:left @5: show.dormers 93 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:left @5: show.porch 56 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:left @5: approach 2.25 m out (SW), entryPath 3 points clear of the footprint
+  PASS  PRESETS.whiteFarmhouse entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.whiteFarmhouse entry:right: show +Y, door on -X; facings 4 E (signpost)
+  PASS  PRESETS.whiteFarmhouse entry:right @4: signpost 3502 px, 73 % unhidden (leaf square-on 1664 px)
+  PASS  PRESETS.whiteFarmhouse entry:right @4: show.wing 92 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:right @4: show.dormers 94 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:right @4: show.porch 54 % unhidden (want 50)
+  PASS  PRESETS.whiteFarmhouse entry:right @4: approach 2.25 m out (E), entryPath 3 points clear of the footprint
+  PASS  PRESETS.whiteFarmhouse entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.redSaltbox entry:front: show +X, door on +X; facings 5 SW (door), 6 S (door), 7 SE (door)
+  PASS  PRESETS.redSaltbox entry:front @5: door leaf 77 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  PRESETS.redSaltbox entry:front @5: approach 2.20 m out (SW), entryPath 2 points clear of the footprint
+  PASS  PRESETS.redSaltbox entry:front @6: door leaf 81 % unhidden, 1664 px alone vs 1664 square-on
+  PASS  PRESETS.redSaltbox entry:front @6: approach 2.20 m out (S), entryPath 2 points clear of the footprint
+  PASS  PRESETS.redSaltbox entry:front @7: door leaf 77 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  PRESETS.redSaltbox entry:front @7: approach 2.20 m out (SE), entryPath 2 points clear of the footprint
+  PASS  PRESETS.redSaltbox entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  PRESETS.redSaltbox entry:left: show +X, door on -Y; facings 7 SW (door), 6 W (signpost)
+  PASS  PRESETS.redSaltbox entry:left @7: door leaf 78 % unhidden, 1188 px alone vs 1632 square-on
+  PASS  PRESETS.redSaltbox entry:left @7: approach 2.25 m out (SW), entryPath 3 points clear of the footprint
+  PASS  PRESETS.redSaltbox entry:left @6: signpost 3668 px, 90 % unhidden (leaf square-on 1632 px)
+  PASS  PRESETS.redSaltbox entry:left @6: approach 2.25 m out (W), entryPath 3 points clear of the footprint
+  PASS  PRESETS.redSaltbox entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  PRESETS.redSaltbox entry:right: show +X, door on +Y; facings 5 SE (door), 6 E (signpost)
+  PASS  PRESETS.redSaltbox entry:right @5: door leaf 77 % unhidden, 1188 px alone vs 1632 square-on
+  PASS  PRESETS.redSaltbox entry:right @5: approach 2.25 m out (SE), entryPath 3 points clear of the footprint
+  PASS  PRESETS.redSaltbox entry:right @6: signpost 3856 px, 90 % unhidden (leaf square-on 1632 px)
+  PASS  PRESETS.redSaltbox entry:right @6: approach 2.25 m out (E), entryPath 3 points clear of the footprint
+  PASS  PRESETS.redSaltbox entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  PRESETS.gothicRevival entry:front: show +Y, door on +Y; facings 4 S (door), 5 SE (door)
+  PASS  PRESETS.gothicRevival entry:front @4: door leaf 100 % unhidden, 1664 px alone vs 1664 square-on
+  PASS  PRESETS.gothicRevival entry:front @4: show.crossGable 55 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:front @4: show.porch 95 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:front @4: show.bargeboard 53 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:front @4: approach 2.25 m out (S), entryPath 2 points clear of the footprint
+  PASS  PRESETS.gothicRevival entry:front @5: door leaf 99 % unhidden, 1185 px alone vs 1664 square-on
+  PASS  PRESETS.gothicRevival entry:front @5: show.crossGable 80 % unhidden (want 25)
+  PASS  PRESETS.gothicRevival entry:front @5: show.porch 95 % unhidden (want 25)
+  PASS  PRESETS.gothicRevival entry:front @5: show.bargeboard 53 % unhidden (want 25)
+  PASS  PRESETS.gothicRevival entry:front @5: approach 2.25 m out (SE), entryPath 2 points clear of the footprint
+  PASS  PRESETS.gothicRevival entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.gothicRevival entry:left: show +Y, door on +X; facings 5 SW (door), 4 W (signpost)
+  PASS  PRESETS.gothicRevival entry:left @5: door leaf 77 % unhidden, 1187 px alone vs 1632 square-on
+  PASS  PRESETS.gothicRevival entry:left @5: show.crossGable 80 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:left @5: show.porch 95 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:left @5: show.bargeboard 53 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:left @5: approach 2.20 m out (SW), entryPath 3 points clear of the footprint
+  PASS  PRESETS.gothicRevival entry:left @4: signpost 4477 px, 93 % unhidden (leaf square-on 1632 px)
+  PASS  PRESETS.gothicRevival entry:left @4: show.crossGable 50 % unhidden (want 25)
+  PASS  PRESETS.gothicRevival entry:left @4: show.porch 95 % unhidden (want 25)
+  PASS  PRESETS.gothicRevival entry:left @4: show.bargeboard 53 % unhidden (want 25)
+  PASS  PRESETS.gothicRevival entry:left @4: approach 2.20 m out (W), entryPath 3 points clear of the footprint
+  PASS  PRESETS.gothicRevival entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.gothicRevival entry:right: show +Y, door on -X; facings 4 E (signpost)
+  PASS  PRESETS.gothicRevival entry:right @4: signpost 4477 px, 93 % unhidden (leaf square-on 1632 px)
+  PASS  PRESETS.gothicRevival entry:right @4: show.crossGable 54 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:right @4: show.porch 95 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:right @4: show.bargeboard 53 % unhidden (want 50)
+  PASS  PRESETS.gothicRevival entry:right @4: approach 2.20 m out (E), entryPath 3 points clear of the footprint
+  PASS  PRESETS.gothicRevival entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93, porchBench/bench@0.8 fit and are reachable
+  PASS  PRESETS.dormerCape entry:front: show +X, door on +X; facings 5 SW (door), 6 S (door), 7 SE (door)
+  PASS  PRESETS.dormerCape entry:front @5: door leaf 63 % unhidden, 1135 px alone vs 1664 square-on
+  PASS  PRESETS.dormerCape entry:front @5: show.dormers 91 % unhidden (want 50)
+  PASS  PRESETS.dormerCape entry:front @5: show.bargeboard 54 % unhidden (want 50)
+  PASS  PRESETS.dormerCape entry:front @5: approach 2.20 m out (SW), entryPath 2 points clear of the footprint
+  PASS  PRESETS.dormerCape entry:front @6: door leaf 68 % unhidden, 1664 px alone vs 1664 square-on
+  PASS  PRESETS.dormerCape entry:front @6: show.dormers 93 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:front @6: show.bargeboard 100 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:front @6: approach 2.20 m out (S), entryPath 2 points clear of the footprint
+  PASS  PRESETS.dormerCape entry:front @7: door leaf 63 % unhidden, 1135 px alone vs 1664 square-on
+  PASS  PRESETS.dormerCape entry:front @7: show.dormers 91 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:front @7: show.bargeboard 54 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:front @7: approach 2.20 m out (SE), entryPath 2 points clear of the footprint
+  PASS  PRESETS.dormerCape entry:front: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  PRESETS.dormerCape entry:left: show +X, door on -Y; facings 7 SW (door), 6 W (signpost)
+  PASS  PRESETS.dormerCape entry:left @7: door leaf 78 % unhidden, 1187 px alone vs 1664 square-on
+  PASS  PRESETS.dormerCape entry:left @7: show.dormers 91 % unhidden (want 50)
+  PASS  PRESETS.dormerCape entry:left @7: show.bargeboard 54 % unhidden (want 50)
+  PASS  PRESETS.dormerCape entry:left @7: approach 2.20 m out (SW), entryPath 3 points clear of the footprint
+  PASS  PRESETS.dormerCape entry:left @6: signpost 3747 px, 92 % unhidden (leaf square-on 1664 px)
+  PASS  PRESETS.dormerCape entry:left @6: show.dormers 93 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:left @6: show.bargeboard 100 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:left @6: approach 2.20 m out (W), entryPath 3 points clear of the footprint
+  PASS  PRESETS.dormerCape entry:left: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  PRESETS.dormerCape entry:right: show +X, door on +Y; facings 5 SE (door), 6 E (signpost)
+  PASS  PRESETS.dormerCape entry:right @5: door leaf 77 % unhidden, 1187 px alone vs 1664 square-on
+  PASS  PRESETS.dormerCape entry:right @5: show.dormers 91 % unhidden (want 50)
+  PASS  PRESETS.dormerCape entry:right @5: show.bargeboard 54 % unhidden (want 50)
+  PASS  PRESETS.dormerCape entry:right @5: approach 2.20 m out (SE), entryPath 3 points clear of the footprint
+  PASS  PRESETS.dormerCape entry:right @6: signpost 3947 px, 92 % unhidden (leaf square-on 1664 px)
+  PASS  PRESETS.dormerCape entry:right @6: show.dormers 93 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:right @6: show.bargeboard 100 % unhidden (want 25)
+  PASS  PRESETS.dormerCape entry:right @6: approach 2.20 m out (E), entryPath 3 points clear of the footprint
+  PASS  PRESETS.dormerCape entry:right: v9.2 stations door/walk, doorstep/reach@0.95, woodpile/lift@0.8, rainBarrel/lift@0.93 fit and are reachable
+  PASS  lamps: 20:30 family home - parlour 1, lantern 1
+  PASS  lamps: 23:24 asleep - every room dark
+  PASS  lamps: the game says 'away' - rooms dark, the lantern left burning
+  PASS  lamps: 04:36 fishing household - the kitchen is lit before the boats
+  PASS  lamps: 14:00 - no lamps in daylight
+  PASS  PRESETS.shingleCottage@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.shingleCottage@6: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.whiteFarmhouse@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.whiteFarmhouse@6: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.redSaltbox@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.redSaltbox@6: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.gothicRevival@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.gothicRevival@6: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.dormerCape@4: classic:true is byte-identical to the 2026-09-16 cut
+  PASS  PRESETS.dormerCape@6: classic:true is byte-identical to the 2026-09-16 cut
+RESULT: OK - all 153 checks pass

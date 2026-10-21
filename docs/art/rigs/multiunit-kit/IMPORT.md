@@ -487,6 +487,8 @@ packages (below). The rig was replaced in place, so the path each names still re
 
 ### The scene-export packages
 
+The scene exporter was retired on 2026-09-27 (`tools/scene-export/README.md`); this section records what was true then.
+
 `StPeters.scene.json` pins the prop rig's sha256, and `MANIFEST.json` pins the sha256 of each package. Both files in
 this change are what the exporter writes: `hh_scene_export.py --check` (`tools/scene-export/README.md`:14) reports
 `up to date (3 files)`. `pkgdiff.py` (§11) compares them with `main` leaf by leaf. A leaf may differ only if it pins
@@ -524,6 +526,8 @@ Its merge base with `main` is `5f691b43`. From there it changes 44 files, and 4 
 `.gitattributes`, `docs/art/rigs/interiorPropRig.js`, `tools/scene-export/packages/MANIFEST.json`,
 `tools/scene-export/packages/StPeters.scene.json`. Both change the two packages, and #853's differ from this change's,
 so whichever of the two merges second needs its packages regenerated on top of the first.
+
+Since the scene exporter's retirement on 2026-09-27, neither PR regenerates packages.
 
 ## 9. Not in this change
 

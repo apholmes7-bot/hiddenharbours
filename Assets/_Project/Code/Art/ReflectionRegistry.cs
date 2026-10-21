@@ -64,6 +64,28 @@ namespace HiddenHarbours.Art
         /// cheap gate — 0 means the pass is never enqueued.</summary>
         public static int Count => s_Live.Count;
 
+        internal static Texture2D ClearFallback
+        {
+            get { EnsureFallbackBound(); return s_ClearFallback; }
+        }
+
+        internal static void BindIdle()
+        {
+            EnsureFallbackBound();
+            Shader.SetGlobalTexture(ReflectionShaderIds.ReflectTex, s_ClearFallback);
+        }
+
+        internal static int NonHullCount
+        {
+            get
+            {
+                int count = 0;
+                for (int i = 0; i < s_Live.Count; i++)
+                    if (s_Live[i] != null && s_Live[i].GetComponentInParent<IsoFacetHullRenderer>() == null) count++;
+                return count;
+            }
+        }
+
         internal static void Register(ReflectiveObject reflector)
         {
             if (reflector == null || s_Live.Contains(reflector)) return;

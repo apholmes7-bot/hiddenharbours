@@ -25,6 +25,12 @@ namespace HiddenHarbours.Core
         /// length ruling, not a regression.</para></summary>
         public const float DefaultSecondsPerDay = 1800f;
 
+        /// <summary>The canon season length (vision-and-pillars §5.8, 28 days) — the fallback for a
+        /// consumer that reads the calendar with no config wired, the sibling of
+        /// <see cref="DefaultSecondsPerDay"/>. The tree snow reads the season length through
+        /// <c>GameServices.DaysPerSeason</c>, so a literal 28 there would be a second copy.</summary>
+        public const int DefaultDaysPerSeason = 28;
+
         /// <summary>The ruled default for <see cref="InteriorRockScale"/> (ADR 0038 proposal 1) — read
         /// by <c>GameServices.InteriorRockScale</c> when no config is wired, so a test rig and a scene
         /// with no GameConfig draw the same cabin the shipped asset does.</summary>
@@ -103,7 +109,7 @@ namespace HiddenHarbours.Core
                  "rot, routines, the moon — because they are all clocked in in-game hours.")]
         public float SecondsPerDay = DefaultSecondsPerDay;
         [Min(1)] public int DaysPerWeek = 7;
-        [Min(1)] public int DaysPerSeason = 28;
+        [Min(1)] public int DaysPerSeason = DefaultDaysPerSeason;
         [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
         public int MarketDayIndex = 4; // Friday
 
@@ -253,6 +259,17 @@ namespace HiddenHarbours.Core
                  "surface-bolted ride bit-for-bit; that is the A/B.")]
         public HullWeightSettings HullWeight = HullWeightSettings.Default;
 
+        [Header("Hull trim (the bow answers her speed — owner 2026-09-21)")]
+        [Tooltip("World-wide policy for how a hull TRIMS (owner 2026-09-21: \"Also i want trim " +
+                 "added to the boats depending on speed and deacceleration\"). Her bow rises as she " +
+                 "climbs her own bow wave toward hull speed (HumpFroude), a planing hull settles once " +
+                 "she is over it (PlaningFroude), the bow squats up when the throttle opens and dips " +
+                 "briefly when she slows. How MUCH is per hull — each BoatHullDef's Trim* fields; this " +
+                 "block holds where the hump sits and the limits and lag a hull that authors none " +
+                 "inherits. Enabled off (or a hull whose Trim* values are all 0) draws her pitch " +
+                 "exactly as before trim existed; that is the A/B.")]
+        public HullTrimSettings HullTrim = HullTrimSettings.Default;
+
         [Header("Ground tackle (dropping the hook)")]
         [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
                  "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +
@@ -274,10 +291,7 @@ namespace HiddenHarbours.Core
                  "prevent.")]
         public WaveFieldSettings WaveField = WaveFieldSettings.Default;
 
-        [Tooltip("The presentation smoother shared by every LOOK consumer (ADR 0018 addendum): how " +
-                 "languidly the train parameters chase the drifting weather, and the glass snap floor " +
-                 "(glass is sacred). The SIM path — seakeeping forces — deliberately does NOT ease; it " +
-                 "reads the pure WaveMath at game time, so gameplay never depends on frame rate.")]
+        [Tooltip("Legacy asset compatibility. The shared sea now uses WaveField's deterministic wind windows; these easing values are inactive.")]
         public WaveFieldAnimatorSettings WaveFieldAnimator = WaveFieldAnimatorSettings.Default;
 
         [Tooltip("WIND FETCH (ADR 0027 #1): how far the wind has blown over open water before it " +
@@ -452,12 +466,13 @@ namespace HiddenHarbours.Core
                  "owner-tunable, no code (rule 6).")]
         public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
 
-        [Header("Boat-UI windows (draggable/resizable instrument cards — 2026-08-07 ruling)")]
-        [Tooltip("The windowed boat UI's chrome sizes and resize/collapse bounds: the hover title " +
-                 "strip every instrument card is dragged by, its two buttons, the corner grip, and " +
-                 "the scale clamps. Presentation only — where a player parks a window is transient " +
-                 "session state, never saved.")]
-        public BoatUiWindowSettings BoatUiWindows = BoatUiWindowSettings.Default;
+        [Header("Helm footprint (the camera answers a full-width helm band — ADR 0050)")]
+        [Tooltip("How the camera answers a helm band that spans the whole width of the screen: the " +
+                 "share of the band's height the boat's place on screen rises by (0.5 = half, the " +
+                 "ruling: the boat sits centred in the sea the band leaves), and how long the move " +
+                 "takes to ease in and out. A card never moves the camera. Presentation only — " +
+                 "never saved.")]
+        public HelmFootprintSettings HelmFootprint = HelmFootprintSettings.Default;
 
         [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
         [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
@@ -520,6 +535,68 @@ namespace HiddenHarbours.Core
                  "and boat and sea stay on the same water, never retuned apart.")]
         public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
 
+        // -----------------------------------------------------------------------------------------
+        //  The floor in the shallows (W4-4; ruling 7 of 2026-10-10, "Shallows: 2B")
+        // -----------------------------------------------------------------------------------------
+        // In clear shallow water the sea draws the ground's own textures inside its opaque composite
+        // (2B; 2A, the splat colours baked into _SeabedTex, stays unbuilt as the mobile-port fallback).
+        // Each step has its own switch, and each switch is an EXACT passthrough when off: today's
+        // pixels, bit for bit. FLAT fields whose code defaults are OFF, so a GameConfig.asset that lags
+        // the code reads false, which is the safe side (the pixel-grid note below says why flat).
+
+        /// <summary>W4-4a's ship default — <b>OFF</b> until its plates are accepted. With it on, the
+        /// ground skips its shading wherever the displaced sea covers it opaquely this frame (the
+        /// coverage <c>IsoFacetHullFeature</c> draws); the sea paints its own bed there, so no pixel
+        /// changes and the terrain's shading under the water is saved.</summary>
+        public const bool DefaultTerrainUnderwaterClip = false;
+
+        [Header("The floor in the shallows (W4-4 — the ground seen through clear water)")]
+        [Tooltip("Skip the ground's shading under the displaced sea? The sea's composite paints its own " +
+                 "bed wherever it covers the ground opaquely, so those ground pixels are never seen: ON " +
+                 "changes no pixel and saves their shading; OFF draws the ground everywhere, as before. " +
+                 "The clip follows the sea's own coverage this frame (still water, swash and hulls " +
+                 "included), never a waterline of the ground's own. Read per camera per frame.")]
+        public bool TerrainUnderwaterClip = DefaultTerrainUnderwaterClip;
+
+        /// <summary>W4-4b's ship default — <b>OFF</b> until its plates are accepted. With it on, wherever the
+        /// sea composites its bed (a region with a seabed bake, under a mood with absorption) the bed is the
+        /// ground's own albedo, drawn by the terrain's include: darkened and blued with depth by the mood's
+        /// own absorption, lit by the caustics and graded, as the painted bed is.</summary>
+        public const bool DefaultShallowsFloor = false;
+
+        [Tooltip("Draw the ground's own textures as the floor of clear shallow water? ON: where the sea " +
+                 "composites its bed, the bed is the ground the terrain draws, wobbling a little with the " +
+                 "surface, darker and bluer with depth by the mood's absorption and lit by the caustics; " +
+                 "murky and stormy moods hide it as they hide the painted bed. OFF: the painted bed, as " +
+                 "before, bit for bit. Desktop only (a mobile build keeps the painted bed). Read every " +
+                 "water tick (~8 Hz).")]
+        public bool ShallowsFloor = DefaultShallowsFloor;
+
+        /// <summary>The floor's bend by default: about 1 − 1/1.33, the turn light takes entering sea water
+        /// from straight above, so a floor point d metres down is seen k × slope × d away.</summary>
+        public const float DefaultShallowsFloorRefraction = 0.25f;
+
+        [Tooltip("How far the surface's tilt moves the floor: a floor point is seen this fraction of " +
+                 "slope × depth away, rounded to whole ground pixels. 0.25 is about light entering sea " +
+                 "water from straight above; 0 holds the floor still under moving water; more " +
+                 "exaggerates the wobble.")]
+        [Range(0f, 1f)]
+        public float ShallowsFloorRefraction = DefaultShallowsFloorRefraction;
+
+        /// <summary>W4-4c's ship default — <b>OFF</b> until its plates are accepted. With it on, a shore plant
+        /// wholly under the live water is drawn by the sea's own composite, over the floor and through the
+        /// same column: darker and bluer with depth by the mood's absorption, bent with the floor, lit by the
+        /// caustics and graded, as the floor beside it is.</summary>
+        public const bool DefaultShallowsSubmergedProps = false;
+
+        [Tooltip("Show the plants under clear shallow water through the water, as the floor is shown? ON: " +
+                 "a plant wholly under the tide is drawn by the sea over the floor, darker and bluer with " +
+                 "depth, wobbling with the floor and lit by the caustics; murky and stormy moods hide it as " +
+                 "they hide the floor. OFF: as before, bit for bit (the sea's bed covers it). Desktop only: " +
+                 "a mobile build's sea never reads it. Ship it with ShallowsFloor, whose bend it shares. " +
+                 "Read per camera per frame, and by each plant on the tide tick.")]
+        public bool ShallowsSubmergedProps = DefaultShallowsSubmergedProps;
+
         /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
         /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
         /// consumers with no config wired (EditMode, a bare test rig) resolve the SAME style the shipped
@@ -536,6 +613,17 @@ namespace HiddenHarbours.Core
                  "Baked SPRITE sheets (buildings, trees, props) still carry drawn keylines until their " +
                  "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
+
+        public const int DefaultHullReflectionMaxHulls = 64;
+        public const int DefaultHullReflectionMaxPackets = 1024;
+        public const int DefaultHullReflectionMaxTriangles = 1000000;
+
+        [Header("Hull mesh reflection (experimental, requires GPU plates)")]
+        public bool HullMeshReflections = false;
+        [Range(1, 2)] public int HullReflectionResolutionDivisor = 1;
+        [Min(1)] public int HullReflectionMaxHulls = DefaultHullReflectionMaxHulls;
+        [Min(1)] public int HullReflectionMaxPackets = DefaultHullReflectionMaxPackets;
+        [Min(1)] public int HullReflectionMaxTriangles = DefaultHullReflectionMaxTriangles;
 
         /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
         /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only
@@ -617,38 +705,130 @@ namespace HiddenHarbours.Core
         public static readonly Color DefaultFoliageSilhouetteTint = new Color(0.94f, 0.90f, 0.82f, 1f);
 
         /// <summary>
+        /// Ship default for <see cref="CharacterBlink"/> — <b>ON</b> (character PR 2a). A rig 9
+        /// figure blinks on its own clock, as the rig's <c>BLINK</c> says: half, shut, half, then
+        /// its clip's own eyes again, every 2.4–6 s, and 15% of blinks followed by a second. Each
+        /// figure's clock is seeded from its own stable identity, so a crowd never blinks together
+        /// and the same figure blinks the same on every run. Nothing the simulation reads comes
+        /// from that seed. OFF: the eyes are the clip's, frame by frame.
+        /// </summary>
+        public const bool DefaultCharacterBlink = true;
+
+        /// <summary>Ship default for <see cref="CharacterHeadLook"/> — <b>ON</b> (character PR 2a):
+        /// a figure turns its neck and head toward what it looks at, as the rig's <c>LOOK</c>
+        /// says (yaw −60..60°, pitch −15..20°, split 0.4 neck / 0.6 head).</summary>
+        public const bool DefaultCharacterHeadLook = true;
+
+        /// <summary>Ship default for <see cref="CharacterEyeLook"/> — <b>ON</b> (character PR 2a):
+        /// past 8° of turn the head leaves undone, the open eyes look left or right
+        /// (<c>eyes.left</c> / <c>eyes.right</c>).</summary>
+        public const bool DefaultCharacterEyeLook = true;
+
+        /// <summary>Ship default for <see cref="CharacterLookRadiusMetres"/>: 5 m on the figure's
+        /// own ground, in the rig's metres.</summary>
+        public const float DefaultCharacterLookRadiusMetres = 5f;
+
+        /// <summary>Ship default for <see cref="CharacterLookTargetHeightMetres"/>: the player's
+        /// head point at rest — rig 10's fisher, <c>head × headMid</c> on idle's first frame, is
+        /// 1.6332 m above the ground in the rig's metres. Retuned from rig 9's 1.31 (1.3135 m) with
+        /// the switch to rig 10 (the rig 10 intake, Phase B; the owner's ruling of 10-02).</summary>
+        public const float DefaultCharacterLookTargetHeightMetres = 1.63f;
+
+        /// <summary>
+        /// Ship default for <see cref="MeshFigureKeyline"/> — <b>ON</b> (character PR 2a): a rig 9
+        /// figure is outlined as the rig outlines it. The ring of pixels just outside her takes
+        /// the rig's keyline ink, <c>#101a19</c>, with 22% of her nearest edge colour mixed in,
+        /// and inside her a pixel across a depth break of more than 0.12 m drops one tone. OFF:
+        /// the figure draws with the hull's rules, as before this PR.
+        /// </summary>
+        public const bool DefaultMeshFigureKeyline = true;
+
+        [Header("Figure life (rig 9: blink, look, the figure's own ink)")]
+        [Tooltip("Let rig 9 figures blink? Each figure keeps its own clock, seeded from who it is, " +
+                 "so a crowd never blinks together. OFF: the eyes are exactly the clip's. Read live.")]
+        public bool CharacterBlink = DefaultCharacterBlink;
+
+        [Tooltip("Let a figure turn its neck and head toward what it looks at (a moored skipper or " +
+                 "a villager toward the player, within the radius below)? The player herself looks " +
+                 "at nothing. OFF: the head is exactly the clip's. Read live.")]
+        public bool CharacterHeadLook = DefaultCharacterHeadLook;
+
+        [Tooltip("Let the eyes finish a look the head leaves undone (eyes.left / eyes.right past 8 " +
+                 "degrees)? OFF: the eyes stay the clip's. Read live.")]
+        public bool CharacterEyeLook = DefaultCharacterEyeLook;
+
+        [Tooltip("How near, in the figure's own metres on its own ground, the player has to be before " +
+                 "a figure looks at her. Read live.")]
+        [Min(0f)]
+        public float CharacterLookRadiusMetres = DefaultCharacterLookRadiusMetres;
+
+        [Tooltip("How high above the player's feet a figure aims its look, in the figure's metres. " +
+                 "1.63 is the player's head at rest.")]
+        [Min(0f)]
+        public float CharacterLookTargetHeightMetres = DefaultCharacterLookTargetHeightMetres;
+
+        [Tooltip("Outline rig 9 figures as the rig does: the ring just outside the figure takes the " +
+                 "keyline ink with a little of the figure's nearest colour mixed in, and a pixel " +
+                 "across a depth break inside the figure drops one tone. The ring goes on EMPTY " +
+                 "pixels only (sea, sky, ground the facet pass does not draw), never over a deck or " +
+                 "hull pixel, so no boat pixel moves. OFF draws the figure with the hull's rules, " +
+                 "exactly as before. Read live.")]
+        public bool MeshFigureKeyline = DefaultMeshFigureKeyline;
+
+        /// <summary>
+        /// Ship default for <see cref="FigurePixelTarget"/> — <b>ON</b>, by the owner's ruling of
+        /// 10-18 (D5: "pixel switch ships on"): the figure pixel look, route 1 of
+        /// <c>docs/design/figure-pixel-target.md</c>. OFF is the picture before the look, byte for
+        /// byte: no figure changes queue, no pass is recorded and no overlay reads the figure target.
+        /// </summary>
+        public const bool DefaultFigurePixelTarget = true;
+
+        /// <summary>
+        /// Ship default for <see cref="FigureHeadingSteps"/> — <b>0, smooth</b>, by the owner's
+        /// ruling of 10-15 (D2: "heading steps built at 0 (smooth)"). 0 turns a figure through
+        /// every angle, exactly as before; N snaps her on-screen facing to N equal compass steps.
+        /// Read only while <see cref="FigurePixelTarget"/> is ON.
+        /// </summary>
+        public const int DefaultFigureHeadingSteps = 0;
+
+        [Header("Figure pixel look (route 1: the figures at the art's own pixel size)")]
+        [Tooltip("Draw the mesh figures at the art's own pixel size: one texel per art pixel " +
+                 "(1/32 m), enlarged with hard edges at the whole zoom steps (x2 and up), so the " +
+                 "player and the cast read like the drawn art and still turn as meshes. Boats are " +
+                 "unchanged. Where a nearer hull or wheelhouse covers a figure, that edge is drawn " +
+                 "at the same art-pixel size. OFF is exactly the picture before the look. Read live.")]
+        public bool FigurePixelTarget = DefaultFigurePixelTarget;
+
+        [Tooltip("With the pixel look ON: how many facings a figure turns through. 0 is smooth " +
+                 "(every angle, the shipped value); 8, 16 or 32 snap her facing on screen to that " +
+                 "many equal compass steps, the way a drawn figure turns. Boats keep turning " +
+                 "smoothly. Read live.")]
+        [Min(0)]
+        public int FigureHeadingSteps = DefaultFigureHeadingSteps;
+
+        /// <summary>
         /// Ship default — <b>ON</b>, by the owner's 2026-09-12 ruling ("ship it on"), taken with
         /// the look debt below written down and accepted: he wants her in play before the shader
         /// pass lands. ON draws her as ONE skinned mesh while she is ABOARD a mesh hull; ashore she
         /// needs <see cref="MeshCharacterAshore"/> as well. OFF is still exactly the sprite, down
         /// to the byte — this stayed a switch, not a fork.
         ///
-        /// <para>The debt the ruling accepts: the mesh is measured 43–57% off the inked art
-        /// (per-material gain alone is 53.61% of that gap) and she carries no face at all,
-        /// because the face is a raster stamp the mesh has no geometry for.</para>
-        ///
-        /// <para>⚠ And the POSE debt, which is the one a playtest finds first: rig 7 baked
-        /// <c>idle</c>, <c>walk</c>, <c>run</c> and <c>balance</c> — no helm clip and no oars
-        /// clip. Walking the deck she is right (<c>balance</c>). At the helm or at the oars
-        /// <c>CharacterSkinStateMap.StateKeyFor</c> asks for the GAIT key before the stance is
-        /// ever consulted, so she draws a standing <c>idle</c> — while the sprite she replaced
-        /// draws a seated helm pose and a rowing pose from FisherIso's own sheets. That is a
-        /// step BACK on those two stances, and <c>FellBackToGait</c> does not flag it, because
-        /// nothing fell back. The fix is an ANIMS row, not a pose invented in the presenter.</para>
+        /// <para>The debt the ruling accepted was rig 7's: a mesh measured 43–57% off the inked art,
+        /// with no face and no helm or oars clip. Rig 9 bakes the cast since the character intake's
+        /// Phase B (2026-09-26), and character PR 2a plays it in full: the face with its blink and
+        /// look, the helm and oars clips through <c>CharacterSkinStateMap</c>, the carry clips, and
+        /// the rig's own ink (<see cref="MeshFigureKeyline"/>).</para>
         /// </summary>
         public const bool DefaultMeshCharacter = true;
 
         [Header("Mesh characters (ADR 0044 d — the skinned player, behind a switch)")]
         [Tooltip("Draw the player as ONE SKINNED MESH through the iso facet pass while she is ABOARD, " +
                  "instead of as a sprite? ON is the shipped look and the default (owner ruling " +
-                 "2026-09-12), and it ships with known debt: the mesh is about half a fidelity " +
-                 "step off the inked art until the shader look pass lands, and she has no eyes, " +
-                 "brows or mouth, because the face is a raster stamp that lives on the sprite and " +
-                 "not in the geometry. Rig 7 baked no helm and no oars clip either, so at the " +
-                 "wheel and at the oars she stands in a plain idle where the sprite sat and " +
-                 "rowed. ASHORE this switch alone does nothing: she draws as a mesh on land only " +
-                 "while Mesh Character Ashore is ON as well, which the shipped config turns ON. " +
-                 "Turn this OFF and the sprite is back exactly, down to the byte, aboard and ashore.")]
+                 "2026-09-12). She is rig 9's figure: her face blinks, she plays the rig's helm, " +
+                 "oars and carry clips, and she is inked as the rig inks her. ASHORE this switch " +
+                 "alone does nothing: she draws as a mesh on land only while Mesh Character Ashore " +
+                 "is ON as well, which the shipped config turns ON. Turn this OFF and the sprite is " +
+                 "back exactly, down to the byte, aboard and ashore.")]
         public bool MeshCharacter = DefaultMeshCharacter;
 
         /// <summary>
@@ -693,24 +873,56 @@ namespace HiddenHarbours.Core
         /// "yes make everyone a mesh now"</b> (ADR 0044, amendment 2026-09-17): the cast follows the
         /// player onto skinned meshes, with the sprite as the fallback for anything that cannot draw.
         ///
-        /// <para>⚠ What ON reaches TODAY is narrower than the ruling, and on purpose (option (b) of the
-        /// same amendment): a cast member draws as a mesh only while standing on a FACET hull — a
-        /// moored boat's skipper — because the facet pass is only recorded while a mesh hull is on
-        /// screen. Villagers ashore are not wired at all and draw their sprites exactly as before.
-        /// A character whose art def names no <see cref="CharacterSkinDef"/>, or whose def lists the
-        /// state it is in nowhere in <see cref="CharacterSkinDef.MeshStates"/>, keeps its sprite
-        /// whatever this says.</para>
+        /// <para>What ON reaches: a moored boat's skipper standing on a FACET hull, and, while
+        /// <see cref="MeshCastAshore"/> is ON as well, every villager on her own feet ashore, under a
+        /// facet id of her own (ADR 0044, amendment 2026-09-27). With Mesh Cast Ashore OFF the
+        /// villagers draw their sprites exactly as before. A character whose art def names no
+        /// <see cref="CharacterSkinDef"/>, or whose def lists the state it is in nowhere in
+        /// <see cref="CharacterSkinDef.MeshStates"/>, keeps its sprite whatever this says.</para>
         /// </summary>
         public const bool DefaultMeshCast = true;
 
         [Tooltip("Draw the CAST (everyone but the player) as skinned meshes through the iso facet " +
                  "pass where they can be drawn that way? ON is the shipped look (owner ruling " +
-                 "2026-09-17). Today that is a moored boat's skipper standing on a mesh hull; " +
-                 "villagers ashore stay sprites, because the facet pass is only recorded while a " +
-                 "mesh hull is on screen. The same debts as the player's switch apply: about half " +
-                 "a fidelity step off the inked art and no eyes, brows or mouth. Read live — flip " +
-                 "it with the game running. Turn it OFF and every cast sprite is back exactly.")]
+                 "2026-09-17). That is a moored boat's skipper standing on a mesh hull and, while " +
+                 "Mesh Cast Ashore is ON too, every villager on her own feet ashore. A rig 9 figure " +
+                 "plays the rig's face, blink and look, and is inked as the rig inks (the figure " +
+                 "life switches above). Read live — flip it with the game running. Turn it OFF and " +
+                 "every cast sprite is back exactly.")]
         public bool MeshCast = DefaultMeshCast;
+
+        /// <summary>
+        /// Code default for <see cref="MeshCastAshore"/>: <b>OFF</b>. The shipped
+        /// <c>GameConfig.asset</c> turns it <b>ON</b>, by the owner's ruling of 2026-09-27
+        /// (decision 1: ON once the plates are accepted, OFF one switch away). A config built fresh
+        /// in code still starts OFF.
+        ///
+        /// <para>ON, and only while <see cref="MeshCast"/> is ON too, draws every VILLAGER on her own
+        /// feet ashore as her skinned mesh, through the facet pass under a facet id of her own (ADR
+        /// 0044, amendment 2026-09-27; the ashore frame is #861's, as the player's). She faces where
+        /// her sprite faces, sorts exactly as her sprite, and her idle is moved off her neighbours' by
+        /// her NpcDef id. Sheltered indoors she is hidden in both pictures and keeps her id. A clip or
+        /// work animation that suspends her sprite, or a state her skin does not mesh, hands the draw
+        /// back to her sprite.</para>
+        ///
+        /// <para>When the region has used every facet id she is refused one: she keeps her WHOLE
+        /// sprite and the id registry logs its one warning for that ask. She asks again only when a
+        /// switch is turned off and on again or she is enabled again, never per frame. Once granted,
+        /// she keeps her id while both switches stay on.</para>
+        ///
+        /// <para>OFF: every villager's sprite, byte for byte as before this switch existed — no ashore
+        /// figure built, no id taken, the sprite untouched.</para>
+        /// </summary>
+        public const bool DefaultMeshCastAshore = false;
+
+        [Tooltip("Draw the VILLAGERS as their skinned meshes ashore? Needs Mesh Cast ON too. ON in " +
+                 "the shipped config (owner ruling 2026-09-27, on the plates), OFF in a fresh one. " +
+                 "A villager is the mesh while she is out on her own feet: indoors she is hidden in " +
+                 "both pictures, and a clip or a state her skin does not mesh hands her back to the " +
+                 "sprite. When the region has run out of facet ids she keeps her whole sprite and " +
+                 "does not ask again until a switch is turned off and on. Read live. Turn it OFF and " +
+                 "every villager's sprite is back exactly, down to the byte.")]
+        public bool MeshCastAshore = DefaultMeshCastAshore;
 
         [Header("Foliage silhouette (the fisher read through dense woods)")]
         [Tooltip("Let the player read through foliage that draws in front of her? ON is the shipped " +
@@ -729,6 +941,12 @@ namespace HiddenHarbours.Core
                  "— the foliage skips the lookup entirely), 1 is a flat opaque cutout of her shape " +
                  "with no leaf detail left in it. 0.55 is the shipped read.")]
         public float FoliageSilhouetteStrength = DefaultFoliageSilhouetteStrength;
+
+        [Header("Foliage snow (tree snow by the calendar, recomputed and never saved)")]
+        [Tooltip("When the snow comes to the trees and when it leaves, in days of the calendar. The trees " +
+                 "wear the cover for the day the clock is on; nothing about it is saved, so a load shows " +
+                 "that day's snow. Ground, roof and shrub snow are later work and are not driven by this yet.")]
+        public FoliageSnowSettings FoliageSnow = FoliageSnowSettings.Default;
 
         [Header("Depth drop (Rod Fishing v2 — the weighted rig's fall + the slack bottom tell)")]
         [Tooltip("The depth-fishing game's tunables (drop a weighted rig, count the fall, feel the floor): " +
@@ -978,30 +1196,25 @@ namespace HiddenHarbours.Core
     /// <summary>
     /// Owner tuning for the <b>helm instrument overlay</b> (<see cref="GameConfig.HelmOverlay"/>) — the
     /// screen-space card that shows the active hull's diegetic control (the tiller or the binnacle
-    /// lever, ADR 0025 S1) while piloting a motorised hull. Placement, the click-to-FOCUS enlargement
-    /// (owner addition 2026-08-03: clicking an instrument brings it to a bigger state where its controls
-    /// are properly clickable; Esc/click-away returns), and the pointer-mapping radii all live here so
-    /// the whole feel is dialled in the Inspector with no code (rule 6). Presentation preferences only —
-    /// never sim state, never saved (rule 5).
+    /// lever, ADR 0025 S1) while piloting a motorised hull. Placement and the pointer-mapping radii
+    /// live here so the whole feel is dialled in the Inspector with no code (rule 6). Presentation
+    /// preferences only — never sim state, never saved (rule 5).
+    ///
+    /// <para>The card's FOCUS state and the composed dash's two scales retired with the dash card
+    /// (H2): a wheel helm is its band, which takes its size from the screen, and the tiller's and the
+    /// lone lever's controls are live on the one card.</para>
     /// </summary>
     [System.Serializable]
     public struct HelmOverlaySettings
     {
-        [Tooltip("Scale of the small dash-card state (screen pixels per rig pixel). 1 = native rig size.")]
+        [Tooltip("Scale of the small card in HUD reference pixels per rig pixel. 1 = native at 1280x720.")]
         [Min(0.1f)] public float SmallScale;
-
-        [Tooltip("Scale of the FOCUSED state (click the instrument to enlarge; Esc/click-away returns). " +
-                 "Bigger = controls easier to hit; the rig's hit geometry scales with it.")]
-        [Min(0.1f)] public float FocusScale;
 
         [Tooltip("Where the SMALL card centres horizontally, as a 0..1 fraction of screen width. " +
                  "0.5 = bottom-centre (the owner's placement ruling, 2026-08-03).")]
         [Range(0f, 1f)] public float SmallCenterX01;
 
-        [Tooltip("Where the FOCUSED card centres horizontally, as a 0..1 fraction of screen width.")]
-        [Range(0f, 1f)] public float FocusCenterX01;
-
-        [Tooltip("Margin (px) from the screen's bottom edge — BOTH states anchor to the bottom of the " +
+        [Tooltip("Margin (HUD reference px) from the screen's bottom edge — the card anchors to the bottom of the " +
                  "screen (the helm rises from the dash).")]
         [Min(0f)] public float MarginY;
 
@@ -1013,27 +1226,15 @@ namespace HiddenHarbours.Core
                  "drive across its FULL range (up = ahead). Smaller = twitchier.")]
         [Min(1f)] public float TillerDragFullDrivePx;
 
-        [Tooltip("Scale of the COMPOSED DASH's small state (S2a — the 600×510 console/sport card is " +
-                 "far bigger than a lone instrument, so it gets its own dial). 0.5 = half rig size.")]
-        [Min(0.1f)] public float DashSmallScale;
-
-        [Tooltip("Scale of the composed dash's FOCUSED state. Clamped at runtime so the card always " +
-                 "fits the screen.")]
-        [Min(0.1f)] public float DashFocusScale;
-
-        /// <summary>Native-size card CENTRED AT THE BOTTOM (the owner's 2026-08-03 placement ruling),
-        /// 2× focus rising from the same bottom-centre anchor.</summary>
+        /// <summary>Native-size card CENTRED AT THE BOTTOM (the owner's 2026-08-03 placement
+        /// ruling).</summary>
         public static HelmOverlaySettings Default => new HelmOverlaySettings
         {
             SmallScale = 1f,
-            FocusScale = 2f,
             SmallCenterX01 = 0.5f,
-            FocusCenterX01 = 0.5f,
             MarginY = 16f,
             GrabRadiusPx = 30f,
             TillerDragFullDrivePx = 140f,
-            DashSmallScale = 0.5f,
-            DashFocusScale = 1.5f,
         };
     }
 
@@ -1088,53 +1289,31 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
-    /// Owner tuning for the <b>boat-UI windows</b> (<see cref="GameConfig.BoatUiWindows"/> — the
-    /// 2026-08-07 windowing ruling: every instrument card draggable, resizable, collapsible, plus the
-    /// one hide-all input). The chrome's strip/button/grip sizes and the resize/collapse scale bounds
-    /// live here so the whole feel is dialled in the Inspector with no code (rule 6). Presentation
-    /// preferences only — where a player parks a window is transient session state (rule 5), never
-    /// saved, and never stored here.
+    /// Owner tuning for how the <b>camera answers the helm's footprint</b>
+    /// (<see cref="GameConfig.HelmFootprint"/> — ADR 0050). While the helm's UI covers a band across the
+    /// whole width of the screen (<see cref="HelmFootprint"/>), the boat's place on screen eases up by
+    /// <see cref="CameraBandShare"/> of the band's height, so the sea the band leaves is centred on the
+    /// boat. A card never moves the camera, and nothing covered means no move at all.
     ///
-    /// <para><b>The size floor is about grabbability, not legibility.</b> Resizing a window only
-    /// re-targets the destination rect of the instrument's ONE native raster (the letterbox
-    /// contract) — no rig is ever re-rendered small, so no font law is in play at any size. MinScale
-    /// simply keeps a window big enough to grab back.</para>
+    /// <para>Presentation only (rule 5): recomputed every frame, never saved.</para>
     /// </summary>
     [System.Serializable]
-    public struct BoatUiWindowSettings
+    public struct HelmFootprintSettings
     {
-        [Tooltip("Height (screen px) of the window title strip that appears on hover above each " +
-                 "boat-UI card — the grab handle for dragging.")]
-        [Min(0f)] public float TitleBarPx;
+        [Tooltip("The share of a full-width helm band's height the boat's place on screen rises by. " +
+                 "0.5 (the ruling) centres the boat in the sea above the band; 0 turns the move off.")]
+        [Range(0f, 1f)] public float CameraBandShare;
 
-        [Tooltip("Width (screen px) of the two strip buttons (collapse tier, hide).")]
-        [Min(0f)] public float ChromeButtonPx;
+        [Tooltip("Seconds the camera takes to ease the boat up when a full-width band comes up, and " +
+                 "back down when it goes. 0 = at once.")]
+        [Min(0f)] public float CameraEaseSeconds;
 
-        [Tooltip("Size (screen px) of the corner resize grip inside the card's bottom-right.")]
-        [Min(0f)] public float GripPx;
-
-        [Tooltip("The COMPACT collapse tier's scale multiplier on the window's Full size — the " +
-                 "glance-sized middle tier between Full and the bare title bar.")]
-        [Range(0.1f, 1f)] public float CompactScale;
-
-        [Tooltip("Floor on the per-window resize multiplier. Grabbability, not legibility — the " +
-                 "raster is never re-rendered, only re-targeted.")]
-        [Min(0.05f)] public float MinScale;
-
-        [Tooltip("Ceiling on the per-window resize multiplier (the window still clamps to the " +
-                 "screen and under the HUD band whatever this says).")]
-        [Min(0.1f)] public float MaxScale;
-
-        /// <summary>An 18 px strip with 22 px buttons and a 14 px grip; Compact at 55% of Full;
-        /// resize clamped 0.35×–3× of the dialled base size.</summary>
-        public static BoatUiWindowSettings Default => new BoatUiWindowSettings
+        /// <summary>Half the band (the ruling), eased over 0.4 s — the camera's own framing-tween
+        /// time, so the two moves read as one hand on the camera.</summary>
+        public static HelmFootprintSettings Default => new HelmFootprintSettings
         {
-            TitleBarPx = 18f,
-            ChromeButtonPx = 22f,
-            GripPx = 14f,
-            CompactScale = 0.55f,
-            MinScale = 0.35f,
-            MaxScale = 3f,
+            CameraBandShare = 0.5f,
+            CameraEaseSeconds = 0.4f,
         };
     }
 
@@ -1148,10 +1327,8 @@ namespace HiddenHarbours.Core
     /// one shared height map (<see cref="DepthSounder.DisplayDepth"/>, rule 5). These are the instrument's
     /// dials, not the sea's.</para>
     ///
-    /// <para><b>Why the card placement lives here and not in <see cref="HelmOverlaySettings"/>:</b> the
-    /// sounder is a SECOND card that can be on screen beside the piloting control, so it needs its own
-    /// corner and its own scale. Keeping them separate also means the owner can move one without moving
-    /// the other.</para>
+    /// <para>No card placement lives here any more: since H2 the sounder's place on the helm is its
+    /// housing in the band, and its raised card is placed by the one rule every instrument shares.</para>
     /// </summary>
     [System.Serializable]
     public struct DepthSounderSettings
@@ -1192,34 +1369,8 @@ namespace HiddenHarbours.Core
                  "the PR that shipped it.")]
         public float PlaceholderWaterTempC;
 
-        [Tooltip("⚠ FALLBACK ONLY since S4.5. Scale of the loose small card (screen px per rig px, " +
-                 "1 = native). The sounder now draws FLUSH in the dash's own brow mount by default, " +
-                 "sized by that authored cutout, so this is only reached when there is no dash on " +
-                 "screen to mount into.")]
-        [Min(0.1f)] public float CardScale;
-
-        [Tooltip("Scale of the EXPANDED state (click the flush sounder to blow it up; Esc/click-away " +
-                 "returns it to the dash). Bigger = the three pushers are easier to hit; the rig's hit " +
-                 "geometry scales with it. This one is very much live — it is the state you read the " +
-                 "instrument in.")]
-        [Min(0.1f)] public float FocusScale;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's RIGHT edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginX;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's TOP edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginY;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen width.")]
-        [Range(0f, 1f)] public float FocusCenterX01;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen height.")]
-        [Range(0f, 1f)] public float FocusCenterY01;
-
         /// <summary>A 4 Hz sounding, armed at 3 m with ±0.5 m pushers (the rig's own defaults), a 2 Hz
-        /// flash, metres, and a native-size card in the top-right with a 2× focused state.</summary>
+        /// flash, and metres.</summary>
         public static DepthSounderSettings Default => new DepthSounderSettings
         {
             ReadIntervalSec = 0.25f,
@@ -1231,12 +1382,6 @@ namespace HiddenHarbours.Core
             MaxAlarmMetres = 20f,
             AlarmBlinkHz = 2f,
             PlaceholderWaterTempC = 12f,
-            CardScale = 1f,
-            FocusScale = 2f,
-            MarginX = 24f,
-            MarginY = 16f,
-            FocusCenterX01 = 0.5f,
-            FocusCenterY01 = 0.5f,
         };
     }
 
@@ -1250,8 +1395,8 @@ namespace HiddenHarbours.Core
     /// safety-critical number rather than a taste one: at zero the contour is Inf/NaN, not small. Naming it
     /// here, once, is what lets the save migration heal an old row and the UI draw a fresh one from the SAME
     /// value (rule 6 — the number is data, never a literal in two places). The rest of the finder's tuning
-    /// — card placement, scan cadence, mark sizing and the placeholder strip — joined it in the UI slice
-    /// (S3b) and is documented field by field below.</para>
+    /// — scan cadence, mark sizing and the placeholder strip — joined it in the UI slice (S3b) and is
+    /// documented field by field below; its card placement retired with the band (H2).</para>
     ///
     /// <para><b><see cref="WaterfallHz"/> is the perf knob, not a taste one.</b> The rig's scan phase
     /// free-runs, and its <c>sonarView</c> is O(width) in <c>fillRect</c> spans plus a whole-texture
@@ -1297,33 +1442,6 @@ namespace HiddenHarbours.Core
                  "and the range, it is a look-at-it-now toggle, not a setting a fisherman expects to find " +
                  "tomorrow.")]
         public bool DefaultFishId;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5. Scale of the loose small card, as a fraction of the rig's " +
-                 "native 480x660 (the surface is always native and the card is a scaled blit of it). " +
-                 "The finder now draws FLUSH in the dash's authored brow mount by default, sized by " +
-                 "that cutout, so this is only reached when there is no dash on screen to mount into.")]
-        [Range(0.2f, 2f)] public float CardScale;
-
-        [Tooltip("Scale of the EXPANDED state (click the flush finder to blow it up; Esc/click-away " +
-                 "returns it to the dash), as a fraction of the rig's native 480x660. Bigger = the " +
-                 "pushers are easier to hit; the rig's hit geometry scales with it. This is the state " +
-                 "the instrument is actually READ in — below ~83% of native its typography breaks " +
-                 "down, so keep it at or above 1.")]
-        [Range(0.2f, 2f)] public float FocusScale;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's RIGHT edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginX;
-
-        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's TOP edge " +
-                 "to the loose small card.")]
-        [Min(0f)] public float MarginY;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen width.")]
-        [Range(0f, 1f)] public float FocusCenterX01;
-
-        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen height.")]
-        [Range(0f, 1f)] public float FocusCenterY01;
 
         [Tooltip("Fish-mark size (the rig's own 'size' multiplier, ~0.5-2.5) for a school you are only " +
                  "clipping the EDGE of — signal strength 0. Small marks read as a weak return.")]
@@ -1375,19 +1493,12 @@ namespace HiddenHarbours.Core
         /// placeholders exactly as <c>fishRig.js:320-321</c> states them (sens 0.75, link on, batt 0.8,
         /// 4.0 V) — so the shipped glass looks like the art director's preview until real models exist.
         /// A 4 Hz scan (measured at ~4.8 ms a repaint, so ~19 ms of every second — and a multiple of
-        /// 2× the 2 Hz alarm blink, so the flash costs nothing extra), a half-size card in the top-right,
-        /// and a native-size focused state.</summary>
+        /// 2× the 2 Hz alarm blink, so the flash costs nothing extra).</summary>
         public static FishFinderSettings Default => new FishFinderSettings
         {
             DefaultRangeMetres = 20f,
             WaterfallHz = 4f,
             DefaultFishId = true,
-            CardScale = 0.5f,
-            FocusScale = 1f,
-            MarginX = 24f,
-            MarginY = 16f,
-            FocusCenterX01 = 0.5f,
-            FocusCenterY01 = 0.5f,
             MarkSizeMin = 0.7f,
             MarkSizeMax = 1.6f,
             MarkSizeJitter01 = 0.25f,

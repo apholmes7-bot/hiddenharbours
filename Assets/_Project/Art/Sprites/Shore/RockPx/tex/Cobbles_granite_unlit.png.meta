@@ -1,0 +1,841 @@
+fileFormatVersion: 2
+guid: 9f6ed77c9f3ed014ebc56eedb72ff4ee
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 9025036574624451965
+    second: Cobbles_granite_unlit_0
+  - first:
+      213: 7651955488699339946
+    second: Cobbles_granite_unlit_1
+  - first:
+      213: -5606375927088252146
+    second: Cobbles_granite_unlit_2
+  - first:
+      213: -3600747662025205712
+    second: Cobbles_granite_unlit_3
+  - first:
+      213: 6752085980530661612
+    second: Cobbles_granite_unlit_4
+  - first:
+      213: 4933437521055448178
+    second: Cobbles_granite_unlit_5
+  - first:
+      213: 5178506161111634165
+    second: Cobbles_granite_unlit_6
+  - first:
+      213: -3135727291229203710
+    second: Cobbles_granite_unlit_7
+  - first:
+      213: 880662524676171435
+    second: Cobbles_granite_unlit_8
+  - first:
+      213: 7200458726621197203
+    second: Cobbles_granite_unlit_9
+  - first:
+      213: 7443909320724427406
+    second: Cobbles_granite_unlit_10
+  - first:
+      213: -1577612745333187440
+    second: Cobbles_granite_unlit_11
+  - first:
+      213: 507510686392825023
+    second: Cobbles_granite_unlit_12
+  - first:
+      213: 673697592503016481
+    second: Cobbles_granite_unlit_13
+  - first:
+      213: -2266074594404758804
+    second: Cobbles_granite_unlit_14
+  - first:
+      213: -4142407227606067287
+    second: Cobbles_granite_unlit_15
+  - first:
+      213: -2937183023652601813
+    second: Cobbles_granite_unlit_16
+  - first:
+      213: -9052221898271196684
+    second: Cobbles_granite_unlit_17
+  - first:
+      213: 81175949540206156
+    second: Cobbles_granite_unlit_18
+  - first:
+      213: 2401136446264893485
+    second: Cobbles_granite_unlit_19
+  - first:
+      213: 3031887509051541277
+    second: Cobbles_granite_unlit_20
+  - first:
+      213: 5328336708811920585
+    second: Cobbles_granite_unlit_21
+  - first:
+      213: -4234086457554862893
+    second: Cobbles_granite_unlit_22
+  - first:
+      213: -1590737700182765452
+    second: Cobbles_granite_unlit_23
+  - first:
+      213: -6539201674457935391
+    second: Cobbles_granite_unlit_24
+  - first:
+      213: -7238524859582549079
+    second: Cobbles_granite_unlit_25
+  - first:
+      213: 2666822840179293512
+    second: Cobbles_granite_unlit_26
+  - first:
+      213: -8614640809176267170
+    second: Cobbles_granite_unlit_27
+  - first:
+      213: -3203613791541830653
+    second: Cobbles_granite_unlit_28
+  - first:
+      213: 8548668074418180671
+    second: Cobbles_granite_unlit_29
+  - first:
+      213: -3803993482273239444
+    second: Cobbles_granite_unlit_30
+  - first:
+      213: 452664813929529912
+    second: Cobbles_granite_unlit_31
+  - first:
+      213: 8158231536146528906
+    second: Cobbles_granite_unlit_32
+  - first:
+      213: -2120467634585233053
+    second: Cobbles_granite_unlit_33
+  - first:
+      213: 8587901486140238963
+    second: Cobbles_granite_unlit_34
+  - first:
+      213: 6110913823879134395
+    second: Cobbles_granite_unlit_35
+  - first:
+      213: 1732515094613219133
+    second: Cobbles_granite_unlit_36
+  - first:
+      213: 919601539273790767
+    second: Cobbles_granite_unlit_37
+  - first:
+      213: 6737479775359415642
+    second: Cobbles_granite_unlit_38
+  - first:
+      213: -6078172013305934451
+    second: Cobbles_granite_unlit_39
+  - first:
+      213: -3089507261703087087
+    second: Cobbles_granite_unlit_40
+  - first:
+      213: 5064535246518741921
+    second: Cobbles_granite_unlit_41
+  - first:
+      213: 5775200530286097224
+    second: Cobbles_granite_unlit_42
+  - first:
+      213: -268037366574384349
+    second: Cobbles_granite_unlit_43
+  - first:
+      213: -8456696973614816466
+    second: Cobbles_granite_unlit_44
+  - first:
+      213: 1107018582038487881
+    second: Cobbles_granite_unlit_45
+  - first:
+      213: 5860475105193985993
+    second: Cobbles_granite_unlit_46
+  - first:
+      213: -5803510498947480194
+    second: Cobbles_granite_unlit_47
+  - first:
+      213: -3654867255844787367
+    second: Cobbles_granite_unlit_48
+  - first:
+      213: -3423677300800654713
+    second: Cobbles_granite_unlit_49
+  - first:
+      213: 3955557551014409441
+    second: Cobbles_granite_unlit_50
+  - first:
+      213: 8359797129880005526
+    second: Cobbles_granite_unlit_51
+  - first:
+      213: -6667952436402108387
+    second: Cobbles_granite_unlit_52
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c523fb654dec404cab759023ed1c6b2
+      internalID: -988584959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf2191415f0b24341a75f1293e659150
+      internalID: 894821399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 042d075198a91374380cbb69fb0b79e0
+      internalID: -268223231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32518b62f384f8549bae50784ef9536e
+      internalID: 1590868809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2878171d1aa115946b52a9ec501993ce
+      internalID: -525198672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c06f23090c43c44cbd467d06c12aa38
+      internalID: -948021276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d88827990a1339247bc87b85342d02db
+      internalID: -909738983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b04effbffe4cc54cb532f3a815d7640
+      internalID: 249284203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2a79f5cf865b3f4a80114ae2c365a11
+      internalID: -70697599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc34d454c59462a43ab407e9b3c1647e
+      internalID: 1296228107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a730d6297fd2ea43ad5e1a632b3e65e
+      internalID: 552719686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a67fb5eef1c3fc4db16bd56960e055f
+      internalID: -636851055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55c5e392d1b55e94091627ed5a9fb275
+      internalID: -1390743303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e9e0f4d569ecf9408b29bd41a51d3b3
+      internalID: -121769438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aada1ddbd9088094e933abf77993809b
+      internalID: -1179441570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc69cc421e91b1c49b7da3363db124e1
+      internalID: -674034445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69b6242e05339004f82b06628c3857b9
+      internalID: -1130926867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14cf8e7fe56e0304aa661a34a11f916c
+      internalID: 1292925475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe10113a11e0b8d479fb58953ad34fb3
+      internalID: 1076540634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c11ca8be9e6fdfd4f942acd4a7427c5e
+      internalID: -202712004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0630f7368dd89594b80212c45ed3990f
+      internalID: 761043282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad66a7006e01d46499cf6833f3d427a7
+      internalID: -144372890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c69680fcaef2a95428d1b8f394ebecce
+      internalID: 416578341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_granite_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 879af71bbbb3c7f47b0a1e79fdedfed8
+      internalID: 965522287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 9681ea8480edac74aba91ed66530aac4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_granite_unlit_c0_r0: -988584959
+      Cobbles_granite_unlit_c0_r1: -70697599
+      Cobbles_granite_unlit_c0_r2: -1130926867
+      Cobbles_granite_unlit_c1_r0: 894821399
+      Cobbles_granite_unlit_c1_r1: 1296228107
+      Cobbles_granite_unlit_c1_r2: 1292925475
+      Cobbles_granite_unlit_c2_r0: -268223231
+      Cobbles_granite_unlit_c2_r1: 552719686
+      Cobbles_granite_unlit_c2_r2: 1076540634
+      Cobbles_granite_unlit_c3_r0: 1590868809
+      Cobbles_granite_unlit_c3_r1: -636851055
+      Cobbles_granite_unlit_c3_r2: -202712004
+      Cobbles_granite_unlit_c4_r0: -525198672
+      Cobbles_granite_unlit_c4_r1: -1390743303
+      Cobbles_granite_unlit_c4_r2: 761043282
+      Cobbles_granite_unlit_c5_r0: -948021276
+      Cobbles_granite_unlit_c5_r1: -121769438
+      Cobbles_granite_unlit_c5_r2: -144372890
+      Cobbles_granite_unlit_c6_r0: -909738983
+      Cobbles_granite_unlit_c6_r1: -1179441570
+      Cobbles_granite_unlit_c6_r2: 416578341
+      Cobbles_granite_unlit_c7_r0: 249284203
+      Cobbles_granite_unlit_c7_r1: -674034445
+      Cobbles_granite_unlit_c7_r2: 965522287
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

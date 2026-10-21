@@ -43,11 +43,11 @@ namespace HiddenHarbours.Core
         /// back.</para>
         ///
         /// <para><b>In shipped play this fence never fires, and that is the point.</b>
-        /// <see cref="CharacterSkinStateMap"/> can only ever name four clips — <c>idle</c>,
-        /// <c>walk</c>, <c>run</c>, <c>balance</c> — and all four sit in the 1.19 m population, so no
-        /// mount clip is reachable from this presenter at all. The fence is defence in depth for the
-        /// PR that adds a mount transition, which reaches the poisoned frames on its first frame of
-        /// work.</para>
+        /// <see cref="CharacterSkinStateMap"/> names the free-body clips (<c>idle</c>, <c>walk</c>,
+        /// <c>run</c>, <c>balance</c>), the helm and oars clips and the carry clips — none of them a
+        /// mount clip, so no mount clip is reachable from a presenter at all. The fence is defence in
+        /// depth for the PR that adds a mount transition, which reaches the poisoned frames on its
+        /// first frame of work.</para>
         /// </summary>
         public const float FenceMetres = 8f;
 
@@ -201,6 +201,18 @@ namespace HiddenHarbours.Core
                                                CharacterSkinDef.Bone[] bones, Matrix4x4[] bindposes,
                                                Matrix4x4[] world, Matrix4x4[] skin)
         {
+            ComposeWorld(clip, frame, bones, world);
+            FinishSkin(world, bindposes, skin);
+        }
+
+        /// <summary>
+        /// The first half of <see cref="ComposeSkinMatrices"/>: one frame's bone locals composed into
+        /// figure-space matrices, <c>world[b] = parent &lt; 0 ? local : world[parent] * local</c>. What
+        /// the look measures from (<see cref="LookAtFrame"/>) before it turns anything.
+        /// </summary>
+        public static void ComposeWorld(in CharacterSkinDef.SkinClip clip, int frame,
+                                        CharacterSkinDef.Bone[] bones, Matrix4x4[] world)
+        {
             int n = bones.Length;
             for (int b = 0; b < n; b++)
             {
@@ -211,7 +223,132 @@ namespace HiddenHarbours.Core
                 // defensive tidiness: a def that broke that order would otherwise read a matrix this
                 // pass has not written yet, and the figure would fold up in a way no test names.
                 world[b] = p < 0 || p >= b ? local : world[p] * local;
-                skin[b] = world[b] * bindposes[b];
+            }
+        }
+
+        /// <summary>The second half of <see cref="ComposeSkinMatrices"/>:
+        /// <c>skin[b] = world[b] * bindpose[b]</c>.</summary>
+        public static void FinishSkin(Matrix4x4[] world, Matrix4x4[] bindposes, Matrix4x4[] skin)
+        {
+            for (int b = 0; b < world.Length; b++) skin[b] = world[b] * bindposes[b];
+        }
+
+        /// <summary>
+        /// <b>The look, applied (rig 9 README §5).</b> Re-composes <paramref name="world"/> from
+        /// <paramref name="neck"/> on with the neck's and the head's clip locals post-multiplied by
+        /// their share of the turn — <c>neck.local = clip.neck.local × E(0.4·turn)</c>,
+        /// <c>head.local = clip.head.local × E(0.6·turn)</c> (<see cref="CharacterFigureLook.TurnOf"/>)
+        /// — after the clip and before any rock. A parent precedes its child, so every bone the turn
+        /// moves comes after the neck; bones after it that the neck does not carry re-compose to the
+        /// values they had.
+        /// </summary>
+        public static void ApplyTurn(in CharacterSkinDef.SkinClip clip, int frame,
+                                     CharacterSkinDef.Bone[] bones, Matrix4x4[] world,
+                                     int neck, Quaternion neckTurn, int head, Quaternion headTurn)
+        {
+            int n = bones.Length;
+            if (neck < 0 || neck >= n) return;
+            for (int b = neck; b < n; b++)
+            {
+                CharacterSkinDef.BoneKey k = clip.KeyOf(frame, b, n);
+                Quaternion r = b == neck ? k.Rotation * neckTurn : b == head ? k.Rotation * headTurn : k.Rotation;
+                var local = Matrix4x4.TRS(k.Position, r, Vector3.one);
+                int p = bones[b].Parent;
+                world[b] = p < 0 || p >= b ? local : world[p] * local;
+            }
+        }
+
+        /// <summary>
+        /// The rig's <c>lookAt</c> on a composed frame (<see cref="ComposeWorld"/>, not yet turned): the
+        /// chest and head world matrices of <paramref name="world"/>, the def's head mid point, and a
+        /// target in the figure's own frame. <paramref name="share"/> is the head's share (the def's
+        /// <see cref="CharacterSkinDef.LookHeadShare"/> in play).
+        /// </summary>
+        public static CharacterFigureLook.Result LookAtFrame(CharacterSkinDef def, Matrix4x4[] world,
+                                                             Vector3 target, double share)
+        {
+            Matrix4x4 chest = world[def.LookChestBone], head = world[def.LookHeadBone];
+            return CharacterFigureLook.LookAt(
+                CharacterFigureLook.Rot.Of(chest), CharacterFigureLook.Rot.Of(head),
+                new CharacterFigureLook.Vec(head.m03, head.m13, head.m23),
+                CharacterFigureLook.Vec.Of(def.HeadMid), CharacterFigureLook.Vec.Of(target),
+                share, CharacterFigureLook.Limits.Of(def));
+        }
+
+        /// <summary>The head's mid point in the figure's frame on a composed frame — the point the head
+        /// snap rounds: <c>fkp(W[head], headMid)</c>.</summary>
+        public static Vector3 HeadPoint(CharacterSkinDef def, Matrix4x4[] world) =>
+            world[def.LookHeadBone].MultiplyPoint3x4(def.HeadMid);
+
+        // ---------------------------------------------------------------- faces
+
+        /// <summary>
+        /// Recover the bind mesh's FACES from its triangles. The bake emits one vertex per face corner,
+        /// faces in order, each fanned from its first corner — <c>(s, s+t, s+t+1)</c> — so a face is a
+        /// run of consecutive vertices. False, with nothing written, when the triangles are not exactly
+        /// that shape; the caller then keeps the skinned per-vertex normals.
+        /// </summary>
+        public static bool TryFaceRuns(int[] triangles, int vertexCount, out int[] starts, out int[] counts)
+        {
+            starts = counts = null;
+            if (triangles == null || triangles.Length == 0 || triangles.Length % 3 != 0 || vertexCount <= 0)
+                return false;
+
+            int faces = 0, prev = -1;
+            for (int t = 0; t < triangles.Length; t += 3)
+                if (triangles[t] != prev) { faces++; prev = triangles[t]; }
+
+            var s = new int[faces];
+            var c = new int[faces];
+            int f = -1;
+            prev = -1;
+            int expectNext = 0;
+            for (int t = 0; t < triangles.Length; t += 3)
+            {
+                int a = triangles[t], b = triangles[t + 1], d = triangles[t + 2];
+                if (a != prev)
+                {
+                    // A new face starts exactly where the previous one ended.
+                    if (a != expectNext) return false;
+                    f++;
+                    s[f] = a;
+                    c[f] = 2;
+                    prev = a;
+                }
+                if (b != a + c[f] - 1 || d != b + 1) return false;
+                c[f]++;
+                expectNext = a + c[f];
+            }
+            if (expectNext != vertexCount) return false;
+            starts = s;
+            counts = c;
+            return true;
+        }
+
+        /// <summary>
+        /// <b>The rig's own normal:</b> per face, the Newell normal of its posed corners, normalised,
+        /// written to every corner (paint, l.945: <c>nx += (a.y − c.y)(a.z + c.z)</c> and its turns).
+        /// For a face on one bone it equals the skinned bind normal to float precision; for a face whose
+        /// corners ride two bones (the hems) it is the normal the rig actually shades, which the skinned
+        /// bind normal is not. Rotation-equivariant, so object space is as good as the rig's view frame.
+        /// </summary>
+        public static void NewellNormals(int[] starts, int[] counts, Vector3[] verts, Vector3[] norms)
+        {
+            for (int f = 0; f < starts.Length; f++)
+            {
+                int s = starts[f], n = counts[f];
+                double nx = 0, ny = 0, nz = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    Vector3 a = verts[s + i], c = verts[s + (i + 1) % n];
+                    nx += ((double)a.y - c.y) * ((double)a.z + c.z);
+                    ny += ((double)a.z - c.z) * ((double)a.x + c.x);
+                    nz += ((double)a.x - c.x) * ((double)a.y + c.y);
+                }
+                double m = Math.Sqrt(nx * nx + ny * ny + nz * nz);
+                if (!(m > 0)) m = 1;
+                var nn = new Vector3((float)(nx / m), (float)(ny / m), (float)(nz / m));
+                for (int i = 0; i < n; i++) norms[s + i] = nn;
             }
         }
 
@@ -244,6 +381,124 @@ namespace HiddenHarbours.Core
                 outVerts[v] = pos;
                 outNorms[v] = nrm.sqrMagnitude > 1e-12f ? nrm.normalized : Vector3.up;
             }
+        }
+
+        // ---------------------------------------------------------------- rig 10's smooth normal
+
+        /// <summary>
+        /// <b>Rig 10's smooth normal, posed</b> (the rig 10 intake, Phase B). Rig 10's paint culls a
+        /// face on its own normal and LIGHTS it on its smooth one, which the rig's <c>posed()</c> turns
+        /// with the bone of the face's first corner, or with that corner's two bones weighted and then
+        /// normalised where the corner is blended (characterIsoRig10.js: "the smooth normal rides the
+        /// face's first bone (weighted where the face is blended)"). Face <c>faces[i]</c>, a run of
+        /// <paramref name="starts"/> / <paramref name="counts"/>, has <c>bindNormals[i]</c> in the bind
+        /// frame; it is posed so through <paramref name="skin"/> and written to the xyz of every corner
+        /// of the face in <paramref name="marks"/>, whose w (the face's mark flags) is kept. The bake's
+        /// port of the rig's paint poses it the same way (<c>CharacterSkinInk9.PosedNormal</c>).
+        /// </summary>
+        public static void PoseSmoothNormals(int[] faces, Vector3[] bindNormals, int[] starts, int[] counts,
+                                             Matrix4x4[] skin, BoneWeight[] weights, Vector4[] marks)
+        {
+            for (int i = 0; i < faces.Length; i++)
+            {
+                int s = starts[faces[i]], n = counts[faces[i]];
+                BoneWeight w = weights[s];
+                Vector3 a = skin[w.boneIndex0].MultiplyVector(bindNormals[i]);
+                double x = a.x, y = a.y, z = a.z;
+                if (w.weight1 != 0f)
+                {
+                    Vector3 b = skin[w.boneIndex1].MultiplyVector(bindNormals[i]);
+                    x = (double)a.x * w.weight0 + (double)b.x * w.weight1;
+                    y = (double)a.y * w.weight0 + (double)b.y * w.weight1;
+                    z = (double)a.z * w.weight0 + (double)b.z * w.weight1;
+                    double l = Math.Sqrt(x * x + y * y + z * z);
+                    if (!(l > 0)) l = 1;
+                    x /= l;
+                    y /= l;
+                    z /= l;
+                }
+                for (int k = 0; k < n; k++)
+                    marks[s + k] = new Vector4((float)x, (float)y, (float)z, marks[s + k].w);
+            }
+        }
+
+        // ---------------------------------------------------------------- the reach past the cell
+
+        /// <summary>
+        /// <b>How far a figure reaches past its cell</b>, in pixels, as (left, top, right, bottom): on
+        /// each side, the most any corner of any honest frame of any clip passes the cell's edge by, at
+        /// whichever facing carries it furthest that way; negative while every corner stays inside. The
+        /// bake records it on the def (<see cref="CharacterSkinDef.ReachPx"/>) and the ashore overlay
+        /// covers it (the rig 10 intake, Phase B; the owner's ruling of 10-02: measure each figure's
+        /// real reach and let the drawing area cover it, and the cell stays as it is).
+        ///
+        /// <para><b>Every facing, exactly, without sampling one.</b> Ashore the facing is any angle, and
+        /// the rig projects <c>sx = cx + xr·S</c>, <c>sy = cy − (yr·sin e + z·cos e)·S</c>, with
+        /// <c>(xr, yr)</c> the point's <c>(x, y)</c> turned by the facing. A turn keeps
+        /// <c>r = hypot(x, y)</c>, and over a whole turn <c>xr</c> and <c>yr</c> each sweep
+        /// <c>[−r, r]</c>: so a point reaches <c>r·S</c> to either side, <c>(z·cos e + r·sin e)·S</c> up
+        /// and <c>(r·sin e − z·cos e)·S</c> down (<see cref="WidenExtent"/>), and a triangle reaches no
+        /// further along a screen axis than its furthest corner.</para>
+        ///
+        /// <para>A frame the fence holds out (<see cref="FrameIsHonest"/>) is never drawn, and is not
+        /// measured. The look's turn of the head and the head snap's half pixel are not measured either:
+        /// they ride inside the one pixel the overlay has always kept past the cell.</para>
+        /// </summary>
+        public static Vector4 MeasureReach(CharacterSkinDef def)
+        {
+            if (def == null) throw new ArgumentNullException(nameof(def));
+            Mesh bind = def.BindMesh;
+            if (bind == null || def.Bones == null || def.Clips == null) return Vector4.zero;
+
+            Vector3[] verts = bind.vertices;
+            BoneWeight[] weights = bind.boneWeights;
+            Matrix4x4[] bindposes = bind.bindposes;
+            int bones = def.Bones.Length;
+            if (weights.Length != verts.Length || bindposes.Length < bones) return Vector4.zero;
+
+            var world = new Matrix4x4[bones];
+            var skin = new Matrix4x4[bones];
+            float e = def.ElevationDeg * Mathf.Deg2Rad, sinE = Mathf.Sin(e), cosE = Mathf.Cos(e);
+            var extent = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+            foreach (CharacterSkinDef.SkinClip clip in def.Clips)
+            {
+                if (!clip.KeysWellFormed(bones)) continue;
+                for (int f = 0; f < clip.FrameCount; f++)
+                {
+                    if (!FrameIsHonest(clip, f, bones, FenceMetres)) continue;
+                    ComposeSkinMatrices(clip, f, def.Bones, bindposes, world, skin);
+                    for (int v = 0; v < verts.Length; v++)
+                    {
+                        BoneWeight w = weights[v];
+                        Vector3 p = skin[w.boneIndex0].MultiplyPoint3x4(verts[v]) * w.weight0;
+                        if (w.weight1 != 0f) p += skin[w.boneIndex1].MultiplyPoint3x4(verts[v]) * w.weight1;
+                        extent = WidenExtent(extent, p, sinE, cosE);
+                    }
+                }
+            }
+            return float.IsNegativeInfinity(extent.x) ? Vector4.zero : ReachPastCell(extent, def);
+        }
+
+        /// <summary>One point, in the figure's metres, widened into its extent over every facing: x the
+        /// furthest <c>r = hypot(x, y)</c>, y the furthest up (<c>z·cos e + r·sin e</c>), z the furthest
+        /// down (<c>r·sin e − z·cos e</c>). Start from negative infinity (<see cref="MeasureReach"/>).</summary>
+        public static Vector3 WidenExtent(Vector3 extent, Vector3 p, float sinE, float cosE)
+        {
+            float r = Mathf.Sqrt(p.x * p.x + p.y * p.y);
+            float up = p.z * cosE + r * sinE, down = r * sinE - p.z * cosE;
+            return new Vector3(Mathf.Max(extent.x, r), Mathf.Max(extent.y, up), Mathf.Max(extent.z, down));
+        }
+
+        /// <summary>An extent (<see cref="WidenExtent"/>) as pixels past the def's cell, (left, top, right,
+        /// bottom): the cell runs 0 to <c>CellW</c> across and 0 to <c>CellH</c> down, the figure's origin
+        /// at <c>PivotPx</c>, <c>PxPerMetre</c> pixels a metre.</summary>
+        public static Vector4 ReachPastCell(Vector3 extent, CharacterSkinDef def)
+        {
+            float s = def.PxPerMetre, side = extent.x * s;
+            return new Vector4(side - def.PivotPx.x,
+                               extent.y * s - def.PivotPx.y,
+                               def.PivotPx.x + side - def.CellW,
+                               def.PivotPx.y + extent.z * s - def.CellH);
         }
     }
 }

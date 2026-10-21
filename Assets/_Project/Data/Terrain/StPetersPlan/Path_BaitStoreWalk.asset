@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_BaitStoreWalk
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_bait_store_walk
+  DisplayName: Bait store walk
+  Kind: 0
+  Width: 1.2
+  Points:
+  - {x: 185.8, y: 0.3}
+  - {x: 186.6, y: -3.4}
+  - {x: 186.7, y: -7.4}
+  - {x: 186.1, y: -11.2}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: path.stp_bait_store_walk
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'A worn walk from the slip road to the bait store''s door: the dirt shows where feet go (keyscene.stp_landing).'

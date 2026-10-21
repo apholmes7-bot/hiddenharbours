@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_doorNotice
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_cannery_door_notice
+  DisplayName: Padlock and notice
+  RigKey: doorNotice
+  SceneId: keyscene.stp_cannery
+  BakedOptionsJson: '{"text":"NOTICE","body":"notice.cannery_for_sale","span":2.2}'
+  Layer: raised
+  Walk: behind
+  Mount: wall
+  BoundsMin: {x: -0.435, y: 0.03, z: 0}
+  BoundsMax: {x: 1.77, y: 0.11, z: 1.88}
+  Frames:
+  - Sprite: {fileID: -5808887306536903464, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 78, y: 34}
+    NativePivot: {x: 17, y: 51}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 14, y: 47}
+  - Sprite: {fileID: 5277441022922652878, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 58, y: 40}
+    NativePivot: {x: 13, y: 41}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 9, y: 37}
+  - Sprite: {fileID: 4047179514086552516, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 10, y: 53}
+    NativePivot: {x: 3, y: 42}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 0, y: 39}
+  - Sprite: {fileID: -4872413125560055208, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 58, y: 40}
+    NativePivot: {x: 43, y: 39}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 39, y: 36}
+  - Sprite: {fileID: 4993974305057755368, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 78, y: 35}
+    NativePivot: {x: 60, y: 49}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 57, y: 45}
+  - Sprite: {fileID: -8084221359799888441, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 58, y: 62}
+    NativePivot: {x: 45, y: 75}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 41, y: 71}
+  - Sprite: {fileID: -6239228683002068451, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 10, y: 72}
+    NativePivot: {x: 7, y: 86}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 4, y: 83}
+  - Sprite: {fileID: -1580286179438476114, guid: 237ce4d14f01469438b09be884aa0c49, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 58, y: 61}
+    NativePivot: {x: 15, y: 76}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 11, y: 73}
+  CellSize: {x: 71, y: 84}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: interact
+    Position: {x: 1.51, y: 0.63, z: 0}
+  - Name: lock
+    Position: {x: 0, y: 0.08, z: 0.88}
+  Path: []
+  TideMarks: []
+  Words:
+  - Id: words.cannery_notice
+    BodyId: notice.cannery_for_sale
+    Corners:
+    - {x: 1.28, y: 0.064, z: 1.25}
+    - {x: 1.74, y: 0.064, z: 1.25}
+    - {x: 1.74, y: 0.064, z: 1.85}
+    - {x: 1.28, y: 0.064, z: 1.85}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []

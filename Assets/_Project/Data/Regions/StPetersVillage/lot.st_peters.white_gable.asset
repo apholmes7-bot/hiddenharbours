@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a8a1730c3b79fb7eb9873bdf343be0f, type: 3}
+  m_Name: lot.st_peters.white_gable
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
+  Id: "lot.st_peters.white_gable"
+  BuildingId: "building.stp_white_gable"
+  BakeKey: "white_gable"
+  StreetId: "route.stpeters.school_lane"
+  Position: {x: 53.0, y: 35.204}
+  DoorOffset: {x: 0.0, y: -2.722}
+  FootprintId: "footprint.st_peters.white_gable"
+  FacingCell: 4
+  Entry: "front"
+  DoorFaces: "S"
+  RoofTop: 44.11
+  ArtBottom: 32.482
+  Gate: {x: 53.0, y: 29.985}
+  Approach: {x: 53.0, y: 28.3}
+  Outline:
+  - {x: 48.0, y: 29.985}
+  - {x: 58.5, y: 29.985}
+  - {x: 58.5, y: 40.5}
+  - {x: 48.0, y: 40.5}
+  SetbackMetres: 0.5
+  FrontageMetres: 10.5
+  DepthMetres: 16.358
+  WalkId: "route.stpeters.white_gable_walk"

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1528df99ab5e4e88b81042c7e3b126c8, type: 3}
+  m_Name: ShoreRock_LedgeBlock
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ShoreRockDef
+  Id: rock.stp_ledge_block
+  Today: Rock_bs
+  At: {x: 114.98, y: -69.63}
+  Form: block
+  Stone: sandstone
+  State: wet
+  Dress: bare
+  Variant: 0
+  Mirrored: 0

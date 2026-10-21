@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -29,6 +30,15 @@ namespace HiddenHarbours.Art
         /// plane (−5). A test pins this under both (TerrainSplatBandPinTests).</summary>
         public const int DefaultSortingOrder = -21;
 
+        /// <summary>A relight map's side in texels: the kit's tile, the detail array's slice size
+        /// (terrain pass 9). The shader masks every relight load to it (TL6_TILE in
+        /// Include/TerrainLight6.hlsl).</summary>
+        public const int RelightTileTexels = 256;
+
+        /// <summary>The relight ramp's width: sixteen palettes of five bands at x = palette * 5 + band,
+        /// then the slice's parameters at x = 80 (TL6_RAMP_PARAMS in Include/TerrainLight6.hlsl).</summary>
+        public const int RelightRampWidth = 81;
+
         [Header("Extent (the region rectangle, from RegionDef)")]
         [SerializeField] private Vector2 _worldCenter;
         [SerializeField] private Vector2 _worldSize = new Vector2(160f, 120f);
@@ -47,6 +57,13 @@ namespace HiddenHarbours.Art
         [SerializeField] private Texture2D _splatC;   // r marsh, g sedge, b foreshore, a talus
         [SerializeField] private Texture2D _splatD;   // r ledge, g rockweed, b musselbed, a oysterreef
         [SerializeField] private Texture2D _splatE;   // r eelgrass, g irishmoss, b lawn, a mud
+        [SerializeField] private Texture2D _splatF;   // r path (terrain pass 9; read once Path's tiles join the array)
+
+        [Header("Terrain light 6 (terrain pass 9): the kit's baked maps — derived, TerrainTexArrayBuilder")]
+        [SerializeField] private Texture2DArray _relightNormal;   // normal, pond depth
+        [SerializeField] private Texture2DArray _relightLight;    // sky visibility, porosity, height, palette and band
+        [SerializeField] private Texture2DArray _relightDetail;   // mark id, class, tips
+        [SerializeField] private Texture2D _relightRamp;          // palettes and each slice's parameters
 
         [Header("Bands (builder-pushed from StPetersShoreMap — not owned here)")]
         [SerializeField] private float _floorPaint = -2.6f;
@@ -84,6 +101,7 @@ namespace HiddenHarbours.Art
         private MaterialPropertyBlock _mpb;
         private Material _runtimeMaterial;
         private float _timer;
+        private bool _relightMisfitWarned;
 
         private static readonly int IdHeightTex = Shader.PropertyToID("_HeightTex");
         private static readonly int IdHeightMin = Shader.PropertyToID("_HeightMin");
@@ -112,11 +130,49 @@ namespace HiddenHarbours.Art
         private static readonly int IdSplatC = Shader.PropertyToID("_SplatC");
         private static readonly int IdSplatD = Shader.PropertyToID("_SplatD");
         private static readonly int IdSplatE = Shader.PropertyToID("_SplatE");
+        private static readonly int IdSplatF = Shader.PropertyToID("_SplatF");
+        private static readonly int IdRelightNormal = Shader.PropertyToID("_RelightNormal");
+        private static readonly int IdRelightLight = Shader.PropertyToID("_RelightLight");
+        private static readonly int IdRelightDetail = Shader.PropertyToID("_RelightDetail");
+        private static readonly int IdRelightRamp = Shader.PropertyToID("_RelightRamp");
+        private static readonly int IdRelightLoaded = Shader.PropertyToID("_RelightLoaded");
         private static readonly int IdBarFrom = Shader.PropertyToID("_BarFrom");
         private static readonly int IdBarTo = Shader.PropertyToID("_BarTo");
         private static readonly int IdBarHalfWidth = Shader.PropertyToID("_BarHalfWidth");
         private static readonly int IdBarSpineHalfWidth = Shader.PropertyToID("_BarSpineHalfWidth");
         private static readonly int IdBarSpineFloor = Shader.PropertyToID("_BarSpineFloor");
+
+        // W4-4: the values the terrain MATERIAL carries (its Properties defaults; no push writes them)
+        // that Include/TerrainSplatAlbedo.hlsl also reads. The sea's floor copies them from this
+        // ground's own material on each bind (WriteGroundFloor), so one retune reaches both.
+        private static readonly int[] s_GroundMaterialFloats =
+        {
+            Shader.PropertyToID("_DetailOffsetCellMetres"),
+            Shader.PropertyToID("_EdgeFadeMetres"),
+            Shader.PropertyToID("_BandBlendMetres"),
+            Shader.PropertyToID("_SectorBlend"),
+            Shader.PropertyToID("_BarEdgeBlend"),
+            Shader.PropertyToID("_MacroScale"),
+            Shader.PropertyToID("_MacroStrength"),
+            Shader.PropertyToID("_WetBandMetres"),
+            Shader.PropertyToID("_WetStrength"),
+            Shader.PropertyToID("_PixelsPerMetre"),
+        };
+        private static readonly int[] s_GroundMaterialColors =
+        {
+            Shader.PropertyToID("_MacroTint"),
+            Shader.PropertyToID("_WetTint"),
+        };
+
+        // W4-4: the live grounds, so the sea of the same region can find the ground it is drawn over
+        // (FindSharing) and bind that ground's look to its floor (WriteGroundFloor). LiveVersion moves on
+        // every enable, disable and full push, so a sea re-binds only when something changed.
+        private static readonly List<TerrainSplatSurface> s_Live = new List<TerrainSplatSurface>();
+
+        /// <summary>Moves whenever a ground enables, disables or pushes its whole look (never on the
+        /// throttled water-level push). A sea re-binds its floor only when this has moved since its
+        /// last bind (W4-4).</summary>
+        public static int LiveVersion { get; private set; }
 
         /// <summary>The builder's one-call wiring (the WaterSurface Configure convention).</summary>
         public void Configure(Vector2 worldCenter, Vector2 worldSize, Material material, int sortingOrder)
@@ -142,32 +198,79 @@ namespace HiddenHarbours.Art
         /// <para>⚠ <paramref name="array512"/> is IGNORED. The 512-class array retired with the px
         /// flip (2026-09-17, owner ruling A2); the parameter stays only so the two region builders —
         /// exporter-tracked, left untouched on purpose — compile as they are. Drop it at their next
-        /// legitimate edit (<c>TerrainTexArrayBuilder.Array512Path</c> carries the same debt).</para></summary>
+        /// API cleanup; callers now pass null and load detail through TerrainArrayAssets.</para></summary>
         public void ConfigureDetail(Texture2DArray array256, Texture2DArray array512)
         {
             _detailArray256 = array256;
         }
 
-        /// <summary>The painted splat maps (twenty material channels across five RGBA textures,
+        /// <summary>The painted splat maps (a material channel each, across six RGBA textures,
         /// same world rect as the height map). Null channels fall back to a transparent 1x1 —
         /// painted nothing — NOT Unity's default "black" whose alpha of 1 would read as a painted
         /// channel (the WaterSurface ClearSeabedFallback lesson). D carries the kit-v2 pair plus two
         /// of v3's beds and E the other two: passing null for either is legal and simply means
-        /// nothing is painted with those materials.
+        /// nothing is painted with those materials. F is terrain pass 9's: its r is the kit's Path,
+        /// which the shader reads once Path's tiles join the detail array.
         ///
-        /// <para>⚠ <paramref name="splatE"/> is REQUIRED rather than defaulted. A caller that
-        /// forgets a map does not get a compile error from an optional parameter — it silently
-        /// renders every eelgrass meadow and moss turf as bare band ground, which looks like a
-        /// painting bug rather than a wiring one.</para></summary>
+        /// <para>⚠ <paramref name="splatE"/> and <paramref name="splatF"/> are REQUIRED rather than
+        /// defaulted. A caller that forgets a map does not get a compile error from an optional
+        /// parameter — it silently renders every eelgrass meadow and moss turf as bare band ground,
+        /// which looks like a painting bug rather than a wiring one.</para></summary>
         public void ConfigureSplat(Texture2D splatA, Texture2D splatB, Texture2D splatC,
-            Texture2D splatD, Texture2D splatE)
+            Texture2D splatD, Texture2D splatE, Texture2D splatF)
         {
             _splatA = splatA;
             _splatB = splatB;
             _splatC = splatC;
             _splatD = splatD;
             _splatE = splatE;
+            _splatF = splatF;
         }
+
+        /// <summary>The five-map form from before terrain pass 9: nothing painted with Path (F binds
+        /// the transparent 1x1). It stays only so the two region builders — exporter-tracked, left
+        /// untouched on purpose — compile as they are; drop it at their next legitimate edit, the
+        /// same debt as <see cref="ConfigureDetail"/>'s array512.</summary>
+        public void ConfigureSplat(Texture2D splatA, Texture2D splatB, Texture2D splatC,
+            Texture2D splatD, Texture2D splatE)
+            => ConfigureSplat(splatA, splatB, splatC, splatD, splatE, null);
+
+        /// <summary>Terrain pass 9: TerrainLight6's inputs, the kit's baked maps (normal and pond,
+        /// sky visibility and height, marks and tips) and its palette ramp, all four derived by
+        /// TerrainTexArrayBuilder in the detail array's slice order. When all four are bound and fit
+        /// the detail array (<see cref="RelightLoaded"/>), the shader relights every material whose
+        /// tiles have maps and keeps the albedo for the rest; otherwise _RelightLoaded stays 0 and
+        /// the ground is exactly the albedo ground.
+        ///
+        /// <para>All or nothing, and checked rather than trusted: the shader LOADs the maps by
+        /// slice and texel, so a missing or mis-shaped one would be read out of bounds, which on
+        /// some graphics APIs is undefined rather than merely wrong.</para></summary>
+        public void ConfigureRelight(Texture2DArray normal, Texture2DArray light, Texture2DArray detail,
+                                     Texture2D ramp)
+        {
+            _relightNormal = normal;
+            _relightLight = light;
+            _relightDetail = detail;
+            _relightRamp = ramp;
+            _relightMisfitWarned = false;
+        }
+
+        /// <summary>True when the detail array and all four relight maps are bound and the maps fit
+        /// it: every map as deep as the array with <see cref="RelightTileTexels"/>-square slices, and
+        /// the ramp <see cref="RelightRampWidth"/> wide with one row per slice.</summary>
+        public bool RelightLoaded
+        {
+            get
+            {
+                if (_detailArray256 == null || _relightRamp == null) return false;
+                int depth = _detailArray256.depth;
+                return Fits(_relightNormal, depth) && Fits(_relightLight, depth) && Fits(_relightDetail, depth)
+                    && _relightRamp.width == RelightRampWidth && _relightRamp.height == depth;
+            }
+        }
+
+        private static bool Fits(Texture2DArray map, int depth) =>
+            map != null && map.depth == depth && map.width == RelightTileTexels && map.height == RelightTileTexels;
 
         /// <summary>The band ladder + meander, pushed from the CPU classifier's constants.</summary>
         public void ConfigureBands(
@@ -213,11 +316,15 @@ namespace HiddenHarbours.Art
             _mpb ??= new MaterialPropertyBlock();
             EnsureBuilt();
             PushAll();
+            if (!s_Live.Contains(this)) s_Live.Add(this);
+            LiveVersion++;
         }
 
         private void OnDisable()
         {
             if (_meshGo != null) _meshGo.SetActive(false);
+            s_Live.Remove(this);
+            LiveVersion++;
         }
 
         private void OnDestroy()
@@ -324,40 +431,117 @@ namespace HiddenHarbours.Art
                 _mpb.SetVector(IdHWorldSize, new Vector4(_worldSize.x, _worldSize.y, 0f, 0f));
             }
 
-            bool detailLoaded = _detailArray256 != null;
-            if (detailLoaded)
-                _mpb.SetTexture(IdDetailArr256, _detailArray256);
-            _mpb.SetFloat(IdDetailLoaded, detailLoaded ? 1f : 0f);
-            _mpb.SetTexture(IdSplatA, _splatA != null ? _splatA : ClearSplat());
-            _mpb.SetTexture(IdSplatB, _splatB != null ? _splatB : ClearSplat());
-            _mpb.SetTexture(IdSplatC, _splatC != null ? _splatC : ClearSplat());
-            _mpb.SetTexture(IdSplatD, _splatD != null ? _splatD : ClearSplat());
-            _mpb.SetTexture(IdSplatE, _splatE != null ? _splatE : ClearSplat());
+            WriteLook(_mpb);
 
-            _mpb.SetFloat(IdFloorPaint, _floorPaint);
-            _mpb.SetFloat(IdFloorRipple, _floorRipple);
-            _mpb.SetFloat(IdFloorSand, _floorSand);
-            _mpb.SetFloat(IdFloorMarram, _floorMarram);
-            _mpb.SetFloat(IdFloorGrass, _floorGrass);
-            _mpb.SetFloat(IdFloorShingle, _floorShingle);
-            _mpb.SetFloat(IdWiggleMetres, _bandWiggleMetres);
-            _mpb.SetFloat(IdWiggleScale, _bandWiggleScale);
-            _mpb.SetFloat(IdDetailMetres, _bandDetailMetres);
-            _mpb.SetFloat(IdDetailScale, _bandDetailScale);
-
-            _mpb.SetVector(IdIslandCenter, new Vector4(_islandCenter.x, _islandCenter.y, 0f, 0f));
-            _mpb.SetFloat(IdIslandAspect, _islandAspect);
-            _mpb.SetVector(IdWeatherFacing, new Vector4(_weatherFacing.x, _weatherFacing.y, 0f, 0f));
-            _mpb.SetFloat(IdSectorFeather, _sectorFeather);
-
-            _mpb.SetVector(IdBarFrom, new Vector4(_barFrom.x, _barFrom.y, 0f, 0f));
-            _mpb.SetVector(IdBarTo, new Vector4(_barTo.x, _barTo.y, 0f, 0f));
-            _mpb.SetFloat(IdBarHalfWidth, _barHalfWidth);
-            _mpb.SetFloat(IdBarSpineHalfWidth, _barSpineHalfWidth);
-            _mpb.SetFloat(IdBarSpineFloor, _barSpineFloor);
+            // Terrain pass 9: the relight, only when all four maps fit the detail array. A map given
+            // but refused is a stale or partial build: say so once, and keep the albedo.
+            bool relight = RelightLoaded;
+            if (relight)
+            {
+                _mpb.SetTexture(IdRelightNormal, _relightNormal);
+                _mpb.SetTexture(IdRelightLight, _relightLight);
+                _mpb.SetTexture(IdRelightDetail, _relightDetail);
+                _mpb.SetTexture(IdRelightRamp, _relightRamp);
+            }
+            else if (!_relightMisfitWarned && (_relightNormal != null || _relightLight != null
+                                               || _relightDetail != null || _relightRamp != null))
+            {
+                _relightMisfitWarned = true;
+                Debug.LogWarning("[TerrainSplatSurface] the relight maps do not fit the detail array " +
+                                 $"(all four, as deep as the array, {RelightTileTexels}-square slices, the ramp " +
+                                 $"{RelightRampWidth} wide with a row per slice) — rebuild them with " +
+                                 "TerrainTexArrayBuilder. The ground keeps the albedo.");
+            }
+            _mpb.SetFloat(IdRelightLoaded, relight ? 1f : 0f);
 
             _mpb.SetFloat(IdWaterLevel, ResolveWaterLevel());
             _renderer.SetPropertyBlock(_mpb);
+            LiveVersion++;
+        }
+
+        /// <summary>The ground's look, less its height, relight and water level: the kit, the six
+        /// splats, the band ladder and its meander, the weather sector and the sandbar. The ONE writer
+        /// of these, for this ground's own block (<see cref="PushAll"/>) and for the sea's floor
+        /// (<see cref="WriteGroundFloor"/>), so the two can never bind different values (W4-4).</summary>
+        private void WriteLook(MaterialPropertyBlock mpb)
+        {
+            bool detailLoaded = _detailArray256 != null;
+            if (detailLoaded)
+                mpb.SetTexture(IdDetailArr256, _detailArray256);
+            mpb.SetFloat(IdDetailLoaded, detailLoaded ? 1f : 0f);
+            mpb.SetTexture(IdSplatA, _splatA != null ? _splatA : ClearSplat());
+            mpb.SetTexture(IdSplatB, _splatB != null ? _splatB : ClearSplat());
+            mpb.SetTexture(IdSplatC, _splatC != null ? _splatC : ClearSplat());
+            mpb.SetTexture(IdSplatD, _splatD != null ? _splatD : ClearSplat());
+            mpb.SetTexture(IdSplatE, _splatE != null ? _splatE : ClearSplat());
+            mpb.SetTexture(IdSplatF, _splatF != null ? _splatF : ClearSplat());
+
+            mpb.SetFloat(IdFloorPaint, _floorPaint);
+            mpb.SetFloat(IdFloorRipple, _floorRipple);
+            mpb.SetFloat(IdFloorSand, _floorSand);
+            mpb.SetFloat(IdFloorMarram, _floorMarram);
+            mpb.SetFloat(IdFloorGrass, _floorGrass);
+            mpb.SetFloat(IdFloorShingle, _floorShingle);
+            mpb.SetFloat(IdWiggleMetres, _bandWiggleMetres);
+            mpb.SetFloat(IdWiggleScale, _bandWiggleScale);
+            mpb.SetFloat(IdDetailMetres, _bandDetailMetres);
+            mpb.SetFloat(IdDetailScale, _bandDetailScale);
+
+            mpb.SetVector(IdIslandCenter, new Vector4(_islandCenter.x, _islandCenter.y, 0f, 0f));
+            mpb.SetFloat(IdIslandAspect, _islandAspect);
+            mpb.SetVector(IdWeatherFacing, new Vector4(_weatherFacing.x, _weatherFacing.y, 0f, 0f));
+            mpb.SetFloat(IdSectorFeather, _sectorFeather);
+
+            mpb.SetVector(IdBarFrom, new Vector4(_barFrom.x, _barFrom.y, 0f, 0f));
+            mpb.SetVector(IdBarTo, new Vector4(_barTo.x, _barTo.y, 0f, 0f));
+            mpb.SetFloat(IdBarHalfWidth, _barHalfWidth);
+            mpb.SetFloat(IdBarSpineHalfWidth, _barSpineHalfWidth);
+            mpb.SetFloat(IdBarSpineFloor, _barSpineFloor);
+        }
+
+        /// <summary>
+        /// The live ground the sea of the same region is drawn over: the one holding the SAME height
+        /// texture over the same world rectangle and elevation range (<see cref="ShallowsFloorMath.SameFrame"/>),
+        /// so the floor the sea draws is this ground's own, by construction, and never a guess. Null when no
+        /// live ground shares the frame (a baked sea, a region with no splat ground, two regions mid-hop).
+        /// </summary>
+        public static TerrainSplatSurface FindSharing(Texture heightTexture, Vector2 worldMin, Vector2 worldSize,
+                                                      float heightMin, float heightMax)
+        {
+            if (heightTexture == null) return null;
+            for (int i = 0; i < s_Live.Count; i++)
+            {
+                TerrainSplatSurface ground = s_Live[i];
+                if (ground == null || ground._heightTexture != heightTexture) continue;
+                if (ShallowsFloorMath.SameFrame(ground._worldCenter - ground._worldSize * 0.5f, ground._worldSize,
+                                                ground._heightMin, ground._heightMax,
+                                                worldMin, worldSize, heightMin, heightMax))
+                    return ground;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Bind this ground's look to the SEA's block (W4-4b), so the sea's floor reads the same kit,
+        /// splats and ladder the ground draws with: <see cref="WriteLook"/>, the one writer, plus the
+        /// values the terrain material carries, copied from this ground's own material. Never the height
+        /// (the sea feeds its own, the same texture by <see cref="FindSharing"/>), never
+        /// <c>_WaterLevel</c> (the sea's own) and never the relight (the floor is albedo only). With no
+        /// built renderer it writes <c>_DetailLoaded</c> 0, which keeps the sea's floor off.
+        /// </summary>
+        public void WriteGroundFloor(MaterialPropertyBlock mpb)
+        {
+            Material ground = _renderer != null ? _renderer.sharedMaterial : null;
+            if (ground == null)
+            {
+                mpb.SetFloat(IdDetailLoaded, 0f);
+                return;
+            }
+            WriteLook(mpb);
+            for (int i = 0; i < s_GroundMaterialFloats.Length; i++)
+                mpb.SetFloat(s_GroundMaterialFloats[i], ground.GetFloat(s_GroundMaterialFloats[i]));
+            for (int i = 0; i < s_GroundMaterialColors.Length; i++)
+                mpb.SetColor(s_GroundMaterialColors[i], ground.GetColor(s_GroundMaterialColors[i]));
         }
 
         private void PushWaterLevel()

@@ -1,0 +1,673 @@
+{
+  "schema": "hidden-harbours/key-scene-id-map@1",
+  "renames": [
+    {
+      "old": "prop.nmc_waterfront_6_bed_35",
+      "new": "prop.nmc_waterfront_6_bed_w"
+    },
+    {
+      "old": "prop.nmc_waterfront_6_bed_29",
+      "new": "prop.nmc_waterfront_6_bed_e"
+    },
+    {
+      "old": "prop.nmc_camp_tent_a19_cabinTent",
+      "new": "prop.nmc_camp_tent_a19_cabin"
+    },
+    {
+      "old": "float.nmc_fingerA",
+      "new": "float.nmc_finger_a"
+    },
+    {
+      "old": "float.nmc_fingerB",
+      "new": "float.nmc_finger_b"
+    },
+    {
+      "old": "ladder.nmc_unloadW",
+      "new": "ladder.nmc_unload_w"
+    },
+    {
+      "old": "ladder.nmc_unloadE",
+      "new": "ladder.nmc_unload_e"
+    },
+    {
+      "old": "harbour.armW",
+      "new": "harbour.arm_w"
+    },
+    {
+      "old": "harbour.armE",
+      "new": "harbour.arm_e"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_0_0",
+      "new": "prop.nmc_traps_yard_w_0_0"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_0_1",
+      "new": "prop.nmc_traps_yard_w_0_1"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_0_2",
+      "new": "prop.nmc_traps_yard_w_0_2"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_0_3",
+      "new": "prop.nmc_traps_yard_w_0_3"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_1_0",
+      "new": "prop.nmc_traps_yard_w_1_0"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_1_1",
+      "new": "prop.nmc_traps_yard_w_1_1"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_1_2",
+      "new": "prop.nmc_traps_yard_w_1_2"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_1_3",
+      "new": "prop.nmc_traps_yard_w_1_3"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_2_0",
+      "new": "prop.nmc_traps_yard_w_2_0"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_2_1",
+      "new": "prop.nmc_traps_yard_w_2_1"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_2_2",
+      "new": "prop.nmc_traps_yard_w_2_2"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_2_3",
+      "new": "prop.nmc_traps_yard_w_2_3"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_3_0",
+      "new": "prop.nmc_traps_yard_w_3_0"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_3_1",
+      "new": "prop.nmc_traps_yard_w_3_1"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_3_2",
+      "new": "prop.nmc_traps_yard_w_3_2"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_3_3",
+      "new": "prop.nmc_traps_yard_w_3_3"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_4_0",
+      "new": "prop.nmc_traps_yard_w_4_0"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_4_1",
+      "new": "prop.nmc_traps_yard_w_4_1"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_4_2",
+      "new": "prop.nmc_traps_yard_w_4_2"
+    },
+    {
+      "old": "prop.nmc_traps_yardW_4_3",
+      "new": "prop.nmc_traps_yard_w_4_3"
+    },
+    {
+      "old": "light.nmc_rest_deck_177.6",
+      "new": "light.nmc_rest_deck_177_6"
+    },
+    {
+      "old": "light.nmc_rest_deck_178.4",
+      "new": "light.nmc_rest_deck_178_4"
+    },
+    {
+      "old": "light.nmc_dock_183.6",
+      "new": "light.nmc_dock_183_6"
+    },
+    {
+      "old": "light.nmc_dock_177.6",
+      "new": "light.nmc_dock_177_6"
+    },
+    {
+      "old": "light.nmc_dock_171.6",
+      "new": "light.nmc_dock_171_6"
+    },
+    {
+      "old": "light.nmc_dock_165.6",
+      "new": "light.nmc_dock_165_6"
+    },
+    {
+      "old": "road.nmc.wharf_road",
+      "new": "road.nmc_wharf_road"
+    },
+    {
+      "old": "road.nmc.route_91",
+      "new": "road.nmc_route_91"
+    },
+    {
+      "old": "road.nmc.stream_lane",
+      "new": "road.nmc_stream_lane"
+    },
+    {
+      "old": "road.nmc.mill_road",
+      "new": "road.nmc_mill_road"
+    },
+    {
+      "old": "structure.nmc_river_wall.00",
+      "new": "structure.nmc_river_wall_00"
+    },
+    {
+      "old": "structure.nmc_river_wall.01",
+      "new": "structure.nmc_river_wall_01"
+    },
+    {
+      "old": "structure.nmc_river_wall.02",
+      "new": "structure.nmc_river_wall_02"
+    },
+    {
+      "old": "structure.nmc_river_wall.03",
+      "new": "structure.nmc_river_wall_03"
+    },
+    {
+      "old": "structure.nmc_river_wall.04",
+      "new": "structure.nmc_river_wall_04"
+    },
+    {
+      "old": "structure.nmc_river_wall.05",
+      "new": "structure.nmc_river_wall_05"
+    },
+    {
+      "old": "structure.nmc_river_wall.06",
+      "new": "structure.nmc_river_wall_06"
+    },
+    {
+      "old": "structure.nmc_river_wall.07",
+      "new": "structure.nmc_river_wall_07"
+    },
+    {
+      "old": "structure.nmc_river_wall.08",
+      "new": "structure.nmc_river_wall_08"
+    },
+    {
+      "old": "structure.nmc_river_wall.09",
+      "new": "structure.nmc_river_wall_09"
+    },
+    {
+      "old": "structure.nmc_river_wall.10",
+      "new": "structure.nmc_river_wall_10"
+    },
+    {
+      "old": "structure.nmc_river_wall.11",
+      "new": "structure.nmc_river_wall_11"
+    },
+    {
+      "old": "structure.nmc_river_wall.12",
+      "new": "structure.nmc_river_wall_12"
+    },
+    {
+      "old": "structure.nmc_town_north.00",
+      "new": "structure.nmc_town_north_00"
+    },
+    {
+      "old": "structure.nmc_town_north.01",
+      "new": "structure.nmc_town_north_01"
+    },
+    {
+      "old": "structure.nmc_town_north.02",
+      "new": "structure.nmc_town_north_02"
+    },
+    {
+      "old": "structure.nmc_town_north.03",
+      "new": "structure.nmc_town_north_03"
+    },
+    {
+      "old": "structure.nmc_town_north.04",
+      "new": "structure.nmc_town_north_04"
+    },
+    {
+      "old": "structure.nmc_town_north.05",
+      "new": "structure.nmc_town_north_05"
+    },
+    {
+      "old": "structure.nmc_town_south.00",
+      "new": "structure.nmc_town_south_00"
+    },
+    {
+      "old": "structure.nmc_town_south.01",
+      "new": "structure.nmc_town_south_01"
+    },
+    {
+      "old": "structure.nmc_town_south.02",
+      "new": "structure.nmc_town_south_02"
+    },
+    {
+      "old": "structure.nmc_town_south.03",
+      "new": "structure.nmc_town_south_03"
+    },
+    {
+      "old": "structure.nmc_town_south.04",
+      "new": "structure.nmc_town_south_04"
+    },
+    {
+      "old": "structure.nmc_town_north.spur_240",
+      "new": "structure.nmc_town_north_spur_01"
+    },
+    {
+      "old": "structure.nmc_wall_stairs_240",
+      "new": "structure.nmc_wall_stairs_01"
+    },
+    {
+      "old": "structure.nmc_town_north.spur_205",
+      "new": "structure.nmc_town_north_spur_02"
+    },
+    {
+      "old": "structure.nmc_town_north.spur_160",
+      "new": "structure.nmc_town_north_spur_03"
+    },
+    {
+      "old": "structure.nmc_wall_stairs_160",
+      "new": "structure.nmc_wall_stairs_02"
+    },
+    {
+      "old": "structure.nmc_bank_stairs_236",
+      "new": "structure.nmc_bank_stairs_01"
+    },
+    {
+      "old": "structure.nmc_bank_stairs_190",
+      "new": "structure.nmc_bank_stairs_02"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n252",
+      "new": "prop.nmc_boardwalk_lamp_n_01"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n238",
+      "new": "prop.nmc_boardwalk_lamp_n_02"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n224",
+      "new": "prop.nmc_boardwalk_lamp_n_03"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n212",
+      "new": "prop.nmc_boardwalk_lamp_n_04"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n200",
+      "new": "prop.nmc_boardwalk_lamp_n_05"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n189",
+      "new": "prop.nmc_boardwalk_lamp_n_06"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n166",
+      "new": "prop.nmc_boardwalk_lamp_n_07"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.n154",
+      "new": "prop.nmc_boardwalk_lamp_n_08"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.s246",
+      "new": "prop.nmc_boardwalk_lamp_s_01"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.s230",
+      "new": "prop.nmc_boardwalk_lamp_s_02"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.s216",
+      "new": "prop.nmc_boardwalk_lamp_s_03"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.s203",
+      "new": "prop.nmc_boardwalk_lamp_s_04"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.s190",
+      "new": "prop.nmc_boardwalk_lamp_s_05"
+    },
+    {
+      "old": "prop.nmc_boardwalk_lamp.s166",
+      "new": "prop.nmc_boardwalk_lamp_s_06"
+    },
+    {
+      "old": "prop.nmc_street_lamp.w236",
+      "new": "prop.nmc_street_lamp_w_01"
+    },
+    {
+      "old": "prop.nmc_street_lamp.w214",
+      "new": "prop.nmc_street_lamp_w_02"
+    },
+    {
+      "old": "prop.nmc_street_lamp.w192",
+      "new": "prop.nmc_street_lamp_w_03"
+    },
+    {
+      "old": "prop.nmc_street_lamp.w160",
+      "new": "prop.nmc_street_lamp_w_04"
+    },
+    {
+      "old": "prop.nmc_street_lamp.w148",
+      "new": "prop.nmc_street_lamp_w_05"
+    },
+    {
+      "old": "structure.nmc_falls_deck.landing",
+      "new": "structure.nmc_falls_deck_landing"
+    },
+    {
+      "old": "prop.nmc_bar_stake.00",
+      "new": "prop.nmc_bar_stake_00"
+    },
+    {
+      "old": "prop.nmc_bar_stake.01",
+      "new": "prop.nmc_bar_stake_01"
+    },
+    {
+      "old": "prop.nmc_bar_stake.02",
+      "new": "prop.nmc_bar_stake_02"
+    },
+    {
+      "old": "prop.nmc_bar_stake.03",
+      "new": "prop.nmc_bar_stake_03"
+    },
+    {
+      "old": "prop.nmc_bar_stake.04",
+      "new": "prop.nmc_bar_stake_04"
+    },
+    {
+      "old": "prop.nmc_bar_stake.05",
+      "new": "prop.nmc_bar_stake_05"
+    },
+    {
+      "old": "prop.nmc_bar_stake.06",
+      "new": "prop.nmc_bar_stake_06"
+    },
+    {
+      "old": "prop.nmc_bar_stake.07",
+      "new": "prop.nmc_bar_stake_07"
+    },
+    {
+      "old": "prop.nmc_bar_stake.08",
+      "new": "prop.nmc_bar_stake_08"
+    },
+    {
+      "old": "prop.nmc_bar_stake.09",
+      "new": "prop.nmc_bar_stake_09"
+    },
+    {
+      "old": "road.nmc.north_creek_lane",
+      "new": "road.nmc_north_creek_lane"
+    },
+    {
+      "old": "road.nmc.creek_lane_south",
+      "new": "road.nmc_creek_lane_south"
+    },
+    {
+      "old": "structure.nmc_creek_dock.1",
+      "new": "structure.nmc_creek_dock_1"
+    },
+    {
+      "old": "structure.nmc_creek_dock.2",
+      "new": "structure.nmc_creek_dock_2"
+    },
+    {
+      "old": "structure.nmc_creek_dock.3",
+      "new": "structure.nmc_creek_dock_3"
+    },
+    {
+      "old": "structure.nmc_creek_dock.4",
+      "new": "structure.nmc_creek_dock_4"
+    },
+    {
+      "old": "structure.nmc_creek_dock.5",
+      "new": "structure.nmc_creek_dock_5"
+    },
+    {
+      "old": "structure.nmc_creek_dock.6",
+      "new": "structure.nmc_creek_dock_6"
+    },
+    {
+      "old": "structure.nmc_creek_dock.7",
+      "new": "structure.nmc_creek_dock_7"
+    },
+    {
+      "old": "structure.nmc_creek_dock.1_steps",
+      "new": "structure.nmc_creek_dock_1_steps"
+    },
+    {
+      "old": "structure.nmc_creek_dock.3_gangway",
+      "new": "structure.nmc_creek_dock_3_gangway"
+    },
+    {
+      "old": "structure.nmc_creek_dock.3_steps",
+      "new": "structure.nmc_creek_dock_3_steps"
+    },
+    {
+      "old": "structure.nmc_creek_dock.4_gangway",
+      "new": "structure.nmc_creek_dock_4_gangway"
+    },
+    {
+      "old": "structure.nmc_creek_dock.4_steps",
+      "new": "structure.nmc_creek_dock_4_steps"
+    },
+    {
+      "old": "prop.nmc_yard_rack_277",
+      "new": "prop.nmc_yard_rack_01"
+    },
+    {
+      "old": "prop.nmc_yard_rack_267",
+      "new": "prop.nmc_yard_rack_02"
+    },
+    {
+      "old": "prop.nmc_yard_fence_e140",
+      "new": "prop.nmc_yard_fence_e"
+    },
+    {
+      "old": "prop.nmc_lot_strip_256",
+      "new": "prop.nmc_lot_strip_01"
+    },
+    {
+      "old": "prop.nmc_lot_strip_241",
+      "new": "prop.nmc_lot_strip_02"
+    },
+    {
+      "old": "prop.nmc_lot_strip_210",
+      "new": "prop.nmc_lot_strip_03"
+    },
+    {
+      "old": "prop.nmc_lot_island_255_93",
+      "new": "prop.nmc_lot_island_01"
+    },
+    {
+      "old": "prop.nmc_lot_island_198_93",
+      "new": "prop.nmc_lot_island_02"
+    },
+    {
+      "old": "prop.nmc_lot_island_255_81",
+      "new": "prop.nmc_lot_island_03"
+    },
+    {
+      "old": "prop.nmc_lot_island_198_81",
+      "new": "prop.nmc_lot_island_04"
+    },
+    {
+      "old": "prop.nmc_lot_pole_252_97",
+      "new": "prop.nmc_lot_pole_01"
+    },
+    {
+      "old": "prop.nmc_lot_pole_229_97",
+      "new": "prop.nmc_lot_pole_02"
+    },
+    {
+      "old": "prop.nmc_lot_pole_206_97",
+      "new": "prop.nmc_lot_pole_03"
+    },
+    {
+      "old": "prop.nmc_lot_pole_255_81",
+      "new": "prop.nmc_lot_pole_04"
+    },
+    {
+      "old": "prop.nmc_lot_pole_198_81",
+      "new": "prop.nmc_lot_pole_05"
+    },
+    {
+      "old": "road.nmc.shore_lane",
+      "new": "road.nmc_shore_lane"
+    },
+    {
+      "old": "prop.nmc_shore_lane_sand_fence_212",
+      "new": "prop.nmc_shore_lane_sand_fence_01"
+    },
+    {
+      "old": "prop.nmc_shore_lane_sand_fence_192",
+      "new": "prop.nmc_shore_lane_sand_fence_02"
+    },
+    {
+      "old": "prop.nmc_shore_lane_sand_fence_171",
+      "new": "prop.nmc_shore_lane_sand_fence_03"
+    },
+    {
+      "old": "prop.nmc_shore_lane_sand_fence_146",
+      "new": "prop.nmc_shore_lane_sand_fence_04"
+    },
+    {
+      "old": "road.nmc.bar_road",
+      "new": "road.nmc_bar_road"
+    },
+    {
+      "old": "road.nmc.water_street",
+      "new": "road.nmc_water_street"
+    },
+    {
+      "old": "road.nmc.camp_road",
+      "new": "road.nmc_camp_road"
+    },
+    {
+      "old": "road.nmc.camp_loop_a",
+      "new": "road.nmc_camp_loop_a"
+    },
+    {
+      "old": "road.nmc.camp_loop_b_stem",
+      "new": "road.nmc_camp_loop_b_stem"
+    },
+    {
+      "old": "road.nmc.camp_loop_b",
+      "new": "road.nmc_camp_loop_b"
+    },
+    {
+      "old": "road.nmc.camp_loop_c_stem",
+      "new": "road.nmc_camp_loop_c_stem"
+    },
+    {
+      "old": "road.nmc.camp_loop_c",
+      "new": "road.nmc_camp_loop_c"
+    },
+    {
+      "old": "coast.nmc_south_shore + coast.nmc_east_coast",
+      "new": "coast.nmc_south_shore + coast_nmc_east_coast"
+    },
+    {
+      "old": "coast.nmc_east_coast.sections",
+      "new": "coast.nmc_east_coast_sections"
+    },
+    {
+      "old": "stream.nmc_town_river.mouth",
+      "new": "stream.nmc_town_river_mouth"
+    },
+    {
+      "old": "stream.nmc_town_river.head",
+      "new": "stream.nmc_town_river_head"
+    },
+    {
+      "old": "stream.nmc_town_river.head_of_tide",
+      "new": "stream.nmc_town_river_head_of_tide"
+    },
+    {
+      "old": "stream.nmc_north_creek.mouth",
+      "new": "stream.nmc_north_creek_mouth"
+    },
+    {
+      "old": "stream.nmc_north_creek.head",
+      "new": "stream.nmc_north_creek_head"
+    },
+    {
+      "old": "stream.nmc_camp_brook.mouth",
+      "new": "stream.nmc_camp_brook_mouth"
+    },
+    {
+      "old": "stream.nmc_camp_brook.head",
+      "new": "stream.nmc_camp_brook_head"
+    },
+    {
+      "old": "falls.nmc_the_falls.lip",
+      "new": "falls.nmc_the_falls_lip"
+    },
+    {
+      "old": "falls.nmc_the_falls.pool",
+      "new": "falls.nmc_the_falls_pool"
+    },
+    {
+      "old": "pond.nmc_camp_pond.bed",
+      "new": "pond.nmc_camp_pond_bed"
+    },
+    {
+      "old": "pond.nmc_north_creek_pond.bed",
+      "new": "pond.nmc_north_creek_pond_bed"
+    },
+    {
+      "old": "pond.nmc_barachois.bed",
+      "new": "pond.nmc_barachois_bed"
+    },
+    {
+      "old": "pond.nmc_marsh_pool.bed",
+      "new": "pond.nmc_marsh_pool_bed"
+    },
+    {
+      "old": "boardwalk.nmc_town_north.under",
+      "new": "boardwalk.nmc_town_north_under"
+    },
+    {
+      "old": "boardwalk.nmc_town_south.under",
+      "new": "boardwalk.nmc_town_south_under"
+    },
+    {
+      "old": "boardwalk.nmc_falls_deck.under",
+      "new": "boardwalk.nmc_falls_deck_under"
+    },
+    {
+      "old": "boardwalk.nmc_marsh_walk.under",
+      "new": "boardwalk.nmc_marsh_walk_under"
+    },
+    {
+      "old": "stream.nmc_town_river.mid",
+      "new": "stream.nmc_town_river_mid"
+    },
+    {
+      "old": "stream.nmc_town_river_mouth.mid",
+      "new": "stream.nmc_town_river_mouth_mid"
+    },
+    {
+      "old": "stream.nmc_north_creek.mid",
+      "new": "stream.nmc_north_creek_mid"
+    },
+    {
+      "old": "stream.nmc_camp_brook.mid",
+      "new": "stream.nmc_camp_brook_mid"
+    },
+    {
+      "old": "pond.nmc_camp_pond.surface",
+      "new": "pond.nmc_camp_pond_surface"
+    },
+    {
+      "old": "pond.nmc_north_creek_pond.surface",
+      "new": "pond.nmc_north_creek_pond_surface"
+    }
+  ]
+}

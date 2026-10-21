@@ -947,6 +947,11 @@ namespace HiddenHarbours.Tools.RigBaking
                                                           RigMeshData data,
                                                           RigHullExtraction extraction = null)
         {
+            if (data.Walk != null)
+            {
+                data.Faces.AddRange(data.WalkInteriorFaces);
+                return data.Walk.Hull + ": " + data.WalkInteriorFaces.Count + " room faces from global";
+            }
             if (!IsMeshInteriorHull(globalName)) return null;
 
             string repo = Directory.GetParent(Application.dataPath).FullName;
@@ -1124,6 +1129,18 @@ namespace HiddenHarbours.Tools.RigBaking
             using IRigScriptHost host = RigScriptHostFactory.Create();
             RigMeshData data = RigMeshExtractor.ExtractFrom(host, scriptPath, globalName,
                                                            hull: extraction);
+            string walkStem = Path.GetFileNameWithoutExtension(assetPath).Replace("HullMesh", "");
+            if (data.Walk != null)
+            {
+                var deck = ScriptableObject.CreateInstance<HiddenHarbours.Boats.BoatDeckDef>();
+                var room = ScriptableObject.CreateInstance<BoatInteriorDef>();
+                try
+                {
+                    var check = HullWalkSidecarImporter.Populate(data.Walk, data, walkStem, deck, room);
+                    if (!check.Ok) throw new FormatException(string.Join("; ", check.Refusals));
+                }
+                finally { UnityEngine.Object.DestroyImmediate(deck); UnityEngine.Object.DestroyImmediate(room); }
+            }
 
             // THE DOOR LEAF (2026-09-17), found while it is still the tail of her own faces. It stays
             // in `data` through the classification and the room below, so every committed side code
@@ -1233,6 +1250,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (created) def = ScriptableObject.CreateInstance<HullMeshDef>();
 
+            string beforeBake = created ? null : EditorJsonUtility.ToJson(def);
+
             def.Id = id;
             def.SourceRigPath = scriptPath;
             // Empty for a static-F hull, so the eleven defs baked before generators existed keep the
@@ -1283,6 +1302,18 @@ namespace HiddenHarbours.Tools.RigBaking
             // "this hull cannot be cut" — and re-baking such a hull writes the same empty array she
             // already had, so nothing moves.
             def.LevelTags = LevelTableFor(data);
+            def.LayoutSchema = data.Walk?.Schema ?? "";
+            def.LiftSets = data.Walk == null ? Array.Empty<HullMeshDef.LiftSet>() : data.LiftSets;
+
+            if (data.Walk == null && !created && beforeBake == EditorJsonUtility.ToJson(def) &&
+                MeshBytesEqual(def.Mesh, build.Mesh) && MeshBytesEqual(def.DoorLeafClosed, leafClosedBuild?.Mesh) &&
+                MeshBytesEqual(def.DoorLeafOpen, leafOpenBuild?.Mesh))
+            {
+                UnityEngine.Object.DestroyImmediate(build.Mesh);
+                if (leafClosedBuild != null) UnityEngine.Object.DestroyImmediate(leafClosedBuild.Mesh);
+                if (leafOpenBuild != null) UnityEngine.Object.DestroyImmediate(leafOpenBuild.Mesh);
+                return def;
+            }
 
             // The mesh sub-assets: replace, never accumulate. DestroyImmediate on the old one removes
             // it from the asset file; the new one is added under the same def. The two leaf poses are
@@ -1326,7 +1357,32 @@ namespace HiddenHarbours.Tools.RigBaking
                           : ", no cutaway (her rig publishes no geometry())") + ".");
             if (!def.IsUsable())
                 throw new InvalidOperationException($"Baked def at {assetPath} is not usable — see fields.");
+            if (data.Walk != null)
+            {
+                var visuals = HullMeshFleet.Hulls.Where(h => h.MeshAssetPath == assetPath)
+                    .SelectMany(h => h.VisualAssetPaths)
+                    .Select(AssetDatabase.LoadAssetAtPath<HiddenHarbours.Boats.BoatVisualDef>).Where(v => v != null);
+                var imported = HullWalkSidecarImporter.Import(data, walkStem, def, visuals);
+                if (!imported.Ok) throw new FormatException(string.Join("; ", imported.Refusals));
+            }
             return def;
+        }
+
+        public static bool MeshBytesEqual(Mesh a, Mesh b)
+        {
+            if (a == null || b == null) return a == null && b == null;
+            if (a.vertexCount != b.vertexCount || a.subMeshCount != b.subMeshCount ||
+                a.indexFormat != b.indexFormat || a.bounds != b.bounds ||
+                !a.GetVertexAttributes().SequenceEqual(b.GetVertexAttributes())) return false;
+            using var left = Mesh.AcquireReadOnlyMeshData(a);
+            using var right = Mesh.AcquireReadOnlyMeshData(b);
+            if (left[0].vertexBufferCount != right[0].vertexBufferCount) return false;
+            for (int stream = 0; stream < left[0].vertexBufferCount; stream++)
+                if (!left[0].GetVertexData<byte>(stream).ToArray().SequenceEqual(right[0].GetVertexData<byte>(stream).ToArray())) return false;
+            if (!left[0].GetIndexData<byte>().ToArray().SequenceEqual(right[0].GetIndexData<byte>().ToArray())) return false;
+            for (int sub = 0; sub < a.subMeshCount; sub++)
+                if (!a.GetSubMesh(sub).Equals(b.GetSubMesh(sub))) return false;
+            return true;
         }
 
         static void EnsureFolder(string folder)

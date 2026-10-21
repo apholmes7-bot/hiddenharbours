@@ -57,7 +57,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 9
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
@@ -127,10 +127,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 156
-        height: 329
+        width: 244
+        height: 332
       alignment: 9
-      pivot: {x: 0.49358973, y: 0.030395137}
+      pivot: {x: 0.5, y: 0.030120483}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: RedSpruce_mature_summer_normal_v1
       rect:
         serializedVersion: 2
-        x: 156
+        x: 244
         y: 0
-        width: 156
-        height: 329
+        width: 244
+        height: 332
       alignment: 9
-      pivot: {x: 0.49358973, y: 0.030395137}
+      pivot: {x: 0.5, y: 0.030120483}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: RedSpruce_mature_summer_normal_v2
       rect:
         serializedVersion: 2
-        x: 312
+        x: 488
         y: 0
-        width: 156
-        height: 329
+        width: 244
+        height: 332
       alignment: 9
-      pivot: {x: 0.49358973, y: 0.030395137}
+      pivot: {x: 0.5, y: 0.030120483}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: RedSpruce_mature_summer_normal_v3
       rect:
         serializedVersion: 2
-        x: 468
+        x: 732
         y: 0
-        width: 156
-        height: 329
+        width: 244
+        height: 332
       alignment: 9
-      pivot: {x: 0.49358973, y: 0.030395137}
+      pivot: {x: 0.5, y: 0.030120483}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

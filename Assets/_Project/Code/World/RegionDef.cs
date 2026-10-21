@@ -110,7 +110,8 @@ namespace HiddenHarbours.World
             SeabedTexels.x <= MaxSeabedTexels && SeabedTexels.y <= MaxSeabedTexels;
 
         /// <summary>Uncompressed R8 bytes the painted seabed costs at this extent — the number the
-        /// resolution decision is actually made on.</summary>
+        /// resolution decision is actually made on. The paint tool writes R16 since ADR 0046, so a map it
+        /// has written costs twice this.</summary>
         public int SeabedBytes => SeabedTexels.x * SeabedTexels.y;
     }
 }

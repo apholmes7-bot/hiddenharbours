@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: b8186727085d3724fa8514242408d00b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6819414129257120208
+    second: Spine_basalt_barnacled_0
+  - first:
+      213: -7427284119531132052
+    second: Spine_basalt_barnacled_1
+  - first:
+      213: 7612636042025215388
+    second: Spine_basalt_barnacled_2
+  - first:
+      213: -7740819437132126258
+    second: Spine_basalt_barnacled_3
+  - first:
+      213: 4435087606433135801
+    second: Spine_basalt_barnacled_4
+  - first:
+      213: 6144856853550854408
+    second: Spine_basalt_barnacled_5
+  - first:
+      213: -1704694744625147020
+    second: Spine_basalt_barnacled_6
+  - first:
+      213: -6011683720653699353
+    second: Spine_basalt_barnacled_7
+  - first:
+      213: -7324353691786154076
+    second: Spine_basalt_barnacled_8
+  - first:
+      213: -6054067899704658600
+    second: Spine_basalt_barnacled_9
+  - first:
+      213: -2210675610837008976
+    second: Spine_basalt_barnacled_10
+  - first:
+      213: 7168544855681680960
+    second: Spine_basalt_barnacled_11
+  - first:
+      213: -8029316305773390053
+    second: Spine_basalt_barnacled_12
+  - first:
+      213: -7437786035615403176
+    second: Spine_basalt_barnacled_13
+  - first:
+      213: -371459882599571661
+    second: Spine_basalt_barnacled_14
+  - first:
+      213: 845605937762258389
+    second: Spine_basalt_barnacled_15
+  - first:
+      213: 6465879833554964651
+    second: Spine_basalt_barnacled_16
+  - first:
+      213: 6248213980060014700
+    second: Spine_basalt_barnacled_17
+  - first:
+      213: -5741150718015229877
+    second: Spine_basalt_barnacled_18
+  - first:
+      213: -4121075824297173989
+    second: Spine_basalt_barnacled_19
+  - first:
+      213: -9061771331498258410
+    second: Spine_basalt_barnacled_20
+  - first:
+      213: -1492794286099351015
+    second: Spine_basalt_barnacled_21
+  - first:
+      213: -8779840298878257529
+    second: Spine_basalt_barnacled_22
+  - first:
+      213: 6413838174369428517
+    second: Spine_basalt_barnacled_23
+  - first:
+      213: -6206470327113464926
+    second: Spine_basalt_barnacled_24
+  - first:
+      213: -1430407070135611592
+    second: Spine_basalt_barnacled_25
+  - first:
+      213: -4758711635014753289
+    second: Spine_basalt_barnacled_26
+  - first:
+      213: 4587117750429184162
+    second: Spine_basalt_barnacled_27
+  - first:
+      213: 6662916477822224858
+    second: Spine_basalt_barnacled_28
+  - first:
+      213: 133881809724936835
+    second: Spine_basalt_barnacled_29
+  - first:
+      213: -4833971565561132719
+    second: Spine_basalt_barnacled_30
+  - first:
+      213: -6571548508519200556
+    second: Spine_basalt_barnacled_31
+  - first:
+      213: 9120525898477935915
+    second: Spine_basalt_barnacled_32
+  - first:
+      213: 6582371517675665754
+    second: Spine_basalt_barnacled_33
+  - first:
+      213: 3678296188192661885
+    second: Spine_basalt_barnacled_34
+  - first:
+      213: 2893539666422786728
+    second: Spine_basalt_barnacled_35
+  - first:
+      213: -348132897573498630
+    second: Spine_basalt_barnacled_36
+  - first:
+      213: -5933191770103212040
+    second: Spine_basalt_barnacled_37
+  - first:
+      213: -1474823691113850740
+    second: Spine_basalt_barnacled_38
+  - first:
+      213: -399423913426610153
+    second: Spine_basalt_barnacled_39
+  - first:
+      213: -6877061258875946466
+    second: Spine_basalt_barnacled_40
+  - first:
+      213: -30835121064299020
+    second: Spine_basalt_barnacled_41
+  - first:
+      213: 1950452340667220109
+    second: Spine_basalt_barnacled_42
+  - first:
+      213: 6857903296011424869
+    second: Spine_basalt_barnacled_43
+  - first:
+      213: -5074917865731993344
+    second: Spine_basalt_barnacled_44
+  - first:
+      213: 2668381672582652947
+    second: Spine_basalt_barnacled_45
+  - first:
+      213: 8909259669801785422
+    second: Spine_basalt_barnacled_46
+  - first:
+      213: -5212932578798541381
+    second: Spine_basalt_barnacled_47
+  - first:
+      213: 7812258636501214742
+    second: Spine_basalt_barnacled_48
+  - first:
+      213: -4627863242310303586
+    second: Spine_basalt_barnacled_49
+  - first:
+      213: -7632444781045726080
+    second: Spine_basalt_barnacled_50
+  - first:
+      213: 6364800178005708888
+    second: Spine_basalt_barnacled_51
+  - first:
+      213: -1935755878325893019
+    second: Spine_basalt_barnacled_52
+  - first:
+      213: 4957891825147279441
+    second: Spine_basalt_barnacled_53
+  - first:
+      213: -6582702035221347647
+    second: Spine_basalt_barnacled_54
+  - first:
+      213: -7635304139070846946
+    second: Spine_basalt_barnacled_55
+  - first:
+      213: 1418264657100875103
+    second: Spine_basalt_barnacled_56
+  - first:
+      213: -5835763390135000186
+    second: Spine_basalt_barnacled_57
+  - first:
+      213: -5768614756625254162
+    second: Spine_basalt_barnacled_58
+  - first:
+      213: 1273239661192719111
+    second: Spine_basalt_barnacled_59
+  - first:
+      213: 5149479921669937514
+    second: Spine_basalt_barnacled_60
+  - first:
+      213: 4528550709603249935
+    second: Spine_basalt_barnacled_61
+  - first:
+      213: -6049018638974612327
+    second: Spine_basalt_barnacled_62
+  - first:
+      213: -3465580877815582854
+    second: Spine_basalt_barnacled_63
+  - first:
+      213: 1596936866147691050
+    second: Spine_basalt_barnacled_64
+  - first:
+      213: 686319668204199817
+    second: Spine_basalt_barnacled_65
+  - first:
+      213: -5848486895939357109
+    second: Spine_basalt_barnacled_66
+  - first:
+      213: 4695156083161182399
+    second: Spine_basalt_barnacled_67
+  - first:
+      213: 4370997374318677978
+    second: Spine_basalt_barnacled_68
+  - first:
+      213: 1058651713583101480
+    second: Spine_basalt_barnacled_69
+  - first:
+      213: 6741730180043453503
+    second: Spine_basalt_barnacled_70
+  - first:
+      213: -7757456421215329432
+    second: Spine_basalt_barnacled_71
+  - first:
+      213: -4114221200312653146
+    second: Spine_basalt_barnacled_72
+  - first:
+      213: 1462484822828261004
+    second: Spine_basalt_barnacled_73
+  - first:
+      213: 2129509796146187758
+    second: Spine_basalt_barnacled_74
+  - first:
+      213: 739227656904816289
+    second: Spine_basalt_barnacled_75
+  - first:
+      213: -8075752345575499868
+    second: Spine_basalt_barnacled_76
+  - first:
+      213: -705654179809487175
+    second: Spine_basalt_barnacled_77
+  - first:
+      213: -9060164101497103854
+    second: Spine_basalt_barnacled_78
+  - first:
+      213: 7185768631097223166
+    second: Spine_basalt_barnacled_79
+  - first:
+      213: 7009482532446867166
+    second: Spine_basalt_barnacled_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f15d8a0be85a21f43bd2c81f896b383e
+      internalID: -187453990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fedf08ed0f5e2f647b0c32611f37f211
+      internalID: 1848405489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a006e3cb41419e499c32d261c289e24
+      internalID: 277108618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95f2cef9d36941942adcfa8105403451
+      internalID: -1687080606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a7b3394e64cd1f45865188094ec721c
+      internalID: -1311757875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88445d5b13c3b604fa49b2d87650321b
+      internalID: 786455109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db197aeeff0d6b442a98a7957b1bb035
+      internalID: 145153067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daffec839507e484fb39c5f73e8e822b
+      internalID: -1414447936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 930f557b1329f3f47ae2524f9da93310
+      internalID: -1689548578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73d55c9449385b7408499c8cc7394fa2
+      internalID: 2092305867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c92da7c7e118754449726317c35c5952
+      internalID: 1961995130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7531334f7704fd4d95ec5ad7db97466
+      internalID: 1638044851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7dfbe647d6c6a54692cac1d7c652388
+      internalID: -2023474019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 630f5d5f9586c164695ef5b12d79c04b
+      internalID: 1889069979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b578874d3e78fdd49810f235944ae559
+      internalID: -685353144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 541c087d0a1e1db4e854b977d6794e85
+      internalID: -1770413526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef4c2506f9f27b141995d570703997b6
+      internalID: 1130909603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4138278a460861c4d8ceeed2c0affcb8
+      internalID: 1817339141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98cf3df55874fc54295612bc72fc666d
+      internalID: -1105333731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 841b725da741b8f4ea05286f92e1c24f
+      internalID: -781209315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6d30cf663b0fee4180cf225dbfa6814
+      internalID: 2138054204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f4f7226763d2454a94553946ecaceb1
+      internalID: -1750058286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51ba1150a25795e44856837dbb7e72c2
+      internalID: 525490948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0470c72a3665dcf49a0232107f3ef9aa
+      internalID: -2093165343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: dd01be070cf08c64384cf5ae68d4d3ed
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_basalt_barnacled_c0_r0: -187453990
+      Spine_basalt_barnacled_c0_r1: -1689548578
+      Spine_basalt_barnacled_c0_r2: 1130909603
+      Spine_basalt_barnacled_c1_r0: 1848405489
+      Spine_basalt_barnacled_c1_r1: 2092305867
+      Spine_basalt_barnacled_c1_r2: 1817339141
+      Spine_basalt_barnacled_c2_r0: 277108618
+      Spine_basalt_barnacled_c2_r1: 1961995130
+      Spine_basalt_barnacled_c2_r2: -1105333731
+      Spine_basalt_barnacled_c3_r0: -1687080606
+      Spine_basalt_barnacled_c3_r1: 1638044851
+      Spine_basalt_barnacled_c3_r2: -781209315
+      Spine_basalt_barnacled_c4_r0: -1311757875
+      Spine_basalt_barnacled_c4_r1: -2023474019
+      Spine_basalt_barnacled_c4_r2: 2138054204
+      Spine_basalt_barnacled_c5_r0: 786455109
+      Spine_basalt_barnacled_c5_r1: 1889069979
+      Spine_basalt_barnacled_c5_r2: -1750058286
+      Spine_basalt_barnacled_c6_r0: 145153067
+      Spine_basalt_barnacled_c6_r1: -685353144
+      Spine_basalt_barnacled_c6_r2: 525490948
+      Spine_basalt_barnacled_c7_r0: -1414447936
+      Spine_basalt_barnacled_c7_r1: -1770413526
+      Spine_basalt_barnacled_c7_r2: -2093165343
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

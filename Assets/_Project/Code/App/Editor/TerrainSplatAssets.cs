@@ -8,8 +8,8 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// Asset plumbing for the five painted splat maps (ADR 0028 PR 2 addendum; the fourth arrived
-    /// with terrain kit v2, the fifth with v3's reef beds) — the paths the
+    /// Asset plumbing for the six painted splat maps (ADR 0028 PR 2 addendum; the fourth arrived
+    /// with terrain kit v2, the fifth with v3's reef beds, the sixth with terrain pass 9's Path) — the paths the
     /// builder wires, blank minting, the DATA-texture importer, and the commit that mirrors the
     /// height brush's <c>CommitTexture()</c> flow (encode → write → reimport → RELOAD from disk
     /// before anything re-wires a reference, because a reimport invalidates the in-memory object).
@@ -24,7 +24,7 @@ namespace HiddenHarbours.App.Editor
     {
         public const string Dir = "Assets/_Project/Data/Terrain";
 
-        /// <summary>The St Peters splat stem — <c>StPetersSplatA/B/C/D/E.png</c>, the EXACT paths
+        /// <summary>The St Peters splat stem — <c>StPetersSplatA/B/C/D/E/F.png</c>, the EXACT paths
         /// <c>StPetersBuilder</c> loads when it wires <c>TerrainSplatSurface.ConfigureSplat</c>
         /// (a pin test holds the two spellings together).
         ///
@@ -34,7 +34,7 @@ namespace HiddenHarbours.App.Editor
         public const string StPetersBaseName = "StPetersSplat";
 
         /// <summary>
-        /// The i-th splat texture's asset path (0=A 1=B 2=C 3=D 4=E) for <b>St Peters</b>.
+        /// The i-th splat texture's asset path (0=A 1=B 2=C 3=D 4=E 5=F) for <b>St Peters</b>.
         ///
         /// <para>⚠ This overload is the one that existed when St Peters was the only painted region, and
         /// it is kept so its callers do not have to change. It is not the one a NEW region uses — see
@@ -66,7 +66,11 @@ namespace HiddenHarbours.App.Editor
         public static bool AllExist() => AllExist(StPetersBaseName);
 
         /// <summary>True when every splat PNG for <paramref name="baseName"/> exists as an imported
-        /// asset. <inheritdoc cref="PathOf(int, string)"/></summary>
+        /// asset. <inheritdoc cref="PathOf(int, string)"/>
+        ///
+        /// <para>⚠ The starter-splat menus ask before they replace paint only when this is true, so a
+        /// painted region keeps all <see cref="TerrainSplatBrush.TextureCount"/> maps committed, the
+        /// sixth (Path's F) included, even while that one is blank.</para></summary>
         public static bool AllExist(string baseName)
         {
             for (int i = 0; i < TerrainSplatBrush.TextureCount; i++)

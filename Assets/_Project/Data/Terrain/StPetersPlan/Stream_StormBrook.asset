@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403eb22347c5492a047a67714d80b7ef, type: 3}
+  m_Name: Stream_StormBrook
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StreamDef
+  Id: stream.stp_storm_brook
+  DisplayName: Storm Brook
+  Source: {fileID: 11400000, guid: 1566408c292241578c4650475cb633c0, type: 2}
+  Points:
+  - {x: -27.5, y: -11}
+  - {x: -33, y: -12}
+  - {x: -40, y: -12.8}
+  - {x: -47, y: -13.8}
+  - {x: -53, y: -17}
+  - {x: -58, y: -19.5}
+  - {x: -63.5, y: -21.5}
+  BedZ:
+  - 5.18
+  - 5
+  - 3.9
+  - 2.5
+  - 1.5
+  - 0.2
+  - -0.6
+  Widths:
+  - 0.9
+  - 1
+  - 1
+  - 1.1
+  - 1.2
+  - 1.4
+  - 1.6
+  Depth: 0.12
+  Bank: {x: 0.35, y: 0.55}
+  Why: 'Out of the Storm Pond, west down to the shore. Its bed is the import along the line where that stands under the designed bed.'

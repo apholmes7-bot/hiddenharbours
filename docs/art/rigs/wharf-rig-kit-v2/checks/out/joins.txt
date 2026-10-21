@@ -1,0 +1,14 @@
+check joins — OK
+
+harbour:fishing     finger0.nx      meets float      edge 0 m · deck 0.45 / 0.45 · group 1 / 1
+harbour:fishing     finger1.nx      meets float      edge 0 m · deck 0.45 / 0.45 · group 1 / 1
+harbour:fishing     finger2.nx      meets float      edge 0 m · deck 0.45 / 0.45 · group 1 / 1
+harbour:cove        pier.nx         meets head       edge 0 m · deck 2.2 / 2.2
+harbour:cove        finger0.nx      meets float      edge 0 m · deck 0.32 / 0.32 · group 1 / 1
+harbour:cove        finger1.nx      meets float      edge 0 m · deck 0.32 / 0.32 · group 1 / 1
+harbour:commercial  quay0.px        meets quay1      edge 0 m · deck 2.8 / 2.8
+harbour:commercial  quay1.nx        meets quay0      edge 0 m · deck 2.8 / 2.8
+harbour:commercial  quay1.px        meets quay2      edge 0 m · deck 2.8 / 2.8
+harbour:commercial  quay2.nx        meets quay1      edge 0 m · deck 2.8 / 2.8
+
+10 joined ends, 0 problems

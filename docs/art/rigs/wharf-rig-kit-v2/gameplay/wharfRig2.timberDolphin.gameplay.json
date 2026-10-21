@@ -1,0 +1,456 @@
+{
+ "schema": "hidden-harbours/wharf-gameplay@2",
+ "rig": "wharfRig2.js + wharfRig2.geo.js + wharfRig2.fam.js + wharfRig2.verbs.js + wharfRig2.kit.js",
+ "exportSymbol": "WharfRig2",
+ "key": "timberDolphin",
+ "label": "dolphin",
+ "generated": "WharfRig2Kit.gameplay() off the live model — do not hand-edit, regenerate",
+ "frame": {
+  "units": "metres",
+  "axes": "+x along the module, +y its water face, +z up",
+  "origin": "module centre at chart datum",
+  "scale_px_per_m": 32,
+  "elev_deg": 40,
+  "dirs": 8,
+  "dir": 1
+ },
+ "params": {
+  "variant": 0,
+  "season": "summer",
+  "stage": "weathered",
+  "age": 0.65,
+  "tideRange": 1.8,
+  "tide": 0.9,
+  "frame": 0,
+  "wind": {
+   "w": 0.2,
+   "gust": 0.4,
+   "dir": 1
+  },
+  "sea": null
+ },
+ "SPRITE": {
+  "cell": [
+   50,
+   166
+  ],
+  "pivot": [
+   27,
+   111
+  ],
+  "pivotIs": "the projection of the model origin (x 0, y 0, z 0): blit at screen(origin) − pivot",
+  "loop": 16,
+  "moving": false
+ },
+ "WALK": [],
+ "HOLES": [],
+ "BLOCKERS": [],
+ "CLIMB": [],
+ "TIE": [],
+ "BOARD": [],
+ "BERTHS": [],
+ "FENDERS": [
+  {
+   "type": "dolphin",
+   "x": 0,
+   "y": 0,
+   "r": 0.73,
+   "module": "m0",
+   "note": "a pile cluster: a fender and a mooring post, not a deck"
+  }
+ ],
+ "FLOAT": {},
+ "SOCKETS": [
+  {
+   "id": "m0.nx",
+   "module": "m0",
+   "at": [
+    -0.7,
+    0,
+    2.8
+   ],
+   "n": [
+    -1,
+    0
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "m0.px",
+   "module": "m0",
+   "at": [
+    0.7,
+    0,
+    2.8
+   ],
+   "n": [
+    1,
+    0
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": null
+  },
+  {
+   "id": "m0.water0",
+   "module": "m0",
+   "at": [
+    -0.7,
+    0.7,
+    2.8
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "m0.shore0",
+   "module": "m0",
+   "at": [
+    -0.7,
+    -0.7,
+    2.8
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  },
+  {
+   "id": "m0.water1",
+   "module": "m0",
+   "at": [
+    0.7,
+    0.7,
+    2.8
+   ],
+   "n": [
+    0,
+    1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "water"
+  },
+  {
+   "id": "m0.shore1",
+   "module": "m0",
+   "at": [
+    0.7,
+    -0.7,
+    2.8
+   ],
+   "n": [
+    0,
+    -1
+   ],
+   "w": 1.4,
+   "type": "fixed",
+   "joined": false,
+   "face": "shore"
+  }
+ ],
+ "WATER": {
+  "bakedWaterPixels": 0,
+  "rule": "every pixel whose z is under the tide (view \"sub\") is the water shader’s: draw the sea over it, the first 0.16 m through three steps of water",
+  "contact": "WharfRig2.contact(frame): the waterline, for the foam lace",
+  "shade": "castShadow levels → TerrainLight6 relight o.lv"
+ },
+ "SNOW": {
+  "map": "frame.snow, one byte per pixel",
+  "rule": "snowed = round(cover × 254) >= byte; 255 never",
+  "never": "vertical faces, growth, sky visibility < 0.18, below tide + 0.25 + 0.2·wind"
+ },
+ "SHADOW": {
+  "levels": "1 canopy (under a deck, stays in overcast) · 2 partial · 3 full",
+  "call": "WharfRig2.castShadow(frame, sky, {z}) or shadeAt(frame, sky, x, y, z)"
+ },
+ "SORT": {
+  "floorLayer": "lay 0: decks and all under them draw under figures",
+  "raised": "lay 1: rails, bollards, grab hoops, dolphin rails, gangway rails — y-sort each by its base row",
+  "channel": "view \"layer\""
+ },
+ "CHAR": {
+  "from": "export/character-v9.2-import-kit reports/worldfit.txt",
+  "rev": "9.2",
+  "rig": "characterIsoRig9.js",
+  "rigSha": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "rung": 0.24,
+  "rungFit": [
+   0.211,
+   0.273
+  ],
+  "rungClamp": [
+   0.18,
+   0.45
+  ],
+  "ladderW": 0.45,
+  "standoff": 0.275,
+  "hands": 0.17,
+  "railFit": [
+   0.549,
+   0.724
+  ],
+  "railClamp": [
+   0.06,
+   1.3
+  ],
+  "reachLift": [
+   0,
+   1.012
+  ],
+  "gripRise": 0.095,
+  "want": [
+   0.132,
+   0.265
+  ],
+  "loadFit": [
+   0.718,
+   0.978
+  ],
+  "radius": [
+   0.141,
+   0.229
+  ],
+  "fisherR": 0.2,
+  "footprint": [
+   0.458,
+   0.37
+  ],
+  "head": 1.8,
+  "clips": {
+   "climb": "ladderDown (reverse to climb)",
+   "tie": "reach",
+   "haul": "haul",
+   "step": "board / boardDown",
+   "walk": "walk",
+   "swim": "swim / tread"
+  },
+  "built": {
+   "rung": 0.24,
+   "ladderW": 0.45,
+   "grab": 1,
+   "cleatHorn": 0.22,
+   "bollard": 0.75,
+   "gangwaySlopeMax": 18.43,
+   "gangwayClear": 1.1,
+   "rail": 1.05
+  }
+ },
+ "FIXTURES": [],
+ "VERBS": [],
+ "CHAR_FIT": [
+  {
+   "fixture": "ladder",
+   "what": "rung spacing",
+   "param": "rung",
+   "value": 0.24,
+   "range": [
+    0.211,
+    0.273
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "ladder",
+   "what": "top-out: board at three rungs",
+   "param": "rail",
+   "value": 0.72,
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "step down · boardDown",
+   "param": "stepDown",
+   "value": "≤ 1.30",
+   "range": [
+    0.06,
+    1.3
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "step up · board, hand on the edge",
+   "param": "stepUp",
+   "value": "0.549–0.724",
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding",
+   "what": "lower step up · boardDown backward",
+   "param": "stepUpNoGrip",
+   "value": "< 0.549",
+   "range": [
+    0.06,
+    1.3
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "cleat",
+   "what": "reach to the horn",
+   "param": "rest",
+   "value": 0.1,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "bollard",
+   "what": "reach to the head",
+   "param": "rest",
+   "value": 0.555,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "fish-cleaning table",
+   "what": "knife",
+   "param": "knife",
+   "value": 0.72,
+   "range": [
+    0.598,
+    0.76
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "fish-cleaning table",
+   "what": "bench",
+   "param": "bench",
+   "value": 0.72,
+   "range": [
+    0.643,
+    0.853
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "dock box",
+   "what": "load",
+   "param": "load",
+   "value": 0.85,
+   "range": [
+    0.718,
+    0.978
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "wharf davit + hauler",
+   "what": "warp",
+   "param": "warp sheave scale at 1.05",
+   "value": 0.52,
+   "range": [
+    0.4,
+    0.632
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "life-ring post",
+   "what": "rest",
+   "param": "rest",
+   "value": 0.95,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "service pedestal",
+   "what": "rest",
+   "param": "rest",
+   "value": 0.95,
+   "range": [
+    0,
+    1.012
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "boarding step",
+   "what": "rail",
+   "param": "rail",
+   "value": 0.6,
+   "range": [
+    0.549,
+    0.724
+   ],
+   "ok": true
+  },
+  {
+   "fixture": "gangway",
+   "what": "slope at chart datum",
+   "param": "deg",
+   "value": 18.43,
+   "range": [
+    0,
+    18.43
+   ],
+   "ok": true,
+   "note": "v9.2 walk is level: walkSlope requested"
+  }
+ ],
+ "CHAR_REQUESTS": [
+  {
+   "clip": "ladderOn / ladderOff",
+   "why": "v9.2 has the ladder loop and no way on or off it at the top",
+   "now": "down: blend 300 ms from idle at the deck spot (0.55 m inboard, back to the water) to ladderDown u 0 at the top station (root 0.435 m out from the face, z = deck − 0.72). Up: board at railZ 0.72, exact for every creator body, with the root advanced 0.60 m onto the deck over the drive (t 0.28–0.88)."
+  },
+  {
+   "clip": "ladderToHull",
+   "why": "stepping back off a ladder onto a boat alongside",
+   "now": "stop the loop with the lower foot at the sole, blend 250 ms to idle on the hull, then turn"
+  },
+  {
+   "clip": "walkSlope",
+   "why": "gangways (18.4° comfortable, 24° steep) and slipways (to 15°): v9.2 walk plants on a level",
+   "now": "walk at 0.727 m/s along the slope, root z linear hinge → toe; at 18° the feet float at most ±1.5 px"
+  },
+  {
+   "clip": "board travel",
+   "why": "board and boardDown end at idle over the start xy; their horizontal travel is not published",
+   "now": "advance the root to the landing over the drive (t 0.28–0.88); the kit gives the landing"
+  },
+  {
+   "clip": "treadToLadder",
+   "why": "a swimmer taking the bottom rung",
+   "now": "blend 300 ms from tread at the ladder root to ladderDown reversed"
+  },
+  {
+   "clip": "stepUp",
+   "why": "board grips the edge it steps onto, and below 0.549 m the tallest creator bodies cannot reach it: a boat’s sole up onto a float is 0.3–0.5 m",
+   "now": "boardDown played backward, which fits every creator body from 0.06 to 1.30 m (measured on all 375)"
+  }
+ ]
+}

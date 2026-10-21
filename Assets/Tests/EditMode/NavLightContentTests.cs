@@ -14,14 +14,13 @@ namespace HiddenHarbours.Tests.EditMode
     /// do the marks standing in the two harbours light a readable picture?</b>
     ///
     /// <para>Where <see cref="NavLightCharacterTests"/> pins the arithmetic, this file points it at
-    /// the real content: the ten <see cref="NavBuoyDef"/> assets in the project, and the twenty-three
-    /// marks the two region planners actually place. Nothing here loads a scene — the plans are pure
+    /// the real content: the ten <see cref="NavBuoyDef"/> assets in the project, and the marks the two
+    /// region planners actually place (Nine Mile Creek's eleven on G3 since NMC H2). Nothing here loads a scene — the plans are pure
     /// functions of the same terrain the builders configure, which is what lets a headless test know
     /// where every buoy in the game is.</para>
     /// </summary>
     public class NavLightContentTests
     {
-        private GameObject _nmcGo;
         private GameObject _spGo;
         private NavMarkPlanResult _nmcPlan;
         private NavMarkPlanResult _spPlan;
@@ -30,10 +29,8 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _nmcGo = new GameObject("NineMileCreekMainland_NavLightTest");
-            var nmc = _nmcGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekMainland.ConfigureTerrain(nmc);
-            _nmcPlan = NineMileCreekNavMarks.Plan(nmc);
+            // Nine Mile Creek's marks stand on G3 since NMC H2: planned on the ground its scene stands on.
+            _nmcPlan = NineMileCreekNavMarks.Plan(NineMileCreekLiveGround.Plan);
 
             _spGo = new GameObject("StPeters_NavLightTest");
             var sp = _spGo.AddComponent<TidalTerrain>();
@@ -46,7 +43,6 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            if (_nmcGo != null) Object.DestroyImmediate(_nmcGo);
             if (_spGo != null) Object.DestroyImmediate(_spGo);
             GameServices.Reset();
         }
@@ -198,8 +194,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// ⭐ <b>The one prefab every mark in the game wears carries a lamp.</b>
         ///
-        /// <para>This is the wiring that makes the feature reach the water at all: twenty-five marks
-        /// are already standing in the two scenes as instances of this prefab, and a component added
+        /// <para>This is the wiring that makes the feature reach the water at all: twenty-seven marks
+        /// stand in the two scenes as instances of this prefab (three of Nine Mile Creek's retired and
+        /// inactive since NMC H2), and a component added
         /// to the asset reaches every one of them without a rebuild. It is asserted because the
         /// component block was added to the prefab's YAML by hand — a clean import proves the file
         /// parses, not that the lamp is on it — and because a future re-run of
@@ -238,7 +235,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
-        //  2. THE MARKS AS PLACED — twenty-three of them, in two harbours
+        //  2. THE MARKS AS PLACED, in two harbours
         // =============================================================================================
 
         /// <summary>
@@ -249,8 +246,9 @@ namespace HiddenHarbours.Tests.EditMode
         ///
         /// <para><b>⚠️ The comparison is PER REGION, and that is a correction the measurement forced.</b>
         /// Compared across the whole game, the two closest-phased marks of one character came out
-        /// <b>0.019 s apart on a one-second period</b> — which is unison to any eye. They are the north
-        /// cardinals of Nine Mile Creek and St Peters: two harbours the player is never in at once, so
+        /// <b>0.019 s apart on a one-second period</b> — which is unison to any eye. They were the north
+        /// cardinals of Nine Mile Creek and St Peters (Nine Mile Creek's cardinals were retired in NMC H2,
+        /// so the pair reported now is another): two harbours the player is never in at once, so
         /// the two lamps are never in one frame and the coincidence cannot be seen. Asserting on the
         /// global minimum would therefore have failed on a picture nobody can look at, and — worse —
         /// a global bar that PASSED would have said nothing about the thing that matters. What can be

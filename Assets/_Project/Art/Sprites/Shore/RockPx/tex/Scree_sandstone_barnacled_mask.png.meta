@@ -1,0 +1,775 @@
+fileFormatVersion: 2
+guid: 27152d19ecd0bd2409b53d6dcf480592
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6581627207148224051
+    second: Scree_sandstone_barnacled_mask_0
+  - first:
+      213: 7000952232875174112
+    second: Scree_sandstone_barnacled_mask_1
+  - first:
+      213: 6209208140586524829
+    second: Scree_sandstone_barnacled_mask_2
+  - first:
+      213: -9144891310592233442
+    second: Scree_sandstone_barnacled_mask_3
+  - first:
+      213: 4117514909693958850
+    second: Scree_sandstone_barnacled_mask_4
+  - first:
+      213: -8205467789285258010
+    second: Scree_sandstone_barnacled_mask_5
+  - first:
+      213: -8444924165690064728
+    second: Scree_sandstone_barnacled_mask_6
+  - first:
+      213: 9191264966441503875
+    second: Scree_sandstone_barnacled_mask_7
+  - first:
+      213: -8592051971116194268
+    second: Scree_sandstone_barnacled_mask_8
+  - first:
+      213: -8603281432667561696
+    second: Scree_sandstone_barnacled_mask_9
+  - first:
+      213: 1035603380064950621
+    second: Scree_sandstone_barnacled_mask_10
+  - first:
+      213: -2068251469511750594
+    second: Scree_sandstone_barnacled_mask_11
+  - first:
+      213: -2137451964407439662
+    second: Scree_sandstone_barnacled_mask_12
+  - first:
+      213: -3215489286168346910
+    second: Scree_sandstone_barnacled_mask_13
+  - first:
+      213: -3373829841986133236
+    second: Scree_sandstone_barnacled_mask_14
+  - first:
+      213: -1203453248135232225
+    second: Scree_sandstone_barnacled_mask_15
+  - first:
+      213: 2505316026272494883
+    second: Scree_sandstone_barnacled_mask_16
+  - first:
+      213: -6263612904149507548
+    second: Scree_sandstone_barnacled_mask_17
+  - first:
+      213: 6817211940607759000
+    second: Scree_sandstone_barnacled_mask_18
+  - first:
+      213: -6416151407911505180
+    second: Scree_sandstone_barnacled_mask_19
+  - first:
+      213: -6728480033072611217
+    second: Scree_sandstone_barnacled_mask_20
+  - first:
+      213: -8292725889384109117
+    second: Scree_sandstone_barnacled_mask_21
+  - first:
+      213: -1066435794119272908
+    second: Scree_sandstone_barnacled_mask_22
+  - first:
+      213: 4618504138733736494
+    second: Scree_sandstone_barnacled_mask_23
+  - first:
+      213: -2273688811802137143
+    second: Scree_sandstone_barnacled_mask_24
+  - first:
+      213: -7951551035130489516
+    second: Scree_sandstone_barnacled_mask_25
+  - first:
+      213: 7454179928875863933
+    second: Scree_sandstone_barnacled_mask_26
+  - first:
+      213: -3991167973481091486
+    second: Scree_sandstone_barnacled_mask_27
+  - first:
+      213: 6923456726084813715
+    second: Scree_sandstone_barnacled_mask_28
+  - first:
+      213: -8035578411197728255
+    second: Scree_sandstone_barnacled_mask_29
+  - first:
+      213: -1455854063779569495
+    second: Scree_sandstone_barnacled_mask_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e7c6ddbd71bfed40ab1c08d9edf9ae4
+      internalID: 641765337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 738cbffba39acf34a9760ecac64ef54d
+      internalID: -1799757161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b9ae8981e3e81046b98339c38ecf599
+      internalID: 363452396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 041a4c49d93fd6a4a82dd9e74f11ba7d
+      internalID: -1429994525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5740074661fb084c8fe5d632d0d3731
+      internalID: 1927774318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c299af1ed9043f459040f74e2989497
+      internalID: 718132180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cacfb504769ecf46861745b70dc3ad1
+      internalID: 1853595648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 92
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01c95862cd75ea94483c721c3da5b56c
+      internalID: 806288875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa726d6d056d3fd41b99ce964acf623d
+      internalID: 808191946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 395825781d4308949b0ee4a29021d8e4
+      internalID: 1662417634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd8b304ce6ae5854eb9b090759e152ef
+      internalID: 224077569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb8102ea91ea16142a4a9874cf39e01e
+      internalID: 680161888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e75763b84ce7c340bb3d80f0faf049c
+      internalID: -713493395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b38d65db6d650640841d0eeb5b03487
+      internalID: -1240723088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 087a58c1ba212ce4a812f638494795f0
+      internalID: 98813429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 46
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d163215bec9539b4bbdb002330586fe8
+      internalID: 202937395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 192f4ff616c63ec49ae6f55d68ddcbde
+      internalID: -1494101529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc15b93629711f34f89d85c1a94bc2d0
+      internalID: 609241791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e05e34ae5c43dd4b88cbcf860c3a88f
+      internalID: -1928085681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9656239658bc7b045987da22670979ee
+      internalID: 871737911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.17391305}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3cba2ac070c0f044a9ba9be63cae4c5
+      internalID: -1148176508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.26086956}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9b92f1666e6ab44981f401c2c3e6d40
+      internalID: -909366566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1521739}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8f3ea3057e433345828ce096e2b8ed6
+      internalID: 567994140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scree_sandstone_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 0
+        width: 78
+        height: 46
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32608697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61c8b5a050234294aba442a321397062
+      internalID: -2009609037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 961e2cc3609eec34c94b0755ed6d9afa
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Scree_sandstone_barnacled_mask_c0_r0: 641765337
+      Scree_sandstone_barnacled_mask_c0_r1: 808191946
+      Scree_sandstone_barnacled_mask_c0_r2: -1494101529
+      Scree_sandstone_barnacled_mask_c1_r0: -1799757161
+      Scree_sandstone_barnacled_mask_c1_r1: 1662417634
+      Scree_sandstone_barnacled_mask_c1_r2: 609241791
+      Scree_sandstone_barnacled_mask_c2_r0: 363452396
+      Scree_sandstone_barnacled_mask_c2_r1: 224077569
+      Scree_sandstone_barnacled_mask_c2_r2: -1928085681
+      Scree_sandstone_barnacled_mask_c3_r0: -1429994525
+      Scree_sandstone_barnacled_mask_c3_r1: 680161888
+      Scree_sandstone_barnacled_mask_c3_r2: 871737911
+      Scree_sandstone_barnacled_mask_c4_r0: 1927774318
+      Scree_sandstone_barnacled_mask_c4_r1: -713493395
+      Scree_sandstone_barnacled_mask_c4_r2: -1148176508
+      Scree_sandstone_barnacled_mask_c5_r0: 718132180
+      Scree_sandstone_barnacled_mask_c5_r1: -1240723088
+      Scree_sandstone_barnacled_mask_c5_r2: -909366566
+      Scree_sandstone_barnacled_mask_c6_r0: 1853595648
+      Scree_sandstone_barnacled_mask_c6_r1: 98813429
+      Scree_sandstone_barnacled_mask_c6_r2: 567994140
+      Scree_sandstone_barnacled_mask_c7_r0: 806288875
+      Scree_sandstone_barnacled_mask_c7_r1: 202937395
+      Scree_sandstone_barnacled_mask_c7_r2: -2009609037
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

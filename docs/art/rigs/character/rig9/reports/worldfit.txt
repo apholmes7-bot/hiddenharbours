@@ -1,0 +1,203 @@
+check-worldfit — collider, footprint and world fixtures, fitted per build
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144
+poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07  fit module b793707e8e42da8dbdeb45cb2a519d9bc3099e585909f1d59362aa4723251c6c
+
+A build fits a fixture when every limb in every frame of its clips makes its target to within 5 mm.
+Bodies: 10 presets + 500 (age x shape x height x weight); creator = the 375 youth, adult and elder bodies.
+
+COLLIDER  collision_radius_m = shoulder joint half-span; footprint_m = [2 x that, 2 x 0.180 x footK]  (Fisher 0.20, 0.40 x 0.36)
+  preset      radius  footprint      measured half-width x/y (whole · body)
+  fisher      0.200   0.400 x 0.360  0.254 / 0.23 · 0.254 / 0.18
+  ginny       0.172   0.344 x 0.357  0.219 / 0.228 · 0.219 / 0.178
+  skipper     0.210   0.419 x 0.359  0.266 / 0.255 · 0.266 / 0.18
+  nan         0.179   0.359 x 0.346  0.237 / 0.228 · 0.237 / 0.185
+  deckboss    0.229   0.458 x 0.370  0.291 / 0.231 · 0.291 / 0.185
+  packer      0.178   0.356 x 0.355  0.229 / 0.227 · 0.229 / 0.178
+  cutter      0.157   0.314 x 0.344  0.2 / 0.24 · 0.2 / 0.172
+  hand        0.174   0.348 x 0.355  0.223 / 0.227 · 0.223 / 0.178
+  boy         0.158   0.317 x 0.322  0.205 / 0.222 · 0.205 / 0.161
+  girl        0.144   0.288 x 0.321  0.188 / 0.221 · 0.188 / 0.16
+  creator bodies: radius 0.141–0.229, footprint 0.283–0.458 x 0.338–0.37; children: radius 0.123–0.182
+
+RAIL — boarding rail height  [board, boardDown]
+  railZ default 0.55, range 0.06–1.3
+  presets short at the default: boy 26 mm, girl 35 mm
+  creator bodies short: 0 / 375; child bodies short: 80 / 125
+  fits every creator body: 0.549–0.724; every preset: none; every child: none
+  per preset (railZ that fits):
+    fisher    fits          0.501–0.996
+    ginny     fits          0.484–0.959
+    skipper   fits          0.481–0.986
+    nan       fits          0.419–0.828
+    deckboss  fits          0.549–1.118
+    packer    fits          0.477–0.941
+    cutter    fits          0.414–0.797
+    hand      fits          0.468–0.940
+    boy       short 26 mm   0.338–0.518
+    girl      short 35 mm   0.332–0.506
+
+LADDER — ladder rung spacing  [ladderDown]
+  rung default 0.3, range 0.18–0.45
+  presets short at the default: cutter 27 mm, boy 221 mm, girl 236 mm
+  creator bodies short: 50 / 375; child bodies short: 125 / 125
+    youth (40/125): h-2 all | h-1 s0.5; s0.75; s1
+    elder (10/125): h-2 s0.75; s1
+  fits every creator body: 0.211–0.273; every preset: none; every child: none
+  per preset (rung that fits):
+    fisher    fits          0.194–0.357
+    ginny     fits          0.189–0.346
+    skipper   fits          0.193–0.355
+    nan       fits          0.180–0.312
+    deckboss  fits          0.211–0.389
+    packer    fits          0.186–0.340
+    cutter    short 27 mm   0.180–0.293
+    hand      fits          0.183–0.333
+    boy       short 221 mm  nothing in range (best 12 mm at 0.18)
+    girl      short 236 mm  nothing in range (best 12 mm at 0.18)
+
+WARP — hauler (warp) height  [hauler]
+  workZ default 1.05, range 0.45–1.25
+  presets short at the default: nan 42 mm, cutter 69 mm, boy 210 mm, girl 215 mm
+  creator bodies short: 188 / 375; child bodies short: 125 / 125
+    youth (91/125): h-2 all | h-1 all | h0 all | h+1 s0 w+1,+2; s0.25 w+1,+2; s0.5 w0,+1,+2; s0.75 w-1,0,+1,+2; s1
+    adult (34/125): h-2 all | h-1 s0 w+2; s0.25 w+2; s0.5 w+1,+2; s0.75 w+1,+2; s1 w0,+1,+2
+    elder (63/125): h-2 all | h-1 all | h0 s0 w+1,+2; s0.25 w+1,+2; s0.5 w+1,+2; s0.75 w0,+1,+2; s1 w-1,0,+1,+2
+  fits every creator body: none; every preset: none; every child: none
+  sheave offset scale (toward the body) that fits at workZ 1.05: every creator body 0.400–0.632; every preset none
+  per preset (workZ that fits; sheave scale that fits at 1.05, or at the closest height):
+    fisher    fits          0.882–1.181   sheave 0.400–1.000
+    ginny     fits          0.865–1.163   sheave 0.400–1.000
+    skipper   fits          0.879–1.150   sheave 0.400–1.000
+    nan       short 42 mm   nothing in range (best 14 mm at 0.89)   sheave 0.400–0.900
+    deckboss  fits          0.932–1.250   sheave 0.400–1.000
+    packer    fits          0.857–1.119   sheave 0.400–1.000
+    cutter    short 69 mm   nothing in range (best 21 mm at 0.85)   sheave 0.400–0.821
+    hand      fits          0.847–1.077   sheave 0.400–1.000
+    boy       short 210 mm  nothing in range (best 85 mm at 0.71)   sheave none at 1.05; at 0.71: none (best 9 mm at 0.4)
+    girl      short 215 mm  nothing in range (best 80 mm at 0.69)   sheave none at 1.05; at 0.69: none (best 24 mm at 0.4)
+
+BENCH — work bench height  [bench]
+  workZ default 0.885, range 0.45–1.25
+  presets short at the default: boy 114 mm, girl 122 mm
+  creator bodies short: 8 / 375; child bodies short: 125 / 125
+    youth (8/125): h-2 s0.75 w0,+1,+2; s1
+  fits every creator body: 0.643–0.853; every preset: 0.643–0.650; every child: none
+  per preset (workZ that fits):
+    fisher    fits          0.599–1.232
+    ginny     fits          0.578–1.194
+    skipper   fits          0.602–1.219
+    nan       fits          0.557–1.035
+    deckboss  fits          0.643–1.250
+    packer    fits          0.576–1.166
+    cutter    fits          0.541–0.960
+    hand      fits          0.572–1.133
+    boy       short 114 mm  0.554–0.662
+    girl      short 122 mm  0.546–0.650
+
+KNIFE — cutting surface height  [chop]
+  workZ default 0.775, range 0.45–1.25
+  presets short at the default: boy 127 mm, girl 139 mm
+  creator bodies short: 5 / 375; child bodies short: 125 / 125
+    youth (5/125): h-2 s1
+  fits every creator body: 0.598–0.760; every preset: 0.598–0.600; every child: none
+  per preset (workZ that fits):
+    fisher    fits          0.552–1.103
+    ginny     fits          0.533–1.063
+    skipper   fits          0.553–1.093
+    nan       fits          0.499–0.919
+    deckboss  fits          0.598–1.232
+    packer    fits          0.529–1.038
+    cutter    fits          0.481–0.847
+    hand      fits          0.523–1.007
+    boy       short 127 mm  0.450–0.615
+    girl      short 139 mm  0.450–0.600
+
+LOAD — lift, place and toss height  [lift, place, toss]
+  workZ default 0.93, range 0.45–1.25
+  presets short at the default: boy 59 mm, girl 73 mm
+  creator bodies short: 0 / 375; child bodies short: 110 / 125
+  fits every creator body: 0.718–0.978; every preset: none; every child: none
+  per preset (workZ that fits):
+    fisher    fits          0.676–1.250
+    ginny     fits          0.669–1.250
+    skipper   fits          0.672–1.250
+    nan       fits          0.633–1.181
+    deckboss  fits          0.713–1.250
+    packer    fits          0.662–1.250
+    cutter    fits          0.630–1.089
+    hand      fits          0.657–1.250
+    boy       short 59 mm   0.640–0.794
+    girl      short 73 mm   nothing in range (best 5 mm at 0.71)
+
+REST — tool rest height (hand-over)  [reach]
+  lift default 0, range 0–1.25
+  presets short at the default: none
+  creator bodies short: 0 / 375; child bodies short: 22 / 125
+  fits every creator body: 0.000–1.012; every preset: 0.000–0.854; every child: 0.013–0.687
+  per preset (lift that fits):
+    fisher    fits          0.000–1.250
+    ginny     fits          0.000–1.250
+    skipper   fits          0.000–1.250
+    nan       fits          0.000–1.179
+    deckboss  fits          0.000–1.250
+    packer    fits          0.000–1.250
+    cutter    fits          0.000–1.095
+    hand      fits          0.000–1.250
+    boy       fits          0.000–0.869
+    girl      fits          0.000–0.854
+
+WHEEL — cab seat and wheel  [drive]
+  presets short at the default: nan 36 mm, cutter 52 mm, boy 163 mm, girl 169 mm
+  creator bodies short: 170 / 375; child bodies short: 125 / 125
+    youth (80/125): h-2 all | h-1 all | h0 all | h+1 s1
+    adult (25/125): h-2 s0.25; s0.5; s0.75; s1 | h-1 s1
+    elder (65/125): h-2 all | h-1 all | h0 s0.5; s0.75; s1
+  seat heights where the feet reach, every creator body: 0.250–0.291; every preset: none
+  per preset (feet / hands mm at the default; seat that fits the feet; wheel at that seat):
+    fisher    0 / 0      0.250–0.452                   wheel default
+    ginny     0 / 0      0.250–0.432                   wheel default
+    skipper   0 / 0      0.250–0.447                   wheel default
+    nan       36 / 0     0.250–0.358                   wheel default
+    deckboss  0 / 0      0.250–0.518                   wheel default
+    packer    0 / 0      0.250–0.422                   wheel default
+    cutter    52 / 0     0.250–0.337                   wheel default
+    hand      0 / 0      0.250–0.419                   wheel default
+    boy       163 / 2    none (best 60 mm at 0.25)     wheel default
+    girl      169 / 5    none (best 65 mm at 0.25)     wheel default
+
+SADDLE — saddle: seat, grips and pegs  [astride, astrideStand]
+  presets short at the default: fisher 59 mm, ginny 76 mm, skipper 63 mm, nan 129 mm, packer 80 mm, cutter 148 mm, hand 88 mm, boy 261 mm, girl 267 mm
+  creator bodies short: 373 / 375; child bodies short: 125 / 125
+    youth all
+    adult (123/125): h-2 all | h-1 all | h0 all | h+1 all | h+2 s0 w-2,-1,0; s0.25; s0.5; s0.75; s1
+    elder all
+  every creator body: pegs z 0.612–0.900, grips y -0.084–0.228, whole-saddle scale 0.340–0.692
+  per preset (feet / hands mm at the default; pegs z; grips y; scale):
+    fisher    59 / 38    0.478–0.900     -0.100–0.372      0.312–0.907
+    ginny     76 / 55    0.496–0.900     -0.100–0.345      0.305–0.878
+    skipper   63 / 2     0.482–0.900     -0.100–0.420      0.303–0.901
+    nan       129 / 55   0.553–0.900     -0.100–0.349      0.310–0.784
+    deckboss  3 / 2      0.420–0.900     -0.100–0.420      0.308–1.000
+    packer    80 / 59    0.499–0.900     -0.100–0.341      0.308–0.871
+    cutter    148 / 110  0.575–0.900     -0.100–0.269      0.305–0.751
+    hand      88 / 65    0.509–0.900     -0.100–0.333      0.300–0.858
+    boy       261 / 169  0.707–0.900     -0.037–0.172      0.384–0.535
+    girl      267 / 178  0.715–0.900     -0.017–0.145      0.381–0.523
+
+MOUNT — mount and dismount  [mountUp, mountDown, mountCab, mountCabDown]
+  presets short at the default: fisher 125 mm, ginny 154 mm, skipper 132 mm, nan 254 mm, deckboss 43 mm, packer 164 mm, cutter 283 mm, hand 172 mm, boy 499 mm, girl 509 mm
+  creator bodies short: 375 / 375; child bodies short: 125 / 125
+  shortfall, creator bodies: 43–341 mm; presets: 43–509 mm; at the default saddle (its seat is out of reach from the ground); fitted by saddle scale: every creator body 0.300–0.493, every preset 0.309–0.384, every child none; at CONTRACT.saddleFit (0.4): creator 375 / 375, children 50 / 125
+    fisher    mountUp 125 · mountDown 122 · mountCab 60 · mountCabDown 57
+    ginny     mountUp 154 · mountDown 151 · mountCab 66 · mountCabDown 61
+    skipper   mountUp 132 · mountDown 129 · mountCab 61 · mountCabDown 57
+    nan       mountUp 254 · mountDown 250 · mountCab 132 · mountCabDown 134
+    deckboss  mountUp 43 · mountDown 32 · mountCab 40 · mountCabDown 43
+    packer    mountUp 164 · mountDown 160 · mountCab 68 · mountCabDown 62
+    cutter    mountUp 283 · mountDown 279 · mountCab 160 · mountCabDown 162
+    hand      mountUp 172 · mountDown 168 · mountCab 70 · mountCabDown 63
+    boy       mountUp 499 · mountDown 495 · mountCab 368 · mountCabDown 370
+    girl      mountUp 509 · mountDown 505 · mountCab 378 · mountCabDown 380
+
+data/world-fit.v9.json: regenerated, byte-identical to the committed file
+OK — no problems.

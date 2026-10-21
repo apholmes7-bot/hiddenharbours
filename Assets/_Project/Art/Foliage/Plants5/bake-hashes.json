@@ -1,0 +1,802 @@
+[
+  {
+    "file": "LowbushBlueberry_0_unlit.png",
+    "rgbaSha256": "d0e013c41c13ca1017c9b03af759639f0225016612f2d6933b7586966e183617"
+  },
+  {
+    "file": "LowbushBlueberry_0_normal.png",
+    "rgbaSha256": "200684d4317081e41e68dd66ce7e0abd01a068035135479083080b99c5dcc981"
+  },
+  {
+    "file": "LowbushBlueberry_0_light.png",
+    "rgbaSha256": "b8344f375b7fa41c67395428c126deff665a8d5e1272ea125cc14d71059ff89e"
+  },
+  {
+    "file": "LowbushBlueberry_0_detail.png",
+    "rgbaSha256": "12b6e54d7aa039904492e229e1f5ffee62b05d590a68920103ca63ddfe7d1c08"
+  },
+  {
+    "file": "SheepLaurel_0_unlit.png",
+    "rgbaSha256": "a3a29ff643e35a6e9ee9e041b7ff9fd6f645d3db1070a8c14442a61ee250eaa6"
+  },
+  {
+    "file": "SheepLaurel_0_normal.png",
+    "rgbaSha256": "e5951181768cd971f9ff82b35419df054d47f612eef1833eead904f606caa631"
+  },
+  {
+    "file": "SheepLaurel_0_light.png",
+    "rgbaSha256": "cf798d02fb7318b417c57285942920d6cff4e776fbb1f63441b89769c2dff626"
+  },
+  {
+    "file": "SheepLaurel_0_detail.png",
+    "rgbaSha256": "bf9081106882edc4186062e660c5a2f52b9da461c167c027025a6fad40cd0c92"
+  },
+  {
+    "file": "Rhodora_0_unlit.png",
+    "rgbaSha256": "a61bc5cc0fc01b211b1c1ca2909f1144fca2d8d8d0f0ab98bc01f2145ab1f42e"
+  },
+  {
+    "file": "Rhodora_0_normal.png",
+    "rgbaSha256": "f295cb024feaeabcc167ee3be50aecd184fa14e8652d4c0b2e5f43a886ed471a"
+  },
+  {
+    "file": "Rhodora_0_light.png",
+    "rgbaSha256": "e44cc16993ec5d146cfa2f583239d57b1929c9f3e7d4c2349824f4baffc3b5f3"
+  },
+  {
+    "file": "Rhodora_0_detail.png",
+    "rgbaSha256": "efec9c1f9c2a96b6cb3573a25f5a1ce9f77da55c5757013b9fd21b90040262d8"
+  },
+  {
+    "file": "BlackHuckleberry_0_unlit.png",
+    "rgbaSha256": "4087c9a17deb6dde192a420d518e16a5384fc5c59beacda2bea4b545ef36abd9"
+  },
+  {
+    "file": "BlackHuckleberry_0_normal.png",
+    "rgbaSha256": "2a6205c4f97eeee80217aa0564e8e1782908b3a20680134ae703f6e61eb550f1"
+  },
+  {
+    "file": "BlackHuckleberry_0_light.png",
+    "rgbaSha256": "407e742a4183d35f2f0636d0b35f7c6e07caaebe6fe1100b05ae117bbc3f19c1"
+  },
+  {
+    "file": "BlackHuckleberry_0_detail.png",
+    "rgbaSha256": "1a32b082b32e8c4e7d57bf251959ceb2e1e65a51a44b3d98bd3eed942f0861ef"
+  },
+  {
+    "file": "CommonJuniper_0_unlit.png",
+    "rgbaSha256": "02675eaa1931fb36b5db20a59e19090283662263b5ae68a99c608e4d1ebee8fb"
+  },
+  {
+    "file": "CommonJuniper_0_normal.png",
+    "rgbaSha256": "093d9e40853769d0b25327b4fa1f8e6cab5a4306afdcf37a58f8c2c245a5ce41"
+  },
+  {
+    "file": "CommonJuniper_0_light.png",
+    "rgbaSha256": "6a4a8e463867e0d4a60b774b39b53e1137ae64026dd2887f2f6684936ebf9b11"
+  },
+  {
+    "file": "CommonJuniper_0_detail.png",
+    "rgbaSha256": "a509428c6bc3b9699e6bd9d6ea31fb0050231dda70255fcaad8606693895064a"
+  },
+  {
+    "file": "Leatherleaf_0_unlit.png",
+    "rgbaSha256": "6dd3493d764ebf50856155ee8d4c0a3df61b342c977db07a5eafe4d94ea5b131"
+  },
+  {
+    "file": "Leatherleaf_0_normal.png",
+    "rgbaSha256": "ef04b21b9ac18536ce8653fb54bd1806a137cc83a6a350211fbe7e0886f30980"
+  },
+  {
+    "file": "Leatherleaf_0_light.png",
+    "rgbaSha256": "f4a81bfc67d63fbd0becd3163895d052f58f0583da85ecb9fc275778909b6388"
+  },
+  {
+    "file": "Leatherleaf_0_detail.png",
+    "rgbaSha256": "7b92f9e7d543f0e26912bf9edaf51a13f1deebb3929b16816abb3aa92d613c85"
+  },
+  {
+    "file": "SweetGale_0_unlit.png",
+    "rgbaSha256": "c4ddd32978551cabf940542e83c3e70656900bc286267a15fc7c77e9d5855fcd"
+  },
+  {
+    "file": "SweetGale_0_normal.png",
+    "rgbaSha256": "e9ac0264977b8241976548cac34841322f01866c1fa6156de559f2d87b33721a"
+  },
+  {
+    "file": "SweetGale_0_light.png",
+    "rgbaSha256": "6cd020ecaf1f12de743f642dd2290b0b2ec434ddea86a5d3b97d87f6ae724ea8"
+  },
+  {
+    "file": "SweetGale_0_detail.png",
+    "rgbaSha256": "05273f9830606df3cb65fee2720b3f38a67beda59d4c4a895c297790a66dfead"
+  },
+  {
+    "file": "WinterberryHolly_0_unlit.png",
+    "rgbaSha256": "036a8d0852144370dbcbe91bb7c4c59722e0652aa2e408a9780e5f5b3d3d9392"
+  },
+  {
+    "file": "WinterberryHolly_0_normal.png",
+    "rgbaSha256": "3cbd5da6429a432e0f224d59148104107197230ea5af322d2fcc4ea44dc63a3e"
+  },
+  {
+    "file": "WinterberryHolly_0_light.png",
+    "rgbaSha256": "52d1a914c4618c4c923229340ec7aaaa6365f2792c1dec5629fc56f066932aa8"
+  },
+  {
+    "file": "WinterberryHolly_0_detail.png",
+    "rgbaSha256": "e0be640393c4c3274fedf441690db3f7ee92bd8ae25920a7b0f27cb3c5d8c795"
+  },
+  {
+    "file": "SpeckledAlder_0_unlit.png",
+    "rgbaSha256": "ba90a11dc13dd6b0babcc202e687cbe58d80b05cf43a0261adc5f2fd043e3410"
+  },
+  {
+    "file": "SpeckledAlder_0_normal.png",
+    "rgbaSha256": "c1c11a62b4652f2d312ff836c0ca445911e098417fea312eeea38c87be731976"
+  },
+  {
+    "file": "SpeckledAlder_0_light.png",
+    "rgbaSha256": "2c57bacf1379e1891816457e769e214bbbf098f09c132ee9043be5993d534cd5"
+  },
+  {
+    "file": "SpeckledAlder_0_detail.png",
+    "rgbaSha256": "eb807a998071df7395763cf14e7f5233aca00604d4894c5128c0225a8f35052e"
+  },
+  {
+    "file": "PussyWillow_0_unlit.png",
+    "rgbaSha256": "8852ca9a8c3abfd01a81a416d896d00ece6dcf81f0a34d4db434a5dd86f6e420"
+  },
+  {
+    "file": "PussyWillow_0_normal.png",
+    "rgbaSha256": "a39d1dca59c0f88e1669810eeba4e17417b6d1692633eeb1961ee6e72bfb0133"
+  },
+  {
+    "file": "PussyWillow_0_light.png",
+    "rgbaSha256": "3be2744549c85121f042c1d1060f4ac40c91e323d10f12e134b69eade4d41496"
+  },
+  {
+    "file": "PussyWillow_0_detail.png",
+    "rgbaSha256": "06a3f0db4e911798b46d44533d8fa2ff15ea4eaf7f59cc29ffc043b0867568d8"
+  },
+  {
+    "file": "RedOsierDogwood_0_unlit.png",
+    "rgbaSha256": "94334459daad7328abaa7cb69d7cd72c18951f01989586df5725119868ffad2f"
+  },
+  {
+    "file": "RedOsierDogwood_0_normal.png",
+    "rgbaSha256": "35794fffdad41d74813297e79eb512f140ad95d3354d5f7121350880ce6adebd"
+  },
+  {
+    "file": "RedOsierDogwood_0_light.png",
+    "rgbaSha256": "aec064479856d126457f84b04f8d33766a36e3eae89424a01c51a91ba317b90d"
+  },
+  {
+    "file": "RedOsierDogwood_0_detail.png",
+    "rgbaSha256": "909536484643ad0472a9eddc4904263f197073f5c1409a521ed9efd32f2aeef3"
+  },
+  {
+    "file": "Meadowsweet_0_unlit.png",
+    "rgbaSha256": "a6612d5a8dac5bad9c182a3163eec70ebd95faa0294d16594a44190e57727bc8"
+  },
+  {
+    "file": "Meadowsweet_0_normal.png",
+    "rgbaSha256": "c0db6b67f1fd202d260d504cf3ff7185868491267c5d2ad900b7cc741968f361"
+  },
+  {
+    "file": "Meadowsweet_0_light.png",
+    "rgbaSha256": "d35178cfee3b91745f5acaaa1e421cd624894d455a8846f5463d35b98f75d12e"
+  },
+  {
+    "file": "Meadowsweet_0_detail.png",
+    "rgbaSha256": "07aa6504f8138c8a7a52d7230c3ca87313e3790fe1f95c2a3dd80caac761ae32"
+  },
+  {
+    "file": "Steeplebush_0_unlit.png",
+    "rgbaSha256": "65309d03059cf336a74f9f80e10f25e821934b6e630ddf8c56194bf6f0e12a26"
+  },
+  {
+    "file": "Steeplebush_0_normal.png",
+    "rgbaSha256": "713342bd7a407cfb05fa88c7c3217e8fc707fcb6ae0bbc637a3667cb24c464c4"
+  },
+  {
+    "file": "Steeplebush_0_light.png",
+    "rgbaSha256": "4ff1156979168f7bbf0a07ddf0ebc1e48695f086952517916491581599eb5aed"
+  },
+  {
+    "file": "Steeplebush_0_detail.png",
+    "rgbaSha256": "68a31d1747ec5539fd1adf7e30e63a5bf8b21e7459ba552069064a00588b1b1e"
+  },
+  {
+    "file": "Raspberry_0_unlit.png",
+    "rgbaSha256": "22248b93079c6fdc1131398ec1351e1a0e2d832965e7487263dd1b32dc54aef8"
+  },
+  {
+    "file": "Raspberry_0_normal.png",
+    "rgbaSha256": "0936ff3219d46233eed7abf4b92ffdc1d4b969674adf33685ae285f0c1cd3a82"
+  },
+  {
+    "file": "Raspberry_0_light.png",
+    "rgbaSha256": "e8ec3749b285c02cebf67fce1f2f79389c9e1a580aff4a231be46cd6f1bfcc89"
+  },
+  {
+    "file": "Raspberry_0_detail.png",
+    "rgbaSha256": "a7deafc1e23f044af8cf72aefb50983b8f25083af807dd21c09ed05128e0ac34"
+  },
+  {
+    "file": "WildRose_0_unlit.png",
+    "rgbaSha256": "b9186e7c72bb47383809903ed475c50c407f2dad56dd48da281f60da2ec9c185"
+  },
+  {
+    "file": "WildRose_0_normal.png",
+    "rgbaSha256": "901d287eaf449aad332e1e20c29b18b4f44788f2931737e69a20edc89d440716"
+  },
+  {
+    "file": "WildRose_0_light.png",
+    "rgbaSha256": "709e1ddf667374ba5fb23cc607b7470ae85c6f033d89e6eb41dcd0e5927fc13b"
+  },
+  {
+    "file": "WildRose_0_detail.png",
+    "rgbaSha256": "2558c3bb00675b4964a133de39305e2b0c4e635d48a89bab7f1a3c839377786a"
+  },
+  {
+    "file": "StaghornSumac_0_unlit.png",
+    "rgbaSha256": "4326f188f8b6e0e318c74a3a6966bde3970dac78f36b2868a742790154d66d93"
+  },
+  {
+    "file": "StaghornSumac_0_normal.png",
+    "rgbaSha256": "fe65c2ce79f44c501bbdd087f76d7af9b37caa51b483eaa41c42cd114d247de3"
+  },
+  {
+    "file": "StaghornSumac_0_light.png",
+    "rgbaSha256": "4cded8c761e8be2a11e581388591e3cbfbbd91b83028c51552877825938b06bc"
+  },
+  {
+    "file": "StaghornSumac_0_detail.png",
+    "rgbaSha256": "14264d9022fe1c36f6057c8829876ce219cbc2a255e0a9ea7d5365c527bd0d8a"
+  },
+  {
+    "file": "Serviceberry_0_unlit.png",
+    "rgbaSha256": "bb28349b0868178ca1e5c9be8273516ab731442e8de5a86fa288ec9ba4a6edeb"
+  },
+  {
+    "file": "Serviceberry_0_normal.png",
+    "rgbaSha256": "48501160eb0670d297f5471c7b52be0dc8893b4726ad43decd84c9a5c096fc53"
+  },
+  {
+    "file": "Serviceberry_0_light.png",
+    "rgbaSha256": "040e377b3da4b5575d0da818b70708fce57899019952a384c7c791fb241a9eff"
+  },
+  {
+    "file": "Serviceberry_0_detail.png",
+    "rgbaSha256": "6f6adca0dac27cf3186d6b010b590f0b608520adba4cfec4868b58546928e481"
+  },
+  {
+    "file": "BeakedHazelnut_0_unlit.png",
+    "rgbaSha256": "798893cfedbeed43a84f9663c6173a7f0f1038fcd2dd5d62b5243ab9fef2d72a"
+  },
+  {
+    "file": "BeakedHazelnut_0_normal.png",
+    "rgbaSha256": "e036f0491724c20cd26981f8dd103b69205a113707cf499eacd2e4b26f0fde59"
+  },
+  {
+    "file": "BeakedHazelnut_0_light.png",
+    "rgbaSha256": "e89ef7c2cf962d49dee75c90679ac6edba9b2f1ad32baddf8691cbe3621a3017"
+  },
+  {
+    "file": "BeakedHazelnut_0_detail.png",
+    "rgbaSha256": "888219199c41db218e0eea829719623198fc00d4d16cf02926d0507a296210cf"
+  },
+  {
+    "file": "WildRaisin_0_unlit.png",
+    "rgbaSha256": "d312a6c0930062dd85b49f2d1d98cdefce59c3727476991d697c84323e9f2266"
+  },
+  {
+    "file": "WildRaisin_0_normal.png",
+    "rgbaSha256": "161c8065293e180869f243781320b3559cfb894293154bb1a85b870ae7add03b"
+  },
+  {
+    "file": "WildRaisin_0_light.png",
+    "rgbaSha256": "396e1fccf15fae48478c22409daa58aa14088d09b39a34f250e056d2f62696fb"
+  },
+  {
+    "file": "WildRaisin_0_detail.png",
+    "rgbaSha256": "1cbd4609adde3a446410c4892199126086b55079ef585b4f5d0bc556e781c860"
+  },
+  {
+    "file": "RedElderberry_0_unlit.png",
+    "rgbaSha256": "f3d8587b472a6eb2ee7d14075fef82e6fb6b21a78d453de76c8a854c4ab5fee5"
+  },
+  {
+    "file": "RedElderberry_0_normal.png",
+    "rgbaSha256": "1efbd8d507b390d7dd0e2f7398fc4cc6b2f88e0621a0fb994d0db9a8ca8f0dd5"
+  },
+  {
+    "file": "RedElderberry_0_light.png",
+    "rgbaSha256": "6a10ab6c0e6abead9f6d5e3b06091dbafbf32194434e5a3373b9f6ff402563ba"
+  },
+  {
+    "file": "RedElderberry_0_detail.png",
+    "rgbaSha256": "74c46f9bc7d790047c4953ead0eae0b9ef9f75dce9717d93d3ecb6fb0a79f465"
+  },
+  {
+    "file": "SugarKelp_0_unlit.png",
+    "rgbaSha256": "d0adb7f1f063ee362a828edc73096eabd65e01a649a082c93a913913de9c5c6d"
+  },
+  {
+    "file": "SugarKelp_0_normal.png",
+    "rgbaSha256": "4d666130a0b983d818a97d4b11e525f8c018da56d878531233e3b8c158f18979"
+  },
+  {
+    "file": "SugarKelp_0_light.png",
+    "rgbaSha256": "a4ccabcb2a1ce2055b7b53243f50f09da7ad918d047292277743c1b860d3d4b0"
+  },
+  {
+    "file": "SugarKelp_0_detail.png",
+    "rgbaSha256": "b04609f1c78984cebcecb42592345a3ae5e5d4799114d5f4dacc15b2c47ea6af"
+  },
+  {
+    "file": "IrishMoss_0_unlit.png",
+    "rgbaSha256": "cdc5dc70fd1ee64a68011ca0c5c2beab0c18d5b9849e37f6f94be9787609609c"
+  },
+  {
+    "file": "IrishMoss_0_normal.png",
+    "rgbaSha256": "ba2d7959afc11a1ce70fb92b5a32bbc1170296123771bf9ddac3619c890a4a63"
+  },
+  {
+    "file": "IrishMoss_0_light.png",
+    "rgbaSha256": "95d01a624a04ca26129bfb68b97f9b39a8e8f482daf12a22166dc05d14a2bbfd"
+  },
+  {
+    "file": "IrishMoss_0_detail.png",
+    "rgbaSha256": "285e3dd2678d7bb14b5de35047ac9048f28e5e0efc5e1d77aabca72fad1fc088"
+  },
+  {
+    "file": "Eelgrass_0_unlit.png",
+    "rgbaSha256": "2d5dcd0dab836c04c264d6da80b0261abebd99d4fefc124c53fcb2783296f3e0"
+  },
+  {
+    "file": "Eelgrass_0_normal.png",
+    "rgbaSha256": "53aa9685ba6a5a666c4a7517c58bf38901015e98f7abf524dd399d9ab61700bd"
+  },
+  {
+    "file": "Eelgrass_0_light.png",
+    "rgbaSha256": "493c7da11db72001a3c6917d8a419f9377793982cd8443c93d9059d160fd254a"
+  },
+  {
+    "file": "Eelgrass_0_detail.png",
+    "rgbaSha256": "a6d7eade97b4448b261c24b279c3c49af496d9a98903b0d6b26b52be9953d7ef"
+  },
+  {
+    "file": "KnottedWrack_0_unlit.png",
+    "rgbaSha256": "644f2b4a15697d48ca31a7dd2017cabdd118c7ef47a6348fb6cb0a20041c6060"
+  },
+  {
+    "file": "KnottedWrack_0_normal.png",
+    "rgbaSha256": "a953a11eb680fe7ed325cb1913fcbb43a141fd0e168bb8f2716ed762bd778678"
+  },
+  {
+    "file": "KnottedWrack_0_light.png",
+    "rgbaSha256": "efa314bc3cc41b90ed4df2cf4c1d0fec7599bb91af3086514ce0baed2e74e74e"
+  },
+  {
+    "file": "KnottedWrack_0_detail.png",
+    "rgbaSha256": "b534ba159d072fe9c1db3f02d6ad7db8fe62e2ae713872c3d2ed76365d6054ed"
+  },
+  {
+    "file": "Bladderwrack_0_unlit.png",
+    "rgbaSha256": "53ef568d7d0d99d4009366dcb1b5f43bf95e65d1cb775e5f12639b9eba5b34d6"
+  },
+  {
+    "file": "Bladderwrack_0_normal.png",
+    "rgbaSha256": "b2c6359262956909a9ea7f735db6bd0085b21383e09f37ed7193fb1b4985fa28"
+  },
+  {
+    "file": "Bladderwrack_0_light.png",
+    "rgbaSha256": "9e569c47944d5bf64c97935cb210c2f413124a7e1625b64530fb4d0820eac91c"
+  },
+  {
+    "file": "Bladderwrack_0_detail.png",
+    "rgbaSha256": "47444caaafaf59d6ca32073d215012b6c6aeba2763cc79181a7d77fd876a8383"
+  },
+  {
+    "file": "SeaLettuce_0_unlit.png",
+    "rgbaSha256": "ea9d084ca5fc531ce3cd08a9d8f67158d0ca302dc6f81a76ec499acd2e7c79ba"
+  },
+  {
+    "file": "SeaLettuce_0_normal.png",
+    "rgbaSha256": "01e586d7a42bcd3dc37c6c8c0a590bf868c3a8eb91bf331b93a318097ea7a5f5"
+  },
+  {
+    "file": "SeaLettuce_0_light.png",
+    "rgbaSha256": "2380b731470ab0871b83f9bc61794f90922bfb6ec1e1dcfe40a16931b3e6af60"
+  },
+  {
+    "file": "SeaLettuce_0_detail.png",
+    "rgbaSha256": "ee63ed22f144dddeefb61dfec3e2417392f76ffe8d5bf2f7282c1309d50f2864"
+  },
+  {
+    "file": "Cordgrass_0_unlit.png",
+    "rgbaSha256": "959600de4f50bdc902068bc244f0d4aa3b20aaa4fe5013a8590dd98edaab2467"
+  },
+  {
+    "file": "Cordgrass_0_normal.png",
+    "rgbaSha256": "f2c3816007f52e37a1c5cb5fea6deb00a4c20100d7db387d6f689c054fabb8ca"
+  },
+  {
+    "file": "Cordgrass_0_light.png",
+    "rgbaSha256": "b8f434262a6501d580643deeaf0fd3bd13dd0a821a128fd4951655fb69203019"
+  },
+  {
+    "file": "Cordgrass_0_detail.png",
+    "rgbaSha256": "96f40a80a3c80487b7610ca66cd9297a1c8b42287feebe5525bdad712552464c"
+  },
+  {
+    "file": "Glasswort_0_unlit.png",
+    "rgbaSha256": "62c3efdfc0e71c53998e0b4b407331b436df2b03a92ea17d41ce062e3a078747"
+  },
+  {
+    "file": "Glasswort_0_normal.png",
+    "rgbaSha256": "99f460331321fffc594ea2aa7dcd6b17fd34922d1a80d957f99e095e7a7c2091"
+  },
+  {
+    "file": "Glasswort_0_light.png",
+    "rgbaSha256": "08698d58590c0d543f741b2ee3d88e99c053a8ecd03e0a7679526c6bbdb0a611"
+  },
+  {
+    "file": "Glasswort_0_detail.png",
+    "rgbaSha256": "b4c9a2854c292fb6fda7609e749b9d2f10cc64939ecfca15bc1bed160afe7981"
+  },
+  {
+    "file": "SaltmeadowHay_0_unlit.png",
+    "rgbaSha256": "c307d049ab2e444c20e442ab990f3d082f2a880a542a22edcd7004e7b122a144"
+  },
+  {
+    "file": "SaltmeadowHay_0_normal.png",
+    "rgbaSha256": "d2be555cf81975011123019d5a48b102bb268129fdec874206b9163297987179"
+  },
+  {
+    "file": "SaltmeadowHay_0_light.png",
+    "rgbaSha256": "012bbf98fb939a04fe29f7932e57f709049d5409169515dc902f58d087804a73"
+  },
+  {
+    "file": "SaltmeadowHay_0_detail.png",
+    "rgbaSha256": "368fdcab7c060a827e53f87518a46f4fc2c773c3b838034ef7cc6d8659ee4cc9"
+  },
+  {
+    "file": "BlackRush_0_unlit.png",
+    "rgbaSha256": "2db426aae4d784aea1412806382972a7a7dd6616212488626fe075ac914524a8"
+  },
+  {
+    "file": "BlackRush_0_normal.png",
+    "rgbaSha256": "ab42cfef743b20330524489c031b92117e727fcc48b088c9a26c26fb41a889eb"
+  },
+  {
+    "file": "BlackRush_0_light.png",
+    "rgbaSha256": "552095be1748bfad365f2a9dbf78b81ccb9bc1cd350c99d9d234f2f6c8f8bde2"
+  },
+  {
+    "file": "BlackRush_0_detail.png",
+    "rgbaSha256": "4e7df5dfd9e50af95330477444fc883d7add6f30cca260059e74718dca2d76c7"
+  },
+  {
+    "file": "Cattail_0_unlit.png",
+    "rgbaSha256": "29aee798bdf3dacae7c2fea6100f162eb6a013a84684e887c24aadde0e203516"
+  },
+  {
+    "file": "Cattail_0_normal.png",
+    "rgbaSha256": "38962cd53d1e30b2aeb1e293f091153d0c2a7212251963868d1c2a5a52e26413"
+  },
+  {
+    "file": "Cattail_0_light.png",
+    "rgbaSha256": "58c4a768e11b86620053da76a47e57ba9be00f2aa1b456ba8bdffc311945d445"
+  },
+  {
+    "file": "Cattail_0_detail.png",
+    "rgbaSha256": "bb528fb3ad9ea0346cae3066f921e13d2b0d98c9ce263094bedeb3445f4b425b"
+  },
+  {
+    "file": "Threesquare_0_unlit.png",
+    "rgbaSha256": "4a54e45511d5f1d7cd8782a27f96f988d3f4c3518b3fd1c61dc2f56d36c028b9"
+  },
+  {
+    "file": "Threesquare_0_normal.png",
+    "rgbaSha256": "52086483c7de88c525388e9f6ae8f0eabd657422ed82dcff1d4a82a72b869418"
+  },
+  {
+    "file": "Threesquare_0_light.png",
+    "rgbaSha256": "076071ae97fa596b59e63d43a21a3864a6c5be3e6abd177c4ba03cbbf8ef3565"
+  },
+  {
+    "file": "Threesquare_0_detail.png",
+    "rgbaSha256": "3651efabdffcd69eadda58c849bb889ff3b4ad764efd721dab8ae1d8da1ae37f"
+  },
+  {
+    "file": "MarramGrass_0_unlit.png",
+    "rgbaSha256": "2d979e5e7640497358e7b39c078dbe5c493ccc2e70adca64feb3cb9327cdc36b"
+  },
+  {
+    "file": "MarramGrass_0_normal.png",
+    "rgbaSha256": "f5bd77801dea80f374883909c9af597ebbcb206e5502f909c7045c8887d88993"
+  },
+  {
+    "file": "MarramGrass_0_light.png",
+    "rgbaSha256": "e7e2b7a0c7f209acf23039ecd903ff4fd7a2e78e4ac0b96537156e432eafb6c6"
+  },
+  {
+    "file": "MarramGrass_0_detail.png",
+    "rgbaSha256": "3876cab8ff75e97fca0535eb07b8436ec497d0ffd0c792b63df4ea4f63df20dd"
+  },
+  {
+    "file": "Bayberry_0_unlit.png",
+    "rgbaSha256": "b1e60519d94fe4614a74a2fb34edb988144b285e4516f4fe919ceed185c0a7d8"
+  },
+  {
+    "file": "Bayberry_0_normal.png",
+    "rgbaSha256": "b6176361564f0b5864bad8e3f3b654762c988f59903bb6b734b9799de0be96b9"
+  },
+  {
+    "file": "Bayberry_0_light.png",
+    "rgbaSha256": "cb79176cd0c31e5d2fa0218b8368c60419c3f97e507e3091f0b97699dedbc5f6"
+  },
+  {
+    "file": "Bayberry_0_detail.png",
+    "rgbaSha256": "4f88437a9b1b6a0a004b5455f2cd28ad6dbbf04b4a1121e1a16ec81b340a36ad"
+  },
+  {
+    "file": "SweetFern_0_unlit.png",
+    "rgbaSha256": "2438ab9a9eae6aa55ac9812f774c8d9545b861f51605b754e11d6af020c01030"
+  },
+  {
+    "file": "SweetFern_0_normal.png",
+    "rgbaSha256": "55455dc8a14fe36adc635a66548e0aa802c43d62fd5ed5daa0fe043669c14377"
+  },
+  {
+    "file": "SweetFern_0_light.png",
+    "rgbaSha256": "a8b3180ad9f51bee3f4695f69e6d8dea3377064a82fa9668d8583cde3711f2d4"
+  },
+  {
+    "file": "SweetFern_0_detail.png",
+    "rgbaSha256": "26403e47b212f56a49cd3d76a709fdf1062dcc61f9d94958fa26003b479c6fa1"
+  },
+  {
+    "file": "BeachPea_0_unlit.png",
+    "rgbaSha256": "b9c651d54da7db9c6184d0df998f5bfb8b7a674d015dd13411776c9a19118b6c"
+  },
+  {
+    "file": "BeachPea_0_normal.png",
+    "rgbaSha256": "88e07bd5bfe04674a0da5e12e69e37c69e1932d84685afb6c8a2d982912fff7d"
+  },
+  {
+    "file": "BeachPea_0_light.png",
+    "rgbaSha256": "7e4beb98b83c0e6c0830af627929c5194d61a24be71f2a942842b4dc3aff49a5"
+  },
+  {
+    "file": "BeachPea_0_detail.png",
+    "rgbaSha256": "ed93adfc14c7ff1678a5f5fa2e8bfd620201eb0c933a9ebc18e6e306a9dad464"
+  },
+  {
+    "file": "Lupin_0_unlit.png",
+    "rgbaSha256": "8c415de1b345f48f6279a15a92d38c69b29693f6c13bbdde67cd9d6756d52e60"
+  },
+  {
+    "file": "Lupin_0_normal.png",
+    "rgbaSha256": "19f44f3b636887a7b0f9d45915b9391907929c0ce16646dd05100977edb6e532"
+  },
+  {
+    "file": "Lupin_0_light.png",
+    "rgbaSha256": "91f76ded4b6eca42a183ead17c7bca35b4d878fc3596484597074ab16c4f0537"
+  },
+  {
+    "file": "Lupin_0_detail.png",
+    "rgbaSha256": "b77fc1ff22d83dff34231d2a3f0a00f1800fd4b1f6abf14899ae9822d8e3c1de"
+  },
+  {
+    "file": "LadySlipper_0_unlit.png",
+    "rgbaSha256": "6d02fed0db5723d053402a71f24fbb0da9ed5ed5da1ef883b2d69c4bcde113f9"
+  },
+  {
+    "file": "LadySlipper_0_normal.png",
+    "rgbaSha256": "d55f61c7f178c11482c355c2e1a74446ca4ca4013cd2ad2234b699be6c9cc764"
+  },
+  {
+    "file": "LadySlipper_0_light.png",
+    "rgbaSha256": "b0aea842887b177d7aaa2f7028d6ae88a61dc63f933d75bfe580d1f3fccac2d7"
+  },
+  {
+    "file": "LadySlipper_0_detail.png",
+    "rgbaSha256": "a84f353f9046e6baee09d9a2345cd2e7fde52e385db9ddd1fec6a3943c2708ee"
+  },
+  {
+    "file": "Fireweed_0_unlit.png",
+    "rgbaSha256": "7eb68d85198c167a114cb40f0b85dc218aa0dc1c995b765497e4288f9e971534"
+  },
+  {
+    "file": "Fireweed_0_normal.png",
+    "rgbaSha256": "13b7de72fe21c18db63398435dd39b57d19d4627e7185ae9cc1dd9e5229d17a5"
+  },
+  {
+    "file": "Fireweed_0_light.png",
+    "rgbaSha256": "6c1befc0bf6063b9ec33c4932763bdaeafc672bdd150f999fd7b8dcc39d1007b"
+  },
+  {
+    "file": "Fireweed_0_detail.png",
+    "rgbaSha256": "00698b2fa81c8b88ba2f3ea3a5cfc1795c7d4efb5839adb2185460f5c456a106"
+  },
+  {
+    "file": "QueenAnne_0_unlit.png",
+    "rgbaSha256": "c43ce6d093137dd7d5e141b5c3dc2c565172e8de490403cc1a53c689b6617852"
+  },
+  {
+    "file": "QueenAnne_0_normal.png",
+    "rgbaSha256": "49d3db3db0227d94069b109926c73bc68b60834ee4a436db7e22123d7e5e1e59"
+  },
+  {
+    "file": "QueenAnne_0_light.png",
+    "rgbaSha256": "d02da6c5b9bf5b90f726ba156b7194b165e7876245cbe85998b4eea8b2a292f6"
+  },
+  {
+    "file": "QueenAnne_0_detail.png",
+    "rgbaSha256": "fae3245da30fbd5f612a4a20a780b6abc32d6ed5592101e88aedd790b1846df8"
+  },
+  {
+    "file": "Goldenrod_0_unlit.png",
+    "rgbaSha256": "5a0ba2704479c2d184cad26c886628f9aaab40686de3c2506df1128598d08f19"
+  },
+  {
+    "file": "Goldenrod_0_normal.png",
+    "rgbaSha256": "cf7083d79d7e2de38b018452acaa9824bb5ae19c73f39eaefdd83f43597e543d"
+  },
+  {
+    "file": "Goldenrod_0_light.png",
+    "rgbaSha256": "813b373e41dd575cb77c174240280160fffcc9962f30a2fcfe465d781eb10e66"
+  },
+  {
+    "file": "Goldenrod_0_detail.png",
+    "rgbaSha256": "51d3360edb90c6df6b21506cded4e162781ec52c9972119793e1a25d768a7fb3"
+  },
+  {
+    "file": "OxeyeDaisy_0_unlit.png",
+    "rgbaSha256": "de3a97334c5aa771ff3ffbd83860167a3d88cae796c3a64cde5fe081e64afbe0"
+  },
+  {
+    "file": "OxeyeDaisy_0_normal.png",
+    "rgbaSha256": "aca4efc08e9f429860479d6f8dbad9561f18ebe3e52484af35f68cab846edf3f"
+  },
+  {
+    "file": "OxeyeDaisy_0_light.png",
+    "rgbaSha256": "d685ead63e790b732d0fcb8d367b1cfae52b18198b32bcf9a8f372d02c2315c3"
+  },
+  {
+    "file": "OxeyeDaisy_0_detail.png",
+    "rgbaSha256": "0164a31577ae4c5ef398cff485956035dc5c5383b2e9d341a92d3803c0296da5"
+  },
+  {
+    "file": "BlueFlag_0_unlit.png",
+    "rgbaSha256": "b12dc1eb221428c35693ada384bb90bd30dfb937651a8dab6537cd1b72329b7e"
+  },
+  {
+    "file": "BlueFlag_0_normal.png",
+    "rgbaSha256": "d678338820672dcce46ebda479988d530f2be41b11874c51a65ea91ec3c627b9"
+  },
+  {
+    "file": "BlueFlag_0_light.png",
+    "rgbaSha256": "2d5498915ca5f1d17ff75ec0fb86be89c4325526a764ffce6972ce29304074ac"
+  },
+  {
+    "file": "BlueFlag_0_detail.png",
+    "rgbaSha256": "0567f76d6c293cb663e7aff2cd81dff30b2e2de353041ff1e9376473d8928726"
+  },
+  {
+    "file": "Buttercup_0_unlit.png",
+    "rgbaSha256": "e124b1ae2e25e153f3371953fb0adc764cf6cf2bb463279da2e13e4bdf5f3343"
+  },
+  {
+    "file": "Buttercup_0_normal.png",
+    "rgbaSha256": "315767df0b829d6667d00b47037d184ee104e61f09719659c773b807a47ca9ae"
+  },
+  {
+    "file": "Buttercup_0_light.png",
+    "rgbaSha256": "5a0ab548abfba95351985ec5ca843065709397c821fa6107c961b9cc5a489497"
+  },
+  {
+    "file": "Buttercup_0_detail.png",
+    "rgbaSha256": "9a701ef18d019c2a370b448610b9ea42ff679dba21b7e8e6aa16e554c453820c"
+  },
+  {
+    "file": "MeadowGrass_0_unlit.png",
+    "rgbaSha256": "4e2586888fd08a29a2b593db76c81a7965492daa0f19b55893a3efa38b2e2c91"
+  },
+  {
+    "file": "MeadowGrass_0_normal.png",
+    "rgbaSha256": "c2e934c5f5f193293811b81e2c027c2a7e715a877db924a0676200e9593fffc8"
+  },
+  {
+    "file": "MeadowGrass_0_light.png",
+    "rgbaSha256": "176cc7be288e1d59e845e668eb1a850fa90debf8708fed80f3effd62776b3a79"
+  },
+  {
+    "file": "MeadowGrass_0_detail.png",
+    "rgbaSha256": "e8c6dfe92e06c680a31bbc973138aa97bd66e08393f2120bdb73e7d11fbe3959"
+  },
+  {
+    "file": "Timothy_0_unlit.png",
+    "rgbaSha256": "a78a11d49f83124a6dc16376137c410416317a52f5eb3a0881a172a52a7d161d"
+  },
+  {
+    "file": "Timothy_0_normal.png",
+    "rgbaSha256": "50a26617563cc36830962a2187fb64a7b145cf8aa23746f75e6efe244d56fd38"
+  },
+  {
+    "file": "Timothy_0_light.png",
+    "rgbaSha256": "f1dba7c5ee3896e810ef75d5e4b6190792086f0d5fcd93853564e187dc7d5794"
+  },
+  {
+    "file": "Timothy_0_detail.png",
+    "rgbaSha256": "e480a4a23c311ca30cd81398107be8b03eabed33d6f0fdb7d6a198c5138e652c"
+  },
+  {
+    "file": "SoftRush_0_unlit.png",
+    "rgbaSha256": "2631c1e5bc112e2d98e7d9ed4c8ea1bc12e6975016992f2d2af8b59c845ca0c1"
+  },
+  {
+    "file": "SoftRush_0_normal.png",
+    "rgbaSha256": "56c8b26d531a4eaf0a1a572638b0cce5fa47e12cec21fe4c7d599fe74413008f"
+  },
+  {
+    "file": "SoftRush_0_light.png",
+    "rgbaSha256": "1bda410b6c0ce0502f65c2835038b98f69c81983de4860c36dec761509bc5cdb"
+  },
+  {
+    "file": "SoftRush_0_detail.png",
+    "rgbaSha256": "66946c997e3b9aba71507c5104350e563043ef01d25c6c19ccb42fd1a00156e0"
+  },
+  {
+    "file": "TussockSedge_0_unlit.png",
+    "rgbaSha256": "fc50150ff1a9b56264b397e6b60bd60ea7b63a52f9507250a14e2e5102e2a629"
+  },
+  {
+    "file": "TussockSedge_0_normal.png",
+    "rgbaSha256": "8f48ed32d9fdafa6f31c53c78022602177963aa544966a86b7fa0817ac7a5085"
+  },
+  {
+    "file": "TussockSedge_0_light.png",
+    "rgbaSha256": "7288f6094a9071c4ec4fa89749cba246903e423c891b4e91159cc49fa7060529"
+  },
+  {
+    "file": "TussockSedge_0_detail.png",
+    "rgbaSha256": "ad07d9d18d04d5684ea536653fd92c044d8ee1fb0d8d35e3928b5bb293f9012f"
+  },
+  {
+    "file": "OstrichFern_0_unlit.png",
+    "rgbaSha256": "42a53090c38ea421ad37ccb5b6840232433c0c35a8c92954eeabac9777d2151e"
+  },
+  {
+    "file": "OstrichFern_0_normal.png",
+    "rgbaSha256": "9b2be5f348972c459eb121fdf2875c471ebebc6c7d8105e71966369eb859e4c1"
+  },
+  {
+    "file": "OstrichFern_0_light.png",
+    "rgbaSha256": "4c78054bb04db1aa4259a0c44e8912f3a96a04a71eb01b0c185f4b980429585e"
+  },
+  {
+    "file": "OstrichFern_0_detail.png",
+    "rgbaSha256": "dce036b25bde63f5ac178b3228bd9e63dbdc99e6b3b4042a486f1638ab1fb960"
+  },
+  {
+    "file": "MarshMarigold_0_unlit.png",
+    "rgbaSha256": "4a89c9f614d2678e9982475d832ebfef9d8d81cd651b97f86b2b92142af89a57"
+  },
+  {
+    "file": "MarshMarigold_0_normal.png",
+    "rgbaSha256": "3fabbd79c81d1c337a47d8ae5190419ac26bd478b83ae3853305a6460e76acaf"
+  },
+  {
+    "file": "MarshMarigold_0_light.png",
+    "rgbaSha256": "681a81f732876153a2eded5d5da630fc8cbaaeec09d4f83045c45d687f12e9ad"
+  },
+  {
+    "file": "MarshMarigold_0_detail.png",
+    "rgbaSha256": "c34b154cc6e1573563ac2731609b24ca6f0e5c67053c1c384ce6edb4f5702206"
+  }
+]

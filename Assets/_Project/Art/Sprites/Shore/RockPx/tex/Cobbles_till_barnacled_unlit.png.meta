@@ -1,0 +1,841 @@
+fileFormatVersion: 2
+guid: 50444a58906919f4eb7f9e649d5ad0ab
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3115674091452752586
+    second: Cobbles_till_barnacled_unlit_0
+  - first:
+      213: 2390476041250701211
+    second: Cobbles_till_barnacled_unlit_1
+  - first:
+      213: 8029084341339788867
+    second: Cobbles_till_barnacled_unlit_2
+  - first:
+      213: 6086709694117531065
+    second: Cobbles_till_barnacled_unlit_3
+  - first:
+      213: 3810545336274313355
+    second: Cobbles_till_barnacled_unlit_4
+  - first:
+      213: 4083952541018634260
+    second: Cobbles_till_barnacled_unlit_5
+  - first:
+      213: -8626854049617013567
+    second: Cobbles_till_barnacled_unlit_6
+  - first:
+      213: -8373668424197036402
+    second: Cobbles_till_barnacled_unlit_7
+  - first:
+      213: 7361761608279246246
+    second: Cobbles_till_barnacled_unlit_8
+  - first:
+      213: 7080924619400788660
+    second: Cobbles_till_barnacled_unlit_9
+  - first:
+      213: 2707200625825877642
+    second: Cobbles_till_barnacled_unlit_10
+  - first:
+      213: -4625877419239521457
+    second: Cobbles_till_barnacled_unlit_11
+  - first:
+      213: 6999857415467458367
+    second: Cobbles_till_barnacled_unlit_12
+  - first:
+      213: 7879094234112546455
+    second: Cobbles_till_barnacled_unlit_13
+  - first:
+      213: -8390402480264898377
+    second: Cobbles_till_barnacled_unlit_14
+  - first:
+      213: 8982716785892953100
+    second: Cobbles_till_barnacled_unlit_15
+  - first:
+      213: 152167558239302769
+    second: Cobbles_till_barnacled_unlit_16
+  - first:
+      213: -6929574269047625990
+    second: Cobbles_till_barnacled_unlit_17
+  - first:
+      213: 5815044646077671250
+    second: Cobbles_till_barnacled_unlit_18
+  - first:
+      213: 6812722603990793031
+    second: Cobbles_till_barnacled_unlit_19
+  - first:
+      213: 6807060911348441954
+    second: Cobbles_till_barnacled_unlit_20
+  - first:
+      213: -8953621226384528430
+    second: Cobbles_till_barnacled_unlit_21
+  - first:
+      213: 6504336245911724841
+    second: Cobbles_till_barnacled_unlit_22
+  - first:
+      213: -1404042310344618187
+    second: Cobbles_till_barnacled_unlit_23
+  - first:
+      213: 5072562503700769882
+    second: Cobbles_till_barnacled_unlit_24
+  - first:
+      213: -391099742714495066
+    second: Cobbles_till_barnacled_unlit_25
+  - first:
+      213: 6668565372377987717
+    second: Cobbles_till_barnacled_unlit_26
+  - first:
+      213: 1724179788794654979
+    second: Cobbles_till_barnacled_unlit_27
+  - first:
+      213: 1431476431613465542
+    second: Cobbles_till_barnacled_unlit_28
+  - first:
+      213: -4021763420058856810
+    second: Cobbles_till_barnacled_unlit_29
+  - first:
+      213: 7413080043727229952
+    second: Cobbles_till_barnacled_unlit_30
+  - first:
+      213: 7993375173215621267
+    second: Cobbles_till_barnacled_unlit_31
+  - first:
+      213: -2419331688826582051
+    second: Cobbles_till_barnacled_unlit_32
+  - first:
+      213: 2160345418186900315
+    second: Cobbles_till_barnacled_unlit_33
+  - first:
+      213: 403837706938841985
+    second: Cobbles_till_barnacled_unlit_34
+  - first:
+      213: -1145936226444087176
+    second: Cobbles_till_barnacled_unlit_35
+  - first:
+      213: -1010021918862091453
+    second: Cobbles_till_barnacled_unlit_36
+  - first:
+      213: 261524993980331630
+    second: Cobbles_till_barnacled_unlit_37
+  - first:
+      213: -570209162428474909
+    second: Cobbles_till_barnacled_unlit_38
+  - first:
+      213: 4534426502224713364
+    second: Cobbles_till_barnacled_unlit_39
+  - first:
+      213: -3901257365392063344
+    second: Cobbles_till_barnacled_unlit_40
+  - first:
+      213: -3575553912849047415
+    second: Cobbles_till_barnacled_unlit_41
+  - first:
+      213: -7170803663070829692
+    second: Cobbles_till_barnacled_unlit_42
+  - first:
+      213: 3371873720043712326
+    second: Cobbles_till_barnacled_unlit_43
+  - first:
+      213: 9178837494192884737
+    second: Cobbles_till_barnacled_unlit_44
+  - first:
+      213: 3685381671313957981
+    second: Cobbles_till_barnacled_unlit_45
+  - first:
+      213: 228060162029894839
+    second: Cobbles_till_barnacled_unlit_46
+  - first:
+      213: -1409928922875246011
+    second: Cobbles_till_barnacled_unlit_47
+  - first:
+      213: -1625561694300000338
+    second: Cobbles_till_barnacled_unlit_48
+  - first:
+      213: 1377981557237003527
+    second: Cobbles_till_barnacled_unlit_49
+  - first:
+      213: -8939017067302600663
+    second: Cobbles_till_barnacled_unlit_50
+  - first:
+      213: -6936544818659682126
+    second: Cobbles_till_barnacled_unlit_51
+  - first:
+      213: -50904006894058495
+    second: Cobbles_till_barnacled_unlit_52
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e5c34feafb44e04bb35cc6db867873b
+      internalID: -1132046604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9999dbb26a8ce9e499e3b545fd636791
+      internalID: -1085012007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b20b24ba52ad3fd428536c1efd3c37de
+      internalID: -2084293025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c91e97bc4cace7499c9c4b1e55dc28b
+      internalID: -255324974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f308b0b664d66204aa962020bbe5b188
+      internalID: -1640354396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61c9792181db3424bb1bc2456ca559b9
+      internalID: 1337164343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77e29868f2dd8f6469a117c2f1b308b1
+      internalID: -2002635579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16f993ea31a09a049904952acc5b787f
+      internalID: -1086916417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 802c523f07654ef4192e24148733aedb
+      internalID: -1170333075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7da3a8637747d26479fd15b9a1a30cf5
+      internalID: 1118985253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d46bf975d5a43aa428e9a403ccb37a44
+      internalID: 808994850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a99b0973f97792146aa546f3e86913ae
+      internalID: 1922795661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2dc2c7d798305347b2d8db14e9a1e99
+      internalID: -493946538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7fbdd3e740543348a55e274ccc9a698
+      internalID: -280532784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7febccb08085d434aba4948a9264c055
+      internalID: -862907952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc5c2a42fa54cd74488d794f4422ba19
+      internalID: -1996715277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f79fb73919a07a24aa32c712d8f7cbc6
+      internalID: -1017910627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ee031ea9021b2a4bbf1f54c8218a47b
+      internalID: 461618879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5657a96266cd184e914a105cc5fcc99
+      internalID: 1491005771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 598da023c2aa8c843ba56f2ca1c3765e
+      internalID: -1268486600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04a6234eab43fbc4bad377ae4c779155
+      internalID: 873564161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbe348bc0678fb7499091b2137569358
+      internalID: -648094337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45c22cf522db5ac42acaecc05e0e7156
+      internalID: 1639698169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_barnacled_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d49c283fe12c79f40b23a6c8ded94151
+      internalID: -911492462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 09740cdd0bb5fe94589d4fe2f98ffcb3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_till_barnacled_unlit_c0_r0: -1132046604
+      Cobbles_till_barnacled_unlit_c0_r1: -1170333075
+      Cobbles_till_barnacled_unlit_c0_r2: -1017910627
+      Cobbles_till_barnacled_unlit_c1_r0: -1085012007
+      Cobbles_till_barnacled_unlit_c1_r1: 1118985253
+      Cobbles_till_barnacled_unlit_c1_r2: 461618879
+      Cobbles_till_barnacled_unlit_c2_r0: -2084293025
+      Cobbles_till_barnacled_unlit_c2_r1: 808994850
+      Cobbles_till_barnacled_unlit_c2_r2: 1491005771
+      Cobbles_till_barnacled_unlit_c3_r0: -255324974
+      Cobbles_till_barnacled_unlit_c3_r1: 1922795661
+      Cobbles_till_barnacled_unlit_c3_r2: -1268486600
+      Cobbles_till_barnacled_unlit_c4_r0: -1640354396
+      Cobbles_till_barnacled_unlit_c4_r1: -493946538
+      Cobbles_till_barnacled_unlit_c4_r2: 873564161
+      Cobbles_till_barnacled_unlit_c5_r0: 1337164343
+      Cobbles_till_barnacled_unlit_c5_r1: -280532784
+      Cobbles_till_barnacled_unlit_c5_r2: -648094337
+      Cobbles_till_barnacled_unlit_c6_r0: -2002635579
+      Cobbles_till_barnacled_unlit_c6_r1: -862907952
+      Cobbles_till_barnacled_unlit_c6_r2: 1639698169
+      Cobbles_till_barnacled_unlit_c7_r0: -1086916417
+      Cobbles_till_barnacled_unlit_c7_r1: -1996715277
+      Cobbles_till_barnacled_unlit_c7_r2: -911492462
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

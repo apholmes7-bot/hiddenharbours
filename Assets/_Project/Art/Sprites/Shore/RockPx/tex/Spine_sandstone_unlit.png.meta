@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 39b210ae2d1711645b46ea080e817674
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3106976815646828134
+    second: Spine_sandstone_unlit_0
+  - first:
+      213: 6417894108496097366
+    second: Spine_sandstone_unlit_1
+  - first:
+      213: 8442459164867970904
+    second: Spine_sandstone_unlit_2
+  - first:
+      213: -2963795209644411247
+    second: Spine_sandstone_unlit_3
+  - first:
+      213: 5581684084007721583
+    second: Spine_sandstone_unlit_4
+  - first:
+      213: 3914896993036912557
+    second: Spine_sandstone_unlit_5
+  - first:
+      213: 9203374947198345511
+    second: Spine_sandstone_unlit_6
+  - first:
+      213: -1392946720089744308
+    second: Spine_sandstone_unlit_7
+  - first:
+      213: 667256805048517131
+    second: Spine_sandstone_unlit_8
+  - first:
+      213: -7928587326022303154
+    second: Spine_sandstone_unlit_9
+  - first:
+      213: 7704903721584220232
+    second: Spine_sandstone_unlit_10
+  - first:
+      213: -894855520182871398
+    second: Spine_sandstone_unlit_11
+  - first:
+      213: 3424623104395763154
+    second: Spine_sandstone_unlit_12
+  - first:
+      213: 5202422304630189819
+    second: Spine_sandstone_unlit_13
+  - first:
+      213: -4958312848925292086
+    second: Spine_sandstone_unlit_14
+  - first:
+      213: -3332548322310564452
+    second: Spine_sandstone_unlit_15
+  - first:
+      213: 8013807752366919317
+    second: Spine_sandstone_unlit_16
+  - first:
+      213: -4746772499068048218
+    second: Spine_sandstone_unlit_17
+  - first:
+      213: 5505427480668831441
+    second: Spine_sandstone_unlit_18
+  - first:
+      213: 357966198256829398
+    second: Spine_sandstone_unlit_19
+  - first:
+      213: -5434327431927707873
+    second: Spine_sandstone_unlit_20
+  - first:
+      213: 1701450868065403825
+    second: Spine_sandstone_unlit_21
+  - first:
+      213: 8179176345004586083
+    second: Spine_sandstone_unlit_22
+  - first:
+      213: -6416560326479029257
+    second: Spine_sandstone_unlit_23
+  - first:
+      213: 299208307088371193
+    second: Spine_sandstone_unlit_24
+  - first:
+      213: 6651826059118303207
+    second: Spine_sandstone_unlit_25
+  - first:
+      213: 929413215294421325
+    second: Spine_sandstone_unlit_26
+  - first:
+      213: -6368934692430883378
+    second: Spine_sandstone_unlit_27
+  - first:
+      213: 5620585003525031380
+    second: Spine_sandstone_unlit_28
+  - first:
+      213: -5411567031429636844
+    second: Spine_sandstone_unlit_29
+  - first:
+      213: -3126310233135062170
+    second: Spine_sandstone_unlit_30
+  - first:
+      213: -43573498978253003
+    second: Spine_sandstone_unlit_31
+  - first:
+      213: -6975175035355890989
+    second: Spine_sandstone_unlit_32
+  - first:
+      213: -4391899320759025140
+    second: Spine_sandstone_unlit_33
+  - first:
+      213: -1653756955632541586
+    second: Spine_sandstone_unlit_34
+  - first:
+      213: -2243684910008998154
+    second: Spine_sandstone_unlit_35
+  - first:
+      213: 587559400069329303
+    second: Spine_sandstone_unlit_36
+  - first:
+      213: -5113284214502611918
+    second: Spine_sandstone_unlit_37
+  - first:
+      213: 4747764434964548388
+    second: Spine_sandstone_unlit_38
+  - first:
+      213: 6906937735576151748
+    second: Spine_sandstone_unlit_39
+  - first:
+      213: -1090527583415617029
+    second: Spine_sandstone_unlit_40
+  - first:
+      213: -3354615416651542298
+    second: Spine_sandstone_unlit_41
+  - first:
+      213: 2622640099343122333
+    second: Spine_sandstone_unlit_42
+  - first:
+      213: -412426590888935201
+    second: Spine_sandstone_unlit_43
+  - first:
+      213: 6661218609135010991
+    second: Spine_sandstone_unlit_44
+  - first:
+      213: -7032249673909707888
+    second: Spine_sandstone_unlit_45
+  - first:
+      213: 2361058427809492292
+    second: Spine_sandstone_unlit_46
+  - first:
+      213: -8264962208742827549
+    second: Spine_sandstone_unlit_47
+  - first:
+      213: 75835885698189720
+    second: Spine_sandstone_unlit_48
+  - first:
+      213: -7881922623437797725
+    second: Spine_sandstone_unlit_49
+  - first:
+      213: -6974176981786403526
+    second: Spine_sandstone_unlit_50
+  - first:
+      213: -594647585539506614
+    second: Spine_sandstone_unlit_51
+  - first:
+      213: 9008897150146537220
+    second: Spine_sandstone_unlit_52
+  - first:
+      213: -8637140901146075110
+    second: Spine_sandstone_unlit_53
+  - first:
+      213: 7559558331251390781
+    second: Spine_sandstone_unlit_54
+  - first:
+      213: 3245698094876247147
+    second: Spine_sandstone_unlit_55
+  - first:
+      213: 3152355710654940679
+    second: Spine_sandstone_unlit_56
+  - first:
+      213: -7761061253451940724
+    second: Spine_sandstone_unlit_57
+  - first:
+      213: 5161188522220404229
+    second: Spine_sandstone_unlit_58
+  - first:
+      213: -4713345124232951966
+    second: Spine_sandstone_unlit_59
+  - first:
+      213: -6520222949188592336
+    second: Spine_sandstone_unlit_60
+  - first:
+      213: -897734361614218595
+    second: Spine_sandstone_unlit_61
+  - first:
+      213: 6281596821590326943
+    second: Spine_sandstone_unlit_62
+  - first:
+      213: -9077010524623062349
+    second: Spine_sandstone_unlit_63
+  - first:
+      213: 637893732746509893
+    second: Spine_sandstone_unlit_64
+  - first:
+      213: -8383741723379382489
+    second: Spine_sandstone_unlit_65
+  - first:
+      213: -7937094432077007113
+    second: Spine_sandstone_unlit_66
+  - first:
+      213: -5320435007448533175
+    second: Spine_sandstone_unlit_67
+  - first:
+      213: -3074570568271263466
+    second: Spine_sandstone_unlit_68
+  - first:
+      213: 8361776140948464357
+    second: Spine_sandstone_unlit_69
+  - first:
+      213: -7756597644356826592
+    second: Spine_sandstone_unlit_70
+  - first:
+      213: -1838007949492020991
+    second: Spine_sandstone_unlit_71
+  - first:
+      213: 3190010809640514392
+    second: Spine_sandstone_unlit_72
+  - first:
+      213: 2358485722598332952
+    second: Spine_sandstone_unlit_73
+  - first:
+      213: 937706443811968151
+    second: Spine_sandstone_unlit_74
+  - first:
+      213: 6068132302360603361
+    second: Spine_sandstone_unlit_75
+  - first:
+      213: 7257230201601897380
+    second: Spine_sandstone_unlit_76
+  - first:
+      213: -5486898871274397004
+    second: Spine_sandstone_unlit_77
+  - first:
+      213: -4107737199690411117
+    second: Spine_sandstone_unlit_78
+  - first:
+      213: 3654838889963026150
+    second: Spine_sandstone_unlit_79
+  - first:
+      213: -5729617616193753412
+    second: Spine_sandstone_unlit_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5624505e8ae53d848bdd86884e26568c
+      internalID: 672497037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3ae886d58f24894c8adb5d6f839ad6c
+      internalID: -209078103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 411d341cd8399874da45a9187a2aaab4
+      internalID: 1350596447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6da13c6e7a30c1b4db3fa141244da0a9
+      internalID: -195658886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71ab8f841f51faf42891b879f2bb53a9
+      internalID: -1720403457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8084fdbed676d6344862d89ad56535e6
+      internalID: 1249113436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2ad5838da0bff74ea2c723f98e6246b
+      internalID: -1176286469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe1d2ae687d934942954b54d43325989
+      internalID: 554766109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8f96ad8228feab469c86624461b2c92
+      internalID: -427050313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71434b7fb746a6b45951c5f1c6bfddc3
+      internalID: 318671021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab98362dbb343c140a64c53aa3f82cfb
+      internalID: -1127327573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2425ebfb81ba74488b0683f1bc97fe3
+      internalID: 1786018390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6eac6953acf224b47abe95918e61b89a
+      internalID: 904348287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 652c4b0986766bd45bc7f7c9ae3b1adf
+      internalID: 1924026341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abde9c953f44dba4aa2cb8c267ca3268
+      internalID: -796371571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cff35baa2740f6f49abf9c9cc1a3a6dd
+      internalID: -222383777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3abce629f2200746ad540cd515a3942
+      internalID: -2053818725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cebf484a583d1e47a31260029bf00d4
+      internalID: 903023535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7439358e2766d5246b2751f6b3567a8f
+      internalID: 705527228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47b788e795eb0dc4090328904fe08b05
+      internalID: -361930879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66e3debac1e99d84fa4c1e567803bfb6
+      internalID: -91805466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5c3868fd8f732d4ca16ff0696d7dbc3
+      internalID: -1461143423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db6026ad2cda4624cb04674315858faf
+      internalID: 657187606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_unlit_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab173d7790eab7f45a98e2bf12804fee
+      internalID: 1905171571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1656199b61ed6d04b9ef09133fb85e98
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_sandstone_unlit_c0_r0: 672497037
+      Spine_sandstone_unlit_c0_r1: -427050313
+      Spine_sandstone_unlit_c0_r2: -2053818725
+      Spine_sandstone_unlit_c1_r0: -209078103
+      Spine_sandstone_unlit_c1_r1: 318671021
+      Spine_sandstone_unlit_c1_r2: 903023535
+      Spine_sandstone_unlit_c2_r0: 1350596447
+      Spine_sandstone_unlit_c2_r1: -1127327573
+      Spine_sandstone_unlit_c2_r2: 705527228
+      Spine_sandstone_unlit_c3_r0: -195658886
+      Spine_sandstone_unlit_c3_r1: 1786018390
+      Spine_sandstone_unlit_c3_r2: -361930879
+      Spine_sandstone_unlit_c4_r0: -1720403457
+      Spine_sandstone_unlit_c4_r1: 904348287
+      Spine_sandstone_unlit_c4_r2: -91805466
+      Spine_sandstone_unlit_c5_r0: 1249113436
+      Spine_sandstone_unlit_c5_r1: 1924026341
+      Spine_sandstone_unlit_c5_r2: -1461143423
+      Spine_sandstone_unlit_c6_r0: -1176286469
+      Spine_sandstone_unlit_c6_r1: -796371571
+      Spine_sandstone_unlit_c6_r2: 657187606
+      Spine_sandstone_unlit_c7_r0: 554766109
+      Spine_sandstone_unlit_c7_r1: -222383777
+      Spine_sandstone_unlit_c7_r2: 1905171571
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

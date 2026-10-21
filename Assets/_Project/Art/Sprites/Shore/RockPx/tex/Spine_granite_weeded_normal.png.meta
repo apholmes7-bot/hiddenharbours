@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 2da166b806531f34e8c05c34d2932c31
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4015277756901460932
+    second: Spine_granite_weeded_normal_0
+  - first:
+      213: -264871454977040910
+    second: Spine_granite_weeded_normal_1
+  - first:
+      213: -3260621181110196094
+    second: Spine_granite_weeded_normal_2
+  - first:
+      213: 1515227757895129464
+    second: Spine_granite_weeded_normal_3
+  - first:
+      213: -3663658195684769693
+    second: Spine_granite_weeded_normal_4
+  - first:
+      213: -895266381203792734
+    second: Spine_granite_weeded_normal_5
+  - first:
+      213: -4527741980047582874
+    second: Spine_granite_weeded_normal_6
+  - first:
+      213: 8611661949126379910
+    second: Spine_granite_weeded_normal_7
+  - first:
+      213: -1428740113211876839
+    second: Spine_granite_weeded_normal_8
+  - first:
+      213: -758301945790861194
+    second: Spine_granite_weeded_normal_9
+  - first:
+      213: 5368842345419415617
+    second: Spine_granite_weeded_normal_10
+  - first:
+      213: -8564584558290898534
+    second: Spine_granite_weeded_normal_11
+  - first:
+      213: 7142176502367253346
+    second: Spine_granite_weeded_normal_12
+  - first:
+      213: 1815980863875586112
+    second: Spine_granite_weeded_normal_13
+  - first:
+      213: 3702935391446740570
+    second: Spine_granite_weeded_normal_14
+  - first:
+      213: 1917724866343215734
+    second: Spine_granite_weeded_normal_15
+  - first:
+      213: 5660645491955726159
+    second: Spine_granite_weeded_normal_16
+  - first:
+      213: -3550039455475236686
+    second: Spine_granite_weeded_normal_17
+  - first:
+      213: -1224841582062837024
+    second: Spine_granite_weeded_normal_18
+  - first:
+      213: -8495339155332853054
+    second: Spine_granite_weeded_normal_19
+  - first:
+      213: -7143397673183468701
+    second: Spine_granite_weeded_normal_20
+  - first:
+      213: 67950907393092147
+    second: Spine_granite_weeded_normal_21
+  - first:
+      213: 5069652545301583796
+    second: Spine_granite_weeded_normal_22
+  - first:
+      213: -3360413882662444773
+    second: Spine_granite_weeded_normal_23
+  - first:
+      213: -6255829738476103456
+    second: Spine_granite_weeded_normal_24
+  - first:
+      213: -5100829824051519590
+    second: Spine_granite_weeded_normal_25
+  - first:
+      213: 3305845913398507411
+    second: Spine_granite_weeded_normal_26
+  - first:
+      213: -2085801390842318726
+    second: Spine_granite_weeded_normal_27
+  - first:
+      213: 7536951417980006250
+    second: Spine_granite_weeded_normal_28
+  - first:
+      213: 1788370364715204090
+    second: Spine_granite_weeded_normal_29
+  - first:
+      213: -4643131197560343449
+    second: Spine_granite_weeded_normal_30
+  - first:
+      213: -3691408963465062211
+    second: Spine_granite_weeded_normal_31
+  - first:
+      213: -4922900973992039043
+    second: Spine_granite_weeded_normal_32
+  - first:
+      213: -701809121480925537
+    second: Spine_granite_weeded_normal_33
+  - first:
+      213: -2540289217310544797
+    second: Spine_granite_weeded_normal_34
+  - first:
+      213: -4435354483187010670
+    second: Spine_granite_weeded_normal_35
+  - first:
+      213: 2715465129232561913
+    second: Spine_granite_weeded_normal_36
+  - first:
+      213: 4442428765210264910
+    second: Spine_granite_weeded_normal_37
+  - first:
+      213: -1456386905726156560
+    second: Spine_granite_weeded_normal_38
+  - first:
+      213: -7364227080483776237
+    second: Spine_granite_weeded_normal_39
+  - first:
+      213: -8725464187272372245
+    second: Spine_granite_weeded_normal_40
+  - first:
+      213: 8082039794982271513
+    second: Spine_granite_weeded_normal_41
+  - first:
+      213: 8659156809250200853
+    second: Spine_granite_weeded_normal_42
+  - first:
+      213: 2803719681425686340
+    second: Spine_granite_weeded_normal_43
+  - first:
+      213: 3537676694849218117
+    second: Spine_granite_weeded_normal_44
+  - first:
+      213: -4629586041662180164
+    second: Spine_granite_weeded_normal_45
+  - first:
+      213: 1295042751306341213
+    second: Spine_granite_weeded_normal_46
+  - first:
+      213: 4507512945168497245
+    second: Spine_granite_weeded_normal_47
+  - first:
+      213: 3302393165268078394
+    second: Spine_granite_weeded_normal_48
+  - first:
+      213: -5681047870811838293
+    second: Spine_granite_weeded_normal_49
+  - first:
+      213: 5342905701851724478
+    second: Spine_granite_weeded_normal_50
+  - first:
+      213: -4743682659768965256
+    second: Spine_granite_weeded_normal_51
+  - first:
+      213: -1740372648890764585
+    second: Spine_granite_weeded_normal_52
+  - first:
+      213: 524675804707087970
+    second: Spine_granite_weeded_normal_53
+  - first:
+      213: -3944000369454084939
+    second: Spine_granite_weeded_normal_54
+  - first:
+      213: -4653160497798216897
+    second: Spine_granite_weeded_normal_55
+  - first:
+      213: 1937482870770212408
+    second: Spine_granite_weeded_normal_56
+  - first:
+      213: -5792778855452316096
+    second: Spine_granite_weeded_normal_57
+  - first:
+      213: -4035831306450747737
+    second: Spine_granite_weeded_normal_58
+  - first:
+      213: -5942468082738323780
+    second: Spine_granite_weeded_normal_59
+  - first:
+      213: 7941312013256914859
+    second: Spine_granite_weeded_normal_60
+  - first:
+      213: 8968205954640682786
+    second: Spine_granite_weeded_normal_61
+  - first:
+      213: 7268112294375058391
+    second: Spine_granite_weeded_normal_62
+  - first:
+      213: -8525475696688975706
+    second: Spine_granite_weeded_normal_63
+  - first:
+      213: -3218460436175564138
+    second: Spine_granite_weeded_normal_64
+  - first:
+      213: 8203102032985340214
+    second: Spine_granite_weeded_normal_65
+  - first:
+      213: 1223991524509488884
+    second: Spine_granite_weeded_normal_66
+  - first:
+      213: 6461181487331440853
+    second: Spine_granite_weeded_normal_67
+  - first:
+      213: 8123242139461030946
+    second: Spine_granite_weeded_normal_68
+  - first:
+      213: 3393721767981205911
+    second: Spine_granite_weeded_normal_69
+  - first:
+      213: 2725368638121273149
+    second: Spine_granite_weeded_normal_70
+  - first:
+      213: 3678044361208880975
+    second: Spine_granite_weeded_normal_71
+  - first:
+      213: -6845139537195140247
+    second: Spine_granite_weeded_normal_72
+  - first:
+      213: -2470539823471849300
+    second: Spine_granite_weeded_normal_73
+  - first:
+      213: 3610318695356338651
+    second: Spine_granite_weeded_normal_74
+  - first:
+      213: -8434971942525596042
+    second: Spine_granite_weeded_normal_75
+  - first:
+      213: -1157433307844577356
+    second: Spine_granite_weeded_normal_76
+  - first:
+      213: 680610096993959455
+    second: Spine_granite_weeded_normal_77
+  - first:
+      213: 878610050704705274
+    second: Spine_granite_weeded_normal_78
+  - first:
+      213: -3646829840059380117
+    second: Spine_granite_weeded_normal_79
+  - first:
+      213: 1967102495263394266
+    second: Spine_granite_weeded_normal_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae65175ce183ef644b63e0038ea5f7d6
+      internalID: -71802640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64d459d3b31af7c4bb4afb8f736392c5
+      internalID: 463581621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03061364c8bbe8848a860283d6370527
+      internalID: -218637959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bdf583501e47b4444a259c2448943060
+      internalID: 1036621406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0dfddf1492855f241a5d9d849fa1184b
+      internalID: -1410692723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17e800dab5852f74abf4ba879d641e74
+      internalID: 1441807197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a244c285f5171354ca630f262eaaf57a
+      internalID: -1738508653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14655125f8188eb4297a53888ba0ffc6
+      internalID: -1227615600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09b87071cb1828049a555e5da7c5530f
+      internalID: -1680156501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a248ada3c7188b24e84a9678e79574b5
+      internalID: -1667967530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30fd2e55ff604fc4082ec7ce3ee5f577
+      internalID: -1198930565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee4befac104fa3347a5a28eb1f079b24
+      internalID: 922956653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d934987407939a84b9c094686094bb33
+      internalID: -503993456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cdf1a454c85b814fb0504fbf9218edc
+      internalID: -1717150344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ede6b2b92b737c4c94e66cd387448c1
+      internalID: 2119038695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea3f662f7b46f0a449ea8c63ec317b50
+      internalID: -2117154325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b71e56e4377ed946a8ebbb3b93da5b2
+      internalID: 1534514609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d5fc540f0ea95f40bae8df29bae884f
+      internalID: -1870941113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79a272ef8932d5f478e6aeb672217581
+      internalID: -1281841929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5077851e989bde54e8faf0e1734c653a
+      internalID: 1941926873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88132030b2707d44794a41dac052337b
+      internalID: 447454012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba5545005faaf0144870adc044e2b7a1
+      internalID: 891520986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22d1edd069d0ff2499fc667f5b2f0bbd
+      internalID: -700294060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_granite_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51f6fdb7c32bbfe4e81bf21a9eaee953
+      internalID: 1977788018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2757b7cf67ec9b5428a8ce278d0539db
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_granite_weeded_normal_c0_r0: -71802640
+      Spine_granite_weeded_normal_c0_r1: -1680156501
+      Spine_granite_weeded_normal_c0_r2: 1534514609
+      Spine_granite_weeded_normal_c1_r0: 463581621
+      Spine_granite_weeded_normal_c1_r1: -1667967530
+      Spine_granite_weeded_normal_c1_r2: -1870941113
+      Spine_granite_weeded_normal_c2_r0: -218637959
+      Spine_granite_weeded_normal_c2_r1: -1198930565
+      Spine_granite_weeded_normal_c2_r2: -1281841929
+      Spine_granite_weeded_normal_c3_r0: 1036621406
+      Spine_granite_weeded_normal_c3_r1: 922956653
+      Spine_granite_weeded_normal_c3_r2: 1941926873
+      Spine_granite_weeded_normal_c4_r0: -1410692723
+      Spine_granite_weeded_normal_c4_r1: -503993456
+      Spine_granite_weeded_normal_c4_r2: 447454012
+      Spine_granite_weeded_normal_c5_r0: 1441807197
+      Spine_granite_weeded_normal_c5_r1: -1717150344
+      Spine_granite_weeded_normal_c5_r2: 891520986
+      Spine_granite_weeded_normal_c6_r0: -1738508653
+      Spine_granite_weeded_normal_c6_r1: 2119038695
+      Spine_granite_weeded_normal_c6_r2: -700294060
+      Spine_granite_weeded_normal_c7_r0: -1227615600
+      Spine_granite_weeded_normal_c7_r1: -2117154325
+      Spine_granite_weeded_normal_c7_r2: 1977788018
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -59,6 +59,18 @@ namespace HiddenHarbours.Art.Editor
         /// </summary>
         public const int SortingOrder = 4;
 
+        /// <summary>
+        /// The material a HOUSE draws with (drop 14, #898: "L2, houses first"):
+        /// <c>HiddenHarbours/LitSprite</c> on the plants' and shrubs' own response, with the house rig's
+        /// window glow dialled in (<c>_EmitColor</c> #ffc673 at the rig's <c>GLOW_STRENGTH</c>). One
+        /// material for every house; each house's sheets reach it through its
+        /// <see cref="SpriteLightBinder"/>, so a re-bake authors no material.
+        /// </summary>
+        public const string LitMaterialPath = "Assets/_Project/Art/Materials/LitVillageBuilding.mat";
+
+        /// <summary>The lit house material, or null if it is not on disk.</summary>
+        public static Material LoadLitMaterial() => AssetDatabase.LoadAssetAtPath<Material>(LitMaterialPath);
+
         // =================================================================================
         // what is placeable
         // =================================================================================
@@ -162,19 +174,25 @@ namespace HiddenHarbours.Art.Editor
 
         /// <summary>
         /// Turn <paramref name="go"/> into the canonical village building: a
-        /// <see cref="SpriteRenderer"/> on the default sprite material, and a <see cref="YSortSprite"/>
-        /// so it layers around the player by world Y. Nothing else.
+        /// <see cref="SpriteRenderer"/> and a <see cref="YSortSprite"/> so it layers around the player by
+        /// world Y — and, for a HOUSE, the lit material and its light channels. Nothing else.
         ///
         /// <para><b>Both the prefab builder and any placement tool go through here</b>, so a building the
         /// owner drags in and one a builder instantiates are the same object.</para>
         ///
-        /// <para><b>What is deliberately absent.</b> No custom material — the buildings have no shader of
-        /// their own, and there is no lighting/mask work in this kit (the tree kit's mask/normal channels
-        /// have no building equivalent yet). No <c>ReflectiveObject</c>: the default sprite material
-        /// carries no <c>HHReflect</c> pass, so one would join the reflective set and draw nothing —
-        /// the same reason <see cref="DecorPrefabBuilder"/> withholds it from its buildings. No
-        /// collider, no door trigger, no interaction: that is the gameplay lane's call, after
-        /// placement.</para>
+        /// <para><b>⭐ A house lights (drop 14, #898: "L2, houses first").</b> A build whose rig bakes the
+        /// three light channels (<see cref="VillageBuildingKit.HasLightChannels"/>) draws with
+        /// <see cref="LitMaterialPath"/> and gets a <see cref="SpriteLightBinder"/> bound to its mask,
+        /// normal and emitter sheets. All four sheets share the albedo's grid, so turning the house
+        /// (<see cref="SetFacing"/>) needs no rebinding. A house whose material or any channel sheet is
+        /// missing THROWS rather than standing unlit: one unlit house among lit ones is the bug that
+        /// passes for a style. Any other building (the wharf buildings, until their own L2) keeps the
+        /// default sprite material and gets no binder, so it draws exactly as it always has.</para>
+        ///
+        /// <para><b>What is deliberately absent.</b> No <c>ReflectiveObject</c>: neither material carries
+        /// an <c>HHReflect</c> pass, so one would join the reflective set and draw nothing — the same
+        /// reason <see cref="DecorPrefabBuilder"/> withholds it from its buildings. No collider, no door
+        /// trigger, no interaction: that is the gameplay lane's call, after placement.</para>
         ///
         /// <para>⚠️ <paramref name="sortingOrder"/> is a SEED, not the final value.
         /// <see cref="YSortSprite"/> recomputes the order from world Y the moment it is enabled, so this
@@ -217,8 +235,42 @@ namespace HiddenHarbours.Art.Editor
 
             if (go.GetComponent<YSortSprite>() == null) go.AddComponent<YSortSprite>();
 
+            if (VillageBuildingKit.HasLightChannels(placement.Entry)) BindLight(go, sr, placement);
+
             return sr;
         }
+
+        /// <summary>
+        /// Put a house on the lit material and bind its three channel sheets. Everything is loaded
+        /// before anything is written, so a missing sheet leaves the object as the lines above made it
+        /// rather than half lit.
+        /// </summary>
+        static void BindLight(GameObject go, SpriteRenderer sr, Placement placement)
+        {
+            Material lit = LoadLitMaterial();
+            Texture2D mask = LoadChannel(placement, VillageBuildingKit.Channel.Mask);
+            Texture2D normal = LoadChannel(placement, VillageBuildingKit.Channel.Normal);
+            Texture2D emit = LoadChannel(placement, VillageBuildingKit.Channel.Emit);
+
+            var missing = new List<string>();
+            if (lit == null) missing.Add(LitMaterialPath);
+            if (mask == null) missing.Add(VillageBuildingKit.SheetPath(placement.Key, VillageBuildingKit.Channel.Mask));
+            if (normal == null) missing.Add(VillageBuildingKit.SheetPath(placement.Key, VillageBuildingKit.Channel.Normal));
+            if (emit == null) missing.Add(VillageBuildingKit.SheetPath(placement.Key, VillageBuildingKit.Channel.Emit));
+            if (missing.Count > 0)
+                throw new InvalidOperationException(
+                    $"'{placement.Key}' is a house, so it lights, and these are not on disk: " +
+                    string.Join(", ", missing) + ". Re-bake the village buildings (Hidden Harbours ▸ " +
+                    "Art ▸ Bake Village Buildings) rather than placing it unlit.");
+
+            sr.sharedMaterial = lit;
+            var binder = go.GetComponent<SpriteLightBinder>();
+            if (binder == null) binder = go.AddComponent<SpriteLightBinder>();
+            binder.SetSheets(mask, normal, emitSheet: emit);
+        }
+
+        static Texture2D LoadChannel(Placement placement, VillageBuildingKit.Channel channel) =>
+            AssetDatabase.LoadAssetAtPath<Texture2D>(VillageBuildingKit.SheetPath(placement.Key, channel));
 
         /// <summary>
         /// Turn an already-configured building to another facing — the ONLY way to rotate one, because

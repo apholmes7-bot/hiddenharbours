@@ -1,0 +1,841 @@
+fileFormatVersion: 2
+guid: 9f8bf4039eeca8b42ae6bd76df5ce05b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5074617361182685852
+    second: Cobbles_quartzite_barnacled_mask_0
+  - first:
+      213: -4593634210472710919
+    second: Cobbles_quartzite_barnacled_mask_1
+  - first:
+      213: 2346124675010990861
+    second: Cobbles_quartzite_barnacled_mask_2
+  - first:
+      213: -3022092077223454219
+    second: Cobbles_quartzite_barnacled_mask_3
+  - first:
+      213: 4238018277316126085
+    second: Cobbles_quartzite_barnacled_mask_4
+  - first:
+      213: -6428045843952632289
+    second: Cobbles_quartzite_barnacled_mask_5
+  - first:
+      213: -4388405919749990320
+    second: Cobbles_quartzite_barnacled_mask_6
+  - first:
+      213: 1048841580370396006
+    second: Cobbles_quartzite_barnacled_mask_7
+  - first:
+      213: 4456488532532448358
+    second: Cobbles_quartzite_barnacled_mask_8
+  - first:
+      213: -6474879278109044944
+    second: Cobbles_quartzite_barnacled_mask_9
+  - first:
+      213: 4376028624316762299
+    second: Cobbles_quartzite_barnacled_mask_10
+  - first:
+      213: -8075163072765185655
+    second: Cobbles_quartzite_barnacled_mask_11
+  - first:
+      213: 6469598951420196067
+    second: Cobbles_quartzite_barnacled_mask_12
+  - first:
+      213: 3003760909163813174
+    second: Cobbles_quartzite_barnacled_mask_13
+  - first:
+      213: -3919204866173493788
+    second: Cobbles_quartzite_barnacled_mask_14
+  - first:
+      213: 6098073011677166948
+    second: Cobbles_quartzite_barnacled_mask_15
+  - first:
+      213: -3559020705821469311
+    second: Cobbles_quartzite_barnacled_mask_16
+  - first:
+      213: -3158751578029456493
+    second: Cobbles_quartzite_barnacled_mask_17
+  - first:
+      213: 580576982681406547
+    second: Cobbles_quartzite_barnacled_mask_18
+  - first:
+      213: -4687134496527829669
+    second: Cobbles_quartzite_barnacled_mask_19
+  - first:
+      213: 2116382822598585734
+    second: Cobbles_quartzite_barnacled_mask_20
+  - first:
+      213: 1611188336968957754
+    second: Cobbles_quartzite_barnacled_mask_21
+  - first:
+      213: 2936430552232019605
+    second: Cobbles_quartzite_barnacled_mask_22
+  - first:
+      213: -7040952136791843697
+    second: Cobbles_quartzite_barnacled_mask_23
+  - first:
+      213: 3781406865480311817
+    second: Cobbles_quartzite_barnacled_mask_24
+  - first:
+      213: -2275379103639864460
+    second: Cobbles_quartzite_barnacled_mask_25
+  - first:
+      213: -7665648731526324060
+    second: Cobbles_quartzite_barnacled_mask_26
+  - first:
+      213: 5438822958159477557
+    second: Cobbles_quartzite_barnacled_mask_27
+  - first:
+      213: -8860654772364561086
+    second: Cobbles_quartzite_barnacled_mask_28
+  - first:
+      213: 5975447866985742117
+    second: Cobbles_quartzite_barnacled_mask_29
+  - first:
+      213: 1186523259793358998
+    second: Cobbles_quartzite_barnacled_mask_30
+  - first:
+      213: -9092503255822477354
+    second: Cobbles_quartzite_barnacled_mask_31
+  - first:
+      213: 2190952085194946861
+    second: Cobbles_quartzite_barnacled_mask_32
+  - first:
+      213: 952761928019671850
+    second: Cobbles_quartzite_barnacled_mask_33
+  - first:
+      213: 4615199705330780736
+    second: Cobbles_quartzite_barnacled_mask_34
+  - first:
+      213: -4115954381182209023
+    second: Cobbles_quartzite_barnacled_mask_35
+  - first:
+      213: -4374392867220736889
+    second: Cobbles_quartzite_barnacled_mask_36
+  - first:
+      213: -1983020622740862468
+    second: Cobbles_quartzite_barnacled_mask_37
+  - first:
+      213: -8488162805395281858
+    second: Cobbles_quartzite_barnacled_mask_38
+  - first:
+      213: -7734067161828376783
+    second: Cobbles_quartzite_barnacled_mask_39
+  - first:
+      213: -878785636973655774
+    second: Cobbles_quartzite_barnacled_mask_40
+  - first:
+      213: -3755227511676858755
+    second: Cobbles_quartzite_barnacled_mask_41
+  - first:
+      213: 1325075103685567813
+    second: Cobbles_quartzite_barnacled_mask_42
+  - first:
+      213: -845269445936646716
+    second: Cobbles_quartzite_barnacled_mask_43
+  - first:
+      213: 4029365683690168993
+    second: Cobbles_quartzite_barnacled_mask_44
+  - first:
+      213: -9079897222453396989
+    second: Cobbles_quartzite_barnacled_mask_45
+  - first:
+      213: -3955652382219059718
+    second: Cobbles_quartzite_barnacled_mask_46
+  - first:
+      213: -8470054632981103688
+    second: Cobbles_quartzite_barnacled_mask_47
+  - first:
+      213: -2482817379014979436
+    second: Cobbles_quartzite_barnacled_mask_48
+  - first:
+      213: 4693975720893095616
+    second: Cobbles_quartzite_barnacled_mask_49
+  - first:
+      213: -3275827267155949975
+    second: Cobbles_quartzite_barnacled_mask_50
+  - first:
+      213: -1587406279091050297
+    second: Cobbles_quartzite_barnacled_mask_51
+  - first:
+      213: -4063464954332794027
+    second: Cobbles_quartzite_barnacled_mask_52
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7159ad64d8a4a2b43a2af138a7217355
+      internalID: 18055955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 836c11f267f07974b8356a6044ef45b1
+      internalID: -1596060291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c795600235abf014084721c396555708
+      internalID: -684418146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a539e46dcabf9024dbdea3f556b8aab8
+      internalID: 532099898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 396785b67ac4051408f3b4e68859a48e
+      internalID: 1692533976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e44dff5f5eb14644f87aa3d8137cd1ef
+      internalID: -2063272791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06d3ebd5f1db2494891e8369b098476e
+      internalID: -642328732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b08ad224b7d98064f8551652f0dad1a1
+      internalID: 232719072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23ac54d4713f1f64bb77c5ecdd94c822
+      internalID: 708877575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 145d204992639214897c2de64d9c64e8
+      internalID: -1007461304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f85da66524636e74a839492f942c6767
+      internalID: -643364334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc38e93c216d263428d8aacd6423cd92
+      internalID: 1624830101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37c7009c571faf042bdc66a12b260e63
+      internalID: 2091064538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a2c9f95eb42c1044be4f545a3286f93
+      internalID: -2043158947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fea8f4be163fe04e9b2669020387f02
+      internalID: -901953090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5443e8d6154f71549ae53c170d5a4650
+      internalID: 1709611573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f7403c725598994cbf63d408fbeda91
+      internalID: 1656353095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5be31b6a6970b747abb1d220d93abef
+      internalID: 285641998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d835c3c599e96894f806e86b58c87935
+      internalID: 326015222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64b87fb7d6d69424ab97f035455b811c
+      internalID: 610612557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e61372e6307067d4c9d85e48b80a42a8
+      internalID: 350845986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d336bfc2ed8cc1847b0942735f7b2e09
+      internalID: 157856329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f343b582c48a1e4fa0164401ed64ea2
+      internalID: 2090522796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d339cc4f1863b4b479ffcd040e26e4b7
+      internalID: 808166531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 67ec2f11365e1554ab5732f9827480d8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_quartzite_barnacled_mask_c0_r0: 18055955
+      Cobbles_quartzite_barnacled_mask_c0_r1: 708877575
+      Cobbles_quartzite_barnacled_mask_c0_r2: 1656353095
+      Cobbles_quartzite_barnacled_mask_c1_r0: -1596060291
+      Cobbles_quartzite_barnacled_mask_c1_r1: -1007461304
+      Cobbles_quartzite_barnacled_mask_c1_r2: 285641998
+      Cobbles_quartzite_barnacled_mask_c2_r0: -684418146
+      Cobbles_quartzite_barnacled_mask_c2_r1: -643364334
+      Cobbles_quartzite_barnacled_mask_c2_r2: 326015222
+      Cobbles_quartzite_barnacled_mask_c3_r0: 532099898
+      Cobbles_quartzite_barnacled_mask_c3_r1: 1624830101
+      Cobbles_quartzite_barnacled_mask_c3_r2: 610612557
+      Cobbles_quartzite_barnacled_mask_c4_r0: 1692533976
+      Cobbles_quartzite_barnacled_mask_c4_r1: 2091064538
+      Cobbles_quartzite_barnacled_mask_c4_r2: 350845986
+      Cobbles_quartzite_barnacled_mask_c5_r0: -2063272791
+      Cobbles_quartzite_barnacled_mask_c5_r1: -2043158947
+      Cobbles_quartzite_barnacled_mask_c5_r2: 157856329
+      Cobbles_quartzite_barnacled_mask_c6_r0: -642328732
+      Cobbles_quartzite_barnacled_mask_c6_r1: -901953090
+      Cobbles_quartzite_barnacled_mask_c6_r2: 2090522796
+      Cobbles_quartzite_barnacled_mask_c7_r0: 232719072
+      Cobbles_quartzite_barnacled_mask_c7_r1: 1709611573
+      Cobbles_quartzite_barnacled_mask_c7_r2: 808166531
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

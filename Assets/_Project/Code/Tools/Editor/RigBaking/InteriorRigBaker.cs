@@ -45,17 +45,38 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public readonly bool RequireDistinctFromDefault;
 
+        /// <summary>
+        /// ROOM only: the JS options literal of the SHELL this room stands inside — the very literal
+        /// that shell bakes with — or null when the room has no shell in the village kit. The room is
+        /// registered against it (<see cref="InteriorRigBaker.ExteriorOptsFor"/>).
+        ///
+        /// <para>Why the shell's own options and not just its size: the house rig's door anchor
+        /// follows the DRAWN door since the village return, and where the door is drawn depends on
+        /// the build (a porch puts it on the +Y gable; no porch puts it on an eave). A bare
+        /// <c>{size}</c> is a porchless default whose door is on the eave, so every room would be
+        /// registered against a door no shipped shell has.</para>
+        /// </summary>
+        public readonly string ExteriorOptsJs;
+
         InteriorBakeRequest(string rigKey, string optsJs, string propName, string label,
                             string outputFolder, string baseName, int facings,
-                            int maxSheetDimension, bool requireDistinctFromDefault)
+                            int maxSheetDimension, bool requireDistinctFromDefault,
+                            string exteriorOptsJs = null)
         {
             RigKey = rigKey; OptsJs = optsJs; PropName = propName; Label = label;
             OutputFolder = outputFolder; BaseName = baseName; Facings = facings;
             MaxSheetDimension = maxSheetDimension;
             RequireDistinctFromDefault = requireDistinctFromDefault;
+            ExteriorOptsJs = exteriorOptsJs;
         }
 
         public bool IsProp => PropName != null;
+
+        /// <summary>This request, registered against the shell whose options are
+        /// <paramref name="exteriorOptsJs"/> (null keeps the size-only fallback).</summary>
+        public InteriorBakeRequest WithExterior(string exteriorOptsJs) =>
+            new InteriorBakeRequest(RigKey, OptsJs, PropName, Label, OutputFolder, BaseName, Facings,
+                                    MaxSheetDimension, RequireDistinctFromDefault, exteriorOptsJs);
 
         /// <summary>A ROOM build: <c>InteriorIso.render(dir, opts)</c>.</summary>
         public static InteriorBakeRequest Room(string optsJs, string label, string outputFolder,
@@ -131,9 +152,11 @@ namespace HiddenHarbours.Tools.RigBaking
         public double FootprintWidthMetres, FootprintLengthMetres;
 
         /// <summary>
-        /// ROOM: the rig's DECLARED floor-to-floor rise to the storey above, in metres
-        /// (<c>anchors().storeyZ</c> — this storey's ceiling plus the joists it carries). Zero for a
-        /// prop, and zero for any rig that does not declare one.
+        /// ROOM: the rig's DECLARED floor-to-floor rise to the storey above, in metres — the difference
+        /// between the upper and this storey's <c>dims().storeyZ</c> where the rig has <c>dims()</c>,
+        /// else <c>anchors().storeyZ</c> (this storey's ceiling plus the joists it carries, on the rigs
+        /// that predate the storey option). Zero for a prop, and zero for any rig that does not declare
+        /// one. See <see cref="InteriorRigBaker.StoreyRiseMetres"/>.
         ///
         /// <para>Read rather than assumed for the same reason <see cref="FootprintWidthMetres"/> is: a
         /// second storey has to be drawn at the height the ART puts it, and a number guessed on this
@@ -393,19 +416,78 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
-        /// The EXTERIOR options a room is registered against: the same <c>size</c>, and nothing else.
+        /// The EXTERIOR options a room is registered against: its OWN shell's options when the request
+        /// carries them (<see cref="InteriorBakeRequest.ExteriorOptsJs"/>), otherwise the same
+        /// <c>size</c> and nothing else.
         ///
-        /// <para><c>size</c> is the ONLY axis both rigs share (<c>Wd = 6 + size·2.4</c>,
+        /// <para>The shell's own options are what the door registration needs. Since the village
+        /// return the house rig's <c>anchors().door</c> is the door as DRAWN — on the +Y gable behind a
+        /// porch, on an eave without one — so the shell that stands over the room is the only one whose
+        /// door the room can honestly be registered to. Measured on the four shipped rooms: against
+        /// their own shells today's rigs give offset 4 (the committed contract) and the returned rigs
+        /// give 0; against <c>{size}</c> alone the returned house is porchless, its door is on the
+        /// eave and the registration refuses all four.</para>
+        ///
+        /// <para>The <c>{size}</c> fallback stays for a room with no shell in the village kit.
+        /// <c>size</c> is the ONLY axis both rigs share (<c>Wd = 6 + size·2.4</c>,
         /// <c>Ln = 7 + size·4.2</c> in both), and the registration probe asserts that footprint
-        /// agreement rather than trusting it. Siding, roof and porch have no interior meaning and are
-        /// deliberately not carried across.</para>
+        /// agreement rather than trusting it.</para>
         /// </summary>
-        static string ExteriorOptsFor(in InteriorBakeRequest req) =>
-            $"{{size:({req.OptsJs}).size!=null?({req.OptsJs}).size:0.3}}";
+        public static string ExteriorOptsFor(in InteriorBakeRequest req) =>
+            !string.IsNullOrEmpty(req.ExteriorOptsJs)
+                ? req.ExteriorOptsJs
+                : $"{{size:({req.OptsJs}).size!=null?({req.OptsJs}).size:0.3}}";
 
         // =================================================================================
         //  the anchors
         // =================================================================================
+
+        /// <summary>
+        /// The room's floor-to-floor rise to the storey above, in metres, or zero when the rig
+        /// declares none. What <see cref="InteriorBakeResult.StoreyHeightMetres"/> carries.
+        ///
+        /// <para>The storey above's height, if this rig declares one. Optional and quiet about it: a rig
+        /// with no second storey in it has nothing to say here, and a missing anchor must not fail a
+        /// bake that is otherwise complete. What must NOT happen is the number being invented on this
+        /// side, which is why it is read and not defaulted to anything but zero.</para>
+        ///
+        /// <para>Carried from #853 (the reader it wrote for the 09-15 drop, never merged); drop 14's
+        /// room rig redefines <c>storeyZ</c> the same way, re-measured below.</para>
+        /// </summary>
+        public static double StoreyRiseMetres(IRigScriptHost host, string g, string optsJs)
+        {
+            // ⚠️ THE FIELD IS A FLOOR-TO-FLOOR RISE AND `storeyZ` STOPPED BEING ONE (2026-09-15). The
+            // rig this repo shipped against declared `b.storeyZ = b.ceilZ + b.joistZ` — "metres of
+            // HEIGHT from this floor to the one above", in its own words — so reading the anchor was
+            // reading the rise. The coastal-heritage interiorIsoRig redefines it as THIS storey's
+            // floor above grade (`b.storeyZ = b.fH` on the ground branch, `b.fH + min(...)` on the
+            // upper), which for every domestic ground room is a flat 0.55 m. Nothing throws: the
+            // number is still a number, still finite, still on the anchor. Baking through the old
+            // reader would have written 0.55 over 3.1025 and dropped Ginny's upper storey almost to
+            // the ground floor — the mirror of the double-rise trap, and just as quiet.
+            //
+            // So ASK FOR THE RISE ITSELF where the rig can answer: the difference between the upper
+            // storey's floor and this one's. Measured on all four shipped rooms, that difference
+            // equals the rig's own stair contract exactly — furnishings().stair.floorRise, its
+            // top.z, and steps x riser all agree to the last digit (sageCottage 2.65 · school 2.59 ·
+            // redSaltbox 2.74 · whiteFarmhouse 2.92), with the companion on and off alike. Only
+            // `storey` is overridden for the measurement: dividers and the hearth do not enter the
+            // height, and a measurement should move as little as it can.
+            //
+            // A rig with no dims(), or one that ignores `storey`, returns the same number twice and
+            // the difference is zero — which is why zero falls through to the anchor and the rigs
+            // that predate the storey option keep the reading they have always had.
+            string upperOpts = $"Object.assign({{}},{optsJs},{{storey:'upper'}})";
+            string rise = $"({g}.dims({upperOpts}).storeyZ - {g}.dims({optsJs}).storeyZ)";
+            bool hasRise =
+                host.EvaluateBool($"typeof {g}.dims === 'function'") &&
+                host.EvaluateBool($"typeof ({rise}) === 'number' && isFinite({rise}) && ({rise}) > 0");
+
+            string s = hasRise ? rise : $"{g}.anchors(0,{optsJs}).storeyZ";
+            return host.EvaluateBool($"typeof ({s}) === 'number' && isFinite({s})")
+                ? host.EvaluateNumber(s)
+                : 0.0;
+        }
 
         /// <summary>
         /// Read the rig's per-facing anchors into the result, in CROPPED cell px so a runtime overlay
@@ -435,15 +517,7 @@ namespace HiddenHarbours.Tools.RigBaking
             r.FootprintWidthMetres = host.EvaluateNumber($"{g}.anchors(0,{req.OptsJs}).Wd");
             r.FootprintLengthMetres = host.EvaluateNumber($"{g}.anchors(0,{req.OptsJs}).Ln");
 
-            // The storey above's height, if this rig declares one. Optional and quiet about it: a rig
-            // with no second storey in it has nothing to say here, and a missing anchor must not fail a
-            // bake that is otherwise complete. What must NOT happen is the number being invented on this
-            // side, which is why it is read and not defaulted to anything but zero.
-            string s = $"{g}.anchors(0,{req.OptsJs}).storeyZ";
-            r.StoreyHeightMetres =
-                host.EvaluateBool($"typeof ({s}) === 'number' && isFinite({s})")
-                    ? host.EvaluateNumber(s)
-                    : 0.0;
+            r.StoreyHeightMetres = StoreyRiseMetres(host, g, req.OptsJs);
 
             int n = req.Facings;
             r.DoorX = new double[n]; r.DoorY = new double[n];

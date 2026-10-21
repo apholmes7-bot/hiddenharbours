@@ -19,6 +19,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// pass is EXCLUSIVE, and an exclusive stroke lerps its own channel from whatever is beneath — so a
     /// second run converges toward the first instead of reproducing it unless the pass clears first. That
     /// is not a formality: it is the defect St Peters shipped with and had to fix.</para>
+    ///
+    /// <para><b>Two grounds since NMC H2.</b> The transient terrain is the plan's analytic ground, and the pass
+    /// still paints from it. The scene's ground is G3 (<see cref="NineMileCreekLiveGround.Plan"/>); the pass
+    /// moves onto G3's masks (<see cref="NineMileCreekGroundMasks"/>) in a later wave. None of these tests
+    /// claims G3's ground.</para>
     /// </summary>
     public class NineMileCreekStarterSplatTests
     {

@@ -105,13 +105,14 @@ namespace HiddenHarbours.App.Editor
     /// second call leaves one room and one set of furniture rather than two of each. That is what will
     /// let a world creator drop a building, turn it, and get the inside re-hung rather than doubled.</para>
     ///
-    /// <para><b>⚠️ The room is NOT necessarily shown at the building's facing.</b> The exterior house rigs
-    /// put their door on the <c>+Y</c> gable and the room rig puts its doorway on <c>−Y</c>, so the same
-    /// cell index shows the two 180° apart. The bake MEASURES the offset that lines their door anchors up
-    /// at all eight facings and writes it into the contract, and <c>InteriorFacingFor</c> is the only
-    /// thing that applies it. The shop kit's measured answer is <b>0</b> and the house family's is
-    /// <b>4</b> — carrying either across would put the doorway against the back wall, and it would read
-    /// as an art bug rather than a placement one.</para>
+    /// <para><b>⚠️ The room is NOT necessarily shown at the building's facing.</b> The bake MEASURES the
+    /// offset that lines the room's door anchors up with its shell's at all eight facings and writes it
+    /// into the contract, and <c>InteriorFacingFor</c> is the only thing that applies it. The shop kit's
+    /// measured answer is <b>0</b>. The house family's was <b>4</b> until the village return (drop 14):
+    /// the room rig before it drew its doorway on <c>−Y</c> and the house rigs their door on <c>+Y</c>.
+    /// The returned room rig draws it on <c>+Y</c> too, and measures <b>0</b>. Carrying a stale answer
+    /// across would put the doorway against the back wall, and it would read as an art bug rather than
+    /// a placement one.</para>
     ///
     /// <para><b>⚠️ The world XY plane is the SQUASHED ground plane.</b> One metre of northward ground
     /// travel draws <c>sin 40° ≈ 0.643</c> world units up the screen
@@ -235,8 +236,9 @@ namespace HiddenHarbours.App.Editor
 
             // --- where the doorway is, in the room's own model frame. MEASURED, per room, from the
             //     bake's own anchors — not taken from InteriorFootprint's house-family defaults. The
-            //     two agree today (this rig's door anchor is pj(0,−Ln/2,fZ), so it cannot be anything
-            //     but centred on −y); measuring is what keeps that true after the next rig drop.
+            //     two no longer agree: the returned room rig of drop 14 anchors its door at
+            //     pj(0, +Ln/2, fZ), centred on +y, where the defaults say −y. Measuring is what
+            //     carried that rig drop without a line changing here.
             Vector2 door = InteriorCatalog.DoorModelMetres(room);
             float doorSign = door.y >= 0f ? 1f : -1f;
 

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78ae17f2f857aae7f1ac284e05f629b6, type: 3}
+  m_Name: Biome_SaltMarsh
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BiomeDef
+  Id: biome.stp_salt_marsh
+  DisplayName: Salt marsh
+  Kind: 1
+  Rule: 'the Lagoon Marsh and Ginny''s Cove fringe: marsh, silt, mud and sedge above -1.5 m'
+  Poly: []
+  Band: {x: -1.6, y: 3.8}
+  SectionIds:
+  - coast.stp_lagoon_marsh
+  - coast.stp_ginnys_cove
+  CliffTopMinM: 0
+  CliffDistanceM: 0

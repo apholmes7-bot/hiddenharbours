@@ -6,16 +6,22 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// The screen-space HELM OVERLAY (ADR 0025 S1): while the player pilots a motorised hull, the
-    /// hull's diegetic control — the outboard TILLER or the binnacle LEVER — draws on a small card
-    /// (placeholder bottom-right; the owner repositions via <see cref="HelmOverlaySettings"/>).
-    /// Clicking the card brings the instrument to a FOCUSED, enlarged state where its controls are
-    /// properly clickable (owner addition 2026-08-03); Esc or a click outside returns to the small
-    /// card. The full per-hull helm composition is S6 — this host is the mechanic every later
-    /// instrument reuses.
+    /// The screen-space HELM OVERLAY (ADR 0025 S1, the band since H2): while the player pilots a
+    /// motorised hull, the hull's diegetic controls draw at the bottom of the screen. A hull with a
+    /// console draws the HELM BAND (the owner's 2026-09-24 ruling): a full-width strip 144·k tall
+    /// whose pieces are the dash's own renders, laid out by <see cref="HelmBandLayout"/> and painted
+    /// by <see cref="HelmBandController"/>. A hull without one draws a single card at the bottom
+    /// centre: the outboard TILLER, or the lone binnacle LEVER.
     ///
-    /// <para><b>One state, one owner.</b> The card renders <see cref="IHelmControl.Drive"/> — the
-    /// controller's own throttle — every frame; mouse input goes back as intents
+    /// <para><b>No focus.</b> The click-to-focus state (owner addition 2026-08-03) retired with the
+    /// dash card: the band's wheel, lever and anchor switch are live at the band's own scale, and a
+    /// press anywhere on the tiller's card starts its throttle drag. A fitted instrument's housing in
+    /// the band raises that instrument's own card (<see cref="HelmInstrumentExpansion"/>); while one
+    /// is raised a press on the band away from every housing lowers it, and the card's own host
+    /// takes Esc and every press inside the card.</para>
+    ///
+    /// <para><b>One state, one owner.</b> The band and the card render <see cref="IHelmControl.Drive"/>
+    /// — the controller's own throttle — every frame; mouse input goes back as intents
     /// (<c>DragDrive</c>/<c>EndDrag</c>, detent semantics in Core). The overlay stores NO drive.
     /// Reads/writes ride <see cref="GameServices.HelmControl"/> only — this assembly references only
     /// Core, so it structurally cannot reach the Boats module (rule 4).</para>
@@ -25,23 +31,28 @@ namespace HiddenHarbours.UI
     /// every already-built scene shows the helm with no builder re-run. Headless-safe and inert
     /// without a registered helm service (EditMode/PlayMode tests, on foot, rowing).</para>
     ///
-    /// <para><b>Perf (rule 7):</b> repaints are change-detected — the lever redraws only when its
-    /// 1/48th-quantised drive (the rig's own cache key) or finish changes; the tiller only when a
-    /// band segment / gear / running flips (steering rotates the RectTransform, no re-raster). One
-    /// reused <see cref="DrawSurface"/> + <see cref="Texture2D"/> per style; zero per-frame
-    /// allocation in the steady state.</para>
+    /// <para><b>Perf (rule 7):</b> the band's pieces repaint and upload only on their own change keys
+    /// (<see cref="HelmBandController"/>); the panel and the caps are untextured tinted quads, retinted
+    /// only when the panel lights switch; piece rects move only when the screen or the rig does. The
+    /// lone lever redraws only when its 1/48th-quantised drive or finish changes; the tiller only when
+    /// a band segment or the gear flips (steering rotates the RectTransform, no re-raster). Zero
+    /// per-frame allocation in the steady state.</para>
     /// </summary>
-    // -45: BEFORE the brow instrument hosts (-40), which flush-mount against the dash card rect this
-    // publishes each frame (S4.5) — an ordering, not a race.
+    // -45: BEFORE the instrument card hosts (-40), which read BandUp and the press routing this host
+    // settles each frame — an ordering, not a race.
     [DefaultExecutionOrder(-45)]
     public sealed class HelmOverlayHost : MonoBehaviour
     {
         [Header("Canvas")]
-        [Tooltip("Sorting order of the overlay canvas. Above the HUD band so the focused instrument " +
-                 "reads over it; below modal shells.")]
+        [Tooltip("Sorting order of the overlay canvas. Above the HUD band; below the raised " +
+                 "instrument cards (62-64) and modal shells.")]
         [SerializeField] private int _sortingOrder = 60;
 
         private static HelmOverlayHost _instance;
+
+        // True on a frame the band is drawn; cleared at the top of every Update, so a card host that
+        // runs after this one never reads a band that is no longer on screen.
+        private static bool _bandUp;
 
         private Canvas _canvas;
         private GameObject _cardGo;          // the card rect (position/size; never rotates)
@@ -52,65 +63,89 @@ namespace HiddenHarbours.UI
         private DrawSurface _surface;
         private Texture2D _texture;
 
-        // Change-detection state (what the current texture shows).
+        // The band: a tinted panel under one image per piece (the caps are tinted, untextured).
+        private GameObject _bandGo;
+        private RawImage _panel;
+        private RectTransform _panelRect;
+        private readonly RawImage[] _pieceImages = new RawImage[HelmBandGeometry.MaxPieces];
+        private readonly RectTransform[] _pieceRects = new RectTransform[HelmBandGeometry.MaxPieces];
+
+        // What the band's images show (applied only when these move).
+        private int _appliedW = -1, _appliedH = -1;
+        private ConsoleRigKind _appliedRig = ConsoleRigKind.None;
+        private int _appliedUploads = -1;
+        private int _appliedNight = -1;
+
+        // Change-detection state (what the card's texture shows).
         private HelmControlStyle _shownStyle = HelmControlStyle.None;
         private int _shownLeverKey = int.MinValue;
         private HelmLeverFinish _shownFinish = (HelmLeverFinish)(-1);
         private int _shownBandLit = -1;
         private bool _shownForward = true;
 
-        // Interaction state.
-        private bool _focused;
+        // Interaction state (the card).
         private bool _dragging;              // a live control drag session (lever grip / tiller band)
         private float _dragStartDrive;
         private float _dragStartScreenY;
         private bool _dragIsTiller;
 
-        // The composed skiff dash (S2a): compositor + per-instrument interaction.
-        private readonly HelmDashController _dashCtl = new HelmDashController();
-        private bool _dashShown;
+        // The band (H2): painter + per-piece interaction.
+        private readonly HelmBandController _bandCtl = new HelmBandController();
+        private bool _bandShown;
 
-        // The helm card as a WINDOW (2026-08-07 ruling): drag by the hover strip, resize by the
-        // grip, collapse to Compact/Bar, hide (individually or via the hide-all key). One window
-        // whichever card the hull shows — dash, lone lever, or tiller.
-        private readonly BoatUiWindowController _window =
-            new BoatUiWindowController(BoatUiWindowId.Helm);
-
-        // The live dash card, published for the brow instruments that flush-mount into it (S4.5).
-        // Recomputed every frame a dash draws and cleared the moment one does not, so a stale rect can
-        // never leave an instrument floating over a helm that is no longer on screen.
-        private static bool _dashLive;
-        private static Rect _dashCard;
-        private static HelmFit _dashFit;
+        // True while what the Core footprint seam says is this host's statement (ADR 0050). Only an
+        // owner clears it, so a host with no card up never stomps on anybody else's.
+        private bool _footprintOwned;
 
         /// <summary>Which card the overlay shows right now (test seam).</summary>
-        public enum HelmCardKind { None, Tiller, Lever, Dash }
+        public enum HelmCardKind { None, Tiller, Lever, Band }
 
         /// <summary>The card currently shown. Exposed for tests.</summary>
         public HelmCardKind CardKind { get; private set; }
 
-        /// <summary>The dash compositor (test seam — wheel mirror angle, steer session).</summary>
-        public HelmDashController DashController => _dashCtl;
+        /// <summary>The band's painter and controls (test seam: pieces, wheel angle, steer session).</summary>
+        public HelmBandController BandController => _bandCtl;
 
         /// <summary>The live host instance (test seam — the bootstrap spawns exactly one).</summary>
         public static HelmOverlayHost Instance => _instance;
 
-        /// <summary>Focused state (click-to-focus, owner addition 2026-08-03). Exposed for tests.</summary>
-        public bool Focused => _focused;
+        /// <summary>
+        /// True while the helm band is on screen this frame. The instrument card hosts read it: with
+        /// the band up, a press away from a raised card is the band's to route (a housing raises its
+        /// own card, anywhere else lowers it), so the card host does not also treat it as its
+        /// click-away. Static because the hosts are independent self-installing singletons; set from
+        /// <see cref="Update"/>, which runs FIRST by execution order, so a reader never sees a stale
+        /// band.
+        /// </summary>
+        public static bool BandUp => _bandUp;
 
         /// <summary>
-        /// The dash card currently on screen and the fit it is drawing — the seam the brow instruments
-        /// flush-mount against (S4.5). False whenever no dash is up (on foot, rowing, a tiller hull, or
-        /// a helm with no console), in which case an instrument has no mount and falls back to its own
-        /// card. Static because the hosts are independent self-installing singletons; published from
-        /// <see cref="Update"/>, which runs FIRST by execution order, so a reader never sees a stale
-        /// rect.
+        /// What the helm covers, as the Core footprint seam states it (ADR 0050): a wheel helm's band
+        /// is a full-width band 144k tall on the bottom edge; the tiller's or the lone lever's card is
+        /// that card alone (the title strip above it retired with the windows, H2). Nothing for no
+        /// card, or for a card the screen gave no room. Pure, so EditMode pins it.
         /// </summary>
-        public static bool TryDashCard(out Rect card, out HelmFit fit)
+        public static HelmFootprintArea FootprintOf(HelmCardKind kind, Rect card, int screenH)
         {
-            card = _dashCard;
-            fit = _dashFit;
-            return _dashLive;
+            switch (kind)
+            {
+                case HelmCardKind.Band:
+                    return HelmFootprintArea.FullWidthBand(HelmBandLayout.BandHeightPx(screenH));
+                case HelmCardKind.Tiller:
+                case HelmCardKind.Lever:
+                    return HelmFootprintArea.OfCard(card);
+                default:
+                    return HelmFootprintArea.None;
+            }
+        }
+
+        // Say what the helm covers, as this host. Change-detected in Core, so a band at rest costs one
+        // struct compare a frame.
+        private void PublishFootprint(in HelmFootprintArea area)
+        {
+            if (area.IsNone && !_footprintOwned) return;
+            _footprintOwned = !area.IsNone;
+            HelmFootprint.Publish(in area);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -147,6 +182,33 @@ namespace HiddenHarbours.UI
             _image.raycastTarget = false;   // we hit-test ourselves; never block other UI
 
             _cardGo.SetActive(false);
+
+            _bandGo = new GameObject("HelmBand");
+            _bandGo.transform.SetParent(canvasGo.transform, false);
+            var bandRect = _bandGo.AddComponent<RectTransform>();
+            bandRect.anchorMin = bandRect.anchorMax = Vector2.zero;
+            bandRect.pivot = Vector2.zero;
+            bandRect.anchoredPosition = Vector2.zero;
+            bandRect.sizeDelta = Vector2.zero;
+            _panel = NewBandImage("Panel", out _panelRect);
+            for (int i = 0; i < _pieceImages.Length; i++)
+            {
+                _pieceImages[i] = NewBandImage("Piece" + i, out _pieceRects[i]);
+                _pieceImages[i].gameObject.SetActive(false);
+            }
+            _bandGo.SetActive(false);
+        }
+
+        private RawImage NewBandImage(string name, out RectTransform rect)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(_bandGo.transform, false);
+            rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = Vector2.zero;
+            rect.pivot = Vector2.zero;
+            var image = go.AddComponent<RawImage>();
+            image.raycastTarget = false;    // we hit-test ourselves; never block other UI
+            return image;
         }
 
         private void OnDestroy()
@@ -155,143 +217,97 @@ namespace HiddenHarbours.UI
             {
                 _instance = null;
                 // The publication is only refreshed by Update, so a host that stops updating would
-                // otherwise leave its last rect standing and hang the brow instruments over a helm
-                // that is no longer drawn.
-                _dashLive = false;
+                // otherwise leave its band standing for the card hosts and keep a card raised over a
+                // helm that is no longer drawn.
+                _bandUp = false;
                 HelmInstrumentExpansion.Collapse();
-                _window.StandDown();   // same reasoning for the window's chrome publication + session
             }
+            PublishFootprint(HelmFootprintArea.None);   // and for the footprint (a no-op unless ours)
             if (_texture != null) Destroy(_texture);
+            _bandCtl.ReleaseTextures();
+        }
+
+        // A disabled host draws nothing, so it covers nothing.
+        private void OnDisable()
+        {
+            if (_instance == this) _bandUp = false;
+            PublishFootprint(HelmFootprintArea.None);
         }
 
         private void Update()
         {
-            // ⚠ IsPlayerHelm, not HasHelm — the card is drawn for the hand ON the wheel. HasHelm only
+            // ⚠ IsPlayerHelm, not HasHelm — the helm is drawn for the hand ON the wheel. HasHelm only
             // says an engine hull is under way, which is equally true of a boat somebody else is
             // steering (the owner's 2026-08-21 playtest: wheel and gauges drawn to a passenger).
             IHelmControl helm = GameServices.HelmControl;
             HelmControlStyle style = helm != null && helm.IsPlayerHelm ? helm.Style : HelmControlStyle.None;
-            _dashLive = false;     // republished below only if a dash actually draws this frame
+            _bandUp = false;       // republished below only if the band actually draws this frame
 
-            if (style == HelmControlStyle.None)
+            // No helm, or hide-all (M): stand down. With hide-all the helm itself — drive, steer,
+            // keys — keeps working, and one more press brings the band back.
+            if (style == HelmControlStyle.None || BoatUiWindows.AllHidden)
             {
                 if (_dragging && helm != null) helm.EndDrag();
                 _dragging = false;
-                _dashCtl.Deactivate(helm);
-                _focused = false;
-                HelmInstrumentExpansion.Collapse();   // losing the helm closes any expanded instrument
+                _bandCtl.Deactivate(helm);
+                HelmInstrumentExpansion.Collapse();   // nothing raised over a helm that is not drawn
                 _shownStyle = HelmControlStyle.None;
                 CardKind = HelmCardKind.None;
-                _window.StandDown();
+                PublishFootprint(HelmFootprintArea.None);
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                if (_bandGo.activeSelf) _bandGo.SetActive(false);
                 return;
             }
-            // The helm WINDOW is hidden (hide-all or its own ×): the card stands down exactly like
-            // losing the helm, except the helm itself — drive, steer, keys — keeps working, and the
-            // window state is one toggle from bringing the card back.
-            if (!_window.Shown)
-            {
-                if (_dragging && helm != null) { helm.EndDrag(); _dragging = false; }
-                _dashCtl.Deactivate(helm);
-                _focused = false;
-                _shownStyle = HelmControlStyle.None;
-                CardKind = HelmCardKind.None;
-                _window.StandDown();
-                if (_cardGo.activeSelf) _cardGo.SetActive(false);
-                return;
-            }
-            if (!_cardGo.activeSelf) _cardGo.SetActive(true);
 
             HelmOverlaySettings cfg = GameServices.HelmOverlay;
 
-            // A lever hull whose console has a ported dash renderer shows the COMPOSED DASH. S2a
-            // brought the two skiffs; S4 brings the two wheelhouses, so that is now every rig the
-            // fleet has — a hull only falls back to the lone lever card if it has no console at all.
+            // A lever hull with a console draws the BAND (every rig the fleet has); a hull only falls
+            // back to the lone lever card if it has no console at all.
             HelmFit fit = helm.Fit;
-            bool dash = style == HelmControlStyle.Lever && fit.Rig != ConsoleRigKind.None;
-            if (dash != _dashShown)
+            bool band = style == HelmControlStyle.Lever && HelmBandGeometry.HasBand(fit.Rig);
+            if (band != _bandShown)
             {
-                // Crossing the dash boundary invalidates the other path's change-detection keys.
-                _dashCtl.Invalidate();
-                if (!dash) _dashCtl.Deactivate(helm);
+                // Crossing the band boundary invalidates the other path's change-detection keys.
+                _bandCtl.Invalidate();
+                if (!band) _bandCtl.Deactivate(helm);
                 if (_dragging) { helm.EndDrag(); _dragging = false; }
                 _shownStyle = HelmControlStyle.None;
                 _shownLeverKey = int.MinValue;
                 _shownBandLit = -1;
-                _dashShown = dash;
+                _appliedRig = ConsoleRigKind.None;
+                _bandShown = band;
             }
 
-            if (dash)
+            if (band)
             {
-                CardKind = HelmCardKind.Dash;
-                // The pilothouse canvas is taller than the skiffs' (600×548 vs 600×510), so the card
-                // rect and the screen→rig mapping both follow the live rig, never one fixed size.
-                int dashW = HelmDashGeometry.CanvasW(fit.Rig), dashH = HelmDashGeometry.CanvasH(fit.Rig);
-                Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, dashW, dashH, in cfg,
-                                                               Screen.width, Screen.height,
-                                                               HudBandLayout.ReservedTopPx());
-                // The player's window layout goes over the shipped one (2026-08-07 ruling). Windowing
-                // the rect HERE, before anything consumes it, is what makes the flush brow mounts and
-                // the pointer mapping follow the moved/resized dash for free.
-                dashCard = _window.Apply(dashCard, Screen.width, Screen.height,
-                                         HudBandLayout.ReservedTopPx());
-                bool cardVisible = _window.CardVisible;
-                if (_image.enabled != cardVisible) _image.enabled = cardVisible;
+                CardKind = HelmCardKind.Band;
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                if (!_bandGo.activeSelf) _bandGo.SetActive(true);
 
-                LayoutCard(HelmControlStyle.Lever, dashCard, dashW, dashH, 0f);
-                if (cardVisible)
-                    _dashCtl.UpdateAndPaint(helm, fit, SampleHeadingDegrees(), Time.deltaTime,
-                                            _focused, ref _texture, _image);
+                int sw = HudScreen.Width, sh = HudScreen.Height;
+                _bandCtl.Layout(fit.Rig, sw, sh);
+                HelmBandGlance glance = HelmDashGeometry.IsPilothouse(fit.Rig) ? Glance() : HelmBandGlance.None;
+                _bandCtl.UpdateAndPaint(helm, in fit, SampleHeadingDegrees(), Time.deltaTime, in glance);
+                ApplyBand(sw, sh);
 
-                // Publish BEFORE reading the pointer: the brow instruments hang off this rect, and the
-                // press routing below has to know where they are to leave their clicks alone. A
-                // BAR-collapsed dash publishes nothing — its brow mounts are folded away with it.
-                _dashCard = dashCard;
-                _dashFit = fit;
-                _dashLive = cardVisible;
-
-                // An EXPANDED instrument owns the pointer outright (S4.5), chrome included: its card
-                // sorts over the dash, so a bar the player cannot see must not swallow its clicks.
-                // Collapse the instrument (click away / Esc) and the dash is draggable again.
-                if (HelmInstrumentExpansion.AnyExpanded)
-                {
-                    _window.StandDown();
-                }
-                else
-                {
-                    _window.LayoutChrome(_canvas.transform);
-                    if (_window.HandlePointer(_dashCtl.Interacting || _dragging)) return;
-                }
-                if (BoatUiWindows.AnySession) return;   // another window owns the pointer
-                if (!cardVisible) return;               // the strip is all there is to click
-                ReadDashPointer(helm, fit, dashCard, in cfg);
+                _bandUp = true;
+                PublishFootprint(FootprintOf(HelmCardKind.Band, default, sh));
+                ReadBandPointer(helm, in fit, in cfg);
                 return;
             }
+
+            if (_bandGo.activeSelf) _bandGo.SetActive(false);
+            if (!_cardGo.activeSelf) _cardGo.SetActive(true);
 
             CardKind = style == HelmControlStyle.Lever ? HelmCardKind.Lever : HelmCardKind.Tiller;
             int rigW = style == HelmControlStyle.Lever ? LeverRigRender.W : TillerRigRender.W;
             int rigH = style == HelmControlStyle.Lever ? LeverRigRender.H : TillerRigRender.H;
 
-            Rect card = HelmOverlayLayout.CardRect(_focused, rigW, rigH, in cfg, Screen.width, Screen.height);
-            card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
-            bool visible = _window.CardVisible;
-            if (_image.enabled != visible) _image.enabled = visible;
+            Rect card = HelmOverlayLayout.CardRect(rigW, rigH, in cfg, HudScreen.Width, HudScreen.Height);
+            PublishFootprint(FootprintOf(CardKind, card, HudScreen.Height));
 
-            LayoutCard(style, card, rigW, rigH, helm.Steer);
-            if (visible) Repaint(style, helm);
-
-            // Same yield as the dash path: an expanded instrument owns the pointer, chrome included.
-            if (HelmInstrumentExpansion.AnyExpanded)
-            {
-                _window.StandDown();
-            }
-            else
-            {
-                _window.LayoutChrome(_canvas.transform);
-                if (_window.HandlePointer(_dragging)) return;
-            }
-            if (BoatUiWindows.AnySession) return;   // another window owns the pointer
-            if (!visible) return;                   // BAR-collapsed: the strip is all there is
+            LayoutCard(style, card, helm.Steer);
+            Repaint(style, helm);
             ReadPointer(style, helm, card, in cfg);
         }
 
@@ -306,9 +322,81 @@ namespace HiddenHarbours.UI
             return k.HasBoat ? k.HeadingDegrees : 0f;
         }
 
+        /// <summary>What the pilot bands' sounder housing shows: the depth through the Core instrument
+        /// seam (the sounder's own throttled read), the hull's units, and the shallow alarm's blink —
+        /// the same three things the sounder's glass draws, so the housing and the raised card cannot
+        /// disagree.</summary>
+        private static HelmBandGlance Glance()
+        {
+            IHelmInstruments instruments = GameServices.HelmInstruments;
+            if (instruments == null || instruments.Fit.Sounder == SounderKind.None
+                || !instruments.TryReadDepth(out float depth))
+                return HelmBandGlance.None;
+            SounderPrefs prefs = instruments.SounderPrefs;
+            bool lit = DepthSounder.ShallowAlarm(depth, in prefs)
+                       && DepthSounder.BlinkPhase(Time.time, GameServices.DepthSounder.AlarmBlinkHz);
+            return new HelmBandGlance(true, depth, prefs.Feet, lit);
+        }
+
         // ---- layout -------------------------------------------------------------------------------
 
-        private void LayoutCard(HelmControlStyle style, Rect card, int rigW, int rigH, float steer)
+        // Hand the band's pieces to their images: rects only when the screen or the rig moved,
+        // textures only when something was uploaded, tints only when the panel lights switched.
+        private void ApplyBand(int sw, int sh)
+        {
+            int count = _bandCtl.PieceCount;
+            bool moved = sw != _appliedW || sh != _appliedH || _bandCtl.Rig != _appliedRig;
+            if (moved)
+            {
+                Place(_panelRect, HelmBandLayout.BandRect(sw, sh));
+                for (int i = 0; i < _pieceImages.Length; i++)
+                {
+                    bool on = i < count;
+                    GameObject go = _pieceImages[i].gameObject;
+                    if (go.activeSelf != on) go.SetActive(on);
+                    if (!on) continue;
+                    Place(_pieceRects[i], _bandCtl.PieceRect(i));
+                    bool cap = _bandCtl.Piece(i).Kind == HelmBandPieceKind.Cap;
+                    if (cap) _pieceImages[i].texture = null;
+                    else _pieceImages[i].color = Color.white;
+                }
+                _appliedW = sw;
+                _appliedH = sh;
+                _appliedRig = _bandCtl.Rig;
+                _appliedUploads = -1;
+                _appliedNight = -1;
+            }
+
+            if (_bandCtl.UploadCount != _appliedUploads)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    if (_bandCtl.Piece(i).Kind == HelmBandPieceKind.Cap) continue;
+                    Texture2D t = _bandCtl.TextureOf(i);
+                    if (_pieceImages[i].texture != t) _pieceImages[i].texture = t;
+                }
+                _appliedUploads = _bandCtl.UploadCount;
+            }
+
+            int night = _bandCtl.NightShown ? 1 : 0;
+            if (night != _appliedNight)
+            {
+                bool lit = night == 1;
+                _panel.color = HelmBandPlateRender.Panel(lit);
+                Color32 capTint = HelmBandPlateRender.Cap(lit);
+                for (int i = 0; i < count; i++)
+                    if (_bandCtl.Piece(i).Kind == HelmBandPieceKind.Cap) _pieceImages[i].color = capTint;
+                _appliedNight = night;
+            }
+        }
+
+        private static void Place(RectTransform rt, Rect r)
+        {
+            rt.anchoredPosition = new Vector2(r.xMin, r.yMin);
+            rt.sizeDelta = new Vector2(r.width, r.height);
+        }
+
+        private void LayoutCard(HelmControlStyle style, Rect card, float steer)
         {
             _cardRect.anchoredPosition = new Vector2(card.xMin, card.yMin);
             _cardRect.sizeDelta = new Vector2(card.width, card.height);
@@ -381,106 +469,69 @@ namespace HiddenHarbours.UI
                 _surface = new DrawSurface(w, h);
         }
 
-        // ---- pointer + keys ------------------------------------------------------------------------
+        // ---- pointer -------------------------------------------------------------------------------
 
-        /// <summary>The composed dash's pointer routing (S2a): the card-level focus mechanics are
-        /// S1's (click-to-focus, Esc/click-away out); WITHIN focus the press lands on the instrument
-        /// under it — wheel rim grab, lever grip drag, binnacle travel-guide — via
-        /// <see cref="HelmDashController"/>. Hit tests run in the dash's own rig pixels, so the
-        /// card scale needs no special-casing (the S1 ScreenToRig discipline).
-        ///
-        /// <para>S4.5 gives the dash two things to YIELD: an expanded instrument owns the pointer and
-        /// Esc outright, and a press inside a flush brow mount belongs to that instrument. Both are
-        /// checked against the same shared state the instrument hosts use, never a second copy.</para></summary>
-        private void ReadDashPointer(IHelmControl helm, in HelmFit fit, Rect card,
-                                     in HelmOverlaySettings cfg)
+        /// <summary>
+        /// The band's pointer routing (H2). A live wheel or lever drag finishes on its own terms, off
+        /// the band or not. Otherwise a press goes, in order: nowhere while the shell blocks the world
+        /// or the press is on a window's chrome; to the raised card's own host when it lands inside
+        /// that card; to a fitted housing, which raises its card (or lowers it, pressed again); to
+        /// lowering the raised card, anywhere else; and only then to the band's controls. This host
+        /// reads no keyboard: Esc is the raised card's, and the keys steer through the controller.
+        /// </summary>
+        private void ReadBandPointer(IHelmControl helm, in HelmFit fit, in HelmOverlaySettings cfg)
         {
-            ConsoleRigKind rig = fit.Rig;
-            int rigW = HelmDashGeometry.CanvasW(rig), rigH = HelmDashGeometry.CanvasH(rig);
             var mouse = Mouse.current;
-            bool held = mouse != null && mouse.leftButton.isPressed;
-
-            if (_dashCtl.Interacting)
-            {
-                // A live drag finishes on its own terms — it started before anything expanded, and
-                // dropping the wheel mid-turn would be worse than a moment of divided attention.
-                // Off-card during a drag still tracks (the S1 lever precedent).
-                if (mouse == null) return;
-                HelmOverlayLayout.ScreenToRig(mouse.position.ReadValue(), card, rigW, rigH,
-                                              out Vector2 rigPx);
-                _dashCtl.Track(helm, rigPx, held, Time.deltaTime);
-                return;
-            }
-
-            // An EXPANDED instrument owns the pointer and Esc (S4.5). Its card sits over the dash, so
-            // without this a click meant for a MODE pusher would also toggle the dash's focus under
-            // it, and Esc would close both at once. The instrument's own host handles the collapse.
-            if (HelmInstrumentExpansion.AnyExpanded) return;
-
-            var kb = Keyboard.current;
-            if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame)
-            {
-                _dashCtl.Deactivate(helm);
-                _focused = false;
-                return;
-            }
-
             if (mouse == null) return;
             Vector2 pos = mouse.position.ReadValue();
-            bool down = mouse.leftButton.wasPressedThisFrame;
-            bool inCard = card.Contains(pos);
 
-            // A press on a flush-mounted instrument belongs to that instrument, not to the dash
-            // underneath it: at SMALL size the whole card is the focus button, so without this the
-            // one click would both expand the sounder and enlarge the dash. Same pure mount rect the
-            // instrument hosts hit-test against, so the two can never disagree about the boundary.
-            if (down && HelmInstrumentMountLayout.TryBrowSounderRect(in fit, card, out Rect browMount)
-                     && browMount.Contains(pos))
+            if (_bandCtl.Interacting)
+            {
+                _bandCtl.Track(helm, pos, mouse.leftButton.isPressed, Time.deltaTime);
                 return;
+            }
 
-            if (!down) return;
+            if (!mouse.leftButton.wasPressedThisFrame) return;
+            if (ShellFlow.WorldInputBlocked) return;
 
-            // A press on ANY window's chrome (another card's title strip, the watch's ×) is that
-            // window's business — never this card's click-away or focus toggle (2026-08-07 ruling).
+            // A raised card typing a name holds the keyboard (the plotter's editor): it owns the
+            // pointer outright, so its click commits the edit rather than this one lowering it.
+            if (HelmKeyCapture.IsCapturing) return;
+
+            // A press on ANY window's chrome (the watch's ×) is that window's business — never this
+            // band's (2026-08-07 ruling).
             if (BoatUiWindows.OverAnyChrome(pos)) return;
 
-            if (!inCard)
+            // Inside a raised card the card's controls are live; its host routes the press.
+            if (HelmInstrumentExpansion.TryRaisedCard(out Rect raised) && raised.Contains(pos)) return;
+
+            HelmInstrumentSlot slot = _bandCtl.PlateAt(in fit, pos);
+            if (slot != HelmInstrumentSlot.None)
             {
-                if (_focused)
-                {
-                    _dashCtl.Deactivate(helm);
-                    _focused = false;
-                }
+                HelmInstrumentExpansion.Click(slot);   // raise it, switch to it, or lower it again
                 return;
             }
-
-            if (!_focused)
+            if (HelmInstrumentExpansion.AnyExpanded)
             {
-                _focused = true;    // SMALL state: the whole card is the focus button (S1)
+                HelmInstrumentExpansion.Collapse();    // the click-away
                 return;
             }
-
-            HelmOverlayLayout.ScreenToRig(pos, card, rigW, rigH, out Vector2 pressPx);
-            _dashCtl.Press(helm, pressPx, in cfg);
+            if (_bandCtl.Contains(pos)) _bandCtl.PressControls(helm, pos, in cfg);
         }
 
+        /// <summary>
+        /// The card's pointer (a tiller hull, or a lever hull with no console). No focus: a press
+        /// anywhere on the tiller's card starts its throttle drag, and a press on the lone lever is a
+        /// grip drag or a travel-guide jump, live at the card's own scale.
+        /// </summary>
         private void ReadPointer(HelmControlStyle style, IHelmControl helm, Rect card,
                                  in HelmOverlaySettings cfg)
         {
-            var kb = Keyboard.current;
-            if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame)
-            {
-                if (_dragging) { helm.EndDrag(); _dragging = false; }
-                _focused = false;
-                return;
-            }
-
             var mouse = Mouse.current;
             if (mouse == null) return;
             Vector2 pos = mouse.position.ReadValue();
             bool down = mouse.leftButton.wasPressedThisFrame;
             bool held = mouse.leftButton.isPressed;
-            bool inCard = card.Contains(pos);
 
             if (_dragging)
             {
@@ -488,7 +539,9 @@ namespace HiddenHarbours.UI
                 {
                     if (_dragIsTiller)
                     {
-                        float scale = _focused ? cfg.FocusScale : cfg.SmallScale;
+                        // The drag is measured in the card's own px, so it divides by the scale the
+                        // card is DRAWN at, HUD factor included.
+                        float scale = cfg.SmallScale * HudBandLayout.ScaleFactor(HudScreen.Width, HudScreen.Height);
                         helm.DragDrive(HelmOverlayLayout.TillerDragDrive(
                             _dragStartDrive, pos.y - _dragStartScreenY, scale, cfg.TillerDragFullDrivePx));
                     }
@@ -510,29 +563,13 @@ namespace HiddenHarbours.UI
                 return;
             }
 
-            if (!down) return;
+            if (!down || !card.Contains(pos)) return;
+            if (ShellFlow.WorldInputBlocked) return;
 
-            // A press on ANY window's chrome belongs to that window, never to this card's
-            // click-away or focus toggle (2026-08-07 ruling).
+            // A press on ANY window's chrome belongs to that window, never to this card
+            // (2026-08-07 ruling).
             if (BoatUiWindows.OverAnyChrome(pos)) return;
 
-            if (!inCard)
-            {
-                // Click-away leaves the focused state (owner addition 2026-08-03).
-                if (_focused) _focused = false;
-                return;
-            }
-
-            if (!_focused)
-            {
-                // SMALL state: the card is a button — click anywhere on it to FOCUS. Controls are
-                // deliberately not draggable at dash size; the focused state is where they are
-                // properly clickable (the owner's ask).
-                _focused = true;
-                return;
-            }
-
-            // FOCUSED: interact with the control.
             if (style == HelmControlStyle.Lever)
             {
                 HelmOverlayLayout.ScreenToRig(pos, card, LeverRigRender.W, LeverRigRender.H, out Vector2 rigPx);
@@ -551,7 +588,7 @@ namespace HiddenHarbours.UI
             }
             else
             {
-                _dragging = true;              // tiller: vertical drag over the grip walks the drive
+                _dragging = true;              // tiller: vertical drag over the card walks the drive
                 _dragIsTiller = true;
                 _dragStartDrive = helm.Drive;
                 _dragStartScreenY = pos.y;

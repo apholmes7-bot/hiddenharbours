@@ -13,9 +13,10 @@ namespace HiddenHarbours.UI
     /// instruments — the same composition contract <see cref="ConsoleDashRender"/> carries: the brow
     /// glass is the sounder host's, the compass is <see cref="CompassRigRender"/>, the wheel the
     /// player grabs is <see cref="WheelRigRender"/> (the rig's own baked wheel is deliberately not
-    /// ported), and the lever (<see cref="LeverRigRender"/>) composites last, on top. The compositor
-    /// is <see cref="HelmDashController"/>; geometry lives in <see cref="HelmDashGeometry"/>'s
-    /// <c>Pilot*</c> table, which the Cape Islander shares.
+    /// ported), and the lever (<see cref="LeverRigRender"/>) composites last, on top. The caller
+    /// is <see cref="HelmBandController"/>, which crops the band's greybox pieces from this raster
+    /// (H2); geometry lives in <see cref="HelmDashGeometry"/>'s <c>Pilot*</c> table, which the Cape
+    /// Islander shares.
     ///
     /// <para><b>The two empty slots.</b> This is the first dash with mounts it cannot fill: the hull
     /// supports RADAR and GPS (<c>NoviHelm.asset</c>) and neither renderer exists yet (S5). The rig
@@ -26,7 +27,7 @@ namespace HiddenHarbours.UI
     /// compass and wheel mount today. No hole, no stretched neighbour, and no layout for S5 to move.</para>
     ///
     /// <para><b>Perf (rule 7):</b> no allocation after the static ramps and the baked key; the caller
-    /// repaints only on a state-key change (<see cref="HelmDashController"/>).</para>
+    /// repaints only on a state-key change (<see cref="HelmBandController"/>).</para>
     /// </summary>
     public static class NoviDashRender
     {

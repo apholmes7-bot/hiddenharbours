@@ -1,0 +1,3489 @@
+{
+  "schema": "iso-rig-params/1",
+  "rig": "Art/houseIsoRig.js",
+  "exportSymbol": "HouseIso",
+  "derivedFromRigSha256": "fa73cf987cbf482ada6b3e585210b049137d49d5520220a3f1f08034cc512c90",
+  "generatedAt": "2026-09-26T19:26:49.818Z",
+  "usedBy": [
+    "House Iso.dc.html",
+    "Cottage Interior Iso.dc.html"
+  ],
+  "constants": {
+    "W": 992,
+    "H": 1060,
+    "PX": 32,
+    "DIRS": 8,
+    "defaultElev": 40,
+    "KEY": "#1a1c22"
+  },
+  "enums": {
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "SHAPES": [
+      "gable",
+      "ell",
+      "gambrel",
+      "saltbox",
+      "cape"
+    ],
+    "SIDINGS": [
+      "shingle",
+      "clapboard",
+      "twotone",
+      "fishscale"
+    ],
+    "WINDOWS": [
+      "sixOverSix",
+      "twoOverTwo",
+      "fourOverFour",
+      "twoOverOne",
+      "oneOverOne",
+      "arched"
+    ]
+  },
+  "palettes": {
+    "ROOFS": {
+      "asphaltGrey": [
+        "#23262b",
+        "#2e333a",
+        "#3c424a",
+        "#4c535c",
+        "#5d6570",
+        "#6f7883"
+      ],
+      "asphaltBrown": [
+        "#2a211a",
+        "#3a2e23",
+        "#4c3d2e",
+        "#5f4d3a",
+        "#736046",
+        "#877254"
+      ],
+      "metal": [
+        "#424d52",
+        "#556065",
+        "#6c7c81",
+        "#88999e",
+        "#a4babe",
+        "#c0d4d7"
+      ]
+    },
+    "BODY": {
+      "greyShingle": [
+        "#4c463f",
+        "#5d564c",
+        "#6f665a",
+        "#82786a",
+        "#968b7b",
+        "#a99d8c"
+      ],
+      "white": [
+        "#8c928c",
+        "#a6aaa2",
+        "#bfc2b9",
+        "#d5d8cf",
+        "#e7e9e0",
+        "#f3f4ec"
+      ],
+      "cream": [
+        "#8a6f3c",
+        "#a6884b",
+        "#c2a35f",
+        "#d8bd7c",
+        "#e9d59d",
+        "#f5e7c1"
+      ],
+      "red": [
+        "#4a130f",
+        "#671b14",
+        "#88271c",
+        "#a33124",
+        "#bd4230",
+        "#d25a42"
+      ],
+      "sage": [
+        "#3a4636",
+        "#4a5843",
+        "#5c6b52",
+        "#718063",
+        "#889777",
+        "#a1ae90"
+      ],
+      "blue": [
+        "#33454a",
+        "#43585d",
+        "#556d72",
+        "#6a848a",
+        "#849ea3",
+        "#a3b9bd"
+      ]
+    },
+    "TRIM": [
+      "#9aa09a",
+      "#b4b8b0",
+      "#ccd0c7",
+      "#e0e2da",
+      "#eef0e8",
+      "#f8f9f2"
+    ]
+  },
+  "tables": {
+    "pivot": {
+      "x": 496,
+      "y": 676
+    },
+    "ERAS": {
+      "plain": {
+        "shape": "gable",
+        "roof": "asphaltGrey",
+        "siding": "shingle",
+        "pitch": 0.95,
+        "bargeboard": false,
+        "windows": "twoOverTwo",
+        "attic": "gable",
+        "trimW": 0.1
+      },
+      "colonial": {
+        "shape": "gable",
+        "roof": "asphaltGrey",
+        "siding": "clapboard",
+        "pitch": 0.85,
+        "bargeboard": false,
+        "windows": "sixOverSix",
+        "attic": "gable",
+        "trimW": 0.12
+      },
+      "gothic": {
+        "shape": "gable",
+        "roof": "asphaltGrey",
+        "siding": "twotone",
+        "pitch": 1.4,
+        "bargeboard": true,
+        "windows": "sixOverSix",
+        "attic": "gothic",
+        "crossGable": 1,
+        "trimW": 0.14
+      },
+      "seaside": {
+        "shape": "cape",
+        "roof": "asphaltBrown",
+        "siding": "shingle",
+        "pitch": 1.05,
+        "bargeboard": false,
+        "windows": "sixOverSix",
+        "attic": "gable",
+        "trimW": 0.11
+      },
+      "modern": {
+        "shape": "saltbox",
+        "roof": "metal",
+        "siding": "clapboard",
+        "pitch": 0.8,
+        "bargeboard": false,
+        "windows": "twoOverTwo",
+        "attic": "none",
+        "trimW": 0.09
+      }
+    },
+    "PRESETS": {
+      "shingleCottage": {
+        "era": "plain",
+        "body": "greyShingle",
+        "roof": "asphaltBrown",
+        "shape": "gable",
+        "siding": "shingle",
+        "size": 0.15,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "weather": 0.35
+      },
+      "whiteFarmhouse": {
+        "era": "colonial",
+        "body": "white",
+        "roof": "metal",
+        "shape": "ell",
+        "siding": "clapboard",
+        "size": 0.7,
+        "porch": "wrap",
+        "dormers": 1,
+        "chimneys": 1,
+        "bay": true,
+        "attic": "gable",
+        "weather": 0.1
+      },
+      "redSaltbox": {
+        "era": "modern",
+        "body": "red",
+        "roof": "asphaltGrey",
+        "shape": "saltbox",
+        "siding": "clapboard",
+        "size": 0.4,
+        "porch": "none",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "none",
+        "weather": 0.2
+      },
+      "gothicRevival": {
+        "era": "gothic",
+        "body": "cream",
+        "lower": "red",
+        "roof": "asphaltGrey",
+        "shape": "gable",
+        "siding": "twotone",
+        "size": 0.8,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 2,
+        "bay": false,
+        "attic": "gothic",
+        "crossGable": 1,
+        "bargeboard": true,
+        "weather": 0.15
+      },
+      "dormerCape": {
+        "era": "seaside",
+        "body": "greyShingle",
+        "roof": "asphaltGrey",
+        "shape": "cape",
+        "siding": "shingle",
+        "size": 0.5,
+        "porch": "front",
+        "dormers": 3,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "bargeboard": true,
+        "weather": 0.45
+      }
+    }
+  },
+  "api": {
+    "render": "fn(2)",
+    "anchors": "fn(2)",
+    "project": "fn(3)",
+    "entrance": "fn(1)",
+    "layout": "fn(1)",
+    "placement": "fn(1)",
+    "footprint": "fn(1)",
+    "dooryard": "fn(1)",
+    "stations": "fn(1)",
+    "lightsOn": "fn(2)",
+    "lights": "fn(2)",
+    "frame": "fn(3)",
+    "relight": "fn(3)",
+    "castShadow": "fn(3)",
+    "view": "fn(4)",
+    "renderLive": "fn(2)"
+  },
+  "presetCount": 5,
+  "presets": {
+    "shingleCottage": {
+      "options": {
+        "era": "plain",
+        "body": "greyShingle",
+        "roof": "asphaltBrown",
+        "shape": "gable",
+        "siding": "shingle",
+        "size": 0.15,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "weather": 0.35
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 493.660646
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 559.532684
+          },
+          "threshold": {
+            "x": 496,
+            "y": 584.046106
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "N",
+          "approach": {
+            "x": 496,
+            "y": 551.247781,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              0,
+              6.065
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 551.247781,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                0,
+                6.065
+              ]
+            },
+            {
+              "x": 496,
+              "y": 510.109374,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                0,
+                8.065
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 544.341214,
+              "y": 480.789733
+            }
+          ],
+          "door": {
+            "x": 409.676404,
+            "y": 582.516458
+          },
+          "threshold": {
+            "x": 409.676404,
+            "y": 607.02988
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "NW",
+          "approach": {
+            "x": 358.764716,
+            "y": 587.78686,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              -4.289,
+              4.289
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 358.764716,
+              "y": 587.78686,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                -4.289,
+                4.289
+              ]
+            },
+            {
+              "x": 313.509882,
+              "y": 558.697613,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                -5.703,
+                5.703
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 564.3648,
+              "y": 449.7166
+            }
+          ],
+          "door": {
+            "x": 373.92,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 373.92,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "W",
+          "approach": {
+            "x": 301.92,
+            "y": 676,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              -6.065,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 301.92,
+              "y": 676,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                -6.065,
+                0
+              ]
+            },
+            {
+              "x": 237.92,
+              "y": 676,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                -8.065,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 544.341214,
+              "y": 418.643467
+            }
+          ],
+          "door": {
+            "x": 409.676404,
+            "y": 693.491933
+          },
+          "threshold": {
+            "x": 409.676404,
+            "y": 718.005356
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "SW",
+          "approach": {
+            "x": 358.764716,
+            "y": 764.21314,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              -4.289,
+              -4.289
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 358.764716,
+              "y": 764.21314,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                -4.289,
+                -4.289
+              ]
+            },
+            {
+              "x": 313.509882,
+              "y": 793.302387,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                -5.703,
+                -5.703
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 405.772553
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 716.475707
+          },
+          "threshold": {
+            "x": 496,
+            "y": 740.989129
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "S",
+          "approach": {
+            "x": 496,
+            "y": 800.752219,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              0,
+              -6.065
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 800.752219,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                0,
+                -6.065
+              ]
+            },
+            {
+              "x": 496,
+              "y": 841.890626,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                0,
+                -8.065
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 447.658786,
+              "y": 418.643467
+            }
+          ],
+          "door": {
+            "x": 582.323596,
+            "y": 693.491933
+          },
+          "threshold": {
+            "x": 582.323596,
+            "y": 718.005356
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "SE",
+          "approach": {
+            "x": 633.235284,
+            "y": 764.21314,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              4.289,
+              -4.289
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 633.235284,
+              "y": 764.21314,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                4.289,
+                -4.289
+              ]
+            },
+            {
+              "x": 678.490118,
+              "y": 793.302387,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                5.703,
+                -5.703
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 427.6352,
+              "y": 449.7166
+            }
+          ],
+          "door": {
+            "x": 618.08,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 618.08,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "E",
+          "approach": {
+            "x": 690.08,
+            "y": 676,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              6.065,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 690.08,
+              "y": 676,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                6.065,
+                0
+              ]
+            },
+            {
+              "x": 754.08,
+              "y": 676,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                8.065,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 447.658786,
+              "y": 480.789733
+            }
+          ],
+          "door": {
+            "x": 582.323596,
+            "y": 582.516458
+          },
+          "threshold": {
+            "x": 582.323596,
+            "y": 607.02988
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 3.815,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 492.860223
+          },
+          "Wd": 6.36,
+          "Ln": 7.63,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "NE",
+          "approach": {
+            "x": 633.235284,
+            "y": 587.78686,
+            "m": [
+              0,
+              6.065
+            ],
+            "w": [
+              4.289,
+              4.289
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 633.235284,
+              "y": 587.78686,
+              "m": [
+                0,
+                6.065
+              ],
+              "w": [
+                4.289,
+                4.289
+              ]
+            },
+            {
+              "x": 678.490118,
+              "y": 558.697613,
+              "m": [
+                0,
+                8.065
+              ],
+              "w": [
+                5.703,
+                5.703
+              ]
+            }
+          ],
+          "mirror": false
+        }
+      },
+      "entrance": {
+        "axis": "y",
+        "facing": "+Y",
+        "x": 0,
+        "y": 3.815,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1,
+        "entry": "front",
+        "show": "+Y"
+      }
+    },
+    "whiteFarmhouse": {
+      "options": {
+        "era": "colonial",
+        "body": "white",
+        "roof": "metal",
+        "shape": "ell",
+        "siding": "clapboard",
+        "size": 0.7,
+        "porch": "wrap",
+        "dormers": 1,
+        "chimneys": 1,
+        "bay": true,
+        "attic": "gable",
+        "weather": 0.1
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 474.043281
+            }
+          ],
+          "door": {
+            "x": 457.3056,
+            "y": 449.902943
+          },
+          "threshold": {
+            "x": 457.3056,
+            "y": 474.416366
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "N",
+          "approach": {
+            "x": 457.312,
+            "y": 457.040829,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              -1.209,
+              10.645
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 457.312,
+              "y": 457.040829,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                -1.209,
+                10.645
+              ]
+            },
+            {
+              "x": 457.312,
+              "y": 415.902422,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                -1.209,
+                12.645
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 558.976627,
+              "y": 457.275669
+            }
+          ],
+          "door": {
+            "x": 261.715724,
+            "y": 522.583883
+          },
+          "threshold": {
+            "x": 261.715724,
+            "y": 547.097305
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "NW",
+          "approach": {
+            "x": 227.774599,
+            "y": 538.756935,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              -8.382,
+              6.672
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 227.774599,
+              "y": 538.756935,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                -8.382,
+                6.672
+              ]
+            },
+            {
+              "x": 182.519765,
+              "y": 509.667688,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                -9.796,
+                8.086
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 585.0624,
+              "y": 416.795074
+            }
+          ],
+          "door": {
+            "x": 203.3664,
+            "y": 662.876477
+          },
+          "threshold": {
+            "x": 203.3664,
+            "y": 687.389899
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "W",
+          "approach": {
+            "x": 155.36,
+            "y": 700.868167,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              -10.645,
+              -1.209
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 155.36,
+              "y": 700.868167,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                -10.645,
+                -1.209
+              ]
+            },
+            {
+              "x": 91.36,
+              "y": 700.868167,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                -12.645,
+                -1.209
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 558.976627,
+              "y": 376.314478
+            }
+          ],
+          "door": {
+            "x": 316.43787,
+            "y": 788.599225
+          },
+          "threshold": {
+            "x": 316.43787,
+            "y": 813.112647
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "SW",
+          "approach": {
+            "x": 282.487693,
+            "y": 848.411964,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              -6.672,
+              -8.382
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 282.487693,
+              "y": 848.411964,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                -6.672,
+                -8.382
+              ]
+            },
+            {
+              "x": 237.232859,
+              "y": 877.501211,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                -8.086,
+                -9.796
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 359.546867
+            }
+          ],
+          "door": {
+            "x": 534.6944,
+            "y": 826.105448
+          },
+          "threshold": {
+            "x": 534.6944,
+            "y": 850.61887
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "S",
+          "approach": {
+            "x": 534.688,
+            "y": 894.959171,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              1.209,
+              -10.645
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 534.688,
+              "y": 894.959171,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                1.209,
+                -10.645
+              ]
+            },
+            {
+              "x": 534.688,
+              "y": 936.097578,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                1.209,
+                -12.645
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 433.023373,
+              "y": 376.314478
+            }
+          ],
+          "door": {
+            "x": 730.284276,
+            "y": 753.424508
+          },
+          "threshold": {
+            "x": 730.284276,
+            "y": 777.93793
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "SE",
+          "approach": {
+            "x": 764.225401,
+            "y": 813.243065,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              8.382,
+              -6.672
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 764.225401,
+              "y": 813.243065,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                8.382,
+                -6.672
+              ]
+            },
+            {
+              "x": 809.480235,
+              "y": 842.332312,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                9.796,
+                -8.086
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 406.9376,
+              "y": 416.795074
+            }
+          ],
+          "door": {
+            "x": 788.6336,
+            "y": 613.131915
+          },
+          "threshold": {
+            "x": 788.6336,
+            "y": 637.645337
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "E",
+          "approach": {
+            "x": 836.64,
+            "y": 651.131833,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              10.645,
+              1.209
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 836.64,
+              "y": 651.131833,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                10.645,
+                1.209
+              ]
+            },
+            {
+              "x": 900.64,
+              "y": 651.131833,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                12.645,
+                1.209
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 433.023373,
+              "y": 457.275669
+            }
+          ],
+          "door": {
+            "x": 675.56213,
+            "y": 487.409166
+          },
+          "threshold": {
+            "x": 675.56213,
+            "y": 511.922588
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": -1.2092,
+            "y": 9.1448,
+            "z": 0.55,
+            "width": 0.95,
+            "height": 2.05,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 459.938697
+          },
+          "Wd": 7.68,
+          "Ln": 9.94,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "NE",
+          "approach": {
+            "x": 709.512307,
+            "y": 503.588036,
+            "m": [
+              -1.209,
+              10.645
+            ],
+            "w": [
+              6.672,
+              8.382
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 709.512307,
+              "y": 503.588036,
+              "m": [
+                -1.209,
+                10.645
+              ],
+              "w": [
+                6.672,
+                8.382
+              ]
+            },
+            {
+              "x": 754.767141,
+              "y": 474.498789,
+              "m": [
+                -1.209,
+                12.645
+              ],
+              "w": [
+                8.086,
+                9.796
+              ]
+            }
+          ],
+          "mirror": false
+        }
+      },
+      "entrance": {
+        "axis": "y",
+        "facing": "+Y",
+        "x": -1.2092,
+        "y": 9.1448,
+        "z": 0.55,
+        "width": 0.95,
+        "height": 2.05,
+        "entry": "front",
+        "show": "+Y"
+      }
+    },
+    "redSaltbox": {
+      "options": {
+        "era": "modern",
+        "body": "red",
+        "roof": "asphaltGrey",
+        "shape": "saltbox",
+        "siding": "clapboard",
+        "size": 0.4,
+        "porch": "none",
+        "dormers": 0,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "none",
+        "weather": 0.2
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 493.260962
+            }
+          ],
+          "door": {
+            "x": 607.36,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 607.36,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "E",
+          "approach": {
+            "x": 677.76,
+            "y": 676,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              5.68,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 677.76,
+              "y": 676,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                5.68,
+                0
+              ]
+            },
+            {
+              "x": 741.76,
+              "y": 676,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                7.68,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 550.993674,
+              "y": 478.618822
+            }
+          ],
+          "door": {
+            "x": 574.743411,
+            "y": 587.388907
+          },
+          "threshold": {
+            "x": 574.743411,
+            "y": 611.902329
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "NE",
+          "approach": {
+            "x": 624.523729,
+            "y": 593.38654,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              4.016,
+              4.016
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 624.523729,
+              "y": 593.38654,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                4.016,
+                4.016
+              ]
+            },
+            {
+              "x": 669.778563,
+              "y": 564.297293,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                5.431,
+                5.431
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 573.7728,
+              "y": 443.26957
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 566.423367
+          },
+          "threshold": {
+            "x": 496,
+            "y": 590.93679
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "N",
+          "approach": {
+            "x": 496,
+            "y": 559.166924,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              0,
+              5.68
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 559.166924,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                0,
+                5.68
+              ]
+            },
+            {
+              "x": 496,
+              "y": 518.028517,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                0,
+                7.68
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 550.993674,
+              "y": 407.920317
+            }
+          ],
+          "door": {
+            "x": 417.256589,
+            "y": 587.388907
+          },
+          "threshold": {
+            "x": 417.256589,
+            "y": 611.902329
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "NW",
+          "approach": {
+            "x": 367.476271,
+            "y": 593.38654,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              -4.016,
+              4.016
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 367.476271,
+              "y": 593.38654,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                -4.016,
+                4.016
+              ]
+            },
+            {
+              "x": 322.221437,
+              "y": 564.297293,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                -5.431,
+                5.431
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 393.278178
+            }
+          ],
+          "door": {
+            "x": 384.64,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 384.64,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "W",
+          "approach": {
+            "x": 314.24,
+            "y": 676,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              -5.68,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 314.24,
+              "y": 676,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                -5.68,
+                0
+              ]
+            },
+            {
+              "x": 250.24,
+              "y": 676,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                -7.68,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 441.006326,
+              "y": 407.920317
+            }
+          ],
+          "door": {
+            "x": 417.256589,
+            "y": 688.619485
+          },
+          "threshold": {
+            "x": 417.256589,
+            "y": 713.132907
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "SW",
+          "approach": {
+            "x": 367.476271,
+            "y": 758.61346,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              -4.016,
+              -4.016
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 367.476271,
+              "y": 758.61346,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                -4.016,
+                -4.016
+              ]
+            },
+            {
+              "x": 322.221437,
+              "y": 787.702707,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                -5.431,
+                -5.431
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 418.2272,
+              "y": 443.26957
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 709.585024
+          },
+          "threshold": {
+            "x": 496,
+            "y": 734.098446
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "S",
+          "approach": {
+            "x": 496,
+            "y": 792.833076,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              0,
+              -5.68
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 792.833076,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                0,
+                -5.68
+              ]
+            },
+            {
+              "x": 496,
+              "y": 833.971483,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                0,
+                -7.68
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 441.006326,
+              "y": 478.618822
+            }
+          ],
+          "door": {
+            "x": 574.743411,
+            "y": 688.619485
+          },
+          "threshold": {
+            "x": 574.743411,
+            "y": 713.132907
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.48,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 486.413193
+          },
+          "Wd": 6.96,
+          "Ln": 8.68,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "SE",
+          "approach": {
+            "x": 624.523729,
+            "y": 758.61346,
+            "m": [
+              5.68,
+              0
+            ],
+            "w": [
+              4.016,
+              -4.016
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 624.523729,
+              "y": 758.61346,
+              "m": [
+                5.68,
+                0
+              ],
+              "w": [
+                4.016,
+                -4.016
+              ]
+            },
+            {
+              "x": 669.778563,
+              "y": 787.702707,
+              "m": [
+                7.68,
+                0
+              ],
+              "w": [
+                5.431,
+                -5.431
+              ]
+            }
+          ],
+          "mirror": false
+        }
+      },
+      "entrance": {
+        "axis": "x",
+        "facing": "+X",
+        "x": 3.48,
+        "y": 0,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1,
+        "entry": "front",
+        "show": "+X"
+      }
+    },
+    "gothicRevival": {
+      "options": {
+        "era": "gothic",
+        "body": "cream",
+        "lower": "red",
+        "roof": "slate",
+        "shape": "gable",
+        "siding": "twotone",
+        "size": 0.8,
+        "porch": "front",
+        "dormers": 0,
+        "chimneys": 2,
+        "bay": false,
+        "attic": "gothic",
+        "crossGable": 1,
+        "bargeboard": true,
+        "weather": 0.15
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 415.668932
+            },
+            {
+              "x": 496,
+              "y": 287.810763
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 531.455721
+          },
+          "threshold": {
+            "x": 496,
+            "y": 555.969144
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "N",
+          "approach": {
+            "x": 496,
+            "y": 523.170818,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              0,
+              7.43
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 523.170818,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                0,
+                7.43
+              ]
+            },
+            {
+              "x": 496,
+              "y": 482.032411,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                0,
+                9.43
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 561.637611,
+              "y": 398.19283
+            },
+            {
+              "x": 420.985587,
+              "y": 307.783452
+            }
+          ],
+          "door": {
+            "x": 378.78998,
+            "y": 562.663047
+          },
+          "threshold": {
+            "x": 378.78998,
+            "y": 587.176469
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "NW",
+          "approach": {
+            "x": 327.878292,
+            "y": 567.933449,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              -5.254,
+              5.254
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 327.878292,
+              "y": 567.933449,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                -5.254,
+                5.254
+              ]
+            },
+            {
+              "x": 282.623458,
+              "y": 538.844202,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                -6.668,
+                6.668
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 588.8256,
+              "y": 356.001787
+            },
+            {
+              "x": 389.9136,
+              "y": 356.001787
+            }
+          ],
+          "door": {
+            "x": 330.24,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 330.24,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "W",
+          "approach": {
+            "x": 258.24,
+            "y": 676,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              -7.43,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 258.24,
+              "y": 676,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                -7.43,
+                0
+              ]
+            },
+            {
+              "x": 194.24,
+              "y": 676,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                -9.43,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 561.637611,
+              "y": 313.810744
+            },
+            {
+              "x": 420.985587,
+              "y": 404.220122
+            }
+          ],
+          "door": {
+            "x": 378.78998,
+            "y": 713.345344
+          },
+          "threshold": {
+            "x": 378.78998,
+            "y": 737.858766
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "SW",
+          "approach": {
+            "x": 327.878292,
+            "y": 784.066551,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              -5.254,
+              -5.254
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 327.878292,
+              "y": 784.066551,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                -5.254,
+                -5.254
+              ]
+            },
+            {
+              "x": 282.623458,
+              "y": 813.155798,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                -6.668,
+                -6.668
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 296.334641
+            },
+            {
+              "x": 496,
+              "y": 424.19281
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 744.55267
+          },
+          "threshold": {
+            "x": 496,
+            "y": 769.066092
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "S",
+          "approach": {
+            "x": 496,
+            "y": 828.829182,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              0,
+              -7.43
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 828.829182,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                0,
+                -7.43
+              ]
+            },
+            {
+              "x": 496,
+              "y": 869.967589,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                0,
+                -9.43
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 430.362389,
+              "y": 313.810744
+            },
+            {
+              "x": 571.014413,
+              "y": 404.220122
+            }
+          ],
+          "door": {
+            "x": 613.21002,
+            "y": 713.345344
+          },
+          "threshold": {
+            "x": 613.21002,
+            "y": 737.858766
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "SE",
+          "approach": {
+            "x": 664.121708,
+            "y": 784.066551,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              5.254,
+              -5.254
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 664.121708,
+              "y": 784.066551,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                5.254,
+                -5.254
+              ]
+            },
+            {
+              "x": 709.376542,
+              "y": 813.155798,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                6.668,
+                -6.668
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 403.1744,
+              "y": 356.001787
+            },
+            {
+              "x": 602.0864,
+              "y": 356.001787
+            }
+          ],
+          "door": {
+            "x": 661.76,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 661.76,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "E",
+          "approach": {
+            "x": 733.76,
+            "y": 676,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              7.43,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 733.76,
+              "y": 676,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                7.43,
+                0
+              ]
+            },
+            {
+              "x": 797.76,
+              "y": 676,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                9.43,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 430.362389,
+              "y": 398.19283
+            },
+            {
+              "x": 571.014413,
+              "y": 307.783452
+            }
+          ],
+          "door": {
+            "x": 613.21002,
+            "y": 562.663047
+          },
+          "threshold": {
+            "x": 613.21002,
+            "y": 587.176469
+          },
+          "entrance": {
+            "axis": "y",
+            "facing": "+Y",
+            "x": 0,
+            "y": 5.18,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+Y"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 399.14541
+          },
+          "Wd": 7.92,
+          "Ln": 10.36,
+          "show": "+Y",
+          "doorWall": "+Y",
+          "doorFaces": "NE",
+          "approach": {
+            "x": 664.121708,
+            "y": 567.933449,
+            "m": [
+              0,
+              7.43
+            ],
+            "w": [
+              5.254,
+              5.254
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 664.121708,
+              "y": 567.933449,
+              "m": [
+                0,
+                7.43
+              ],
+              "w": [
+                5.254,
+                5.254
+              ]
+            },
+            {
+              "x": 709.376542,
+              "y": 538.844202,
+              "m": [
+                0,
+                9.43
+              ],
+              "w": [
+                6.668,
+                6.668
+              ]
+            }
+          ],
+          "mirror": false
+        }
+      },
+      "entrance": {
+        "axis": "y",
+        "facing": "+Y",
+        "x": 0,
+        "y": 5.18,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1,
+        "entry": "front",
+        "show": "+Y"
+      }
+    },
+    "dormerCape": {
+      "options": {
+        "era": "seaside",
+        "body": "greyShingle",
+        "roof": "slate",
+        "shape": "cape",
+        "siding": "shingle",
+        "size": 0.5,
+        "porch": "front",
+        "dormers": 3,
+        "chimneys": 1,
+        "bay": false,
+        "attic": "gable",
+        "bargeboard": true,
+        "weather": 0.45
+      },
+      "anchors": {
+        "N": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 466.361847
+            }
+          ],
+          "door": {
+            "x": 611.2,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 611.2,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "E",
+          "approach": {
+            "x": 681.6,
+            "y": 676,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              5.8,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 681.6,
+              "y": 676,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                5.8,
+                0
+              ]
+            },
+            {
+              "x": 745.6,
+              "y": 676,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                7.8,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NE": {
+          "chimneys": [
+            {
+              "x": 553.654659,
+              "y": 451.011217
+            }
+          ],
+          "door": {
+            "x": 577.458701,
+            "y": 585.643552
+          },
+          "threshold": {
+            "x": 577.458701,
+            "y": 610.156974
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "NE",
+          "approach": {
+            "x": 627.239019,
+            "y": 591.641185,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              4.101,
+              4.101
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 627.239019,
+              "y": 591.641185,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                4.101,
+                4.101
+              ]
+            },
+            {
+              "x": 672.493853,
+              "y": 562.551938,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                5.515,
+                5.515
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "E": {
+          "chimneys": [
+            {
+              "x": 577.536,
+              "y": 413.951517
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 563.955063
+          },
+          "threshold": {
+            "x": 496,
+            "y": 588.468485
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "N",
+          "approach": {
+            "x": 496,
+            "y": 556.69862,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              0,
+              5.8
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 556.69862,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                0,
+                5.8
+              ]
+            },
+            {
+              "x": 496,
+              "y": 515.560213,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                0,
+                7.8
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SE": {
+          "chimneys": [
+            {
+              "x": 553.654659,
+              "y": 376.891817
+            }
+          ],
+          "door": {
+            "x": 414.541299,
+            "y": 585.643552
+          },
+          "threshold": {
+            "x": 414.541299,
+            "y": 610.156974
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "NW",
+          "approach": {
+            "x": 364.760981,
+            "y": 591.641185,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              -4.101,
+              4.101
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 364.760981,
+              "y": 591.641185,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                -4.101,
+                4.101
+              ]
+            },
+            {
+              "x": 319.506147,
+              "y": 562.551938,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                -5.515,
+                5.515
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "S": {
+          "chimneys": [
+            {
+              "x": 496,
+              "y": 361.541186
+            }
+          ],
+          "door": {
+            "x": 380.8,
+            "y": 638.004196
+          },
+          "threshold": {
+            "x": 380.8,
+            "y": 662.517618
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "W",
+          "approach": {
+            "x": 310.4,
+            "y": 676,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              -5.8,
+              0
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 310.4,
+              "y": 676,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                -5.8,
+                0
+              ]
+            },
+            {
+              "x": 246.4,
+              "y": 676,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                -7.8,
+                0
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "SW": {
+          "chimneys": [
+            {
+              "x": 438.345341,
+              "y": 376.891817
+            }
+          ],
+          "door": {
+            "x": 414.541299,
+            "y": 690.364839
+          },
+          "threshold": {
+            "x": 414.541299,
+            "y": 714.878262
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "SW",
+          "approach": {
+            "x": 364.760981,
+            "y": 760.358815,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              -4.101,
+              -4.101
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 364.760981,
+              "y": 760.358815,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                -4.101,
+                -4.101
+              ]
+            },
+            {
+              "x": 319.506147,
+              "y": 789.448062,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                -5.515,
+                -5.515
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "W": {
+          "chimneys": [
+            {
+              "x": 414.464,
+              "y": 413.951517
+            }
+          ],
+          "door": {
+            "x": 496,
+            "y": 712.053328
+          },
+          "threshold": {
+            "x": 496,
+            "y": 736.56675
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "S",
+          "approach": {
+            "x": 496,
+            "y": 795.30138,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              0,
+              -5.8
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 496,
+              "y": 795.30138,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                0,
+                -5.8
+              ]
+            },
+            {
+              "x": 496,
+              "y": 836.439787,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                0,
+                -7.8
+              ]
+            }
+          ],
+          "mirror": false
+        },
+        "NW": {
+          "chimneys": [
+            {
+              "x": 438.345341,
+              "y": 451.011217
+            }
+          ],
+          "door": {
+            "x": 577.458701,
+            "y": 690.364839
+          },
+          "threshold": {
+            "x": 577.458701,
+            "y": 714.878262
+          },
+          "entrance": {
+            "axis": "x",
+            "facing": "+X",
+            "x": 3.6,
+            "y": 0,
+            "z": 0.55,
+            "width": 1,
+            "height": 2.1,
+            "entry": "front",
+            "show": "+X"
+          },
+          "ridge": {
+            "x": 496,
+            "y": 457.09514
+          },
+          "Wd": 7.2,
+          "Ln": 9.1,
+          "show": "+X",
+          "doorWall": "+X",
+          "doorFaces": "SE",
+          "approach": {
+            "x": 627.239019,
+            "y": 760.358815,
+            "m": [
+              5.8,
+              0
+            ],
+            "w": [
+              4.101,
+              -4.101
+            ]
+          },
+          "entryPath": [
+            {
+              "x": 627.239019,
+              "y": 760.358815,
+              "m": [
+                5.8,
+                0
+              ],
+              "w": [
+                4.101,
+                -4.101
+              ]
+            },
+            {
+              "x": 672.493853,
+              "y": 789.448062,
+              "m": [
+                7.8,
+                0
+              ],
+              "w": [
+                5.515,
+                -5.515
+              ]
+            }
+          ],
+          "mirror": false
+        }
+      },
+      "entrance": {
+        "axis": "x",
+        "facing": "+X",
+        "x": 3.6,
+        "y": 0,
+        "z": 0.55,
+        "width": 1,
+        "height": 2.1,
+        "entry": "front",
+        "show": "+X"
+      }
+    }
+  },
+  "runtimeDependencies": [
+    "Art/coastalPass.js",
+    "Art/interiorPropRig.js"
+  ],
+  "renderSignatureSha256": "d5d1c69503756a6c3adc1ee2353de33df22e42e5e827e8260935d4f7b9327a4c",
+  "renderDependencyHashes": {
+    "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
+    "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
+    "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
+    "Art/houseIsoRig.js": "fa73cf987cbf482ada6b3e585210b049137d49d5520220a3f1f08034cc512c90",
+    "Art/interiorIsoRig.js": "02521fff604ab32b6e2980036daae4c38915216646f9574ede5956404812e940",
+    "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
+    "Art/coastalPass.js": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+  }
+}

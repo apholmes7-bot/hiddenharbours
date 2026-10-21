@@ -68,7 +68,7 @@ namespace HiddenHarbours.Tests.PlayMode
         // ON the centre, not near it: far inside the 1/128 m step of the grid the camera snaps to at zoom 4.
         const float OnTheCentreMetres = 0.001f;
 
-        const int FullArmDepth = 60;   // this branch: 20 materials x 3 steps in the 256 array
+        const int FullArmDepth = 63;   // since terrain pass 9 (2026-09-26): 21 materials x 3 steps, Path the 21st
         const int BaseArmDepth = 36;   // main at 40f4656f: 12 materials x 3 steps (the other 7 in a 512 array)
 
         // Scored at -2.087 m on the play frame: deck 10%, water 2%; Grass 47, Shingle 25, Rockweed 7, Talus 5, Shelf 4.
@@ -85,7 +85,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static Vector2 OnTheHalfMetre(Vector2 v) => new Vector2(Mathf.Round(v.x * 2f) * 0.5f, Mathf.Round(v.y * 2f) * 0.5f);
 
-        static readonly string[] SplatIds = { "_SplatA", "_SplatB", "_SplatC", "_SplatD", "_SplatE" };
+        // Terrain pass 9 added _SplatF (Path, in its r). A region whose builder wires five maps pushes it as
+        // the transparent 1x1, which is "nothing painted" and so is not the size of the others.
+        static readonly string[] SplatIds = { "_SplatA", "_SplatB", "_SplatC", "_SplatD", "_SplatE", "_SplatF" };
+        const int SplatF = 5;
 
         readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
         readonly List<Object> _spawned = new List<Object>();
@@ -248,6 +251,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 live[i] = mpb.GetTexture(SplatIds[i]) as Texture2D;
                 Assert.IsNotNull(live[i], $"the terrain pushed no {SplatIds[i]}, so there is nothing to paint the fixture on.");
                 Assert.IsTrue(live[i].isReadable, $"{SplatIds[i]} '{live[i].name}' is not readable, so it cannot be copied.");
+                if (i == SplatF && live[i].width == 1 && live[i].height == 1) continue;   // nothing painted with Path
                 Assert.AreEqual(live[0].width, live[i].width, $"{SplatIds[i]} is not the size of _SplatA.");
                 Assert.AreEqual(live[0].height, live[i].height, $"{SplatIds[i]} is not the size of _SplatA.");
             }
@@ -278,7 +282,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 fixture[i].Apply(fixture[i].mipmapCount > 1, false);
             }
 
-            _surface.ConfigureSplat(fixture[0], fixture[1], fixture[2], fixture[3], fixture[4]);
+            _surface.ConfigureSplat(fixture[0], fixture[1], fixture[2], fixture[3], fixture[4], fixture[5]);
             _surface.enabled = false;   // OnDisable hides the quad
             _surface.enabled = true;    // OnEnable rebuilds nothing and pushes every map, synchronously
             for (int i = 0; i < 2; i++) yield return null;
@@ -294,7 +298,7 @@ namespace HiddenHarbours.Tests.PlayMode
             double rightShare = ChangedShare(asDrawn, withFixture, Mathf.Min(_w, 2 * thirdPx + reachPx), _w);
 
             // --- put the ground back, and say whether it came back ---
-            _surface.ConfigureSplat(live[0], live[1], live[2], live[3], live[4]);
+            _surface.ConfigureSplat(live[0], live[1], live[2], live[3], live[4], live[5]);
             _surface.enabled = false;
             _surface.enabled = true;
             for (int i = 0; i < 2; i++) yield return null;
@@ -613,7 +617,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the camera's frustum misses the terrain quad.");
         }
 
-        /// <summary>The arm is the detail array the ground actually samples: 60 slices here, 36 on main.</summary>
+        /// <summary>The arm is the detail array the ground actually samples: 63 slices here (60 when the flip
+        /// landed; terrain pass 9 appended Path), 36 on main before the flip.</summary>
         string ReadArm(out int depth)
         {
             var mpb = new MaterialPropertyBlock();

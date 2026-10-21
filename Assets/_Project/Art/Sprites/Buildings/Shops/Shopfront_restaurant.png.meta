@@ -138,11 +138,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 584
-        width: 650
-        height: 584
+        y: 582
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Shopfront_restaurant_d1
       rect:
         serializedVersion: 2
-        x: 650
-        y: 584
-        width: 650
-        height: 584
+        x: 648
+        y: 582
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Shopfront_restaurant_d2
       rect:
         serializedVersion: 2
-        x: 1300
-        y: 584
-        width: 650
-        height: 584
+        x: 1296
+        y: 582
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Shopfront_restaurant_d3
       rect:
         serializedVersion: 2
-        x: 1950
-        y: 584
-        width: 650
-        height: 584
+        x: 1944
+        y: 582
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Shopfront_restaurant_d4
       rect:
         serializedVersion: 2
-        x: 2600
-        y: 584
-        width: 650
-        height: 584
+        x: 2592
+        y: 582
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Shopfront_restaurant_d5
       rect:
         serializedVersion: 2
-        x: 3250
-        y: 584
-        width: 650
-        height: 584
+        x: 3240
+        y: 582
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -271,10 +271,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 650
-        height: 584
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Shopfront_restaurant_d7
       rect:
         serializedVersion: 2
-        x: 650
+        x: 648
         y: 0
-        width: 650
-        height: 584
+        width: 648
+        height: 582
       alignment: 9
-      pivot: {x: 0.5, y: 0.35787672}
+      pivot: {x: 0.5, y: 0.35738832}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

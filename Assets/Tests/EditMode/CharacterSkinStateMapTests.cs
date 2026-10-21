@@ -13,15 +13,16 @@ namespace HiddenHarbours.Tests.EditMode
     /// reference to a boat, an input stack or a clock — if the mesh and the sheets ever disagree about
     /// what she is doing, the bug must be provably upstream of both.</para>
     ///
-    /// <para><b>The fallback is the interesting half.</b> Rig 7's clip table is the ANIMS rows, and of
-    /// the four stances only <c>balance</c> is one of them: there is no <c>helm</c> clip and no
-    /// <c>oars</c> clip. Helm and Oars therefore draw the FREE BODY — and the player's sprite does NOT,
-    /// because <c>FisherIso.asset</c> carries a helm and an oars sheet of its own. The mesh is a step
-    /// BACK on those two, a stated debt rather than an inherited gap.</para>
+    /// <para><b>Helm and Oars ask for the rig's own clips</b> (character PR 2a). Rig 9 bakes
+    /// <c>idle_helm</c>, <c>walk_helm</c>, <c>idle_oars</c> and <c>walk_oars</c>, so the map asks for them
+    /// and a def that lacks one — every rig 7 def — falls back to the free gait and SAYS so through
+    /// <c>fellBack</c>. Rig 7's debt (the free body at the wheel while the sheet had a helm pose) is
+    /// therefore paid, and visible where it is not. A run at either stance asks for the free <c>run</c> by
+    /// design: no stance bakes a run on the rig or on the sprite (<c>CharacterVisualDef.SheetFor</c> gives a
+    /// stance's run an empty sheet), so that is the sprite's own answer and not a fallback.</para>
     ///
-    /// <para>Note which of the tests below can and cannot see that. <c>fellBack</c> catches a def the
-    /// BAKE left short; helm maps to the gait key before the def is consulted, so nothing falls back
-    /// and nothing reports. An ANIMS row is the only fix, and no flag here substitutes for it.</para>
+    /// <para>The rig side of this — that these spellings are the rig's clip table and the ten committed
+    /// defs resolve them — is <c>CharacterSkinCarryStateTests</c>; this file pins the map itself.</para>
     /// </summary>
     public sealed class CharacterSkinStateMapTests
     {
@@ -57,6 +58,12 @@ namespace HiddenHarbours.Tests.EditMode
             return _def;
         }
 
+        // What a rig 9 def carries for the stances, and what a rig 7 def carried.
+        private static readonly string[] Rig9States =
+            { "idle", "walk", "run", "balance", "idle_helm", "walk_helm", "idle_oars", "walk_oars" };
+
+        private static readonly string[] Rig7States = { "idle", "walk", "run", "balance" };
+
         // ------------------------------------------------------------------ the plain mapping
 
         [Test]
@@ -71,22 +78,74 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheOneBakedStanceWinsOverTheGait()
+        public void TheBalanceStanceWinsOverTheGait()
         {
-            // `balance` is the only stance rig 7 exports as a clip of its own. DeckRiderVisual does
-            // not ask for it while she is CROSSING the deck, so this mapping never has to choose
-            // between bracing and travelling — it only has to honour the request it was handed.
+            // DeckRiderVisual does not ask for balance while she is CROSSING the deck, so this mapping
+            // never has to choose between bracing and travelling — it only honours the request.
             Assert.AreEqual(CharacterSkinStateMap.Balance,
                             CharacterSkinStateMap.StateKeyFor(CharacterStance.Balance, CharacterGait.Idle));
+            Assert.AreEqual(CharacterSkinStateMap.Balance,
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Balance, CharacterGait.Walk));
         }
 
         [Test]
-        public void TheUnbakedStancesAskForTheirGaitClip()
+        public void TheWheelAndTheOarsAskForTheRigsCarryClips()
         {
-            Assert.AreEqual(CharacterSkinStateMap.Idle,
-                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Helm, CharacterGait.Idle));
-            Assert.AreEqual(CharacterSkinStateMap.Walk,
-                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Oars, CharacterGait.Walk));
+            Assert.AreEqual("idle_helm", CharacterSkinStateMap.StateKeyFor(CharacterStance.Helm, CharacterGait.Idle));
+            Assert.AreEqual("walk_helm", CharacterSkinStateMap.StateKeyFor(CharacterStance.Helm, CharacterGait.Walk));
+            Assert.AreEqual("idle_oars", CharacterSkinStateMap.StateKeyFor(CharacterStance.Oars, CharacterGait.Idle));
+            Assert.AreEqual("walk_oars", CharacterSkinStateMap.StateKeyFor(CharacterStance.Oars, CharacterGait.Walk));
+        }
+
+        [Test]
+        public void ARunAtTheWheelOrTheOarsIsTheFreeRunAsOnTheSprite()
+        {
+            Assert.AreEqual(CharacterSkinStateMap.Run,
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Helm, CharacterGait.Run));
+            Assert.AreEqual(CharacterSkinStateMap.Run,
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Oars, CharacterGait.Run));
+        }
+
+        [Test]
+        public void ACarryIsTheAnimUnderscoreTheCarry()
+        {
+            Assert.AreEqual("walk_buckets", CharacterSkinStateMap.CarryKey("walk", "buckets"));
+            Assert.AreEqual("walk", CharacterSkinStateMap.CarryKey("walk", null));
+            Assert.AreEqual("walk", CharacterSkinStateMap.CarryKey("walk", string.Empty));
+
+            Assert.AreEqual("idle_buckets",
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Free, CharacterGait.Idle, "buckets"));
+            Assert.AreEqual("walk_buckets",
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Free, CharacterGait.Walk, "buckets"));
+            Assert.AreEqual("run_buckets",
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Free, CharacterGait.Run, "buckets"));
+            Assert.AreEqual("walk",
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Free, CharacterGait.Walk, null));
+        }
+
+        [Test]
+        public void AStanceWinsOverACarry()
+        {
+            // The rig ignores a carry on a stance clip; so does the map.
+            Assert.AreEqual("walk_helm",
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Helm, CharacterGait.Walk, "buckets"));
+            Assert.AreEqual("idle_oars",
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Oars, CharacterGait.Idle, "buckets"));
+            Assert.AreEqual(CharacterSkinStateMap.Balance,
+                            CharacterSkinStateMap.StateKeyFor(CharacterStance.Balance, CharacterGait.Walk, "buckets"));
+        }
+
+        [Test]
+        public void ACarryKeyIsBuiltOnceAndReused()
+        {
+            // Rule 7: a presenter resolves every frame, so the same carry must hand back the same string,
+            // not a new concatenation per figure per frame.
+            string first = CharacterSkinStateMap.StateKeyFor(CharacterStance.Free, CharacterGait.Walk, "buckets");
+            string again = CharacterSkinStateMap.StateKeyFor(CharacterStance.Free, CharacterGait.Walk, "buckets");
+            Assert.AreSame(first, again, "the carry key must be memoised, not rebuilt");
+            Assert.AreSame(CharacterSkinStateMap.StateKeyFor(CharacterStance.Helm, CharacterGait.Idle),
+                           CharacterSkinStateMap.StateKeyFor(CharacterStance.Helm, CharacterGait.Idle),
+                           "the helm key must be memoised, not rebuilt");
         }
 
         // ------------------------------------------------------------------ the fallback chain
@@ -94,25 +153,63 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void AStanceTheBakeCarriesResolvesWithoutFallingBack()
         {
-            CharacterSkinDef def = DefWith("idle", "walk", "run", "balance");
+            CharacterSkinDef def = DefWith(Rig9States);
 
             Assert.IsTrue(CharacterSkinStateMap.Resolve(def, CharacterStance.Balance, CharacterGait.Idle,
                                                         out string key, out bool fellBack));
             Assert.AreEqual("balance", key);
             Assert.IsFalse(fellBack, "the clip was there — nothing should have been reported as missing");
+
+            Assert.IsTrue(CharacterSkinStateMap.Resolve(def, CharacterStance.Oars, CharacterGait.Walk,
+                                                        out key, out fellBack));
+            Assert.AreEqual("walk_oars", key);
+            Assert.IsFalse(fellBack, "rig 9 bakes walk_oars, so rowing is its own clip");
         }
 
         [Test]
-        public void AnUnbakedStanceAsksForItsGaitClipAndThatIsNotAFallback()
+        public void ARunAtTheWheelResolvesToTheFreeRunWithoutFallingBack()
         {
-            CharacterSkinDef def = DefWith("idle", "walk", "run", "balance");
+            CharacterSkinDef def = DefWith(Rig9States);
+
+            Assert.IsTrue(CharacterSkinStateMap.Resolve(def, CharacterStance.Helm, CharacterGait.Run,
+                                                        out string key, out bool fellBack));
+            Assert.AreEqual("run", key);
+            Assert.IsFalse(fellBack,
+                "the free run is what the map ASKED for (no stance bakes a run), so nothing fell back");
+        }
+
+        [Test]
+        public void ADefWithoutTheWheelClipFallsBackToTheGaitAndSaysSo()
+        {
+            CharacterSkinDef def = DefWith(Rig7States);
 
             Assert.IsTrue(CharacterSkinStateMap.Resolve(def, CharacterStance.Helm, CharacterGait.Walk,
                                                         out string key, out bool fellBack));
-            Assert.AreEqual("walk", key, "helm is not an exported clip, so she must walk the free body");
-            Assert.IsFalse(fellBack,
-                "helm ALREADY maps to the gait key before the def is consulted — the def carried the " +
-                "clip that was asked for, so nothing fell back");
+            Assert.AreEqual("walk", key, "a def with no walk_helm walks the free body");
+            Assert.IsTrue(fellBack,
+                "walk_helm was asked for and the def lacks it — the caller must be told, not left to " +
+                "draw the free body as if it were the wheel");
+
+            Assert.IsTrue(CharacterSkinStateMap.Resolve(def, CharacterStance.Oars, CharacterGait.Idle,
+                                                        out key, out fellBack));
+            Assert.AreEqual("idle", key);
+            Assert.IsTrue(fellBack);
+        }
+
+        [Test]
+        public void ACarryTheBakeLacksFallsBackToTheFreeGaitAndSaysSo()
+        {
+            CharacterSkinDef def = DefWith("idle", "walk", "run", "idle_buckets");
+
+            Assert.IsTrue(CharacterSkinStateMap.Resolve(def, CharacterStance.Free, CharacterGait.Idle, "buckets",
+                                                        out string key, out bool fellBack));
+            Assert.AreEqual("idle_buckets", key);
+            Assert.IsFalse(fellBack);
+
+            Assert.IsTrue(CharacterSkinStateMap.Resolve(def, CharacterStance.Free, CharacterGait.Walk, "buckets",
+                                                        out key, out fellBack));
+            Assert.AreEqual("walk", key, "no walk_buckets, so she walks the free body");
+            Assert.IsTrue(fellBack);
         }
 
         [Test]

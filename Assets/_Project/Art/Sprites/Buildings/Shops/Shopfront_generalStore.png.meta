@@ -138,11 +138,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 517
-        width: 554
-        height: 517
+        y: 515
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Shopfront_generalStore_d1
       rect:
         serializedVersion: 2
-        x: 554
-        y: 517
-        width: 554
-        height: 517
+        x: 552
+        y: 515
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Shopfront_generalStore_d2
       rect:
         serializedVersion: 2
-        x: 1108
-        y: 517
-        width: 554
-        height: 517
+        x: 1104
+        y: 515
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Shopfront_generalStore_d3
       rect:
         serializedVersion: 2
-        x: 1662
-        y: 517
-        width: 554
-        height: 517
+        x: 1656
+        y: 515
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Shopfront_generalStore_d4
       rect:
         serializedVersion: 2
-        x: 2216
-        y: 517
-        width: 554
-        height: 517
+        x: 2208
+        y: 515
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Shopfront_generalStore_d5
       rect:
         serializedVersion: 2
-        x: 2770
-        y: 517
-        width: 554
-        height: 517
+        x: 2760
+        y: 515
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Shopfront_generalStore_d6
       rect:
         serializedVersion: 2
-        x: 3324
-        y: 517
-        width: 554
-        height: 517
+        x: 3312
+        y: 515
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -293,10 +293,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 554
-        height: 517
+        width: 552
+        height: 515
       alignment: 9
-      pivot: {x: 0.5, y: 0.34622824}
+      pivot: {x: 0.5, y: 0.34563106}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

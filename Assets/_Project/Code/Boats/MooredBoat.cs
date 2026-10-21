@@ -34,7 +34,7 @@ namespace HiddenHarbours.Boats
     /// draughts rather than at a shared guess.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MooredBoat : MonoBehaviour, IVesselWay, ICharacterFigureStand
+    public sealed class MooredBoat : MonoBehaviour, IVesselWay, ICharacterFigureStand, ICharacterFigureIdentity
     {
         /// <summary>
         /// <b>How she is lying, for her lamps</b> (ADR 0016, the lamp regime) — <see cref="VesselWay.
@@ -52,7 +52,17 @@ namespace HiddenHarbours.Boats
         /// STATE with a berth's default, not a constant, and whoever is driving her says otherwise.
         /// </para>
         /// </summary>
-        public VesselWay Way => _way;
+        public VesselWay Way
+        {
+            get
+            {
+                // A declared berth or a holding anchor wins. BoatAnchor delegates to this answer,
+                // so two IVesselWay components never disagree, even on the arrival's moving hull.
+                var anchor = GetComponent<BoatAnchor>();
+                return _way == VesselWay.Moored || (anchor != null && anchor.IsHolding)
+                    ? VesselWay.Moored : VesselWay.UnderWay;
+            }
+        }
 
         private VesselWay _way = VesselWay.Moored;
 
@@ -73,7 +83,7 @@ namespace HiddenHarbours.Boats
                 // Spelled through the Core seam rather than by type: Boats may not reference Art
                 // (rule 4), and the lamps live there. IVesselWayListener is Core's own hook for
                 // exactly this — "the boat you are hanging off has changed her mind".
-                if (lamps is IVesselWayListener listener) listener.OnVesselWayChanged(way);
+                if (lamps is IVesselWayListener listener) listener.OnVesselWayChanged(Way);
             }
         }
 
@@ -395,6 +405,11 @@ namespace HiddenHarbours.Boats
         // is the slot's, the bearing is the sprite's held heading against the hull's drawn one.
 
         IsoCharacterSprite ICharacterFigureStand.FigureCharacter => _skipper;
+
+        /// <summary>The skipper's one stable key (character PR 2a): the owner's id, so the same skipper
+        /// blinks the same way on every run and the look seam can name them. Empty for a review hull,
+        /// which has no owner.</summary>
+        string ICharacterFigureIdentity.FigureKey => _owner != null ? _owner.Id : string.Empty;
 
         /// <summary>The hull the skipper stands on — but only while that hull holds their deck slot, because
         /// the stand point is only published, and only kept current by <see cref="StandTheSkipperAt"/>,

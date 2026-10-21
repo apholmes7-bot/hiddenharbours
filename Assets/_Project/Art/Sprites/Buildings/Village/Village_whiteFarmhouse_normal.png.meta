@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 50ff530b00c48a84c84378416273646b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4576317475831730284
+    second: Village_whiteFarmhouse_normal_0
+  - first:
+      213: -4492528355380902430
+    second: Village_whiteFarmhouse_normal_1
+  - first:
+      213: 1644273118327141338
+    second: Village_whiteFarmhouse_normal_2
+  - first:
+      213: -2158976297803688056
+    second: Village_whiteFarmhouse_normal_3
+  - first:
+      213: -8625780173989291590
+    second: Village_whiteFarmhouse_normal_4
+  - first:
+      213: -2725857970830764051
+    second: Village_whiteFarmhouse_normal_5
+  - first:
+      213: 5327750268595736092
+    second: Village_whiteFarmhouse_normal_6
+  - first:
+      213: 3819067610417654461
+    second: Village_whiteFarmhouse_normal_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 481
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40f256b1510ab9b46a96d899d1342048
+      internalID: -163436654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d1
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 481
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0606cd41e056cc64a81d3d861544aaf0
+      internalID: 1660305597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d2
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 481
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d22adbb9e6020da428225ac5229c24d7
+      internalID: 348163975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d3
+      rect:
+        serializedVersion: 2
+        x: 1476
+        y: 481
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85636393275212b46b69826b3e05bbda
+      internalID: 1661141063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66ce3a3d4a103d04cbedc313d4f0fe12
+      internalID: 417045227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d5
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 0
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2ef7a8adab99394fbc7dbad774121df
+      internalID: -620769139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d6
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 0
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91248dda50ba35a4bb587768b6a43767
+      internalID: 1948040660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteFarmhouse_normal_d7
+      rect:
+        serializedVersion: 2
+        x: 1476
+        y: 0
+        width: 492
+        height: 481
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3180873}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb06bb51fd2dc014f84f829876ef4847
+      internalID: -95633616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c79bf59575e109649b3bcbbead7e277f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_whiteFarmhouse_normal_d0: -163436654
+      Village_whiteFarmhouse_normal_d1: 1660305597
+      Village_whiteFarmhouse_normal_d2: 348163975
+      Village_whiteFarmhouse_normal_d3: 1661141063
+      Village_whiteFarmhouse_normal_d4: 417045227
+      Village_whiteFarmhouse_normal_d5: -620769139
+      Village_whiteFarmhouse_normal_d6: 1948040660
+      Village_whiteFarmhouse_normal_d7: -95633616
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

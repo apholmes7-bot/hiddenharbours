@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_133
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_133
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: SE
+  Batter: steep
+  Brow:
+  - {x: 210.35324, y: 51.232315}
+  - {x: 210.59286, y: 51.25}
+  - {x: 210.84286, y: 51.25}
+  - {x: 211.09286, y: 51.25}
+  Toe:
+  - {x: 210.7276, y: 50.25132}
+  - {x: 211.76996, y: 49.27403}
+  - {x: 212.36281, y: 49.265114}
+  - {x: 212.18503, y: 49.225853}
+  DropMetres:
+  - 10.313287
+  - 10.9299345
+  - 11.269712
+  - 11.228125
+  ToeElevations:
+  - 0.61237705
+  - 0.070050456
+  - -0.26972777
+  - -0.2281394
+  Stations:
+  - 219
+  - 220
+  - 221
+  - 222
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'SE steep: the worn SE steep face beyond its range (it carries drop 5.27-10.00 m, batter 68.2-76.8 deg, worn by 009-021, 025-029)'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 219 to 222; the ring''s own PR builds it.'

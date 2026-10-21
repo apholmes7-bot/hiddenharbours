@@ -218,6 +218,7 @@ namespace HiddenHarbours.Tests.EditMode
             public Color Tint; public Vector2 SunDir; public float SunElevation;
             public bool Breaks; public float BreakDepth, OuterDepth;
             public float Chop, Roughness, Flow, PushedLevel;    // read back from the property block
+            public float StillBound;                            // _HHStillRange.z read back: 1 = a still map is drawn
             public float WaveCount;                             // _WaveFieldParams.x read back
             public float LightCount;                            // _WaterLightCount read back
             public float WetFraction, MeanLumaWet, StdLumaWet;
@@ -233,6 +234,7 @@ namespace HiddenHarbours.Tests.EditMode
         readonly List<GameObject> _built = new List<GameObject>();
         ITidalTerrain _previousTerrain;
         IEnvironmentService _previousEnvironment;
+        IStillWater _previousStill;
         GameConfig _previousConfig;
         PlateEnvironment _env;
         FakeLamp _lamp;
@@ -248,6 +250,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             _previousTerrain = GameServices.TidalTerrain;
             _previousEnvironment = GameServices.Environment;
+            _previousStill = GameServices.StillWater;
             _previousConfig = GameServices.Config;
         }
 
@@ -268,6 +271,7 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.TidalTerrain = _previousTerrain;
             GameServices.Environment = _previousEnvironment;
             GameServices.Config = _previousConfig;
+            GameServices.StillWater = _previousStill;
 
             // Globals are STICKY: hand the next fixture a silent, calm, daylit sea with no lamp in it.
             WaveFieldBridge.PublishGlobals(PackedWaveField.Empty);
@@ -1377,7 +1381,7 @@ namespace HiddenHarbours.Tests.EditMode
                     stage = BuildNineMileCreek();
                     stage.Name = cells[i].key;
                     stage.Aim = cells[i].key == "nmc-steep" ? AimAtTheSteepestBreak(stage)
-                                                            : AimAtTheLongestSurfRun(stage);
+                                                            : AimAtTheLongestSurfRun(stage, liveSurf: true);
                 }
                 BuildCamera();
                 _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
@@ -1734,7 +1738,7 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     stage = BuildNineMileCreek();
                     stage.Name = "nmc-sand";
-                    stage.Aim = AimAtTheLongestSurfRun(stage);
+                    stage.Aim = AimAtTheLongestSurfRun(stage, liveSurf: true);
                 }
                 BuildCamera();
                 _cam.transform.position = new Vector3(stage.Aim.x, stage.Aim.y, -100f);
@@ -2323,8 +2327,8 @@ namespace HiddenHarbours.Tests.EditMode
             WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in trains));
             WaveFieldBridge.PublishFetchGlobals(GameServices.WaveFetch, _env.Wind);
             WaveFieldBridge.PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch, GameServices.Breakers);
-            contour = BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch),
-                                             GameServices.Breakers);
+            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch);
+            contour = BreakerMath.ContourFor(trains.Dominant, leeEnvelope, GameServices.Breakers);
 
             // The hour, published the way ADR 0013's controller publishes it (it does not tick in edit mode).
             // Moonless: the moon needs a clock for its phase, and a plate is an instant.
@@ -2343,6 +2347,12 @@ namespace HiddenHarbours.Tests.EditMode
             // The push. The shipped component reads the fake environment and writes every sim-driven
             // uniform, the mood blend and the palette seam onto its own property block — a zero-dt push
             // snaps every eased value to its target, so the plate is the settled sea for this weather.
+            // The still water above the tide (ADR 0046): none. No committed region has a still map, so every
+            // viewpoint plays at the tide's waterline alone. The live sea HOLDS the still-water globals, which
+            // follow whatever the seam has registered — a pond an earlier fixture left registered would be
+            // drawn into the evidence — so it is pinned per plate like the tide, and read back below.
+            GameServices.StillWater = null;
+
             var surface = stage.SeaGo.GetComponent<WaterSurface>();
             Assert.IsNotNull(surface, "the stage's Sea must carry the shipped WaterSurface");
             PushUniformsSnap.Invoke(surface, null);
@@ -2408,6 +2418,7 @@ namespace HiddenHarbours.Tests.EditMode
             Vector4 outer = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerOuter"));
             Vector4 depths = Shader.GetGlobalVector(Shader.PropertyToID("_BreakerDepths"));
             Vector4 fieldParams = Shader.GetGlobalVector(Shader.PropertyToID("_WaveFieldParams"));
+            Vector4 stillRange = Shader.GetGlobalVector(Shader.PropertyToID("_HHStillRange"));
             WetStatistics(stage, _env.WaterLevel, ldr, out float wet, out float meanLumaWet,
                           out float stdLumaWet);
 
@@ -2419,7 +2430,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Breaks = outer.w > 0.5f, BreakDepth = depths.x, OuterDepth = outer.x,
                 Chop = block.GetFloat("_Chop"), Roughness = block.GetFloat("_Roughness"),
                 Flow = block.GetFloat("_Flow"), PushedLevel = block.GetFloat("_WaterLevel"),
-                WaveCount = fieldParams.x,
+                WaveCount = fieldParams.x, StillBound = stillRange.z,
                 LightCount = Shader.GetGlobalFloat(Shader.PropertyToID("_WaterLightCount")),
                 WetFraction = wet, MeanLumaWet = meanLumaWet, StdLumaWet = stdLumaWet,
             };
@@ -3338,8 +3349,10 @@ namespace HiddenHarbours.Tests.EditMode
                           "reflector in a fixture); wind heading " +
                           $"({WindHeading.x:F3}, {WindHeading.y:F3}); lamp = BoatSpotlight defaults x water strength " +
                           $"{Searchlight.WaterStrength} at aim + ({Searchlight.Offset.x}, {Searchlight.Offset.y}) throwing +x");
+            sb.AppendLine("# still water above the tide: none registered (ADR 0046: no committed region has a still " +
+                          "map); the 'still' column is _HHStillRange read back per plate");
             sb.AppendLine("file | weather sea01 wind_mps | tide level_m pushed_level | hour tint sunDir sunElev | " +
-                          "breaks breakDepth outerDepth | _Chop _Roughness _Flow | trains lights | wet% lumaWet stdWet");
+                          "breaks breakDepth outerDepth | _Chop _Roughness _Flow | trains lights | wet% lumaWet stdWet | still");
             foreach (PlateRecord r in records)
             {
                 sb.AppendLine(
@@ -3349,7 +3362,8 @@ namespace HiddenHarbours.Tests.EditMode
                     $"({r.SunDir.x:F2},{r.SunDir.y:F2}) {r.SunElevation:F2} | " +
                     $"{(r.Breaks ? "yes" : "no")} {r.BreakDepth:F2} {r.OuterDepth:F2} | " +
                     $"{r.Chop:F3} {r.Roughness:F3} {r.Flow:F3} | {r.WaveCount:F0} {r.LightCount:F0} | " +
-                    $"{r.WetFraction:P1} {r.MeanLumaWet:F3} {r.StdLumaWet:F3}");
+                    $"{r.WetFraction:P1} {r.MeanLumaWet:F3} {r.StdLumaWet:F3} | " +
+                    $"{(r.StillBound > 0.5f ? "bound" : "none")}");
             }
             File.WriteAllText(Path.Combine(dir, "MANIFEST.txt"), sb.ToString());
         }
@@ -3379,6 +3393,9 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{r.File}: the searchlight must be in the array at night and only at night");
                 Assert.AreEqual(r.Weather != Weather.Glass, r.Breaks,
                     $"{r.File}: a working sea must publish a breaking contour and glass must not");
+                Assert.AreEqual(0f, r.StillBound, 1e-4f,
+                    $"{r.File}: a still map is drawn into this plate, and no region it photographs has one " +
+                    "(ADR 0046) — the plate is not of the sea it claims");
             }
 
             // 2. The frame is of what it claims: a coast plate holds coast AND water; the control holds
@@ -3511,12 +3528,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var terrainGo = new GameObject("TidalTerrain");
             _built.Add(terrainGo);
-            var terrain = terrainGo.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
+            // The scene's own ground (NMC H2): G3, the map the region's sea draws and its hulls sail on.
             // ⚠ Registered by hand: the terrain components are not [ExecuteAlways], so OnEnable never fires
             // in edit mode and the accessor stays null — whereupon WaterSurface bakes a flat height field
             // and the sea draws opaque over everything. Cost the #680 pass a capture.
-            GameServices.TidalTerrain = terrain;
+            var terrain = NineMileCreekLiveGround.Register(terrainGo);
 
             var region = AssetDatabase.LoadAssetAtPath<RegionDef>(WaterSceneTemplate.RegionAssetPathFor("NineMileCreek"));
             Assert.IsNotNull(region, "Data/Regions/NineMileCreek.asset must exist to size the ground");
@@ -3529,7 +3545,8 @@ namespace HiddenHarbours.Tests.EditMode
                                                 NineMileCreekBuilder.NineMileCreekHeightResolution,
                                                 NineMileCreekBuilder.NineMileCreekHeightMin,
                                                 NineMileCreekBuilder.NineMileCreekHeightMax,
-                                                terrain.MaxShoreGradient());
+                                                NineMileCreekLiveGround.PremiseShoreGradient());
+            NineMileCreekLiveGround.DrawUnder(sea, terrain);   // the sea draws G3, as the builder wires it
             return new Stage
             {
                 Terrain = terrain, SeaGo = sea,
@@ -3592,9 +3609,8 @@ namespace HiddenHarbours.Tests.EditMode
             splat.ConfigureSandbar(StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo,
                 StPetersBuilder.SandbarHalfWidth,
                 StPetersShoreMap.BarSpineHalfWidth, StPetersShoreMap.BarSpineFloorElevation);
-            HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Build();
             splat.ConfigureDetail(
-                AssetDatabase.LoadAssetAtPath<Texture2DArray>(HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array256Path),
+                HiddenHarbours.Art.Editor.TerrainArrayAssets.LoadDetailRequired(),
                 null);   // the 512 array retired with the px flip (2026-09-17, owner ruling A2)
             var splatMaps = new Texture2D[TerrainSplatBrush.TextureCount];
             for (int i = 0; i < splatMaps.Length; i++)
@@ -3666,8 +3682,8 @@ namespace HiddenHarbours.Tests.EditMode
         static BreakerContour ReferenceContour(out WaveTrains trains)
         {
             trains = WaveMath.TrainsFrom(WindFor(Weather.Blow), SeaStateFor(Weather.Blow), GameServices.WaveField);
-            return BreakerMath.ContourFor(trains.Dominant, WaveFetch.Envelope01(0f, GameServices.WaveFetch),
-                                          GameServices.Breakers);
+            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, trains.Dominant.Wavelength, GameServices.WaveFetch);
+            return BreakerMath.ContourFor(trains.Dominant, leeEnvelope, GameServices.Breakers);
         }
 
         /// <summary>#680's plunge scan: the highest surf-similarity number on the break contour — Nine Mile
@@ -3712,9 +3728,17 @@ namespace HiddenHarbours.Tests.EditMode
             return bestAt;
         }
 
+        /// <summary>W4-3: the fetch below which <see cref="AimAtTheLongestSurfRun"/> skips a break point for a
+        /// case that reads the live surf. For the Blow's wind the longest runs sit either side of a wide gap:
+        /// fetch 0.039–0.067 on the lee shoals (dominant factor 0.013 at most) and 0.349 and up (factor 0.28 and
+        /// up), so any threshold from 0.1 to 0.3 picks the same aim.</summary>
+        const float NearZeroFetch01 = 0.1f;
+
         /// <summary>#680's surf-zone finder: the point on the break contour from which the surf RUNS
-        /// furthest shoreward — the widest spilling beach on the coast.</summary>
-        Vector2 AimAtTheLongestSurfRun(Stage stage)
+        /// furthest shoreward — the widest spilling beach on the coast. A case that reads the LIVE surf passes
+        /// <paramref name="liveSurf"/>: the lee law (W4-3) grows no long train where the Blow's wind has next
+        /// to no fetch, so a break point there breaks next to no surf, and the finder skips it.</summary>
+        Vector2 AimAtTheLongestSurfRun(Stage stage, bool liveSurf = false)
         {
             BreakerContour contour = ReferenceContour(out _);
             Assert.IsTrue(contour.Breaks, "the reference sea must break somewhere");
@@ -3739,6 +3763,8 @@ namespace HiddenHarbours.Tests.EditMode
                 if (BreakerSurfRenderTests.InsideTheHarbour(p)) continue;
                 float depth = level - stage.Terrain.ElevationAt(p);
                 if (depth <= 0f || Mathf.Abs(depth - contour.BreakDepths.x) > 0.06f) continue;
+                if (liveSurf && WaveFetch.Fetch01(p, WindFor(Weather.Blow), level, stage.Terrain, GameServices.WaveFetch) < NearZeroFetch01)
+                    continue;
                 atBreakDepth++;
 
                 float run = 0f;

@@ -159,6 +159,20 @@ has no heading, so its sheet axes are **variant × sway frame**, not direction.
 > draws the DEFAULT tree. `sheetSpec(key, size)` takes the stage FACTOR (`STAGES.mature` = 1), not the
 > stage NAME — passing `'mature'` yields a degenerate 24×9 cell with `metres: null`. Both produce ten
 > identical rows across ten species, which is the only tell; assert the ten cells are DISTINCT first.
+>
+> ⚠️ **PASS 4 (v4.1, landed 2026-09-24) ADDS MAPS, NOT A NEW WORLD SIZE.** `treeIsoRig4.js`
+> (`TreeRig4`) comes with `weatherSky.js` (`WeatherSky`, the sky it lights under), `_treeGameplay.js`
+> (`TREE_GAMEPLAY`, its sidecar writer) and `treeMaps4.js` (`TreeMaps4`, the map writer). Load them in
+> that order. The kit's README, checkers, delivered check outputs and map manifest live in
+> [`../tree-rig-kit-v4/`](../tree-rig-kit-v4/), its sidecars in `gameplay/trees/`, its review renders in
+> `../spikes/tree-pass-4/`. What the repo measured at intake is
+> [`../tree-rig-kit-v4/VERIFICATION.md`](../tree-rig-kit-v4/VERIFICATION.md). The metres are pass 3's
+> unchanged, but every cell widens by twice the species' `windReach` so the sway has room, so
+> **`_TrunkAnchor` moves again** (red spruce 0.0304 → 0.0301, aspen 0.0295 → 0.0272). The new outputs
+> are a snow map (the cover at which each pixel turns white), wind weights and a phase map. **The mask
+> order does not change** (R key, G back rim, B depth, A coverage); new data goes in new sheets. Since the
+> pass-4 bake (#882, 2026-09-27) the game draws pass 4: `TreeKitCatalog.RigScriptPath` names
+> `treeIsoRig4.js`.
 
 **NOT A RIG AT ALL — the building lifecycle PASS (2026-08-19)** —
 `building-lifecycle-kit/buildingLifecycleRig.js` (`BuildingLifecycle`). The only entry in the catalog that
@@ -174,6 +188,13 @@ Bound into **`wharfBuildingRig` · `houseIsoRig` · `shopfrontRig`** by a two-li
 declared a **prerequisite** of all three in `RigCatalog`. Adopting the hook was measured to change
 nothing: all three hosts render **byte-identical** to their pre-hook selves on every finished build, and a
 full re-bake returned the five committed M1 village sheets byte-for-byte (`BuildingLifecyclePassTests`).
+
+Since drop 13, **`wharf-building-kit-v2/wharfBuildingRig2`** is bound too, with one difference: its hook
+sits **inside** its model build rather than after `build(b)`. The pass is declared its prerequisite the
+same way, and the same measurement holds: its seven presets with no lifecycle keys render
+**byte-identical** with the pass loaded and absent, and the decayed builds differ. The record is
+`docs/art/wharf-buildings-pass2-intake.md`. `WharfBuildingPass2IntakeTests` re-measures three presets on
+every run.
 
 > ⚠️ **An unrecognised state id is SILENTLY IGNORED.** `active()` returns true for any non-default value,
 > then `normPhase`/`normDecay` fall back to the default and hand the faces back untouched — so
@@ -214,6 +235,12 @@ byte-identical golden master was.
 - **`wharfBuildingRig` — still UNMEASURED.** Its listing above stays a prior until *Dev ▸ Bake Buildings
   (houses + wharf)* runs and the bake either passes or refuses. Nothing consumes it yet (the shed/barn/
   cannery family is M2).
+- **`wharf-building-kit-v2/wharfBuildingRig2` (drop 13) — counter-clockwise by this probe's reading on Node,
+  all seven presets (2026-09-28).** The silhouette cross-check passed on every preset, and the door anchor
+  at dir 2 lands exactly where pass 1's does. `WharfBuildingPass2IntakeTests` re-measures netShed,
+  gambrelBarn and cannery with the C# probe on every run. It is not baked yet: when it is, the bake probes
+  again and refuses on a mismatch. Its geometry library (`wharfBuildingRig2.geo.js`) has no rendered
+  heading and carries the `Clockwise` placeholder.
 - **🔴 `interiorIsoRig` / `interiorPropRig` — counter-clockwise, but `BuildingRigAzimuthProbe` MUST NOT
   be used on them (measured 2026-08-05).** The probe above reads which side the **door** lands on at a
   quarter turn, and the step it does not state is that it assumes the door is on the **`+Y`** gable —
@@ -232,6 +259,11 @@ byte-identical golden master was.
   bake time and written into `Interiors.json` as `exteriorFacingOffset`; `InteriorKit.InteriorFacingFor`
   is the one place it is applied. At any other offset the doorway lands against the back wall — you walk
   in the front door and appear at the back of the room, and it reads as an art bug.
+- **Since the village return (drop 14, #898), the measured offset is 0.** The returned `interiorIsoRig`
+  (`village-return/houses-kit/Art/`) opens its doorway on the gable its house's door is on, so each room
+  registers under its own shell at offset 0, and `Interiors.json` says so. The mechanism is unchanged: the
+  probe still measures, and `InteriorKit.InteriorFacingFor` still applies what it measured. The `−Y`
+  doorway and the `+4` above describe the rig before it. Record: `village-return/INTAKE.md`, Phase B.
 
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not

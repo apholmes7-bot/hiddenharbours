@@ -23,8 +23,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// one proves a pump offers itself to somebody standing on its audited spot. This one proves the
     /// LOOP closes — that the thing you fill is findable in the world without a dev menu, which is the
     /// half that did not exist. Every object here is the SHIPPED one: the fixture runs
-    /// <see cref="NineMileCreekStation.Place"/> against the region's own terrain, so a can that only
-    /// works when a test stands it at the origin cannot pass.</para>
+    /// <see cref="NineMileCreekStation.Place"/> against the builder's analytic ground, the premise the
+    /// builder still places the station on, so a can that only works when a test stands it at the origin
+    /// cannot pass. ⚠ Since NMC H2 the scene stands on G3 and the station moves onto it in a later wave:
+    /// this proves the shipped placement's loop, not the activated scene's ground.</para>
     ///
     /// <para><b>⚠️ No virtual key presses</b> (they are undeliverable in this harness). The offer is read
     /// off <see cref="InteractResolver"/> — the same total order the runtime driver uses — and the verbs

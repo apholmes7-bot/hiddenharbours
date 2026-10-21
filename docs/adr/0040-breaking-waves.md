@@ -673,3 +673,95 @@ capsize law (planar force + yaw only), the walkability waterline, the clip conto
 still ship at 0 pending the owner's nod on PR 2's two check-ins. Until he turns them up the hull beats and
 lifts to a bore the water does not yet draw; both halves are one nod apart, and the register says so.
 Audio may still read `SurfState.Bore01` — the surf's clock is public and unchanged.
+
+
+## B1 — the shore fringe follows the existing bore (2026-10-05)
+
+Main b5825e1f's capture showed a travelling bore and sheet underneath a broader bright
+shore fringe. B1 serves P1 and P5 by making that arrival readable. The owner approved
+this implementation after the capture and design review; a new GPU slot and look ruling
+are still required. This section does not claim visual acceptance.
+
+### The handoff and its passthrough
+
+`_SurfFringeSequenceStrength` hands the fringe's displacement to the existing run-up and
+weights its remaining cover by the existing born pulse, travel life and local break gate.
+The handoff uses `boreEdgeBlend`, the reference-depth shore domain, multiplied by the new
+dial and `_SurfBeatStrength`. A gate weighted only by local breaking would leave the
+metres-wide offshore fringe outside the active break band untouched.
+
+| Dial | At 1 with the existing surf controls on | At 0 |
+|---|---|---|
+| `_SurfFringeSequenceStrength` | Foam-only displacement blends to `surfRunUpM`; after existing supersede, remaining coverage is multiplied by `saturate(surfBreaking * surfAlive * surfBore)` within the full shore domain. The existing sheet carries the trail. | Both new adjustments are bypassed; the previous displacement, coverage and colour/alpha composition remain. |
+
+The shader default and all nine serialized material values are **0**. Existing material
+values are unchanged. This dial is an owner sequence policy, not weather easing, so it
+is absent from `MoodFloatNames`. Beat off, run-up off and no breaking sea preserve the
+previous fringe. Partial handoff deliberately retains some legacy swash. The exact
+edge/clip, sheet, anatomy, history buffer, twins, Core and gameplay remain unchanged.
+The only production edit is in the water shader, outside both twins.
+
+### Older foam and acceptance
+
+The owner delegated the older-foam decision. **Older deposited foam may remain as
+background residue while the next arrival stays visibly distinct.** No history lifetime,
+hull wake, boat foam or gameplay tuning is part of this change. The original diagnostic
+remains cover below 5% continuously for 0.1T inside [0.35T, 0.65T] after local arrival.
+Its main sand and ledge failures remain failures; the new fringe test does not rename them.
+
+The following separate criteria were declared in the revised design before its plate
+re-check. They are measurement conventions, not new production dials:
+
+1. At full handoff, isolated fringe contribution above 0.1 covers less than 5% of the
+   fixed wet ROI for at least 0.1T inside the same quiet window.
+2. In the dressed image with retained history, at least 75% of active 1m contour bins
+   show a mean display-luminance increase of at least 0.08: the peak in the +/-0.1T
+   arrival window minus the following quiet-window median. Sample a 0.5m shoreward
+   ribbon. An active bin reaches a public `Breaking01 * Whitewater01 * Bore01` of 0.1.
+   Weak/absent bins are reported, never credited as passes. Judge both arrivals separately.
+3. The independently observed leading bright ridge remains within 0.5m of its public
+   phase-90 front for at least 75% of samples over the first 0.25T. Preserve crest identity;
+   missing/ambiguous ridges are unverified and do not pass.
+4. Keep the original residue diagnostic beside those measures. No absolute residue-area
+   cap is substituted. No new along-crest law: retain the existing <15 degrees across
+   >=20m with >=75% coincident visible onset diagnostic for a uniform pulse.
+
+The corner remains a weak/collapsing control, not an invented plunge. Insufficient
+active observations prevent acceptance. General pause, rate and seek coherence are
+outside B1 under the owner's ruling.
+
+### Tests, evidence and cost status
+
+`SurfSequenceTests` adds 18 EditMode cases: six headless and twelve that explicitly skip
+on a Null graphics device. The headless cases exercise public bore/SurfAt functions,
+check the actual advect expression and water-shader consumers (including broken-source
+negative controls), pin the approved protected source, and verify all nine zero keys.
+They do not execute a C# copy of the new HLSL rule.
+
+GPU cases use the existing NMC fixture at sand (128,-71), ledge (109,157.5) and corner
+(50,-22). They warm production history for 8T, then record 3T at 128 steps/T to contain
+two complete arrival/quiet windows for bins with different phases. Their test-only
+in-memory shader variants redirect time/history bindings and the fringe/event RGB
+targets, leaving geometry, coverage, alpha and physics intact. The baseline shader is
+reconstructed and checked against b5825e1f's normalized source SHA256 before compilation;
+it is not a second candidate arm. No baseline or fixture depends on uncommitted files.
+
+The fixed ridge estimator uses a shoreward falling luminance edge corroborated by
+colour-isolated event contribution, follows the previous observed ridge, and rejects
+competing peaks. It never selects the ridge nearest the predicted front. Samples with
+no identifiable ridge remain in the denominator. CSVs, diagnostic images and the original
+residue verdict are written under `Evidence~/b1-sequence-tests/` only when granted a GPU
+run. This flat-fixture acceptance still needs the planned displaced-surface, wide-edge,
+tide, mood, zoom and laptop controls and owner plate review. No GPU ran in Phase B.
+
+Estimated added work is 12–18 scalar ALU per affected water fragment, at most two
+branches, **zero texture taps, train evaluations, transcendental calls or new loops**.
+The one 16-step surf march stays unchanged. No new render pass, target or production CPU
+allocation. The historical compiled size above (368004 to 372460 bytes) is not this
+candidate's size: compilation and matched synced-render timing remain pending.
+
+CI forecast on the supplied main names: EditMode **14158/13893/265/0** and unchanged
+PlayMode **1054/945/109/0** (total/passed/skipped/failed). These are forecasts, not results.
+At draft opening, stop without waiting; the owner relays CI completion. Phase C needs
+its own slot grant, and zero-dial pixel passthrough, sequence quality and cost remain
+unproved until those controls run.

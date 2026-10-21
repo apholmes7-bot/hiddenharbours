@@ -37,6 +37,13 @@ MonoBehaviour:
   SeakeepingMassFactor: 1.9
   SeakeepingLiveliness: 0.78
   SeakeepingDamping: 0.28
+  TrimHumpDegrees: 5.95
+  TrimPlaningDropDegrees: 3.45
+  TrimAccelDegreesPerMps2: 1.5
+  TrimDecelDegreesPerMps2: 1.5
+  TrimMaxBowUpDegrees: 0
+  TrimMaxBowDownDegrees: 0
+  TrimResponseSeconds: 0.5
   CameraWorldHeightMeters: 19
   DeckContainer: {fileID: 0}
   DeckContainerOffset: {x: 0.35, y: -0.9}

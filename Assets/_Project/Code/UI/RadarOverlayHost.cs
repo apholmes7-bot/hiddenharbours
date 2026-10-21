@@ -18,17 +18,13 @@ namespace HiddenHarbours.UI
     /// (<see cref="RadarLandEcho"/>). An empty scope over open water is the truth, and it is what this
     /// draws.</para>
     ///
-    /// <para><b>Flush in the brow's CENTRE slot by default; expanded is a choice</b> (the S4.5 rule and
-    /// the sounder/finder/plotter precedent). Clicking the mount EXPANDS it to a centred card, and only
-    /// there are the pushers live. Clicking away, clicking the mount again, or Esc collapses. One
-    /// raster, two presentations — the flush face and the expanded card are the same texture at two
-    /// rects, so they cannot disagree about what is out there.</para>
-    ///
-    /// <para><b>⚠ A dome compass takes this slot.</b> The radar's mount IS the centre brow station the
-    /// dome binnacle displaces (<c>noviRig.js:453</c>), so a hull carrying both has nowhere to put the
-    /// scope and the instrument does not draw. That is stated once, in
-    /// <see cref="HelmInstrumentMountLayout.TryBrowRadarRect"/>, and this host simply falls back to its
-    /// own card the way every instrument does when it has no mount.</para>
+    /// <para><b>A housing in the band; raised is a choice</b> (H2, the sounder/finder/plotter
+    /// precedent). The radar's place on the helm is its named housing in the pilot bands, and pressing
+    /// it RAISES a centred card (<see cref="HelmBandLayout.RaisedCardRect"/>), where alone the pushers
+    /// are live. Pressing away, pressing the housing again, or Esc lowers it. Unraised, this host
+    /// draws nothing and turns no aerial. The band gives the compass and the radar a piece each, so
+    /// the dash's old displacement (a dome binnacle taking the radar's brow station,
+    /// <c>noviRig.js:453</c>) no longer leaves a radar without a housing.</para>
     ///
     /// <para><b>Perf (rule 7) — the one thing a radar makes harder than a chart.</b> A turning sweep
     /// changes the picture every frame, and so, more quietly, does a drifting boat re-measuring every
@@ -66,9 +62,9 @@ namespace HiddenHarbours.UI
     public sealed class RadarOverlayHost : MonoBehaviour
     {
         [Header("Canvas")]
-        [Tooltip("Sorting order of the radar canvas. Above the helm dash's own canvas (60), the " +
-                 "sounder/finder (62) and the chartplotter (63) — the radar mounts in a THIRD brow " +
-                 "slot, so all three instruments can be on screen at once and none should z-fight.")]
+        [Tooltip("Sorting order of the radar canvas. Above the helm band's own canvas (60), the " +
+                 "sounder/finder (62) and the chartplotter (63), so a raised card never z-fights " +
+                 "another instrument's.")]
         [SerializeField] private int _sortingOrder = 64;
 
         private static RadarOverlayHost _instance;
@@ -105,27 +101,22 @@ namespace HiddenHarbours.UI
         /// <summary>Which slot this host owns in the shared expansion arbiter.</summary>
         private const HelmInstrumentSlot Slot = HelmInstrumentSlot.Radar;
 
-        // The EXPANDED card as a WINDOW (2026-08-07 ruling). The flush face is part of the dash
-        // picture and follows the HELM window instead — it gets no chrome of its own.
-        private readonly BoatUiWindowController _window =
-            new BoatUiWindowController(BoatUiWindowId.Radar);
+        // True from the second frame of a raise: the press that raised the card was the band's, so
+        // the frame it rises must not read that same press as one on the card.
+        private bool _wasExpanded;
 
         /// <summary>The one host per play session (it self-installs and survives scene loads). Exposed so
         /// a PlayMode test can drive the host that is actually running rather than a second copy — a
         /// duplicate destroys itself in <c>Awake</c>.</summary>
         public static RadarOverlayHost Instance => _instance;
 
-        /// <summary>Blown up to its own card rather than flush in the brow's centre slot. Shared state,
-        /// so only one instrument is ever expanded. Exposed for tests.</summary>
+        /// <summary>Raised to its own card rather than only a housing in the band. Shared state, so
+        /// only one instrument is ever raised. Exposed for tests.</summary>
         public bool Expanded => HelmInstrumentExpansion.IsExpanded(Slot);
 
-        /// <summary>True while the instrument is on screen — i.e. this hull's helm actually carries a
-        /// radar. Exposed for tests.</summary>
-        public bool Showing => _cardGo != null && _cardGo.activeSelf;
-
-        /// <summary>True while the scope is drawing FLUSH in the brow's authored radar mount (the
-        /// default), false while it is expanded or has fallen back to its own card.</summary>
-        public bool FlushMounted { get; private set; }
+        /// <summary>True while the instrument is presented — this hull's helm actually carries a radar
+        /// (its housing in the band, or its card raised). Exposed for tests.</summary>
+        public bool Showing { get; private set; }
 
         /// <summary>How many rasters this host has done — the repaint-cost guard's evidence.</summary>
         public int RepaintCount { get; private set; }
@@ -204,7 +195,7 @@ namespace HiddenHarbours.UI
 
         private void OnDestroy()
         {
-            if (_instance == this) { _instance = null; _window.StandDown(); }
+            if (_instance == this) _instance = null;
             if (_texture != null) Destroy(_texture);
         }
 
@@ -217,33 +208,25 @@ namespace HiddenHarbours.UI
                 if (Expanded) HelmInstrumentExpansion.Collapse();
                 ForgetCursor();
                 _painted = false;
-                FlushMounted = false;
                 _land.Forget();
-                _window.StandDown();
-                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                StandDown();
                 return;
             }
 
-            // This instrument's WINDOW is hidden (hide-all or its own ×): stand down, and close any
-            // expansion rather than leaving an invisible card owning the pointer and Esc.
-            if (!_window.Shown)
+            // Hide-all (M): stand down, and lower any raised card rather than leaving an invisible
+            // one owning the pointer and Esc.
+            if (BoatUiWindows.AllHidden)
             {
                 if (Expanded) HelmInstrumentExpansion.Collapse();
-                FlushMounted = false;
-                _window.StandDown();
-                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                StandDown();
                 return;
             }
+            Showing = true;
 
-            // The flush face follows the HELM window (2026-08-07 ruling) — see SounderOverlayHost.
-            // The dome-compass fallback card (a radar with no brow station) is windowed as the
-            // EXPANDED presentation is not in play here: it only draws when not expanded, and it
-            // stands down with the dash like every flush face.
-            if (!Expanded && instruments.Fit.Rig != ConsoleRigKind.None
-                          && !BoatUiWindows.FlushMountsAvailable)
+            // Unraised, the housing in the band is the whole presentation: no sweep, no contacts.
+            if (!Expanded)
             {
-                FlushMounted = false;
-                _window.StandDown();
+                _wasExpanded = false;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -264,31 +247,24 @@ namespace HiddenHarbours.UI
                                              out bool hasBoat);
             ReadContacts(boat, hasBoat, in state, in cfg);
 
-            bool expanded = Expanded;
-            Rect card = GlassRect(expanded);
-            if (expanded)
-            {
-                // The expanded card is this instrument's WINDOW (2026-08-07): the player's layout
-                // goes over the shipped one, and the hit map scales with the same rect.
-                card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
-            }
-            else
-            {
-                _window.StandDown();   // flush face / fallback card: no chrome, no publication
-            }
-            bool visible = !expanded || _window.CardVisible;
-            if (_image.enabled != visible) _image.enabled = visible;
-
+            Rect card = HelmBandLayout.RaisedCardRect(RadarRigRender.W, RadarRigRender.H,
+                                                      HudScreen.Width, HudScreen.Height,
+                                                      HudBandLayout.ReservedTopPx());
             LayoutCard(card);
-            if (visible) Repaint(in state, regionId, hasBoat, in cfg);
+            Repaint(in state, regionId, hasBoat, in cfg);
+            HelmInstrumentExpansion.PublishRaisedCard(Slot, card);
 
-            if (expanded)
-            {
-                _window.LayoutChrome(_cardGo.transform.parent);
-                if (_window.HandlePointer(controlDragLive: false)) return;
-            }
-            if (BoatUiWindows.AnySession) return;   // a window drag owns the pointer
-            ReadPointer(instruments, save, in prefs, in cfg, in state, card, expanded);
+            bool raiseFrame = !_wasExpanded;
+            _wasExpanded = true;
+            if (raiseFrame) return;
+            ReadPointer(instruments, save, in prefs, in cfg, in state, card);
+        }
+
+        private void StandDown()
+        {
+            Showing = false;
+            _wasExpanded = false;
+            if (_cardGo.activeSelf) _cardGo.SetActive(false);
         }
 
         /// <summary>
@@ -422,31 +398,6 @@ namespace HiddenHarbours.UI
 
         // ---- layout -------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Where the glass draws this frame. FLUSH in the brow's authored radar mount is the default
-        /// (S4.5); EXPANDED is a centred card at the largest integer scale that fits.
-        ///
-        /// <para>The expanded rect is also the FALLBACK for a frame with no dash published, and — unlike
-        /// the other instruments — for a real shipped case: a hull with a DOME compass has no centre brow
-        /// station, so a radar fitted alongside one has no flush mount at all and lives entirely on its
-        /// own card. That is the honest presentation of an instrument with nowhere to sit.</para>
-        /// </summary>
-        private Rect GlassRect(bool expanded)
-        {
-            if (!expanded && HelmOverlayHost.TryDashCard(out Rect dash, out HelmFit fit)
-                          && HelmInstrumentMountLayout.TryBrowRadarRect(in fit, dash, out Rect mount))
-            {
-                FlushMounted = true;
-                return mount;
-            }
-            FlushMounted = false;
-            Rect card = RadarOverlayLayout.ExpandedCardRect(Screen.width, Screen.height);
-            // Keep the expanded glass out from under the always-on band (S4.5) — it slides down before
-            // it shrinks, because this is the state the instrument is READ in.
-            return HudBandLayout.FitBelowBand(card, Screen.width, Screen.height,
-                                              HudBandLayout.ReservedTopPx());
-        }
-
         private void LayoutCard(Rect card)
         {
             _cardRect.anchoredPosition = new Vector2(card.xMin, card.yMin);
@@ -549,11 +500,11 @@ namespace HiddenHarbours.UI
         // ---- pointer + keys ------------------------------------------------------------------------
 
         /// <summary>
-        /// The selection model, the sounder's and the plotter's exactly (S4.5). FLUSH: the whole face is
-        /// one button — click it to EXPAND, and nothing else is live, so a glance at the dash can never
-        /// move the cursor. EXPANDED: the three pushers and the scope work, and a click ANYWHERE outside
-        /// collapses. A click inside that lands on no control does nothing rather than closing, so a
-        /// near-miss on a pusher is never punished. Esc collapses from anywhere.
+        /// The raised card's pointer, the sounder's and the plotter's exactly (H2): the three pushers
+        /// and the scope work, and a press inside that lands on no control does nothing rather than
+        /// lowering, so a near-miss on a pusher is never punished. Esc lowers from anywhere. A press
+        /// OUTSIDE the card is the band's to route while the band is up; with no band it is this card's
+        /// click-away.
         ///
         /// <para><b>A click on the scope drops the EBL/VRM cursor</b> — the marine "where is that, and
         /// how far?" read, and the direct analogue of the chartplotter's measure line (S6 PR 4). The rig
@@ -561,10 +512,10 @@ namespace HiddenHarbours.UI
         /// puts the cursor away, the same "click to stow the tool" gesture the measure line uses.</para>
         /// </summary>
         private void ReadPointer(IHelmInstruments instruments, SaveData save, in RadarPrefs prefs,
-                                 in RadarSettings cfg, in RadarRigState st, Rect card, bool expanded)
+                                 in RadarSettings cfg, in RadarRigState st, Rect card)
         {
             var kb = Keyboard.current;
-            if (expanded && kb != null && kb.escapeKey.wasPressedThisFrame)
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 HelmInstrumentExpansion.Collapse();
                 return;
@@ -576,19 +527,13 @@ namespace HiddenHarbours.UI
             Vector2 pos = mouse.position.ReadValue();
 
             // A press on ANY window's chrome is that window's business — never this instrument's
-            // expand, collapse-away or controls (2026-08-07 ruling).
+            // controls or click-away (2026-08-07 ruling).
             if (BoatUiWindows.OverAnyChrome(pos)) return;
 
-            bool inCard = card.Contains(pos);
-
-            if (!expanded)
+            if (!card.Contains(pos))
             {
-                if (inCard) HelmInstrumentExpansion.Click(Slot);
-                return;
-            }
-            if (!inCard)
-            {
-                HelmInstrumentExpansion.Click(HelmInstrumentSlot.None);   // click-away → collapse
+                if (!HelmOverlayHost.BandUp)
+                    HelmInstrumentExpansion.Click(HelmInstrumentSlot.None);   // click-away → lower
                 return;
             }
 
@@ -664,35 +609,6 @@ namespace HiddenHarbours.UI
             _cursorOn = on;
             _cursorBearing = bearing;
             _cursorRangeNM = rangeNM;
-        }
-    }
-
-    /// <summary>
-    /// Where the radar's EXPANDED card lands on screen — its own helper because the instrument is
-    /// PORTRAIT (480×660) where the plotter is landscape, so the plotter's width/height budget would
-    /// pick a different scale.
-    ///
-    /// <para><b>Integer scale, the arc's standing rule</b> (<see cref="ChartplotterOverlayLayout"/>):
-    /// these rigs are pixel art rastered at native size and blitted, and a fractional scale resamples
-    /// the 3×5 font into mush. A 1× card on a small screen is honest and crisp.</para>
-    /// </summary>
-    public static class RadarOverlayLayout
-    {
-        /// <summary>The card's share of the screen. Tall and narrow: the instrument is portrait, so the
-        /// binding constraint is height, and the width budget only has to not crowd the dash.</summary>
-        private const float WidthFrac = 0.45f, HeightFrac = 0.82f;
-
-        /// <summary>The expanded card's screen rect: the instrument at the largest INTEGER scale that
-        /// still fits the budget.</summary>
-        public static Rect ExpandedCardRect(float screenW, float screenH)
-        {
-            int scale = 1;
-            while ((scale + 1) * RadarRigRender.W <= screenW * WidthFrac
-                   && (scale + 1) * RadarRigRender.H <= screenH * HeightFrac)
-                scale++;
-
-            float w = RadarRigRender.W * scale, h = RadarRigRender.H * scale;
-            return new Rect((screenW - w) * 0.5f, (screenH - h) * 0.5f, w, h);
         }
     }
 }

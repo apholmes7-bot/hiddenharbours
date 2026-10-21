@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_166
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_166
+  Status: 1
+  SplitFrom: wall.stp_038
+  Follows: wall.stp_038
+  Rock: sandstone
+  Class: 5
+  Aspect: S
+  Batter: steep
+  Brow:
+  - {x: 90.10974, y: -69.01008}
+  - {x: 89.86092, y: -69.03459}
+  Toe:
+  - {x: 90.28402, y: -70.76764}
+  - {x: 90.03297, y: -70.79196}
+  DropMetres:
+  - 8.038061
+  - 8.083586
+  ToeElevations:
+  - -2.0380607
+  - -2.0835853
+  Stations:
+  - 22
+  - 23
+  BrowFrom:
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  BrowPass9:
+  - 5.791219
+  - 5.8127646
+  ToePass9:
+  - -2.0351353
+  - -2.0672975
+  SourceList: 'walls-by-real-id.json (the Art desk, 2026-10-01; st-peters-one-scene-package-2026-10-01/desk)'
+  SourceListSha256: b52263f4975429884468eed8a3070a1b0d8c30ee6558f7e4121262967ffd4f46
+  SourceRow: 38
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Cut from 038, re-lined on the import: its stations k22-k23. The list''s row 038 (East Ledges): re-lined.'

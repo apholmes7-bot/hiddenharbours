@@ -197,12 +197,59 @@ namespace HiddenHarbours.Core
         private static IRadarContacts _radarContacts;
 
         /// <summary>
+        /// The birds near the view right now (<see cref="IBirdPresence"/>) — written by the flock that
+        /// draws them, read by the audio that voices them, so the gull calls come from the gulls and
+        /// neither module names the other (rule 4).
+        ///
+        /// <para><b>⚠ NEVER null, like <see cref="RadarContacts"/> — read it without a null check.</b>
+        /// Absent a registered flock it is <see cref="EmptyBirdPresence"/>, an empty sky: no birds near,
+        /// so nothing calls. That is the right shipped behaviour on the title screen, in a bare scene and
+        /// under a fixture that has stood the flock down.</para>
+        ///
+        /// <para>Same lifetime and discipline as <see cref="RadarContacts"/> otherwise: the flock
+        /// registers itself when enabled and <b>must clear this on disable</b> (assign null — the getter
+        /// turns that back into the empty sky) so a disabled flock is a silent one.</para>
+        /// FLAG lead-architect: new Core contract (the bird-presence seam).
+        /// </summary>
+        public static IBirdPresence BirdPresence
+        {
+            get
+            {
+                IBirdPresence model = _birdPresence;
+                // ⚠️ NEVER `_birdPresence ?? EmptyBirdPresence.Instance` here — the FishSchools reasoning
+                // verbatim. A flock is a MonoBehaviour, and once it is destroyed the reference is Unity's
+                // FAKE-null: `??`/`?.` bypass UnityEngine.Object's overloaded `==`, so a DESTROYED flock
+                // would read as live and every call through it would throw.
+                if (model is UnityEngine.Object producer && producer == null) return EmptyBirdPresence.Instance;
+                return model != null ? model : EmptyBirdPresence.Instance;
+            }
+            set => _birdPresence = value;
+        }
+
+        private static IBirdPresence _birdPresence;
+
+        /// <summary>
         /// The versioned save system (VS-08). Self-installing and persistent (SaveService bootstraps
         /// itself before the first scene), so unlike the others it is not wired by GameRoot. The world
         /// reads/writes persisted flags through it (the onboarding-flags consolidation off PlayerPrefs).
         /// Optional — null before the bootstrap runs (e.g. EditMode) — so consumers must null-check.
         /// </summary>
         public static ISaveService Save { get; set; }
+
+        /// <summary>
+        /// The player's look (character PR 2b, ADR 0051): the seam a picker previews and keeps a
+        /// <see cref="CharacterRecipe"/> through, over <see cref="Save"/> and the shipped builder. Never
+        /// null: nothing has to wire it, so a default <see cref="PlayerAppearance"/> is made on first read;
+        /// a test assigns its own. Cleared by <see cref="Reset"/>, so an open preview never outlives the
+        /// session that opened it (enter-play-mode options keep statics alive between plays).
+        /// </summary>
+        public static IPlayerAppearance Appearance
+        {
+            get => _appearance ??= new PlayerAppearance();
+            set => _appearance = value;
+        }
+
+        private static IPlayerAppearance _appearance;
 
         /// <summary>
         /// The active region's terrain-elevation source — the "height map" the tidal-exposure seam reads
@@ -261,6 +308,63 @@ namespace HiddenHarbours.Core
         /// wiping live subscribers there would silently unhook components that are still enabled.</para>
         /// </summary>
         public static event System.Action TidalTerrainChanged;
+
+        /// <summary>
+        /// The active region's <b>still water</b> — the fresh water that stands above the tide (ponds, a
+        /// brook's fresh reach), as a level per plan point (<see cref="IStillWater"/>, ADR 0046). The
+        /// region's painted terrain registers it on enable and clears it on disable, beside
+        /// <see cref="TidalTerrain"/>; its readers compose it with the tide through
+        /// <see cref="StillWaterLevels.Compose"/>: <b>water = max(tide, still)</b>.
+        ///
+        /// <para><b>Never null.</b> Absent a registrant — every region without a still map, a bare scene,
+        /// EditMode — this reads <see cref="EmptyStillWater.Instance"/>, no still water anywhere, and every
+        /// composition returns the tide bit for bit. Assign null to clear it; the getter turns that back
+        /// into the empty map, as <see cref="FishSchools"/> does.</para>
+        ///
+        /// <para><b>⚠ Assigning raises <see cref="StillWaterChanged"/></b>, for the one kind of consumer
+        /// that cannot ask per query: the render, which publishes the still map as shader globals and must
+        /// re-publish when the region's still water comes or goes.</para>
+        /// FLAG lead-architect: new Core contract (the still-water seam, ADR 0046).
+        /// </summary>
+        public static IStillWater StillWater
+        {
+            get
+            {
+                IStillWater still = _stillWater;
+                // Never `??` here, for FishSchools' reason: a producer that is a UnityEngine.Object reads
+                // FAKE-null once destroyed, which `??` does not see. Ask the Unity way first.
+                if (still is UnityEngine.Object producer && producer == null) return EmptyStillWater.Instance;
+                return still != null ? still : EmptyStillWater.Instance;
+            }
+            set
+            {
+                // Reference equality, as TidalTerrain: the raise re-publishes the render's globals, so a
+                // self-assignment must not re-raise.
+                if (ReferenceEquals(_stillWater, value)) return;
+                _stillWater = value;
+                StillWaterChanged?.Invoke();
+            }
+        }
+
+        private static IStillWater _stillWater;
+
+        /// <summary>
+        /// True when <paramref name="still"/> is the still water registered right now — the RAW slot, so a
+        /// registrant can clear only its own registration on teardown. (Comparing against
+        /// <see cref="StillWater"/> would compare against the getter's stand-in, not the slot.)
+        /// </summary>
+        public static bool IsRegisteredStillWater(IStillWater still)
+            => still != null && ReferenceEquals(_stillWater, still);
+
+        /// <summary>
+        /// Raised whenever <see cref="StillWater"/> starts pointing at a different still water (including
+        /// at null on teardown). For consumers that publish the still map rather than ask it per query —
+        /// the water render's shader globals.
+        ///
+        /// <para><b>Subscribers must unsubscribe</b>; <see cref="Reset"/> does not clear the list, for
+        /// <see cref="TidalTerrainChanged"/>'s reason.</para>
+        /// </summary>
+        public static event System.Action StillWaterChanged;
 
         /// <summary>
         /// The ON-FOOT PLAYER's transform — "where the person walking this world actually is". The
@@ -537,6 +641,17 @@ namespace HiddenHarbours.Core
         public static AnchorSettings Anchor =>
             Config != null ? Config.Anchor : AnchorSettings.Default;
 
+        /// <summary>The HULL-TRIM policy (the bow answers her speed — owner 2026-09-21; where the hump
+        /// sits, and the limits and lag a hull that authors none inherits), same contract as
+        /// <see cref="WaveField"/> including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so
+        /// dragging the trim sliders in play moves the next tick's bow. Falls back to
+        /// <see cref="HullTrimSettings.Default"/> with no config wired. Read by <c>BoatController</c>,
+        /// which publishes the target its one drawer eases after.
+        /// FLAG lead-architect: new Core accessor (the trim block, the WaveField pattern).</summary>
+        public static HullTrimSettings HullTrim =>
+            Config != null ? Config.HullTrim : HullTrimSettings.Default;
+
         /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
         /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
         /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a
@@ -649,30 +764,43 @@ namespace HiddenHarbours.Core
         ///
         /// <para><b>Resolve this ONCE per consumer per tick</b> — at a hull's centre, not per probe.
         /// The march is <see cref="WaveFetch.MarchSteps"/> terrain samples and the envelope does not
-        /// meaningfully vary across a hull (see <see cref="WaveFetch"/>'s slowly-varying-envelope
-        /// note).</para>
+        /// is shared by the probes. Stage B records the approximation and its limits in ADR 0018.</para>
         /// </summary>
         public static float FetchEnvelopeAt(UnityEngine.Vector2 worldPos)
         {
-            WaveFetchSettings settings = WaveFetch;
-            if (settings.Strength <= 0f) return 1f;      // cheapest OFF: no service reads at all
-            IEnvironmentService environment = Environment;
-            if (environment == null) return 1f;
-            IGameClock clock = Clock;
-            if (clock == null) return 1f;
-            return WaveFetch_EnvelopeAt(worldPos, environment, clock, in settings);
+            WaveFetchSample fetch = FetchAt(worldPos);
+            if (fetch.Fraction >= 1f) return 1f;
+            WaveTrains trains;
+            if (!SharedWaveField.TryGet(out trains))
+            {
+                var environment = Environment;
+                if (environment == null || Clock == null) return 1f;
+                var field = WaveField;
+                var sample = environment.Sample();
+                trains = environment is IWaveWindSource history
+                    ? WaveMemory.TrainsAt(history, Clock.TotalSeconds, in field)
+                    : WaveMath.TrainsFrom(sample.WindVector, sample.SeaState01, in field);
+            }
+            return fetch.ForWavelength(trains.Dominant.Wavelength);
         }
 
-        private static float WaveFetch_EnvelopeAt(UnityEngine.Vector2 worldPos,
-                                                  IEnvironmentService environment, IGameClock clock,
-                                                  in WaveFetchSettings settings)
+        /// <summary>Shared march bearing: short-window wind, matching the drawn chop.</summary>
+        public static UnityEngine.Vector2 FetchWindAt(IEnvironmentService environment, double time,
+                                                       in WaveFieldSettings field)
+            => environment is IWaveWindSource history
+                ? WaveMemory.ShortWind(history, time, in field).Wind : environment.Sample().WindVector;
+
+        /// <summary>Clear-reach fraction and data for each train; no allocation or saved state.</summary>
+        public static WaveFetchSample FetchAt(UnityEngine.Vector2 worldPos)
         {
-            EnvironmentSample sample = environment.Sample();
-            float waterLevel = environment.WaterLevelAt(clock.TotalSeconds);
-            // ⚠️ Fully qualified on purpose: the SETTINGS property above is also called `WaveFetch`,
-            // so the bare name binds to it and `WaveFetchSettings` has no EnvelopeAt.
-            return HiddenHarbours.Core.WaveFetch.EnvelopeAt(worldPos, sample.WindVector, waterLevel,
-                                                            TidalTerrain, in settings);
+            WaveFetchSettings settings = WaveFetch;
+            if (settings.Strength <= 0f) return WaveFetchSample.Open;
+            IEnvironmentService environment = Environment;
+            IGameClock clock = Clock;
+            if (environment == null || clock == null) return WaveFetchSample.Open;
+            WaveFieldSettings field = WaveField;
+            return HiddenHarbours.Core.WaveFetch.At(worldPos, FetchWindAt(environment, clock.TotalSeconds, in field),
+                environment.WaterLevelAt(clock.TotalSeconds), TidalTerrain, in settings);
         }
 
         /// <summary>
@@ -777,13 +905,6 @@ namespace HiddenHarbours.Core
         public static HelmWheelSettings HelmWheel =>
             Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
 
-        /// <summary>The boat-UI windows' chrome tunables (the 2026-08-07 windowing ruling — the
-        /// hover title strip, its buttons, the corner grip, and the resize/collapse scale bounds).
-        /// Same contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline
-        /// (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).</summary>
-        public static BoatUiWindowSettings BoatUiWindowing =>
-            Config != null ? Config.BoatUiWindows : BoatUiWindowSettings.Default;
-
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
@@ -802,6 +923,87 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: new Core contract (the ADR 0031 world-art style seam).</summary>
         public static bool HullKeylineFlood =>
             Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
+
+        /// <summary>The ground's underwater clip (W4-4a): does the terrain skip its shading where the
+        /// displaced sea covers it opaquely this frame? Same contract as <see cref="HullKeylineFlood"/>,
+        /// including the <c>Config != null</c> discipline. Falls back to
+        /// <see cref="GameConfig.DefaultTerrainUnderwaterClip"/> — <b>OFF</b> — so an unwired scene draws
+        /// the ground everywhere, as before. Read per camera per frame by <c>IsoFacetHullFeature</c>.
+        /// FLAG lead-architect: new Core contract (the W4-4 shallows-floor seam).</summary>
+        public static bool TerrainUnderwaterClip =>
+            Config != null ? Config.TerrainUnderwaterClip : GameConfig.DefaultTerrainUnderwaterClip;
+
+        /// <summary>The props under the water (W4-4c): does the sea draw a shore plant wholly under the
+        /// live water through its own column, over the floor? Same contract as
+        /// <see cref="TerrainUnderwaterClip"/>, including the <c>Config != null</c> discipline. Falls back
+        /// to <see cref="GameConfig.DefaultShallowsSubmergedProps"/> — <b>OFF</b> — so an unwired scene
+        /// draws the plants as before. Read per camera per frame by <c>IsoFacetHullFeature</c> and on the
+        /// tide tick by <c>ShorePlantTideView</c>.</summary>
+        public static bool ShallowsSubmergedProps =>
+            Config != null ? Config.ShallowsSubmergedProps : GameConfig.DefaultShallowsSubmergedProps;
+
+        public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
+        public static int HullReflectionResolutionDivisor =>
+            Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;
+        public static int HullReflectionMaxHulls =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxHulls)
+                : GameConfig.DefaultHullReflectionMaxHulls;
+        public static int HullReflectionMaxPackets =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxPackets)
+                : GameConfig.DefaultHullReflectionMaxPackets;
+        public static int HullReflectionMaxTriangles =>
+            Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxTriangles)
+                : GameConfig.DefaultHullReflectionMaxTriangles;
+
+        /// <summary>Do rig 9 figures blink (character PR 2a)? Same contract as
+        /// <see cref="HullKeylineFlood"/>, including the <c>Config != null</c> discipline. Falls back
+        /// to <see cref="GameConfig.DefaultCharacterBlink"/> (ON). Read every pose by the figure
+        /// presenters. Presentation only: no sim system reads it or the blink's seed.</summary>
+        public static bool CharacterBlink =>
+            Config != null ? Config.CharacterBlink : GameConfig.DefaultCharacterBlink;
+
+        /// <summary>Do figures turn their neck and head toward what they look at? Falls back to
+        /// <see cref="GameConfig.DefaultCharacterHeadLook"/> (ON). Read every pose.</summary>
+        public static bool CharacterHeadLook =>
+            Config != null ? Config.CharacterHeadLook : GameConfig.DefaultCharacterHeadLook;
+
+        /// <summary>Do the open eyes finish a look the head leaves undone? Falls back to
+        /// <see cref="GameConfig.DefaultCharacterEyeLook"/> (ON). Read every pose.</summary>
+        public static bool CharacterEyeLook =>
+            Config != null ? Config.CharacterEyeLook : GameConfig.DefaultCharacterEyeLook;
+
+        /// <summary>How near, in the figure's metres on its own ground, a look target must be. Falls
+        /// back to <see cref="GameConfig.DefaultCharacterLookRadiusMetres"/>.</summary>
+        public static float CharacterLookRadiusMetres =>
+            Config != null ? Config.CharacterLookRadiusMetres : GameConfig.DefaultCharacterLookRadiusMetres;
+
+        /// <summary>How high above a target's feet a figure aims, in the figure's metres. Falls back
+        /// to <see cref="GameConfig.DefaultCharacterLookTargetHeightMetres"/>.</summary>
+        public static float CharacterLookTargetHeightMetres =>
+            Config != null ? Config.CharacterLookTargetHeightMetres
+                           : GameConfig.DefaultCharacterLookTargetHeightMetres;
+
+        /// <summary>Are rig 9 figures inked by the rig's own rules (the keyline ring on empty pixels
+        /// and the one-tone depth edge)? Falls back to <see cref="GameConfig.DefaultMeshFigureKeyline"/>
+        /// (ON). Read every frame by the figure renderer; OFF is the hull's rules, as before PR 2a.
+        /// FLAG lead-architect: new Core contract (the figure-ink seam, beside ADR 0031's).</summary>
+        public static bool MeshFigureKeyline =>
+            Config != null ? Config.MeshFigureKeyline : GameConfig.DefaultMeshFigureKeyline;
+
+        /// <summary>Are the mesh figures drawn at the art's own pixel size (the figure pixel look,
+        /// route 1)? Falls back to <see cref="GameConfig.DefaultFigurePixelTarget"/> (ON). Read every
+        /// frame by the figure renderers and the hull feature; OFF is the picture before the look,
+        /// byte for byte.
+        /// FLAG lead-architect: new Core contract (the figure pixel look's switch).</summary>
+        public static bool FigurePixelTarget =>
+            Config != null ? Config.FigurePixelTarget : GameConfig.DefaultFigurePixelTarget;
+
+        /// <summary>How many facings a figure turns through while the pixel look is ON; 0 is smooth.
+        /// Never below 0. Falls back to <see cref="GameConfig.DefaultFigureHeadingSteps"/> (0, the
+        /// owner's D2 of 10-15). Read through <see cref="FigureHeadingDial.LiveSteps"/>.
+        /// FLAG lead-architect: new Core contract (the figure heading dial).</summary>
+        public static int FigureHeadingSteps =>
+            System.Math.Max(0, Config != null ? Config.FigureHeadingSteps : GameConfig.DefaultFigureHeadingSteps);
 
         /// <summary>The boat-glow passthrough (owner's ruling, 2026-09-03 — "the glows should be
         /// constrained to their space, if its interior it should be confined to the cabin with the glow
@@ -871,6 +1073,21 @@ namespace HiddenHarbours.Core
             Config != null ? Config.FoliageSilhouetteStrength
                            : GameConfig.DefaultFoliageSilhouetteStrength;
 
+        /// <summary>The calendar's season length in days, never below 1. Same contract as
+        /// <see cref="SecondsPerDay"/>, including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
+        /// <see cref="GameConfig.DefaultDaysPerSeason"/>.</summary>
+        public static int DaysPerSeason =>
+            System.Math.Max(1, Config != null ? Config.DaysPerSeason : GameConfig.DefaultDaysPerSeason);
+
+        /// <summary>The tree-snow calendar (<see cref="FoliageSnowMath"/>): the day the first snow settles,
+        /// how long the cover builds, when the melt starts and how long it runs. Same contract as
+        /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline. Falls back to
+        /// <see cref="FoliageSnowSettings.Default"/>, the proposed shape, so an unwired scene still
+        /// snows on the same days the shipped asset does.</summary>
+        public static FoliageSnowSettings FoliageSnow =>
+            Config != null ? Config.FoliageSnow : FoliageSnowSettings.Default;
+
         /// <summary>
         /// Rebuilds a <see cref="CatchItem"/> from a stable species id — the save-restore's species
         /// resolver (M1 §7.3: the save carries the reference, the Def's stats re-cache at load).
@@ -905,8 +1122,11 @@ namespace HiddenHarbours.Core
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
+            BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
             Save = null;
+            Appearance = null;           // → a fresh default on next read; drops any open preview
             TidalTerrain = null;
+            StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
             Hands = null;
             CatchHands = null;

@@ -1,0 +1,849 @@
+{
+  "tool": "check-renders",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "images": [
+    {
+      "file": "renders/1x/fisher.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/fisher.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/fisher.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/fisher.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/fisher.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/fisher.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/fisher.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/fisher.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/fisher.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/fisher.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/fisher.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/fisher.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/ginny.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/ginny.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/ginny.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/ginny.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/ginny.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/ginny.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/ginny.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/ginny.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/ginny.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/ginny.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/ginny.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/ginny.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/skipper.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/skipper.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/skipper.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/skipper.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/skipper.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/skipper.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/skipper.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/skipper.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/skipper.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/skipper.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/skipper.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/skipper.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/nan.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/nan.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/nan.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/nan.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/nan.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/nan.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/nan.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/nan.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/nan.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/nan.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/nan.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/nan.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/deckboss.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/deckboss.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/deckboss.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/deckboss.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/deckboss.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/deckboss.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/deckboss.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/deckboss.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/deckboss.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/deckboss.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/deckboss.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/deckboss.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/packer.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/packer.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/packer.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/packer.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/packer.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/packer.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/packer.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/packer.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/packer.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/packer.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/packer.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/packer.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/cutter.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/cutter.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/cutter.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/cutter.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/cutter.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/cutter.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/cutter.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/cutter.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/cutter.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/cutter.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/cutter.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/cutter.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/hand.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/hand.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/hand.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/hand.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/hand.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/hand.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/hand.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/hand.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/hand.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/hand.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/hand.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/hand.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/boy.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/boy.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/boy.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/boy.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/boy.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/boy.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/boy.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/boy.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/boy.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/boy.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/boy.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/boy.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/girl.idle.front.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/girl.idle.front.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/girl.idle.back.png",
+      "size": "384x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/girl.idle.back.png",
+      "size": "1536x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/girl.walk.front.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/girl.walk.front.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/girl.walk.back.png",
+      "size": "512x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/girl.walk.back.png",
+      "size": "2048x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/girl.dig.front.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/girl.dig.front.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/1x/girl.dig.back.png",
+      "size": "640x92",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    },
+    {
+      "file": "renders/4x/girl.dig.back.png",
+      "size": "2560x368",
+      "pixelsDiffer": 0,
+      "rgbaSha256Ok": true,
+      "pngSha256Ok": true
+    }
+  ]
+}

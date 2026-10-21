@@ -1,0 +1,16 @@
+# stamps — passed
+
+treeIsoRig4.js    a25cfba1e79d1a2b46a4a92a56ff4877237f3f38f908eb3b02453efe3308e18b
+weatherSky.js     38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062
+_treeGameplay.js  768ed2e1d88abb6c3cac0e37dd88bf71f47355a58d8e1b7df56b79b26eea88ab
+
+RedSpruce       hashes match · self-test 142 checks, 0 failed · generated 2026-09-23
+BlackSpruce     hashes match · self-test 134 checks, 0 failed · generated 2026-09-23
+BalsamFir       hashes match · self-test 120 checks, 0 failed · generated 2026-09-23
+WhitePine       hashes match · self-test 156 checks, 0 failed · generated 2026-09-23
+WhiteCedar      hashes match · self-test 102 checks, 0 failed · generated 2026-09-23
+Tamarack        hashes match · self-test 148 checks, 0 failed · generated 2026-09-23
+WhiteBirch      hashes match · self-test 164 checks, 0 failed · generated 2026-09-23
+RedMaple        hashes match · self-test 164 checks, 0 failed · generated 2026-09-23
+RedOak          hashes match · self-test 164 checks, 0 failed · generated 2026-09-23
+TremblingAspen  hashes match · self-test 164 checks, 0 failed · generated 2026-09-23

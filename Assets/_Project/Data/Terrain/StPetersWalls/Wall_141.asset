@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_141
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.stp_141
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: SE
+  Batter: wall
+  Brow:
+  - {x: 213.75, y: 53.42865}
+  - {x: 213.77026, y: 53.73239}
+  - {x: 214.07509, y: 53.75}
+  - {x: 214.25, y: 53.825096}
+  - {x: 214.2303, y: 54.121666}
+  - {x: 214.44633, y: 54.26695}
+  - {x: 214.72154, y: 54.25}
+  - {x: 214.75, y: 54.471542}
+  - {x: 214.80122, y: 54.763355}
+  - {x: 215.118, y: 54.75}
+  - {x: 215.25, y: 54.86799}
+  - {x: 215.26189, y: 55.153297}
+  - {x: 215.51443, y: 55.25}
+  - {x: 215.75, y: 55.264435}
+  Toe:
+  - {x: 214.2505, y: 53.01392}
+  - {x: 214.26523, y: 53.237415}
+  - {x: 214.489, y: 53.248814}
+  - {x: 214.77628, y: 53.363533}
+  - {x: 214.77626, y: 53.607433}
+  - {x: 214.91603, y: 53.74793}
+  - {x: 215.20409, y: 53.742893}
+  - {x: 215.28047, y: 54.01481}
+  - {x: 215.32837, y: 54.229855}
+  - {x: 215.52849, y: 54.24603}
+  - {x: 215.75159, y: 54.45458}
+  - {x: 215.7627, y: 54.664223}
+  - {x: 215.97441, y: 54.722343}
+  - {x: 216.25117, y: 54.775734}
+  DropMetres:
+  - 10.444111
+  - 10.353781
+  - 10.420162
+  - 10.450237
+  - 10.363163
+  - 10.326599
+  - 10.35702
+  - 10.288338
+  - 10.238918
+  - 10.285298
+  - 10.320635
+  - 10.255477
+  - 10.359041
+  - 10.427509
+  ToeElevations:
+  - 0.55587363
+  - 0.6314202
+  - 0.5798223
+  - 0.5497472
+  - 0.6368216
+  - 0.6733852
+  - 0.6429647
+  - 0.7116467
+  - 0.76106644
+  - 0.7146865
+  - 0.6793501
+  - 0.69719124
+  - 0.6409434
+  - 0.57247573
+  Stations:
+  - 239
+  - 240
+  - 241
+  - 242
+  - 243
+  - 244
+  - 245
+  - 246
+  - 247
+  - 248
+  - 249
+  - 250
+  - 251
+  - 252
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 
+  SourceListSha256: 
+  SourceRow: -1
+  MeasuredOn: 'the ground file''s import (Phase A, fix 1: the Head''s ring at +10.9 m)'
+  FaceNeeded: 'SE wall: a new face: no St Peters wall wears SE wall'
+  Why: 'Held for the Head''s ring (fix 1), a forecast: no scene object. Its lines are Phase A''s on the import, ring stations 239 to 252; the ring''s own PR builds it.'

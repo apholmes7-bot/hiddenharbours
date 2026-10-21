@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -63,19 +65,14 @@ namespace HiddenHarbours.Tests.RigBaking
         /// baked them, and if they were already present it must NOT have re-baked (a 30 s bake on every
         /// build, overwriting a rock the owner may have chosen from the alternate menu items).
         ///
-        /// <para>⚠ The self-heal is the v10 look's. In the px look a region builder cannot wire the
-        /// faces yet (it loads each wall's colour by its v10 name until the band's field is renamed, a
-        /// later PR), so <c>EnsureBaked</c> refuses instead — pinned by the next test in either shipped
-        /// look. Once the owner has banked px, this one reports INCONCLUSIVE with that reason: its
-        /// premise, a shipped look that heals, no longer holds.</para>
+        /// <para>It runs in whichever look the shipped material is in: v10 bakes v10, and once the owner
+        /// has banked px it bakes px — then the one CI test that runs a real px bake end to end. Both
+        /// region wall builders wire the colour slot by the same look
+        /// (<see cref="BothRegionWallBuildersAskTheCatalogForTheColourChannel"/>).</para>
         /// </summary>
         [Test]
         public void EnsureBakedLeavesTheCheckoutTextured_AndDoesNotReBakeWhenItAlreadyIs()
         {
-            Assume.That(!CliffBakeMenu.IsPxLook,
-                "the shipped cliff material is in the px look, where EnsureBaked refuses by design until the " +
-                "band's colour field is renamed; InThePxLookEnsureBakedRefuses_AndNamesTheWayBack pins that");
-
             bool wasBaked = CliffBakeMenu.IsBaked;
 
             bool baked = CliffBakeMenu.EnsureBaked();
@@ -105,19 +102,137 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// ⚠ <b>In the px look the self-heal REFUSES — loudly, and with the way back.</b> Both region
-        /// builders wire each wall's colour by its v10 name (<c>_unlit</c>), and the px bake has moved
-        /// that file to <c>_index</c>, so a build in the px look would stand the coast up with no colour
-        /// on any wall and nothing saying why. The refusal is the loud version, and its message names the
-        /// two menu items the way back runs through.
-        ///
-        /// <para>The look is the shipped material's keyword, so this turns it on IN MEMORY on the loaded
-        /// asset when the material ships in v10, and in a <c>finally</c> turns it back off and clears the
-        /// dirty flag it raised. <c>EnsureBaked</c> refuses before it bakes or saves anything, so nothing
-        /// here writes the asset, and nothing is left for a later save to write either.</para>
+        /// The colour slot holds one file per look — <c>_unlit</c> in v10, the px bake's <c>_index</c>
+        /// (moved into the slot, GUID and all) — and it is the first of each look's three channels.
         /// </summary>
         [Test]
-        public void InThePxLookEnsureBakedRefuses_AndNamesTheWayBack()
+        public void TheColourChannelIsIndexInPxAndUnlitInV10()
+        {
+            Assert.AreEqual("_unlit", CliffCatalog.ColourChannel(false), "the v10 colour slot is not _unlit");
+            Assert.AreEqual("_index", CliffCatalog.ColourChannel(true), "the px colour slot is not _index");
+            Assert.AreEqual(CliffCatalog.UnlitChannel, CliffCatalog.ColourChannel(false));
+            Assert.AreEqual(CliffCatalog.IndexChannel, CliffCatalog.ColourChannel(true));
+            Assert.AreEqual(CliffCatalog.LiveChannels[0], CliffCatalog.ColourChannel(false),
+                "the v10 bake's colour channel is not the one the helper names");
+            Assert.AreEqual(CliffCatalog.PxLiveChannels[0], CliffCatalog.ColourChannel(true),
+                "the px bake's colour channel is not the one the helper names");
+        }
+
+        /// <summary>
+        /// ⚠ <b>A SOURCE guard, because CI cannot see the wiring any other way.</b> The bake root is
+        /// gitignored, so on CI a wall build finds no faces and the colour slot is null in either look —
+        /// a behavioural test cannot tell a builder that asks the look from one that spells
+        /// <c>_unlit</c>, and a builder that spells it wires nothing in px (every wall uncoloured, with a
+        /// warning per chunk). So each builder must name neither colour file and ask the catalog, once.
+        /// The real wiring is the plates' (<c>CliffPxLookPlatePlayTests</c>, on a GPU).
+        /// </summary>
+        [Test]
+        public void BothRegionWallBuildersAskTheCatalogForTheColourChannel()
+        {
+            foreach (string builder in new[]
+                     {
+                         "Assets/_Project/Code/App/Editor/NineMileCreekCliffWalls.cs",
+                         "Assets/_Project/Code/App/Editor/StPetersCliffWalls.cs",
+                     })
+            {
+                string path = Path.Combine(RigCatalog.RepoRoot, builder);
+                Assert.IsTrue(File.Exists(path), $"{builder} is not where this guard reads it");
+                string source = File.ReadAllText(path);
+
+                foreach (string literal in new[] { "\"_unlit\"", "\"_index\"" })
+                    StringAssert.DoesNotContain(literal, source,
+                        $"{builder} spells the colour slot's file ({literal}) — in the other look that " +
+                        "file is not on disk and every wall builds uncoloured; ask " +
+                        "CliffCatalog.ColourChannel(CliffBakeMenu.IsPxLook)");
+
+                const string ask = "CliffCatalog.ColourChannel(";
+                int asks = source.Split(new[] { ask }, StringSplitOptions.None).Length - 1;
+                Assert.AreEqual(1, asks,
+                    $"{builder} should ask the catalog for the colour channel exactly once per build");
+                StringAssert.Contains("CliffCatalog.ColourChannel(CliffBakeMenu.IsPxLook)", source,
+                    $"{builder} asks for the colour channel by something other than the material's look");
+            }
+        }
+
+        /// <summary>
+        /// <see cref="CliffBakeMenu.EnsureBaked"/> bakes in the MATERIAL'S look, and only what is missing
+        /// there. Run through the pure planner with an injected "is this face present" — no bake runs and
+        /// nothing is written, so a dev box's own faces are never touched.
+        /// </summary>
+        [Test]
+        public void EnsureBakedPlansOnlyTheRocksMissingInTheMaterialsLook()
+        {
+            string sandstone = CliffBaker.DefaultRock, till = CliffBaker.OverburdenRock;
+            string other = CliffCatalog.Rocks.First(r => !CliffBaker.DefaultRocks.Contains(r));
+            CollectionAssert.AreEqual(new[] { sandstone, till }, CliffBaker.DefaultRocks,
+                "the wall's rocks changed — re-read this table");
+
+            string[] Plan(bool px, string rock, params string[] present) =>
+                CliffBakeMenu.RocksEnsureBakedWouldBake(px, rock, p => present.Contains(p));
+            string V10(string rock) => CliffBakeMenu.SentinelFacePathFor(rock, false);
+            string Px(string rock) => CliffBakeMenu.SentinelFacePathFor(rock, true);
+
+            CollectionAssert.AreEqual(new[] { sandstone, till }, Plan(false, null),
+                "v10, no faces: bake both rocks");
+            CollectionAssert.AreEqual(new[] { till }, Plan(false, null, V10(sandstone)),
+                "v10, sandstone only: bake the till it lacks, not the sandstone it has");
+            CollectionAssert.IsEmpty(Plan(false, null, V10(sandstone), V10(till)),
+                "v10, both baked: nothing to do");
+            CollectionAssert.AreEqual(new[] { sandstone, till }, Plan(true, null, V10(sandstone), V10(till)),
+                "px, both baked in v10 only: bake both in px (the bake moves each _unlit to _index)");
+            CollectionAssert.IsEmpty(Plan(true, null, Px(sandstone), Px(till)),
+                "px, both baked in px: nothing to do");
+            CollectionAssert.AreEqual(new[] { till }, Plan(true, till),
+                "px, no faces, till named: bake the named rock alone");
+            CollectionAssert.IsEmpty(Plan(true, other, Px(sandstone), Px(till)),
+                $"px, the wall's rocks baked, {other} named: nothing — a named rock is baked only when " +
+                "the wall itself is missing a face");
+        }
+
+        /// <summary>
+        /// ⭐ THE LOOK SELF-HEAL'S RULE (owner, 09-24: "the narrow self-heal"). The material is tracked and
+        /// the faces are not, so a pulled look change can leave them disagreeing — v10 colour read as px
+        /// indices draws most of every wall near-black. The heal acts ONLY on that MISMATCH (a wall rock
+        /// missing in the material's look and on disk in the other one) and never on an ABSENCE, which
+        /// is every fresh clone and every CI run; in batchmode it only warns.
+        /// </summary>
+        [Test]
+        public void TheLookSelfHealActsOnAMismatchAndNeverOnAnAbsence()
+        {
+            string sandstone = CliffBaker.DefaultRock, till = CliffBaker.OverburdenRock;
+            string V10(string rock) => CliffBakeMenu.SentinelFacePathFor(rock, false);
+            string Px(string rock) => CliffBakeMenu.SentinelFacePathFor(rock, true);
+            const CliffBakeMenu.LookHeal none = CliffBakeMenu.LookHeal.None;
+            const CliffBakeMenu.LookHeal bake = CliffBakeMenu.LookHeal.Bake;
+            const CliffBakeMenu.LookHeal warn = CliffBakeMenu.LookHeal.Warn;
+
+            void Expect(string row, bool px, CliffBakeMenu.LookHeal interactive, CliffBakeMenu.LookHeal batch,
+                        params string[] onDisk)
+            {
+                Assert.AreEqual(interactive, CliffBakeMenu.HealFor(px, false, p => onDisk.Contains(p)),
+                    $"in the editor: {row}");
+                Assert.AreEqual(batch, CliffBakeMenu.HealFor(px, true, p => onDisk.Contains(p)),
+                    $"in batchmode: {row}");
+            }
+
+            Expect("v10 look, no faces — an absence (a fresh clone, CI)", false, none, none);
+            Expect("px look, no faces — an absence (a fresh clone, CI)", true, none, none);
+            Expect("px look, px faces", true, none, none, Px(sandstone), Px(till));
+            Expect("px look, v10 faces — the pulled flip", true, bake, warn, V10(sandstone), V10(till));
+            Expect("v10 look, px faces — the pulled revert", false, bake, warn, Px(sandstone), Px(till));
+            Expect("px look, sandstone px, till still v10", true, bake, warn, Px(sandstone), V10(till));
+            Expect("px look, sandstone px, till in neither — an absence", true, none, none, Px(sandstone));
+            Expect("v10 look, v10 faces", false, none, none, V10(sandstone), V10(till));
+        }
+
+        /// <summary>
+        /// The look is the shipped material's keyword, and the sentinel follows it: <c>_index</c> in px,
+        /// <c>_unlit</c> in v10. Flips the keyword IN MEMORY on the loaded asset, both ways, and in a
+        /// <c>finally</c> puts it back and clears the dirty flag it raised — nothing here saves, bakes or
+        /// imports, so nothing is left for a later save to write either.
+        /// </summary>
+        [Test]
+        public void TheLookFollowsTheMaterialsKeyword_AndTheSentinelFollowsTheLook()
         {
             var mat = AssetDatabase.LoadAssetAtPath<Material>(CliffCatalog.MaterialPath);
             Assert.IsNotNull(mat, $"no wall material at {CliffCatalog.MaterialPath} — the look lives on it");
@@ -125,23 +240,25 @@ namespace HiddenHarbours.Tests.RigBaking
             bool wasDirty = EditorUtility.IsDirty(mat);
             try
             {
-                mat.EnableKeyword(CliffCatalog.PxKeyword);
-                Assert.IsTrue(CliffBakeMenu.IsPxLook, "the look does not follow the material's keyword");
-                Assert.AreEqual(CliffBakeMenu.SentinelFacePathFor(CliffBaker.DefaultRock, true),
-                                CliffBakeMenu.SentinelFacePath,
-                    "in the px look the sentinel is the _index slot the px bake writes");
+                foreach (bool px in new[] { true, false })
+                {
+                    if (px) mat.EnableKeyword(CliffCatalog.PxKeyword);
+                    else mat.DisableKeyword(CliffCatalog.PxKeyword);
 
-                var refused = Assert.Throws<InvalidOperationException>(() => CliffBakeMenu.EnsureBaked(),
-                    "a region build in the px look would wire no colour to any wall");
-                foreach (string item in new[] { CliffBakeMenu.KitV10Item, CliffBakeMenu.KitPxItem })
-                    StringAssert.Contains(item.Replace("/", " ▸ "), refused.Message,
-                        "the refusal must name the menu items the way back runs through");
-                Assert.Throws<InvalidOperationException>(() => CliffBakeMenu.EnsureBaked("till"),
-                    "a named rock is refused as well");
+                    string look = px ? "px" : "v10";
+                    Assert.AreEqual(px, CliffBakeMenu.IsPxLook,
+                        $"the look does not follow the material's keyword ({look})");
+                    Assert.AreEqual(CliffBakeMenu.SentinelFacePathFor(CliffBaker.DefaultRock, px),
+                                    CliffBakeMenu.SentinelFacePath,
+                        $"in the {look} look the sentinel is not the slot the {look} bake writes");
+                    StringAssert.EndsWith($"{CliffCatalog.ColourChannel(px)}.png", CliffBakeMenu.SentinelFacePath,
+                        $"in the {look} look the sentinel is not the {CliffCatalog.ColourChannel(px)} file");
+                }
             }
             finally
             {
-                if (!shippedPx) mat.DisableKeyword(CliffCatalog.PxKeyword);
+                if (shippedPx) mat.EnableKeyword(CliffCatalog.PxKeyword);
+                else mat.DisableKeyword(CliffCatalog.PxKeyword);
                 if (!wasDirty) EditorUtility.ClearDirty(mat);
             }
             Assert.AreEqual(shippedPx, CliffBakeMenu.IsPxLook, "the shipped look was not put back");

@@ -123,6 +123,7 @@ namespace HiddenHarbours.Boats
         private MaterialPropertyBlock _block;
         private Material _occluderMaterial;
         private IDeckOccupantSlots _heldSlots;   // the slot host every live claim belongs to
+        private IBoatHullPresenter _drawnHull;   // this Draw's hull when her drawn attitude can be read, else null
         private Transform _pool;
 
         // The live beat, as published. Nothing here is sim state and none of it is saved.
@@ -236,6 +237,10 @@ namespace HiddenHarbours.Boats
             float heading = hull != null ? hull.DrawnHeadingDegrees() : 0f;
             float elevation = hull != null ? hull.BakeElevationDegrees : DeckAreaMath.PlanViewElevationDegrees;
             Vector3 boatPos = transform.position;
+            // A hull with a continuous attitude (a mesh) is drawn rocked, heaved and bobbed, and the gear
+            // must stand where she is DRAWN (Place). A sprite hull's rock is her baked frame grid: no
+            // attitude to read, so her gear keeps the level placement, as the rider does.
+            _drawnHull = hull != null && hull.SupportsContinuousRock && hull.Visual != null ? hull : null;
 
             for (int i = 0; i < _pieces.Count; i++) _pieces[i].Live = false;
             int next = 0;
@@ -423,9 +428,19 @@ namespace HiddenHarbours.Boats
 
             Vector2 offset = DeckAreaMath.DeckToWorld(new Vector2(local.x, local.y), local.z,
                                                       heading, elevation);
-            Vector3 world = boatPos + new Vector3(offset.x, offset.y, 0f);
+            Vector3 level = boatPos + new Vector3(offset.x, offset.y, 0f);
+            // Stand it on the point the hull is DRAWN at: her applied roll, pitch and heave and the
+            // picture's own origin, all read off her presenter. Level, it parted from the lobster boat's
+            // drawn transom by 51 px at her hump. The ORDER stays the level point's, so a heave or a trim
+            // never re-sorts the gear against the figures standing among it.
+            Vector3 world = level;
+            if (_drawnHull != null &&
+                MountedRockPoseMath.TryDrawnPoint(_drawnHull.Visual.position, local, heading,
+                                                  _drawnHull.AppliedRollDegrees, _drawnHull.AppliedPitchDegrees,
+                                                  _drawnHull.AppliedHeaveMeters, elevation, out Vector2 drawn))
+                world = new Vector3(drawn.x, drawn.y, boatPos.z);
             sr.transform.position = world;
-            sr.sortingOrder = DecorOrderFor(world.y);
+            sr.sortingOrder = DecorOrderFor(level.y);
 
             Sprite s = cell != null ? cell : fallback;
             if (sr.sprite != s) sr.sprite = s;

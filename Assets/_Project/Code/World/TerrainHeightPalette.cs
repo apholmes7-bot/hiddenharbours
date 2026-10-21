@@ -27,6 +27,10 @@ namespace HiddenHarbours.World
         //   deep navy (abyss) → blue → cyan (shallows) → pale sand (the waterline band) → green (low land)
         //   → olive → brown (cliff/rock). The exact stops are a designer-aid choice, not a balance tunable —
         //   they only colour the editor overlay, so they live as code constants (rule 6 is about GAME values).
+        //   The ramp reads METRES, never codes, so a map's bit depth (R8 or the R16 of ADR 0046 §8) does not
+        //   reach it; and the stops already bracket the widest range a map declares (−4 .. +7 m for the
+        //   16-bit St Peters map terrain pass 9 brings) — land above +6 shades from the plateau green toward
+        //   the cliff brown.
         private static readonly float[] StopElev =
         {
             -4f,   // deep floor

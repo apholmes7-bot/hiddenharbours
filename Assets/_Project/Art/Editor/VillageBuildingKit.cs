@@ -117,6 +117,64 @@ namespace HiddenHarbours.Art.Editor
             $"{StemFor(buildKey)}_d{facing}";
 
         // =================================================================================
+        // THE L2 LIGHT CHANNELS (village return, drop 14) — three data sheets beside a house
+        // =================================================================================
+
+        /// <summary>
+        /// Which sheet of a build a PNG is. The ALBEDO is the kit's sheet as it always was. A HOUSE also
+        /// bakes three light channels beside it (drop 14, "L2, houses first"), on the albedo's own grid,
+        /// crop and flip, so one UV reads all four: the MASK in the trees' order (R key, G back rim,
+        /// B depth, A coverage), the view-space NORMAL, and the EMIT sheet — one byte a texel (R8), the
+        /// rig's own night glow as a level and a source.
+        /// </summary>
+        public enum Channel { Albedo, Mask, Normal, Emit }
+
+        /// <summary>The three light channels, in the order the slicer and the check walk them.</summary>
+        public static readonly Channel[] LightChannels = { Channel.Mask, Channel.Normal, Channel.Emit };
+
+        /// <summary>
+        /// The rig whose builds bake the light channels: the returned house, which lights through
+        /// <c>CoastalPass.light</c>. The four wharf-building sheets bake albedo only: drop 13 re-baked
+        /// them in pass 2 (<c>wharfBuilding2</c>), and the owner ruled albedo for its new look (L2 maps for
+        /// them are an option, priced in #910, not built).
+        /// </summary>
+        public const string LightChannelRig = "house";
+
+        /// <summary>True when a build bakes its three light channels beside its albedo.</summary>
+        public static bool BakesLightChannels(Build build) =>
+            string.Equals(build.RigKey, LightChannelRig, StringComparison.Ordinal);
+
+        /// <summary>True when a contract entry has light channel sheets — read off the entry's rig by the
+        /// same rule the bake used, so the contract carries no second field to drift from it.</summary>
+        public static bool HasLightChannels(Entry entry) =>
+            entry != null && string.Equals(entry.rig, LightChannelRig, StringComparison.Ordinal);
+
+        /// <summary>The stem suffix of a channel sheet (the albedo has none). The bake writes these and
+        /// <see cref="ArtImportPipeline.IsDataChannel"/> reads them; a test holds the three together.</summary>
+        public static string SuffixOf(Channel channel) => channel switch
+        {
+            Channel.Mask => "_mask",
+            Channel.Normal => "_normal",
+            Channel.Emit => "_emit",
+            _ => "",
+        };
+
+        /// <summary>Only the albedo is colour. The channels are numbers: sRGB off, and no
+        /// alpha-is-transparency bleed.</summary>
+        public static bool IsColourChannel(Channel channel) => channel == Channel.Albedo;
+
+        /// <summary>A channel sheet's stem, e.g. <c>Village_school_mask</c>.</summary>
+        public static string StemFor(string buildKey, Channel channel) => StemFor(buildKey) + SuffixOf(channel);
+
+        /// <summary>A channel sheet's path beside the albedo.</summary>
+        public static string SheetPath(string buildKey, Channel channel) =>
+            BuildingsRoot + StemFor(buildKey, channel) + ".png";
+
+        /// <summary>A channel sheet's sprite for one facing, e.g. <c>Village_school_mask_d4</c>.</summary>
+        public static string SpriteNameFor(string buildKey, Channel channel, int facing) =>
+            $"{StemFor(buildKey, channel)}_d{facing}";
+
+        // =================================================================================
         // WHAT M1 NEEDS — the one hand-written table in the chain
         // =================================================================================
 
@@ -136,7 +194,7 @@ namespace HiddenHarbours.Art.Editor
             /// <summary>What the owner sees in a dropdown or the scene hierarchy.</summary>
             public readonly string Label;
 
-            /// <summary>Catalog rig key — <c>"house"</c> or <c>"wharfBuilding"</c>.</summary>
+            /// <summary>Catalog rig key — <c>"house"</c>, or <c>"wharfBuilding2"</c> for the wharf buildings (pass 2).</summary>
             public readonly string RigKey;
 
             /// <summary>The rig's own preset name, or null for a dialled build.</summary>
@@ -146,6 +204,9 @@ namespace HiddenHarbours.Art.Editor
             /// keys — the rig's real option spelling, grep-verified against the rig source by
             /// <c>BuildingAxesTests</c>, which is what keeps a silently-ignored key out of here.</summary>
             public readonly IReadOnlyDictionary<string, object> Dialled;
+
+            /// <summary>Options layered over the rig's own preset, without copying its axes.</summary>
+            public readonly IReadOnlyDictionary<string, object> Overrides;
 
             /// <summary>Why this build is in the set, in one line — read by nobody and worth
             /// keeping anyway, since "which of these is the school" is the question a future reader
@@ -186,16 +247,22 @@ namespace HiddenHarbours.Art.Editor
 
             Build(string key, string label, string rigKey, string preset,
                   IReadOnlyDictionary<string, object> dialled, string why,
-                  string phase = null, string decay = null, bool burnt = false, int importCap = 0)
+                  string phase = null, string decay = null, bool burnt = false, int importCap = 0,
+                  IReadOnlyDictionary<string, object> overrides = null)
             {
                 Key = key; Label = label; RigKey = rigKey; Preset = preset;
                 Dialled = dialled; Why = why;
                 Phase = phase; Decay = decay; Burnt = burnt; ImportCap = importCap;
+                Overrides = overrides;
             }
 
             public static Build FromPreset(string key, string label, string rigKey, string preset,
                                            string why)
                 => new Build(key, label, rigKey, preset, null, why);
+
+            public static Build FromPresetWithOptions(string key, string label, string rigKey, string preset,
+                                                       Dictionary<string, object> options, string why)
+                => new Build(key, label, rigKey, preset, null, why, overrides: options);
 
             public static Build FromDialled(string key, string label, string rigKey,
                                             Dictionary<string, object> dialled, string why)
@@ -432,20 +499,20 @@ namespace HiddenHarbours.Art.Editor
             // makes that safe rather than hopeful.
 
             Build.FromPresetInState(
-                "ginnyWoodshed", "Ginny's woodshed (neglected)", "wharfBuilding", "redShed",
+                "ginnyWoodshed", "Ginny's woodshed (neglected)", "wharfBuilding2", "redShed",
                 phase: null, decay: "neglected", burnt: false,
                 why: "behind her cottage on the north side - the one still standing squarest, because " +
                      "a woodshed is the one you keep the roof on. Red board-and-batten so the three " +
                      "read as three different buildings and not one shed copied about."),
 
             Build.FromPresetInState(
-                "ginnyNetStore", "Ginny's net store (ruin)", "wharfBuilding", "netShed",
+                "ginnyNetStore", "Ginny's net store (ruin)", "wharfBuilding2", "netShed",
                 phase: null, decay: "ruin", burnt: false,
                 why: "east, the furthest out - a net store from when this land was worked, and the " +
                      "furthest gone. The netShed preset by name as well as by shape."),
 
             Build.FromPresetInState(
-                "ginnyLeanTo", "Ginny's lean-to (collapsing)", "wharfBuilding", "tealShack",
+                "ginnyLeanTo", "Ginny's lean-to (collapsing)", "wharfBuilding2", "tealShack",
                 phase: null, decay: "collapsing", burnt: false,
                 why: "north-west, first thing you pass walking up - a lean-to with its back broken, " +
                      "which is what `collapsing` draws: a roof slope stove in, rafters showing."),
@@ -457,7 +524,7 @@ namespace HiddenHarbours.Art.Editor
             // scenery, and this building is meant to read as a thing that could be brought back. At
             // collapsing it still has walls, a name and a roofline - and one slope stove in.
             Build.FromPresetInState(
-                "stPetersCannery", "St Peters cannery (collapsing)", "wharfBuilding", "cannery",
+                "stPetersCannery", "St Peters cannery (collapsing)", "wharfBuilding2", "cannery",
                 phase: null, decay: "collapsing", burnt: false,
                 why: "the fish cannery that shut when the business went to the mainland - the long-arc " +
                      "goal the owner named on 2026-08-19: get it running again and employ the village. " +
@@ -472,6 +539,10 @@ namespace HiddenHarbours.Art.Editor
                 //   abandoned    832 x 707      2x4 REFUSED     4x2 = 3328x1414   17 MB
                 //   collapsing   840 x 673      2x4 REFUSED     4x2 = 3360x1346   17 MB   <- this build
                 //   ruin         864 x 612      2x4 REFUSED     4x2 = 3456x1224   16 MB
+                //
+                // That table is pass 1's. Pass 2 (drop 13; the rig this row bakes since #910) draws the
+                // collapsing cannery 892 x 681 on the same 9.5 x 15.4 m footprint: 2x4 REFUSED at 2048,
+                // 4x2 = 3568x1362 at 4096, 18.5 MiB. Still one 4096 sheet, as the owner ruled.
                 //
                 // ⭐ NOTE THE FIRST ROW. This is NOT the dereliction blowing the cap - the cannery has
                 // never fitted a 2048-capped 8-facing sheet, in any state. That is why M1Set never
@@ -496,108 +567,41 @@ namespace HiddenHarbours.Art.Editor
         /// walk <see cref="M1Set"/> alone. Two different questions: "did everything the kit declares get
         /// baked?" and "is the M1 village still five clapboard buildings you can walk into?"</para>
         /// </summary>
+        public static readonly Build[] KeySceneSet =
+        {
+            Build.FromPresetWithOptions("stPetersBaitStore", "St Peters bait store", "wharfBuilding2", "tealShack",
+                new Dictionary<string, object> { { "sign", true } }, "O3 Landing: the store at the head of its walk."),
+            Build.FromPresetWithOptions("stPetersNetLoft", "St Peters net loft", "wharfBuilding2", "redShed",
+                new Dictionary<string, object> { { "weather", 0.55 } }, "O3 east end: pass 2's net loft."),
+            Build.FromPresetWithOptions("stPetersNetShed", "St Peters net shed", "wharfBuilding2", "netShed",
+                new Dictionary<string, object> { { "weather", 0.70 } }, "O3 east end: pass 2's net shed."),
+            Build.FromPresetWithOptions("stPetersIceHouse", "St Peters ice house", "wharfBuilding2", "iceHouse",
+                new Dictionary<string, object> { { "weather", 0.60 } }, "O3 east end: pass 2's ice house."),
+        };
+
         public static Build[] AllBuilds
         {
             get
             {
-                var all = new Build[M1Set.Length + LifecycleSet.Length];
+                var all = new Build[M1Set.Length + LifecycleSet.Length + KeySceneSet.Length];
                 M1Set.CopyTo(all, 0);
                 LifecycleSet.CopyTo(all, M1Set.Length);
+                KeySceneSet.CopyTo(all, M1Set.Length + LifecycleSet.Length);
                 return all;
             }
         }
 
         // =================================================================================
-        //  ⚠️ CAN THIS BUILDING BE ENTERED AT ALL? — the axes that decide where the door DRAWS
+        //  WHERE THE DOOR IS DRAWN — the returned house says so itself (drop 14)
         // =================================================================================
-
-        /// <summary>
-        /// <b>🔴 <c>houseIsoRig.anchors()</c> DOES NOT REPORT WHERE THE DOOR IS DRAWN.</b> It returns
-        /// <c>door: pj(0, Ln/2, fH+1)</c> — the <c>+Y</c> gable centre — for <i>every</i> shape and
-        /// every porch, unconditionally (<c>houseIsoRig.js:898</c>). Where the door actually goes is
-        /// decided three hundred lines earlier by axes the anchor never consults:
-        ///
-        /// <code>
-        ///   :747  bayFrontOn = !!bayKind &amp;&amp; shape !== 'ell'
-        ///   :748  hasPorch   = (porch === 'front' || porch === 'wrap') &amp;&amp; !bayFrontOn &amp;&amp; !isCape
-        ///   :750  eaveDoor   = isCape || (!hasPorch &amp;&amp; shape !== 'ell')   → door on the +X EAVE wall
-        ///   :772  gableDoor  = hasPorch &amp;&amp; shape !== 'ell'               → door on the +Y GABLE centre
-        ///   :739  shape 'ell'                                            → door on the forward WING
-        /// </code>
-        ///
-        /// <para><b>Why this matters more than it looks.</b> A room's doorway registers to the ANCHOR
-        /// (<c>InteriorKit.InteriorFacingFor</c> lines the two door anchors up, and
-        /// <c>InteriorFootprint</c> cuts the gap in the wall there). So when the anchor and the drawn
-        /// door disagree, the gap you can walk through is somewhere other than the door you can see —
-        /// and BOTH draw perfectly. Measured on this set 2026-08-12: the school's and the saltbox's
-        /// doors were 90° away on the eave wall, and the farmhouse's was on its ell wing, 1.21 m
-        /// across and 4.17 m beyond the footprint its room occupies.</para>
-        ///
-        /// <para><b>It also silently defeated the facing pass.</b> <c>BuildingFacing</c> reasons that
-        /// "a wrong sign would have to be a wrong sign in the baked pixels" — true of the cell
-        /// ORDER, which it measures, but not of WHICH WALL, which it takes from the same declared
-        /// anchor. So <c>StPetersVillage.FacingToward</c> has been turning the school's and the
-        /// saltbox's blank gable toward the green while their real doors face 90° away. Left alone
-        /// deliberately (re-facing is a visible change to banked buildings and wants its own drop);
-        /// recorded here so the next reader does not re-derive it.</para>
-        ///
-        /// <para><b>The rule this leaves.</b> Any build the interior kit bakes a room for must draw
-        /// its door on the gable — porch <c>front</c>/<c>wrap</c>, shape neither <c>ell</c> nor
-        /// <c>cape</c>, and no bay (a bay cancels the porch via <c>bayFrontOn</c>, taking the door
-        /// with it). <c>VillageBuildingSetTests</c> enforces it and greps the rig's own routing lines
-        /// so the predicate below cannot drift away from them in silence.</para>
-        /// </summary>
-        public static bool DrawsDoorOnGable(Build build, out string why)
-        {
-            if (build.IsPreset)
-            {
-                why = $"'{build.Key}' is a PRESET build, so its porch/shape/bay live in the rig's " +
-                      "own table and cannot be read here. Dial it instead — a build that a room " +
-                      "stands inside has to be checkable from the kit.";
-                return false;
-            }
-
-            string porch = Value(build, "porch") as string ?? "none";
-            string shape = Value(build, "shape") as string ?? "gable";
-            object bay = Value(build, "bay");
-
-            // A bay resolves to a kind for `true` as well as for the two named kinds, and any kind
-            // sets bayFrontOn (given shape != 'ell'), which cancels hasPorch — and the door with it.
-            bool hasBay = bay is bool b ? b : bay is string s && s.Length > 0 && s != "none";
-
-            if (shape == "ell")
-            {
-                why = $"'{build.Key}' is shape 'ell': the rig draws its door on the forward WING " +
-                      "(houseIsoRig.js:739), which stands outside the footprint the room occupies.";
-                return false;
-            }
-            if (shape == "cape")
-            {
-                why = $"'{build.Key}' is shape 'cape': the rig always routes a cape's entry to the " +
-                      "long +X eave face (houseIsoRig.js:750, `isCape ||`), whatever the porch says.";
-                return false;
-            }
-            if (porch != "front" && porch != "wrap")
-            {
-                why = $"'{build.Key}' has porch '{porch}': with no porch the rig routes the door to " +
-                      "the +X EAVE wall (houseIsoRig.js:750), 90° from the gable its room opens onto.";
-                return false;
-            }
-            if (hasBay)
-            {
-                why = $"'{build.Key}' has a bay: bayFrontOn cancels hasPorch (houseIsoRig.js:747-748), " +
-                      "so the porch stops carrying the door and it falls back to the eave wall.";
-                return false;
-            }
-
-            why = $"'{build.Key}': porch '{porch}', shape '{shape}', no bay → gableDoor, so the drawn " +
-                  "door sits on the +Y gable centre where anchors() claims it and where a room's " +
-                  "doorway is cut.";
-            return true;
-        }
-
-        static object Value(Build build, string key) =>
-            build.Dialled != null && build.Dialled.TryGetValue(key, out object v) ? v : null;
+        //
+        // Until the village return, houseIsoRig.anchors().door was the +Y gable centre for every shape
+        // and porch, while the rig drew the door wherever its porch, shape and bay axes routed it; a
+        // mirror of those axes (DrawsDoorOnGable) kept rooms out of shells whose door was drawn
+        // elsewhere. The returned rig's anchor follows the door it draws (`door:pj(e.x,e.y,e.z+1.0)`),
+        // and each room registers against its own shell's anchor (InteriorRigBaker.ExteriorOptsFor), so
+        // a shell whose door the room cannot open onto is REFUSED by the registration probe at bake
+        // time. The mirror and its source pin retired with the switch, as the pin asked (#898, R2).
 
         /// <summary>The build with this key, or null. Searches the WHOLE kit — M1 and lifecycle.</summary>
         public static Build? FindBuild(string key)
@@ -764,23 +768,43 @@ namespace HiddenHarbours.Art.Editor
             return null;
         }
 
-        /// <summary>The entry a sheet stem belongs to, or null for a stranger (which must fail, not
-        /// be guessed at).</summary>
+        /// <summary>The entry a sheet stem belongs to — its albedo, or one of its light channels when it
+        /// has them — or null for a stranger (which must fail, not be guessed at).</summary>
         public static Entry EntryForStem(Contract contract, string stem)
         {
             if (contract?.buildings == null) return null;
             foreach (var e in contract.buildings)
+            {
                 if (string.Equals(stem, StemFor(e.key), StringComparison.Ordinal)) return e;
+                if (!HasLightChannels(e)) continue;
+                foreach (Channel c in LightChannels)
+                    if (string.Equals(stem, StemFor(e.key, c), StringComparison.Ordinal)) return e;
+            }
             return null;
         }
 
-        /// <summary>Every sheet path the contract claims, in bake order.</summary>
+        /// <summary>Which of <paramref name="entry"/>'s sheets <paramref name="stem"/> is.</summary>
+        public static Channel ChannelOf(Entry entry, string stem)
+        {
+            if (HasLightChannels(entry))
+                foreach (Channel c in LightChannels)
+                    if (string.Equals(stem, StemFor(entry.key, c), StringComparison.Ordinal)) return c;
+            return Channel.Albedo;
+        }
+
+        /// <summary>Every sheet path the contract claims, in bake order: each build's albedo, then its
+        /// light channels when it has them.</summary>
         public static string[] AllSheetPaths(Contract contract)
         {
             if (contract?.buildings == null) return Array.Empty<string>();
-            var paths = new string[contract.buildings.Length];
-            for (int i = 0; i < paths.Length; i++) paths[i] = SheetPath(contract.buildings[i].key);
-            return paths;
+            var paths = new List<string>(contract.buildings.Length * 4);
+            foreach (var e in contract.buildings)
+            {
+                paths.Add(SheetPath(e.key));
+                if (!HasLightChannels(e)) continue;
+                foreach (Channel c in LightChannels) paths.Add(SheetPath(e.key, c));
+            }
+            return paths.ToArray();
         }
 
         /// <summary>
@@ -858,6 +882,21 @@ namespace HiddenHarbours.Art.Editor
             if (contract?.buildings == null) return 0f;
             long bytes = 0;
             foreach (var e in contract.buildings) bytes += e.runtimeBytesRgba32;
+            return bytes / 1024f / 1024f;
+        }
+
+        /// <summary>What one entry's light channels cost in memory: two RGBA32 sheets (mask, normal) and
+        /// one R8 (emit), each the albedo's size — 2.25× the albedo. 0 without channels.</summary>
+        public static long LightChannelRuntimeBytes(Entry entry) =>
+            HasLightChannels(entry) ? (long)entry.sheetW * entry.sheetH * (4 + 4 + 1) : 0;
+
+        /// <summary>The kit's light channels in memory, in MiB — the L2 cost, stated beside
+        /// <see cref="TotalRuntimeMib"/>'s albedo.</summary>
+        public static float TotalLightChannelMib(Contract contract)
+        {
+            if (contract?.buildings == null) return 0f;
+            long bytes = 0;
+            foreach (var e in contract.buildings) bytes += LightChannelRuntimeBytes(e);
             return bytes / 1024f / 1024f;
         }
 

@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 0aac653acaf065a45ae198ff1b0c0d49
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8476886534111260997
+    second: Spine_sandstone_weeded_normal_0
+  - first:
+      213: 2813163674449645278
+    second: Spine_sandstone_weeded_normal_1
+  - first:
+      213: -7377515083746619296
+    second: Spine_sandstone_weeded_normal_2
+  - first:
+      213: 877867931547900770
+    second: Spine_sandstone_weeded_normal_3
+  - first:
+      213: 725085158021073401
+    second: Spine_sandstone_weeded_normal_4
+  - first:
+      213: -7274734971327927978
+    second: Spine_sandstone_weeded_normal_5
+  - first:
+      213: 8243898339022086466
+    second: Spine_sandstone_weeded_normal_6
+  - first:
+      213: -2069078769637833813
+    second: Spine_sandstone_weeded_normal_7
+  - first:
+      213: 3444626212102345058
+    second: Spine_sandstone_weeded_normal_8
+  - first:
+      213: 3577551886062258996
+    second: Spine_sandstone_weeded_normal_9
+  - first:
+      213: -7231825998744238192
+    second: Spine_sandstone_weeded_normal_10
+  - first:
+      213: 6731665123852722235
+    second: Spine_sandstone_weeded_normal_11
+  - first:
+      213: 652285600074765805
+    second: Spine_sandstone_weeded_normal_12
+  - first:
+      213: 8286906796383546126
+    second: Spine_sandstone_weeded_normal_13
+  - first:
+      213: -8377966093523859614
+    second: Spine_sandstone_weeded_normal_14
+  - first:
+      213: -6622322743936167237
+    second: Spine_sandstone_weeded_normal_15
+  - first:
+      213: 711565710910647299
+    second: Spine_sandstone_weeded_normal_16
+  - first:
+      213: -5821141179815138760
+    second: Spine_sandstone_weeded_normal_17
+  - first:
+      213: 4049721491197739447
+    second: Spine_sandstone_weeded_normal_18
+  - first:
+      213: 1585601551760195161
+    second: Spine_sandstone_weeded_normal_19
+  - first:
+      213: -6090216324612579766
+    second: Spine_sandstone_weeded_normal_20
+  - first:
+      213: -5455753350776874667
+    second: Spine_sandstone_weeded_normal_21
+  - first:
+      213: 2392908585768870771
+    second: Spine_sandstone_weeded_normal_22
+  - first:
+      213: 2076441117658298747
+    second: Spine_sandstone_weeded_normal_23
+  - first:
+      213: -6902909281064425677
+    second: Spine_sandstone_weeded_normal_24
+  - first:
+      213: -7385793481488692905
+    second: Spine_sandstone_weeded_normal_25
+  - first:
+      213: -5269585684161418336
+    second: Spine_sandstone_weeded_normal_26
+  - first:
+      213: -3160352914350644234
+    second: Spine_sandstone_weeded_normal_27
+  - first:
+      213: 8598473432418427678
+    second: Spine_sandstone_weeded_normal_28
+  - first:
+      213: 119649673899344053
+    second: Spine_sandstone_weeded_normal_29
+  - first:
+      213: 6970460345038497465
+    second: Spine_sandstone_weeded_normal_30
+  - first:
+      213: -6865140489272023189
+    second: Spine_sandstone_weeded_normal_31
+  - first:
+      213: -2493066805115398105
+    second: Spine_sandstone_weeded_normal_32
+  - first:
+      213: 6647403617156409507
+    second: Spine_sandstone_weeded_normal_33
+  - first:
+      213: 7123598832506325450
+    second: Spine_sandstone_weeded_normal_34
+  - first:
+      213: 8783071227507843177
+    second: Spine_sandstone_weeded_normal_35
+  - first:
+      213: -2892099855145048186
+    second: Spine_sandstone_weeded_normal_36
+  - first:
+      213: 1350442002159386247
+    second: Spine_sandstone_weeded_normal_37
+  - first:
+      213: 1783726618490994692
+    second: Spine_sandstone_weeded_normal_38
+  - first:
+      213: 6480486292024976254
+    second: Spine_sandstone_weeded_normal_39
+  - first:
+      213: -5976181963665256224
+    second: Spine_sandstone_weeded_normal_40
+  - first:
+      213: 3649118622934161700
+    second: Spine_sandstone_weeded_normal_41
+  - first:
+      213: 3705437103023567481
+    second: Spine_sandstone_weeded_normal_42
+  - first:
+      213: 2234989431557932415
+    second: Spine_sandstone_weeded_normal_43
+  - first:
+      213: -7907462196341302197
+    second: Spine_sandstone_weeded_normal_44
+  - first:
+      213: -8684016621299710215
+    second: Spine_sandstone_weeded_normal_45
+  - first:
+      213: -1596666301370379402
+    second: Spine_sandstone_weeded_normal_46
+  - first:
+      213: 6662568932411664436
+    second: Spine_sandstone_weeded_normal_47
+  - first:
+      213: 33039389767830869
+    second: Spine_sandstone_weeded_normal_48
+  - first:
+      213: 8596164499908787018
+    second: Spine_sandstone_weeded_normal_49
+  - first:
+      213: 8199342340473919841
+    second: Spine_sandstone_weeded_normal_50
+  - first:
+      213: 8916995796325420600
+    second: Spine_sandstone_weeded_normal_51
+  - first:
+      213: 6614573095312600784
+    second: Spine_sandstone_weeded_normal_52
+  - first:
+      213: 5087540280034716031
+    second: Spine_sandstone_weeded_normal_53
+  - first:
+      213: 2609168154344627580
+    second: Spine_sandstone_weeded_normal_54
+  - first:
+      213: 1154101831382886136
+    second: Spine_sandstone_weeded_normal_55
+  - first:
+      213: -4870097180587553665
+    second: Spine_sandstone_weeded_normal_56
+  - first:
+      213: -7686274011999034163
+    second: Spine_sandstone_weeded_normal_57
+  - first:
+      213: 5461497956496060328
+    second: Spine_sandstone_weeded_normal_58
+  - first:
+      213: 7778741528639269990
+    second: Spine_sandstone_weeded_normal_59
+  - first:
+      213: 4223523015424477354
+    second: Spine_sandstone_weeded_normal_60
+  - first:
+      213: -7383006210446593094
+    second: Spine_sandstone_weeded_normal_61
+  - first:
+      213: -4562762449672895323
+    second: Spine_sandstone_weeded_normal_62
+  - first:
+      213: -5700269610348630207
+    second: Spine_sandstone_weeded_normal_63
+  - first:
+      213: 2223474173122832084
+    second: Spine_sandstone_weeded_normal_64
+  - first:
+      213: 6782276976447363541
+    second: Spine_sandstone_weeded_normal_65
+  - first:
+      213: 5084000409752621161
+    second: Spine_sandstone_weeded_normal_66
+  - first:
+      213: -2833231042128245306
+    second: Spine_sandstone_weeded_normal_67
+  - first:
+      213: -8818209374273076425
+    second: Spine_sandstone_weeded_normal_68
+  - first:
+      213: 3058483156811402324
+    second: Spine_sandstone_weeded_normal_69
+  - first:
+      213: -1626745179002524287
+    second: Spine_sandstone_weeded_normal_70
+  - first:
+      213: -6053750122578719511
+    second: Spine_sandstone_weeded_normal_71
+  - first:
+      213: 3242890098029711161
+    second: Spine_sandstone_weeded_normal_72
+  - first:
+      213: 7706579257505840667
+    second: Spine_sandstone_weeded_normal_73
+  - first:
+      213: 2877583822204240517
+    second: Spine_sandstone_weeded_normal_74
+  - first:
+      213: -8379154225423065956
+    second: Spine_sandstone_weeded_normal_75
+  - first:
+      213: -1617759512705939999
+    second: Spine_sandstone_weeded_normal_76
+  - first:
+      213: -1259967569879408224
+    second: Spine_sandstone_weeded_normal_77
+  - first:
+      213: -9207802250806064774
+    second: Spine_sandstone_weeded_normal_78
+  - first:
+      213: -8685468238927939704
+    second: Spine_sandstone_weeded_normal_79
+  - first:
+      213: -9197014947516413319
+    second: Spine_sandstone_weeded_normal_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42480320dc817c04fb4c1a4380595037
+      internalID: 712161082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4cd1e391b221684f80667728f285779
+      internalID: 1341756928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93cdc735ac8bdeb46bbd1093220efbde
+      internalID: 1830152819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3de4c08f1c0b88e4fa9d6b8089095825
+      internalID: 1532307333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb1b287d2a617db4984f3df5a05f1bb8
+      internalID: -2146838022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88b9186de8f71f24a9cd6723d1220d5f
+      internalID: -1956471495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81c96cb0d5b242642b8a0eeb32a2f71d
+      internalID: -1949425324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 763d0e40f926ee846a259210f6144d10
+      internalID: -1971592027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 187e628b3bd49674f89a292357f6ab1c
+      internalID: 1336319968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8b6ecf074573294ebe5f3f628d781b6
+      internalID: 1063228593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16ed2a1bd254ddf4f8a16cb46731c229
+      internalID: 2004834421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f5ccf7004315474facffdb65bee0cea
+      internalID: 356307457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72012992c85442d43b1343c45fe16efa
+      internalID: -1070448467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e7e81d89e9029d40b603351cb614207
+      internalID: -1134523993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d878fee7b4db86e4d936d5a17af0801d
+      internalID: -394082148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 302c7a6a3c3fb114f8332a10297a14e2
+      internalID: -873038643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a7c48edb5b41214f95f1d923fc4d1ca
+      internalID: 1625217914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8602adca12ec31a4bb50015b116bb5a9
+      internalID: -582927225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7722d77724e1137418b0679df4207ca4
+      internalID: -1792955669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4537828afcb29204aa0cc53d7c1ac1c9
+      internalID: -1402435674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4fe29853a3e68e429a4b0e177382caf
+      internalID: 1636124698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86ba20c883de6e041a91ece1f89df8ce
+      internalID: 1718006994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a374ff0a4a8e5c46ad344336b075eef
+      internalID: 19039439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_sandstone_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c4148c7589fb36469c7e970af7b305a
+      internalID: 805254848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d418a46a737ea7140abdc1f5adb3a962
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_sandstone_weeded_normal_c0_r0: 712161082
+      Spine_sandstone_weeded_normal_c0_r1: 1336319968
+      Spine_sandstone_weeded_normal_c0_r2: 1625217914
+      Spine_sandstone_weeded_normal_c1_r0: 1341756928
+      Spine_sandstone_weeded_normal_c1_r1: 1063228593
+      Spine_sandstone_weeded_normal_c1_r2: -582927225
+      Spine_sandstone_weeded_normal_c2_r0: 1830152819
+      Spine_sandstone_weeded_normal_c2_r1: 2004834421
+      Spine_sandstone_weeded_normal_c2_r2: -1792955669
+      Spine_sandstone_weeded_normal_c3_r0: 1532307333
+      Spine_sandstone_weeded_normal_c3_r1: 356307457
+      Spine_sandstone_weeded_normal_c3_r2: -1402435674
+      Spine_sandstone_weeded_normal_c4_r0: -2146838022
+      Spine_sandstone_weeded_normal_c4_r1: -1070448467
+      Spine_sandstone_weeded_normal_c4_r2: 1636124698
+      Spine_sandstone_weeded_normal_c5_r0: -1956471495
+      Spine_sandstone_weeded_normal_c5_r1: -1134523993
+      Spine_sandstone_weeded_normal_c5_r2: 1718006994
+      Spine_sandstone_weeded_normal_c6_r0: -1949425324
+      Spine_sandstone_weeded_normal_c6_r1: -394082148
+      Spine_sandstone_weeded_normal_c6_r2: 19039439
+      Spine_sandstone_weeded_normal_c7_r0: -1971592027
+      Spine_sandstone_weeded_normal_c7_r1: -873038643
+      Spine_sandstone_weeded_normal_c7_r2: 805254848
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

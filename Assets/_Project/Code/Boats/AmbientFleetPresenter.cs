@@ -416,12 +416,12 @@ namespace HiddenHarbours.Boats
             TideProfile profile = env.ActiveTideProfile;
             float minWaterLevel = profile.MeanLevel - profile.Amplitude;
 
-            var grounds = new Rect(def.GroundsCenter - def.GroundsSize * 0.5f, def.GroundsSize);
-            Vector2[][] spots = AmbientFleetPlan.PlanFleet(
-                env.WorldSeed, def.Id, fleet.PlannedDayIndex,
-                fleet.Boats.Length, Mathf.Max(1, def.SpotsPerBoat), grounds,
-                terrain.ElevationAt, minWaterLevel,
-                def.MinDepthMeters, def.SpotSpacingMeters, def.LegSampleStepMeters, def.MaxCandidateTries);
+            // The fleet fishes all the water it can reach (#886), measured once per region load and tide
+            // profile; a day's plan only reads it. The day's length caps a leg to what the slowest boat
+            // sails between two work windows.
+            Vector2[][] spots = AmbientFleetPlan.PlanFleetDay(
+                def, WaterFor(fleet, terrain, minWaterLevel), env.WorldSeed, fleet.PlannedDayIndex,
+                fleet.Boats.Length, GameServices.SecondsPerDay);
 
             float workEnd = Mathf.Max(def.WorkWindowEndFraction, def.WorkWindowStartFraction + 0.01f);
             float flip = AmbientFleetSchedule.WorkFlipFraction(def.WorkWindowStartFraction, workEnd);
@@ -463,6 +463,21 @@ namespace HiddenHarbours.Boats
                     SnapBuoy(buoy, present);
                 }
             }
+        }
+
+        /// <summary>
+        /// The fleet's accessible water on this terrain at this spring low: measured on first ask and kept
+        /// until the terrain instance (a region load) or the tide's floor (a profile change) moves.
+        /// </summary>
+        private static AmbientFleetWater WaterFor(FleetRuntime fleet, ITidalTerrain terrain, float minWaterLevel)
+        {
+            if (fleet.Water != null && ReferenceEquals(fleet.WaterTerrain, terrain) &&
+                fleet.Water.MinWaterLevel == minWaterLevel)
+                return fleet.Water;
+
+            fleet.Water = AmbientFleetWater.For(fleet.Def, terrain.ElevationAt, minWaterLevel);
+            fleet.WaterTerrain = terrain;
+            return fleet.Water;
         }
 
         private static void HideBuoys(Fisher fisher)
@@ -773,6 +788,8 @@ namespace HiddenHarbours.Boats
             public int PlannedDayIndex = int.MinValue;
             public Fisher[] Boats = System.Array.Empty<Fisher>();
             public Vector2[] BoatPositions = System.Array.Empty<Vector2>();
+            public AmbientFleetWater Water;       // measured once per terrain and tide floor (WaterFor)
+            public ITidalTerrain WaterTerrain;
         }
     }
 }

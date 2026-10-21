@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using NUnit.Framework;
@@ -233,26 +234,89 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(File.Exists(path), "BoatWakeEmitter not found at " + rel);
             string code = File.ReadAllText(path);
 
-            int fromRoot = CountOf(code, "WakeGrading.SternAnchorFromRoot(");
-            int legacy = CountOf(code, "WakeGrading.SternAnchor(");
-            TestContext.WriteLine($"BoatWakeEmitter: {fromRoot} anchors from the one root, {legacy} legacy");
-
-            Assert.AreEqual(3, fromRoot,
-                "All THREE of the emitter's stern anchors — the plume/roll, the deposits and the plume " +
-                "apex — must take the hull's own lofted transom.");
-            Assert.AreEqual(0, legacy,
-                "The length-derived SternAnchor must not survive in the emitter: it is the second opinion " +
-                "about where the boat ends that row 29 exists to remove. (It stays on WakeGrading for the " +
-                "sprite fleet and its own tests, which is why this is a tripwire and not a deletion.)");
-            StringAssert.Contains("SternOffsetMeters()", code,
-                "...and the offset must come from the presenter seam, not a constant.");
+            Assert.That(SternRoutingViolations(code), Is.Empty,
+                "Every consumer must use the shared drawn-stern helper, with the authored fallback intact.");
         }
 
-        static int CountOf(string haystack, string needle)
+        [TestCase("FormBubbles")]
+        [TestCase("DepositTrail")]
+        [TestCase("RenderPlume")]
+        public void SternRoutingGuard_RejectsEachConsumerBypass(string consumer)
         {
-            int n = 0, i = 0;
-            while ((i = haystack.IndexOf(needle, i, System.StringComparison.Ordinal)) >= 0) { n++; i += needle.Length; }
-            return n;
+            string source = File.ReadAllText(Path.Combine(Application.dataPath,
+                "_Project/Code/Boats/BoatWakeEmitter.cs"));
+            string body = MethodCode(CodeOnly(source), consumer);
+            StringAssert.Contains("SternAnchor(", body, "negative control must mutate a real caller");
+            string mutated = CodeOnly(source).Replace(body, body.Replace("SternAnchor(", "BypassedAnchor("));
+            // A matching comment cannot make the disconnected consumer pass.
+            mutated += "\n/* " + body + " */";
+            CollectionAssert.Contains(SternRoutingViolations(mutated), consumer);
+        }
+
+        [TestCase("_hasPosedStern", "false")]
+        [TestCase("ProjectAlongHeading(_posedStern", "ProjectAlongHeading(pos")]
+        [TestCase("SternOffsetMeters(),asternOffset", "0f,asternOffset")]
+        [TestCase("WakeGrading.SternAnchorFromRoot(", "WakeGrading.SternAnchor(")]
+        public void SternRoutingGuard_RejectsBrokenPoseOrFallback(string before, string after)
+        {
+            string source = CodeOnly(File.ReadAllText(Path.Combine(Application.dataPath,
+                "_Project/Code/Boats/BoatWakeEmitter.cs")));
+            string helper = MethodCode(source, "SternAnchor");
+            string compact = Regex.Replace(helper, @"\s+", "");
+            StringAssert.Contains(before, compact, "negative control must mutate the actual helper");
+            string mutated = source.Replace(helper, compact.Replace(before, after));
+            CollectionAssert.Contains(SternRoutingViolations(mutated), "SternAnchor");
+        }
+
+        // This remains a source wiring tripwire, not a rendered-foam or arithmetic test. Inspect
+        // individual executable method bodies: old whole-file counts could pass disconnected code.
+        internal static List<string> SternRoutingViolations(string source)
+        {
+            string code = CodeOnly(source);
+            var failures = new List<string>();
+            if (Regex.IsMatch(code, @"WakeGrading\s*\.\s*SternAnchor\s*\("))
+                failures.Add("legacy length-derived anchor");
+            foreach (string consumer in new[] { "FormBubbles", "DepositTrail", "RenderPlume" })
+            {
+                string body = Regex.Replace(MethodCode(code, consumer), @"\s+", "");
+                string assignment = consumer == "FormBubbles"
+                    ? "Vector2sternPoint=SternAnchor(pos,bow,sternScatter*0.5f,bakeElevationDegrees);"
+                    : consumer == "DepositTrail"
+                        ? "Vector2stern=SternAnchor(pos,bow,trail.DepositAsternOffset,bakeElevationDegrees);"
+                        : "Vector2apex=SternAnchor(pos,bow,grade.PlumeAsternOffset,bakeElevationDegrees);";
+                if (!body.Contains(assignment)) failures.Add(consumer);
+            }
+            string anchor = Regex.Replace(MethodCode(code, "SternAnchor"), @"\s+", "");
+            if (anchor != "_hasPosedStern?WakeRootMath.ProjectAlongHeading(_posedStern,bow,-asternOffset,elevation)"
+                + ":WakeGrading.SternAnchorFromRoot(pos,bow,SternOffsetMeters(),asternOffset,elevation)")
+                failures.Add("SternAnchor");
+            return failures;
+        }
+
+        static string CodeOnly(string source)
+        {
+            // Remove strings as well as comments, so documentary examples cannot satisfy the guard.
+            return Regex.Replace(source, "@\"(?:\"\"|[^\"])*\"|\"(?:\\\\.|[^\"\\\\])*\"|/\\*.*?\\*/|//[^\\r\\n]*",
+                " ", RegexOptions.Singleline);
+        }
+
+        static string MethodCode(string code, string method)
+        {
+            Match start = Regex.Match(code, @"private\s+(?:void|Vector2)\s+" + method + @"\s*\([^)]*\)\s*(=>|\{)");
+            if (!start.Success) return string.Empty;
+            int begin = start.Index + start.Length;
+            if (start.Groups[1].Value == "=>")
+            {
+                int end = code.IndexOf(';', begin);
+                return end < 0 ? string.Empty : code.Substring(begin, end - begin);
+            }
+            int depth = 1;
+            for (int end = begin; end < code.Length; end++)
+            {
+                if (code[end] == '{') depth++;
+                if (code[end] == '}' && --depth == 0) return code.Substring(begin, end - begin);
+            }
+            return string.Empty;
         }
     }
 }

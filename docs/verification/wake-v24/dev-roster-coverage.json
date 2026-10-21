@@ -1,0 +1,146 @@
+[
+  {
+    "Id": "boat.dory",
+    "Asset": "Dory.asset",
+    "PoseVerified": true,
+    "GPU": true
+  },
+  {
+    "Id": "boat.dory_outboard",
+    "Asset": "DoryOutboard.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.punt",
+    "Asset": "Punt.asset",
+    "PoseVerified": true,
+    "GPU": true
+  },
+  {
+    "Id": "boat.punt_upgraded",
+    "Asset": "PuntUpgraded.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.console_skiff",
+    "Asset": "ConsoleSkiff.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.sport_skiff",
+    "Asset": "SportSkiff.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.sport_skiff_mk2",
+    "Asset": "SportSkiffMk2.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.sport_skiff_twin",
+    "Asset": "SportSkiffTwin.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.zodiac_frc",
+    "Asset": "ZodiacFrc.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.zodiac_hurricane",
+    "Asset": "ZodiacHurricane.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.sloop_30",
+    "Asset": "Sloop30.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.cape_islander",
+    "Asset": "CapeIslander.asset",
+    "PoseVerified": true,
+    "GPU": true
+  },
+  {
+    "Id": "boat.lobster_boat",
+    "Asset": "LobsterBoat.asset",
+    "PoseVerified": true,
+    "GPU": true
+  },
+  {
+    "Id": "boat.lobster_inshore_open_northumberland",
+    "Asset": "LobsterInshoreOpenNorthumberland.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.lobster_standard_hardtop_northumberland",
+    "Asset": "LobsterStandardHardtopNorthumberland.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.lobster_offshore_open_northumberland",
+    "Asset": "LobsterOffshoreOpenNorthumberland.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.sport_fisher_convertible",
+    "Asset": "SportFisherConvertible.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.side_dragger",
+    "Asset": "SideDragger.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.sloop_88",
+    "Asset": "Sloop88.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.sport_fisher_skybridge",
+    "Asset": "SportFisherSkybridge.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.stern_trawler",
+    "Asset": "SternTrawler.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.stern_trawler_mk2",
+    "Asset": "SternTrawlerMk2.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.coastal_packet",
+    "Asset": "CoastalPacket.asset",
+    "PoseVerified": true,
+    "GPU": false
+  },
+  {
+    "Id": "boat.tanker",
+    "Asset": "Tanker.asset",
+    "PoseVerified": true,
+    "GPU": false
+  }
+]

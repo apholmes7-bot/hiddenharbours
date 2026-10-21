@@ -53,9 +53,21 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 
 ## 3. Core services (the spine)
 
+**Helm switches (2026-10-07):** `BoatAnchor` answers `IVesselWay` on the physics root and
+pushes `IVesselWayListener` when its derived lamp regime changes. Holding uses the existing
+`VesselWay.Moored`; stowed or dragging uses `UnderWay`. If a `MooredBoat` also lives on that
+root, both providers return the same combined answer: a declared berth or a holding anchor wins.
+Rebuilt lamps read that answer immediately; no way state is saved. `DeckIceBox` registers an
+`IInteractable` on the player's own deck, at the new `InteractPriority.DeckStorage` rung (-10),
+below doors (`Fixture`) and fuel work (`ToolTarget`). Both the box and the fuel tank register with
+`Interactables` on enable and relinquish that registration on disable; priority only applies to
+registered candidates. The switcher's helm-first ladder is unchanged.
+The lid consumes the shared interact verb (ADR 0043); its old L read is removed. The dev I ice
+scaffold remains as-is pending the input lane's PR 1; no binding or key is added.
+
 | Service | Responsibility | Notes / determinism |
 |---------|----------------|---------------------|
-| **EventBus** | Decoupled pub/sub between modules (`FishCaught`, `FishingStateChanged`, `TideChanged`, `BoatGrounded`, `DayStarted`, `MarketTick`). | Typed events; no module references another's classes. |
+| **EventBus** | Typed, synchronous, main-thread notifications between modules; events are notifications, not transactions. A handler failure is logged once and later handlers and the publisher continue, without rethrowing. A request still needs its own explicit outcome. | Ordered, flattened snapshots preserve delegate removal and reentrancy semantics. Successful Publish allocates zero bus bytes after initialization; subscription changes and fault logging may allocate. Unexpected exception logs fail tests; injected faults require exact `LogAssert.Expect`, never ignored failures. [ADR 0052](../adr/0052-event-handler-isolation.md). |
 | **TimeService** | The 24h clock, day/week/season/year, time scale, sleep/wait. `gameTime` is a `double` (in-game seconds). | The master clock everything derives from. |
 | **EnvironmentService** | Computes **tide, wind, weather, sea state, visibility** from `(worldSeed, gameTime, region)`. Emits an `EnvironmentSample` per region per tick. | **Deterministic** → not saved, recomputed. (`design/time-tides-weather.md`) |
 | **RegionService** | Additive load/unload of region scenes, the `MapGraph`, travel/transit, fog-of-war reveal state. | Reveal state is saved; geometry is authored. |
@@ -65,6 +77,16 @@ installer + a `ServiceLocator` exposed through Core interfaces. `lead-architect`
 | **InputService** | Translates raw input → **intents** (`MoveIntent`, `ThrottleIntent`, `InteractIntent`, `SetHeadingIntent`). | Platform-swappable. **Landed 2026-09-02 as ADR 0043:** per-mode intent structs in Core (`WalkIntents`, `DeckIntents`, `DriveDemand`; `HelmIntents` in PR 1), one `IControlIntentSource<T>` read per mode per frame, bindings as data in `Data/Input/HiddenHarbours.inputactions`. |
 | **SaveService** | Versioned save/load, autosave, app-suspend safety. | See §6. |
 | **AudioDirector** | Adaptive ambient/music/SFX driven by region + EnvironmentSample. | (`design/art-and-audio-bible.md`) |
+
+### Authored gull perches (O3 wave 1b)
+
+Core's `IGullPerch` offers a stable id, ground point, screen point and host sort line.
+`GullPerches` holds scene-lifetime offers and exclusive reservations in stable id order.
+World's `GullPerch` registers on enable and unregisters on disable; it has no per-frame callback.
+Art's `GullFlock` claims an offer on its existing decision tick and uses its landing and departure
+states, releasing the reservation on departure, timeout, disable or host removal. The modules
+reference Core only. Neither offers nor reservations are saved. See
+[`wave-1b-placement.md`](../design/st-peters-key-scenes/wave-1b-placement.md) for the placement ruling.
 
 ## 4. The Environment → Boat force contract (P1, the signature loop)
 
@@ -170,6 +192,21 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   boat-cross/grounding depth, the clam-baring or the seabed bake — a pier does not shoal the berth
   beneath it. Added because the St Peters wharf stands over a dredged −1.0 m slip in a tide-gated region,
   so the sim called the ratified disembark point 4.5 m of open sea at high water.
+- **`Core.IStillWater` + `Core.StillWaterLevels` + `GameServices.StillWater`** — the **still-water** seam
+  (ADR 0046): fresh water that stands ABOVE the tide, where the region-wide tide cannot reach — a pond, a
+  brook's fresh reach. `StillLevelAt(worldPos)` answers the still surface in metres above chart datum, or
+  `StillWaterLevels.None` (−∞) where there is none; `Map` hands the render the same R16 texture, rectangle
+  and range the sim decodes (code 0 = none, on the height map's own scale). The ONE rule is
+  `StillWaterLevels.Compose`: **water = max(tide, still)**, written as a comparison so "none" returns the
+  tide bit for bit; depth stays `water − standing`, so the wade and swim bands apply to a pond unchanged
+  and a built deck over a brook is still dry. `PaintedTidalTerrain` registers its map's still water beside
+  the terrain and clears only its own; the accessor is **never null** (`EmptyStillWater.Instance`, the
+  `IFishSchools` precedent), and **with no still map every answer is bit-identical to the tide-only
+  read** — every region until PR 5 binds St Peters' map. DERIVED from the terrain plan, never painted by
+  hand, never saved (rule 5). Readers: the on-foot composition (`StandableSurfaces.OnFootDepth` /
+  `OnFootDepthNow`, `TidalWalkability`), and the water shader's fragment depth and the tidal faces
+  (through `Art.StillWaterGlobals` and `Art/Shaders/Include/StillWater.hlsl`). ⚠ **Boats, clams, traps, fishing,
+  vehicles and the sea's presenters stay on the tide** — ADR 0046 §6.2 gives the reason for each.
 
 ### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009
 
@@ -226,6 +263,57 @@ never referencing Fishing. The contract's rules:
 
 Guarded by `Assets/Tests/EditMode/FishingV2ContractTests.cs` (frozen ints, additive-struct,
 Def invariants).
+
+### 4.5 The helm's footprint (overlays and the camera keep clear of the helm without referencing UI) — ADR 0050
+
+**`Core.HelmFootprint` + `Core.HelmFootprintArea` + `Core.HelmFootprintChanged`** — one statement of
+what the helm's UI covers at the bottom of the screen, in screen pixels (bottom-left origin): nothing,
+a full-width band's height, or a card's rect. The helm host (`UI/HelmOverlayHost`) publishes today's
+card, its window and title strip included, and says nothing with no helm in her hand, under hide-all
+or with the window hidden; H2's band publishes `FullWidthBand(144·k)`. The readers keep clear through
+Core only: the dev toast (`Player`), the interact popup and the HUD's nav cluster (`UI`), the quest note
+(`World`), each via the shared `LiftToClear` (a band raises the floor; a card lifts only what reaches
+it, above it, or beside it first for the nav cluster); and the camera (`App/CameraFollow`), which eases
+the boat up by `GameConfig.HelmFootprint.CameraBandShare` of a full-width band (0.5, ruled), in metres
+by the framing on screen, added with the look-ahead ahead of the feel, the snap and the clamp, and
+never for a card. Change-detected, so a quiet frame is a struct compare. Presentation state: unsaved
+(rule 5), nothing published headless, so every reader stands where it did.
+
+
+### Wave wind history (ADR 0018, Stage A, 2026-10-13)
+
+Core's additive `IWaveWindSource.WaveWindAt(double gameTimeSeconds)` returns a
+`WaveWindSample` with wind vector and continuous sea state for any past world time,
+including negative times at startup. `EnvironmentService` evaluates the active region's
+wind law and dev override through this seam. `WaveMemory` averages fixed world-grid taps
+in wavelength bands; `WaveFieldAnimator` bakes travel at the clock without frame history.
+The bridge publishes one payload through `SharedWaveField` to both riders and seakeeping;
+published trains are sampled at time zero. Before publication consumers evaluate the
+same wind memory at the clock. `WaterSurface` uses the short band's wind for decorative
+wind and chop. Settings live solely in `GameConfig.WaveField`; nothing is saved. See
+ADR 0018's dated amendment for windows, causality, fallback and future-stage boundaries.
+
+### Birds belong to places (gulls, 2026-10-15)
+
+The flock no longer gathers around the camera. Each place a bird keeps is a `BirdHauntDef`, one
+file per place under `Data/Birds/Haunts/<Region>/`, with ids `birdhaunt.<region>_<place>` and
+`birdroost.<region>_<place>`. Where and when sit on the place: region, kind, box, roost, shelter,
+working hours, market day, tide, perches and away heading. How many sit in its list of birds, one
+`BirdHauntEntry` per species id (only `bird.herring_gull` today). `Resources/BirdHauntLibrary.asset`
+lists the places and holds the gull's `GullScheduleTuning`.
+
+`GullSchedule` (pure, no engine) turns a place, the calendar (season, day, hour, market day) and the
+sea (storm, visibility, tide) into how many birds it holds, from `(worldSeed, gameTime)` alone.
+`GullRoster` gives each bird slot its place (at the haunt, at the roost, commuting or away) and its
+spot. A bird left behind is where it was when the view comes back. `GullFlock` (Art) ticks the
+roster `ScheduleTicksPerSecond` times a second and binds its pool of `GullConfig.Count` drawn birds
+to the slots nearest the view.
+
+The flock publishes those birds through Core's `IBirdPresence`. `GameServices.BirdPresence` is never
+null: it falls back to `EmptyBirdPresence` when no flock is up. Audio's `GullCallPlayer` reads only
+that seam (rule 4). It calls for the birds near the view, panned to the bird, quieter with distance,
+and more often for feeding birds; its knobs are the director's `GullCallTuning`. The always-on gull
+bed is gone. Nothing is saved: the schedule is recomputed from seed and time.
 
 ## 5. Boat & entity architecture (composition)
 
@@ -348,6 +436,26 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
     characters; "editor" where no build was made), which is §7.8's exit criterion: a playtest report that
     cannot be pinned to a build is worth very little. Moving the CAMERA to a composed title framing is a
     separate, App-lane question — the UI assembly reaches Core only, by design.
+- **The player's save is never clobbered.** The one slot is `persistentDataPath/savegame.json`, which
+  every checkout on a machine shares (the path is keyed on company and product, not on the folder). Two
+  guarantees protect it.
+  - **No test touches it.** `SaveService` opens `SaveStore.ActivePath`. That is the player's save, except
+    under the editor's test runner, where each PlayMode run gets a file of its own:
+    `<project>/Temp/TestRunSaves/<guid>/savegame.json`, which starts absent, so every run begins on a new game
+    as CI always has. The PlayMode tests' run hook (`Tests.PlayMode.TestRunSave`, an assembly-level
+    `PrebuildSetupWithTestData`) sets it before the runner enters play mode. It is handed over in a process
+    environment variable (`SaveStore.TestRunSaveVariable`) because the service reads in `Awake` at
+    BeforeSceneLoad, before any test or run callback exists, and entering play mode reloads the domain, so no
+    static set beforehand would survive. The service keeps the path it opened, so the quit write as the runner
+    leaves play mode lands in the run's file too. The hook disarms when the editor is back in edit mode, a
+    cancelled run included, and again in the runner's cleanup. A built player compiles the branch out. Pinned
+    by `SaveNeverClobberedPlayTests`, which drives every write path of the live service and is not
+    GPU-gated, and by `SaveNeverClobberedTests`.
+  - **A New Game keeps the game it erases.** Before `BeginNewGame` replaces the file, and before the first
+    write over a save that existed but could not be read, `SaveStore.KeepReplaced` copies it, byte for byte,
+    to `savegame.kept-1.json` beside it. Older copies move up one, and the one past
+    `SaveStore.KeptGameCount` (3) is dropped. Every other write is unchanged. There is no in-game undo:
+    recovery is by hand, renaming a kept copy back to `savegame.json`.
 
 ## 7. Tick & performance model
 

@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 21c72c076e713f3439121eca583373a0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3781272445218305653
+    second: Village_redSaltbox_normal_0
+  - first:
+      213: -6717747375171952783
+    second: Village_redSaltbox_normal_1
+  - first:
+      213: 8777292407729508059
+    second: Village_redSaltbox_normal_2
+  - first:
+      213: -7916781616259582760
+    second: Village_redSaltbox_normal_3
+  - first:
+      213: -7955720024633482741
+    second: Village_redSaltbox_normal_4
+  - first:
+      213: -8127749431093576100
+    second: Village_redSaltbox_normal_5
+  - first:
+      213: 8808511649422674668
+    second: Village_redSaltbox_normal_6
+  - first:
+      213: 6565698331153291012
+    second: Village_redSaltbox_normal_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 426
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7bfb2dcac0f7bb4c84a245f40bade11
+      internalID: 141152628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d1
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 426
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c0cec0ba5df84d4d88e70d78af51caa
+      internalID: 1480584446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d2
+      rect:
+        serializedVersion: 2
+        x: 884
+        y: 426
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f827f253db3443f44a29d2ce4964baeb
+      internalID: -1606489266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d3
+      rect:
+        serializedVersion: 2
+        x: 1326
+        y: 426
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61bfae6ff779a154b98614f443e984fa
+      internalID: 1486313290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01b8c6e350bac7f4290dcfac645af221
+      internalID: -1325840095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d5
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 0
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2df487144b5eb09479afa00d9019ef9b
+      internalID: 1172427348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d6
+      rect:
+        serializedVersion: 2
+        x: 884
+        y: 0
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec0350c7acf011e47934bc2c13f8b360
+      internalID: 2002691822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_redSaltbox_normal_d7
+      rect:
+        serializedVersion: 2
+        x: 1326
+        y: 0
+        width: 442
+        height: 426
+      alignment: 9
+      pivot: {x: 0.5, y: 0.32394367}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb1d3606c251f5445b33c33e59e4f5b2
+      internalID: -1836599202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 66f99ba8e77417347aea52b9254a7e93
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_redSaltbox_normal_d0: 141152628
+      Village_redSaltbox_normal_d1: 1480584446
+      Village_redSaltbox_normal_d2: -1606489266
+      Village_redSaltbox_normal_d3: 1486313290
+      Village_redSaltbox_normal_d4: -1325840095
+      Village_redSaltbox_normal_d5: 1172427348
+      Village_redSaltbox_normal_d6: 2002691822
+      Village_redSaltbox_normal_d7: -1836599202
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

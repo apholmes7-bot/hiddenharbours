@@ -590,6 +590,49 @@ namespace HiddenHarbours.Core
     }
 
     // =====================================================================================
+    //  THE PLAYER'S LOOK — the recipe the builder draws (character PR 2b, ADR 0051)
+    // =====================================================================================
+
+    /// <summary>
+    /// <b>The player's recipe changed, and the save already holds it.</b> Published by
+    /// <see cref="IPlayerAppearance.Commit"/> AFTER the write, only on a real change, and answered by
+    /// whoever draws the player's mesh (ashore, aboard, at the helm): the builder resolves the recipe
+    /// and the drawing side recolours. The picker never sets a material (rule 4, ADR 0029); this is the
+    /// <see cref="OutfitChanged"/> shape for the whole body.
+    ///
+    /// <para><b>The player only, and no figure key</b> (ADR 0044 §9.3): the cast keeps its ten baked
+    /// defs, and a presentation key is never saved.</para>
+    /// </summary>
+    public readonly struct PlayerAppearanceChanged
+    {
+        /// <summary>A copy of the recipe now kept. Never null; EMPTY means the body as baked.</summary>
+        public readonly CharacterRecipe Recipe;
+
+        public PlayerAppearanceChanged(CharacterRecipe recipe)
+        {
+            Recipe = recipe != null ? recipe.Clone() : new CharacterRecipe();
+        }
+    }
+
+    /// <summary>
+    /// <b>Show the player built from this recipe, without keeping it.</b> Published by
+    /// <see cref="IPlayerAppearance.Preview"/>, and again by <see cref="IPlayerAppearance.CancelPreview"/>
+    /// with the committed recipe, so a preview ends the way it began (the
+    /// <see cref="OutfitPreviewRequested"/> reasoning). Answered by the same subscriber, on the same path,
+    /// with the same refusals as <see cref="PlayerAppearanceChanged"/>. Persisted by nobody.
+    /// </summary>
+    public readonly struct PlayerAppearancePreviewRequested
+    {
+        /// <summary>A copy of the recipe to DRAW. Never null; EMPTY means the body as baked.</summary>
+        public readonly CharacterRecipe Recipe;
+
+        public PlayerAppearancePreviewRequested(CharacterRecipe recipe)
+        {
+            Recipe = recipe != null ? recipe.Clone() : new CharacterRecipe();
+        }
+    }
+
+    // =====================================================================================
     //  THE NOTEBOOK — the book she carries
     // =====================================================================================
 

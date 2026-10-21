@@ -1,0 +1,344 @@
+fileFormatVersion: 2
+guid: 377219289419795458b1de8204269097
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6763488633966535025
+    second: Village_stPetersIceHouse_0
+  - first:
+      213: 3929019264594570
+    second: Village_stPetersIceHouse_1
+  - first:
+      213: 3442954934426048509
+    second: Village_stPetersIceHouse_2
+  - first:
+      213: 597160131453608015
+    second: Village_stPetersIceHouse_3
+  - first:
+      213: -4050105065655016307
+    second: Village_stPetersIceHouse_4
+  - first:
+      213: 206233175873175932
+    second: Village_stPetersIceHouse_5
+  - first:
+      213: -6596106575803719750
+    second: Village_stPetersIceHouse_6
+  - first:
+      213: -5518898259645759213
+    second: Village_stPetersIceHouse_7
+  - first:
+      213: -6431241588393665405
+    second: Village_stPetersIceHouse_8
+  - first:
+      213: -2375515128132521089
+    second: Village_stPetersIceHouse_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 413
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31063714df55aa44bba02362c4845e56
+      internalID: 1342581417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d1
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 413
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9550217ed0249744facd41594af2ab6a
+      internalID: -1082736065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d2
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 413
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de22f1888bd56594cb8e6328c123d5af
+      internalID: 61656529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d3
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 413
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c22ce6226e23a14388b143c78af6676
+      internalID: 74789876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d4
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 413
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df7517be64c0fce4cbb8ba7bc278333f
+      internalID: 1764888655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f470d99f39701734c992394ceae759b8
+      internalID: 943200882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 599ff30e1d9b4fa40b4f62cb466a916e
+      internalID: 914400724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersIceHouse_d7
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 384
+        height: 413
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2929782}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59dac6d35064d4a459e537ea8d061c86
+      internalID: 1151444741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 22d3840d2de9b4d42921b06c756a8708
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_stPetersIceHouse_d0: 1342581417
+      Village_stPetersIceHouse_d1: -1082736065
+      Village_stPetersIceHouse_d2: 61656529
+      Village_stPetersIceHouse_d3: 74789876
+      Village_stPetersIceHouse_d4: 1764888655
+      Village_stPetersIceHouse_d5: 943200882
+      Village_stPetersIceHouse_d6: 914400724
+      Village_stPetersIceHouse_d7: 1151444741
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

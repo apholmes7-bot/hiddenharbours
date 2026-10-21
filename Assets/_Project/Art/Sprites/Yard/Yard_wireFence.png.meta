@@ -145,10 +145,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -165,12 +165,12 @@ TextureImporter:
       name: Yard_wireFence_d1
       rect:
         serializedVersion: 2
-        x: 104
+        x: 102
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -187,12 +187,12 @@ TextureImporter:
       name: Yard_wireFence_d2
       rect:
         serializedVersion: 2
-        x: 208
+        x: 204
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -209,12 +209,12 @@ TextureImporter:
       name: Yard_wireFence_d3
       rect:
         serializedVersion: 2
-        x: 312
+        x: 306
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -231,12 +231,12 @@ TextureImporter:
       name: Yard_wireFence_d4
       rect:
         serializedVersion: 2
-        x: 416
+        x: 408
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -253,12 +253,12 @@ TextureImporter:
       name: Yard_wireFence_d5
       rect:
         serializedVersion: 2
-        x: 520
+        x: 510
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -275,12 +275,12 @@ TextureImporter:
       name: Yard_wireFence_d6
       rect:
         serializedVersion: 2
-        x: 624
+        x: 612
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -297,12 +297,12 @@ TextureImporter:
       name: Yard_wireFence_d7
       rect:
         serializedVersion: 2
-        x: 728
+        x: 714
         y: 0
-        width: 104
-        height: 95
+        width: 102
+        height: 93
       alignment: 9
-      pivot: {x: 0.5, y: 0.34736842}
+      pivot: {x: 0.5, y: 0.34408602}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

@@ -27,6 +27,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// stops the boat — the same read that already stops her on the tidal bar. Testing the fence's corners
     /// would now be testing a thing that is not there; the last two tests below test the mechanism that
     /// replaced it, which is the one that was always doing the real work on St Peters.</para>
+    ///
+    /// <para><b>NMC H2: the scene's ground is G3.</b> The arrival, the dock zone and the step ashore are berth 0 on G3's
+    /// north face (<see cref="NineMileCreekGroundPlan"/>), and every depth here is read off G3
+    /// (<see cref="NineMileCreekLiveGround"/>), the ground the scene stands on. The analytic plan's walls are the later
+    /// waves' authoring premise and are no longer the quay these claims are about.</para>
     /// </summary>
     public class NineMileCreekDockTests
     {
@@ -43,13 +48,7 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.Reset();
         }
 
-        private MainlandTidalTerrain MakeCreekTerrain()
-        {
-            var go = New("TidalTerrain");
-            var terrain = go.AddComponent<MainlandTidalTerrain>();
-            NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
-            return terrain;
-        }
+        private static ITidalTerrain Ground => NineMileCreekLiveGround.Plan;
 
         // ---- the invariant the bug violated: arrival is within dock range ----------------------
 
@@ -78,21 +77,30 @@ namespace HiddenHarbours.Tests.EditMode
             _spawned.Add(hull); boat.SetHull(hull);
             var switcher = New("Switcher").AddComponent<ControlSwitcher>();
 
+            // The arrival is laid ALONGSIDE berth 0, bow east, as the builder lays it (NMC H5/H6).
             var anchor = New("NineMileCreekAnchor").AddComponent<RegionAnchor>();
+            var arrival = At("Arr", NineMileCreekBuilder.ArrivalPos);
+            arrival.localEulerAngles = new Vector3(0f, 0f, -NineMileCreekGroundPlan.BerthHeadingDegrees);
             anchor.Configure("region.nine_mile_creek",
-                             At("Arr", NineMileCreekBuilder.ArrivalPos),
+                             arrival,
                              At("Dock", NineMileCreekBuilder.DockZonePos),
                              At("Dis", NineMileCreekBuilder.DisembarkPos));
+            anchor.ConfigureAlongsideBerth(NineMileCreekGroundPlan.DesignHalfBeamMetres);
 
             // Board (the normal travel case is ARRIVING ABOARD), then arrive exactly as
             // RegionTravelCoordinator does on the hop (which re-asserts the aboard mode).
             switcher.Configure(player, boat, input, null, NineMileCreekBuilder.DockZoneRadius, null);
             playerGo.transform.position = boatGo.transform.position;        // step aboard from beside the boat
             Assert.IsTrue(switcher.TryInteract(), "board before travelling");
-            RegionTravelCoordinator.ApplyArrival(player.transform, boatGo.transform, switcher, anchor);
+            Assert.IsTrue(RegionTravelCoordinator.ApplyArrival(player.transform, boatGo.transform, switcher, anchor, null),
+                "the region's own arrival is an alongside berth, so she is laid alongside it");
 
+            // An edit-mode rig carries no hull presence (SetHull registers one in play mode only), so she reports
+            // no beam and lies as the design boat: on the point itself.
             Assert.AreEqual(NineMileCreekBuilder.ArrivalPos, boatGo.transform.position,
                 "the boat is parked at the Nine Mile Creek arrival point on arrival");
+            Assert.That(Quaternion.Angle(NineMileCreekGroundPlan.ArrivalRotation, boatGo.transform.rotation),
+                Is.LessThan(0.01f), "…heading east along the face, her port side to the fender line");
             Assert.AreEqual(ControlMode.OnDeck, switcher.Mode, "you arrive still aboard — standing on the deck");
             Assert.IsTrue(switcher.InDockZone(),
                 "with the boat parked at arrival, the dock zone is in range → E disembarks (the #52 fix)");
@@ -103,27 +111,34 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void DisembarkPoint_IsOnTheQuayDeck_NotInTheBasin()
         {
-            Rect deck = NineMileCreekWharf.DeckFootprint();
+            // The quay on G3 is the ground behind the north face's cap: the cap spans the face's half-metre raster
+            // transition, and the apron behind it is the ground itself (NMC H5).
+            Rect cap = NineMileCreekGroundPlan.NorthCap;
             Vector2 p = NineMileCreekBuilder.DisembarkPos;
 
-            Assert.IsTrue(deck.Contains(p),
-                $"the disembark spot {p} must land the on-foot player ON the quay {deck} — stepping " +
-                "ashore into the basin is the bug this rectangle exists to prevent");
+            Assert.That(p.x, Is.InRange(cap.xMin, cap.xMax),
+                $"the disembark spot {p} must land the on-foot player on the north quay's run, x {cap.xMin}..{cap.xMax}");
+            Assert.Greater(p.y, cap.yMax,
+                $"…and landward of the cap's brow at y {cap.yMax}: stepping ashore into the basin is the bug this " +
+                "exists to prevent");
+            float ground = Ground.ElevationAt(p);
+            Assert.Less(TidalExposure.WaterDepth(NineMileCreekMainland.SpringHighWater, ground), 0f,
+                $"the quay at the disembark spot stands at {ground:0.00} m and must be dry at SPRING HIGH");
         }
 
         [Test]
         public void TheDockZone_IsAgainstTheMooringEdge_WhereTheFleetLies()
         {
-            Rect deck = NineMileCreekWharf.DeckFootprint();
             Vector2 dock = NineMileCreekBuilder.DockZonePos;
+            float face = NineMileCreekGroundPlan.NorthFaceY;
 
-            Assert.Less(dock.y, NineMileCreekWharf.MooringEdgeY,
+            Assert.Less(dock.y, face,
                 "you come alongside the SOUTH face — that is the wall with the fleet, the bollards and " +
                 "the ladder on it, and the only edge the kit gives a tall face to");
-            Assert.GreaterOrEqual(dock.y, NineMileCreekWharf.MooringEdgeY - NineMileCreekBuilder.DockZoneRadius,
+            Assert.GreaterOrEqual(dock.y, face - NineMileCreekBuilder.DockZoneRadius,
                 "…but against it, not adrift in the basin: the whole dock radius must reach the concrete");
-            Assert.That(dock.x, Is.InRange(deck.xMin, deck.xMax),
-                "and off the wall's length, not past its end");
+            Assert.That(dock.x, Is.InRange(NineMileCreekGroundPlan.BerthSlotWestX, NineMileCreekGroundPlan.BerthSlotEastX),
+                "and in berth 0's own slot on the face, not past the wall's end or in a neighbour's berth");
         }
 
         // ---- what replaced the fence: the ground itself ------------------------------------------
@@ -131,18 +146,20 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheQuayStopsTheBoat_ByDepth_WhichIsWhatTheFenceUsedToFake()
         {
-            // The old fence's whole job, done by the terrain: a hull cannot swim onto the quay, because
-            // the quay is +3.0 m of made ground and there is no water over it at any state of the tide.
-            var terrain = MakeCreekTerrain();
+            // The old fence's whole job, done by the ground: a hull cannot swim onto the quay, because G3 behind
+            // each face's cap stands above spring high along the face's whole run. The cap and its blocker take
+            // the face's own half-metre transition.
             float high = NineMileCreekMainland.SpringHighWater;
 
-            foreach (Rect deck in NineMileCreekWharf.Decks())
-            {
-                float ground = terrain.ElevationAt(deck.center);
-                Assert.Less(TidalExposure.WaterDepth(high, ground), 0f,
-                    $"the quay at {deck.center} carries {TidalExposure.WaterDepth(high, ground):0.00} m of " +
-                    "water at SPRING HIGH — a boat could sail onto the wharf. This is the fence's job now");
-            }
+            foreach (Rect cap in new[] { NineMileCreekGroundPlan.NorthCap, NineMileCreekGroundPlan.CraneCap })
+                for (float x = cap.xMin + 0.25f; x < cap.xMax; x += 0.5f)
+                {
+                    var p = new Vector2(x, cap.yMax);
+                    float ground = Ground.ElevationAt(p);
+                    Assert.Less(TidalExposure.WaterDepth(high, ground), 0f,
+                        $"the quay at {p} carries {TidalExposure.WaterDepth(high, ground):0.00} m of " +
+                        "water at SPRING HIGH — a boat could sail onto the wharf. This is the fence's job now");
+                }
         }
 
         [Test]
@@ -150,9 +167,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // The other half of the same claim, and the one that would fail if a fill were made too
             // generous: a wharf you cannot bring a boat to is a sea wall.
-            var terrain = MakeCreekTerrain();
             float high = NineMileCreekMainland.SpringHighWater;
-            float bed = terrain.ElevationAt(NineMileCreekBuilder.DockZonePos);
+            float bed = Ground.ElevationAt(NineMileCreekBuilder.DockZonePos);
 
             Assert.Greater(TidalExposure.WaterDepth(high, bed), 0.3f,
                 $"the dock zone lies over {bed:0.00} m of ground — the start dory could not come " +
@@ -182,8 +198,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // She is a CROSSING, so the ground under the landing has to do both things: carry you at low
             // water and cover at high. A landing that never bares is a landing you can only swim to.
-            var terrain = MakeCreekTerrain();
-            float ground = terrain.ElevationAt(NineMileCreekBuilder.WalkArrivalPos);
+            float ground = Ground.ElevationAt(NineMileCreekBuilder.WalkArrivalPos);
 
             Assert.IsTrue(TidalExposure.IsExposed(NineMileCreekMainland.SpringLowWater, ground),
                 $"the bar at the walk-in arrival stands at {ground:0.00} m and must BARE at spring low, " +

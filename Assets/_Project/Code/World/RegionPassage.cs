@@ -51,6 +51,12 @@ namespace HiddenHarbours.World
 
         public RegionDef Target => _target;
 
+        [SerializeField] private MonoBehaviour _accessPolicy;
+        // An unconfigured passage retains its existing behaviour; a wrong policy fails closed.
+        public bool TravelAllowed => _accessPolicy == null ||
+            (_accessPolicy is IRegionPassageAccess access && access.CanTravel);
+        public void ConfigureAccess(MonoBehaviour policy) => _accessPolicy = policy;
+
         /// <summary>Which arrival point in the target region this passage lands at; empty = the target's
         /// own default.</summary>
         public string ArrivalKey => _arrivalKey;
@@ -123,6 +129,7 @@ namespace HiddenHarbours.World
         /// </summary>
         public void Activate()
         {
+            if (!TravelAllowed) return;
             if (_loader == null || _target == null)
             {
                 Debug.LogWarning("[RegionPassage] Not wired (need a target region + a loader).", this);

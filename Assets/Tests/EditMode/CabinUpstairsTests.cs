@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 
@@ -30,10 +31,11 @@ namespace HiddenHarbours.Tests.EditMode
         const float CottageWidth = 6.6f;
         const float CottageLength = 8.05f;
 
-        /// <summary>And how far apart its two floors are: <c>interiorIsoRig</c> declares
-        /// <c>storeyZ = roomH + 0.34</c> of joists, which comes to 3.1025 m at this cottage's size and is
-        /// what the bake writes into the interiors contract as <c>storeyHeightMetres</c>. Restated here
-        /// rather than read from the contract, for the same reason the footprint is.</summary>
+        /// <summary>And how far apart its two floors are: the room rig before the village return declared
+        /// <c>storeyZ = roomH + 0.34</c> of joists, which comes to 3.1025 m at this cottage's size, and
+        /// Ginny's placed cottage still stands its upstairs at that height. The returned rig of drop 14
+        /// measures a 2.65 m rise, which is what the contract carries since #898. Restated here rather
+        /// than read from the contract, for the same reason the footprint is.</summary>
         const float CottageStoreyHeightMetres = 3.1025f;
 
         /// <summary>A save service that behaves the way the real one does in the one respect the rest
@@ -863,9 +865,13 @@ namespace HiddenHarbours.Tests.EditMode
                 if (f.Fixture == StPetersInteriors.InteriorFixture.OwnerBed) ginny = f.RoomMetres;
             }
 
-            Assert.Less(player.y, divide, "the player's bed is on the door side of the partition");
-            Assert.Greater(ginny.y, divide,
-                           "and Ginny's is on the hearth side — two rooms, not one room with two beds");
+            // Which side is the door's is read from the bake (the plan turned with the returned room
+            // rig, #898), so this holds on whichever gable the rig draws the doorway.
+            float doorEnd = CottageDoorEnd();
+            Assert.Greater((player.y - divide) * doorEnd, 0f,
+                           "the player's bed is on the door side of the partition");
+            Assert.Less((ginny.y - divide) * doorEnd, 0f,
+                        "and Ginny's is on the hearth side — two rooms, not one room with two beds");
         }
 
         [Test]
@@ -880,10 +886,24 @@ namespace HiddenHarbours.Tests.EditMode
                 if (span > widest) { widest = span; divide = 0.5f * (w.Y0 + w.Y1); }
             }
 
+            float doorEnd = CottageDoorEnd();
             foreach (var f in plan.Furnishings)
                 if (f.Fixture == StPetersInteriors.InteriorFixture.Wardrobe)
-                    Assert.Less(f.RoomMetres.y, divide,
-                                "the owner ruled the wardrobe stands in the PLAYER's room");
+                    Assert.Greater((f.RoomMetres.y - divide) * doorEnd, 0f,
+                                   "the owner ruled the wardrobe stands in the PLAYER's room, which is the " +
+                                   "door side of the partition");
+        }
+
+        /// <summary>+1 if the cottage's baked doorway is on its <c>+y</c> gable, −1 if on <c>−y</c>: read
+        /// from the bake's own anchors with the call the stander makes, so the plan is checked against the
+        /// room it is stood in. Fails rather than guessing when the room is not in the contract.</summary>
+        static float CottageDoorEnd()
+        {
+            InteriorCatalog.Placement baked = InteriorCatalog.FindRoom(StPetersGinnyPlot.CottageKey);
+            Assert.IsTrue(baked.IsValid,
+                          $"'{StPetersGinnyPlot.CottageKey}' is not in the interiors contract, so which end " +
+                          "its doorway is on cannot be read");
+            return InteriorCatalog.DoorModelMetres(baked).y >= 0f ? 1f : -1f;
         }
 
         // =============================================================================

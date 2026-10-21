@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shop Building Kit — harness</title>
+<style>
+  body{margin:0;background:#0b1216;color:#c8d4d7;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;}
+  h1{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#c9a86a;margin:0 0 4px;}
+  p.note{color:#6f7e83;margin:0 0 16px;max-width:70ch;}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;}
+  .row > span{color:#6f7e83;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;width:74px;}
+  button{font:inherit;font-size:12px;padding:4px 9px;border-radius:3px;border:1px solid #2a3b43;background:#132025;color:#93a4a8;cursor:pointer;}
+  button.on{border-color:#c9a86a;background:#2a2317;color:#e6d2a4;}
+  button.act{border-color:#2f6079;background:#122530;color:#7fd6c9;}
+  #stage{border:1px solid #243137;background:#0e181d;margin:12px 0;overflow:auto;}
+  canvas{display:block;image-rendering:pixelated;}
+  pre{border:1px solid #243137;background:#0e181d;padding:11px 13px;margin:0;white-space:pre-wrap;color:#8fa3a8;font-size:12px;}
+  b{color:#c8d4d7;font-weight:400;}
+</style>
+</head>
+<body>
+<h1>Shop Building Kit — harness</h1>
+<p class="note">Standalone: no build, no deps. Loads the three rigs in order, bakes any trade / level /
+facing, and asserts the pivot is identical across all eight facings. Rig source is the same file the
+engine ships.</p>
+
+<div class="row"><span>trade</span><span id="trades" style="display:flex;gap:6px;flex-wrap:wrap;width:auto;"></span></div>
+<div class="row"><span>bake</span><span id="modes" style="display:flex;gap:6px;width:auto;"></span></div>
+<div class="row"><span>facing</span><span id="dirs" style="display:flex;gap:6px;width:auto;"></span></div>
+<div class="row"><span>export</span>
+  <button class="act" id="strip">bake 8-dir strip ↓</button>
+  <button class="act" id="check">run asserts</button>
+</div>
+
+<div id="stage"><canvas id="cv" width="720" height="600"></canvas></div>
+<pre id="log">loading rigs…</pre>
+
+<script src="shopfrontRig.js"></script>
+<script src="shopInteriorRig.js"></script>
+<script src="shopBuildingRig.js"></script>
+<script>
+(function(){
+  var FACE = ['N','NE','E','SE','S','SW','W','NW'];
+  var SF = window.Shopfront, SI = window.ShopInterior, SB = window.ShopBuilding;
+  var st = { type:'restaurant', mode:'ground', dir:3 };
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), out = document.getElementById('log');
+
+  var MODES = [['ground','plan · ground'],['upper','plan · upper'],['room','one room'],['shell','exterior']];
+  function chips(host, list, isOn, pick){
+    host.innerHTML = '';
+    list.forEach(function(it){
+      var b = document.createElement('button');
+      b.textContent = it[1]; b.className = isOn(it[0]) ? 'on' : '';
+      b.onclick = function(){ pick(it[0]); };
+      host.appendChild(b);
+    });
+  }
+  function ui(){
+    chips(document.getElementById('trades'), SB.plans().map(function(t){ return [t, SI.TYPES[t].label]; }),
+      function(t){ return t===st.type; }, function(t){ st.type=t; draw(); });
+    chips(document.getElementById('modes'), MODES,
+      function(m){ return m===st.mode; }, function(m){ st.mode=m; draw(); });
+    chips(document.getElementById('dirs'), FACE.map(function(f,i){ return [i,f]; }),
+      function(i){ return i===st.dir; }, function(i){ st.dir=i; draw(); });
+  }
+
+  // one bake -> {img, W, H, pivot, meta}
+  function bake(dir){
+    var t = st.type, m = st.mode;
+    if(m==='shell'){
+      var d = SF.dims({type:t});
+      return { img:new ImageData(SF.render(dir,{type:t}), SF.W, SF.H), W:SF.W, H:SF.H, pivot:SF.pivot,
+        meta:'shell ' + d.Wd + '×' + d.Ln + ' m · eave ' + d.wallH.toFixed(2) + ' · ridge ' + d.ridgeZ.toFixed(2)
+          + (d.wing ? ' · wing ' + d.wing.width.toFixed(1) + '×' + d.wing.depth.toFixed(1) + ' m' : '') };
+    }
+    if(m==='room'){
+      var room = SI.ROOMS[t][0], rd = SI.dims({type:t, room:room});
+      return { img:new ImageData(SI.render(dir,{type:t, room:room}), SI.W, SI.H), W:SI.W, H:SI.H, pivot:SI.pivot,
+        meta:'room ' + room + ' · ' + rd.Wd.toFixed(2) + '×' + rd.Ln.toFixed(2) + ' m · ceil '
+          + rd.ceilZ.toFixed(2) + ' · ' + (rd.planned ? 'plan box adopted' : 'whole shell') };
+    }
+    var o = { type:t, level:m }, dm = SB.dims(o);
+    if(m==='upper' && !dm.hasUpper) return null;
+    var r = SB.render(dir, o);
+    return { img:new ImageData(r.rgba, r.W, r.H), W:r.W, H:r.H, pivot:r.pivot,
+      meta:dm.rooms.length + ' rooms · ' + dm.walls + ' wall segments · ' + dm.doors + ' openings · floor z '
+        + dm.levelZ.toFixed(2) + (dm.stair ? ' · stair in ' + dm.stair.room : '') };
+  }
+
+  function draw(){
+    ui();
+    var t0 = Date.now(), b;
+    try{ b = bake(st.dir); }
+    catch(e){ out.textContent = 'bake failed: ' + e.message; return; }
+    if(!b){ out.textContent = st.type + ' has no upper floor.'; return; }
+    cv.width = b.W; cv.height = b.H;
+    ctx.clearRect(0,0,b.W,b.H); ctx.putImageData(b.img, 0, 0);
+    ctx.fillStyle = '#7fd6c9';
+    ctx.fillRect(b.pivot.x-4, b.pivot.y, 9, 1); ctx.fillRect(b.pivot.x, b.pivot.y-4, 1, 9);
+    out.innerHTML = '<b>' + st.type + ' · ' + st.mode + ' · ' + FACE[st.dir] + '</b>\n'
+      + b.meta + '\ncell ' + b.W + '×' + b.H + ' px · pivot ' + b.pivot.x + ',' + b.pivot.y
+      + ' · baked in ' + (Date.now()-t0) + ' ms (cross-hair = pivot)';
+  }
+
+  document.getElementById('strip').onclick = function(){
+    var cells = [], i;
+    for(i=0;i<8;i++){ var b = bake(i); if(!b) return; cells.push(b); }
+    var W = cells[0].W, H = cells[0].H;
+    var s = document.createElement('canvas'); s.width = W*8; s.height = H;
+    var sx = s.getContext('2d');
+    cells.forEach(function(c,k){ sx.putImageData(c.img, k*W, 0); });
+    s.toBlob(function(bl){
+      var u = URL.createObjectURL(bl), a = document.createElement('a');
+      a.href = u; a.download = 'shop-' + st.type + '-' + st.mode + '-8dir.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    });
+  };
+
+  document.getElementById('check').onclick = function(){
+    var lines = [], fails = 0;
+    function assert(ok, msg){ lines.push((ok?'  ok  ':' FAIL ') + msg); if(!ok) fails++; }
+    assert(!!SF && !!SI && !!SB, 'all three rigs loaded, in order');
+    // the 8-facing pivot check bakes 16 sheets, so it runs for the SELECTED trade only; every other
+    // assert is table maths and runs across all nine.
+    ['ground','upper'].forEach(function(lvl){
+      var dm = SB.dims({type:st.type, level:lvl});
+      if(lvl==='upper' && !dm.hasUpper) return;
+      var s = SB.sheet({type:st.type, level:lvl}), same = true;
+      for(var d=0;d<8;d++){ var r = SB.render(d, {type:st.type, level:lvl});
+        if(r.pivot.x!==s.cx || r.pivot.y!==s.gy || r.W!==s.W || r.H!==s.H) same = false; }
+      assert(same, st.type + '/' + lvl + ': pivot + cell identical across 8 facings (' + s.W + '×' + s.H + ' @ ' + s.cx + ',' + s.gy + ')');
+    });
+    SB.plans().forEach(function(t){
+      ['ground','upper'].forEach(function(lvl){
+        var dm = SB.dims({type:t, level:lvl});
+        if(lvl==='upper' && !dm.hasUpper) return;
+        var z = SB.stairZone({type:t, level:lvl});
+        if(z){ var clash = SB.items({type:t, level:lvl}).some(function(it){
+            var rm = SB.rooms({type:t, level:lvl}).filter(function(q){ return q.id===it.room; })[0];
+            if(!rm) return false;
+            var G = rm.grid, c = SI.itemCells(it.k, it.rot);
+            var x0 = G.ox + it.gx*G.cell, x1 = x0 + c.cw*G.cell;
+            var y0 = G.oy + it.gy*G.cell, y1 = y0 + c.ch*G.cell;
+            return x0 < z.x1 && z.x0 < x1 && y0 < z.y1 && z.y0 < y1; });
+          assert(!clash, t + '/' + lvl + ': no fixture inside the stair keep-out'); }
+      });
+      var w = SB.wingOf(t), sw = SF.dims({type:t}).wing;
+      assert(!w === !sw && (!w || (Math.abs(w.depth-sw.depth) < 0.001 && Math.abs(w.width-sw.width) < 0.001)),
+        t + ': shell wing matches the plan wing');
+      SI.ROOMS[t].forEach(function(room){
+        var rb = SB.roomBox(t, room);
+        if(!rb) return;
+        var rd = SI.dims({type:t, room:room});
+        assert(Math.abs(rd.Wd-rb.Wd) < 0.001 && Math.abs(rd.Ln-rb.Ln) < 0.001,
+          t + '/' + room + ': single-room bake adopts the plan box');
+      });
+    });
+    out.innerHTML = '<b>' + (fails ? fails + ' assert(s) FAILED' : 'all asserts pass') + '</b>\n' + lines.join('\n');
+  };
+
+  if(!SF || !SI || !SB){ out.textContent = 'rigs did not load — check the three <script src> tags and their order.'; }
+  else draw();
+})();
+</script>
+</body>
+</html>

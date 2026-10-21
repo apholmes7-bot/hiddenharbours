@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Yard_stoneWall_d1
       rect:
         serializedVersion: 2
-        x: 85
+        x: 83
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Yard_stoneWall_d2
       rect:
         serializedVersion: 2
-        x: 170
+        x: 166
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Yard_stoneWall_d3
       rect:
         serializedVersion: 2
-        x: 255
+        x: 249
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Yard_stoneWall_d4
       rect:
         serializedVersion: 2
-        x: 340
+        x: 332
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Yard_stoneWall_d5
       rect:
         serializedVersion: 2
-        x: 425
+        x: 415
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Yard_stoneWall_d6
       rect:
         serializedVersion: 2
-        x: 510
+        x: 498
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Yard_stoneWall_d7
       rect:
         serializedVersion: 2
-        x: 595
+        x: 581
         y: 0
-        width: 85
-        height: 69
+        width: 83
+        height: 67
       alignment: 9
-      pivot: {x: 0.49411765, y: 0.39130434}
+      pivot: {x: 0.4939759, y: 0.3880597}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

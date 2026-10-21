@@ -511,6 +511,16 @@ by the HUD (UX doc).
 Also: set the project **Sprite Atlas** to pack per-environment/character atlases (Point filter, no
 compression) to cut draw calls without sacrificing crispness.
 
+> **Compression None means exact bytes, not four channels** (lead-architect call, 2026-10-15, the plant
+> texture memory lane). A data map that its shader reads only part of may name a narrower *uncompressed*
+> format on its Standalone override, one that keeps every channel the shader reads byte for byte: R16 for
+> the painted seabed height (ADR 0046); RG16 for a plant light map (sky in r, through in g; its b, the
+> height, is never read); R8 for a plant detail map, whose part the importer's swizzle moves from b to r
+> (`PlantRig5Baker.Load`). The default platform stays Uncompressed, so every platform without an override,
+> mobile included, keeps RGBA32. Block formats (BC, ETC, ASTC) stay out: they work on whole 4×4 blocks and
+> change pixels — BC7 moved about a quarter of the drawn plant albedo texels by more than 4 levels in 255.
+> Guards: `PlantMapImportTests` and `PlantRig5PlatePlayTests`.
+
 > **⚠️ The Pixel Perfect Camera's snap does NOT cover everything** (owner playtest 2026-08-23, "the
 > running fisher and the Otter go soft during movement"). `GridSnapping.PixelSnapping` publishes
 > `PixelPerfectRendering.pixelSnapSpacing`, and **SpriteRenderers alone** snap to it. It does not move

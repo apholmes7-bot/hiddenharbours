@@ -392,5 +392,80 @@ namespace HiddenHarbours.Art
         /// is bound, which is the tree and which returns 0 (every pixel may rim) for any texel.</param>
         public static float RimGateFlag(Vector4 gateTexel, Vector4 selector) =>
             Mathf.Clamp01(Vector4.Dot(gateTexel, selector));
+
+        // =========================================================================================
+        //  the EMITTER sheet (village return drop 14, L2) — twins of SpriteLightEmit* in
+        //  SpriteLightResponse.hlsl and SpriteLitDecorEmit in SpriteLitDecor.hlsl
+        // =========================================================================================
+
+        /// <summary>2^5: the emitter byte's SOURCE sits above its LEVEL's five bits
+        /// (<c>SPRITE_LIGHT_EMIT_SOURCE_STRIDE</c>).</summary>
+        public const int EmitSourceStride = 32;
+
+        /// <summary>The emitter byte's top LEVEL step, its low five bits all set
+        /// (<c>SPRITE_LIGHT_EMIT_LEVEL_MAX</c>).</summary>
+        public const int EmitLevelMax = 31;
+
+        /// <summary>The highest SOURCE the byte's top three bits can carry.</summary>
+        public const int EmitSourceMax = 7;
+
+        /// <summary>The emitter byte's SOURCE codes: which light feeds a glowing texel. <b>Reserved</b>
+        /// for a later occupancy step; the L2 law reads the level only.</summary>
+        public const int EmitSourceNone = 0, EmitSourceKitchen = 1, EmitSourceParlour = 2,
+                         EmitSourceUpper = 3, EmitSourceHall = 4, EmitSourcePorch = 5;
+
+        /// <summary>
+        /// The byte the L2 bake writes for one texel: the LEVEL (0..1, the rig's own glow with every light
+        /// in the house full on) in the low five bits and the SOURCE above them. A level that rounds to
+        /// 0 writes 0 whatever the source, because a texel that never glows has no light feeding it.
+        /// </summary>
+        public static byte EncodeEmit(float level, int source)
+        {
+            int l = Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp01(level) * EmitLevelMax), 0, EmitLevelMax);
+            if (l == 0) return 0;
+            int s = Mathf.Clamp(source, 0, EmitSourceMax);
+            return (byte)(s * EmitSourceStride + l);
+        }
+
+        /// <summary>The texel's byte, 0..255, recovered from the UNORM8 the sampler returns — the twin of
+        /// <c>SpriteLightEmitByte</c>, in the same float arithmetic.</summary>
+        public static float EmitByte(float texel) => Mathf.Floor(Mathf.Clamp01(texel) * 255f + 0.5f);
+
+        /// <summary>The LEVEL, 0..1: the low five bits over their top step. Twin of
+        /// <c>SpriteLightEmitLevel</c>.</summary>
+        public static float EmitLevel(float texel)
+        {
+            float b = EmitByte(texel);
+            return (b - EmitSourceStride * Mathf.Floor(b / EmitSourceStride)) / EmitLevelMax;
+        }
+
+        /// <summary>The SOURCE, 0..7: the high three bits. Twin of <c>SpriteLightEmitSource</c>.
+        /// <b>Reserved</b>: nothing in the L2 law reads it.</summary>
+        public static float EmitSource(float texel) => Mathf.Floor(EmitByte(texel) / EmitSourceStride);
+
+        /// <summary>
+        /// THE EMIT TERM, twin of <c>SpriteLightEmit</c>: how much of its glow an emitter texel shows now,
+        /// 0..1, before colour and strength — its baked level times the night gate. A texel of 0 (no
+        /// emitter, or an unbound sheet's black fallback) is 0 at any gate.
+        /// </summary>
+        public static float Emit(float texel, float gate) => EmitLevel(texel) * Mathf.Clamp01(gate);
+
+        /// <summary>
+        /// The whole emitted glow a consumer adds, twin of <c>SpriteLitDecorEmit</c>: the emit term at the
+        /// boat lamp's night gate (<see cref="LightMath.NightGateWithFallback"/>, the cycle read as running
+        /// when the tint is not near-black, which is <c>SpriteLightNightGate</c>'s own test), times the
+        /// colour and a non-negative strength, then compensated for the day/night overlay
+        /// (<see cref="LightMath.CompensateForDayNightTint"/>) so a lit window survives the night.
+        /// </summary>
+        public static Color EmitResponse(float texel, Color tint, Color emitColor, float strength,
+                                         float gateThreshold, float gateSoftness, float gateNoCycle)
+        {
+            bool cycleActive = tint.r + tint.g + tint.b > 1e-3f;
+            float gate = LightMath.NightGateWithFallback(
+                LightMath.Luminance(tint), gateThreshold, gateSoftness, cycleActive, gateNoCycle);
+            float amount = Mathf.Max(0f, strength) * Emit(texel, gate);
+            var glow = new Color(emitColor.r * amount, emitColor.g * amount, emitColor.b * amount, 0f);
+            return LightMath.CompensateForDayNightTint(glow, tint, LightMath.DayNightCompensationMinChannel);
+        }
     }
 }

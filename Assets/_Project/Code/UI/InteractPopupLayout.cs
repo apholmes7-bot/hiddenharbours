@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
 {
@@ -77,6 +78,36 @@ namespace HiddenHarbours.UI
         /// </summary>
         public static Vector2 PanelAnchoredPosition()
             => new Vector2(RefW - MarginX - PanelWidth, -(RefH - MarginY - PanelHeight));
+
+        /// <summary>
+        /// The panel's anchored position kept out of what the helm's UI covers (ADR 0050,
+        /// <see cref="HelmFootprint"/>): straight up, its column kept, until it clears the covered
+        /// area's top by its own <see cref="MarginY"/> — above a full-width band, and above a card that
+        /// reaches it. Exactly <see cref="PanelAnchoredPosition()"/> with nothing covered, and whenever
+        /// the covered area does not reach it.
+        /// </summary>
+        public static Vector2 PanelAnchoredPosition(in HelmFootprintArea covered, float screenW, float screenH)
+        {
+            Vector2 home = PanelAnchoredPosition();
+            if (covered.IsNone) return home;
+            float s = HudBandLayout.ScaleFactor(screenW, screenH);
+            float lift = covered.LiftToClear(PanelScreenRect(screenW, screenH), MarginY * s);
+            return lift > 0f ? new Vector2(home.x, home.y + lift / s) : home;
+        }
+
+        /// <summary>
+        /// Where the panel lands at home, in SCREEN pixels (bottom-left origin, y up), on a
+        /// <paramref name="screenW"/>×<paramref name="screenH"/> screen: the reference host is pinned
+        /// to the screen's TOP-LEFT and scaled by the canvas's own factor, so on a screen that is not
+        /// 16:9 the panel is where the host puts it, not in the screen's corner.
+        /// </summary>
+        public static Rect PanelScreenRect(float screenW, float screenH)
+        {
+            float s = HudBandLayout.ScaleFactor(screenW, screenH);
+            Vector2 a = PanelAnchoredPosition();
+            float top = screenH + a.y * s;
+            return new Rect(a.x * s, top - PanelHeight * s, PanelWidth * s, PanelHeight * s);
+        }
 
         /// <summary>The panel's size, as one value for the caller to apply.</summary>
         public static Vector2 PanelSize() => new Vector2(PanelWidth, PanelHeight);

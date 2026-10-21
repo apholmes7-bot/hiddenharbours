@@ -1,0 +1,1263 @@
+{
+  "rig": "modern2500.rig.js",
+  "exportSymbol": "ModernTruck2500",
+  "variant": "modern2500",
+  "schema": "hidden-harbours-gameplay/modern2500/v2",
+  "derivedFromRigSha256": "7b483a56d32329f4841f7f5678cadb18ff2dcdbbbf8c4ed68727c912f025df3b",
+  "kind": "road_vehicle",
+  "label": "Modern 2500",
+  "generated": "bake-kit.js, from the rig's own G, anchorPoints() and the builder literals listed under each provenance",
+  "status": "Integration candidate; collision and reach tests in world remain to be done.",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground beneath the body centre (z=0 is the road)",
+    "axes": "+x curb/passenger side, +y nose, +z up",
+    "at_rest": "every value here is at susF=susR=0 with all doors, hood and gate shut; see SUSPENSION for the body-drop correction",
+    "pivot_px": {
+      "x": 192,
+      "y": 214,
+      "cell": [
+        384,
+        320
+      ]
+    }
+  },
+  "coordinate_frame": {
+    "units": "metres",
+    "x": "right/passenger",
+    "y": "nose/forward",
+    "z": "up",
+    "origin": "ground beneath body centre"
+  },
+  "BODY": {
+    "key": "modern2500",
+    "label": "Modern 2500",
+    "kind": "crew-cab standard box, off-road trim",
+    "loa_m": 6.38,
+    "body_length_m": 6.12,
+    "width_over_flares_m": 2.17,
+    "width_over_mirrors_m": 2.54,
+    "width_over_steps_m": 2.24,
+    "body_width_m": 2.06,
+    "height_m": 2.11,
+    "roof_z": 2.07,
+    "belt_z": 1.5,
+    "wheelbase_m": 4.04,
+    "bed_length_m": 2.04,
+    "wheels": 4,
+    "collider_bbox": {
+      "x": [
+        -1.092,
+        1.092
+      ],
+      "y": [
+        -3.25,
+        3.275
+      ],
+      "z": [
+        0.004,
+        2.108
+      ],
+      "_note": "Node bounds at rest with hitch, steps and mirrors disabled: x from the body group; y and z from all mesh faces. Rounded to millimetres."
+    },
+    "main_body_bbox": [
+      [
+        -1.092,
+        -3.25,
+        0.004
+      ],
+      [
+        1.092,
+        3.275,
+        2.108
+      ]
+    ],
+    "ground_clearance_m": {
+      "hard": 0.255,
+      "source": "rear diff tube r 0.17 centred z 0.425",
+      "frame_rails": 0.52,
+      "skid_plate": 0.44,
+      "exhaust_tip": 0.332,
+      "rock_rails": 0.54
+    },
+    "travelF": 0.12,
+    "travelR": 0.14,
+    "provenance": "BODIES.modern2500 + G; widths from the mirror, step and flare literals in doors() and archLip()"
+  },
+  "CAB": {
+    "_what": "a seated interior, not a walkable room",
+    "seated": true,
+    "floor": {
+      "z": 0.9,
+      "polygon": [
+        [
+          -0.96,
+          -0.76
+        ],
+        [
+          0.96,
+          -0.76
+        ],
+        [
+          0.96,
+          1.38
+        ],
+        [
+          -0.96,
+          1.38
+        ]
+      ]
+    },
+    "steering_wheel": {
+      "centre": [
+        -0.5,
+        1,
+        1.52
+      ],
+      "radius": 0.17,
+      "hand": "left-hand drive"
+    },
+    "seats": [
+      {
+        "id": "front_street",
+        "kind": "bucket",
+        "role": "driver",
+        "cushion": {
+          "x": [
+            -0.8,
+            -0.26
+          ],
+          "y": [
+            0.24,
+            0.78
+          ],
+          "top_z": 1.26
+        },
+        "back": {
+          "y": [
+            0.12,
+            0.28
+          ],
+          "top_z": 1.84
+        },
+        "seat_ref": [
+          -0.53,
+          0.5,
+          1.26
+        ]
+      },
+      {
+        "id": "front_curb",
+        "kind": "bucket",
+        "role": "passenger",
+        "cushion": {
+          "x": [
+            0.26,
+            0.8
+          ],
+          "y": [
+            0.24,
+            0.78
+          ],
+          "top_z": 1.26
+        },
+        "back": {
+          "y": [
+            0.12,
+            0.28
+          ],
+          "top_z": 1.84
+        },
+        "seat_ref": [
+          0.53,
+          0.5,
+          1.26
+        ]
+      },
+      {
+        "id": "rear_bench",
+        "kind": "bench",
+        "role": "rear",
+        "cushion": {
+          "x": [
+            -0.85,
+            0.85
+          ],
+          "y": [
+            -0.72,
+            -0.2
+          ],
+          "top_z": 1.26
+        },
+        "back": {
+          "y": [
+            -0.8,
+            -0.68
+          ],
+          "top_z": 1.8
+        },
+        "seat_ref": [
+          0,
+          -0.46,
+          1.26
+        ],
+        "positions": [
+          [
+            -0.54,
+            -0.46,
+            1.26
+          ],
+          [
+            0,
+            -0.46,
+            1.26
+          ],
+          [
+            0.54,
+            -0.46,
+            1.26
+          ]
+        ]
+      }
+    ],
+    "obstructions": [
+      {
+        "id": "console",
+        "footprint": {
+          "x": [
+            -0.18,
+            0.18
+          ],
+          "y": [
+            0.16,
+            1
+          ]
+        },
+        "top_z": 1.28
+      },
+      {
+        "id": "dash",
+        "footprint": {
+          "x": [
+            -0.96,
+            0.96
+          ],
+          "y": [
+            1.06,
+            1.36
+          ]
+        },
+        "top_z": 1.6
+      }
+    ],
+    "provenance": "interior() and cab(), read verbatim"
+  },
+  "CARGO": {
+    "floor": {
+      "z": 1.02,
+      "polygon": [
+        [
+          -0.88,
+          -2.98
+        ],
+        [
+          0.88,
+          -2.98
+        ],
+        [
+          0.88,
+          -0.94
+        ],
+        [
+          -0.88,
+          -0.94
+        ]
+      ]
+    },
+    "walls_top_z": 1.52,
+    "aisle_width_m": 1.24,
+    "obstructions": [
+      {
+        "id": "wheel_tub_street",
+        "footprint": {
+          "x": [
+            -0.88,
+            -0.62
+          ],
+          "y": [
+            -2.34,
+            -1.24
+          ]
+        },
+        "top_z": 1.22
+      },
+      {
+        "id": "wheel_tub_curb",
+        "footprint": {
+          "x": [
+            0.62,
+            0.88
+          ],
+          "y": [
+            -2.34,
+            -1.24
+          ]
+        },
+        "top_z": 1.22
+      }
+    ],
+    "gate": {
+      "hinge_axis": {
+        "kind": "x_axis",
+        "at_y": -2.98,
+        "at_z": 1.03
+      },
+      "hinge": [
+        0,
+        -2.98,
+        1.03
+      ],
+      "degrees": 92,
+      "ledge_length_m": 0.47,
+      "not_a_ramp": true
+    },
+    "walkable": "gameplay decision pending"
+  },
+  "THRESHOLD": [
+    {
+      "id": "door_fl",
+      "pose": "dFL",
+      "side": "street (-x, driver)",
+      "span_y": [
+        0.2,
+        1.44
+      ],
+      "clear_width_m": 1.24,
+      "sill_z": 0.78,
+      "head_z": 1.99,
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          -1.01,
+          1.44
+        ],
+        "direction": [
+          0,
+          0,
+          1
+        ],
+        "point": [
+          -1.01,
+          1.44,
+          0.78
+        ],
+        "max_degrees": -68
+      },
+      "sweep_outer_edge": [
+        [
+          -1.01,
+          0.2,
+          0.78
+        ],
+        [
+          -1.0965,
+          0.203,
+          0.78
+        ],
+        [
+          -1.1826,
+          0.2121,
+          0.78
+        ],
+        [
+          -1.2678,
+          0.2271,
+          0.78
+        ],
+        [
+          -1.3518,
+          0.248,
+          0.78
+        ],
+        [
+          -1.4341,
+          0.2748,
+          0.78
+        ],
+        [
+          -1.5144,
+          0.3072,
+          0.78
+        ],
+        [
+          -1.5921,
+          0.3451,
+          0.78
+        ],
+        [
+          -1.6671,
+          0.3884,
+          0.78
+        ],
+        [
+          -1.7389,
+          0.4368,
+          0.78
+        ],
+        [
+          -1.8071,
+          0.4901,
+          0.78
+        ],
+        [
+          -1.8714,
+          0.548,
+          0.78
+        ],
+        [
+          -1.9315,
+          0.6103,
+          0.78
+        ],
+        [
+          -1.9871,
+          0.6766,
+          0.78
+        ],
+        [
+          -2.038,
+          0.7466,
+          0.78
+        ],
+        [
+          -2.0839,
+          0.82,
+          0.78
+        ],
+        [
+          -2.1245,
+          0.8964,
+          0.78
+        ],
+        [
+          -2.1597,
+          0.9755,
+          0.78
+        ]
+      ],
+      "reach_point": [
+        -1.7,
+        0.82,
+        0
+      ],
+      "anchor": "doorFL"
+    },
+    {
+      "id": "door_fr",
+      "pose": "dFR",
+      "side": "curb (+x)",
+      "span_y": [
+        0.2,
+        1.44
+      ],
+      "clear_width_m": 1.24,
+      "sill_z": 0.78,
+      "head_z": 1.99,
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          1.01,
+          1.44
+        ],
+        "direction": [
+          0,
+          0,
+          1
+        ],
+        "point": [
+          1.01,
+          1.44,
+          0.78
+        ],
+        "max_degrees": 68
+      },
+      "sweep_outer_edge": [
+        [
+          1.01,
+          0.2,
+          0.78
+        ],
+        [
+          1.0965,
+          0.203,
+          0.78
+        ],
+        [
+          1.1826,
+          0.2121,
+          0.78
+        ],
+        [
+          1.2678,
+          0.2271,
+          0.78
+        ],
+        [
+          1.3518,
+          0.248,
+          0.78
+        ],
+        [
+          1.4341,
+          0.2748,
+          0.78
+        ],
+        [
+          1.5144,
+          0.3072,
+          0.78
+        ],
+        [
+          1.5921,
+          0.3451,
+          0.78
+        ],
+        [
+          1.6671,
+          0.3884,
+          0.78
+        ],
+        [
+          1.7389,
+          0.4368,
+          0.78
+        ],
+        [
+          1.8071,
+          0.4901,
+          0.78
+        ],
+        [
+          1.8714,
+          0.548,
+          0.78
+        ],
+        [
+          1.9315,
+          0.6103,
+          0.78
+        ],
+        [
+          1.9871,
+          0.6766,
+          0.78
+        ],
+        [
+          2.038,
+          0.7466,
+          0.78
+        ],
+        [
+          2.0839,
+          0.82,
+          0.78
+        ],
+        [
+          2.1245,
+          0.8964,
+          0.78
+        ],
+        [
+          2.1597,
+          0.9755,
+          0.78
+        ]
+      ],
+      "reach_point": [
+        1.7,
+        0.82,
+        0
+      ],
+      "anchor": "doorFR"
+    },
+    {
+      "id": "door_rl",
+      "pose": "dRL",
+      "side": "street (-x, driver)",
+      "span_y": [
+        -0.78,
+        0.16
+      ],
+      "clear_width_m": 0.94,
+      "sill_z": 0.78,
+      "head_z": 1.99,
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          -1.01,
+          0.16
+        ],
+        "direction": [
+          0,
+          0,
+          1
+        ],
+        "point": [
+          -1.01,
+          0.16,
+          0.78
+        ],
+        "max_degrees": -68
+      },
+      "sweep_outer_edge": [
+        [
+          -1.01,
+          -0.78,
+          0.78
+        ],
+        [
+          -1.0756,
+          -0.7777,
+          0.78
+        ],
+        [
+          -1.1408,
+          -0.7709,
+          0.78
+        ],
+        [
+          -1.2054,
+          -0.7595,
+          0.78
+        ],
+        [
+          -1.2691,
+          -0.7436,
+          0.78
+        ],
+        [
+          -1.3315,
+          -0.7233,
+          0.78
+        ],
+        [
+          -1.3923,
+          -0.6987,
+          0.78
+        ],
+        [
+          -1.4513,
+          -0.67,
+          0.78
+        ],
+        [
+          -1.5081,
+          -0.6372,
+          0.78
+        ],
+        [
+          -1.5625,
+          -0.6005,
+          0.78
+        ],
+        [
+          -1.6142,
+          -0.5601,
+          0.78
+        ],
+        [
+          -1.663,
+          -0.5162,
+          0.78
+        ],
+        [
+          -1.7086,
+          -0.469,
+          0.78
+        ],
+        [
+          -1.7507,
+          -0.4187,
+          0.78
+        ],
+        [
+          -1.7893,
+          -0.3656,
+          0.78
+        ],
+        [
+          -1.8241,
+          -0.31,
+          0.78
+        ],
+        [
+          -1.8549,
+          -0.2521,
+          0.78
+        ],
+        [
+          -1.8816,
+          -0.1921,
+          0.78
+        ]
+      ],
+      "reach_point": [
+        -1.7,
+        -0.31,
+        0
+      ],
+      "anchor": "doorRL"
+    },
+    {
+      "id": "door_rr",
+      "pose": "dRR",
+      "side": "curb (+x)",
+      "span_y": [
+        -0.78,
+        0.16
+      ],
+      "clear_width_m": 0.94,
+      "sill_z": 0.78,
+      "head_z": 1.99,
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          1.01,
+          0.16
+        ],
+        "direction": [
+          0,
+          0,
+          1
+        ],
+        "point": [
+          1.01,
+          0.16,
+          0.78
+        ],
+        "max_degrees": 68
+      },
+      "sweep_outer_edge": [
+        [
+          1.01,
+          -0.78,
+          0.78
+        ],
+        [
+          1.0756,
+          -0.7777,
+          0.78
+        ],
+        [
+          1.1408,
+          -0.7709,
+          0.78
+        ],
+        [
+          1.2054,
+          -0.7595,
+          0.78
+        ],
+        [
+          1.2691,
+          -0.7436,
+          0.78
+        ],
+        [
+          1.3315,
+          -0.7233,
+          0.78
+        ],
+        [
+          1.3923,
+          -0.6987,
+          0.78
+        ],
+        [
+          1.4513,
+          -0.67,
+          0.78
+        ],
+        [
+          1.5081,
+          -0.6372,
+          0.78
+        ],
+        [
+          1.5625,
+          -0.6005,
+          0.78
+        ],
+        [
+          1.6142,
+          -0.5601,
+          0.78
+        ],
+        [
+          1.663,
+          -0.5162,
+          0.78
+        ],
+        [
+          1.7086,
+          -0.469,
+          0.78
+        ],
+        [
+          1.7507,
+          -0.4187,
+          0.78
+        ],
+        [
+          1.7893,
+          -0.3656,
+          0.78
+        ],
+        [
+          1.8241,
+          -0.31,
+          0.78
+        ],
+        [
+          1.8549,
+          -0.2521,
+          0.78
+        ],
+        [
+          1.8816,
+          -0.1921,
+          0.78
+        ]
+      ],
+      "reach_point": [
+        1.7,
+        -0.31,
+        0
+      ],
+      "anchor": "doorRR"
+    }
+  ],
+  "STEP": {
+    "default": true,
+    "present_when": {
+      "steps": true
+    },
+    "kind": "rock_rails",
+    "top_z": 0.652,
+    "sill_z": 0.78,
+    "boards": [
+      {
+        "id": "rail_street",
+        "tread_top_z": 0.652,
+        "outboard_x": [
+          -1.12,
+          -0.99
+        ],
+        "span_y": [
+          -0.8,
+          1.46
+        ]
+      },
+      {
+        "id": "rail_curb",
+        "tread_top_z": 0.652,
+        "outboard_x": [
+          0.99,
+          1.12
+        ],
+        "span_y": [
+          -0.8,
+          1.46
+        ]
+      }
+    ]
+  },
+  "TOW": {
+    "hitch": {
+      "id": "hitch_rear",
+      "type": "receiver_ball",
+      "present_when": {
+        "hitch": true
+      },
+      "ball": [
+        0,
+        -3.3,
+        0.66
+      ],
+      "receiver": [
+        0,
+        -3.25,
+        0.48
+      ]
+    },
+    "ball": [
+      0,
+      -3.3,
+      0.66
+    ],
+    "receiver": [
+      0,
+      -3.25,
+      0.48
+    ],
+    "front_hooks": [
+      {
+        "id": "recovery_hook_street",
+        "pos": [
+          -0.6,
+          3.22,
+          0.66
+        ]
+      },
+      {
+        "id": "recovery_hook_curb",
+        "pos": [
+          0.6,
+          3.22,
+          0.66
+        ]
+      }
+    ],
+    "trailer_physics": "not included"
+  },
+  "SUSPENSION": {
+    "travel_m": {
+      "front": 0.12,
+      "rear": 0.14
+    },
+    "formula": "dz(y) = -susF*0.12*t - susR*0.14*(1-t); t=(y+1.79)/4.04",
+    "applies_to": "body, panel hinges, cabin seats, cargo, light and interaction anchors; never the wheel centres",
+    "helper": "ModernTruck2500.anchorPoints(pose) returns corrected articulated anchor positions"
+  },
+  "WHEELS": {
+    "radius_m": 0.425,
+    "width_m": 0.3,
+    "tire_width_m": 0.3,
+    "steer_max_degrees": 30,
+    "_note": "the front pair yaw with steer about their own vertical axes; the rear pair never yaw",
+    "list": [
+      {
+        "id": "FL",
+        "pos": [
+          -0.875,
+          2.25,
+          0.425
+        ],
+        "centre": [
+          -0.875,
+          2.25,
+          0.425
+        ],
+        "role": "steer",
+        "steer_axis": {
+          "kind": "vertical",
+          "at": [
+            -0.875,
+            2.25
+          ]
+        }
+      },
+      {
+        "id": "RL",
+        "pos": [
+          -0.875,
+          -1.79,
+          0.425
+        ],
+        "centre": [
+          -0.875,
+          -1.79,
+          0.425
+        ],
+        "role": "drive"
+      },
+      {
+        "id": "FR",
+        "pos": [
+          0.875,
+          2.25,
+          0.425
+        ],
+        "centre": [
+          0.875,
+          2.25,
+          0.425
+        ],
+        "role": "steer",
+        "steer_axis": {
+          "kind": "vertical",
+          "at": [
+            0.875,
+            2.25
+          ]
+        }
+      },
+      {
+        "id": "RR",
+        "pos": [
+          0.875,
+          -1.79,
+          0.425
+        ],
+        "centre": [
+          0.875,
+          -1.79,
+          0.425
+        ],
+        "role": "drive"
+      }
+    ]
+  },
+  "STEERING": {
+    "param": "steer",
+    "range": [
+      -1,
+      1
+    ],
+    "max_degrees": 30,
+    "sign": "+1 is full left lock",
+    "ackermann": false,
+    "applies_to": [
+      "wheelFL",
+      "wheelFR"
+    ],
+    "note": "a visual angle on both front wheels; nothing couples it to heading"
+  },
+  "LIGHTS": {
+    "headlights": [
+      [
+        -0.935,
+        3.0533,
+        1.445
+      ],
+      [
+        0.935,
+        3.0533,
+        1.445
+      ]
+    ],
+    "taillights": [
+      [
+        -0.97,
+        -3.07,
+        1.3
+      ],
+      [
+        0.97,
+        -3.07,
+        1.3
+      ]
+    ],
+    "third_brake": [
+      0,
+      -0.835,
+      1.968
+    ],
+    "roof_markers": {
+      "points": [
+        [
+          -0.58,
+          0.578,
+          2.099
+        ],
+        [
+          -0.29,
+          0.578,
+          2.099
+        ],
+        [
+          0,
+          0.578,
+          2.099
+        ],
+        [
+          0.29,
+          0.578,
+          2.099
+        ],
+        [
+          0.58,
+          0.578,
+          2.099
+        ]
+      ],
+      "count": 5,
+      "_note": "the highest thing on the truck; height_m includes them"
+    },
+    "night_swap": "headlamp lenses paint head by day and glow at night; the ramp count is the same both ways",
+    "world_light_emitters": "Attach engine lights to pose-aware headlight anchors; this rig renders sprite emissive appearance only."
+  },
+  "INTERACT": [
+    {
+      "id": "drive",
+      "action": "enter_drive",
+      "at": "door_fl",
+      "anchor": "doorFL",
+      "reach_point": [
+        -1.602,
+        0.2,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ]
+    },
+    {
+      "id": "ride",
+      "action": "enter_ride",
+      "at": "door_fr",
+      "anchor": "doorFR",
+      "reach_point": [
+        1.602,
+        0.2,
+        0
+      ],
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "id": "ride_rear_street",
+      "action": "enter_ride",
+      "at": "door_rl",
+      "anchor": "doorRL",
+      "reach_point": [
+        -1.602,
+        -0.78,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ]
+    },
+    {
+      "id": "ride_rear_curb",
+      "action": "enter_ride",
+      "at": "door_rr",
+      "anchor": "doorRR",
+      "reach_point": [
+        1.602,
+        -0.78,
+        0
+      ],
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "id": "tailgate",
+      "action": "open_close",
+      "anchor": "gate",
+      "reach_point": [
+        0,
+        -3.79,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ]
+    },
+    {
+      "id": "bed",
+      "action": "cargo",
+      "anchor": "bed",
+      "reach_point": [
+        1.8,
+        -1.96,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "reachable from either side and over the open gate; the tubs split the floor"
+    },
+    {
+      "id": "hood",
+      "action": "open_close_engine",
+      "anchor": "hoodLatch",
+      "reach_point": [
+        0,
+        3.79,
+        0
+      ],
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ]
+    },
+    {
+      "id": "hitch",
+      "action": "couple",
+      "anchor": "hitch",
+      "reach_point": [
+        0,
+        -3.79,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ]
+    },
+    {
+      "id": "fuel",
+      "action": "refuel",
+      "anchor": "fuel",
+      "reach_point": [
+        -1.7,
+        -1.1,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ],
+      "_note": "a cosmetic fuel door on the street-side bedside; it does not open"
+    }
+  ],
+  "_interact_notes": {
+    "reach_point": "a request, not a promise: a ground-level standing spot. NOT validated against terrain, kerb or another vehicle.",
+    "visible_facings": "computed: a feature with outward normal n is listed for facing d when nx*sin(d*45) + ny*cos(d*45) < -0.3. Top faces are visible at all eight."
+  },
+  "_excluded": {
+    "walkable_roof": "the cab roof has no rack, grab rail or route up.",
+    "fuel_fill": "the fuel door is a surface, not an opening.",
+    "cab_bed_passthrough": "the rear window is glass; there is no opening between CAB and CARGO.",
+    "interior_INTERACT": "nothing inside the cab is an interactable.",
+    "badges": "no lettering, logos or model names are modelled; badge blanks are plain shapes."
+  },
+  "_confirm": {
+    "cargo_walkability": "undecided",
+    "character_clearance": "requires world testing",
+    "trailer_physics": "engine-owned",
+    "roof": "not a walkable surface",
+    "mirror_collider": "BODY.collider_bbox stops at the flares; the mirrors reach 2.54 m over.",
+    "steering": "STEERING moves the front wheels only; nothing couples it to heading."
+  },
+  "_integration": {
+    "cab": "Enclosed seats remain in CAB.seats. drive.at and ride.at name doors; the driver stays hidden.",
+    "door_reach": "x is the measured body half-width plus 0.51 m; y is G.doorF[0] or G.doorR[0]. Ground and door clearance await the runtime plates.",
+    "towing": "No towing. TOW and hitch interaction data are inert."
+  }
+}

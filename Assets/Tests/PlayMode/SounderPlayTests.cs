@@ -317,8 +317,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             InstrumentLocker.Add(_save.Current, "boat.test_card", BoatEquipment.DepthSounderId);
             yield return null;
-            Assert.That(host.Showing, Is.True, "the bought sounder puts a card on screen");
-            Assert.That(host.Focused, Is.False, "and starts as the small dash card");
+            Assert.That(host.Showing, Is.True, "the bought sounder is presented");
+            Assert.That(host.Expanded, Is.False, "and starts as its housing in the band, not raised");
 
             // Pull the height map (leaving the region) — there is no sounding, so nothing to draw. Wait
             // past the throttle interval: the last sounding is legitimately still current until then.
@@ -362,15 +362,15 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(glass.SounderPrefs.Night, Is.EqualTo(!night));
         }
 
-        // ---- S4.5: flush on the dash by default, expanded on request ---------------------------------
+        // ---- H2: a housing in the band by default, its card raised on request ------------------------
 
         [UnityTest]
-        public IEnumerator TheGlass_MountsFlushOnTheDash_AndExpandsOnlyWhenAsked()
+        public IEnumerator TheGlass_IsAPlateInTheBand_AndRaisesOnlyWhenAsked()
         {
             // The owner's ask, end to end and in a live scene: nothing is blown up until it is chosen.
             // Worth a PlayMode test rather than another pure one because the thing that could break is
-            // the AGREEMENT between two self-installing hosts that cannot see each other — the helm
-            // publishing its card rect and the sounder reading it, in execution order.
+            // the AGREEMENT between two self-installing hosts that cannot see each other — the helm's
+            // band drawing the sounder's housing and the sounder raising its card, in execution order.
             HelmInstrumentExpansion.Collapse();
             SounderOverlayHost host = TheHost();
             HelmOverlayHost helm = HelmOverlayHost.Instance;
@@ -385,45 +385,52 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             relay.DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.test_flush", SounderKind.Depth));
-            yield return null;   // helm publishes its card
-            yield return null;   // …and the sounder mounts into it
+            yield return null;   // the helm raises its band
+            yield return null;   // …with the sounder's housing in it
 
-            Assert.That(helm.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
-                        "the premise: a console hull is showing its dash");
-            Assert.That(HelmOverlayHost.TryDashCard(out Rect card, out HelmFit fit), Is.True);
-            Assert.That(fit.Sounder, Is.EqualTo(SounderKind.Depth));
+            Assert.That(helm.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Band),
+                        "the premise: a console hull is showing its band");
+            HelmBandController band = helm.BandController;
+            int plate = -1;
+            for (int i = 0; i < band.PieceCount; i++)
+                if (band.Piece(i).Kind == HelmBandPieceKind.SounderPlate) plate = i;
+            Assert.That(plate, Is.GreaterThanOrEqualTo(0), "the band has the sounder's housing");
+            Assert.That(band.PlateLabelShown(plate), Is.EqualTo(HelmBandController.SounderLabel),
+                        "…and it is labelled for the fitted sounder");
 
             Assert.That(host.Showing, Is.True);
-            Assert.That(host.Expanded, Is.False, "DEFAULT: not blown up");
-            Assert.That(host.FlushMounted, Is.True, "DEFAULT: drawing in the console's own brow cutout");
+            Assert.That(host.Expanded, Is.False, "DEFAULT: not raised");
+            Assert.That(HelmInstrumentExpansion.TryRaisedCard(out _), Is.False, "…so no card is published");
 
-            // …and it is drawing exactly where the chrome puts the bezel — the shared pure mount, so
-            // the glass can never end up beside its own hole.
-            Assert.That(HelmInstrumentMountLayout.TryBrowSounderRect(in fit, card, out Rect mount),
-                        Is.True);
-            Assert.That(mount.width, Is.GreaterThan(0f));
-
-            // Selecting it expands it; the flush mount is given up for the readable card.
-            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Sounder);
+            // A press on the housing raises its card: the band host's routing (the plate under the
+            // pointer, then the shared expansion), since a fixture cannot deliver a pointer press.
+            HelmFit fit = GameServices.HelmInstruments.Fit;
+            Assert.That(band.PlateAt(in fit, band.PieceRect(plate).center), Is.EqualTo(HelmInstrumentSlot.Sounder));
+            HelmInstrumentExpansion.Click(band.PlateAt(in fit, band.PieceRect(plate).center));
+            yield return null;
             yield return null;
             Assert.That(host.Expanded, Is.True);
-            Assert.That(host.FlushMounted, Is.False);
             Assert.That(host.Showing, Is.True, "the same instrument, a different presentation");
+            Assert.That(HelmInstrumentExpansion.TryRaisedCard(out Rect card), Is.True, "the raised card is published");
+            Rect q1 = HelmBandLayout.RaisedCardRect(DepthRigRender.W, DepthRigRender.H, Screen.width, Screen.height,
+                                                    HudBandLayout.ReservedTopPx());
+            Assert.That(card, Is.EqualTo(q1), "…where the raised-card rule puts it (Q1)");
 
-            // Collapsing puts it back on the dash.
+            // Lowering it leaves the housing.
             HelmInstrumentExpansion.Collapse();
             yield return null;
             Assert.That(host.Expanded, Is.False);
-            Assert.That(host.FlushMounted, Is.True);
+            Assert.That(host.Showing, Is.True, "the housing stays in the band");
+            Assert.That(HelmInstrumentExpansion.TryRaisedCard(out _), Is.False);
 
-            // Losing the instrument closes any expansion rather than stranding it open.
+            // Losing the instrument closes any raised card rather than stranding it open.
             HelmInstrumentExpansion.Click(HelmInstrumentSlot.Sounder);
             yield return null;
             GameServices.TidalTerrain = null;
             yield return WaitSeconds(GameServices.DepthSounder.ReadIntervalSec * 1.5f);
             Assert.That(host.Showing, Is.False);
             Assert.That(HelmInstrumentExpansion.AnyExpanded, Is.False,
-                        "a glass that goes dark must not leave the expansion latched on");
+                        "a glass that goes dark must not leave its card raised");
         }
 
         // Wait REAL elapsed seconds — headless frames are not time

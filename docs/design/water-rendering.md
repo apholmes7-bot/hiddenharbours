@@ -1787,6 +1787,7 @@ an independent art dial (push the dapple off the very edge if you want to), no l
 |---|---|---|
 | `_CausticDayGate` | `0` (**OFF**) | 0 = caustics always on (today); 1 = day-only (fades out at night). |
 | `_CausticShallowBias` | `0` m | Push the caustic band deeper off the very edge (0 = today's band). |
+| `_CausticClarity` | `1` (owner, 2026-10-08) | Full attenuation of the caustic add by the seabed's RGB transmission. Explicitly 1 in Water.mat and all eight presets; held fixed across moods (§17.12). |
 
 `_CausticDayGate` is in `WaterSurface.MoodFloatNames`, so the weather-driven palette (§14) and the preset
 library (§12) **ease** it per mood — e.g. a `FoggySmother` preset can kill the sun-dapple. This is art-lane
@@ -1818,9 +1819,10 @@ dapple — and physically a flat surface focuses nothing. No new C# uniform (the
 sim-pushed data — the ADR 0027 "no new uniform" ruling; the three knobs are material properties,
 rule 6). `col.rgb` only — never `depth` / `clip()` / `_WaterLevel` / the height read / the sim
 (P1 integrity, CLAUDE.md rule 5). Cost: 4 extra `WaveFieldSample` calls inside
-`if (_CausticCurvatureBlend > 0.001)` — zero at the shipped default. Deliberately NOT added to
-`WaterSurface.MoodFloatNames` (no double-drive); whether the blend should be mood-eased is an open
-question for the owner.
+`if (_CausticCurvatureBlend > 0.001)` — zero at the shader default. C1 serializes a candidate blend
+of 0.5 on the live material and all eight presets, and carries all three curvature properties through
+`WaterSurface.MoodFloatNames` (see §17.11). This branch precedes the day-gate multiply: a night frame
+or an absent field does not by itself avoid the four taps. GPU timing is required before acceptance.
 
 | Property | Default | Effect |
 |---|---|---|
@@ -1989,6 +1991,381 @@ wired by each region's builder.
 > a black bottom across its whole shallows. `WaterSurface` therefore pushes an explicit clear 1×1 on
 > enable, unconditionally, so "no bake" means coverage 0 and composites nothing. Same lesson, same
 > shape, as the interior guard's black 1×1 and the reflection target's clear one. Pinned by a test.
+
+### 17.10 Played-region shallows: S1 activation (2026-09-28)
+
+S1 explicitly serializes the seabed toggle/keyword, the existing six absorption bands and
+the existing (1, 0.18, 0.08) extinction ratio on all eight water presets. Their turbidity
+values are unchanged. Runtime mood blending already pushes turbidity through the surface
+property block; the separate editor "Apply water preset" action copies the entire material,
+including keywords. A preset that omitted the toggle could therefore disable the bottom.
+
+The texture remains per-surface. Neither the preset nor the shared Water.mat receives a
+region's bake. ShallowsActivationTests checks preset copying, region isolation and the real
+displaced-chunk copy path. It also contains committed-region acceptance cases for St Peters
+and Nine Mile Creek, using the WaterSurface script identity rather than scene line numbers.
+
+Both regions now bind a 1520 x 1520 seabed colour bake made with the explicit-terrain
+SeabedBakeTool overload. Each source is the active terrain component in its committed
+scene: TidalTerrain in St Peters, MainlandTidalTerrain in Nine Mile Creek. Their world
+rectangles are unchanged (St Peters: minimum -380,-260, size 760,520; NMC: -380,-280,
+size 760,560). The two scene changes are only WaterSurface._seabedTexture references:
+StPeters.unity line 178290 and NineMileCreek.unity line 420982 on base 45a09dd6.
+St Peters keeps GUID 4f2c5d2a7b42a5e4bbd474103eb31267; NMC uses
+6c34e797a389d8947b0468d83edd9f95. Both imports are sRGB RGBA32, uncompressed,
+point-filtered and clamped, without mips or NPOT scaling. All 14 ShallowsActivationTests
+cases passed in Unity 6000.5.0f1. Scene export was retired by #900; no exporter output
+is part of this change.
+
+The colour bake's 1520 samples span at most 0.5 m on the long axis and cost 8.8135 MiB per
+RGBA32 texture without mips. This does not fix register row 31's height-resolution clamp.
+Do not change depth, height textures, clip, walkability or the retired scalar-alpha path.
+The owner accepted ground/seabed continuity and six bands on 2026-09-28. There is no S1b or S2.
+
+**Dated 2026-10-18 (W4-4):** ruling 7 of 2026-10-10, "Shallows: 2B. 2A stays unbuilt as the mobile-port
+fallback.", supersedes "There is no S1b or S2". The sea draws the ground's own textures as its floor in clear
+shallows (2B, §17.13); 2A, the splat's colours baked into `_SeabedTex`, stays unbuilt.
+
+### 17.11 C1 candidate: wave-linked, daylight-gated caustics (2026-09-28)
+
+C1 activates the existing §17.6 approximation without changing the shader. Water.mat and all eight
+water presets explicitly carry curvature blend **0.5**, step **0.5 m** and gain **12**. Blend 0.5
+retains half the independent texture signal when the wave field is fully live; it is a candidate
+for the owner's plates, not a visually validated setting. Step and gain retain their shader defaults.
+Water.mat's day gate changes from 0 to **1**, matching every preset: a running day/night cycle fades
+caustics with positive sun elevation. An unset cycle retains the existing full-day fallback.
+
+The three curvature properties join the weather float-copy list so preset values reach the renderer's
+property block. All anchors currently agree, but later data edits remain effective. `_CausticShallowBias`
+stays at its effective zero and outside that list; C1 does not retune depth gates. Amount, scale, depth,
+texture strength, absorption, seabed bindings and gameplay waterline are unchanged.
+
+`CausticMath` is a plain C# arithmetic twin, not a second runtime wave or lighting driver.
+`CausticMathTests` contains 26 cases with explicit expected numbers: nine serialized-material checks,
+twelve day-gate examples, three flat/tilted-surface examples, one finite-difference numeric check and
+one blend/fallback check. `CausticMoodCopyTests` adds one Unity case for material copying and distinct
+weather-anchor values reaching the property block. The nine material cases were red on main's data
+before activation; all 26 plain cases passed offline using NUnit. All 27 new cases subsequently passed
+in Unity 6000.5.0f1 during the owner-granted C1 slot. Water/weather regressions and the shader compile
+guard passed; the separately run, known golden-hour sun-side plate test reproduced main's failure.
+
+The slot produced 56 paired gameplay-scale images in both played regions: blend 0 versus 0.5 at sun-up,
+noon, sunset and night, calm and blowing, plus caustic-amount-zero controls and night day-gate 0/1 arms.
+All 16 frame groups restored pixel-for-pixel. Calm's zero-energy fallback preserved the independent
+pattern; blowing daylight showed curvature changes, and the night gate removed the caustic add.
+The owner still decides the look. Captures and timing records remain in Evidence~/, outside commits.
+
+GPU timing on an RTX 4060 / Direct3D11 at 1920 x 1080 used the shared `HH IsoFacet Hulls` marker (six
+GPU blocks per sampled frame), with 60 measured frames per arm per region after warmup. Its median
+off/on values were 3.567/3.736 ms in St Peters and 12.219/10.820 ms in Nine Mile Creek. The latter's
+7.643-19.102 ms spread makes its negative delta inconclusive, not a speedup. This is an incremental
+shared-pass comparison, not an isolated shader timer or a 60 fps certification. The first Direct3D12
+capture attempt crashed in GPU readback; the accepted captures use Direct3D11. No shader, scene, bake,
+depth, clip, walkability or simulation change belongs to C1.
+
+### 17.12 C2a: caustic clarity attenuation (ships at 1, 2026-10-08)
+
+The light nets previously added on top of an already absorbed seabed. C2a gives that add the same
+optical law: `sigma = AbsorptionSigma()` and `T = AbsorptionTransmission(sigma, depth)` =
+`exp(-sigma * 2d)`, followed by `AbsorptionBand(T, _AbsorptionBands)`. The new factor is
+`Tc = lerp(1, bandedT, saturate(_CausticClarity))`; the final caustic add multiplies by `Tc`
+after its existing depth and day gates. The pure `CausticMath.ClarityTransmission` twin calls
+`WaterAbsorption.IsActive`, `Transmission` and `BandTransmission`, with no second optical law.
+
+Three choices keep the effect consistent with light travelling through water:
+
+- Use **`depth`, the real water column**, not bias-shifted `causticDepth`. The shallow bias places
+  the light pattern; it must not shorten the optical path. The seabed uses cosmetic `depthC`
+  at its organic shore fringe; C2a deliberately uses the real column while sharing its 2d law.
+- Use **per-channel RGB transmission**, so red fades first and the nets shift toward cyan with
+  depth, like the seabed. No separate grey approximation or extinction ratio is introduced.
+- Apply **the same `_AbsorptionBands` before the clarity blend**. Six bands retain the seabed's
+  pixel-art steps; values below 1 keep smooth transmission. Partial clarity blends toward those steps.
+
+Clarity 0 is an exact factor of (1,1,1), and the summed sigma at or below `ABSORPTION_EPS`
+also returns exactly (1,1,1), at any clarity. Water.mat and all eight presets explicitly serialize
+`_CausticClarity: 1`, so the editor's wholesale `CopyPropertiesFromMaterial` restores one even
+onto a material seeded with 0. Clarity stays outside `WaterSurface.MoodFloatNames`: it is owner
+look policy; the existing mood-eased `_Turbidity` still changes the shared extinction.
+
+Worked example: StirredBrown turbidity 3 and ratio (1, 0.18, 0.08), at 0.5 m, give smooth
+T = (0.04978707, 0.58274825, 0.78662786). Six bands give (0, 0.5, 5/6); clarity 0.5 gives
+(0.5, 0.75, 11/12). At the waterline smooth and six-band T are (1,1,1).
+
+Source cost is one `exp` per channel per active shallow pixel, inside the existing `causticGate`
+branch and guarded by positive clarity and active sigma. There is no new texture sample, keyword,
+or property-block write. No extra optical work runs outside that branch; at zero clarity the new
+exponential is skipped. At shipped clarity 1, the branch computes clamped sigma, its active-sigma
+check, the down-and-back depth product and RGB exponential, band saturation/multiply/add/floor/divide,
+clarity saturation/lerp and the final RGB multiply inside the caustic gate. Transmission and banding are skipped for
+inactive sigma. Measured GPU cost remains **NOT VERIFIED**; Phase C supplied the owner-reviewed plates.
+
+The 28 new EditMode cases cover independent worked numbers, depth/turbidity monotonicity, bit-exact
+passthrough of the arithmetic factor, strength/depth clamps, all nine serialized ones, all nine preset
+copies from a seeded 0, shader wiring, and the mood-policy exclusion. Phase A+B used source/text
+checks without Unity; CI compiles and runs the tests. Phase C captured clarity 0/0.5/1 plus
+caustics-off controls in both played regions at noon and golden hour.
+
+**Phase D (owner, 2026-10-08).** The owner chose clarity **1** and accepted the measured default-off
+GPU residual: 91 changed RGB channel values in 28 of 96 fixed-clock pairs, maximum absolute
+difference 0.00048828125, isolated to the new final factor. The zero path is unchanged; the strict
+local diagnostic stays failing and uncommitted, with no relaxed test bar. GPU price is **NOT VERIFIED**.
+Water, DeepBlue, FoggySmother, GlassyCalm, NorthAtlantic, StirredBrown, StormGrey, Tropical and
+WarmShelter each serialize 1. The bare shader default also moves to 1 so fixtures and new materials
+start from the shipped sea. `WaterPresetMenu.ApplyVariant` copies the complete variant material, and
+`DisplacedWaterSurface` clones/copies the live material; both therefore carry 1. The eight older
+native `.preset` twins omit `_CausticClarity` altogether, so they contain no competing zero pin;
+they are not regenerated here. `WaterSurface` blends only its named mood properties and does not
+override clarity. The C# twin takes clarity explicitly and has no default to move. Part A changes
+data and matching guards without Unity. Part B needs a later owner-granted slot for isolated GPU
+timing, the Phase C clarity-1 anchors through shipped materials without an override, and the GPU
+classes whose measured premises predate clarity 1.
+
+### 17.13 The floor in the shallows (W4-4, 2026-10-18)
+
+Ruling 7 (2026-10-10): "Shallows: 2B. 2A stays unbuilt as the mobile-port fallback." In clear, calm, shallow
+water the sea's bed is the ground's own textures, the splat paint, kit tiles, macro drift and wet band the terrain
+draws, seen through the column by §17.7's law: darker and bluer with depth, stepped by the six bands, lit by the
+caustics, graded, and gone in a murky or stormy sea. The shore plants wholly under the water lie on that floor and
+take the same law (W4-4c); the rocks keep the waterline their sprites carry. Above the water nothing changes. ADR
+0027 #7's amendment and ADR 0028's note (both 2026-10-18) carry the decision; this section is the live spec. The
+three switches default OFF in code and ship ON in `GameConfig.asset`, since the project lead accepted the W4-4 plates
+on 2026-10-20.
+
+#### One ground, two readers (W4-4a)
+
+The ground's albedo lives in one include, `Art/Shaders/Include/TerrainSplatAlbedo.hlsl` (`TSA_` prefix): the hem,
+the weights of the six splat maps, the kit sum over its 21 materials, the macro drift and the wet band. The
+terrain calls its five functions with its old statements in its old order, so its pixels are unchanged; the sea
+includes the same file and calls the same five. `TerrainSplatSurface.WriteGroundFloor` binds the ground's look to
+its region's sea from the values it binds the ground with, so the two cannot disagree; a ground whose kit is not
+loaded writes `_DetailLoaded` 0, which keeps the floor off. No scene changes.
+
+The terrain also stops shading ground the displaced sea covers opaquely: its frag opens with a gated `discard`
+where the sea's coverage target (`_HHWaterScreenTex`) holds alpha 1. The margin is the overlay's own blend weight,
+zero metres, so the fringe, the swash and still water keep their ground. ADR 0028's note has the detail; the
+switch is `GameConfig.TerrainUnderwaterClip`.
+
+#### The floor (W4-4b)
+
+In the sea's frag the floor replaces `bed` after the bands and before the lerp, and nowhere else:
+
+```hlsl
+half4 bed = SAMPLE_TEXTURE2D(_SeabedTex, sampler_SeabedTex, bedUV);   // the bake: coverage, and the fallback
+float3 bedT = AbsorptionTransmission(absSigma, max(depthC, 0.0));      // §17.7: per channel, path 2d
+bedT = AbsorptionBand(bedT, _AbsorptionBands);
+#if defined(HH_SHALLOWS_FLOOR)
+[branch]
+if (_ShallowsFloor > 0.5 && _DetailLoaded > 0.5 && bedIn > 0.0 && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
+    bed = ShallowsFloorBed(bed, worldXY, waveSlope, max(depthC, 0.0), elevation + depth, floorDx, floorDy);
+#endif
+col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
+```
+
+So the floor is absorbed per channel by the mood's own depths, then the caustics (C2a's clarity included) light it
+at the pixel's own `depth`, then the palette grade takes it with everything else.
+
+- **What the helper reads.** The height at the bent point (`SeabedElevationLod`: LOD 0, unmipped, the texel the
+  terrain reads) and the ground's hem from it; at hem 0, below the ground's paint floor, the bake's bed returns
+  untouched. Otherwise the six splats, the kit (two slices for each material over 0.4% weight), the macro drift,
+  and the wet band at the water's own level there (`elevation + depth`: the tide, or still water above it).
+- **The share.** The ground over the bake, the over operator in straight alpha: `a = hem + bed.a × (1 − hem)`,
+  colour `lerp(bed, ground, hem / a)`.
+- **Unlit, as the bake is.** The floor is the kit's albedo; the terrain's relight maps are not applied. The sea's
+  own light, the caustics and the grade with the day, lights it as it lit the bake.
+- **The gate's skip is exact.** Off, unbound, off the rect, or where every channel's banded transmission is 0, the
+  call cannot change a pixel: either the bed stays the bake or the lerp weighs it 0.
+- **The wave sample is the frag's own.** The bend reads the slope the swell already sampled, moved above the bed
+  column unchanged: its inputs are written once and its outputs by the sample alone.
+
+#### The bend, on the ground's grid
+
+`wp = worldXY + round(slope × depth × k × ppm) / ppm`. `slope` is the shared wave field's gradient (the surface the
+swell draws and the hulls ride), `depth` the fringe depth the bands use, `k` = `GameConfig.ShallowsFloorRefraction`
+= 0.25 (about 1 − 1/1.33, light entering sea water from straight above; 0 holds the floor still) and `ppm` =
+`_PixelsPerMetre` = 32.
+
+- **The grid is the ground's own.** The floor is pixelized as the terrain is: the kit point-sampled at
+  world-anchored coordinates, 32 texels a metre, and the splats read as the terrain reads them. It is not on the
+  sea's 24 px/m `Pixelize` cell, which the bake keeps: at the waterline the floor and the dry ground beside it are
+  the same pixels.
+- **It never crawls or swims.** The offset is a whole number of ground pixels, so the floor steps by whole texels as
+  the swell passes and the tide turns, and a point read never lands between two. Its grid and its offset are both
+  functions of world position and time, so a camera pan moves the view over the floor and never the floor.
+- **Under the displaced sea** the fragments carry the undisplaced ground position (`OUT.worldXY`) while the lift
+  moves them on screen, so there the floor rides the lift by a few pixels: part of the wobble, for the plates to
+  judge.
+
+#### How deep the floor shows, per mood
+
+A channel's banded transmission rounds to 0 under half the lowest step, 1/12 at six bands, so the floor loses that
+channel at d = ln 12 / (2σr), with the shipped ratio r = (1, 0.18, 0.08). No mood's value changes.
+
+| Mood (material) | σ (1/m) | Red gone at | Green gone at | Blue gone at |
+|---|---|---|---|---|
+| `Water` (the base anchor unless a region assigns one) and `Water_GlassyCalm` | 0.25 | 4.97 m | 27.61 m | 62.12 m |
+| `Water_Tropical` | 0.12 | 10.35 m | 57.52 m | 129.42 m |
+| `Water_DeepBlue` | 0.3 | 4.14 m | 23.01 m | 51.77 m |
+| `Water_WarmShelter` | 0.5 | 2.48 m | 13.81 m | 31.06 m |
+| `Water_NorthAtlantic` | 0.6 | 2.07 m | 11.50 m | 25.88 m |
+| `Water_FoggySmother` | 1.2 | 1.04 m | 5.75 m | 12.94 m |
+| `Water_StormGrey` | 1.6 | 0.78 m | 4.31 m | 9.71 m |
+| `Water_StirredBrown` | 3 | 0.41 m | 2.30 m | 5.18 m |
+
+In clear calm water the floor keeps its warm colours down to about 5 m and its greens to about 28 m; in a brown
+sea its red goes at 0.4 m and the whole floor by 5.2 m; in a storm by 9.7 m. The played height maps bottom at −4 m
+(St Peters) and −6 m (Nine Mile Creek), so in the clear moods the floor shows wherever the ground lies. More or less
+floor is a mood's `_Turbidity` (every depth above scales as 1/σ) or the ratio (the colour order); neither moves here.
+
+#### The plants under the water (W4-4c)
+
+A shore plant wholly under the live water is laid into the sea's bed over the floor, before the lerp, so the
+column's transmission and bands, the caustics and the grade take it with the floor beside it: it darkens, shifts
+colour, steps, catches the light and grades exactly as the floor does, by the one law applied once.
+
+```hlsl
+#if defined(HH_SHALLOWS_FLOOR)
+// ... the floor's gate and call (above) ...
+[branch]
+if (_HHUnderWaterLive > 0.5 && bedIn > 0.0 && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
+    bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0));
+#endif
+col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
+```
+
+- **Who is under.** The plant's own submerged test, the one that already sorts it under the sea
+  (`ShorePlantTideMath.IsSubmerged`: over its ground by at least its drawn standing height), sets rendering-layer
+  bit 27 (`UnderWaterRegistry.RenderingLayer`, beside the silhouette's 28, the reflection's 29 and the displaced
+  sea's 30) while `GameConfig.ShallowsSubmergedProps` is on, in play only. It reads the level the sea draws by
+  (`WaterLevelAt`, which the sea eases to with a 0.5 s response: millimetres at tidal rates). The bit is written
+  only when it changes and `UnderWaterRegistry` follows it; a disabled plant leaves the set and gives the bit back.
+  No scene stores it and no `ShorePlantDef` or `ShoreRockDef` field is new: membership is derived, not authored.
+- **The pass.** `IsoFacetHullFeature` draws one more filtered renderer list, every renderer with the bit and an
+  `HHUnderWater` pass, sorted `CommonTransparent` as the main pass sorts them, into one ARGB32 sRGB target at camera
+  resolution, cleared first, published as `_HHUnderWaterTex`. The lit sprite's `HHUnderWater` pass draws the sprite
+  where it stands with the main pass's tint, albedo and clip, premultiplied and unlit, because the light under the
+  water is the sea's. Its `UnityPerMaterial` rows come from the main pass's macros, so the shader keeps one layout.
+  Every placed plant draws with `LitShorePlant.mat`, whose shader is the lit sprite.
+- **The read.** `ShallowsPropsBed` bends the point by `ShallowsBend`, the floor's own helper (whole ground pixels),
+  finds the screen pixel that point was drawn at, reads that texel and lays it over the bed (premultiplied over
+  straight alpha). The floor and the plant wobble together on the ground's grid, and under the displaced sea both
+  ride the lift by the same few pixels. The helper holds no absorption, caustic or grade.
+- **The flag is this camera's.** `_HHUnderWaterLive` is lowered for every camera before its passes are added and
+  on Dispose, and raised only by that camera's props pass once it has drawn; the water pass declares the read, so
+  the render graph orders the props first. Before the pass, or with nothing under, the sea reads a clear 1×1 and a
+  flag of 0.
+- **What the player sees.** Wholly under at low, mean and high water: 0, 9 and 27 plants at St Peters, 80, 495 and
+  1087 at Nine Mile Creek. Today the sea covers them all. With the switch on they show through clear water with the
+  floor and fade with it in murky or stormy moods, each in the tide column it wears now. A plant whose tip stands
+  above the water (St Peters 0, 9 and 3; Nine Mile Creek 197, 516 and 54) draws above the sea as today, the part of
+  it below the surface included; only a wholly submerged plant goes through the column. Still water is not a
+  plant's level (`ShorePlantTideView` reads the tide), so a pond plant's state follows the tide, as before.
+- **For the plates.** The plant bake already tints a submerged column cooler and darker (the rig's ramp) and the
+  column darkens it again: whether both stay is the art director's call. A plant is absorbed at the depth of the
+  ground under each of its pixels, not at its own height. The plants ship with the floor: alone they would bend
+  against the unbent bake.
+
+#### Why the sea draws them: the three routes
+
+| | (i) above the sea, a column material | (ii) the sea lays them in (built) | (iii) baked into the floor |
+|---|---|---|---|
+| What the player sees | the plant over the swash, foam and surface light: on the water, not in it | the plant in the water, under every surface layer, with the floor | the plant in the water, held at one tide |
+| GPU | the column in each plant pixel | one projection and one texel read per shown sea pixel; the plants' pixels drawn once more | nothing new at draw time |
+| Draw calls, batching | two passes a plant for per-channel light, in a new band | one more draw per wholly submerged plant on screen, batched as the main pass batches it (each plant's light block already keeps it out of the SRP batcher) | none for a baked plant |
+| Pixel grid | the plant's own | the plant's own, read through the floor's whole-pixel bend | the bake's texels |
+| Tide swap | kept | kept | lost: a bake holds one column |
+| Determinism | look-only | look-only | look-only |
+| `SortingBands` | a new rung over `Sea` (an ADR 0032 amendment), and the submerged order moves | none | none |
+| Tests it moves | `SortingBandsTests`, `ShorePlantTideTableTests`' submerged order | four W4-4b premises (below) | the bake's tests, and a builder change (1377 plants at Nine Mile Creek; St Peters cannot be rebuilt) |
+| The law | a second material runs it | the floor's, applied once | the bake's, fixed |
+
+(ii) is built in the form that needs no new sorting layer. The seat's form, a URP 2D sorting-layer texture, is a
+TagManager and ADR-sized change on a one-layer project; a rendering-layer bit with a pass tag picks the same
+renderers inside the feature that already draws the sea's coverage, reflections and foam.
+
+#### The rocks keep their one waterline
+
+Every placed rock (33 at St Peters, 18 at Nine Mile Creek, under `Shoreline/ShoreRocks`) draws with URP's
+Sprite-Lit-Default above the sea (orders 619 to 1629 against the sea's −5), so the sea never covers one. An awash
+rock's sprite is clipped at the sea plane its bake assumed
+(`RockRigBakeTests.AnAwashRockIsCLIPPED_NotFlooded_SoNoWaterIsEverBaked`): that clip is its waterline, and the sea
+shows below it. W4-4c draws no rock under the water, so nothing draws a second line to disagree with it.
+
+Its below-water pixels should go through the column too: one law for everything under the water. A rock would know
+which of its pixels are under by each pixel's height above its foot (its row ÷ 32 px/m, capped at the rock's
+height) against the sea's own level over the DRAWN ground at its foot: the painted height map the sea reads, never
+the simulation's ground, which under St Peters' rocks lies a median 1.10 m below the drawn one and up to 4.58 m off
+(at Nine Mile Creek the two are one map). It would wear its wet row, unclipped, and the live level would cut it:
+above the line in the main pass, below it through the props target. That is a material change for every rock in
+both played scenes and a drawn-ground source per rock, so it is raised before it is built;
+`AnAwashRock_DrawsNoSecondWaterline` guards today's state and moves with that change.
+
+#### Switches (off is today's pixels)
+
+| Switch | Lives in | Default | Off |
+|---|---|---|---|
+| `TerrainUnderwaterClip` | `GameConfig` (code and asset) | false in code; true in the asset | the terrain's gate is never taken |
+| `ShallowsFloor` | `GameConfig` (code and asset), pushed by `WaterSurface` | false in code; true in the asset | the sea's gate skips the call; the bed is the bake |
+| `ShallowsFloorRefraction` | `GameConfig` (code and asset) | 0.25 | read only while the floor is on; 0 holds it still |
+| `ShallowsSubmergedProps` | `GameConfig` (code and asset), read in play | false in code; true in the asset | no plant takes the bit; the feature draws no props pass and binds a clear 1×1; the sea's flag stays 0 |
+| `HH_SHALLOWS_FLOOR` | the water shader | defined unless `SHADER_API_MOBILE` | a mobile build compiles today's bed, without the props read |
+
+A stale asset that deserializes a switch as 0 reads off. `WaterSurface` pushes the floor's switch and bend beside
+the salience knobs, in the edit-mode preview and in play; with no config wired it reads the defaults, off.
+
+#### Cost (rule 7; counted from the source, timed on the slot)
+
+- **Off:** two screen derivatives a sea pixel (they feed only the floor) and, inside the absorption block, one
+  uniform branch.
+- **On, where the floor shows:** one height read, six splat reads and two kit reads for each material over 0.4%
+  weight (9 to 13 reads at one to three materials) and the terrain's own albedo arithmetic. The gate keeps it to
+  in-rect pixels where some channel passes light; below the ground's paint floor it is the height read alone.
+- **Against it,** the clip skips the ground's shading wherever the sea covers it opaquely. The terrain already
+  discards below its paint floor after one height read (`TSA_Hem`), so the full shading the clip saves (six splat
+  reads, the kit's reads and the relight) is the painted ground under the opaque sea: by the height maps at least
+  9.0% of St Peters' rect at mean water and 12.2% at high, 12.4% and 18.5% of Nine Mile Creek's, and almost none at
+  low water (0.0% and 0.2%). The 2B estimate's 81% and 34% are the always-wet share of each rect, mostly below the
+  paint floor, where the clip saves the one height read. So the floor's reads mostly move from the terrain to the
+  sea, and add where both still draw: the fringe, the swash and still water. Both sides are timed on the slot.
+- **Samplers:** two inline states (linear clamp for the splats, point repeat for the kit) take the water shader
+  from 10 to 12 of D3D11's 16. **Memory:** nothing new; the ground's textures are bound, not copied. **CPU:** no
+  per-frame allocation; two floats more in each block write.
+- **The plants (W4-4c).** Off: nothing, no pass, no target, the sea's gate never taken. On: one more draw per wholly
+  submerged plant on screen, its own pixels drawn once more, and in the sea one projection and one texel read per
+  shown pixel. **Memory:** the props target, 4 bytes a pixel at camera resolution (8.3 MB at 1920×1080, 33 MB at
+  3840×2160), held only while the switch is on and a plant is under, released otherwise. **CPU:** no per-frame
+  allocation; a plant writes its bit and the set only when its state changes. A build without `HH_SHALLOWS_FLOOR`
+  compiles the read out with the floor, so the switch stays off there.
+- **The 2A line** (proposed with W4-4, for acceptance with its plates): a port turns to 2A (the splat's colours
+  baked into `_SeabedTex`, no new read) if the floor's own price, floor on minus floor off with the clip on in both,
+  times above 0.5 ms a frame at the 14 m dory framing over St Peters' low-water intertidal on that port's typical
+  device. No 2A now: the line is a port's, ruling 7 keeps 2B on PC, and a mobile build already compiles without
+  `HH_SHALLOWS_FLOOR`. As measured on this PC (2026-10-18, noon, mean and high water, the clip off in both arms),
+  the floor costs +0.76 to +1.37 ms a frame at 1920×1080 and +3.9 to +5.0 ms at 3840×2160 over both played regions,
+  so any slower port is over the line and 2A is its path. A build without `HH_SHALLOWS_FLOOR` already draws today's
+  bed, so 2A is a bake into a texture the sea already reads; nothing here makes it harder.
+
+#### Determinism and tests
+
+Look-only (rule 5): static textures, the recomputed tide and still water. Nothing the simulation, the CPU
+classifier or a placement reads changes; the floor writes only `col.rgb`. `ShallowsFloorShaderTests` (text guards
+on the two shaders and the include) and `ShallowsFloorTests` (data, binding and the switches) pin it:
+`WaterAndTerrain_ShareOneSplatInclude`, `TheTerrain_DrawsTheSharedAlbedo_AndKeepsNoCopyOfItsOwn`,
+`TheIncludesTables_AreTheTerrainsTables_EntryForEntry`, `TheTerrainClips_OnlyUnderTheSeasOwnWaterLevel`,
+`TheFloor_GoesThroughThePaletteGrade`, `TheFloor_IsAbsorbedPerChannel`, `TheCaustics_LightTheSplatFloor`,
+`TheFloor_BendsByWholeGroundPixels`, `SameFrame_IsOneMapPlacement`,
+`EachPlayedRegion_SeaAndGround_ShareOneHeightFrame`, `TheClipFlag_IsRaisedOnlyByThisCamerasOwnWaterPass`,
+`TheGroundFloor_BindsEveryUniformTheIncludeReads` and `SwitchOff_IsTodaysPixels_BitForBit` (clip, floor, props).
+HLSL does not compile headless: `WaterShaderCompileGuardTests` and `LitSpriteShaderCompileGuardTests` in the editor
+and the slot's plates prove what text cannot.
+
+W4-4c adds `TheFloorAndThePropsShareOneColumnLaw`, the props case, and `ShallowsPropsTests`'
+`ASubmergedPlant_IsSeenThroughTheWater` and `AnAwashRock_DrawsNoSecondWaterline`. It moves four W4-4b premises,
+each named in its test: `TheFloor_GoesThroughThePaletteGrade` (what comes before the composite, 5dab2083's frag
+:5162-:5165: the floor's call, `#endif`, the lerp), `TheFloor_IsAbsorbedPerChannel` and the floor case (the column's
+sequence, :5149-:5165), and `TheFloor_BendsByWholeGroundPixels` (the bend, inline at :2256-:2257, now `ShallowsBend`'s
+body, unchanged). The plants' bit and set are render state, read only by the plant view, its math and the feature
+(the rock guard's scan), so the simulation reads nothing new.
 
 ## 18. Current drift lines — the tide's SET reads on the surface (Arc C water visuals)
 
@@ -3263,6 +3640,12 @@ the promotion into the field is P2, gated on an ADR 0018 amendment.
 
 ## 26. Object reflections — a filtered renderer list into an RT, wave-warped (ADR 0027 #8)
 
+**R3 mesh path (2026-10-01, default off):** [Hull mesh reflections](hull-reflection-mesh.md)
+adds a bounded physical-height reflected draw of current hull/leaf/fitting/figure meshes,
+with retained submerged colourless depth occlusion. The legacy path below remains shipped
+until the owner rules from Phase C's matched GPU plates. Water look assets and lookup are unchanged.
+
+
 Boats, wharf structures and bankside trees **reflect in the water**. This is the project's first render
 target in the water path, and it reopens a settled rejection — so both halves are recorded here.
 
@@ -3315,6 +3698,15 @@ So `ReflectiveObject` publishes the pivot per renderer into the MaterialProperty
 `_HHReflectOrigin` (`xy` = the pivot, `w` = 1 meaning "published"). With `w = 0` the HLSL **refuses to
 mirror** and collapses the geometry to a clipped point: a missing reflection is a bug you go and find, a
 reflection pinned to the world origin is a bug that looks like a haunted sea.
+
+**Hull property ownership (water R1).** `IsoFacetHullRenderer.ApplyPose()` reads each target
+renderer's own block before publishing the hull-owned draw fields back to it. The scratch block is
+reused, but each read replaces it: the overlay's `_HHReflectOrigin` and `_HHReflectLit` survive,
+and neither those fields nor a sibling's unrelated overrides travel between FacetMesh, DoorLeaf
+and HullOverlay. Deck-slot depths are still computed once per pose. `ReflectiveObject` keeps its
+existing refresh cadence; this preserves its last published pivot, not a new per-frame pivot update.
+The tree/building reflector path is unchanged. Current-frame hull-image availability is separate
+water-plan R2 work; the first/settled, still/moving contact plate still requires an editor slot.
 
 > ⚠️ **World Y is the mirror axis but NOT "height".** In a top-down game world Y is a ground-plane
 > coordinate (north); the art fakes height by drawing up the screen, which is exactly why mirroring
@@ -3792,24 +4184,27 @@ have continued into hue.
 
 ### 29.2 The ramp — `WakeFoamAgeing` (Core), and its HLSL twin
 
-`Core/Environment/WakeFoamAgeing.cs`. Foam is born at the sea's **foam** anchor and walks down the
-water's own ramp — **foam → shallow → mid** — over its life, through three owner-tunable knots:
+`Core/Environment/WakeFoamAgeing.cs`. Foam is born at the sea's **foam** anchor and walks **into the
+water it rides on** — **foam → the water lifted → the water** — over its life, through three
+owner-tunable knots (W4-1, design 3A, ruled 2026-10-10; §47):
 
 | Knot | Default | Means |
 |---|---|---|
 | `WhiteHold` | 0.12 | fraction of life held at pure white — *"white only at the moment of churn"* |
-| `BlueReach` | 0.45 | life at which it has become the sea's shallow blue |
-| `DeepReach` | 0.85 | life at which it lands on the mid blue and stops descending |
+| `BlueReach` | 0.45 | life at which it has become its water, lifted (the mid stop; ≈ 3.45 s astern on the band) |
+| `DeepReach` | 0.85 | life at which it IS its water, and stops (≈ 10.95 s astern on the band) |
 
-**The colours are never invented.** Every value returned is a convex combination of the live
-ADR 0015 palette anchors, so the "different shades of blue" are the ones the sea is already using and a
-preset swap or a mood turn carries the wake with it. That containment is a *provable* property, and
-`WakeFoamAgeingTests.EveryShade_StaysInsideTheSeasOwnPalette` pins it as a derived bound rather than a
-tolerance.
+**The colours are never invented.** The white stop is the live ADR 0015 foam anchor; the other two are
+the water at that spot. Every value returned is a convex combination of the foam and that water (the lift
+lies between them in every channel), so a preset swap or a mood turn carries the wake with it. That
+containment is a *provable* property, and `WakeFoamAgeingTests.EveryShade_StaysInsideTheSeasOwnPalette`
+pins it as a derived bound rather than a tolerance.
 
-**The last leg is the alpha fade, deliberately.** The ramp stops at the mid anchor; the existing fade
-takes it the rest of the way. The ambient ocean at any given spot is whatever depth, tide and light make
-it — dissolving into it beats guessing it.
+**The walk ends ON the water.** Until W4-1 the ramp stopped at the mid anchor and left the last leg to the
+alpha fade; on any water darker than that anchor the old wake read as a fixed light marine blue stripe
+(the owner's 2026-10-09 finding 3). Now the end stop is the water itself, so the fade has nothing left to
+hide. In the shader that water is the LIT sea under the foam, `col.rgb` at the layer's own composite
+(C2, §47.6).
 
 `_WakeFoamAgeStrength = 0` (shader) / `WakeAgeRamp.Strength = 0` (C#) is a **bit-exact** passthrough to
 the single-white look. The usual A/B contract.
@@ -4035,6 +4430,7 @@ key absent *everywhere* looks consistent and is invisible to a value-based check
 | `_WakeFoamAgeStrength` | the nine water materials | 0 = one flat white (the pre-#665 compose), 1 = full palette walk |
 | `_WakeFoamFreshFloor` | ” | freshness that still reads as churning *now*. Ships at 1 so the white hold has exactly one owner |
 | `_WakeFoamWhiteHold/BlueReach/DeepReach` | ” | the three knots, in age |
+| `_WakeBodyLift` / `_WakeBodyWhiten` | ” (mood-eased) | the mid stop: the water ×2, whitened 5% toward the foam (W4-1, §47) |
 | `_foamAgeHalfLifeSeconds` | `IsoFacetHullFeature` | how fast the colour walk runs. **Keep it under the coverage half-life** |
 | `AgeStrength` / `LengthJitter` / `OrientJitterDeg` | `WakeWaveConfig` | how much the crests age, and how much they differ from one another |
 | `SeaGain` / `ThrowPerSecond` / `BurstSlots` / `SizeBias` / `FallShrink` | `BowImpactConfig` | how hard the sea drives the bow, and how the throw reads |
@@ -4235,15 +4631,20 @@ The walk was lifted out of `WakeFoamAgedColor` into a shared entry point, and ev
 composes through it:
 
 ```hlsl
-float3 FoamAgedColor(float age01, float3 legacy, float strength)
+float3 FoamAgedColor(float age01, float3 legacy, float strength, float3 body)
 {
     float s = saturate(strength);
     if (s <= 0.001) return legacy;                 // the A/B, bit-exact, for every layer at once
     float  t    = WakeFoamKnots(age01, _WakeFoamWhiteHold, _WakeFoamBlueReach, _WakeFoamDeepReach);
-    float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb);
+    float3 lift = WakeBodyLift(body, _PaletteFoam.rgb, _WakeBodyLift, _WakeBodyWhiten);
+    float3 ramp = WakeFoamRamp3(t, _PaletteFoam.rgb, lift, body);
     return lerp(legacy, ramp, s);
 }
 ```
+
+(As of W4-1, §47. When this section was written the walk ran
+`WakeFoamRamp3(t, _PaletteFoam.rgb, _PaletteShallow.rgb, _PaletteMid.rgb)`, and the measurements below were
+taken on that walk.)
 
 `WakeFoamAgedColor` became a two-line adapter onto it (the wake's freshness clock, `_FoamColor`,
 `_WakeFoamAgeStrength`); the caps pass `capAge01` and `_CapAgeStrength`; the surf passes its own age and
@@ -4312,6 +4713,10 @@ So the resolution claim is made over **the walk** — the samples strictly betwe
 knot, the stretch that used to be flat white — where **all 59 samples are 59 distinct colours**; and the
 band-wide claim became *the commonest colour must be one of the ramp's own end-stops, never a value the
 walk stalled on*. It is `_PaletteMid`, the tail's ambient blue, at 30.7 %.
+
+> **W4-1 (§47) moved the far end.** The band now dies into the water it rides on, not into `_PaletteMid`:
+> the test runs the sweep over Water.mat's water at 1 m (`DepthRamp.png` texel 56, #5e7e78), so "dying"
+> is that water and the span is foam → water. The table above is the measurement as it was taken.
 
 ### …and what it does on the plates (`SHEET-foam.png`)
 
@@ -5949,3 +6354,118 @@ photographed as her default **mesh** variant.
 ⚠ **Row 38 is not fixed by this, and is not made worse by it.** The lift reads the transom root the wake
 already publishes, so while the band is drawn off the track (§38) the lift stands off the track with it.
 That is one cause with two symptoms, and the cause is row 38's ruling to make.
+
+## 47. The wake fades into the water it rides on (W4-1, design 3A, owner ruling 2026-10-10)
+
+**The owner's 2026-10-09 finding 3:** an old wake faded into a fixed light marine blue, not into the
+water under it. Ruled 2026-10-10 (design 3A of the water-four lane's Phase A report): the wake walks from
+the sea's foam into **the water it rides on**.
+
+### 47.1 The walk, before and after
+
+**Before:** foam → `_PaletteShallow` → `_PaletteMid`, three fixed anchors (§29.2, §33). On any water darker
+than the mid anchor the dying wake sat on the sea as a pale stripe. In the Phase A report's frame (display
+sRGB at noon, graded, the band's core at full coverage), the base mood at 4 m: water #1e355b, the wake
+#357fb3 at 3.45 s astern (ΔE76 31.6, ×5.1 luma) and still #214780 at 10.95 s (ΔE76 13.6).
+
+**After:** foam → lift(body) → body, where the body is the water this pixel is:
+
+```hlsl
+// 3A saved the body here: float3 foamBody = col.rgb; after the seabed, before the swell tint.
+// C2 (§47.6) replaced it with col.rgb at each layer's own composite, after every light layer.
+float3 WakeBodyLift(float3 body, float3 foam, float lift, float whiten)
+{
+    return lerp(min(body * max(lift, 1.0), foam), foam, saturate(whiten));
+}
+```
+
+The knots keep their meaning: `WhiteHold` holds white, `BlueReach` is where the walk reaches the lifted
+water (≈ 3.45 s astern on the band), `DeepReach` is where it becomes the water (≈ 10.95 s). The lift has two
+guards: never below ×1 (the mid stop is never darker than its water) and capped at the foam per channel
+(never brighter than its white). Together they keep the walk's luma monotone, which
+`Luminance_NeverRises_AsFoamAges` still proves.
+
+### 47.2 The two dials
+
+| dial | ships | means |
+|---|---|---|
+| `_WakeBodyLift` | 2 | the mid stop is its water this many times brighter (linear, per channel, capped at the foam) |
+| `_WakeBodyWhiten` | 0.05 | …then whitened this far toward the sea's foam |
+
+Both are serialized on `Water.mat` and all eight presets (`WaterPresetMenu` copies every property on apply,
+so a dial on `Water.mat` alone would be lost) and are the shader's defaults. Both are in
+`WaterSurface.MoodFloatNames`: a look per mood, so the weather eases them. They are deliberately **not** in
+`FoamRealnessTests`' list of wake keys that must agree across presets.
+
+At the shipped arm the base mood reads #8ab1b0 at 1 m (ΔE76 19.4, ×2.2 luma) and #3b4d6d at 4 m (ΔE76 11.5,
+×2.0) at 3.45 s, and is the water exactly (ΔE 0) at 10.95 s, in all nine moods at every depth. On dark
+water the whiten dominates (at 4 m, ΔE76 11.5 against 4.1 with no whiten). The Phase C plates pick the arm.
+
+### 47.3 The caps and the surf follow, each through its own strength
+
+There is one walk (§33), so the whitecaps (`_CapAgeStrength`) and the surf and its lip (`_SurfAgeStrength`)
+also die into the water under them (`col.rgb` at their own composite since C2, §47.6). Each strength at 0
+is still its layer's legacy white, bit-exact. W4-1 changes
+neither strength. `PaletteGrade` and the envelope bands still read the four ADR 0015 anchors: 3A moves the
+foam only.
+
+### 47.4 The sprites speak the same language
+
+`BoatWakeEmitter` gives each foam puff, droplet, bubble and wave crest its own water, from
+`BoatCrossing.DepthAt` at its position, through `SeaPaletteState.BodyAt`. `WaterSurface` publishes what the
+CPU needs: the depth ramp's sampled row and the deep-blue dials, as a `SeaWaterBody`. `DepthRamp.png`
+imports readable for this (256×8 RGBA, 8 KB of CPU memory, read once per texture, no GPU readback). Two
+known gaps: the sprites' water has no seabed composite (the bed only ever darkens, so a sprite over a
+visible bed ends a little lighter than the band); and the plume and bow spray stay at `ShadeFresh`, age 0,
+which is the foam anchor in both walks. A ramp that cannot be read publishes no water, and the sprites
+fall back to the mid anchor, with one console warning. Since C2 the band ends on the LIT water and the
+sprites still on this pre-light water: see §47.6.
+
+### 47.5 What is tested
+
+- `WakeFoamAgeingMeasurementTests.TheWake_EndsAsTheWaterItRidesOn_InEveryMood`: ΔE 0 at age 1, the nine
+  materials at 1, 2.5 and 4 m, against the test's own transcription of the shader's depth block from the
+  materials' YAML and the ramp's pixels; it also checks the water the CPU hands a sprite.
+- `…TheWakesMidStop_KeepsTheWatersHue`: the mid stop within 10° of its water's hue (display sRGB), half the
+  20° gap the Phase A report measured as the defect; the shallow anchor fails the same bar.
+- `…WakeBodyDials_OnAllNineMaterials_AndInMoodFloatNames`.
+- `WakeFoamAgeingShaderTests.FoamAgedColor_EndsOnTheLitWaterUnderEachLayer_NotAnAnchor` (C2; it was
+  `FoamAgedColor_ReadsTheSavedBody_NotAnAnchor`): all four aged foam layers end the walk on the `col.rgb`
+  their own compose lerps from, after the sky and object reflections; `foamBody` does not come back.
+- The ramp and the lift are compared line for line with their C# twins (`Ramp3`, `BodyLift`).
+
+### 47.6 C2: the walk ends on the LIT water (owner ruling 2026-10-11)
+
+The Phase C plates found the end of the walk darker than its water at noon. Cape Islander, 4 m, 10.95 s
+astern: ΔE76 15.2 at 0.42 of the water's luma in the base mood, 16.7 at 0.41 in GlassyCalm. 3A saved the
+body before the light layers, and at noon the sky reflection and the rest lift the sea well above it
+(with `_SkyReflectionStrength` 0 the same station read ΔE 5.8 at 0.70). The owner ruled it a stripe, to
+be fixed before the arm ships.
+
+**The fix:** each aged layer hands the walk `col.rgb` at its own composite, and its compose lerps from
+that same `col.rgb`:
+
+```hlsl
+col.rgb = lerp(col.rgb, WakeFoamAgedColor(wakeFresh, col.rgb), saturate(wakeFoam) * _FoamColor.a);
+```
+
+At the end of the walk the compose is `lerp(col, col, w)`. The layer leaves the pixel exactly as it found
+it, lit, at every hour and in every mood, over whatever lies under it: an old wake over a cap ends as the
+cap, the surf's whitewater ends on the water its barrel shaded. The `foamBody` save is gone.
+
+**Why not the other way** (compositing the foam before the light layers): the fresh foam would then take
+the reflection, the spec and the caustics on top of its white. That changes the young foam's look, and
+the plates pinned on it, to fix only its end. It would also move three blocks of code across some 500
+lines of light layers.
+
+**What it moves:** the mid stop is now the LIT water ×`_WakeBodyLift` (capped at the foam), so at noon
+the wake at 3.45 s is lighter than under 3A. The twins are unchanged in both copies (`WakeFoamRamp3` and
+`Ramp3`, `WakeBodyLift` and `BodyLift`, `FoamAgedColor` and `Shade`); only the shader's argument moved.
+
+**The sprites cannot follow.** The CPU has no sky, reflection or spec to light its water with, so a
+sprite's walk still ends on `SeaPaletteState.BodyAt`, the water before the light layers. Each sprite's
+alpha reaches 0 at the end of its life (`LifeFade`), so at noon its last frames sit a shade under the lit
+sea at the bottom of that fade. Named, not fixed.
+
+**Q8, in the same change:** each sprite reads its depth once, for its ride and its body
+(`BoatWakeEmitter.DepthUnder`). 3A read it twice, at about 0.65 µs a read over some 160 live sprites.

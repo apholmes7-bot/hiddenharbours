@@ -13,7 +13,8 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>One map per control mode.</b> <see cref="WalkMap"/>, <see cref="DeckMap"/>,
     /// <see cref="HelmMap"/>, <see cref="DriveMap"/> and <see cref="UiMap"/> — the mode list ADR 0043
-    /// fixes. A device-backed intent source finds its map here ONCE, at construction, and polls its
+    /// fixes — and <see cref="HudMap"/>, the HUD's own press, which every mode shares (H2). A
+    /// device-backed intent source finds its map here ONCE, at construction, and polls its
     /// actions every frame (<c>ReadValue</c> / <c>IsPressed</c> / <c>WasPressedThisFrame</c>): polling is
     /// the shipped shape and the tests' shape, and the Input System's callbacks are not used for the
     /// polled modes (rule 7 — no per-frame allocation, no callback plumbing).</para>
@@ -31,6 +32,7 @@ namespace HiddenHarbours.Player
         public const string HelmMap = "Helm";
         public const string DriveMap = "Drive";
         public const string UiMap = "UI";
+        public const string HudMap = "Hud";
 
         /// <summary>The control scheme names, as the asset spells them.</summary>
         public const string KeyboardMouseScheme = "KeyboardMouse";

@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 4b71c8e801a57774fa057bc22b1fc8ba
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3163184367501444415
+    second: Spine_basalt_barnacled_mask_0
+  - first:
+      213: -3286870446017500299
+    second: Spine_basalt_barnacled_mask_1
+  - first:
+      213: -6565271111654159349
+    second: Spine_basalt_barnacled_mask_2
+  - first:
+      213: -7925760902613389576
+    second: Spine_basalt_barnacled_mask_3
+  - first:
+      213: 319490125357277347
+    second: Spine_basalt_barnacled_mask_4
+  - first:
+      213: -116587090597109060
+    second: Spine_basalt_barnacled_mask_5
+  - first:
+      213: -7839298117510920556
+    second: Spine_basalt_barnacled_mask_6
+  - first:
+      213: -3357395515671599894
+    second: Spine_basalt_barnacled_mask_7
+  - first:
+      213: 6356875051716938280
+    second: Spine_basalt_barnacled_mask_8
+  - first:
+      213: 2479662771653659875
+    second: Spine_basalt_barnacled_mask_9
+  - first:
+      213: -306274234201854589
+    second: Spine_basalt_barnacled_mask_10
+  - first:
+      213: -1518184104454875343
+    second: Spine_basalt_barnacled_mask_11
+  - first:
+      213: -1742125207007047786
+    second: Spine_basalt_barnacled_mask_12
+  - first:
+      213: -5532561279800719028
+    second: Spine_basalt_barnacled_mask_13
+  - first:
+      213: 6544828909185413998
+    second: Spine_basalt_barnacled_mask_14
+  - first:
+      213: -7209489048158554292
+    second: Spine_basalt_barnacled_mask_15
+  - first:
+      213: -5804494004058529583
+    second: Spine_basalt_barnacled_mask_16
+  - first:
+      213: -9116668578565626460
+    second: Spine_basalt_barnacled_mask_17
+  - first:
+      213: 1307017535349349506
+    second: Spine_basalt_barnacled_mask_18
+  - first:
+      213: -8460047219616626905
+    second: Spine_basalt_barnacled_mask_19
+  - first:
+      213: 6680739598167435890
+    second: Spine_basalt_barnacled_mask_20
+  - first:
+      213: -923888256827207651
+    second: Spine_basalt_barnacled_mask_21
+  - first:
+      213: -342121029033330403
+    second: Spine_basalt_barnacled_mask_22
+  - first:
+      213: -8255471022184892321
+    second: Spine_basalt_barnacled_mask_23
+  - first:
+      213: 5816616344664342628
+    second: Spine_basalt_barnacled_mask_24
+  - first:
+      213: 5638097695905563981
+    second: Spine_basalt_barnacled_mask_25
+  - first:
+      213: 6229442800072180935
+    second: Spine_basalt_barnacled_mask_26
+  - first:
+      213: -1978906630973637838
+    second: Spine_basalt_barnacled_mask_27
+  - first:
+      213: -4307204402878178583
+    second: Spine_basalt_barnacled_mask_28
+  - first:
+      213: 8316819727974843923
+    second: Spine_basalt_barnacled_mask_29
+  - first:
+      213: -9058647041697692033
+    second: Spine_basalt_barnacled_mask_30
+  - first:
+      213: 6272777622949865281
+    second: Spine_basalt_barnacled_mask_31
+  - first:
+      213: -7656810409362087986
+    second: Spine_basalt_barnacled_mask_32
+  - first:
+      213: 1825803671122690697
+    second: Spine_basalt_barnacled_mask_33
+  - first:
+      213: 3184579756325141072
+    second: Spine_basalt_barnacled_mask_34
+  - first:
+      213: -7012544682872984969
+    second: Spine_basalt_barnacled_mask_35
+  - first:
+      213: -2400395755446172135
+    second: Spine_basalt_barnacled_mask_36
+  - first:
+      213: 7131178885946361683
+    second: Spine_basalt_barnacled_mask_37
+  - first:
+      213: -4041392779997127947
+    second: Spine_basalt_barnacled_mask_38
+  - first:
+      213: 751605698845437822
+    second: Spine_basalt_barnacled_mask_39
+  - first:
+      213: -1788375497801641830
+    second: Spine_basalt_barnacled_mask_40
+  - first:
+      213: 3164668535899404103
+    second: Spine_basalt_barnacled_mask_41
+  - first:
+      213: -7672785211671286993
+    second: Spine_basalt_barnacled_mask_42
+  - first:
+      213: 6354289024196825908
+    second: Spine_basalt_barnacled_mask_43
+  - first:
+      213: 4438343035360534758
+    second: Spine_basalt_barnacled_mask_44
+  - first:
+      213: -6362724760341293197
+    second: Spine_basalt_barnacled_mask_45
+  - first:
+      213: -49574371372789445
+    second: Spine_basalt_barnacled_mask_46
+  - first:
+      213: -5975535316735550438
+    second: Spine_basalt_barnacled_mask_47
+  - first:
+      213: 2729073517176740179
+    second: Spine_basalt_barnacled_mask_48
+  - first:
+      213: 7582916004765057918
+    second: Spine_basalt_barnacled_mask_49
+  - first:
+      213: -6472793057155091917
+    second: Spine_basalt_barnacled_mask_50
+  - first:
+      213: 2238818498313445944
+    second: Spine_basalt_barnacled_mask_51
+  - first:
+      213: -8496136192514448318
+    second: Spine_basalt_barnacled_mask_52
+  - first:
+      213: -8142652927849958092
+    second: Spine_basalt_barnacled_mask_53
+  - first:
+      213: 5667232746248701719
+    second: Spine_basalt_barnacled_mask_54
+  - first:
+      213: -4507646535552130202
+    second: Spine_basalt_barnacled_mask_55
+  - first:
+      213: -9121385107517910758
+    second: Spine_basalt_barnacled_mask_56
+  - first:
+      213: -495134286317577124
+    second: Spine_basalt_barnacled_mask_57
+  - first:
+      213: -5937829135434691982
+    second: Spine_basalt_barnacled_mask_58
+  - first:
+      213: 4058362641614724183
+    second: Spine_basalt_barnacled_mask_59
+  - first:
+      213: -6713843323242675452
+    second: Spine_basalt_barnacled_mask_60
+  - first:
+      213: -1479939882145382682
+    second: Spine_basalt_barnacled_mask_61
+  - first:
+      213: 5484662792543880526
+    second: Spine_basalt_barnacled_mask_62
+  - first:
+      213: 278652471573270776
+    second: Spine_basalt_barnacled_mask_63
+  - first:
+      213: -2108362121762537537
+    second: Spine_basalt_barnacled_mask_64
+  - first:
+      213: 4998527354638473640
+    second: Spine_basalt_barnacled_mask_65
+  - first:
+      213: 5077776667785793599
+    second: Spine_basalt_barnacled_mask_66
+  - first:
+      213: 5766355001014435693
+    second: Spine_basalt_barnacled_mask_67
+  - first:
+      213: -8360477813421310757
+    second: Spine_basalt_barnacled_mask_68
+  - first:
+      213: -971991701809133862
+    second: Spine_basalt_barnacled_mask_69
+  - first:
+      213: -4388393349366460111
+    second: Spine_basalt_barnacled_mask_70
+  - first:
+      213: -1265534848040662734
+    second: Spine_basalt_barnacled_mask_71
+  - first:
+      213: 2746401673264779177
+    second: Spine_basalt_barnacled_mask_72
+  - first:
+      213: -7792212728226924217
+    second: Spine_basalt_barnacled_mask_73
+  - first:
+      213: -8350656446902480978
+    second: Spine_basalt_barnacled_mask_74
+  - first:
+      213: 4414296473764910771
+    second: Spine_basalt_barnacled_mask_75
+  - first:
+      213: 3603227184496370784
+    second: Spine_basalt_barnacled_mask_76
+  - first:
+      213: 1363894659273182968
+    second: Spine_basalt_barnacled_mask_77
+  - first:
+      213: -789538291296032401
+    second: Spine_basalt_barnacled_mask_78
+  - first:
+      213: 3044904254292261838
+    second: Spine_basalt_barnacled_mask_79
+  - first:
+      213: 2270981987028297560
+    second: Spine_basalt_barnacled_mask_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6064debae0fe081488b3bb0bcd60f291
+      internalID: 1570468084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6975d6b28e6b2474898e6b9f15855b47
+      internalID: -498038401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95dbf23a891c5b84fb2f9addb270e75b
+      internalID: -2062073563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef50d2fd6803ebe429ed86018b45557c
+      internalID: 1553448050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e306faedc1c33d04397b3078ddba8c9b
+      internalID: -414176336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9690ae4d40011a40991502f1501e700
+      internalID: 482534645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3e8b4c2fa98f4545b078af4b95ee091
+      internalID: 1086126228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7b7ef0cf25d50a4ba86f776ab295ffc
+      internalID: 1605404304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 977c6d541827ba44c9fb5ac9dc1211a7
+      internalID: -2141605275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fd1ac7d6ae8b104fa9ef030b9d7408f
+      internalID: -1018305434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e057d3e3790f1f48a461abd70ae9c90
+      internalID: -382869520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d6b1e8f25c78dc48b9fbcaa73dce6f5
+      internalID: -952057820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8cbd187870e9924cb063b568663b9a1
+      internalID: 1218711902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c74cc74e4a2f5f844bdbb3dbf3b3432d
+      internalID: -759082125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a82cf15ab1e0c941a7ff35fa7fd3353
+      internalID: -915273509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19b7eb844df148446be75551a836525e
+      internalID: 1845648749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 319f2554f373e774397bf91d6ef279a5
+      internalID: 835742105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6670efe06fcdd314b83cf23c932624c3
+      internalID: -1367683986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69eadab18058fab4b88e792287da55f1
+      internalID: -2144252183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0799d555bb1c1e4f91648a63cb8e1e4
+      internalID: -661823423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfe23ced338ee8149beb48410d887a3a
+      internalID: -1786339694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83b50a4ef732d794098334b09e5511a2
+      internalID: -1387575290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45f6650123073c34ab177c8ae7d63ed1
+      internalID: 850463242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae00321aa3b01a24c8a4cf0729d9d020
+      internalID: 1246489974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 614db37dd4ccf0949a4beb2d34e3b281
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_basalt_barnacled_mask_c0_r0: 1570468084
+      Spine_basalt_barnacled_mask_c0_r1: -2141605275
+      Spine_basalt_barnacled_mask_c0_r2: 835742105
+      Spine_basalt_barnacled_mask_c1_r0: -498038401
+      Spine_basalt_barnacled_mask_c1_r1: -1018305434
+      Spine_basalt_barnacled_mask_c1_r2: -1367683986
+      Spine_basalt_barnacled_mask_c2_r0: -2062073563
+      Spine_basalt_barnacled_mask_c2_r1: -382869520
+      Spine_basalt_barnacled_mask_c2_r2: -2144252183
+      Spine_basalt_barnacled_mask_c3_r0: 1553448050
+      Spine_basalt_barnacled_mask_c3_r1: -952057820
+      Spine_basalt_barnacled_mask_c3_r2: -661823423
+      Spine_basalt_barnacled_mask_c4_r0: -414176336
+      Spine_basalt_barnacled_mask_c4_r1: 1218711902
+      Spine_basalt_barnacled_mask_c4_r2: -1786339694
+      Spine_basalt_barnacled_mask_c5_r0: 482534645
+      Spine_basalt_barnacled_mask_c5_r1: -759082125
+      Spine_basalt_barnacled_mask_c5_r2: -1387575290
+      Spine_basalt_barnacled_mask_c6_r0: 1086126228
+      Spine_basalt_barnacled_mask_c6_r1: -915273509
+      Spine_basalt_barnacled_mask_c6_r2: 850463242
+      Spine_basalt_barnacled_mask_c7_r0: 1605404304
+      Spine_basalt_barnacled_mask_c7_r1: 1845648749
+      Spine_basalt_barnacled_mask_c7_r2: 1246489974
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

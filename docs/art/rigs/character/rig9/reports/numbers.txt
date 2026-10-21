@@ -1,0 +1,53 @@
+check-numbers — per preset
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+preset      painted ramps fixed  verts (unique)  faces  tris  bones  clips/frames
+fisher      21      6     7      2076 (792)      508    1060  28     53/438
+ginny       21      7     7      2071 (780)      503    1065  28     53/438
+skipper     21      5     8      2148 (745)      538    1072  28     53/438
+nan         24      6     8      2084 (720)      521    1042  28     53/438
+deckboss    22      8     7      1744 (645)      425    894   28     53/438
+packer      25      9     7      2089 (771)      517    1055  28     53/438
+cutter      23      8     7      2012 (738)      492    1028  28     53/438
+hand        23      8     7      1931 (718)      473    985   28     53/438
+boy         20      5     7      2058 (755)      513    1032  28     53/438
+girl        21      7     7      1902 (699)      466    970   28     53/438
+
+Animations (reach mm at the default world contracts; <= 5 makes every target):
+preset      walk       run        dig        fish       swim       sleep      sit/drive  ride       mount      
+fisher      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 59   short 125  
+ginny       yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 76   short 154  
+skipper     yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 63   short 132  
+nan         yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 36   short 129  short 254  
+deckboss    yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      yes 3      short 43   
+packer      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 80   short 164  
+cutter      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 52   short 148  short 283  
+hand        yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 88   short 172  
+boy         yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 163  short 261  short 499  
+girl        yes 0      yes 0      yes 0      yes 0      yes 0      yes 0      short 169  short 267  short 509  
+
+Ride and mount at the fitted saddle (the default scaled to 0.4, idle spot 0.6 m beside it), reach mm:
+  fisher    ride 0    mount 0
+  ginny     ride 0    mount 0
+  skipper   ride 0    mount 0
+  nan       ride 0    mount 0
+  deckboss  ride 0    mount 0
+  packer    ride 0    mount 0
+  cutter    ride 0    mount 0
+  hand      ride 0    mount 0
+  boy       ride 0    mount 0
+  girl      ride 0    mount 0
+
+Every preset has every family: the same 53 clips, frames and ms. "sit" is drive. Walk / run speeds (m/s):
+  fisher    0.727 / 2
+  ginny     0.705 / 1.94
+  skipper   0.721 / 1.983
+  nan       0.628 / 1.727
+  deckboss  0.8 / 2.202
+  packer    0.694 / 1.91
+  cutter    0.609 / 1.677
+  hand      0.694 / 1.909
+  boy       0.452 / 1.243
+  girl      0.445 / 1.225
+
+OK — no problems.

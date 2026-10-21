@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Yard_hedgeRun_d1
       rect:
         serializedVersion: 2
-        x: 86
+        x: 84
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Yard_hedgeRun_d2
       rect:
         serializedVersion: 2
-        x: 172
+        x: 168
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Yard_hedgeRun_d3
       rect:
         serializedVersion: 2
-        x: 258
+        x: 252
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Yard_hedgeRun_d4
       rect:
         serializedVersion: 2
-        x: 344
+        x: 336
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Yard_hedgeRun_d5
       rect:
         serializedVersion: 2
-        x: 430
+        x: 420
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Yard_hedgeRun_d6
       rect:
         serializedVersion: 2
-        x: 516
+        x: 504
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Yard_hedgeRun_d7
       rect:
         serializedVersion: 2
-        x: 602
+        x: 588
         y: 0
-        width: 86
-        height: 71
+        width: 84
+        height: 69
       alignment: 9
-      pivot: {x: 0.5, y: 0.36619717}
+      pivot: {x: 0.5, y: 0.36231884}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

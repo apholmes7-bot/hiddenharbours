@@ -1,0 +1,835 @@
+fileFormatVersion: 2
+guid: 825becc70be2200459e17705338e654b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9092337670346854680
+    second: Cobbles_quartzite_weeded_normal_0
+  - first:
+      213: 4711980884600093970
+    second: Cobbles_quartzite_weeded_normal_1
+  - first:
+      213: -3075229535185151781
+    second: Cobbles_quartzite_weeded_normal_2
+  - first:
+      213: -3863718647571688272
+    second: Cobbles_quartzite_weeded_normal_3
+  - first:
+      213: -558133260531652673
+    second: Cobbles_quartzite_weeded_normal_4
+  - first:
+      213: -6759572895077098965
+    second: Cobbles_quartzite_weeded_normal_5
+  - first:
+      213: 3433054756536530690
+    second: Cobbles_quartzite_weeded_normal_6
+  - first:
+      213: -6759160446666639842
+    second: Cobbles_quartzite_weeded_normal_7
+  - first:
+      213: -8566627650814828444
+    second: Cobbles_quartzite_weeded_normal_8
+  - first:
+      213: 6182282034124124706
+    second: Cobbles_quartzite_weeded_normal_9
+  - first:
+      213: 2503282544664239497
+    second: Cobbles_quartzite_weeded_normal_10
+  - first:
+      213: -3303936531737856832
+    second: Cobbles_quartzite_weeded_normal_11
+  - first:
+      213: 297072498152985484
+    second: Cobbles_quartzite_weeded_normal_12
+  - first:
+      213: -1027761655794646682
+    second: Cobbles_quartzite_weeded_normal_13
+  - first:
+      213: 195567822296922453
+    second: Cobbles_quartzite_weeded_normal_14
+  - first:
+      213: -7735715975974144264
+    second: Cobbles_quartzite_weeded_normal_15
+  - first:
+      213: -80889855761037788
+    second: Cobbles_quartzite_weeded_normal_16
+  - first:
+      213: 2682360826870169046
+    second: Cobbles_quartzite_weeded_normal_17
+  - first:
+      213: 8647948755660255067
+    second: Cobbles_quartzite_weeded_normal_18
+  - first:
+      213: -971036186663210502
+    second: Cobbles_quartzite_weeded_normal_19
+  - first:
+      213: -3548773125007042009
+    second: Cobbles_quartzite_weeded_normal_20
+  - first:
+      213: 1901266646090054155
+    second: Cobbles_quartzite_weeded_normal_21
+  - first:
+      213: 8421092641308274823
+    second: Cobbles_quartzite_weeded_normal_22
+  - first:
+      213: 354366502033031081
+    second: Cobbles_quartzite_weeded_normal_23
+  - first:
+      213: 3801093416642979815
+    second: Cobbles_quartzite_weeded_normal_24
+  - first:
+      213: 5731328352357431888
+    second: Cobbles_quartzite_weeded_normal_25
+  - first:
+      213: 782536667929988035
+    second: Cobbles_quartzite_weeded_normal_26
+  - first:
+      213: 442079712657935961
+    second: Cobbles_quartzite_weeded_normal_27
+  - first:
+      213: -4763873670467793892
+    second: Cobbles_quartzite_weeded_normal_28
+  - first:
+      213: 8274787620721779237
+    second: Cobbles_quartzite_weeded_normal_29
+  - first:
+      213: -5005092346578596909
+    second: Cobbles_quartzite_weeded_normal_30
+  - first:
+      213: -6097144989510406339
+    second: Cobbles_quartzite_weeded_normal_31
+  - first:
+      213: -9100264984449908664
+    second: Cobbles_quartzite_weeded_normal_32
+  - first:
+      213: -6780855740215938731
+    second: Cobbles_quartzite_weeded_normal_33
+  - first:
+      213: 4164152043429366478
+    second: Cobbles_quartzite_weeded_normal_34
+  - first:
+      213: -2056845117681040511
+    second: Cobbles_quartzite_weeded_normal_35
+  - first:
+      213: -200484213999427767
+    second: Cobbles_quartzite_weeded_normal_36
+  - first:
+      213: 1084520612576890997
+    second: Cobbles_quartzite_weeded_normal_37
+  - first:
+      213: -4227620596861324676
+    second: Cobbles_quartzite_weeded_normal_38
+  - first:
+      213: 4456616775317749636
+    second: Cobbles_quartzite_weeded_normal_39
+  - first:
+      213: -6311008231445064933
+    second: Cobbles_quartzite_weeded_normal_40
+  - first:
+      213: -2631986726407304811
+    second: Cobbles_quartzite_weeded_normal_41
+  - first:
+      213: -8642032333793860867
+    second: Cobbles_quartzite_weeded_normal_42
+  - first:
+      213: -2108629264230072038
+    second: Cobbles_quartzite_weeded_normal_43
+  - first:
+      213: 4999691083769005388
+    second: Cobbles_quartzite_weeded_normal_44
+  - first:
+      213: 6468404342170262476
+    second: Cobbles_quartzite_weeded_normal_45
+  - first:
+      213: 722319776149227477
+    second: Cobbles_quartzite_weeded_normal_46
+  - first:
+      213: -4914867765469190229
+    second: Cobbles_quartzite_weeded_normal_47
+  - first:
+      213: -3187623233695570608
+    second: Cobbles_quartzite_weeded_normal_48
+  - first:
+      213: 7299460298919374000
+    second: Cobbles_quartzite_weeded_normal_49
+  - first:
+      213: 4280741229583130896
+    second: Cobbles_quartzite_weeded_normal_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 274b54101d4d4124da959bb9d211717c
+      internalID: -82284057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e6da05ab9be66f4581c3bfe7a7d7138
+      internalID: 529414383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62c3a4a22946ea146afdd0f39524f5ae
+      internalID: -1804924485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 290317d6987effc4a809e124d5a89160
+      internalID: 1943956980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83d66cc5217c62a4bbddda016db69ea7
+      internalID: 1873860083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 823861c53199e814b98d08a2a8ff889c
+      internalID: -400830978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3229d8498f1840f449e251bced710c53
+      internalID: -1191586267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13c761518bcbb8f46b92d6c2bbbfbf99
+      internalID: -1643198096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32c13ecc296dd3c48b89127ad96cadd8
+      internalID: 1014653384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3804778c4c2b6ba41a73526399a2a0f0
+      internalID: -792993289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42fa222235425b140a297a88e638cb51
+      internalID: 1217668433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e9bc98996be02c4ab495530563535d5
+      internalID: -1767616306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f9db081ac997384780baffa00c4acce
+      internalID: -1759864420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 269718c7ada402941ab585c5f4116af8
+      internalID: 2052191426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c7afdef0981a5a43ae6b3ff7a0baba0
+      internalID: 30076285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f83546db6f043504ba01375213218679
+      internalID: -944361757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2585e7a91d2b434f8483b372b64988d
+      internalID: 592589988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8ce417053c480349b2672df9cc77122
+      internalID: -316715950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e61c20970254cde45ab93012d291e155
+      internalID: -1506788750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c284220d8031bc5498becdf1137bcf8d
+      internalID: 457177848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d7ce70cecee8a64f9454145fa2ddf32
+      internalID: -1523317209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae755b83444632441ae7ca62638b48e8
+      internalID: 1339390261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a2e300bc76f9734bb80908018b67cb3
+      internalID: -1915176613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_quartzite_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8e9892a02f0ed74b8c2e22e2c7c10b0
+      internalID: -34154087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e6a8118d2a1450f4d94f53ed888df093
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_quartzite_weeded_normal_c0_r0: -82284057
+      Cobbles_quartzite_weeded_normal_c0_r1: 1014653384
+      Cobbles_quartzite_weeded_normal_c0_r2: 592589988
+      Cobbles_quartzite_weeded_normal_c1_r0: 529414383
+      Cobbles_quartzite_weeded_normal_c1_r1: -792993289
+      Cobbles_quartzite_weeded_normal_c1_r2: -316715950
+      Cobbles_quartzite_weeded_normal_c2_r0: -1804924485
+      Cobbles_quartzite_weeded_normal_c2_r1: 1217668433
+      Cobbles_quartzite_weeded_normal_c2_r2: -1506788750
+      Cobbles_quartzite_weeded_normal_c3_r0: 1943956980
+      Cobbles_quartzite_weeded_normal_c3_r1: -1767616306
+      Cobbles_quartzite_weeded_normal_c3_r2: 457177848
+      Cobbles_quartzite_weeded_normal_c4_r0: 1873860083
+      Cobbles_quartzite_weeded_normal_c4_r1: -1759864420
+      Cobbles_quartzite_weeded_normal_c4_r2: -1523317209
+      Cobbles_quartzite_weeded_normal_c5_r0: -400830978
+      Cobbles_quartzite_weeded_normal_c5_r1: 2052191426
+      Cobbles_quartzite_weeded_normal_c5_r2: 1339390261
+      Cobbles_quartzite_weeded_normal_c6_r0: -1191586267
+      Cobbles_quartzite_weeded_normal_c6_r1: 30076285
+      Cobbles_quartzite_weeded_normal_c6_r2: -1915176613
+      Cobbles_quartzite_weeded_normal_c7_r0: -1643198096
+      Cobbles_quartzite_weeded_normal_c7_r1: -944361757
+      Cobbles_quartzite_weeded_normal_c7_r2: -34154087
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

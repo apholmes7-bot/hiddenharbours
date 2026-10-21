@@ -1,0 +1,841 @@
+fileFormatVersion: 2
+guid: 981d8f92f8465074f9259b30809b937b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6593541936341484905
+    second: Cobbles_sandstone_barnacled_mask_0
+  - first:
+      213: -6444864091738352888
+    second: Cobbles_sandstone_barnacled_mask_1
+  - first:
+      213: 1649495655227996627
+    second: Cobbles_sandstone_barnacled_mask_2
+  - first:
+      213: 1050539847206886831
+    second: Cobbles_sandstone_barnacled_mask_3
+  - first:
+      213: 5638837936338738557
+    second: Cobbles_sandstone_barnacled_mask_4
+  - first:
+      213: -6640982065981124436
+    second: Cobbles_sandstone_barnacled_mask_5
+  - first:
+      213: -4768288969388317291
+    second: Cobbles_sandstone_barnacled_mask_6
+  - first:
+      213: -8536022351259549586
+    second: Cobbles_sandstone_barnacled_mask_7
+  - first:
+      213: 2819761345699124244
+    second: Cobbles_sandstone_barnacled_mask_8
+  - first:
+      213: 3938915068856934120
+    second: Cobbles_sandstone_barnacled_mask_9
+  - first:
+      213: 7115151354569210602
+    second: Cobbles_sandstone_barnacled_mask_10
+  - first:
+      213: -1490852429224664570
+    second: Cobbles_sandstone_barnacled_mask_11
+  - first:
+      213: 6311518987578091350
+    second: Cobbles_sandstone_barnacled_mask_12
+  - first:
+      213: -537179973684256166
+    second: Cobbles_sandstone_barnacled_mask_13
+  - first:
+      213: -6288674731843426423
+    second: Cobbles_sandstone_barnacled_mask_14
+  - first:
+      213: -8274121707122642097
+    second: Cobbles_sandstone_barnacled_mask_15
+  - first:
+      213: -2391543120263561034
+    second: Cobbles_sandstone_barnacled_mask_16
+  - first:
+      213: 2857583143284106824
+    second: Cobbles_sandstone_barnacled_mask_17
+  - first:
+      213: 8748906367893819175
+    second: Cobbles_sandstone_barnacled_mask_18
+  - first:
+      213: 8601126496268918230
+    second: Cobbles_sandstone_barnacled_mask_19
+  - first:
+      213: 6157919743265977396
+    second: Cobbles_sandstone_barnacled_mask_20
+  - first:
+      213: -6743326220113852425
+    second: Cobbles_sandstone_barnacled_mask_21
+  - first:
+      213: 5724320584933231544
+    second: Cobbles_sandstone_barnacled_mask_22
+  - first:
+      213: -9013193021676078836
+    second: Cobbles_sandstone_barnacled_mask_23
+  - first:
+      213: -4361797933182429771
+    second: Cobbles_sandstone_barnacled_mask_24
+  - first:
+      213: -3506689235463306827
+    second: Cobbles_sandstone_barnacled_mask_25
+  - first:
+      213: -3578264386277062688
+    second: Cobbles_sandstone_barnacled_mask_26
+  - first:
+      213: -3670229783667632397
+    second: Cobbles_sandstone_barnacled_mask_27
+  - first:
+      213: 3129566686324785273
+    second: Cobbles_sandstone_barnacled_mask_28
+  - first:
+      213: 233009741509741943
+    second: Cobbles_sandstone_barnacled_mask_29
+  - first:
+      213: 4928956100675416504
+    second: Cobbles_sandstone_barnacled_mask_30
+  - first:
+      213: -1355800864246397389
+    second: Cobbles_sandstone_barnacled_mask_31
+  - first:
+      213: 6145737884878773995
+    second: Cobbles_sandstone_barnacled_mask_32
+  - first:
+      213: 4117174995775679576
+    second: Cobbles_sandstone_barnacled_mask_33
+  - first:
+      213: -6625098824513961664
+    second: Cobbles_sandstone_barnacled_mask_34
+  - first:
+      213: 2741201332440483022
+    second: Cobbles_sandstone_barnacled_mask_35
+  - first:
+      213: -1995689502528783221
+    second: Cobbles_sandstone_barnacled_mask_36
+  - first:
+      213: -7742285586065335057
+    second: Cobbles_sandstone_barnacled_mask_37
+  - first:
+      213: 589092882913758725
+    second: Cobbles_sandstone_barnacled_mask_38
+  - first:
+      213: -3138418137445529031
+    second: Cobbles_sandstone_barnacled_mask_39
+  - first:
+      213: -1081903940636238549
+    second: Cobbles_sandstone_barnacled_mask_40
+  - first:
+      213: -2564260679076343875
+    second: Cobbles_sandstone_barnacled_mask_41
+  - first:
+      213: -5379683395593894094
+    second: Cobbles_sandstone_barnacled_mask_42
+  - first:
+      213: -2567613397392446064
+    second: Cobbles_sandstone_barnacled_mask_43
+  - first:
+      213: -7058545150977322935
+    second: Cobbles_sandstone_barnacled_mask_44
+  - first:
+      213: -351844985547203894
+    second: Cobbles_sandstone_barnacled_mask_45
+  - first:
+      213: -856341275450531691
+    second: Cobbles_sandstone_barnacled_mask_46
+  - first:
+      213: 5178865925739468418
+    second: Cobbles_sandstone_barnacled_mask_47
+  - first:
+      213: 2487031404030305247
+    second: Cobbles_sandstone_barnacled_mask_48
+  - first:
+      213: 3334820129442958941
+    second: Cobbles_sandstone_barnacled_mask_49
+  - first:
+      213: -2466947011219230289
+    second: Cobbles_sandstone_barnacled_mask_50
+  - first:
+      213: -4478515819224412244
+    second: Cobbles_sandstone_barnacled_mask_51
+  - first:
+      213: 7434599323736707715
+    second: Cobbles_sandstone_barnacled_mask_52
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3897a5c286413b64cafaacafc22d47cd
+      internalID: 137209807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7202c5d5bd8c071478710926627f2506
+      internalID: -1168668963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8a53e4072fca7d489fb3919d69ac69a
+      internalID: 147109960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2889128abe837f245ad904060d4889c1
+      internalID: -1847106456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c960f70dc13b6042a9962defa7862c9
+      internalID: 1078349769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8aaaf80af2a710a44b4be1c614025b63
+      internalID: 1812491458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd81eb9a5a190ef48a3abc4f14a41fc9
+      internalID: -1289821515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad47f4049dc87fb45ad30658220edeb3
+      internalID: 1320706368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f9e5b244b3277c4685e2668c96d4231
+      internalID: 820778882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a53a5a35f5ac354ba2c6364ee13b486
+      internalID: -1487007805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9abd472995e78e4b839a36ae397f3af
+      internalID: 924476618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e51e6550925e8a4e86d939115b7afd4
+      internalID: 1383279395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c45d1f8005b96f7499207e2e471a8c0a
+      internalID: -1025097931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6a31b9640f176a4a99e340593947dfc
+      internalID: -940624428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 267ee5c8b905582468bc389a9cee187e
+      internalID: -1716304474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ed4507befd3af34a81ecb56a52a064a
+      internalID: 2053963666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab599d70a6ea4d54cbfd1e383f026b60
+      internalID: -484137145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e97e698df8627d1458e5fa6e41af91c9
+      internalID: -527775196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fee25eb783994d46af8833974448b47
+      internalID: 1872579587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9123d25c4305b144be5438c15a7c468
+      internalID: -494535370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a965c9d8a898ff4d884ac0668cb1681
+      internalID: 680762960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfa0e99c502538d4ea3caea99e4059ae
+      internalID: -1267275963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50c4e68a0353a45499d2116b8056b8af
+      internalID: 1096415452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_sandstone_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ee6ed0bb0dcf9144a710b3a5290509d
+      internalID: 1272123627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3540c16a022ed2a4daff606628368f42
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_sandstone_barnacled_mask_c0_r0: 137209807
+      Cobbles_sandstone_barnacled_mask_c0_r1: 820778882
+      Cobbles_sandstone_barnacled_mask_c0_r2: -484137145
+      Cobbles_sandstone_barnacled_mask_c1_r0: -1168668963
+      Cobbles_sandstone_barnacled_mask_c1_r1: -1487007805
+      Cobbles_sandstone_barnacled_mask_c1_r2: -527775196
+      Cobbles_sandstone_barnacled_mask_c2_r0: 147109960
+      Cobbles_sandstone_barnacled_mask_c2_r1: 924476618
+      Cobbles_sandstone_barnacled_mask_c2_r2: 1872579587
+      Cobbles_sandstone_barnacled_mask_c3_r0: -1847106456
+      Cobbles_sandstone_barnacled_mask_c3_r1: 1383279395
+      Cobbles_sandstone_barnacled_mask_c3_r2: -494535370
+      Cobbles_sandstone_barnacled_mask_c4_r0: 1078349769
+      Cobbles_sandstone_barnacled_mask_c4_r1: -1025097931
+      Cobbles_sandstone_barnacled_mask_c4_r2: 680762960
+      Cobbles_sandstone_barnacled_mask_c5_r0: 1812491458
+      Cobbles_sandstone_barnacled_mask_c5_r1: -940624428
+      Cobbles_sandstone_barnacled_mask_c5_r2: -1267275963
+      Cobbles_sandstone_barnacled_mask_c6_r0: -1289821515
+      Cobbles_sandstone_barnacled_mask_c6_r1: -1716304474
+      Cobbles_sandstone_barnacled_mask_c6_r2: 1096415452
+      Cobbles_sandstone_barnacled_mask_c7_r0: 1320706368
+      Cobbles_sandstone_barnacled_mask_c7_r1: 2053963666
+      Cobbles_sandstone_barnacled_mask_c7_r2: 1272123627
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

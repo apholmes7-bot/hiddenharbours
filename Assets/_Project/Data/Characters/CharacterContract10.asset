@@ -1,0 +1,3509 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e022541e09740f58bc959cfac053cec, type: 3}
+  m_Name: CharacterContract10
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterRigContractDef
+  Id: contract.character_iso10
+  SourceRig: docs/art/rigs/character/rig10/Art/characterIsoRig10.js (characterIsoRig10
+    10.3)
+  SourceRigSha256: ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3
+  Fields:
+  - Name: shape
+    Kind: 0
+    Options:
+    - 0
+    - 0.25
+    - 0.5
+    - 0.75
+    - 1
+    CastOnly: []
+  - Name: age
+    Kind: 0
+    Options:
+    - child
+    - youth
+    - adult
+    - elder
+    CastOnly:
+    - child
+  - Name: height
+    Kind: 0
+    Options:
+    - -2
+    - -1
+    - 0
+    - 1
+    - 2
+    CastOnly: []
+  - Name: weight
+    Kind: 0
+    Options:
+    - -2
+    - -1
+    - 0
+    - 1
+    - 2
+    CastOnly: []
+  - Name: head
+    Kind: 0
+    Options:
+    - round
+    - oval
+    - square
+    - long
+    - heart
+    - wide
+    - pear
+    CastOnly: []
+  - Name: skin
+    Kind: 1
+    Options:
+    - porcelain
+    - fair
+    - rose
+    - olive
+    - tan
+    - bronze
+    - umber
+    - deep
+    - ebony
+    CastOnly: []
+  - Name: hair
+    Kind: 1
+    Options:
+    - blond
+    - sand
+    - black
+    - brown
+    - auburn
+    - ginger
+    - salt
+    - grey
+    - white
+    CastOnly: []
+  - Name: hairStyle
+    Kind: 0
+    Options:
+    - crop
+    - mop
+    - bob
+    - long
+    - bun
+    - ponytail
+    - buzz
+    - bald
+    CastOnly: []
+  - Name: beard
+    Kind: 0
+    Options:
+    - none
+    - stubble
+    - moustache
+    - chinstrap
+    - goatee
+    - vandyke
+    - sideburns
+    - mutton
+    - full
+    - long
+    CastOnly: []
+  - Name: eyes
+    Kind: 1
+    Options:
+    - sea
+    - sky
+    - bark
+    - slate
+    - amber
+    - moss
+    - umber
+    CastOnly: []
+  - Name: eyeShape
+    Kind: 0
+    Options:
+    - round
+    - narrow
+    - lidded
+    CastOnly: []
+  - Name: garment
+    Kind: 0
+    Options:
+    - tee
+    - longsleeve
+    - workshirt
+    - sweater
+    - vest
+    - apron
+    - breton
+    - hoodie
+    - cardigan
+    - peacoat
+    - lifevest
+    - singlet
+    - overalls
+    - oilskins
+    - skirt
+    - suit
+    - tux
+    - dress
+    - gown
+    - waders
+    - coveralls
+    - greatcoat
+    - wetsuit
+    - sundress
+    - pinafore
+    - trunks
+    - briefs
+    - swimsuit
+    - bikini
+    CastOnly: []
+  - Name: outfit
+    Kind: 1
+    Options:
+    - teal
+    - navy
+    - oil
+    - rust
+    - slate
+    - moss
+    - black
+    - char
+    - denim
+    - khaki
+    - cream
+    - wine
+    - plum
+    - rose
+    - sky
+    - orange
+    CastOnly: []
+  - Name: shirt
+    Kind: 1
+    Options:
+    - white
+    - cream
+    - navy
+    - red
+    - moss
+    - slate
+    - ochre
+    - black
+    - sky
+    - rose
+    CastOnly: []
+  - Name: hat
+    Kind: 0
+    Options:
+    - none
+    - watchcap
+    - souwester
+    - ballcap
+    - kerchief
+    - flatcap
+    - hood
+    - tophat
+    - bowler
+    - captain
+    - sunhat
+    - bucket
+    - beret
+    CastOnly: []
+  - Name: hatCol
+    Kind: 1
+    Options:
+    - oil
+    - navy
+    - rust
+    - teal
+    - char
+    - oat
+    - black
+    - white
+    - straw
+    CastOnly: []
+  - Name: apronCol
+    Kind: 1
+    Options:
+    - canvas
+    - rubber
+    - ochre
+    - black
+    - red
+    - navy
+    - white
+    - orange
+    - yellow
+    CastOnly: []
+  - Name: bottom
+    Kind: 0
+    Options:
+    - trousers
+    - shorts
+    - cropped
+    - skirt
+    - longskirt
+    CastOnly: []
+  - Name: sex
+    Kind: 0
+    Options:
+    - m
+    - f
+    CastOnly: []
+  - Name: frame
+    Kind: 0
+    Options:
+    - lean
+    - average
+    - broad
+    - stocky
+    - heavy
+    - slender
+    - hourglass
+    - pear
+    - full
+    CastOnly: []
+  Presets:
+  - Key: fisher
+    Values:
+    - 0.25
+    - adult
+    - 0
+    - 0
+    - round
+    - fair
+    - blond
+    - mop
+    - stubble
+    - sea
+    - round
+    - overalls
+    - teal
+    - white
+    - none
+    - char
+    - canvas
+    - trousers
+    - m
+    - average
+  - Key: ginny
+    Values:
+    - 0.75
+    - adult
+    - 0
+    - -1
+    - heart
+    - rose
+    - ginger
+    - bob
+    - none
+    - amber
+    - round
+    - overalls
+    - rust
+    - moss
+    - hood
+    - navy
+    - canvas
+    - trousers
+    - f
+    - average
+  - Key: skipper
+    Values:
+    - 0
+    - elder
+    - 1
+    - 1
+    - square
+    - tan
+    - salt
+    - crop
+    - full
+    - slate
+    - lidded
+    - oilskins
+    - oil
+    - navy
+    - souwester
+    - oil
+    - canvas
+    - trousers
+    - m
+    - stocky
+  - Key: nan
+    Values:
+    - 0.75
+    - elder
+    - -1
+    - 1
+    - round
+    - porcelain
+    - white
+    - bun
+    - none
+    - sky
+    - lidded
+    - skirt
+    - slate
+    - cream
+    - kerchief
+    - rust
+    - canvas
+    - skirt
+    - f
+    - full
+  - Key: deckboss
+    Values:
+    - 0
+    - adult
+    - 2
+    - 2
+    - wide
+    - deep
+    - black
+    - buzz
+    - mutton
+    - bark
+    - narrow
+    - vest
+    - navy
+    - slate
+    - flatcap
+    - char
+    - canvas
+    - trousers
+    - m
+    - broad
+  - Key: packer
+    Values:
+    - 1
+    - adult
+    - 0
+    - 1
+    - pear
+    - umber
+    - black
+    - bun
+    - none
+    - bark
+    - round
+    - apron
+    - slate
+    - white
+    - kerchief
+    - teal
+    - canvas
+    - trousers
+    - f
+    - pear
+  - Key: cutter
+    Values:
+    - 0.75
+    - youth
+    - -1
+    - -1
+    - oval
+    - olive
+    - auburn
+    - ponytail
+    - none
+    - moss
+    - narrow
+    - apron
+    - moss
+    - ochre
+    - none
+    - oat
+    - rubber
+    - trousers
+    - f
+    - slender
+  - Key: hand
+    Values:
+    - 0.25
+    - youth
+    - 1
+    - -1
+    - long
+    - bronze
+    - brown
+    - crop
+    - none
+    - bark
+    - round
+    - workshirt
+    - slate
+    - ochre
+    - ballcap
+    - navy
+    - canvas
+    - trousers
+    - m
+    - lean
+  - Key: boy
+    Values:
+    - 0.25
+    - child
+    - 0
+    - 0
+    - round
+    - fair
+    - brown
+    - mop
+    - none
+    - sky
+    - round
+    - sweater
+    - navy
+    - red
+    - watchcap
+    - navy
+    - canvas
+    - trousers
+    - m
+    - average
+  - Key: girl
+    Values:
+    - 0.5
+    - child
+    - 0
+    - -1
+    - oval
+    - ebony
+    - black
+    - long
+    - none
+    - umber
+    - round
+    - workshirt
+    - moss
+    - cream
+    - none
+    - oat
+    - canvas
+    - trousers
+    - f
+    - average
+  NpcPresets:
+  - harbourmaster
+  - lightkeeper
+  - ferry
+  - monger
+  - mender
+  - boatwright
+  - postie
+  - grocer
+  - diver
+  - lobsterman
+  - cafe
+  - swimmer
+  - oldsalt
+  - lifeguard
+  - painter
+  - coastguard
+  - mechanic
+  - baker
+  - tourist
+  - paperboy
+  Paint:
+  - Role: skin
+    Source: 0
+    Field: skin
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 2.7
+    ToneLo: 2
+    ToneHi: 5
+  - Role: skinD
+    Source: 0
+    Field: skin
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: -1
+    Gain: 2.4
+    Bias: 2.7
+    ToneLo: 2
+    ToneHi: 5
+  - Role: skinL
+    Source: 0
+    Field: skin
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 2.7
+    ToneLo: 2
+    ToneHi: 5
+  - Role: stub
+    Source: 2
+    Field: 
+    FixedKey: 
+    TableFields:
+    - skin
+    - hair
+    Rows:
+    - Keys:
+      - porcelain
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281487482
+      - serializedVersion: 2
+        rgba: 4282343566
+      - serializedVersion: 2
+        rgba: 4283332011
+      - serializedVersion: 2
+        rgba: 4284650182
+      - serializedVersion: 2
+        rgba: 4286691812
+      - serializedVersion: 2
+        rgba: 4289255411
+    - Keys:
+      - porcelain
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282076789
+      - serializedVersion: 2
+        rgba: 4282998409
+      - serializedVersion: 2
+        rgba: 4284447398
+      - serializedVersion: 2
+        rgba: 4286224578
+      - serializedVersion: 2
+        rgba: 4288264154
+      - serializedVersion: 2
+        rgba: 4290434284
+    - Keys:
+      - porcelain
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281283923
+      - serializedVersion: 2
+        rgba: 4282140008
+      - serializedVersion: 2
+        rgba: 4283522174
+      - serializedVersion: 2
+        rgba: 4285101203
+      - serializedVersion: 2
+        rgba: 4286943142
+      - serializedVersion: 2
+        rgba: 4288981943
+    - Keys:
+      - porcelain
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281417056
+      - serializedVersion: 2
+        rgba: 4282338677
+      - serializedVersion: 2
+        rgba: 4283655567
+      - serializedVersion: 2
+        rgba: 4285038248
+      - serializedVersion: 2
+        rgba: 4286551482
+      - serializedVersion: 2
+        rgba: 4288459726
+    - Keys:
+      - porcelain
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281284964
+      - serializedVersion: 2
+        rgba: 4282141049
+      - serializedVersion: 2
+        rgba: 4283392149
+      - serializedVersion: 2
+        rgba: 4284708528
+      - serializedVersion: 2
+        rgba: 4286288071
+      - serializedVersion: 2
+        rgba: 4288064730
+    - Keys:
+      - porcelain
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281285488
+      - serializedVersion: 2
+        rgba: 4282141572
+      - serializedVersion: 2
+        rgba: 4283392931
+      - serializedVersion: 2
+        rgba: 4284841407
+      - serializedVersion: 2
+        rgba: 4286552533
+      - serializedVersion: 2
+        rgba: 4288460263
+    - Keys:
+      - porcelain
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281942109
+      - serializedVersion: 2
+        rgba: 4282863730
+      - serializedVersion: 2
+        rgba: 4284509069
+      - serializedVersion: 2
+        rgba: 4286417320
+      - serializedVersion: 2
+        rgba: 4288588480
+      - serializedVersion: 2
+        rgba: 4290890711
+    - Keys:
+      - porcelain
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4283652982
+      - serializedVersion: 2
+        rgba: 4284509067
+      - serializedVersion: 2
+        rgba: 4285891750
+      - serializedVersion: 2
+        rgba: 4287734209
+      - serializedVersion: 2
+        rgba: 4289707991
+      - serializedVersion: 2
+        rgba: 4291549671
+    - Keys:
+      - porcelain
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284113792
+      - serializedVersion: 2
+        rgba: 4285035412
+      - serializedVersion: 2
+        rgba: 4286615216
+      - serializedVersion: 2
+        rgba: 4288326346
+      - serializedVersion: 2
+        rgba: 4290234079
+      - serializedVersion: 2
+        rgba: 4291944172
+    - Keys:
+      - fair
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280568176
+      - serializedVersion: 2
+        rgba: 4281161604
+      - serializedVersion: 2
+        rgba: 4281887905
+      - serializedVersion: 2
+        rgba: 4283140032
+      - serializedVersion: 2
+        rgba: 4284984544
+      - serializedVersion: 2
+        rgba: 4287548401
+    - Keys:
+      - fair
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281157739
+      - serializedVersion: 2
+        rgba: 4281751167
+      - serializedVersion: 2
+        rgba: 4283068828
+      - serializedVersion: 2
+        rgba: 4284648892
+      - serializedVersion: 2
+        rgba: 4286556886
+      - serializedVersion: 2
+        rgba: 4288727273
+    - Keys:
+      - fair
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280364874
+      - serializedVersion: 2
+        rgba: 4280958301
+      - serializedVersion: 2
+        rgba: 4282078068
+      - serializedVersion: 2
+        rgba: 4283525517
+      - serializedVersion: 2
+        rgba: 4285301410
+      - serializedVersion: 2
+        rgba: 4287274932
+    - Keys:
+      - fair
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280498007
+      - serializedVersion: 2
+        rgba: 4281091435
+      - serializedVersion: 2
+        rgba: 4282211461
+      - serializedVersion: 2
+        rgba: 4283528098
+      - serializedVersion: 2
+        rgba: 4284910006
+      - serializedVersion: 2
+        rgba: 4286752715
+    - Keys:
+      - fair
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280365658
+      - serializedVersion: 2
+        rgba: 4280959086
+      - serializedVersion: 2
+        rgba: 4281948043
+      - serializedVersion: 2
+        rgba: 4283132842
+      - serializedVersion: 2
+        rgba: 4284580803
+      - serializedVersion: 2
+        rgba: 4286357719
+    - Keys:
+      - fair
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280300646
+      - serializedVersion: 2
+        rgba: 4280894330
+      - serializedVersion: 2
+        rgba: 4281948825
+      - serializedVersion: 2
+        rgba: 4283265721
+      - serializedVersion: 2
+        rgba: 4284910802
+      - serializedVersion: 2
+        rgba: 4286753252
+    - Keys:
+      - fair
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281023060
+      - serializedVersion: 2
+        rgba: 4281616487
+      - serializedVersion: 2
+        rgba: 4283065219
+      - serializedVersion: 2
+        rgba: 4284907426
+      - serializedVersion: 2
+        rgba: 4286946748
+      - serializedVersion: 2
+        rgba: 4289183700
+    - Keys:
+      - fair
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282733932
+      - serializedVersion: 2
+        rgba: 4283327360
+      - serializedVersion: 2
+        rgba: 4284447644
+      - serializedVersion: 2
+        rgba: 4286158523
+      - serializedVersion: 2
+        rgba: 4288066259
+      - serializedVersion: 2
+        rgba: 4289842660
+    - Keys:
+      - fair
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4283194742
+      - serializedVersion: 2
+        rgba: 4283788170
+      - serializedVersion: 2
+        rgba: 4285171110
+      - serializedVersion: 2
+        rgba: 4286750660
+      - serializedVersion: 2
+        rgba: 4288526811
+      - serializedVersion: 2
+        rgba: 4290237162
+    - Keys:
+      - rose
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280830327
+      - serializedVersion: 2
+        rgba: 4281489548
+      - serializedVersion: 2
+        rgba: 4282281128
+      - serializedVersion: 2
+        rgba: 4283533765
+      - serializedVersion: 2
+        rgba: 4285509604
+      - serializedVersion: 2
+        rgba: 4288270325
+    - Keys:
+      - rose
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281485425
+      - serializedVersion: 2
+        rgba: 4282144647
+      - serializedVersion: 2
+        rgba: 4283462052
+      - serializedVersion: 2
+        rgba: 4285042370
+      - serializedVersion: 2
+        rgba: 4287081946
+      - serializedVersion: 2
+        rgba: 4289449197
+    - Keys:
+      - rose
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280627024
+      - serializedVersion: 2
+        rgba: 4281351781
+      - serializedVersion: 2
+        rgba: 4282536827
+      - serializedVersion: 2
+        rgba: 4283984786
+      - serializedVersion: 2
+        rgba: 4285760934
+      - serializedVersion: 2
+        rgba: 4287996856
+    - Keys:
+      - rose
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280825693
+      - serializedVersion: 2
+        rgba: 4281484914
+      - serializedVersion: 2
+        rgba: 4282670221
+      - serializedVersion: 2
+        rgba: 4283921832
+      - serializedVersion: 2
+        rgba: 4285369530
+      - serializedVersion: 2
+        rgba: 4287474639
+    - Keys:
+      - rose
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280627809
+      - serializedVersion: 2
+        rgba: 4281352566
+      - serializedVersion: 2
+        rgba: 4282406803
+      - serializedVersion: 2
+        rgba: 4283591855
+      - serializedVersion: 2
+        rgba: 4285105863
+      - serializedVersion: 2
+        rgba: 4287079643
+    - Keys:
+      - rose
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280628333
+      - serializedVersion: 2
+        rgba: 4281287554
+      - serializedVersion: 2
+        rgba: 4282407584
+      - serializedVersion: 2
+        rgba: 4283724990
+      - serializedVersion: 2
+        rgba: 4285370326
+      - serializedVersion: 2
+        rgba: 4287475176
+    - Keys:
+      - rose
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281350746
+      - serializedVersion: 2
+        rgba: 4282009967
+      - serializedVersion: 2
+        rgba: 4283458442
+      - serializedVersion: 2
+        rgba: 4285300903
+      - serializedVersion: 2
+        rgba: 4287406273
+      - serializedVersion: 2
+        rgba: 4289905624
+    - Keys:
+      - rose
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282996083
+      - serializedVersion: 2
+        rgba: 4283720840
+      - serializedVersion: 2
+        rgba: 4284906404
+      - serializedVersion: 2
+        rgba: 4286552256
+      - serializedVersion: 2
+        rgba: 4288525784
+      - serializedVersion: 2
+        rgba: 4290630120
+    - Keys:
+      - rose
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4283456893
+      - serializedVersion: 2
+        rgba: 4284181650
+      - serializedVersion: 2
+        rgba: 4285564334
+      - serializedVersion: 2
+        rgba: 4287209929
+      - serializedVersion: 2
+        rgba: 4289051872
+      - serializedVersion: 2
+        rgba: 4290958830
+    - Keys:
+      - olive
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280305501
+      - serializedVersion: 2
+        rgba: 4280833390
+      - serializedVersion: 2
+        rgba: 4281428874
+      - serializedVersion: 2
+        rgba: 4282550183
+      - serializedVersion: 2
+        rgba: 4284394442
+      - serializedVersion: 2
+        rgba: 4287088864
+    - Keys:
+      - olive
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280894808
+      - serializedVersion: 2
+        rgba: 4281488233
+      - serializedVersion: 2
+        rgba: 4282609798
+      - serializedVersion: 2
+        rgba: 4284058787
+      - serializedVersion: 2
+        rgba: 4285966784
+      - serializedVersion: 2
+        rgba: 4288267737
+    - Keys:
+      - olive
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280102198
+      - serializedVersion: 2
+        rgba: 4280630088
+      - serializedVersion: 2
+        rgba: 4281618781
+      - serializedVersion: 2
+        rgba: 4282935668
+      - serializedVersion: 2
+        rgba: 4284645771
+      - serializedVersion: 2
+        rgba: 4286815396
+    - Keys:
+      - olive
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280235076
+      - serializedVersion: 2
+        rgba: 4280828757
+      - serializedVersion: 2
+        rgba: 4281752431
+      - serializedVersion: 2
+        rgba: 4282938250
+      - serializedVersion: 2
+        rgba: 4284254367
+      - serializedVersion: 2
+        rgba: 4286293179
+    - Keys:
+      - olive
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280102983
+      - serializedVersion: 2
+        rgba: 4280630873
+      - serializedVersion: 2
+        rgba: 4281489012
+      - serializedVersion: 2
+        rgba: 4282542993
+      - serializedVersion: 2
+        rgba: 4283990956
+      - serializedVersion: 2
+        rgba: 4285898183
+    - Keys:
+      - olive
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280103507
+      - serializedVersion: 2
+        rgba: 4280631396
+      - serializedVersion: 2
+        rgba: 4281489794
+      - serializedVersion: 2
+        rgba: 4282675872
+      - serializedVersion: 2
+        rgba: 4284255163
+      - serializedVersion: 2
+        rgba: 4286293716
+    - Keys:
+      - olive
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280760128
+      - serializedVersion: 2
+        rgba: 4281353554
+      - serializedVersion: 2
+        rgba: 4282605932
+      - serializedVersion: 2
+        rgba: 4284317321
+      - serializedVersion: 2
+        rgba: 4286291110
+      - serializedVersion: 2
+        rgba: 4288724164
+    - Keys:
+      - olive
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282471001
+      - serializedVersion: 2
+        rgba: 4282998891
+      - serializedVersion: 2
+        rgba: 4283988614
+      - serializedVersion: 2
+        rgba: 4285568674
+      - serializedVersion: 2
+        rgba: 4287410621
+      - serializedVersion: 2
+        rgba: 4289383123
+    - Keys:
+      - olive
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282931811
+      - serializedVersion: 2
+        rgba: 4283459700
+      - serializedVersion: 2
+        rgba: 4284712080
+      - serializedVersion: 2
+        rgba: 4286160811
+      - serializedVersion: 2
+        rgba: 4287871429
+      - serializedVersion: 2
+        rgba: 4289711833
+    - Keys:
+      - tan
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280172901
+      - serializedVersion: 2
+        rgba: 4280569207
+      - serializedVersion: 2
+        rgba: 4281033107
+      - serializedVersion: 2
+        rgba: 4282088880
+      - serializedVersion: 2
+        rgba: 4283736787
+      - serializedVersion: 2
+        rgba: 4286037736
+    - Keys:
+      - tan
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280762463
+      - serializedVersion: 2
+        rgba: 4281158769
+      - serializedVersion: 2
+        rgba: 4282214031
+      - serializedVersion: 2
+        rgba: 4283597740
+      - serializedVersion: 2
+        rgba: 4285309129
+      - serializedVersion: 2
+        rgba: 4287216608
+    - Keys:
+      - tan
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279969598
+      - serializedVersion: 2
+        rgba: 4280365904
+      - serializedVersion: 2
+        rgba: 4281223014
+      - serializedVersion: 2
+        rgba: 4282474365
+      - serializedVersion: 2
+        rgba: 4284053653
+      - serializedVersion: 2
+        rgba: 4285764267
+    - Keys:
+      - tan
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280168267
+      - serializedVersion: 2
+        rgba: 4280499037
+      - serializedVersion: 2
+        rgba: 4281422200
+      - serializedVersion: 2
+        rgba: 4282476946
+      - serializedVersion: 2
+        rgba: 4283596713
+      - serializedVersion: 2
+        rgba: 4285242050
+    - Keys:
+      - tan
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279970383
+      - serializedVersion: 2
+        rgba: 4280366689
+      - serializedVersion: 2
+        rgba: 4281158525
+      - serializedVersion: 2
+        rgba: 4282081690
+      - serializedVersion: 2
+        rgba: 4283333302
+      - serializedVersion: 2
+        rgba: 4284847054
+    - Keys:
+      - tan
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279970907
+      - serializedVersion: 2
+        rgba: 4280301677
+      - serializedVersion: 2
+        rgba: 4281159563
+      - serializedVersion: 2
+        rgba: 4282214569
+      - serializedVersion: 2
+        rgba: 4283597509
+      - serializedVersion: 2
+        rgba: 4285242588
+    - Keys:
+      - tan
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280627784
+      - serializedVersion: 2
+        rgba: 4281024090
+      - serializedVersion: 2
+        rgba: 4282210165
+      - serializedVersion: 2
+        rgba: 4283856018
+      - serializedVersion: 2
+        rgba: 4285633456
+      - serializedVersion: 2
+        rgba: 4287673035
+    - Keys:
+      - tan
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282338657
+      - serializedVersion: 2
+        rgba: 4282734963
+      - serializedVersion: 2
+        rgba: 4283592591
+      - serializedVersion: 2
+        rgba: 4285107371
+      - serializedVersion: 2
+        rgba: 4286752966
+      - serializedVersion: 2
+        rgba: 4288331995
+    - Keys:
+      - tan
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282799211
+      - serializedVersion: 2
+        rgba: 4283195773
+      - serializedVersion: 2
+        rgba: 4284316313
+      - serializedVersion: 2
+        rgba: 4285699508
+      - serializedVersion: 2
+        rgba: 4287279311
+      - serializedVersion: 2
+        rgba: 4288660961
+    - Keys:
+      - bronze
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279843675
+      - serializedVersion: 2
+        rgba: 4280173931
+      - serializedVersion: 2
+        rgba: 4280637063
+      - serializedVersion: 2
+        rgba: 4281495972
+      - serializedVersion: 2
+        rgba: 4283078087
+      - serializedVersion: 2
+        rgba: 4285444829
+    - Keys:
+      - bronze
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280433238
+      - serializedVersion: 2
+        rgba: 4280763238
+      - serializedVersion: 2
+        rgba: 4281752707
+      - serializedVersion: 2
+        rgba: 4283070368
+      - serializedVersion: 2
+        rgba: 4284650429
+      - serializedVersion: 2
+        rgba: 4286623701
+    - Keys:
+      - bronze
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279640372
+      - serializedVersion: 2
+        rgba: 4279970628
+      - serializedVersion: 2
+        rgba: 4280827226
+      - serializedVersion: 2
+        rgba: 4281946993
+      - serializedVersion: 2
+        rgba: 4283329417
+      - serializedVersion: 2
+        rgba: 4285236896
+    - Keys:
+      - bronze
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279773506
+      - serializedVersion: 2
+        rgba: 4280169298
+      - serializedVersion: 2
+        rgba: 4280960875
+      - serializedVersion: 2
+        rgba: 4281884038
+      - serializedVersion: 2
+        rgba: 4282938013
+      - serializedVersion: 2
+        rgba: 4284649143
+    - Keys:
+      - bronze
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279641157
+      - serializedVersion: 2
+        rgba: 4279971413
+      - serializedVersion: 2
+        rgba: 4280697201
+      - serializedVersion: 2
+        rgba: 4281554318
+      - serializedVersion: 2
+        rgba: 4282674602
+      - serializedVersion: 2
+        rgba: 4284254147
+    - Keys:
+      - bronze
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279641681
+      - serializedVersion: 2
+        rgba: 4279971937
+      - serializedVersion: 2
+        rgba: 4280697983
+      - serializedVersion: 2
+        rgba: 4281687197
+      - serializedVersion: 2
+        rgba: 4282938809
+      - serializedVersion: 2
+        rgba: 4284649681
+    - Keys:
+      - bronze
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280298558
+      - serializedVersion: 2
+        rgba: 4280628558
+      - serializedVersion: 2
+        rgba: 4281814377
+      - serializedVersion: 2
+        rgba: 4283263110
+      - serializedVersion: 2
+        rgba: 4284974755
+      - serializedVersion: 2
+        rgba: 4287080128
+    - Keys:
+      - bronze
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282009431
+      - serializedVersion: 2
+        rgba: 4282339431
+      - serializedVersion: 2
+        rgba: 4283196803
+      - serializedVersion: 2
+        rgba: 4284579999
+      - serializedVersion: 2
+        rgba: 4286094522
+      - serializedVersion: 2
+        rgba: 4287804624
+    - Keys:
+      - bronze
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282470241
+      - serializedVersion: 2
+        rgba: 4282800241
+      - serializedVersion: 2
+        rgba: 4283920525
+      - serializedVersion: 2
+        rgba: 4285172136
+      - serializedVersion: 2
+        rgba: 4286620610
+      - serializedVersion: 2
+        rgba: 4288133590
+    - Keys:
+      - umber
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279776849
+      - serializedVersion: 2
+        rgba: 4280106590
+      - serializedVersion: 2
+        rgba: 4280569464
+      - serializedVersion: 2
+        rgba: 4281296275
+      - serializedVersion: 2
+        rgba: 4282681270
+      - serializedVersion: 2
+        rgba: 4284785870
+    - Keys:
+      - umber
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280431692
+      - serializedVersion: 2
+        rgba: 4280761689
+      - serializedVersion: 2
+        rgba: 4281684851
+      - serializedVersion: 2
+        rgba: 4282805136
+      - serializedVersion: 2
+        rgba: 4284188076
+      - serializedVersion: 2
+        rgba: 4285964742
+    - Keys:
+      - umber
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279573290
+      - serializedVersion: 2
+        rgba: 4279903288
+      - serializedVersion: 2
+        rgba: 4280759371
+      - serializedVersion: 2
+        rgba: 4281747296
+      - serializedVersion: 2
+        rgba: 4282932599
+      - serializedVersion: 2
+        rgba: 4284512401
+    - Keys:
+      - umber
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279771959
+      - serializedVersion: 2
+        rgba: 4280101957
+      - serializedVersion: 2
+        rgba: 4280893020
+      - serializedVersion: 2
+        rgba: 4281684598
+      - serializedVersion: 2
+        rgba: 4282541196
+      - serializedVersion: 2
+        rgba: 4283924648
+    - Keys:
+      - umber
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279574075
+      - serializedVersion: 2
+        rgba: 4279904073
+      - serializedVersion: 2
+        rgba: 4280629346
+      - serializedVersion: 2
+        rgba: 4281354621
+      - serializedVersion: 2
+        rgba: 4282212249
+      - serializedVersion: 2
+        rgba: 4283595188
+    - Keys:
+      - umber
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279574855
+      - serializedVersion: 2
+        rgba: 4279904852
+      - serializedVersion: 2
+        rgba: 4280630384
+      - serializedVersion: 2
+        rgba: 4281487500
+      - serializedVersion: 2
+        rgba: 4282541991
+      - serializedVersion: 2
+        rgba: 4283925185
+    - Keys:
+      - umber
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280297012
+      - serializedVersion: 2
+        rgba: 4280627010
+      - serializedVersion: 2
+        rgba: 4281746522
+      - serializedVersion: 2
+        rgba: 4283063669
+      - serializedVersion: 2
+        rgba: 4284577938
+      - serializedVersion: 2
+        rgba: 4286355633
+    - Keys:
+      - umber
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281942349
+      - serializedVersion: 2
+        rgba: 4282272347
+      - serializedVersion: 2
+        rgba: 4283128947
+      - serializedVersion: 2
+        rgba: 4284314766
+      - serializedVersion: 2
+        rgba: 4285697705
+      - serializedVersion: 2
+        rgba: 4287080129
+    - Keys:
+      - umber
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282403159
+      - serializedVersion: 2
+        rgba: 4282798692
+      - serializedVersion: 2
+        rgba: 4283852669
+      - serializedVersion: 2
+        rgba: 4284972440
+      - serializedVersion: 2
+        rgba: 4286158257
+      - serializedVersion: 2
+        rgba: 4287409095
+    - Keys:
+      - deep
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279644747
+      - serializedVersion: 2
+        rgba: 4279974744
+      - serializedVersion: 2
+        rgba: 4280305777
+      - serializedVersion: 2
+        rgba: 4281032845
+      - serializedVersion: 2
+        rgba: 4282417841
+      - serializedVersion: 2
+        rgba: 4284325064
+    - Keys:
+      - deep
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280234309
+      - serializedVersion: 2
+        rgba: 4280564051
+      - serializedVersion: 2
+        rgba: 4281421165
+      - serializedVersion: 2
+        rgba: 4282541450
+      - serializedVersion: 2
+        rgba: 4283990183
+      - serializedVersion: 2
+        rgba: 4285504192
+    - Keys:
+      - deep
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279441444
+      - serializedVersion: 2
+        rgba: 4279771185
+      - serializedVersion: 2
+        rgba: 4280495940
+      - serializedVersion: 2
+        rgba: 4281418331
+      - serializedVersion: 2
+        rgba: 4282669170
+      - serializedVersion: 2
+        rgba: 4284051595
+    - Keys:
+      - deep
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279574577
+      - serializedVersion: 2
+        rgba: 4279904319
+      - serializedVersion: 2
+        rgba: 4280629590
+      - serializedVersion: 2
+        rgba: 4281420912
+      - serializedVersion: 2
+        rgba: 4282277767
+      - serializedVersion: 2
+        rgba: 4283463842
+    - Keys:
+      - deep
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279442229
+      - serializedVersion: 2
+        rgba: 4279772226
+      - serializedVersion: 2
+        rgba: 4280365915
+      - serializedVersion: 2
+        rgba: 4281025399
+      - serializedVersion: 2
+        rgba: 4282014355
+      - serializedVersion: 2
+        rgba: 4283134382
+    - Keys:
+      - deep
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279377217
+      - serializedVersion: 2
+        rgba: 4279707214
+      - serializedVersion: 2
+        rgba: 4280366697
+      - serializedVersion: 2
+        rgba: 4281158534
+      - serializedVersion: 2
+        rgba: 4282278562
+      - serializedVersion: 2
+        rgba: 4283464380
+    - Keys:
+      - deep
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280099630
+      - serializedVersion: 2
+        rgba: 4280429371
+      - serializedVersion: 2
+        rgba: 4281483091
+      - serializedVersion: 2
+        rgba: 4282799983
+      - serializedVersion: 2
+        rgba: 4284314509
+      - serializedVersion: 2
+        rgba: 4285894827
+    - Keys:
+      - deep
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281810503
+      - serializedVersion: 2
+        rgba: 4282140244
+      - serializedVersion: 2
+        rgba: 4282865517
+      - serializedVersion: 2
+        rgba: 4284051336
+      - serializedVersion: 2
+        rgba: 4285434020
+      - serializedVersion: 2
+        rgba: 4286619323
+    - Keys:
+      - deep
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282271312
+      - serializedVersion: 2
+        rgba: 4282601054
+      - serializedVersion: 2
+        rgba: 4283589239
+      - serializedVersion: 2
+        rgba: 4284643474
+      - serializedVersion: 2
+        rgba: 4285894828
+      - serializedVersion: 2
+        rgba: 4286948289
+    - Keys:
+      - ebony
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279972162
+      - serializedVersion: 2
+        rgba: 4280498509
+      - serializedVersion: 2
+        rgba: 4281091939
+      - serializedVersion: 2
+        rgba: 4281949563
+      - serializedVersion: 2
+        rgba: 4283465372
+      - serializedVersion: 2
+        rgba: 4285438386
+    - Keys:
+      - ebony
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280561724
+      - serializedVersion: 2
+        rgba: 4281088071
+      - serializedVersion: 2
+        rgba: 4282272862
+      - serializedVersion: 2
+        rgba: 4283523959
+      - serializedVersion: 2
+        rgba: 4285037713
+      - serializedVersion: 2
+        rgba: 4286617258
+    - Keys:
+      - ebony
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279768859
+      - serializedVersion: 2
+        rgba: 4280295206
+      - serializedVersion: 2
+        rgba: 4281347638
+      - serializedVersion: 2
+        rgba: 4282400584
+      - serializedVersion: 2
+        rgba: 4283716701
+      - serializedVersion: 2
+        rgba: 4285164662
+    - Keys:
+      - ebony
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279901992
+      - serializedVersion: 2
+        rgba: 4280493875
+      - serializedVersion: 2
+        rgba: 4281481031
+      - serializedVersion: 2
+        rgba: 4282337629
+      - serializedVersion: 2
+        rgba: 4283325297
+      - serializedVersion: 2
+        rgba: 4284642445
+    - Keys:
+      - ebony
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279769644
+      - serializedVersion: 2
+        rgba: 4280295991
+      - serializedVersion: 2
+        rgba: 4281217613
+      - serializedVersion: 2
+        rgba: 4282007909
+      - serializedVersion: 2
+        rgba: 4283061886
+      - serializedVersion: 2
+        rgba: 4284247448
+    - Keys:
+      - ebony
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279704632
+      - serializedVersion: 2
+        rgba: 4280296514
+      - serializedVersion: 2
+        rgba: 4281218394
+      - serializedVersion: 2
+        rgba: 4282140788
+      - serializedVersion: 2
+        rgba: 4283326093
+      - serializedVersion: 2
+        rgba: 4284642982
+    - Keys:
+      - ebony
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280427045
+      - serializedVersion: 2
+        rgba: 4281018928
+      - serializedVersion: 2
+        rgba: 4282268996
+      - serializedVersion: 2
+        rgba: 4283716701
+      - serializedVersion: 2
+        rgba: 4285362040
+      - serializedVersion: 2
+        rgba: 4287073430
+    - Keys:
+      - ebony
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282137918
+      - serializedVersion: 2
+        rgba: 4282664265
+      - serializedVersion: 2
+        rgba: 4283717214
+      - serializedVersion: 2
+        rgba: 4285033590
+      - serializedVersion: 2
+        rgba: 4286481807
+      - serializedVersion: 2
+        rgba: 4287732389
+    - Keys:
+      - ebony
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282598471
+      - serializedVersion: 2
+        rgba: 4283125074
+      - serializedVersion: 2
+        rgba: 4284440680
+      - serializedVersion: 2
+        rgba: 4285625727
+      - serializedVersion: 2
+        rgba: 4286942359
+      - serializedVersion: 2
+        rgba: 4288126891
+    Offset: 0
+    Gain: 2.4
+    Bias: 2.7
+    ToneLo: 2
+    ToneHi: 5
+  - Role: hair
+    Source: 0
+    Field: hair
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: hairD
+    Source: 0
+    Field: hair
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: -1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: hairL
+    Source: 0
+    Field: hair
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: beard
+    Source: 0
+    Field: hair
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: buzz
+    Source: 2
+    Field: 
+    FixedKey: 
+    TableFields:
+    - skin
+    - hair
+    Rows:
+    - Keys:
+      - porcelain
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280900738
+      - serializedVersion: 2
+        rgba: 4281100701
+      - serializedVersion: 2
+        rgba: 4281894328
+      - serializedVersion: 2
+        rgba: 4283806945
+      - serializedVersion: 2
+        rgba: 4286698226
+    - Keys:
+      - porcelain
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282210678
+      - serializedVersion: 2
+        rgba: 4283528339
+      - serializedVersion: 2
+        rgba: 4285174193
+      - serializedVersion: 2
+        rgba: 4287082444
+      - serializedVersion: 2
+        rgba: 4289187043
+    - Keys:
+      - porcelain
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280493360
+      - serializedVersion: 2
+        rgba: 4281545534
+      - serializedVersion: 2
+        rgba: 4282861133
+      - serializedVersion: 2
+        rgba: 4284373854
+      - serializedVersion: 2
+        rgba: 4286150003
+    - Keys:
+      - porcelain
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280825164
+      - serializedVersion: 2
+        rgba: 4281878626
+      - serializedVersion: 2
+        rgba: 4282735482
+      - serializedVersion: 2
+        rgba: 4283525513
+      - serializedVersion: 2
+        rgba: 4284974499
+    - Keys:
+      - porcelain
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280495187
+      - serializedVersion: 2
+        rgba: 4281285742
+      - serializedVersion: 2
+        rgba: 4282010250
+      - serializedVersion: 2
+        rgba: 4282932900
+      - serializedVersion: 2
+        rgba: 4284184509
+    - Keys:
+      - porcelain
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280430700
+      - serializedVersion: 2
+        rgba: 4281287563
+      - serializedVersion: 2
+        rgba: 4282276265
+      - serializedVersion: 2
+        rgba: 4283527363
+      - serializedVersion: 2
+        rgba: 4284975833
+    - Keys:
+      - porcelain
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281940805
+      - serializedVersion: 2
+        rgba: 4283585885
+      - serializedVersion: 2
+        rgba: 4285625208
+      - serializedVersion: 2
+        rgba: 4287796374
+      - serializedVersion: 2
+        rgba: 4290164918
+    - Keys:
+      - porcelain
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285494393
+      - serializedVersion: 2
+        rgba: 4286548115
+      - serializedVersion: 2
+        rgba: 4288325038
+      - serializedVersion: 2
+        rgba: 4290167238
+      - serializedVersion: 2
+        rgba: 4291614424
+    - Keys:
+      - porcelain
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4286481806
+      - serializedVersion: 2
+        rgba: 4288061096
+      - serializedVersion: 2
+        rgba: 4289640641
+      - serializedVersion: 2
+        rgba: 4291219672
+      - serializedVersion: 2
+        rgba: 4292337892
+    - Keys:
+      - fair
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280441214
+      - serializedVersion: 2
+        rgba: 4280575641
+      - serializedVersion: 2
+        rgba: 4281303478
+      - serializedVersion: 2
+        rgba: 4283150304
+      - serializedVersion: 2
+        rgba: 4286041842
+    - Keys:
+      - fair
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281751154
+      - serializedVersion: 2
+        rgba: 4283003023
+      - serializedVersion: 2
+        rgba: 4284583342
+      - serializedVersion: 2
+        rgba: 4286426059
+      - serializedVersion: 2
+        rgba: 4288530402
+    - Keys:
+      - fair
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280033836
+      - serializedVersion: 2
+        rgba: 4281020474
+      - serializedVersion: 2
+        rgba: 4282270283
+      - serializedVersion: 2
+        rgba: 4283717213
+      - serializedVersion: 2
+        rgba: 4285493362
+    - Keys:
+      - fair
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280365640
+      - serializedVersion: 2
+        rgba: 4281287774
+      - serializedVersion: 2
+        rgba: 4282144632
+      - serializedVersion: 2
+        rgba: 4282869127
+      - serializedVersion: 2
+        rgba: 4284383650
+    - Keys:
+      - fair
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280035407
+      - serializedVersion: 2
+        rgba: 4280760682
+      - serializedVersion: 2
+        rgba: 4281419400
+      - serializedVersion: 2
+        rgba: 4282276258
+      - serializedVersion: 2
+        rgba: 4283527868
+    - Keys:
+      - fair
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279971177
+      - serializedVersion: 2
+        rgba: 4280762503
+      - serializedVersion: 2
+        rgba: 4281685415
+      - serializedVersion: 2
+        rgba: 4282870722
+      - serializedVersion: 2
+        rgba: 4284384728
+    - Keys:
+      - fair
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281481281
+      - serializedVersion: 2
+        rgba: 4283060569
+      - serializedVersion: 2
+        rgba: 4285034358
+      - serializedVersion: 2
+        rgba: 4287205269
+      - serializedVersion: 2
+        rgba: 4289508533
+    - Keys:
+      - fair
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285034869
+      - serializedVersion: 2
+        rgba: 4286023055
+      - serializedVersion: 2
+        rgba: 4287734187
+      - serializedVersion: 2
+        rgba: 4289510597
+      - serializedVersion: 2
+        rgba: 4290957783
+    - Keys:
+      - fair
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4286022282
+      - serializedVersion: 2
+        rgba: 4287536036
+      - serializedVersion: 2
+        rgba: 4289049791
+      - serializedVersion: 2
+        rgba: 4290563030
+      - serializedVersion: 2
+        rgba: 4291681251
+    - Keys:
+      - rose
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280572289
+      - serializedVersion: 2
+        rgba: 4280706716
+      - serializedVersion: 2
+        rgba: 4281500088
+      - serializedVersion: 2
+        rgba: 4283347170
+      - serializedVersion: 2
+        rgba: 4286369779
+    - Keys:
+      - rose
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281882229
+      - serializedVersion: 2
+        rgba: 4283199634
+      - serializedVersion: 2
+        rgba: 4284714416
+      - serializedVersion: 2
+        rgba: 4286622924
+      - serializedVersion: 2
+        rgba: 4288858595
+    - Keys:
+      - rose
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280164911
+      - serializedVersion: 2
+        rgba: 4281151549
+      - serializedVersion: 2
+        rgba: 4282401357
+      - serializedVersion: 2
+        rgba: 4283914078
+      - serializedVersion: 2
+        rgba: 4285756019
+    - Keys:
+      - rose
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280562507
+      - serializedVersion: 2
+        rgba: 4281484385
+      - serializedVersion: 2
+        rgba: 4282341498
+      - serializedVersion: 2
+        rgba: 4283065993
+      - serializedVersion: 2
+        rgba: 4284646052
+    - Keys:
+      - rose
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280166738
+      - serializedVersion: 2
+        rgba: 4280891757
+      - serializedVersion: 2
+        rgba: 4281550474
+      - serializedVersion: 2
+        rgba: 4282473124
+      - serializedVersion: 2
+        rgba: 4283856061
+    - Keys:
+      - rose
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280167787
+      - serializedVersion: 2
+        rgba: 4280893578
+      - serializedVersion: 2
+        rgba: 4281882025
+      - serializedVersion: 2
+        rgba: 4283067843
+      - serializedVersion: 2
+        rgba: 4284647385
+    - Keys:
+      - rose
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281612612
+      - serializedVersion: 2
+        rgba: 4283191644
+      - serializedVersion: 2
+        rgba: 4285230968
+      - serializedVersion: 2
+        rgba: 4287336598
+      - serializedVersion: 2
+        rgba: 4289770935
+    - Keys:
+      - rose
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285166200
+      - serializedVersion: 2
+        rgba: 4286154130
+      - serializedVersion: 2
+        rgba: 4287930797
+      - serializedVersion: 2
+        rgba: 4289707462
+      - serializedVersion: 2
+        rgba: 4291220440
+    - Keys:
+      - rose
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4286218893
+      - serializedVersion: 2
+        rgba: 4287667111
+      - serializedVersion: 2
+        rgba: 4289246401
+      - serializedVersion: 2
+        rgba: 4290759896
+      - serializedVersion: 2
+        rgba: 4292009445
+    - Keys:
+      - olive
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280375414
+      - serializedVersion: 2
+        rgba: 4280378768
+      - serializedVersion: 2
+        rgba: 4281106861
+      - serializedVersion: 2
+        rgba: 4282888152
+      - serializedVersion: 2
+        rgba: 4285910251
+    - Keys:
+      - olive
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281619818
+      - serializedVersion: 2
+        rgba: 4282871943
+      - serializedVersion: 2
+        rgba: 4284321189
+      - serializedVersion: 2
+        rgba: 4286229186
+      - serializedVersion: 2
+        rgba: 4288399067
+    - Keys:
+      - olive
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279902500
+      - serializedVersion: 2
+        rgba: 4280823601
+      - serializedVersion: 2
+        rgba: 4282008129
+      - serializedVersion: 2
+        rgba: 4283520596
+      - serializedVersion: 2
+        rgba: 4285296492
+    - Keys:
+      - olive
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280299840
+      - serializedVersion: 2
+        rgba: 4281156694
+      - serializedVersion: 2
+        rgba: 4281948014
+      - serializedVersion: 2
+        rgba: 4282672255
+      - serializedVersion: 2
+        rgba: 4284186780
+    - Keys:
+      - olive
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279904071
+      - serializedVersion: 2
+        rgba: 4280564066
+      - serializedVersion: 2
+        rgba: 4281156990
+      - serializedVersion: 2
+        rgba: 4282079642
+      - serializedVersion: 2
+        rgba: 4283396533
+    - Keys:
+      - olive
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279905376
+      - serializedVersion: 2
+        rgba: 4280565631
+      - serializedVersion: 2
+        rgba: 4281488797
+      - serializedVersion: 2
+        rgba: 4282674105
+      - serializedVersion: 2
+        rgba: 4284187857
+    - Keys:
+      - olive
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281415481
+      - serializedVersion: 2
+        rgba: 4282863953
+      - serializedVersion: 2
+        rgba: 4284837485
+      - serializedVersion: 2
+        rgba: 4286943116
+      - serializedVersion: 2
+        rgba: 4289311663
+    - Keys:
+      - olive
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284903533
+      - serializedVersion: 2
+        rgba: 4285826439
+      - serializedVersion: 2
+        rgba: 4287537570
+      - serializedVersion: 2
+        rgba: 4289313980
+      - serializedVersion: 2
+        rgba: 4290760913
+    - Keys:
+      - olive
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285956482
+      - serializedVersion: 2
+        rgba: 4287339420
+      - serializedVersion: 2
+        rgba: 4288853174
+      - serializedVersion: 2
+        rgba: 4290366414
+      - serializedVersion: 2
+        rgba: 4291549917
+    - Keys:
+      - tan
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280243577
+      - serializedVersion: 2
+        rgba: 4280246932
+      - serializedVersion: 2
+        rgba: 4280909232
+      - serializedVersion: 2
+        rgba: 4282690523
+      - serializedVersion: 2
+        rgba: 4285516270
+    - Keys:
+      - tan
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281553517
+      - serializedVersion: 2
+        rgba: 4282674314
+      - serializedVersion: 2
+        rgba: 4284189096
+      - serializedVersion: 2
+        rgba: 4285966278
+      - serializedVersion: 2
+        rgba: 4288005086
+    - Keys:
+      - tan
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279836199
+      - serializedVersion: 2
+        rgba: 4280691765
+      - serializedVersion: 2
+        rgba: 4281876037
+      - serializedVersion: 2
+        rgba: 4283257688
+      - serializedVersion: 2
+        rgba: 4284902254
+    - Keys:
+      - tan
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280168003
+      - serializedVersion: 2
+        rgba: 4281024601
+      - serializedVersion: 2
+        rgba: 4281750386
+      - serializedVersion: 2
+        rgba: 4282409346
+      - serializedVersion: 2
+        rgba: 4283792543
+    - Keys:
+      - tan
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279838026
+      - serializedVersion: 2
+        rgba: 4280431973
+      - serializedVersion: 2
+        rgba: 4281025154
+      - serializedVersion: 2
+        rgba: 4281816734
+      - serializedVersion: 2
+        rgba: 4283002552
+    - Keys:
+      - tan
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279773540
+      - serializedVersion: 2
+        rgba: 4280433794
+      - serializedVersion: 2
+        rgba: 4281291169
+      - serializedVersion: 2
+        rgba: 4282411197
+      - serializedVersion: 2
+        rgba: 4283793876
+    - Keys:
+      - tan
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281283900
+      - serializedVersion: 2
+        rgba: 4282731860
+      - serializedVersion: 2
+        rgba: 4284640112
+      - serializedVersion: 2
+        rgba: 4286680208
+      - serializedVersion: 2
+        rgba: 4288917426
+    - Keys:
+      - tan
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284837488
+      - serializedVersion: 2
+        rgba: 4285694346
+      - serializedVersion: 2
+        rgba: 4287339941
+      - serializedVersion: 2
+        rgba: 4289050816
+      - serializedVersion: 2
+        rgba: 4290366932
+    - Keys:
+      - tan
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285824645
+      - serializedVersion: 2
+        rgba: 4287207327
+      - serializedVersion: 2
+        rgba: 4288655545
+      - serializedVersion: 2
+        rgba: 4290103505
+      - serializedVersion: 2
+        rgba: 4291155680
+    - Keys:
+      - bronze
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280111732
+      - serializedVersion: 2
+        rgba: 4280114831
+      - serializedVersion: 2
+        rgba: 4280711339
+      - serializedVersion: 2
+        rgba: 4282427351
+      - serializedVersion: 2
+        rgba: 4285318378
+    - Keys:
+      - bronze
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281356137
+      - serializedVersion: 2
+        rgba: 4282542213
+      - serializedVersion: 2
+        rgba: 4283991460
+      - serializedVersion: 2
+        rgba: 4285702849
+      - serializedVersion: 2
+        rgba: 4287807194
+    - Keys:
+      - bronze
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279704354
+      - serializedVersion: 2
+        rgba: 4280559664
+      - serializedVersion: 2
+        rgba: 4281678144
+      - serializedVersion: 2
+        rgba: 4282994259
+      - serializedVersion: 2
+        rgba: 4284704618
+    - Keys:
+      - bronze
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280036159
+      - serializedVersion: 2
+        rgba: 4280826965
+      - serializedVersion: 2
+        rgba: 4281552749
+      - serializedVersion: 2
+        rgba: 4282145918
+      - serializedVersion: 2
+        rgba: 4283594651
+    - Keys:
+      - bronze
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279705926
+      - serializedVersion: 2
+        rgba: 4280299873
+      - serializedVersion: 2
+        rgba: 4280827261
+      - serializedVersion: 2
+        rgba: 4281553305
+      - serializedVersion: 2
+        rgba: 4282804660
+    - Keys:
+      - bronze
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279641695
+      - serializedVersion: 2
+        rgba: 4280301694
+      - serializedVersion: 2
+        rgba: 4281093276
+      - serializedVersion: 2
+        rgba: 4282147768
+      - serializedVersion: 2
+        rgba: 4283595984
+    - Keys:
+      - bronze
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281151800
+      - serializedVersion: 2
+        rgba: 4282599759
+      - serializedVersion: 2
+        rgba: 4284442220
+      - serializedVersion: 2
+        rgba: 4286482315
+      - serializedVersion: 2
+        rgba: 4288719534
+    - Keys:
+      - bronze
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284705388
+      - serializedVersion: 2
+        rgba: 4285562245
+      - serializedVersion: 2
+        rgba: 4287142049
+      - serializedVersion: 2
+        rgba: 4288787643
+      - serializedVersion: 2
+        rgba: 4290169039
+    - Keys:
+      - bronze
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285692801
+      - serializedVersion: 2
+        rgba: 4287009691
+      - serializedVersion: 2
+        rgba: 4288457653
+      - serializedVersion: 2
+        rgba: 4289840077
+      - serializedVersion: 2
+        rgba: 4290958044
+    - Keys:
+      - umber
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280045680
+      - serializedVersion: 2
+        rgba: 4280048265
+      - serializedVersion: 2
+        rgba: 4280644773
+      - serializedVersion: 2
+        rgba: 4282294736
+      - serializedVersion: 2
+        rgba: 4285054948
+    - Keys:
+      - umber
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281355620
+      - serializedVersion: 2
+        rgba: 4282541440
+      - serializedVersion: 2
+        rgba: 4283859102
+      - serializedVersion: 2
+        rgba: 4285570491
+      - serializedVersion: 2
+        rgba: 4287543764
+    - Keys:
+      - umber
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279638046
+      - serializedVersion: 2
+        rgba: 4280493098
+      - serializedVersion: 2
+        rgba: 4281546042
+      - serializedVersion: 2
+        rgba: 4282861645
+      - serializedVersion: 2
+        rgba: 4284440933
+    - Keys:
+      - umber
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280035642
+      - serializedVersion: 2
+        rgba: 4280826191
+      - serializedVersion: 2
+        rgba: 4281485927
+      - serializedVersion: 2
+        rgba: 4282013559
+      - serializedVersion: 2
+        rgba: 4283331221
+    - Keys:
+      - umber
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279639873
+      - serializedVersion: 2
+        rgba: 4280233307
+      - serializedVersion: 2
+        rgba: 4280760695
+      - serializedVersion: 2
+        rgba: 4281420947
+      - serializedVersion: 2
+        rgba: 4282541230
+    - Keys:
+      - umber
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279641178
+      - serializedVersion: 2
+        rgba: 4280235128
+      - serializedVersion: 2
+        rgba: 4281026710
+      - serializedVersion: 2
+        rgba: 4282015410
+      - serializedVersion: 2
+        rgba: 4283332554
+    - Keys:
+      - umber
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281085747
+      - serializedVersion: 2
+        rgba: 4282533450
+      - serializedVersion: 2
+        rgba: 4284375653
+      - serializedVersion: 2
+        rgba: 4286284165
+      - serializedVersion: 2
+        rgba: 4288456104
+    - Keys:
+      - umber
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284639335
+      - serializedVersion: 2
+        rgba: 4285495680
+      - serializedVersion: 2
+        rgba: 4287075483
+      - serializedVersion: 2
+        rgba: 4288655029
+      - serializedVersion: 2
+        rgba: 4289905610
+    - Keys:
+      - umber
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285692284
+      - serializedVersion: 2
+        rgba: 4287008917
+      - serializedVersion: 2
+        rgba: 4288391086
+      - serializedVersion: 2
+        rgba: 4289707718
+      - serializedVersion: 2
+        rgba: 4290629078
+    - Keys:
+      - deep
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280045165
+      - serializedVersion: 2
+        rgba: 4279982215
+      - serializedVersion: 2
+        rgba: 4280513187
+      - serializedVersion: 2
+        rgba: 4282163150
+      - serializedVersion: 2
+        rgba: 4284857570
+    - Keys:
+      - deep
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281289570
+      - serializedVersion: 2
+        rgba: 4282409853
+      - serializedVersion: 2
+        rgba: 4283793051
+      - serializedVersion: 2
+        rgba: 4285438905
+      - serializedVersion: 2
+        rgba: 4287346386
+    - Keys:
+      - deep
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279572251
+      - serializedVersion: 2
+        rgba: 4280427048
+      - serializedVersion: 2
+        rgba: 4281479992
+      - serializedVersion: 2
+        rgba: 4282730315
+      - serializedVersion: 2
+        rgba: 4284309346
+    - Keys:
+      - deep
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279969591
+      - serializedVersion: 2
+        rgba: 4280694605
+      - serializedVersion: 2
+        rgba: 4281354341
+      - serializedVersion: 2
+        rgba: 4281881973
+      - serializedVersion: 2
+        rgba: 4283133843
+    - Keys:
+      - deep
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279574079
+      - serializedVersion: 2
+        rgba: 4280167513
+      - serializedVersion: 2
+        rgba: 4280629109
+      - serializedVersion: 2
+        rgba: 4281289361
+      - serializedVersion: 2
+        rgba: 4282343852
+    - Keys:
+      - deep
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279575128
+      - serializedVersion: 2
+        rgba: 4280169078
+      - serializedVersion: 2
+        rgba: 4280895124
+      - serializedVersion: 2
+        rgba: 4281883824
+      - serializedVersion: 2
+        rgba: 4283135176
+    - Keys:
+      - deep
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281019952
+      - serializedVersion: 2
+        rgba: 4282467399
+      - serializedVersion: 2
+        rgba: 4284244067
+      - serializedVersion: 2
+        rgba: 4286218371
+      - serializedVersion: 2
+        rgba: 4288258726
+    - Keys:
+      - deep
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284573541
+      - serializedVersion: 2
+        rgba: 4285429885
+      - serializedVersion: 2
+        rgba: 4286943896
+      - serializedVersion: 2
+        rgba: 4288523443
+      - serializedVersion: 2
+        rgba: 4289708232
+    - Keys:
+      - deep
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285626233
+      - serializedVersion: 2
+        rgba: 4286942866
+      - serializedVersion: 2
+        rgba: 4288259500
+      - serializedVersion: 2
+        rgba: 4289576132
+      - serializedVersion: 2
+        rgba: 4290497236
+    - Keys:
+      - ebony
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280241769
+      - serializedVersion: 2
+        rgba: 4280309890
+      - serializedVersion: 2
+        rgba: 4280906140
+      - serializedVersion: 2
+        rgba: 4282556102
+      - serializedVersion: 2
+        rgba: 4285250522
+    - Keys:
+      - ebony
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281486174
+      - serializedVersion: 2
+        rgba: 4282737528
+      - serializedVersion: 2
+        rgba: 4284120468
+      - serializedVersion: 2
+        rgba: 4285831601
+      - serializedVersion: 2
+        rgba: 4287739338
+    - Keys:
+      - ebony
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279834135
+      - serializedVersion: 2
+        rgba: 4280754723
+      - serializedVersion: 2
+        rgba: 4281807409
+      - serializedVersion: 2
+        rgba: 4283123011
+      - serializedVersion: 2
+        rgba: 4284702042
+    - Keys:
+      - ebony
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280166195
+      - serializedVersion: 2
+        rgba: 4281022023
+      - serializedVersion: 2
+        rgba: 4281747294
+      - serializedVersion: 2
+        rgba: 4282274925
+      - serializedVersion: 2
+        rgba: 4283592331
+    - Keys:
+      - ebony
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279835963
+      - serializedVersion: 2
+        rgba: 4280494931
+      - serializedVersion: 2
+        rgba: 4280956526
+      - serializedVersion: 2
+        rgba: 4281682057
+      - serializedVersion: 2
+        rgba: 4282736548
+    - Keys:
+      - ebony
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279771732
+      - serializedVersion: 2
+        rgba: 4280496752
+      - serializedVersion: 2
+        rgba: 4281288077
+      - serializedVersion: 2
+        rgba: 4282276520
+      - serializedVersion: 2
+        rgba: 4283593408
+    - Keys:
+      - ebony
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281281836
+      - serializedVersion: 2
+        rgba: 4282794818
+      - serializedVersion: 2
+        rgba: 4284637020
+      - serializedVersion: 2
+        rgba: 4286611067
+      - serializedVersion: 2
+        rgba: 4288717214
+    - Keys:
+      - ebony
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284835425
+      - serializedVersion: 2
+        rgba: 4285757304
+      - serializedVersion: 2
+        rgba: 4287336849
+      - serializedVersion: 2
+        rgba: 4288916395
+      - serializedVersion: 2
+        rgba: 4290166463
+    - Keys:
+      - ebony
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4285822837
+      - serializedVersion: 2
+        rgba: 4287204749
+      - serializedVersion: 2
+        rgba: 4288652453
+      - serializedVersion: 2
+        rgba: 4289968828
+      - serializedVersion: 2
+        rgba: 4290889932
+    Offset: -1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: over
+    Source: 0
+    Field: outfit
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: overD
+    Source: 0
+    Field: outfit
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: -1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: overL
+    Source: 0
+    Field: outfit
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: shirt
+    Source: 0
+    Field: shirt
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 2.7
+    ToneLo: 2
+    ToneHi: 5
+  - Role: shirtD
+    Source: 0
+    Field: shirt
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: -1
+    Gain: 2.4
+    Bias: 2.7
+    ToneLo: 2
+    ToneHi: 5
+  - Role: collar
+    Source: 0
+    Field: shirt
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 2.7
+    ToneLo: 2
+    ToneHi: 5
+  - Role: hat
+    Source: 0
+    Field: hatCol
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: hatL
+    Source: 0
+    Field: hatCol
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: hatD
+    Source: 0
+    Field: hatCol
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: -1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: apron
+    Source: 0
+    Field: apronCol
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: apronD
+    Source: 0
+    Field: apronCol
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: -1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: belt
+    Source: 1
+    Field: 
+    FixedKey: belt
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: hose
+    Source: 1
+    Field: 
+    FixedKey: boot
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: boot
+    Source: 1
+    Field: 
+    FixedKey: boot
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: bootL
+    Source: 1
+    Field: 
+    FixedKey: boot
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: sole
+    Source: 1
+    Field: 
+    FixedKey: boot
+    TableFields: []
+    Rows: []
+    Offset: -2
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: brass
+    Source: 1
+    Field: 
+    FixedKey: brass
+    TableFields: []
+    Rows: []
+    Offset: 1
+    Gain: 2.4
+    Bias: 1.8
+    ToneLo: 1
+    ToneHi: 4
+  - Role: ink
+    Source: 1
+    Field: 
+    FixedKey: ink
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0
+  - Role: ink2
+    Source: 1
+    Field: 
+    FixedKey: ink2
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0
+  - Role: white
+    Source: 1
+    Field: 
+    FixedKey: white
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0
+  - Role: iris
+    Source: 0
+    Field: eyes
+    FixedKey: 
+    TableFields: []
+    Rows: []
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0
+  - Role: lid
+    Source: 2
+    Field: 
+    FixedKey: 
+    TableFields:
+    - skin
+    Rows:
+    - Keys:
+      - porcelain
+      Colors:
+      - serializedVersion: 2
+        rgba: 4283655066
+    - Keys:
+      - fair
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281751178
+    - Keys:
+      - rose
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282341270
+    - Keys:
+      - olive
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281291368
+    - Keys:
+      - tan
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280829557
+    - Keys:
+      - bronze
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280236387
+    - Keys:
+      - umber
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280168271
+    - Keys:
+      - deep
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279904581
+    - Keys:
+      - ebony
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280756019
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0
+  - Role: brow
+    Source: 2
+    Field: 
+    FixedKey: 
+    TableFields:
+    - hair
+    Rows:
+    - Keys:
+      - blond
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280042583
+    - Keys:
+      - sand
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281155917
+    - Keys:
+      - black
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279636751
+    - Keys:
+      - brown
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279968296
+    - Keys:
+      - auburn
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279638318
+    - Keys:
+      - ginger
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279639364
+    - Keys:
+      - salt
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280952610
+    - Keys:
+      - grey
+      Colors:
+      - serializedVersion: 2
+        rgba: 4283980111
+    - Keys:
+      - white
+      Colors:
+      - serializedVersion: 2
+        rgba: 4284901217
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0
+  - Role: lip
+    Source: 2
+    Field: 
+    FixedKey: 
+    TableFields:
+    - skin
+    Rows:
+    - Keys:
+      - porcelain
+      Colors:
+      - serializedVersion: 2
+        rgba: 4283655066
+    - Keys:
+      - fair
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281751178
+    - Keys:
+      - rose
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282341270
+    - Keys:
+      - olive
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281291368
+    - Keys:
+      - tan
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280829557
+    - Keys:
+      - bronze
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280236387
+    - Keys:
+      - umber
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280168271
+    - Keys:
+      - deep
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279904581
+    - Keys:
+      - ebony
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280756019
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0
+  - Role: mouth
+    Source: 2
+    Field: 
+    FixedKey: 
+    TableFields:
+    - skin
+    Rows:
+    - Keys:
+      - porcelain
+      Colors:
+      - serializedVersion: 2
+        rgba: 4282272378
+    - Keys:
+      - fair
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280828011
+    - Keys:
+      - rose
+      Colors:
+      - serializedVersion: 2
+        rgba: 4281286773
+    - Keys:
+      - olive
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280433741
+    - Keys:
+      - tan
+      Colors:
+      - serializedVersion: 2
+        rgba: 4280234841
+    - Keys:
+      - bronze
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279708234
+    - Keys:
+      - umber
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279640378
+    - Keys:
+      - deep
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279376944
+    - Keys:
+      - ebony
+      Colors:
+      - serializedVersion: 2
+        rgba: 4279900706
+    Offset: 0
+    Gain: 1
+    Bias: 0
+    ToneLo: 0
+    ToneHi: 0

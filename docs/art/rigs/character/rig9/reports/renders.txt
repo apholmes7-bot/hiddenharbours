@@ -1,0 +1,7 @@
+check-renders — review renders against fresh renders
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+120 PNGs (10 presets x idle, walk, dig x front, back x 1x, 4x).
+pixels identical to a fresh render: 120 / 120; manifest pixel hash: 120 / 120; file hash: 120 / 120; unlisted PNGs: 0
+
+OK — no problems.

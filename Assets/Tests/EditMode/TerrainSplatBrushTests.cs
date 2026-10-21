@@ -19,7 +19,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void MaterialOrder_IsTheCanonicalSplatOrder()
         {
             // The one order everything shares: the shader's channel unpack (A.rgba B.rgba C.rgba
-            // D.rgba E.rgba), the pin tests, and every committed splat PNG. Append-only, never reorder.
+            // D.rgba E.rgba F.r), the pin tests, and every committed splat PNG. Append-only, never reorder.
             CollectionAssert.AreEqual(
                 new[]
                 {
@@ -28,6 +28,7 @@ namespace HiddenHarbours.Tests.EditMode
                     "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
                     "Lawn",
                     "Mud",
+                    "Path",
                 },
                 TerrainSplatBrush.MaterialNames,
                 "The brush's material order drifted from the canonical splat channel order.");
@@ -56,10 +57,10 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(m, TerrainSplatBrush.MaterialOf(tex, ch),
                     $"material {m} does not round-trip through (texture, channel).");
             }
-            // Texture E is FULL: the last valid material is 19 (Mud, at E.a, 2026-09-17), after
-            // Eelgrass, Irishmoss and Lawn.
-            Assert.AreEqual(4, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
-            Assert.AreEqual(3, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
+            // Texture E is full (Mud took E.a, 2026-09-17), so the last valid material is 20: Path, at
+            // F.r, the first channel of the sixth map (terrain pass 9, 2026-09-25).
+            Assert.AreEqual(5, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
+            Assert.AreEqual(0, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
         }
 
         [Test]
@@ -108,18 +109,29 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void NoSplatChannelIsFree_TheNextMaterialNeedsASixthMap()
+        public void Path_LandsOnSplatFR_AsThePlanPlacesIt()
         {
-            // 20 materials in 20 channels. ⭐ SAID DELIBERATELY: Lawn took E.b (2026-08-26) and Mud
-            // took E.a (2026-09-17, owner ruling M1), so the old "one channel free" count went to
-            // zero on purpose. The next material (the px kit's Path is waiting) needs a SIXTH splat
-            // map, _SplatF — every region's committed PNGs, the surface's binding and the byte-zero
-            // gate all move — which is its own PR, decided on purpose; this is what says so.
-            Assert.AreEqual(19, TerrainSplatBrush.MaterialOf(4, 3), "E.a should be the last slot (19).");
-            Assert.AreEqual(TerrainSplatBrush.TextureCount * 4, TerrainSplatBrush.MaterialCount,
-                "Every channel of the five maps should be spoken for — if that changed, say so deliberately.");
-            Assert.AreEqual(TerrainSplatBrush.TextureCount, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount),
-                "The next material must fall on a map that does not exist yet (the sixth).");
+            // Terrain pass 9 (docs/design/st-peters-terrain-pass-9.md §5): the kit's Path takes index
+            // 20, the r of a sixth map. Stated as the plan states it — if this ever shifts, every
+            // committed SplatF PNG's red changes meaning.
+            Assert.AreEqual("SplatF.r", TerrainSplatBrush.ChannelLabel(20), "Path");
+            Assert.AreEqual("Path", TerrainSplatBrush.MaterialNames[20]);
+        }
+
+        [Test]
+        public void TheSixthMap_HoldsPath_AndThreeChannelsAreFree()
+        {
+            // 21 materials in 24 channels. ⭐ SAID DELIBERATELY: Mud took E.a (2026-09-17, owner ruling
+            // M1), which filled the five maps, and terrain pass 9's Path opened the sixth, _SplatF, at
+            // F.r (2026-09-25). F.g, F.b and F.a are free. Adopting one moves every region's committed
+            // SplatF PNG channel, so verify it is zero there first, as D.a and E.a were; this is what
+            // says so. (Until terrain pass 9 this test said no channel was free, and was named so.)
+            Assert.AreEqual(19, TerrainSplatBrush.MaterialOf(4, 3), "E.a should still be Mud's slot (19).");
+            Assert.AreEqual(20, TerrainSplatBrush.MaterialOf(5, 0), "F.r should be Path's slot (20).");
+            Assert.AreEqual(3, TerrainSplatBrush.TextureCount * 4 - TerrainSplatBrush.MaterialCount,
+                "Three channels of the six maps should be free (F.g, F.b, F.a) — if that changed, say so deliberately.");
+            Assert.AreEqual(5, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount),
+                "The next material should fall on the sixth map, at F.g.");
         }
 
         [Test]
@@ -141,6 +153,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatC.png", TerrainSplatAssets.PathOf(2));
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatD.png", TerrainSplatAssets.PathOf(3));
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatE.png", TerrainSplatAssets.PathOf(4));
+            // The sixth, Path's: the builder loads it in its TextureCount loop, though it still wires
+            // five maps until the island's own pass 9 work paints Path.
+            Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatF.png", TerrainSplatAssets.PathOf(5));
         }
 
         // ============================ FALLOFF + FLOW ============================

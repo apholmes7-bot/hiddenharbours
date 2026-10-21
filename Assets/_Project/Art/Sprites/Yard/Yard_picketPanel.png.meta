@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Yard_picketPanel_d1
       rect:
         serializedVersion: 2
-        x: 82
+        x: 80
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Yard_picketPanel_d2
       rect:
         serializedVersion: 2
-        x: 164
+        x: 160
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Yard_picketPanel_d3
       rect:
         serializedVersion: 2
-        x: 246
+        x: 240
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Yard_picketPanel_d4
       rect:
         serializedVersion: 2
-        x: 328
+        x: 320
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Yard_picketPanel_d5
       rect:
         serializedVersion: 2
-        x: 410
+        x: 400
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Yard_picketPanel_d6
       rect:
         serializedVersion: 2
-        x: 492
+        x: 480
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Yard_picketPanel_d7
       rect:
         serializedVersion: 2
-        x: 574
+        x: 560
         y: 0
-        width: 82
-        height: 78
+        width: 80
+        height: 76
       alignment: 9
-      pivot: {x: 0.5, y: 0.33333334}
+      pivot: {x: 0.5, y: 0.32894737}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

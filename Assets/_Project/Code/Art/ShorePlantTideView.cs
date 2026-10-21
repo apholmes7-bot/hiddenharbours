@@ -15,15 +15,17 @@ namespace HiddenHarbours.Art
     /// small: read the ONE height map through Core, pick a column, set a sprite, set a sorting order.
     /// No new simulation, no second waterline.</para>
     ///
-    /// <para><b>⭐ THE SUBMERGED HALF — the owner's ask, and it is a SORTING answer, not a shader
-    /// one.</b> Plants below the water should be visible THROUGH the water where it is shallow. The
-    /// mechanism already existed in two halves that had never been put together: the rig bakes the
-    /// cold WATER ramp into the submerged states (colour only — no dapple, because the live
-    /// sprite-light shader's caustics are swell-driven and two uncorrelated patterns on one frond is
-    /// worse than none), and the sea already fades toward transparent in the shallows. All that was
-    /// missing is drawing the plant in the gap BETWEEN the painted seabed (−21…−18) and the Sea plane
-    /// (−5). A submerged bed drawn there is simply seen through shallow water and lost as it deepens.
-    /// <b>No new transparency system is introduced and the water shader is not touched.</b></para>
+    /// <para><b>⭐ THE SUBMERGED HALF.</b> Plants below the water should be visible THROUGH the water
+    /// where it is shallow. The rig bakes the cold WATER ramp into the submerged states (colour only —
+    /// no dapple, because the live sprite-light shader's caustics are swell-driven and two
+    /// uncorrelated patterns on one frond is worse than none), and a submerged plant draws in the gap
+    /// BETWEEN the painted seabed (−21…−18) and the Sea plane (−5). ⚠ That gap alone no longer shows
+    /// it: the sea composites its own bed opaquely (ADR 0027 #7), so a plant there is seen only where
+    /// the shore fades the sea. With <c>GameConfig.ShallowsSubmergedProps</c> on (W4-4c; it ships
+    /// OFF), a plant under the water also carries <see cref="UnderWaterRegistry.RenderingLayer"/>, and
+    /// the sea draws it through its own column over the floor: the sea's absorption, caustics and
+    /// grade, the one law the floor beside it takes. Play mode only, and written only on a change, so
+    /// no scene file ever holds the bit.</para>
     ///
     /// <para><b>⚠ An emergent plant goes back to the decor band</b> and lets <see cref="YSortSprite"/>
     /// own its order, because a plant sticking out through the surface is decor: leave it under the
@@ -77,6 +79,8 @@ namespace HiddenHarbours.Art
         private int _state = -1;            // -1 = nothing applied yet
         private bool _submerged;
         private bool _appliedOnce;
+        private bool _propsOn;              // W4-4c: the props switch as last applied
+        private bool _underWater;           // W4-4c: carrying the under-water bit, and registered
 
         /// <summary>The baked column currently worn, 0 (low) … 4 (high). −1 before the first tick.</summary>
         public int State => _state;
@@ -133,7 +137,16 @@ namespace HiddenHarbours.Art
                 rimGateChannel: SpriteLightBinder.RimGateChannel.Blue);
         }
 
-        private void OnDisable() => ShorePlantTideDriver.Unregister(this);
+        private void OnDisable()
+        {
+            ShorePlantTideDriver.Unregister(this);
+            // W4-4c: a plant switched off leaves the sea's under-water list and gives its bit back.
+            if (!_underWater) return;
+            UnderWaterRegistry.Unregister(_sr);
+            if (_sr != null)
+                _sr.renderingLayerMask = ShorePlantTideMath.UnderWaterMask(_sr.renderingLayerMask, false, false);
+            _underWater = false;
+        }
 
         /// <summary>Edit mode has no clock and no driver, so the preview slider is the tide — scrubbing
         /// it has to move the plant, or the preview is a field that does nothing.</summary>
@@ -155,6 +168,7 @@ namespace HiddenHarbours.Art
             if (_def == null || _sr == null) return;
 
             var terrain = GameServices.TidalTerrain;
+            bool propsOn = PropsOn;
 
             // No region wired yet (EditMode, the persistent boot before the first scene loads): hold
             // the authored state rather than guessing at a tide. A null terrain means "open water"
@@ -162,7 +176,7 @@ namespace HiddenHarbours.Art
             // move — inventing a submerged look here would flicker every scene load.
             if (terrain == null || !TryResolveWaterLevel(out float waterLevel))
             {
-                if (!_appliedOnce) Apply(state: 0, submerged: false);
+                if (!_appliedOnce) Apply(state: 0, submerged: false, propsOn: propsOn);
                 return;
             }
 
@@ -172,9 +186,14 @@ namespace HiddenHarbours.Art
             int state = ShorePlantTideMath.StateFor(overM, _def.TideLadderOverM);
             bool submerged = ShorePlantTideMath.IsSubmerged(overM, DrawnStandingHeightM);
 
-            if (_appliedOnce && state == _state && submerged == _submerged) return;   // the common case
-            Apply(state, submerged);
+            if (_appliedOnce && state == _state && submerged == _submerged && propsOn == _propsOn)
+                return;   // the common case
+            Apply(state, submerged, propsOn);
         }
+
+        /// <summary>W4-4c: is the props switch on for this plant? Play mode only: the under-water bit is
+        /// a runtime state, and an edit-mode write would land in the scene file.</summary>
+        private static bool PropsOn => Application.isPlaying && GameServices.ShallowsSubmergedProps;
 
         /// <summary>
         /// How tall this plant stands IN THE PICTURE, metres.
@@ -214,7 +233,7 @@ namespace HiddenHarbours.Art
             return true;
         }
 
-        private void Apply(int state, bool submerged)
+        private void Apply(int state, bool submerged, bool propsOn)
         {
             var sprite = _def.SpriteFor(state);
             if (sprite != null) _sr.sprite = sprite;
@@ -232,8 +251,21 @@ namespace HiddenHarbours.Art
                 if (ySorted) _ySort.Dynamic = false;   // static decor: sorts once, then stands down
             }
 
+            // W4-4c: the bit that puts this plant in the sea's under-water list, from the same
+            // submerged test as the order above. Written only when it changes, and the list follows it.
+            uint mask = ShorePlantTideMath.UnderWaterMask(_sr.renderingLayerMask, submerged, propsOn);
+            if (mask != _sr.renderingLayerMask) _sr.renderingLayerMask = mask;
+            bool underWater = (mask & UnderWaterRegistry.RenderingLayer) != 0;
+            if (underWater != _underWater)
+            {
+                if (underWater) UnderWaterRegistry.Register(_sr);
+                else UnderWaterRegistry.Unregister(_sr);
+                _underWater = underWater;
+            }
+
             _state = state;
             _submerged = submerged;
+            _propsOn = propsOn;
             _appliedOnce = true;
         }
     }

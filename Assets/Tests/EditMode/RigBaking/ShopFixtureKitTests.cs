@@ -52,7 +52,9 @@ namespace HiddenHarbours.Tests.RigBaking
             var e = RigCatalog.Get(ShopFixtureKit.RigKey);
 
             Assert.That(e.GlobalName, Is.EqualTo("ShopInterior"));
-            Assert.That(e.ScriptPath, Is.EqualTo("docs/art/rigs/shop-building-kit/shopInteriorRig.js"));
+            // The returned room since the village return (drop 14, #898). The counter draws as it did:
+            // its render never asks the room for the live light, so the fixture sheet does not re-bake.
+            Assert.That(e.ScriptPath, Is.EqualTo("docs/art/rigs/village-return/shop-building-kit/shopInteriorRig.js"));
             Assert.That(e.DeclaredConvention, Is.EqualTo(AzimuthConvention.CounterClockwise),
                 "The shop rigs are registered counter-clockwise. Declaring the deck-loop kit's " +
                 "clockwise here would mirror six of the eight cells of every fixture.");

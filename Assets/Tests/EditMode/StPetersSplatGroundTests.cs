@@ -65,6 +65,40 @@ namespace HiddenHarbours.Tests.EditMode
             finally { Object.DestroyImmediate(go); }
         }
 
+        /// <summary>Terrain pass 9's sixth splat map, _SplatF, whose r is the kit's Path. St Peters'
+        /// builder still hands the surface five maps (it is exporter-tracked, and left untouched until the
+        /// island's own pass 9 work paints Path), so its ground must push _SplatF as "nothing painted",
+        /// the transparent 1x1, and never leave the slot to whatever the material holds.</summary>
+        [Test]
+        public void TheGroundPushesTheSixthSplatMap_AsNothingPainted_UnderTheBuildersFiveMaps()
+        {
+            var go = new GameObject("StPetersSplatSixthMap");
+            try
+            {
+                // The builder's order and its five-map call (StPetersBuilder, the splat ground).
+                go.SetActive(false);
+                var splat = go.AddComponent<TerrainSplatSurface>();
+                splat.Configure(StPetersBuilder.RegionWorldCenter, StPetersBuilder.RegionWorldSize,
+                                null, TerrainSplatSurface.DefaultSortingOrder);
+                splat.ConfigureSplat(null, null, null, null, null);
+                go.SetActive(true);
+
+                var renderer = go.GetComponentInChildren<MeshRenderer>(true);
+                Assert.IsNotNull(renderer, "the surface built no ground quad, so it pushed nothing to read");
+                var mpb = new MaterialPropertyBlock();
+                renderer.GetPropertyBlock(mpb);
+                var f = mpb.GetTexture("_SplatF") as Texture2D;
+                Assert.IsNotNull(f, "St Peters' ground pushed no _SplatF, so the island's Path reads whatever " +
+                                    "the material holds");
+                Assert.AreEqual(1, f.width, "St Peters' _SplatF is not the 1x1 'nothing painted'");
+                Assert.AreEqual(1, f.height, "St Peters' _SplatF is not the 1x1 'nothing painted'");
+                Color32 texel = f.GetPixels32()[0];
+                Assert.AreEqual(0, texel.r, "St Peters' _SplatF paints Path over the whole island");
+                Assert.AreEqual(0, texel.a, "St Peters' _SplatF is not transparent");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
         /// <summary>The generated quad child's world-metre width (built with HideFlags.DontSave, so it is
         /// a child MeshFilter rather than anything the scene serializes).</summary>
         private static float QuadWidth(GameObject host)

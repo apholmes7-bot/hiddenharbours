@@ -1,0 +1,520 @@
+{
+ "schema": "hidden-harbours/character-shading@3",
+ "rig": "characterIsoRig10.js",
+ "revision": "10.3",
+ "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+ "build": "fisher",
+ "key": [
+  0,
+  0.8106792283998809,
+  0.5854905538443584
+ ],
+ "fleetKey": [
+  -0.4275044441062873,
+  0.732864761325064,
+  0.5292912165125462
+ ],
+ "form": 0.5,
+ "formMid": 0.45,
+ "edge": 0.12,
+ "keyline": "#101a19",
+ "keylineMix": 0.22,
+ "keylineDefault": false,
+ "cull": "back faces (toward-camera component of the flat normal <= 0)",
+ "step": "clamp(round(s*gain + bias + b), lo, hi) + off, clamped to the ramp; s = n.key + form*(n.toward - formMid). lo..hi is four tones: shadow, base, light, highlight; the contour pass may take one below",
+ "headSnap": "the head bone is moved in screen space so its centre sits on a pixel centre (<= 0.5 px)",
+ "materials": {
+  "skin": {
+   "ramp": [
+    "#6b4028",
+    "#8a5636",
+    "#a8724a",
+    "#c98d63",
+    "#e0a981",
+    "#f0c9a2"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 0
+  },
+  "skinD": {
+   "ramp": [
+    "#6b4028",
+    "#8a5636",
+    "#a8724a",
+    "#c98d63",
+    "#e0a981",
+    "#f0c9a2"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": -1
+  },
+  "skinL": {
+   "ramp": [
+    "#6b4028",
+    "#8a5636",
+    "#a8724a",
+    "#c98d63",
+    "#e0a981",
+    "#f0c9a2"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 1
+  },
+  "stub": {
+   "ramp": [
+    "#704924",
+    "#84572d",
+    "#a16c38",
+    "#c0874b",
+    "#e0ac67",
+    "#f1cb8e"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 0
+  },
+  "hair": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "hairD": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "hairL": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "beard": {
+   "ramp": [
+    "#7a5a1c",
+    "#946218",
+    "#b07d1f",
+    "#e0b13a",
+    "#f2cf6a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "buzz": {
+   "ramp": [
+    "#7e5922",
+    "#996624",
+    "#b6812f",
+    "#e0af4b",
+    "#f2ce77"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "over": {
+   "ramp": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "overD": {
+   "ramp": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "overL": {
+   "ramp": [
+    "#0d3f3c",
+    "#14554e",
+    "#1c7367",
+    "#2ba39a",
+    "#49b8aa"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "shirt": {
+   "ramp": [
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc",
+    "#dfe3dc",
+    "#eef0ea"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 0
+  },
+  "shirtD": {
+   "ramp": [
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc",
+    "#dfe3dc",
+    "#eef0ea"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": -1
+  },
+  "collar": {
+   "ramp": [
+    "#878b85",
+    "#a2a7a0",
+    "#bcc2ba",
+    "#cfd4cc",
+    "#dfe3dc",
+    "#eef0ea"
+   ],
+   "gain": 2.4,
+   "bias": 2.7,
+   "lo": 2,
+   "hi": 5,
+   "off": 1
+  },
+  "hat": {
+   "ramp": [
+    "#14181b",
+    "#1f262a",
+    "#2c353b",
+    "#3d484f",
+    "#505d65"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "hatL": {
+   "ramp": [
+    "#14181b",
+    "#1f262a",
+    "#2c353b",
+    "#3d484f",
+    "#505d65"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "hatD": {
+   "ramp": [
+    "#14181b",
+    "#1f262a",
+    "#2c353b",
+    "#3d484f",
+    "#505d65"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "apron": {
+   "ramp": [
+    "#4d4436",
+    "#665b48",
+    "#7f735c",
+    "#988b71",
+    "#b0a488"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "apronD": {
+   "ramp": [
+    "#4d4436",
+    "#665b48",
+    "#7f735c",
+    "#988b71",
+    "#b0a488"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -1
+  },
+  "belt": {
+   "ramp": [
+    "#241611",
+    "#38221a",
+    "#4d2f22",
+    "#63402d",
+    "#7c553c"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "hose": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "boot": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 0
+  },
+  "bootL": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "sole": {
+   "ramp": [
+    "#101317",
+    "#1d2127",
+    "#2b323a",
+    "#3d454e",
+    "#525c63"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": -2
+  },
+  "brass": {
+   "ramp": [
+    "#5a4318",
+    "#7d6024",
+    "#a68333",
+    "#c9a548",
+    "#e3c46a"
+   ],
+   "gain": 2.4,
+   "bias": 1.8,
+   "lo": 1,
+   "hi": 4,
+   "off": 1
+  },
+  "ink": {
+   "color": "#12181b",
+   "fixed": true
+  },
+  "ink2": {
+   "color": "#243036",
+   "fixed": true
+  },
+  "white": {
+   "color": "#e6e9e2",
+   "fixed": true
+  },
+  "iris": {
+   "color": "#2ba39a",
+   "fixed": true
+  },
+  "lid": {
+   "color": "#8a5636",
+   "fixed": true
+  },
+  "brow": {
+   "color": "#57441c",
+   "fixed": true
+  },
+  "lip": {
+   "color": "#8a5636",
+   "fixed": true
+  },
+  "mouth": {
+   "color": "#6b4028",
+   "fixed": true
+  }
+ },
+ "dither": {
+  "used": false,
+  "bayer4": [
+   [
+    0,
+    8,
+    2,
+    10
+   ],
+   [
+    12,
+    4,
+    14,
+    6
+   ],
+   [
+    3,
+    11,
+    1,
+    9
+   ],
+   [
+    15,
+    7,
+    13,
+    5
+   ]
+  ],
+  "index": "bayer4[x & 3][y & 3], x the cell column, y the cell row",
+  "threshold": "(m + 0.5) / 16",
+  "note": "no pixel of rig 10 is dithered: the step is clamp(round(...)), never a threshold against this matrix"
+ },
+ "tolerance": {
+  "gate_m": 0.000001,
+  "inside": 0.000001,
+  "area": 1e-9,
+  "cull": 0.0001,
+  "markEdge": 0.0001,
+  "depthScale": 10000000,
+  "shadeScale": 1000000000,
+  "tieDepth": 1e-9,
+  "use": {
+   "gate_m": "the round trip, the loops, the hand-offs and the rocked skin are held equal to this, in metres",
+   "inside": "a pixel centre (x + 0.5, y + 0.5) is inside a triangle when each barycentric weight is >= -inside",
+   "area": "a triangle whose screen area is below this draws nothing",
+   "cull": "a face draws when its toward-camera component is > max(cull, minT); a point mark when it is > cull",
+   "markEdge": "a point mark whose projected centre is within markEdge of a pixel edge draws nothing",
+   "depthScale": "the z-test compares round((d - db) * depthScale) / depthScale",
+   "shadeScale": "the shade value s is round(s * shadeScale) / shadeScale before the step",
+   "tieDepth": "the A/B keyline takes its nearest neighbour by depth, ties within tieDepth going to the darker"
+  }
+ },
+ "ink": {
+  "colours": [
+   "#12181b",
+   "#243036"
+  ],
+  "roles": {
+   "0": "material ink: the open eye and the gaze pupil; the brow is mix(hair ramp[0], INK[0], 0.34)",
+   "1": "material ink2: the half-shut round and lidded eye; the round eye's gaze turned in, seen from the side",
+   "keyline": "SHADING.keyline #101a19 is the A/B keyline's tint (keylineDefault false), a colour of its own, not INK[0]",
+   "iris": "no rig 10 face is drawn in iris: since 10.0 the eye is one pixel of ink, so EYES only names the colour"
+  },
+  "eyeWhite": "#e6e9e2"
+ },
+ "aim": {
+  "bar_deg": 4,
+  "share": 1,
+  "distance_m": 2,
+  "bearings_deg": [
+   -50,
+   -30,
+   -15,
+   0,
+   15,
+   30,
+   50
+  ],
+  "dz_m": [
+   -0.35,
+   0,
+   0.25
+  ],
+  "clip": "idle",
+  "frame": 0,
+  "targets": "from the head point (head bone * headMid) of idle f0, unturned: distance_m away at each bearing (from the figure's +y toward +x) and at each height dz; only the targets whose need is inside the limits",
+  "measure": "turn = lookAt(S, target, share), applied: the angle between the turned head bone's +y and the target seen from the turned head point",
+  "measured": "10.3 on the 30 builds: 2.82 to 2.98 deg, the seven elders 3.65 to 3.73 (9.2: 1.70, the skipper and Nan 2.40)"
+ }
+}

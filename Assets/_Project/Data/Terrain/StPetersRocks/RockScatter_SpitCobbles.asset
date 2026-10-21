@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e87d3230c94ad695159f4e185e8122, type: 3}
+  m_Name: RockScatter_SpitCobbles
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RockScatterDef
+  Id: scatter.stp_spit_cobbles
+  DisplayName: Spit cobbles
+  Rule: sections
+  Over:
+  - coast.stp_east_gap
+  - coast.stp_west_gap
+  Band: {x: 0, y: 0}
+  Elevation: {x: -1.4, y: 1.6}
+  Every: {x: 3, y: 5}
+  Forms:
+  - Form: cobbles
+    Weight: 3
+  - Form: knuckle
+    Weight: 1
+  Stone: sandstone
+  State: wet
+  Count: 20
+  Rocks:
+  - N: 1
+    At: {x: -2.45, y: -76.41}
+    Elevation: -0.3
+    Form: cobbles
+  - N: 4
+    At: {x: 0.09, y: -77.08}
+    Elevation: -0.18
+    Form: cobbles
+  - N: 5
+    At: {x: 0.24, y: -71.18}
+    Elevation: 0.47
+    Form: cobbles
+  - N: 6
+    At: {x: -1.08, y: -69.09}
+    Elevation: 0.03
+    Form: knuckle
+  - N: 12
+    At: {x: 160.43, y: -54.51}
+    Elevation: 0.4
+    Form: cobbles
+  - N: 13
+    At: {x: 161.48, y: -53.21}
+    Elevation: 1.2
+    Form: cobbles
+  - N: 14
+    At: {x: 163.56, y: -54.69}
+    Elevation: 0.23
+    Form: cobbles
+  - N: 15
+    At: {x: 162.94, y: -53.55}
+    Elevation: 0.88
+    Form: knuckle
+  - N: 16
+    At: {x: 168.82, y: -59.53}
+    Elevation: -0.58
+    Form: cobbles
+  - N: 17
+    At: {x: 168.52, y: -56.5}
+    Elevation: -0.16
+    Form: cobbles
+  - N: 18
+    At: {x: 169.21, y: -44.42}
+    Elevation: 0.1
+    Form: cobbles
+  - N: 19
+    At: {x: 171.4, y: -59.59}
+    Elevation: -0.63
+    Form: cobbles
+  - N: 20
+    At: {x: 173.24, y: -55.95}
+    Elevation: 0.1
+    Form: cobbles
+  - N: 21
+    At: {x: 172.31, y: -52.69}
+    Elevation: 0.78
+    Form: knuckle
+  - N: 22
+    At: {x: 170.44, y: -48.87}
+    Elevation: 1.01
+    Form: cobbles
+  - N: 23
+    At: {x: 177.49, y: -56.82}
+    Elevation: 0.03
+    Form: cobbles
+  - N: 24
+    At: {x: 174.84, y: -52.19}
+    Elevation: 0.47
+    Form: knuckle
+  - N: 25
+    At: {x: 178.78, y: -58.66}
+    Elevation: -0.29
+    Form: cobbles
+  - N: 26
+    At: {x: 181.5, y: -56.48}
+    Elevation: -0.52
+    Form: cobbles
+  - N: 27
+    At: {x: 180.82, y: -53.26}
+    Elevation: -0.64
+    Form: cobbles
+  Why: 'The spits'' shingle, big stones along their crests. Part 2 laid 27. Its rule re-run on the import round PR 5w''s walls (b/rocks.json, A2''s rule) lays 28; 20 stand and 8 are removed: n 0 (beach raised the ground +0.21 m over pass 9); n 2 (beach raised the ground +0.21 m over pass 9); n 3 (beach raised the ground +0.08 m over pass 9); n 7 (beach sand, rim to shore); n 8 (beach raised the ground +0.14 m over pass 9); n 9 (beach sand, rim to shore); n 10 (beach sand, rim to shore); n 11 (beach sand, rim to shore). (terrain pass 9 part 2, p2_data.py sha256 15750c11...; PR 5w, on the ground file: paint only)'

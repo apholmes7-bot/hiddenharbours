@@ -51,6 +51,13 @@ When you add an ADR, add its row here in the same PR.
 | 0042 | The squash is an art fact: the world plane vs the bake projection | Accepted (ruled 2026-08-29; the station kit migrated in the same PR) |
 | 0043 | Input: intents in Core, bindings as data | Accepted (rulings 2026-09-02; PR 0 seams the walk — rolling out: helm/verbs PR 1, gamepad PR 2) |
 | 0044 | Characters are meshes in every state; sheets retire per state at parity | **Proposed** (owner overruled the spike 2026-09-09; amends 0024's scope AND its numbers — seat to ratify) |
+| 0050 | The helm's footprint: one Core seam for what the helm covers at the bottom of the screen | **Proposed** (H1 of the helm dash band, 2026-09-28; `lead-architect`'s Core contract, Accepted on merge; the band and the camera's half of it ruled by the owner 2026-09-28) |
+| 0046 | Still water above the tide: water = max(tide, still), one map for sim and render, a 16-bit height map | Accepted (terrain pass 9 PR 4; decisions 6, 7 and 11 ruled 2026-09-25; the seam's contract and the 8-bit committed maps accepted 2026-09-26; answers 0014's R8/R16 question) |
+| 0047 | Derived art is imported, not committed | Accepted (owner approved the array plan 2026-09-27; implementation awaiting validation) |
+| 0048 | The boats switch: each hull's rig carries its room, its cut and its walk | **Proposed** (the owner accepts it by merging; ghost or gate, drops 15 and 16, and the sloops' place open; each batch's intake extends its rollout record) |
+| 0051 | Building a person without JS: the ten baked bodies, recoloured from the rig's own tables | **Proposed** (character PR 2b, 2026-10-07, on rig 10.3; the owner accepts it by merging; presets only, ruled 2026-10-01) |
+| 0052 | A failing event handler cannot cut its publisher short | **Proposed** (option A RULED 2026-10-08; ADR awaits owner approval in its PR) |
+| 0053 | Held props are facet meshes on the figure's sockets | **Proposed** (D1–D10 ruled by the owner 2026-10-08; lands with held props PR 2, the bake; the owner approves it in its PR) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

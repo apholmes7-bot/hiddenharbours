@@ -1,0 +1,8 @@
+check-look — the gaze states and the head turn
+rig 02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144  poses 42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07
+
+Controls: bones neck + head (split 0.4 / 0.6), yaw -60..60 deg, pitch -15..20 deg (+ is down); eyes.left / eyes.right in place of eyes.open.
+gaze: 504 builds (168 bodies x 3 eye shapes), 16 facings: 504 move the pupils both ways at every facing that shows the eyes.
+turn: 117 builds (every hat x every hair style on the Fisher, every garment with the hood), 16 facings x 8 limits x idle and walk: 117 open no gap. Aim within 1.70 deg for targets inside the limits.
+
+OK — no problems.

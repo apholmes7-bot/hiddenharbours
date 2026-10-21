@@ -1,0 +1,925 @@
+fileFormatVersion: 2
+guid: 20c6d3479bfc9ab49a7a80bfa01b51ab
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1440167104208794133
+    second: Spine_basalt_weeded_normal_0
+  - first:
+      213: 3470436840466504979
+    second: Spine_basalt_weeded_normal_1
+  - first:
+      213: 2699024184846120696
+    second: Spine_basalt_weeded_normal_2
+  - first:
+      213: -9008158337405172093
+    second: Spine_basalt_weeded_normal_3
+  - first:
+      213: -1582246923923160157
+    second: Spine_basalt_weeded_normal_4
+  - first:
+      213: -7223218990290424482
+    second: Spine_basalt_weeded_normal_5
+  - first:
+      213: -4981688393284550597
+    second: Spine_basalt_weeded_normal_6
+  - first:
+      213: -6748293061325403633
+    second: Spine_basalt_weeded_normal_7
+  - first:
+      213: 9203245500630326708
+    second: Spine_basalt_weeded_normal_8
+  - first:
+      213: 1090869952391042827
+    second: Spine_basalt_weeded_normal_9
+  - first:
+      213: -672637347636129678
+    second: Spine_basalt_weeded_normal_10
+  - first:
+      213: 36579147571563291
+    second: Spine_basalt_weeded_normal_11
+  - first:
+      213: -3106073314820614331
+    second: Spine_basalt_weeded_normal_12
+  - first:
+      213: 561204917392595233
+    second: Spine_basalt_weeded_normal_13
+  - first:
+      213: -590546909468230073
+    second: Spine_basalt_weeded_normal_14
+  - first:
+      213: -3576100136285763304
+    second: Spine_basalt_weeded_normal_15
+  - first:
+      213: -1296030070244230661
+    second: Spine_basalt_weeded_normal_16
+  - first:
+      213: 3135685273014828282
+    second: Spine_basalt_weeded_normal_17
+  - first:
+      213: 7160851273644732789
+    second: Spine_basalt_weeded_normal_18
+  - first:
+      213: -2195636775728690888
+    second: Spine_basalt_weeded_normal_19
+  - first:
+      213: -2902646828214838730
+    second: Spine_basalt_weeded_normal_20
+  - first:
+      213: 270080859326573650
+    second: Spine_basalt_weeded_normal_21
+  - first:
+      213: 3214756777165187981
+    second: Spine_basalt_weeded_normal_22
+  - first:
+      213: -6438568561395324177
+    second: Spine_basalt_weeded_normal_23
+  - first:
+      213: -5933629449677334131
+    second: Spine_basalt_weeded_normal_24
+  - first:
+      213: -2222684587364341058
+    second: Spine_basalt_weeded_normal_25
+  - first:
+      213: 4282589006695920834
+    second: Spine_basalt_weeded_normal_26
+  - first:
+      213: -3509051706435148447
+    second: Spine_basalt_weeded_normal_27
+  - first:
+      213: 6544490455898845257
+    second: Spine_basalt_weeded_normal_28
+  - first:
+      213: -4568601150150373321
+    second: Spine_basalt_weeded_normal_29
+  - first:
+      213: 7587085087197229853
+    second: Spine_basalt_weeded_normal_30
+  - first:
+      213: 8377211532620293113
+    second: Spine_basalt_weeded_normal_31
+  - first:
+      213: -1958643652318658847
+    second: Spine_basalt_weeded_normal_32
+  - first:
+      213: 5968130847056624191
+    second: Spine_basalt_weeded_normal_33
+  - first:
+      213: 4905432561904918003
+    second: Spine_basalt_weeded_normal_34
+  - first:
+      213: 4106245206540661741
+    second: Spine_basalt_weeded_normal_35
+  - first:
+      213: -8491183505708855256
+    second: Spine_basalt_weeded_normal_36
+  - first:
+      213: 3595555055501249875
+    second: Spine_basalt_weeded_normal_37
+  - first:
+      213: 6533332943273684396
+    second: Spine_basalt_weeded_normal_38
+  - first:
+      213: 2607059342165661261
+    second: Spine_basalt_weeded_normal_39
+  - first:
+      213: -620604061794318498
+    second: Spine_basalt_weeded_normal_40
+  - first:
+      213: 5558304475930024601
+    second: Spine_basalt_weeded_normal_41
+  - first:
+      213: -5002643874119688942
+    second: Spine_basalt_weeded_normal_42
+  - first:
+      213: 2333191402167670132
+    second: Spine_basalt_weeded_normal_43
+  - first:
+      213: -6469975689661884827
+    second: Spine_basalt_weeded_normal_44
+  - first:
+      213: 6600261350928330848
+    second: Spine_basalt_weeded_normal_45
+  - first:
+      213: -641091964469557213
+    second: Spine_basalt_weeded_normal_46
+  - first:
+      213: -7969559005340249313
+    second: Spine_basalt_weeded_normal_47
+  - first:
+      213: 25434035530469010
+    second: Spine_basalt_weeded_normal_48
+  - first:
+      213: -4369227030169320823
+    second: Spine_basalt_weeded_normal_49
+  - first:
+      213: 1840178180653556280
+    second: Spine_basalt_weeded_normal_50
+  - first:
+      213: -7442971811851939454
+    second: Spine_basalt_weeded_normal_51
+  - first:
+      213: -5349868944793944602
+    second: Spine_basalt_weeded_normal_52
+  - first:
+      213: -8576365576796158243
+    second: Spine_basalt_weeded_normal_53
+  - first:
+      213: -8192742450488277360
+    second: Spine_basalt_weeded_normal_54
+  - first:
+      213: 1389661814142359600
+    second: Spine_basalt_weeded_normal_55
+  - first:
+      213: -6683523903275823709
+    second: Spine_basalt_weeded_normal_56
+  - first:
+      213: 3669308794715640350
+    second: Spine_basalt_weeded_normal_57
+  - first:
+      213: -6460708862861472010
+    second: Spine_basalt_weeded_normal_58
+  - first:
+      213: 939496519377191468
+    second: Spine_basalt_weeded_normal_59
+  - first:
+      213: -2506735578780515762
+    second: Spine_basalt_weeded_normal_60
+  - first:
+      213: -6665024545031679709
+    second: Spine_basalt_weeded_normal_61
+  - first:
+      213: -4565238520906532666
+    second: Spine_basalt_weeded_normal_62
+  - first:
+      213: 3373926065460234333
+    second: Spine_basalt_weeded_normal_63
+  - first:
+      213: 1706426222083611859
+    second: Spine_basalt_weeded_normal_64
+  - first:
+      213: 1698287003294717207
+    second: Spine_basalt_weeded_normal_65
+  - first:
+      213: 5466104811810029508
+    second: Spine_basalt_weeded_normal_66
+  - first:
+      213: -2594202722576912768
+    second: Spine_basalt_weeded_normal_67
+  - first:
+      213: 1529829119734384814
+    second: Spine_basalt_weeded_normal_68
+  - first:
+      213: -3888567327500631315
+    second: Spine_basalt_weeded_normal_69
+  - first:
+      213: -655431884337027072
+    second: Spine_basalt_weeded_normal_70
+  - first:
+      213: -2810586948256010688
+    second: Spine_basalt_weeded_normal_71
+  - first:
+      213: 2951154287216280876
+    second: Spine_basalt_weeded_normal_72
+  - first:
+      213: 1514292030919411685
+    second: Spine_basalt_weeded_normal_73
+  - first:
+      213: -141005609223229562
+    second: Spine_basalt_weeded_normal_74
+  - first:
+      213: 5329849972026015434
+    second: Spine_basalt_weeded_normal_75
+  - first:
+      213: 4676926794818259262
+    second: Spine_basalt_weeded_normal_76
+  - first:
+      213: -3513305221386815551
+    second: Spine_basalt_weeded_normal_77
+  - first:
+      213: -1730162137105069519
+    second: Spine_basalt_weeded_normal_78
+  - first:
+      213: -6973437358998708606
+    second: Spine_basalt_weeded_normal_79
+  - first:
+      213: 456841466593913668
+    second: Spine_basalt_weeded_normal_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fba71cd9ca4c0b4aad47c036ad96ea5
+      internalID: -1298371686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03936428ac8d96c44aed489f3b83ac2a
+      internalID: 612664429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0eef3088ec37ef419cf9c5de9f69bb2
+      internalID: 826091893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f900dccf4f58bf64d8aa5bdb5f1ae9ef
+      internalID: 79519307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26763bfd555fadb458ededab8491c8fc
+      internalID: -1651691034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b116f8b94b47c144984af96deabe1da
+      internalID: -3834723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a470b55a6792d64e8c58714353dff30
+      internalID: 130076872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 84
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e2412776ba0f04499f7047184206d93
+      internalID: 1294701769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 592c3c3bb30ca8144aae398638209434
+      internalID: 1333109069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14f57e0472888c3409e9758d0f546e35
+      internalID: -56651206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09ceed9c50e10874db41fb1331c72b86
+      internalID: 89918319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35db1d38c71acea4bac6cc6ea740955c
+      internalID: 1952908654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54198b9036a6e1045a6683c1307f3941
+      internalID: 1655581008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea57eb1384cc99545b018b7981e1b031
+      internalID: -1137203569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d7de70450d23724a8d7c0bcefccb23e
+      internalID: -379706636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 42
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f2675cac087ad043a353cf66b305f8c
+      internalID: 863632333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73c6f53fb986d5142a39788cf9227537
+      internalID: -1051438315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42b17c29a9cd11f42865ae0bdff061e1
+      internalID: 487563289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcb859008881e0b448ac0b820b065a1e
+      internalID: -616947009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d226c47409c308846bc2db5c09f4d2d0
+      internalID: 937378055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31ac593e67871234b99599c93f0414f1
+      internalID: -452803603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.2857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c95b7dca69ec7fc4e898830218d56aec
+      internalID: -620016115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f86883c6cf1a25148a42a800fe2fd2d1
+      internalID: -475122128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spine_basalt_weeded_normal_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 122
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21428572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7fda308395aa56428e582f5a3cb17f4
+      internalID: 835227865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: cfa7d149ed73fa24a94743e395ff380a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Spine_basalt_weeded_normal_c0_r0: -1298371686
+      Spine_basalt_weeded_normal_c0_r1: 1333109069
+      Spine_basalt_weeded_normal_c0_r2: -1051438315
+      Spine_basalt_weeded_normal_c1_r0: 612664429
+      Spine_basalt_weeded_normal_c1_r1: -56651206
+      Spine_basalt_weeded_normal_c1_r2: 487563289
+      Spine_basalt_weeded_normal_c2_r0: 826091893
+      Spine_basalt_weeded_normal_c2_r1: 89918319
+      Spine_basalt_weeded_normal_c2_r2: -616947009
+      Spine_basalt_weeded_normal_c3_r0: 79519307
+      Spine_basalt_weeded_normal_c3_r1: 1952908654
+      Spine_basalt_weeded_normal_c3_r2: 937378055
+      Spine_basalt_weeded_normal_c4_r0: -1651691034
+      Spine_basalt_weeded_normal_c4_r1: 1655581008
+      Spine_basalt_weeded_normal_c4_r2: -452803603
+      Spine_basalt_weeded_normal_c5_r0: -3834723
+      Spine_basalt_weeded_normal_c5_r1: -1137203569
+      Spine_basalt_weeded_normal_c5_r2: -620016115
+      Spine_basalt_weeded_normal_c6_r0: 130076872
+      Spine_basalt_weeded_normal_c6_r1: -379706636
+      Spine_basalt_weeded_normal_c6_r2: -475122128
+      Spine_basalt_weeded_normal_c7_r0: 1294701769
+      Spine_basalt_weeded_normal_c7_r1: 863632333
+      Spine_basalt_weeded_normal_c7_r2: 835227865
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

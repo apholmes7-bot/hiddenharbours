@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa0f2025b8e46a0afc14338df57d0b5, type: 3}
+  m_Name: RicePointPlan
+  m_EditorClassIdentifier: HiddenHarbours.App.Editor::HiddenHarbours.App.Editor.LandScenePlanDef
+  Id: scene_plan.rice_point
+  Region: {fileID: 11400000, guid: 26222517019e45e095fc986a3e54569c, type: 2}
+  Ground: {fileID: 11400000, guid: e06039ea1a5f453ba635ba95499e5c10, type: 2}
+  Source: {fileID: 4900000, guid: 4e3d14c3fd68408ab0f9b424955fcf8d, type: 3}
+  SurfacePaint:
+  - {fileID: 2800000, guid: fa029db1ad6e4aa3bc1af0117887cd4e, type: 3}
+  - {fileID: 2800000, guid: 016b72cfcf124afdaece745e9d5fec80, type: 3}
+  - {fileID: 2800000, guid: 7b422e66235f487b956bf19ce8aea06d, type: 3}
+  - {fileID: 2800000, guid: c5d3b109d01249229aa4def46a8cb9ec, type: 3}
+  - {fileID: 2800000, guid: ed7f10d544584c1d81b9e47f53be37ac, type: 3}
+  - {fileID: 2800000, guid: bfd4fb4e5b714b72b22f141d7d41ec95, type: 3}
+  Doors:
+  - Id: door.rpt_sea
+    Target: {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
+    TargetArrival: rpt_sea
+    OwnArrival: nmc_sea
+    Centre: {x: 377, y: -162.5}
+    Size: {x: 6, y: 35}
+    Arrival: {x: 366, y: -162.5}
+    Disembark: {x: 366, y: -90}
+    OnFootOnly: 0
+  - Id: door.rpt_strand
+    Target: {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
+    TargetArrival: rpt_strand
+    OwnArrival: nmc_strand
+    Centre: {x: 377, y: -96}
+    Size: {x: 6, y: 8}
+    Arrival: {x: 366, y: -96}
+    Disembark: {x: 366, y: -96}
+    OnFootOnly: 1
+  - Id: door.rpt_route_91
+    Target: {fileID: 11400000, guid: 2dcfcde045cd43fcac4a78cff2cc4bab, type: 2}
+    TargetArrival: rpt_route_91
+    OwnArrival: nmc_route_91
+    Centre: {x: 377, y: -42}
+    Size: {x: 6, y: 5.8}
+    Arrival: {x: 366, y: -42}
+    Disembark: {x: 366, y: -42}
+    OnFootOnly: 1
+  PlayerStart: {x: -56, y: -108.4}
+  BoatStart: {x: -53.285, y: -109.825}
+  BoatHeading: 28
+  DevHull: {fileID: 11400000, guid: 0a2bd7c6d85101b489fd6647b1aab278, type: 2}
+  DevFish:
+  - {fileID: 11400000, guid: fb6307e1beba81b489d45e74a83f1eb9, type: 2}
+  - {fileID: 11400000, guid: 26b4dbb937e3fa445abac5461ae2fef4, type: 2}
+  - {fileID: 11400000, guid: 2dda7f6271e3f744c959bcafa2cf0bdb, type: 2}
+  - {fileID: 11400000, guid: d7296757a95e4d6d88d887d0c91430b2, type: 2}
+  - {fileID: 11400000, guid: 9a7de760fbccebfc45dfa1b4963e1a19, type: 2}
+  - {fileID: 11400000, guid: c703d19040e15547a1f2408f365094bd, type: 2}
+  - {fileID: 11400000, guid: da1674da10da1dd0b8fa162464a32258, type: 2}
+  Backdrop: {r: 0.05, g: 0.1, b: 0.15, a: 1}
+  EdgeThickness: 2
+  MaxShoreGradient: 4
+  PaintFloor: -6
+  HeightBands:
+  - -2.2
+  - 0
+  - 2.2
+  - 3.6
+  - 6

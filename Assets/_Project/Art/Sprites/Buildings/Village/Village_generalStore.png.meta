@@ -138,11 +138,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 416
-        width: 394
-        height: 416
+        y: 429
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Village_generalStore_d1
       rect:
         serializedVersion: 2
-        x: 394
-        y: 416
-        width: 394
-        height: 416
+        x: 412
+        y: 429
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Village_generalStore_d2
       rect:
         serializedVersion: 2
-        x: 788
-        y: 416
-        width: 394
-        height: 416
+        x: 824
+        y: 429
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Village_generalStore_d3
       rect:
         serializedVersion: 2
-        x: 1182
-        y: 416
-        width: 394
-        height: 416
+        x: 1236
+        y: 429
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Village_generalStore_d4
       rect:
         serializedVersion: 2
-        x: 1576
-        y: 416
-        width: 394
-        height: 416
+        x: 0
+        y: 0
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Village_generalStore_d5
       rect:
         serializedVersion: 2
-        x: 0
+        x: 412
         y: 0
-        width: 394
-        height: 416
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Village_generalStore_d6
       rect:
         serializedVersion: 2
-        x: 394
+        x: 824
         y: 0
-        width: 394
-        height: 416
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Village_generalStore_d7
       rect:
         serializedVersion: 2
-        x: 788
+        x: 1236
         y: 0
-        width: 394
-        height: 416
+        width: 412
+        height: 429
       alignment: 9
-      pivot: {x: 0.5, y: 0.28605768}
+      pivot: {x: 0.5, y: 0.3053613}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

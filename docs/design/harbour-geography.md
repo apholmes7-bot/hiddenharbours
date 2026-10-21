@@ -1,5 +1,25 @@
 # Hidden Harbours — the harbour's geography: Route 91, the three rivers, the marina
 
+> **H1 reconciliation — 2026-10-06.** The owner's 2026-09-26 11:59:38Z ruling puts the
+> West River north of the peninsula/Rocky Point. NMC faces east; the south shore at the
+> St Peters crossing extends west to Rice Point. Route 91 runs north to the peninsula's
+> centre, with a right-hand branch through Cumberland to Rocky Point. The 22:23:05Z
+> ruling retains those names, the trunk's two large crossings, and area 6 outside the
+> city's harbour including east-bank land. The scene allocation is the seat's delegated
+> interpretation; see [world-map-plan Q12–Q21](world-map-plan.md#7-open-questions-for-the-owner).
+> These answers supersede the historical alternatives below. Bearings only are carried
+> from the private blueprint; no imagery, real coordinates or real-world scale is imported.
+>
+> NMC's town river and the small west-running inland creek north of the wharf belong to
+> the ruled M2 overhaul, after St Peters. The final ground package supplies their terrain
+> and still water; H1 holds unplaced contracts, H2 applies ground, H4 fits bridges and roads
+> to that ground, then R4 proves traffic. N1 is the sole scene-write route. No ford, fresh
+> grading pass, house pad, route change, access grant or new fishery is authorized by H1.
+> The four north-bank nearest-corner exceptions are 2.72, 2.78, 2.02 and 2.12 m; the house
+> footprint is its extent, while `at` is its rig origin. River fishing remains M3; bookings,
+> marina businesses, sports/swimming and playable interiors require their own scope.
+
+
 > **Status: DESIGN CAPTURE of the owner's 2026-08-20 rulings.** Six new facts about the bay's
 > landform were ruled (§1). This document writes them down one level above any scene — what the
 > land *is*, not how a builder lays it out — and states honestly what each one costs the built
@@ -38,6 +58,11 @@ it. The 2026-08-07 ruling already made the home world *a variant of Hillsborough
 | 4 | **A river runs off the ocean up through Nine Mile Creek town**, dividing it and making small picturesque **boardwalks**. ⭐ *Followed up the same day:* **the town may move to accommodate it**, and **the bridge artwork will be created**. | the real Nine Mile Creek | ⚠⚠ **This one re-cuts the region** — and is now unblocked to do so. §5 |
 | 5 | **A marina** on the **south side of the peninsula**, north of St Peters Island. | the Charlottetown-area marinas | Nothing built; a region-level mark. §6 |
 | 6 | The harbour-mouth shoreline **mirrors Rocky Point**: a point, a small bay behind it, opening to Finnigan's Landing's harbour. | Rocky Point / Fort Amherst | Nothing built. §3.2 |
+
+⚠ *2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The owner's eight areas touch ruling
+1. It reads *"crosses a **west-running river**, making the peninsula/point"* — from Nine Mile Creek,
+the river between the town and the peninsula. The owner now writes *"7 is the west river with rocky
+point to its south"* — the river north of the point. Ruling 1 stands as written; §10 Q7.
 
 **Route 91's name is RULED. Nothing else here is named** — the PEI-variant name slate is still owed
 to the owner, so §9 lists candidates and christens nothing.
@@ -129,6 +154,16 @@ rivers discharge through that same mouth, which is why a real tide runs in it.
 > set-piece**. The nav-buoy kit already ships, channels are already data, and IALA-B marks are
 > already computed from them. A point to round with a marked channel behind it is the best possible
 > advertisement for the chart the player has been learning to read.
+
+*2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The owner has put two things here.
+**Cumberland** is on the peninsula: *"5 is cumerland which is built onto a point (rocky point) which is
+the western landmass leading into the main cities harbour"*, home to *"a resort bordered by a
+golfcourse"*. And **a lighthouse** marks the channel: the road runs *"Through cumberland past the resort
+and to a lighthouse which marks the harbour channel entering to the bay outside the main city."* The
+set-piece above now has its landmark. It is not the old *"small lighthouse on the point"* of
+`world-and-regions.md` §6.3, which belonged to the retired Port Greywick, nor Nine Mile Creek's range
+light ([`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §7). Which side of the West River
+the peninsula is on: §10 Q7. What area 6 is: §10 Q9.
 
 ### 3.3 How a boat enters a river — the proposed reach ladder
 
@@ -344,6 +379,13 @@ once. This document does not schedule it; it flags it. §10 Q3.
 **Ruled:** a marina on the **south side of the peninsula**, north of St Peters Island — the pleasure
 and small-craft harbour, distinct from Nine Mile Creek's working wharf.
 
+*2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The marina is now **the resort's**, on
+this same shore: *"Cumberland will be home to a resort bordered by a golfcourse. The resort will have a
+marina on its south shore which will be a purchasable and business option amongst other marinas in
+game. Boat charters are an option as a business as well"*. So it **can be bought**, it is **one of
+several** marinas, and **charters** are a business beside it. The business side is economy-sim's and
+later; nothing below changes.
+
 ### 6.1 What a marina *is* here
 
 The distinction is the point, and it is a P3 (Living Working Coast) distinction:
@@ -443,6 +485,12 @@ real bay names, lightly varied:
 creek the built region already has a mouth for. Naming it anything else would make the town's own
 name a coincidence. **§10 Q5** — but this one barely needs asking.
 
+*2026-09-26 — see [`world-map-plan.md`](world-map-plan.md) §8.* The owner's eight areas use four real
+names, recorded here as **candidates**, as the owner wrote them: **Cumberland** (the place on the
+peninsula, with the resort — new), **Rocky Point** (the point — already a candidate above), **the West
+River** (already a candidate above) and **Rice Point** (the unused wharf beside Nine Mile Creek —
+new). Ruled as written, or varied in house style: §10 Q11.
+
 ---
 
 ## 10. Open questions for the owner
@@ -467,11 +515,27 @@ below.
    bridge, which is settled. These are M3 and unbuilt. Recommendation: **bridge** at the west river,
    and hold the **north river** open as a possible **ferry** — the threshold to the city is the best
    place in the game for a scheduled crossing.
-5. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
-   against this geometry right now. The town river should land **after** them; this document
-   recommends it is not started until they merge. **This is now the only thing gating the work.**
+5. **Resolved execution gate:** after St Peters, through N1. H1 is unplaced data; H2 and
+   later scene application wait for the coordinator's granted slot and settled main.
 6. **Is the town river simply "Nine Mile Creek"?** (§9 — the town is already named for it.) And the
    three big rivers' names, whenever the name slate comes due.
+
+**From the owner's eight areas, 2026-09-26** — asked in full in [`world-map-plan.md`](world-map-plan.md)
+§7 Q12–Q21; the ones that belong to this document's landform are listed here.
+
+7. **Resolved (09-26 11:59:38Z):** West River north; peninsula/Rocky Point south of it.
+8. **Resolved (same ruling):** north from NMC, then right toward Rocky Point at the
+   peninsula's centre. The earlier “west” alternative is superseded.
+9. **Resolved (09-26 22:23:05Z):** area 6 is the water outside the city harbour, with
+   east-bank land; its later scene allocation is the seat's delegated interpretation.
+10. **Resolved (same ruling):** Cumberland's road is a Route 91 branch; the trunk
+    continues with the two large river crossings toward the city.
+11. **Resolved (same ruling):** Cumberland, Rice Point, Rocky Point and the West River
+    remain as written. Other local names are held for the names slate.
+
+The 09-28 09:36:30Z #892 relay also closes world-map-plan Q20/Q21: area 4 is East Water
+with East Point beyond it; Governors Island, East Point and New Scotland stand as ruled.
+The relay's “q92 yes” is read as Q21. Later regions and businesses are logged, not built by H1.
 
 ---
 
@@ -490,3 +554,7 @@ Made in the same PR as this document:
 
 **Checked and *not* amended:** §2's home-water partition and §3's Market Port split were already
 superseded and correctly folded in by the 2026-08-07 rewrite. Nothing stale was found there.
+
+**2026-09-26:** [`world-map-plan.md`](world-map-plan.md) gained **§8, the eight areas**, and §7
+Q12–Q21. This document's §1, §3.2, §6, §9 and §10 (Q7–Q11) carry dated notes pointing to it; nothing
+above was renumbered or rewritten.

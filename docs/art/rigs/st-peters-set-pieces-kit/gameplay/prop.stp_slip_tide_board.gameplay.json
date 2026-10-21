@@ -1,0 +1,366 @@
+{
+ "schema": "hidden-harbours/st-peters-set-piece@1",
+ "generatedBy": "StPetersSetPieces 1.0.0",
+ "key": "slipTideBoard",
+ "id": "prop.stp_slip_tide_board",
+ "name": "Slip tide board",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.stp_landing",
+ "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -0.19,
+   0.32
+  ],
+  "y": [
+   -0.19,
+   0.204
+  ],
+  "z": [
+   0,
+   4.01
+  ]
+ },
+ "layer": "raised",
+ "walk": "behind",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.2,
+     0.22
+    ],
+    [
+     0.2,
+     0.22
+    ],
+    [
+     0.2,
+     -0.2
+    ],
+    [
+     -0.2,
+     -0.2
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 24,
+   "h": 113,
+   "pivot": [
+    10,
+    106
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 25,
+   "h": 116,
+   "pivot": [
+    12,
+    107
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 20,
+   "h": 113,
+   "pivot": [
+    10,
+    106
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 28,
+   "h": 116,
+   "pivot": [
+    15,
+    107
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 24,
+   "h": 113,
+   "pivot": [
+    14,
+    106
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 25,
+   "h": 116,
+   "pivot": [
+    12,
+    107
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 20,
+   "h": 113,
+   "pivot": [
+    10,
+    106
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 28,
+   "h": 116,
+   "pivot": [
+    12,
+    107
+   ]
+  }
+ ],
+ "anchors": {
+  "marks": [
+   {
+    "z": -0.7,
+    "overDatum": 1.5,
+    "at": [
+     0,
+     0.20400000000000001,
+     0.2999999999999998
+    ],
+    "label": null,
+    "kind": "half",
+    "px": [
+     14,
+     102.8
+    ]
+   },
+   {
+    "z": -0.2,
+    "overDatum": 2,
+    "at": [
+     0.21000000000000002,
+     0.20400000000000001,
+     0.7999999999999998
+    ],
+    "label": "2",
+    "kind": "metre",
+    "px": [
+     7.3,
+     90.6
+    ]
+   },
+   {
+    "z": 0.3,
+    "overDatum": 2.5,
+    "at": [
+     0,
+     0.20400000000000001,
+     1.2999999999999998
+    ],
+    "label": null,
+    "kind": "half",
+    "px": [
+     14,
+     78.3
+    ]
+   },
+   {
+    "z": 0.8,
+    "overDatum": 3,
+    "at": [
+     0.21000000000000002,
+     0.20400000000000001,
+     1.7999999999999998
+    ],
+    "label": "3",
+    "kind": "metre",
+    "px": [
+     7.3,
+     66.1
+    ]
+   },
+   {
+    "z": 1.3,
+    "overDatum": 3.5,
+    "at": [
+     0,
+     0.20400000000000001,
+     2.3
+    ],
+    "label": null,
+    "kind": "half",
+    "px": [
+     14,
+     53.8
+    ]
+   },
+   {
+    "z": 1.8,
+    "overDatum": 4,
+    "at": [
+     0.21000000000000002,
+     0.20400000000000001,
+     2.8
+    ],
+    "label": "4",
+    "kind": "metre",
+    "px": [
+     7.3,
+     41.6
+    ]
+   },
+   {
+    "z": 2.3,
+    "overDatum": 4.5,
+    "at": [
+     0,
+     0.20400000000000001,
+     3.3
+    ],
+    "label": null,
+    "kind": "half",
+    "px": [
+     14,
+     29.3
+    ]
+   },
+   {
+    "z": 2.2,
+    "overDatum": 4.4,
+    "at": [
+     0.24,
+     0.20400000000000001,
+     3.21
+    ],
+    "label": null,
+    "kind": "spring high",
+    "px": [
+     6.3,
+     31.5
+    ]
+   }
+  ],
+  "top": [
+   0,
+   0,
+   4.01
+  ],
+  "words": [
+   {
+    "id": "words.gauge_2",
+    "text": "2",
+    "at": [
+     0.21000000000000002,
+     0.20400000000000001,
+     0.7999999999999998
+    ],
+    "size": 0.12,
+    "note": "the game draws the numeral beside the red metre mark",
+    "atPx": [
+     7.3,
+     90.6
+    ]
+   },
+   {
+    "id": "words.gauge_3",
+    "text": "3",
+    "at": [
+     0.21000000000000002,
+     0.20400000000000001,
+     1.7999999999999998
+    ],
+    "size": 0.12,
+    "note": "the game draws the numeral beside the red metre mark",
+    "atPx": [
+     7.3,
+     66.1
+    ]
+   },
+   {
+    "id": "words.gauge_4",
+    "text": "4",
+    "at": [
+     0.21000000000000002,
+     0.20400000000000001,
+     2.8
+    ],
+    "size": 0.12,
+    "note": "the game draws the numeral beside the red metre mark",
+    "atPx": [
+     7.3,
+     41.6
+    ]
+   }
+  ],
+  "px": {
+   "top": [
+    14,
+    7.7
+   ]
+  }
+ },
+ "options": {
+  "foot": -1,
+  "datum": -2.2,
+  "top": 2.6,
+  "growth": 1
+ },
+ "light": null,
+ "animated": null,
+ "notes": "Reads metres over chart datum (-2.20, the spring low): whole metres red with numerals as data, the spring high (+2.20, 4.4) a red flag. opts.foot is the ground it stands on."
+}

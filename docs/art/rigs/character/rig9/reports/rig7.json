@@ -1,0 +1,2437 @@
+{
+  "tool": "compare-rig7",
+  "rig": "02df29ec88dffe9ad68b8761290f4ed66ef73e919346682be43c089be6f49144",
+  "poses": "42179e4484fa9d0e38a8c467928d7207b5d68d93b97d56fd449acc24468f7f07",
+  "ok": true,
+  "problems": [],
+  "inputs": {
+    "rig7": {
+      "samples/fisher.skeleton.json": "8bf3ea2a00b73a491ea93f850fcbb44bda07585e0e888675f020f303d8f06096",
+      "samples/fisher.skinned.json": "afe00a2b82a4caa6c96eb83f57c5640ece6816571a524f9ce6288141906391db",
+      "samples/fisher.walk.clip.json": "d304c2f6da6c4d860bacbb4f28f7637b4d3a4350908c2d243c0f1b6b6933259b",
+      "golden-report.json": "18bdca38256805a8c2eadf9db65b5e58f298f3dce1e7632663bfcb908af72a6f"
+    },
+    "v9": {
+      "builds/fisher.v9.json": "1f01c4e5b24cdc784201c6a992a6787b619775a5fdf54632900bc428296401cf",
+      "golden-report.json": "c90fab4238766a74d44151ce72975faed179b26694bd0d7995426a28775c91f6"
+    }
+  },
+  "skeleton": {
+    "counts": {
+      "rig7": 45,
+      "v9": 28,
+      "kept": 25,
+      "split": 1,
+      "folded": 9,
+      "removed": 10,
+      "v9New": 1
+    },
+    "map": [
+      {
+        "rig7": "root",
+        "parent7": null,
+        "v9": "root",
+        "parent9": null,
+        "how": "same",
+        "bind7": [
+          0,
+          0,
+          0
+        ],
+        "bind9": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "bindDelta_mm": [
+          0
+        ]
+      },
+      {
+        "rig7": "pelvis",
+        "parent7": "root",
+        "v9": "pelvis",
+        "parent9": "root",
+        "how": "same",
+        "bind7": [
+          0,
+          0,
+          0.607
+        ],
+        "bind9": [
+          [
+            0,
+            0,
+            0.62
+          ]
+        ],
+        "bindDelta_mm": [
+          13.1
+        ]
+      },
+      {
+        "rig7": "torso",
+        "parent7": "pelvis",
+        "v9": "spine chest",
+        "parent9": null,
+        "how": "split in two: spine (pelvis up to the waist ring) and chest (the waist ring up); the waist ring blends them 0.5 / 0.5",
+        "bind7": [
+          0,
+          0,
+          0.872
+        ],
+        "bind9": [
+          [
+            0,
+            0,
+            0.68
+          ],
+          [
+            0,
+            0,
+            0.87
+          ]
+        ],
+        "bindDelta_mm": [
+          192.1,
+          2.1
+        ]
+      },
+      {
+        "rig7": "neck",
+        "parent7": "torso",
+        "v9": "neck",
+        "parent9": "chest",
+        "how": "same",
+        "bind7": [
+          0,
+          0,
+          1.044
+        ],
+        "bind9": [
+          [
+            0,
+            0,
+            1.105
+          ]
+        ],
+        "bindDelta_mm": [
+          61.3
+        ]
+      },
+      {
+        "rig7": "neck_tip",
+        "parent7": "neck",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into neck: head is its child at a constant length",
+        "bind7": [
+          0,
+          -0.005,
+          1.233
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "head",
+        "parent7": "neck",
+        "v9": "head",
+        "parent9": "neck",
+        "how": "same; rig 7's sits 0.10 m above neck_tip (the head centre), v9's at the top of the neck",
+        "bind7": [
+          0,
+          0.005,
+          1.333
+        ],
+        "bind9": [
+          [
+            0,
+            0,
+            1.16
+          ]
+        ],
+        "bindDelta_mm": [
+          173.1
+        ]
+      },
+      {
+        "rig7": "inseam_top",
+        "parent7": "pelvis",
+        "v9": null,
+        "parent9": null,
+        "how": "removed: v9 draws no inseam panel, so nothing is parked",
+        "bind7": [
+          0,
+          0.004,
+          0.576
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "inseam_bot",
+        "parent7": "pelvis",
+        "v9": null,
+        "parent9": null,
+        "how": "removed (as inseam_top)",
+        "bind7": [
+          0,
+          0.004,
+          0.173
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "hip_L",
+        "parent7": "pelvis",
+        "v9": "hip_L",
+        "parent9": "pelvis",
+        "how": "same",
+        "bind7": [
+          -0.082,
+          0,
+          0.587
+        ],
+        "bind9": [
+          [
+            -0.085,
+            0,
+            0.58
+          ]
+        ],
+        "bindDelta_mm": [
+          7.2
+        ]
+      },
+      {
+        "rig7": "hip_L_tip",
+        "parent7": "hip_L",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into hip_L: knee_L is its child at a constant length",
+        "bind7": [
+          -0.08,
+          0.057,
+          0.307
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "knee_L",
+        "parent7": "hip_L",
+        "v9": "knee_L",
+        "parent9": "hip_L",
+        "how": "same",
+        "bind7": [
+          -0.08,
+          0.057,
+          0.307
+        ],
+        "bind9": [
+          [
+            -0.085,
+            0,
+            0.315
+          ]
+        ],
+        "bindDelta_mm": [
+          57.9
+        ]
+      },
+      {
+        "rig7": "knee_L_tip",
+        "parent7": "knee_L",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into knee_L: foot_L is its child at a constant length",
+        "bind7": [
+          -0.076,
+          -0.012,
+          0.061
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "ankle_L",
+        "parent7": "knee_L",
+        "v9": null,
+        "parent9": null,
+        "how": "removed: the boot shaft is rings on knee_L (part boot_L)",
+        "bind7": [
+          -0.078,
+          0.031,
+          0.214
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "ankle_L_tip",
+        "parent7": "ankle_L",
+        "v9": null,
+        "parent9": null,
+        "how": "removed (as ankle_L)",
+        "bind7": [
+          -0.076,
+          -0.012,
+          0.067
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "ankle_L_cuff",
+        "parent7": "ankle_L",
+        "v9": null,
+        "parent9": null,
+        "how": "removed: the boot cuff is a ring on knee_L",
+        "bind7": [
+          -0.078,
+          0.031,
+          0.214
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "foot_L",
+        "parent7": "knee_L",
+        "v9": "foot_L",
+        "parent9": "knee_L",
+        "how": "same",
+        "bind7": [
+          -0.076,
+          -0.012,
+          0.061
+        ],
+        "bind9": [
+          [
+            -0.085,
+            0,
+            0.075
+          ]
+        ],
+        "bindDelta_mm": [
+          20.5
+        ]
+      },
+      {
+        "rig7": "hip_R",
+        "parent7": "pelvis",
+        "v9": "hip_R",
+        "parent9": "pelvis",
+        "how": "same",
+        "bind7": [
+          0.082,
+          0,
+          0.587
+        ],
+        "bind9": [
+          [
+            0.085,
+            0,
+            0.58
+          ]
+        ],
+        "bindDelta_mm": [
+          7.2
+        ]
+      },
+      {
+        "rig7": "hip_R_tip",
+        "parent7": "hip_R",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into hip_R: knee_R is its child at a constant length",
+        "bind7": [
+          0.08,
+          0.07,
+          0.31
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "knee_R",
+        "parent7": "hip_R",
+        "v9": "knee_R",
+        "parent9": "hip_R",
+        "how": "same",
+        "bind7": [
+          0.08,
+          0.07,
+          0.31
+        ],
+        "bind9": [
+          [
+            0.085,
+            0,
+            0.315
+          ]
+        ],
+        "bindDelta_mm": [
+          70.2
+        ]
+      },
+      {
+        "rig7": "knee_R_tip",
+        "parent7": "knee_R",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into knee_R: foot_R is its child at a constant length",
+        "bind7": [
+          0.076,
+          0.012,
+          0.061
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "ankle_R",
+        "parent7": "knee_R",
+        "v9": null,
+        "parent9": null,
+        "how": "removed: the boot shaft is rings on knee_R (part boot_R)",
+        "bind7": [
+          0.078,
+          0.048,
+          0.214
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "ankle_R_tip",
+        "parent7": "ankle_R",
+        "v9": null,
+        "parent9": null,
+        "how": "removed (as ankle_R)",
+        "bind7": [
+          0.076,
+          0.012,
+          0.067
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "ankle_R_cuff",
+        "parent7": "ankle_R",
+        "v9": null,
+        "parent9": null,
+        "how": "removed: the boot cuff is a ring on knee_R",
+        "bind7": [
+          0.078,
+          0.048,
+          0.214
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "foot_R",
+        "parent7": "knee_R",
+        "v9": "foot_R",
+        "parent9": "knee_R",
+        "how": "same",
+        "bind7": [
+          0.076,
+          0.012,
+          0.061
+        ],
+        "bind9": [
+          [
+            0.085,
+            0,
+            0.075
+          ]
+        ],
+        "bindDelta_mm": [
+          20.5
+        ]
+      },
+      {
+        "rig7": "shoulder_L",
+        "parent7": "torso",
+        "v9": "shoulder_L",
+        "parent9": "chest",
+        "how": "same; rig 7 put it at the drawn tube top (0.098 m under rig 6's joint), v9 at the joint",
+        "bind7": [
+          -0.176,
+          0,
+          0.981
+        ],
+        "bind9": [
+          [
+            -0.2,
+            0,
+            1.045
+          ]
+        ],
+        "bindDelta_mm": [
+          68.1
+        ]
+      },
+      {
+        "rig7": "shoulder_L_tip",
+        "parent7": "shoulder_L",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into shoulder_L: elbow_L is its child at a constant length",
+        "bind7": [
+          -0.186,
+          -0.039,
+          0.81
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "elbow_L",
+        "parent7": "shoulder_L",
+        "v9": "elbow_L",
+        "parent9": "shoulder_L",
+        "how": "same",
+        "bind7": [
+          -0.186,
+          -0.039,
+          0.81
+        ],
+        "bind9": [
+          [
+            -0.2,
+            0,
+            0.82
+          ]
+        ],
+        "bindDelta_mm": [
+          42.7
+        ]
+      },
+      {
+        "rig7": "elbow_L_tip",
+        "parent7": "elbow_L",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into elbow_L: hand_L is its child at a constant length",
+        "bind7": [
+          -0.188,
+          0.015,
+          0.643
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "wrist_L",
+        "parent7": "elbow_L",
+        "v9": null,
+        "parent9": null,
+        "how": "removed: the cuff is a ring on elbow_L (part fore_L)",
+        "bind7": [
+          -0.188,
+          0.003,
+          0.679
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "hand_L",
+        "parent7": "elbow_L",
+        "v9": "hand_L",
+        "parent9": "elbow_L",
+        "how": "same",
+        "bind7": [
+          -0.188,
+          0.023,
+          0.619
+        ],
+        "bind9": [
+          [
+            -0.2,
+            0,
+            0.615
+          ]
+        ],
+        "bindDelta_mm": [
+          25.8
+        ]
+      },
+      {
+        "rig7": "shoulder_R",
+        "parent7": "torso",
+        "v9": "shoulder_R",
+        "parent9": "chest",
+        "how": "same; rig 7 put it at the drawn tube top (0.098 m under rig 6's joint), v9 at the joint",
+        "bind7": [
+          0.176,
+          0,
+          0.981
+        ],
+        "bind9": [
+          [
+            0.2,
+            0,
+            1.045
+          ]
+        ],
+        "bindDelta_mm": [
+          68.1
+        ]
+      },
+      {
+        "rig7": "shoulder_R_tip",
+        "parent7": "shoulder_R",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into shoulder_R: elbow_R is its child at a constant length",
+        "bind7": [
+          0.186,
+          -0.036,
+          0.809
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "elbow_R",
+        "parent7": "shoulder_R",
+        "v9": "elbow_R",
+        "parent9": "shoulder_R",
+        "how": "same",
+        "bind7": [
+          0.186,
+          -0.036,
+          0.809
+        ],
+        "bind9": [
+          [
+            0.2,
+            0,
+            0.82
+          ]
+        ],
+        "bindDelta_mm": [
+          40.3
+        ]
+      },
+      {
+        "rig7": "elbow_R_tip",
+        "parent7": "elbow_R",
+        "v9": null,
+        "parent9": null,
+        "how": "folded into elbow_R: hand_R is its child at a constant length",
+        "bind7": [
+          0.188,
+          0.02,
+          0.643
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "wrist_R",
+        "parent7": "elbow_R",
+        "v9": null,
+        "parent9": null,
+        "how": "removed: the cuff is a ring on elbow_R (part fore_R)",
+        "bind7": [
+          0.188,
+          0.007,
+          0.679
+        ],
+        "bind9": [],
+        "bindDelta_mm": []
+      },
+      {
+        "rig7": "hand_R",
+        "parent7": "elbow_R",
+        "v9": "hand_R",
+        "parent9": "elbow_R",
+        "how": "same",
+        "bind7": [
+          0.188,
+          0.027,
+          0.619
+        ],
+        "bind9": [
+          [
+            0.2,
+            0,
+            0.615
+          ]
+        ],
+        "bindDelta_mm": [
+          30
+        ]
+      },
+      {
+        "rig7": "tool_R",
+        "parent7": "hand_R",
+        "v9": "tool_R",
+        "parent9": "hand_R",
+        "how": "same socket: +y along the tool",
+        "bind7": [
+          0.176,
+          0.03,
+          0.655
+        ],
+        "bind9": [
+          [
+            0.2,
+            0,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          92.8
+        ]
+      },
+      {
+        "rig7": "tool_L",
+        "parent7": "hand_L",
+        "v9": "tool_L",
+        "parent9": "hand_L",
+        "how": "same socket: +y along the tool",
+        "bind7": [
+          -0.176,
+          0.025,
+          0.655
+        ],
+        "bind9": [
+          [
+            -0.2,
+            0,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          91.4
+        ]
+      },
+      {
+        "rig7": "tool_R_1",
+        "parent7": "tool_R",
+        "v9": "tool_R_1",
+        "parent9": "tool_R",
+        "how": "same socket (0.40 of the tool length)",
+        "bind7": [
+          0.176,
+          0.53,
+          0.655
+        ],
+        "bind9": [
+          [
+            0.2,
+            0.5,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          92.8
+        ]
+      },
+      {
+        "rig7": "tool_R_2",
+        "parent7": "tool_R_1",
+        "v9": "tool_R_2",
+        "parent9": "tool_R_1",
+        "how": "same socket (0.70 of the tool length)",
+        "bind7": [
+          0.176,
+          0.905,
+          0.655
+        ],
+        "bind9": [
+          [
+            0.2,
+            0.875,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          92.8
+        ]
+      },
+      {
+        "rig7": "tool_L_1",
+        "parent7": "tool_L",
+        "v9": "tool_L_1",
+        "parent9": "tool_L",
+        "how": "same socket (0.40 of the tool length)",
+        "bind7": [
+          -0.176,
+          0.525,
+          0.655
+        ],
+        "bind9": [
+          [
+            -0.2,
+            0.5,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          91.4
+        ]
+      },
+      {
+        "rig7": "tool_L_2",
+        "parent7": "tool_L_1",
+        "v9": "tool_L_2",
+        "parent9": "tool_L_1",
+        "how": "same socket (0.70 of the tool length)",
+        "bind7": [
+          -0.176,
+          0.9,
+          0.655
+        ],
+        "bind9": [
+          [
+            -0.2,
+            0.875,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          91.4
+        ]
+      },
+      {
+        "rig7": "carry_L",
+        "parent7": "hand_L",
+        "v9": "carry_L",
+        "parent9": "hand_L",
+        "how": "same socket",
+        "bind7": [
+          -0.171,
+          0.015,
+          0.643
+        ],
+        "bind9": [
+          [
+            -0.2,
+            0,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          79.6
+        ]
+      },
+      {
+        "rig7": "carry_R",
+        "parent7": "hand_R",
+        "v9": "carry_R",
+        "parent9": "hand_R",
+        "how": "same socket",
+        "bind7": [
+          0.171,
+          0.02,
+          0.643
+        ],
+        "bind9": [
+          [
+            0.2,
+            0,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          80.6
+        ]
+      },
+      {
+        "rig7": "carry_mid",
+        "parent7": "torso",
+        "v9": "carry_mid",
+        "parent9": "chest",
+        "how": "same socket; parent torso -> chest",
+        "bind7": [
+          0,
+          0.017,
+          0.643
+        ],
+        "bind9": [
+          [
+            0,
+            0,
+            0.57
+          ]
+        ],
+        "bindDelta_mm": [
+          74.6
+        ]
+      }
+    ],
+    "v9New": {
+      "back": "new socket on chest: the slung rod"
+    },
+    "nonIdentityRest": {
+      "rig7": 20,
+      "v9": 0
+    },
+    "fkFromRest_m": 1.3877787807814457e-17
+  },
+  "mesh": {
+    "rig7": {
+      "faces": 711,
+      "tris": 1570,
+      "verts": 2992,
+      "influences": {
+        "1": 2920,
+        "2": 72
+      },
+      "blended": {
+        "upper_L: shoulder_L 0.38 + shoulder_L_tip 0.62": 36,
+        "upper_R: shoulder_R 0.38 + shoulder_R_tip 0.62": 36
+      },
+      "parts": {
+        "thigh_L": {
+          "over": 8
+        },
+        "shin_L": {
+          "over": 8
+        },
+        "boot_L": {
+          "boot": 8
+        },
+        "boot_cuff_L": {
+          "bootL": 8
+        },
+        "foot_L": {
+          "boot": 12,
+          "sole": 6
+        },
+        "thigh_R": {
+          "over": 8
+        },
+        "shin_R": {
+          "over": 8
+        },
+        "boot_R": {
+          "boot": 8
+        },
+        "boot_cuff_R": {
+          "bootL": 8
+        },
+        "foot_R": {
+          "boot": 12,
+          "sole": 6
+        },
+        "inseam": {
+          "overD": 6
+        },
+        "pelvis": {
+          "over": 18
+        },
+        "torso": {
+          "over": 72,
+          "shirt": 86,
+          "overD": 42,
+          "brass": 12,
+          "collar": 10
+        },
+        "upper_L": {
+          "sleeve": 8,
+          "skin": 8
+        },
+        "fore_L": {
+          "skin": 8
+        },
+        "hand_L": {
+          "skin": 26
+        },
+        "upper_R": {
+          "sleeve": 8,
+          "skin": 8
+        },
+        "fore_R": {
+          "skin": 8
+        },
+        "hand_R": {
+          "skin": 26
+        },
+        "neck": {
+          "skin": 8
+        },
+        "head": {
+          "skin": 116,
+          "hair": 81,
+          "stub": 60
+        }
+      },
+      "fields": [
+        "v",
+        "mat",
+        "b",
+        "db",
+        "part",
+        "bone"
+      ],
+      "materials": [
+        "boot",
+        "bootL",
+        "brass",
+        "collar",
+        "hair",
+        "over",
+        "overD",
+        "shirt",
+        "skin",
+        "sleeve",
+        "sole",
+        "stub"
+      ],
+      "bValues": [
+        -0.7661939766255644,
+        -0.7661939766255643,
+        -0.7391341716182546,
+        -0.73,
+        -0.7270710678118655,
+        -0.72,
+        -0.7129289321881346,
+        -0.71,
+        -0.7008658283817455,
+        -0.6738060233744356,
+        -0.62,
+        -0.4,
+        -0.34,
+        -0.3,
+        -0.26,
+        -0.24,
+        -0.2,
+        -0.16,
+        -0.14,
+        -0.1382917569104036,
+        -0.13718975122027294,
+        -0.1369551813004515,
+        -0.13619020460121395,
+        -0.1352136744297422,
+        -0.13094476920048945,
+        -0.12905763045960686,
+        -0.1235366200973845,
+        -0.12171454854269508,
+        -0.12117962597417822,
+        -0.12,
+        -0.11956792310681763,
+        -0.1189999529069555,
+        -0.11718605513261986,
+        -0.11627470448640989,
+        -0.11530733729460362,
+        -0.1153073372946036,
+        -0.11303802735542319,
+        -0.1121465540702745,
+        -0.11150789904912846,
+        -0.11086935373802059,
+        -0.108,
+        -0.10690876275661301,
+        -0.10565685424949241,
+        -0.10565685424949237,
+        -0.104192685221009,
+        -0.10192055684365417,
+        -0.10154126160660285,
+        -0.10151789340237644,
+        -0.10090311701587043,
+        -0.1,
+        -0.09874750001998893,
+        -0.09848210659762358,
+        -0.09845873839339714,
+        -0.09807944315634591,
+        -0.09609605613387144,
+        -0.09434314575050763,
+        -0.09309123724338704,
+        -0.09242769231337657,
+        -0.09215009085403386,
+        -0.09200000000000001,
+        -0.08873327510318049,
+        -0.08849210095087154,
+        -0.08785344592972553,
+        -0.0869619726445768,
+        -0.08469266270539641,
+        -0.08372529551359015,
+        -0.08281394486738015,
+        -0.08106095247995578,
+        -0.08100004709304451,
+        -0.08043207689318234,
+        -0.08,
+        -0.07976409102839556,
+        -0.0764633799026155,
+        -0.07158874730793047,
+        -0.0708088843524882,
+        -0.06905523079951054,
+        -0.06478632557025786,
+        -0.06380979539878603,
+        -0.06304481869954853,
+        -0.06281024877972706,
+        -0.06,
+        -0.04,
+        -0.02,
+        0.06,
+        0.1,
+        0.1321353038619955,
+        0.13351281097465884,
+        0.13476224424848257,
+        0.13598290696282228,
+        0.14,
+        0.1413190384993882,
+        0.14351110544061021,
+        0.14367796192549143,
+        0.14448593413491317,
+        0.15057922487826936,
+        0.15285681432163115,
+        0.15352546753227722,
+        0.15470511378549437,
+        0.15554009611647795,
+        0.1562500588663056,
+        0.15632619059994468,
+        0.15851743108422517,
+        0.15965661939198764,
+        0.16,
+        0.163702465805721,
+        0.16481680741215687,
+        0.16561512618858942,
+        0.16591659387897562,
+        0.16641330782747427,
+        0.1701876135675423,
+        0.17053461539172057,
+        0.17136404655423373,
+        0.17475914347373875,
+        0.1751200701673392,
+        0.1775993039454323,
+        0.17807342299174644,
+        0.17810263324702946,
+        0.17843437502498613,
+        0.17887110373016196,
+        0.18112889626983808,
+        0.18156562497501383,
+        0.18189736675297052,
+        0.18192657700825357,
+        0.1824006960545676,
+        0.1848799298326607,
+        0.1852408565262611,
+        0.1886359534457662,
+        0.1894653846082793,
+        0.18981238643245768,
+        0.19358669217252572,
+        0.19408340612102437,
+        0.19438487381141056,
+        0.19518319258784309,
+        0.196297534194279,
+        0.2,
+        0.20034338060801232,
+        0.20148256891577482,
+        0.20367380940005528,
+        0.20374994113369435,
+        0.2044599038835221,
+        0.20529488621450556,
+        0.20647453246772277,
+        0.20714318567836884,
+        0.20942077512173063,
+        0.21551406586508692,
+        0.21632203807450856,
+        0.21648889455938974,
+        0.21868096150061184,
+        0.22401709303717768,
+        0.22523775575151744,
+        0.22648718902534118,
+        0.22786469613800445,
+        0.28,
+        0.34,
+        0.6
+      ],
+      "bytes": 241028
+    },
+    "v9": {
+      "faces": 508,
+      "tris": 1060,
+      "verts": 2076,
+      "influences": {
+        "1": 2042,
+        "2": 34
+      },
+      "blended": {
+        "torso: spine 0.5 + chest 0.5": 32,
+        "bib: spine 0.5 + chest 0.5": 2
+      },
+      "parts": {
+        "pelvis": {
+          "over": 17,
+          "overD": 1
+        },
+        "torso": {
+          "over": 27,
+          "shirt": 38
+        },
+        "bib": {
+          "over": 2,
+          "overD": 2,
+          "brass": 2
+        },
+        "strap": {
+          "over": 10
+        },
+        "collar": {
+          "collar": 8
+        },
+        "neck": {
+          "skin": 6
+        },
+        "upper_L": {
+          "shirtD": 7,
+          "shirt": 13,
+          "skin": 7
+        },
+        "fore_L": {
+          "skin": 8
+        },
+        "hand_L": {
+          "skin": 10
+        },
+        "upper_R": {
+          "shirtD": 7,
+          "shirt": 13,
+          "skin": 7
+        },
+        "fore_R": {
+          "skin": 8
+        },
+        "hand_R": {
+          "skin": 10
+        },
+        "thigh_L": {
+          "over": 6,
+          "overD": 1
+        },
+        "shin_L": {
+          "over": 7
+        },
+        "boot_L": {
+          "boot": 6,
+          "bootL": 7
+        },
+        "foot_L": {
+          "sole": 6,
+          "boot": 7
+        },
+        "thigh_R": {
+          "over": 6,
+          "overD": 1
+        },
+        "shin_R": {
+          "over": 7
+        },
+        "boot_R": {
+          "boot": 6,
+          "bootL": 7
+        },
+        "foot_R": {
+          "sole": 6,
+          "boot": 7
+        },
+        "head": {
+          "stub": 8,
+          "skin": 20,
+          "hair": 31,
+          "skinD": 1
+        },
+        "nose": {
+          "skin": 3,
+          "skinD": 1
+        },
+        "ear": {
+          "skinD": 12
+        },
+        "hair": {
+          "hair": 50,
+          "hairD": 5
+        },
+        "face": {
+          "ink": 26,
+          "iris": 20,
+          "white": 22,
+          "ink2": 6,
+          "brow": 14,
+          "lip": 4,
+          "mouth": 2
+        }
+      },
+      "fields": [
+        "v",
+        "mat",
+        "b",
+        "db",
+        "part",
+        "group",
+        "minT",
+        "side",
+        "bone"
+      ],
+      "materials": [
+        "boot",
+        "bootL",
+        "brass",
+        "brow",
+        "collar",
+        "hair",
+        "hairD",
+        "ink",
+        "ink2",
+        "iris",
+        "lip",
+        "mouth",
+        "over",
+        "overD",
+        "shirt",
+        "shirtD",
+        "skin",
+        "skinD",
+        "sole",
+        "stub",
+        "white"
+      ],
+      "bValues": [
+        -1,
+        0
+      ],
+      "bytes": 149377
+    }
+  },
+  "face": {
+    "equivalents": [
+      "eyes   eyesClosed, or lid 1 -> shut · 0 < lid < 1 -> half · lid 0 with brow -1 -> wide · otherwise open",
+      "brows  brow -1 -> up · 0 -> flat · +1 -> knit",
+      "mouth  neutral -> flat · oh -> open · grit -> grit · grin -> smile",
+      "gaze   no v9 group: the eye marks do not move (dropped)"
+    ],
+    "seen": {
+      "lid": {
+        "0": 1,
+        "1": 1,
+        "0.26": 1,
+        "0.45": 1,
+        "0.28": 1
+      },
+      "gaze": {
+        "0,0": 1,
+        "1,0": 1,
+        "-1,0": 1
+      },
+      "brow": {
+        "0": 1,
+        "1": 1,
+        "-1": 1
+      },
+      "mouth": {
+        "neutral": 1,
+        "grit": 1,
+        "oh": 1,
+        "grin": 1
+      },
+      "eyesClosed": 14
+    },
+    "agree": {
+      "eyes": 253,
+      "brows": 257,
+      "mouth": 267,
+      "all": 223
+    },
+    "frames": 308,
+    "crossTab": {
+      "lid 0 · brow 0 · neutral  ->  open / flat / flat": [
+        "idle f0",
+        "idle f1",
+        "idle f3",
+        "walk f0",
+        "walk f1",
+        "walk f2",
+        "walk f3",
+        "walk f4",
+        "walk f5",
+        "walk f6",
+        "walk f7",
+        "hold f0",
+        "hold f1",
+        "hold f3",
+        "cast f0",
+        "cast f1",
+        "cast f6",
+        "cast f7",
+        "cast f8",
+        "cast f9",
+        "bite f0",
+        "bite f3",
+        "castBack f0",
+        "castBack f1",
+        "castBack f2",
+        "castBack f3",
+        "castRelease f0",
+        "castRelease f1",
+        "castRelease f3",
+        "castRelease f4",
+        "castRelease f5",
+        "castRelease f6",
+        "castRelease f7",
+        "board f0",
+        "board f1",
+        "board f2",
+        "board f3",
+        "board f7",
+        "board f8",
+        "board f9",
+        "boardDown f0",
+        "boardDown f1",
+        "boardDown f2",
+        "boardDown f3",
+        "boardDown f4",
+        "boardDown f5",
+        "haul f0",
+        "haul f1",
+        "haul f3",
+        "haul f4",
+        "haul f5",
+        "haul f7",
+        "ladderDown f0",
+        "ladderDown f1",
+        "ladderDown f2",
+        "ladderDown f3",
+        "ladderDown f4",
+        "ladderDown f5",
+        "ladderDown f6",
+        "ladderDown f7",
+        "ladderDown f8",
+        "ladderDown f9",
+        "hauler f0",
+        "hauler f1",
+        "hauler f2",
+        "hauler f6",
+        "hauler f7",
+        "bench f0",
+        "bench f1",
+        "bench f2",
+        "bench f3",
+        "bench f4",
+        "bench f5",
+        "bench f6",
+        "bench f7",
+        "bench f8",
+        "bench f9",
+        "chop f0",
+        "chop f1",
+        "chop f2",
+        "chop f3",
+        "chop f4",
+        "chop f5",
+        "chop f6",
+        "chop f7",
+        "lift f0",
+        "lift f1",
+        "lift f2",
+        "lift f3",
+        "lift f7",
+        "place f0",
+        "place f1",
+        "place f2",
+        "place f3",
+        "place f4",
+        "place f5",
+        "place f6",
+        "place f7",
+        "toss f0",
+        "toss f1",
+        "toss f2",
+        "swim f0",
+        "swim f1",
+        "swim f2",
+        "swim f3",
+        "swim f5",
+        "swim f6",
+        "swim f7",
+        "tread f0",
+        "tread f1",
+        "tread f2",
+        "tread f3",
+        "tread f5",
+        "drive f0",
+        "drive f1",
+        "drive f2",
+        "drive f3",
+        "drive f5",
+        "reach f0",
+        "reach f1",
+        "reach f2",
+        "reach f3",
+        "reach f4",
+        "reach f5",
+        "astride f0",
+        "astride f1",
+        "astride f2",
+        "astride f3",
+        "astride f5",
+        "astrideStand f0",
+        "astrideStand f1",
+        "astrideStand f2",
+        "astrideStand f3",
+        "astrideStand f4",
+        "astrideStand f5",
+        "astrideStand f6",
+        "astrideStand f7",
+        "mountUp f0",
+        "mountUp f1",
+        "mountUp f2",
+        "mountUp f3",
+        "mountUp f4",
+        "mountUp f5",
+        "mountUp f6",
+        "mountUp f7",
+        "mountUp f8",
+        "mountUp f9",
+        "mountUp f10",
+        "mountUp f11",
+        "mountUp f12",
+        "mountUp f13",
+        "mountUp f14",
+        "mountUp f15",
+        "mountDown f0",
+        "mountDown f1",
+        "mountDown f2",
+        "mountDown f3",
+        "mountDown f4",
+        "mountDown f5",
+        "mountDown f6",
+        "mountDown f7",
+        "mountDown f8",
+        "mountDown f9",
+        "mountDown f10",
+        "mountDown f11",
+        "mountDown f12",
+        "mountDown f13",
+        "mountCab f0",
+        "mountCab f1",
+        "mountCab f2",
+        "mountCab f3",
+        "mountCab f4",
+        "mountCab f5",
+        "mountCab f6",
+        "mountCab f7",
+        "mountCab f8",
+        "mountCab f9",
+        "mountCab f10",
+        "mountCab f11",
+        "mountCab f12",
+        "mountCab f13",
+        "mountCab f14",
+        "mountCab f15",
+        "mountCab f16",
+        "mountCab f17",
+        "mountCabDown f0",
+        "mountCabDown f1",
+        "mountCabDown f2",
+        "mountCabDown f3",
+        "mountCabDown f4",
+        "mountCabDown f5",
+        "mountCabDown f6",
+        "mountCabDown f7",
+        "mountCabDown f8",
+        "mountCabDown f9",
+        "mountCabDown f10",
+        "mountCabDown f11",
+        "mountCabDown f12",
+        "mountCabDown f13",
+        "mountCabDown f14",
+        "mountCabDown f15"
+      ],
+      "lid 0 · brow 0 · neutral · gaze 1,0  ->  open / flat / flat": [
+        "idle f2",
+        "hold f2",
+        "bite f2"
+      ],
+      "lid 1 closed · brow 0 · neutral · gaze -1,0  ->  open / flat / flat": [
+        "idle f4",
+        "hold f4"
+      ],
+      "lid 0 · brow 0 · neutral · gaze -1,0  ->  open / flat / flat": [
+        "idle f5",
+        "hold f5",
+        "bite f5"
+      ],
+      "lid 0.26 · brow 1 · grit  ->  open / flat / flat": [
+        "run f0",
+        "run f1",
+        "run f2",
+        "run f3",
+        "run f4",
+        "run f5",
+        "dig f0",
+        "dig f4",
+        "dig f7",
+        "dig f8",
+        "dig f9",
+        "strike f0",
+        "strike f1",
+        "strike f2"
+      ],
+      "lid 0 · brow 0 · neutral  ->  open / knit / flat": [
+        "cast f2",
+        "cast f3",
+        "cast f4",
+        "balance f0",
+        "balance f1",
+        "balance f4",
+        "balance f7",
+        "castBack f4",
+        "castBack f5",
+        "board f4",
+        "board f5",
+        "board f6"
+      ],
+      "lid 0 · brow 0 · neutral  ->  open / flat / open": [
+        "cast f5",
+        "swim f4"
+      ],
+      "lid 0.26 · brow 1 · grit  ->  open / knit / grit": [
+        "dig f1",
+        "dig f2",
+        "dig f3",
+        "strike f3",
+        "strike f4",
+        "strike f5",
+        "reel f0",
+        "reel f1",
+        "reel f2",
+        "reel f3",
+        "reel f4",
+        "reel f5",
+        "reel f6",
+        "reel f7",
+        "reel f8",
+        "reel f9",
+        "reel f10",
+        "reel f11"
+      ],
+      "lid 0.26 · brow 1 · grit  ->  open / flat / open": [
+        "dig f5",
+        "dig f6"
+      ],
+      "lid 0 · brow 0 · neutral · gaze 1,0  ->  open / knit / flat": [
+        "balance f2",
+        "balance f3"
+      ],
+      "lid 0.45 closed · brow 0 · neutral · gaze -1,0  ->  open / knit / flat": [
+        "balance f5"
+      ],
+      "lid 1 closed · brow 0 · neutral · gaze -1,0  ->  open / knit / flat": [
+        "balance f6"
+      ],
+      "lid 0 · brow -1 · oh  ->  wide / up / open": [
+        "stagger f0",
+        "stagger f1",
+        "stagger f2",
+        "stagger f3",
+        "stagger f4",
+        "stagger f5",
+        "stagger f6",
+        "stagger f7",
+        "stagger f8",
+        "stagger f9"
+      ],
+      "lid 0 · brow 0 · neutral  ->  wide / up / flat": [
+        "bite f1"
+      ],
+      "lid 1 closed · brow 0 · neutral · gaze -1,0  ->  wide / up / flat": [
+        "bite f4"
+      ],
+      "lid 0.28 · brow 0 · grin  ->  open / flat / flat": [
+        "land f0",
+        "land f1",
+        "land f2",
+        "land f3",
+        "land f4",
+        "land f5"
+      ],
+      "lid 0.28 · brow 0 · grin  ->  open / knit / open": [
+        "land f6",
+        "land f7",
+        "land f8"
+      ],
+      "lid 0.28 · brow 0 · grin  ->  open / flat / smile": [
+        "land f9",
+        "land f10",
+        "land f11"
+      ],
+      "lid 0 · brow 0 · neutral  ->  open / knit / open": [
+        "castRelease f2"
+      ],
+      "lid 0 · brow 0 · neutral  ->  open / knit / grit": [
+        "haul f2",
+        "haul f6",
+        "hauler f3",
+        "hauler f4",
+        "hauler f5",
+        "lift f4",
+        "lift f5",
+        "lift f6",
+        "toss f3",
+        "toss f4"
+      ],
+      "lid 0 · brow 0 · neutral  ->  open / up / open": [
+        "toss f5",
+        "toss f6",
+        "toss f7"
+      ],
+      "lid 0 closed · brow 0 · neutral  ->  open / flat / flat": [
+        "tread f4",
+        "drive f4",
+        "astride f4"
+      ],
+      "lid 1 closed · brow 0 · neutral  ->  shut / flat / flat": [
+        "sleep f0",
+        "sleep f1",
+        "sleep f2",
+        "sleep f3",
+        "sleep f4",
+        "sleep f5"
+      ]
+    },
+    "differs": {
+      "idle": [
+        "f4 eyes shut->open"
+      ],
+      "run": [
+        "f0 eyes half->open",
+        "f0 brows knit->flat",
+        "f0 mouth grit->flat",
+        "f1 eyes half->open",
+        "f1 brows knit->flat",
+        "f1 mouth grit->flat",
+        "f2 eyes half->open",
+        "f2 brows knit->flat",
+        "f2 mouth grit->flat",
+        "f3 eyes half->open",
+        "f3 brows knit->flat",
+        "f3 mouth grit->flat",
+        "f4 eyes half->open",
+        "f4 brows knit->flat",
+        "f4 mouth grit->flat",
+        "f5 eyes half->open",
+        "f5 brows knit->flat",
+        "f5 mouth grit->flat"
+      ],
+      "hold": [
+        "f4 eyes shut->open"
+      ],
+      "cast": [
+        "f2 brows flat->knit",
+        "f3 brows flat->knit",
+        "f4 brows flat->knit",
+        "f5 mouth flat->open"
+      ],
+      "dig": [
+        "f0 eyes half->open",
+        "f0 brows knit->flat",
+        "f0 mouth grit->flat",
+        "f1 eyes half->open",
+        "f2 eyes half->open",
+        "f3 eyes half->open",
+        "f4 eyes half->open",
+        "f4 brows knit->flat",
+        "f4 mouth grit->flat",
+        "f5 eyes half->open",
+        "f5 brows knit->flat",
+        "f5 mouth grit->open",
+        "f6 eyes half->open",
+        "f6 brows knit->flat",
+        "f6 mouth grit->open",
+        "f7 eyes half->open",
+        "f7 brows knit->flat",
+        "f7 mouth grit->flat",
+        "f8 eyes half->open",
+        "f8 brows knit->flat",
+        "f8 mouth grit->flat",
+        "f9 eyes half->open",
+        "f9 brows knit->flat",
+        "f9 mouth grit->flat"
+      ],
+      "balance": [
+        "f0 brows flat->knit",
+        "f1 brows flat->knit",
+        "f2 brows flat->knit",
+        "f3 brows flat->knit",
+        "f4 brows flat->knit",
+        "f5 eyes shut->open",
+        "f5 brows flat->knit",
+        "f6 eyes shut->open",
+        "f6 brows flat->knit",
+        "f7 brows flat->knit"
+      ],
+      "bite": [
+        "f1 eyes open->wide",
+        "f1 brows flat->up",
+        "f4 eyes shut->wide",
+        "f4 brows flat->up"
+      ],
+      "strike": [
+        "f0 eyes half->open",
+        "f0 brows knit->flat",
+        "f0 mouth grit->flat",
+        "f1 eyes half->open",
+        "f1 brows knit->flat",
+        "f1 mouth grit->flat",
+        "f2 eyes half->open",
+        "f2 brows knit->flat",
+        "f2 mouth grit->flat",
+        "f3 eyes half->open",
+        "f4 eyes half->open",
+        "f5 eyes half->open"
+      ],
+      "reel": [
+        "f0 eyes half->open",
+        "f1 eyes half->open",
+        "f2 eyes half->open",
+        "f3 eyes half->open",
+        "f4 eyes half->open",
+        "f5 eyes half->open",
+        "f6 eyes half->open",
+        "f7 eyes half->open",
+        "f8 eyes half->open",
+        "f9 eyes half->open",
+        "f10 eyes half->open",
+        "f11 eyes half->open"
+      ],
+      "land": [
+        "f0 eyes half->open",
+        "f0 mouth smile->flat",
+        "f1 eyes half->open",
+        "f1 mouth smile->flat",
+        "f2 eyes half->open",
+        "f2 mouth smile->flat",
+        "f3 eyes half->open",
+        "f3 mouth smile->flat",
+        "f4 eyes half->open",
+        "f4 mouth smile->flat",
+        "f5 eyes half->open",
+        "f5 mouth smile->flat",
+        "f6 eyes half->open",
+        "f6 brows flat->knit",
+        "f6 mouth smile->open",
+        "f7 eyes half->open",
+        "f7 brows flat->knit",
+        "f7 mouth smile->open",
+        "f8 eyes half->open",
+        "f8 brows flat->knit",
+        "f8 mouth smile->open",
+        "f9 eyes half->open",
+        "f10 eyes half->open",
+        "f11 eyes half->open"
+      ],
+      "castBack": [
+        "f4 brows flat->knit",
+        "f5 brows flat->knit"
+      ],
+      "castRelease": [
+        "f2 brows flat->knit",
+        "f2 mouth flat->open"
+      ],
+      "board": [
+        "f4 brows flat->knit",
+        "f5 brows flat->knit",
+        "f6 brows flat->knit"
+      ],
+      "haul": [
+        "f2 brows flat->knit",
+        "f2 mouth flat->grit",
+        "f6 brows flat->knit",
+        "f6 mouth flat->grit"
+      ],
+      "hauler": [
+        "f3 brows flat->knit",
+        "f3 mouth flat->grit",
+        "f4 brows flat->knit",
+        "f4 mouth flat->grit",
+        "f5 brows flat->knit",
+        "f5 mouth flat->grit"
+      ],
+      "lift": [
+        "f4 brows flat->knit",
+        "f4 mouth flat->grit",
+        "f5 brows flat->knit",
+        "f5 mouth flat->grit",
+        "f6 brows flat->knit",
+        "f6 mouth flat->grit"
+      ],
+      "toss": [
+        "f3 brows flat->knit",
+        "f3 mouth flat->grit",
+        "f4 brows flat->knit",
+        "f4 mouth flat->grit",
+        "f5 brows flat->up",
+        "f5 mouth flat->open",
+        "f6 brows flat->up",
+        "f6 mouth flat->open",
+        "f7 brows flat->up",
+        "f7 mouth flat->open"
+      ],
+      "swim": [
+        "f4 mouth flat->open"
+      ],
+      "tread": [
+        "f4 eyes shut->open"
+      ],
+      "drive": [
+        "f4 eyes shut->open"
+      ],
+      "astride": [
+        "f4 eyes shut->open"
+      ]
+    },
+    "groups": [
+      {
+        "group": "eyes.open",
+        "first": 414,
+        "count": 16,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "ink",
+          "iris",
+          "white"
+        ]
+      },
+      {
+        "group": "eyes.half",
+        "first": 430,
+        "count": 10,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "ink",
+          "white"
+        ]
+      },
+      {
+        "group": "eyes.shut",
+        "first": 440,
+        "count": 6,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "ink2"
+        ]
+      },
+      {
+        "group": "eyes.wide",
+        "first": 446,
+        "count": 18,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "white",
+          "ink",
+          "iris"
+        ]
+      },
+      {
+        "group": "eyes.left",
+        "first": 464,
+        "count": 12,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "white",
+          "ink",
+          "iris"
+        ]
+      },
+      {
+        "group": "eyes.right",
+        "first": 476,
+        "count": 12,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "ink",
+          "iris",
+          "white"
+        ]
+      },
+      {
+        "group": "brows.flat",
+        "first": 488,
+        "count": 4,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "brow"
+        ]
+      },
+      {
+        "group": "brows.up",
+        "first": 492,
+        "count": 4,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "brow"
+        ]
+      },
+      {
+        "group": "brows.knit",
+        "first": 496,
+        "count": 6,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "brow"
+        ]
+      },
+      {
+        "group": "mouth.flat",
+        "first": 502,
+        "count": 1,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "lip"
+        ]
+      },
+      {
+        "group": "mouth.open",
+        "first": 503,
+        "count": 1,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "mouth"
+        ]
+      },
+      {
+        "group": "mouth.grit",
+        "first": 504,
+        "count": 1,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "mouth"
+        ]
+      },
+      {
+        "group": "mouth.smile",
+        "first": 505,
+        "count": 3,
+        "bones": [
+          "head"
+        ],
+        "mats": [
+          "lip"
+        ]
+      }
+    ]
+  },
+  "clips": {
+    "shared": 35,
+    "onlyV9": [
+      "helm_idle",
+      "helm_walk",
+      "oars_idle",
+      "oars_row",
+      "idle+buckets",
+      "walk+buckets",
+      "run+buckets",
+      "board+buckets",
+      "boardDown+buckets",
+      "idle+tray",
+      "walk+tray",
+      "run+tray",
+      "board+tray",
+      "boardDown+tray",
+      "idle+pot",
+      "walk+pot",
+      "board+pot",
+      "boardDown+pot"
+    ],
+    "onlyR7": [],
+    "headerDiffs": [
+      "astride mount free -> saddle",
+      "astrideStand mount free -> saddle",
+      "mountUp mount free -> saddle",
+      "mountDown mount free -> saddle",
+      "mountCab mount free -> saddle",
+      "mountCabDown mount free -> saddle"
+    ],
+    "uDiffs": [],
+    "format": {
+      "clip": {
+        "rig7": [
+          "anim",
+          "name",
+          "build",
+          "frames",
+          "ms",
+          "duration",
+          "loop",
+          "settle",
+          "mount",
+          "carry",
+          "power",
+          "rock",
+          "bones",
+          "parked",
+          "tracks"
+        ],
+        "v9": [
+          "name",
+          "anim",
+          "carry",
+          "stance",
+          "build",
+          "frames",
+          "ms",
+          "duration",
+          "loop",
+          "settle",
+          "mount",
+          "pin",
+          "bones",
+          "tracks"
+        ]
+      },
+      "track": {
+        "rig7": [
+          "frame",
+          "u",
+          "ms",
+          "bones",
+          "face",
+          "tool"
+        ],
+        "v9": [
+          "frame",
+          "u",
+          "ms",
+          "bones",
+          "face",
+          "tool"
+        ]
+      },
+      "bone": {
+        "rig7": [
+          "pos",
+          "rot",
+          "rotEuler"
+        ],
+        "v9": [
+          "pos",
+          "rot",
+          "rotEuler"
+        ]
+      },
+      "face": {
+        "rig7": [
+          "lid",
+          "gaze",
+          "brow",
+          "mouth",
+          "eyesClosed"
+        ],
+        "v9": [
+          "eyes",
+          "brows",
+          "mouth"
+        ]
+      },
+      "tool": {
+        "rig7": [
+          "held",
+          "pitch",
+          "yaw",
+          "bend",
+          "advisory"
+        ],
+        "v9": [
+          "held",
+          "kind",
+          "pitch",
+          "yaw",
+          "bend",
+          "len",
+          "advisory"
+        ]
+      }
+    },
+    "walkLocalPosMoves": {
+      "rig7": [
+        "pelvis",
+        "torso",
+        "neck_tip",
+        "head",
+        "inseam_top",
+        "inseam_bot",
+        "hip_L",
+        "hip_L_tip",
+        "knee_L",
+        "knee_L_tip",
+        "ankle_L",
+        "ankle_L_tip",
+        "foot_L",
+        "hip_R",
+        "hip_R_tip",
+        "knee_R",
+        "knee_R_tip",
+        "ankle_R",
+        "ankle_R_tip",
+        "foot_R",
+        "shoulder_L",
+        "shoulder_L_tip",
+        "elbow_L",
+        "elbow_L_tip",
+        "wrist_L",
+        "hand_L",
+        "shoulder_R",
+        "shoulder_R_tip",
+        "elbow_R",
+        "elbow_R_tip",
+        "wrist_R",
+        "hand_R",
+        "tool_R",
+        "tool_L",
+        "carry_L",
+        "carry_R",
+        "carry_mid"
+      ],
+      "v9": [
+        "pelvis",
+        "carry_mid"
+      ]
+    },
+    "walkLargestTurn": {
+      "rig7": {
+        "deg": 178.3,
+        "at": "knee_R f2-3"
+      },
+      "v9": {
+        "deg": 30.3,
+        "at": "knee_L f3-4"
+      }
+    }
+  },
+  "materials": {
+    "format": {
+      "rig7": "per face: mat (a rig 6 material name), b, db. No material table in the export: ramps, gains and biases are rig 6 code (makeMats, SPAN, GAIN 3.0, BIAS, LN, BAYER).",
+      "v9": "per face: mat, b, db (+ group, minT, side). shading.materials[mat] = { ramp, gain, bias, lo, hi, off } or { color, fixed:true }; shading = the globals (key, fleetKey, form, formMid, edge, keyline, keylineMix, cull, step, headSnap)."
+    },
+    "rig7": [
+      "boot",
+      "bootL",
+      "brass",
+      "collar",
+      "hair",
+      "over",
+      "overD",
+      "shirt",
+      "skin",
+      "sleeve",
+      "sole",
+      "stub"
+    ],
+    "v9": [
+      "boot",
+      "bootL",
+      "brass",
+      "brow",
+      "collar",
+      "hair",
+      "hairD",
+      "ink",
+      "ink2",
+      "iris",
+      "lip",
+      "mouth",
+      "over",
+      "overD",
+      "shirt",
+      "shirtD",
+      "skin",
+      "skinD",
+      "sole",
+      "stub",
+      "white"
+    ],
+    "table": {
+      "ramp": 24,
+      "fixed": 8
+    }
+  },
+  "golden": {
+    "rig7": {
+      "builds": 10,
+      "rows": 56,
+      "frames": 4620,
+      "tol": 0.0001,
+      "worst": 4.0245144857948865e-13,
+      "worstAt": "fisher",
+      "ok": true,
+      "keys": {
+        "top": [
+          "rig",
+          "rig6",
+          "date",
+          "tol",
+          "builds"
+        ],
+        "build": [
+          "build",
+          "bones",
+          "faces",
+          "frames",
+          "worst",
+          "worstAt",
+          "ok",
+          "rows"
+        ],
+        "row": [
+          "label",
+          "frames",
+          "max",
+          "parked",
+          "ok",
+          "err"
+        ]
+      }
+    },
+    "v9": {
+      "builds": 10,
+      "checks": 20,
+      "passed": 190,
+      "of": 190,
+      "ids": [
+        "timing",
+        "skeleton",
+        "skin",
+        "roundtrip",
+        "continuity",
+        "rock",
+        "loops",
+        "handoffs",
+        "contacts",
+        "travel",
+        "cell",
+        "face",
+        "hair",
+        "gaze",
+        "look",
+        "tones",
+        "light",
+        "budget (report)",
+        "sidecar",
+        "heights"
+      ],
+      "roundtrip": {
+        "fisher": "8.92e-16 m",
+        "ginny": "7.53e-16 m",
+        "skipper": "7.04e-16 m",
+        "nan": "8.95e-16 m",
+        "deckboss": "8.96e-16 m",
+        "packer": "8.95e-16 m",
+        "cutter": "7.03e-16 m",
+        "hand": "7.11e-16 m",
+        "boy": "6.87e-16 m",
+        "girl": "7.04e-16 m"
+      },
+      "keys": {
+        "top": [
+          "schema",
+          "rig",
+          "revision",
+          "derivedFromRigSha256",
+          "posesDerivedFromRigSha256",
+          "run",
+          "summary",
+          "builds"
+        ],
+        "build": [
+          "label",
+          "passed",
+          "of",
+          "reported",
+          "ms",
+          "checks"
+        ],
+        "check": [
+          "id",
+          "title",
+          "ms",
+          "pass",
+          "value",
+          "detail",
+          "gate"
+        ]
+      }
+    }
+  },
+  "sizes": {
+    "rig7": {
+      "bones": 45,
+      "faces": 711,
+      "tris": 1570,
+      "verts": 2992,
+      "clips": 35,
+      "frames": 308,
+      "skeletonBytes": 7142,
+      "skeletonWorldBytes": 6424,
+      "bindMeshBytes": 241028,
+      "clipBytes": 2206905,
+      "fileBytes": 2463402
+    },
+    "v9": {
+      "bones": 28,
+      "faces": 508,
+      "tris": 1060,
+      "verts": 2076,
+      "clips": 53,
+      "frames": 438,
+      "skeletonBytes": 4833,
+      "skeletonWorldBytes": 0,
+      "bindMeshBytes": 149377,
+      "clipBytes": 1832167,
+      "fileBytes": 1996964
+    }
+  },
+  "samples": {
+    "samples/fisher.skeleton.v9.json": "byte-identical to the cut",
+    "samples/fisher.walk.clip.v9.json": "byte-identical to the cut"
+  },
+  "freshAgainstCommitted": {
+    "skeleton": {
+      "numbers": 504,
+      "differ": 0,
+      "max": 0,
+      "structure": 0
+    },
+    "walk": {
+      "numbers": 2267,
+      "differ": 0,
+      "max": 0,
+      "structure": 0
+    }
+  }
+}

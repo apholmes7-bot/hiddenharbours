@@ -303,10 +303,21 @@ namespace HiddenHarbours.Tests.EditMode
                              float.Parse(m.Groups[3].Value, CultureInfo.InvariantCulture));
         }
 
-        /// <summary>The sea's live palette anchors, straight off the hero material (ADR 0015).</summary>
+        /// <summary>The sea's live palette anchors and wake dials, straight off the hero material
+        /// (ADR 0015; W4-1).</summary>
         private static SeaPaletteState LivePalette()
             => new SeaPaletteState(MatColor("_PaletteDeep"), MatColor("_PaletteMid"),
-                                   MatColor("_PaletteShallow"), MatColor("_PaletteFoam"));
+                                   MatColor("_PaletteShallow"), MatColor("_PaletteFoam"),
+                                   MatFloat("_WakeBodyLift"), MatFloat("_WakeBodyWhiten"), default);
+
+        /// <summary>
+        /// The water the surf band rides on (W4-1, design 3A: the walk ends ON its water). Water.mat's
+        /// water at 1 m, a depth inside the band: u = (1 − 0.15) / (4 − 0.15) = 0.221 on its depth ramp,
+        /// so texel 56 of <c>DepthRamp.png</c>, byte for byte (no deep-blue pull starts until u = 0.25).
+        /// One water for the whole sweep keeps these claims about the WALK; the water changing with depth
+        /// is <c>WakeFoamAgeingMeasurementTests.TheWake_EndsAsTheWaterItRidesOn_InEveryMood</c>'s.
+        /// </summary>
+        private static readonly Color SurfWater = new Color32(0x5e, 0x7e, 0x78, 0xff);
 
         /// <summary>The shared walk at the live knots and a given strength. Scatter and jitter are 0
         /// because the shader has no per-particle seed — the field halves of this twin are
@@ -348,7 +359,7 @@ namespace HiddenHarbours.Tests.EditMode
             WakeAgeRamp ramp = LiveRamp(ageStrength);
 
             return TheDrawnBandsEnergies()
-                   .Select(e => WakeFoamAgeing.Shade(surf, 1f - e, 0f, in ramp, in palette))
+                   .Select(e => WakeFoamAgeing.Shade(surf, 1f - e, 0f, in ramp, in palette, SurfWater))
                    .ToList();
         }
 
@@ -384,7 +395,8 @@ namespace HiddenHarbours.Tests.EditMode
             string commonest = byColour[0].Key;
             float topShare = byColour[0].Count() / (float)walked.Count;
 
-            // The two ends of the drawn band, and the distance between them in the sea's own colours.
+            // The two ends of the drawn band, and the distance between them: from the sea's own foam to
+            // the water the band rides on (W4-1; it was the foam -> mid anchor span).
             Color born = walked[0];
             Color dying = walked[walked.Count - 1];
             SeaPaletteState palette = LivePalette();
@@ -392,7 +404,7 @@ namespace HiddenHarbours.Tests.EditMode
                                             new Vector3(dying.r, dying.g, dying.b));
             float wholeRamp = Vector3.Distance(
                 new Vector3(palette.Foam.r, palette.Foam.g, palette.Foam.b),
-                new Vector3(palette.Mid.r, palette.Mid.g, palette.Mid.b));
+                new Vector3(SurfWater.r, SurfWater.g, SurfWater.b));
 
             // ⭐ WHERE THE #665 METRIC DISCRIMINATES, AND WHY IT IS NOT THE WHOLE BAND. A three-knot ramp
             // has two DELIBERATE flat runs: the white HOLD at the break line (the churn itself, the first
@@ -406,13 +418,13 @@ namespace HiddenHarbours.Tests.EditMode
             List<Color> onTheWalk = TheDrawnBandsEnergies()
                 .Select(e => 1f - e)
                 .Where(age => age > ramp.WhiteHold && age < ramp.DeepReach)
-                .Select(age => WakeFoamAgeing.Shade(surf, age, 0f, in ramp, in palette))
+                .Select(age => WakeFoamAgeing.Shade(surf, age, 0f, in ramp, in palette, SurfWater))
                 .ToList();
             int walkDistinct = onTheWalk.Select(Key).Distinct().Count();
 
             Debug.Log($"[row 2] the drawn surf band at _SurfAgeStrength {shipped:F2}: {walked.Count} samples, " +
                       $"{distinct} distinct colours; commonest {commonest} at {topShare:P1}; born {born}, " +
-                      $"dying {dying}; travelled {travel:F3} of the palette's {wholeRamp:F3} foam->mid " +
+                      $"dying {dying}; travelled {travel:F3} of the {wholeRamp:F3} foam->water " +
                       $"span. On the WALK between the knots: {onTheWalk.Count} samples, {walkDistinct} " +
                       $"distinct. At the dial's 0: {flat.Select(Key).Distinct().Count()} colour ({surf}).");
 
@@ -427,11 +439,11 @@ namespace HiddenHarbours.Tests.EditMode
             // …and the one colour that DOES repeat must be an ANCHOR, never a value part-way down the
             // walk. A dominant mid-ramp colour would be resolution lost in transit, which is the failure
             // this whole file exists to catch.
-            var anchors = new[] { Key(palette.Foam), Key(palette.Shallow), Key(palette.Mid) };
+            var anchors = new[] { Key(palette.Foam), Key(WakeFoamAgeing.LiftOf(SurfWater, in palette)), Key(SurfWater) };
             Assert.Contains(commonest, anchors,
                 $"the commonest colour in the band ({commonest} at {topShare:P1}) must be one of the " +
-                "ramp's own end-stops — the churn's white hold, or the tail's ambient blue — and not a " +
-                "value the walk stalled on");
+                "walk's own stops — the churn's white hold, or the tail's own water (W4-1; it was the " +
+                "mid anchor) — and not a value the walk stalled on");
             Assert.Less(topShare, 0.50f,
                 $"…and no end-stop may own the band ({commonest} at {topShare:P1})");
 
@@ -473,8 +485,8 @@ namespace HiddenHarbours.Tests.EditMode
 
             for (float age = 0f; age <= 1.001f; age += 0.05f)
             {
-                Color fromSurf = WakeFoamAgeing.Shade(surf, age, 0f, in ramp, in palette);
-                Color fromWake = WakeFoamAgeing.Shade(foam, age, 0f, in ramp, in palette);
+                Color fromSurf = WakeFoamAgeing.Shade(surf, age, 0f, in ramp, in palette, SurfWater);
+                Color fromWake = WakeFoamAgeing.Shade(foam, age, 0f, in ramp, in palette, SurfWater);
                 Assert.AreEqual(fromSurf.r, fromWake.r, 1e-6f, $"red disagrees at age {age:F2}");
                 Assert.AreEqual(fromSurf.g, fromWake.g, 1e-6f, $"green disagrees at age {age:F2}");
                 Assert.AreEqual(fromSurf.b, fromWake.b, 1e-6f, $"blue disagrees at age {age:F2}");

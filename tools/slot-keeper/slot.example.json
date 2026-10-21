@@ -1,0 +1,28 @@
+{
+  "_comment": "Copy to slot.json in the live home (outside every box, never in git) and fill the four paths. slot.py refuses a path still starting with '<'. Every number below is the default; leave a key out to keep it.",
+  "unity_exe": "<the pinned editor's Unity.exe, under ...\\Unity\\Hub\\Editor\\<version>\\Editor\\>",
+  "unity_exe_args": [],
+  "owner_project": "<the owner's own project folder: never launched, nor anything under it>",
+  "save_path": "<the shared save: ...\\AppData\\LocalLow\\DefaultCompany\\My project\\savegame.json>",
+  "state_dir": "<the live home: queue.json, lease.json, paused, log.jsonl, returns\\, saves\\>",
+  "disk_path": "C:\\",
+  "allusersprofile": "C:\\ProgramData",
+  "editor_rule": {
+    "image": "unity.exe",
+    "exe_path_contains": "\\hub\\editor\\",
+    "exe_path_endswith": "\\editor\\unity.exe",
+    "cmdline_contains": "-projectpath",
+    "worker_cmdline_contains": "assetimportworker",
+    "bridge_cmdline_endswith": " mcp",
+    "hub_exe_path_contains": "\\unity hub\\resources\\"
+  },
+  "launch_headroom_gib": 16,
+  "stop_headroom_gib": 4,
+  "min_disk_gb": 15,
+  "sample_seconds": 5,
+  "grace_minutes": 15,
+  "idle_minutes": 30,
+  "wait_heartbeat_seconds": 120,
+  "max_lease_minutes": 240,
+  "wait_check_seconds": 15
+}

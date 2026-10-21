@@ -385,6 +385,7 @@ namespace HiddenHarbours.Boats
             // slot to find "the tank the player can address", which is how FILL reaches a boat without
             // the Economy module ever naming a Boats type.
             GameServices.ActiveBoatFuel = this;
+            Interactables.Register(this);
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
         }
 
@@ -393,6 +394,7 @@ namespace HiddenHarbours.Boats
             // Identity-guarded, so a boat being torn down cannot clear a slot another boat now owns.
             if (ReferenceEquals(GameServices.ActiveBoatFuel, this))
                 GameServices.ActiveBoatFuel = null;
+            Interactables.Unregister(this);
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
         }
 

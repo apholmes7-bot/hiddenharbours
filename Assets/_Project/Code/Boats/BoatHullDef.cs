@@ -144,6 +144,32 @@ namespace HiddenHarbours.Boats
                  "the boat's motion while the sea is working it; 0 = undamped.")]
         public float SeakeepingDamping = 0f;
 
+        [Header("Trim (the bow answers her speed — GameConfig.HullTrim; all 0 = she never trims)")]
+        [Tooltip("How far her bow rises at the hump (degrees): the rise as she climbs her own bow " +
+                 "wave, reached smoothly from level at rest and in full at hull speed " +
+                 "(GameConfig.HullTrim.HumpFroude). Read at the speed her drive can HOLD, so it goes " +
+                 "when the drive is cut. 0 = her bow does not rise with speed.")]
+        [Min(0f)] public float TrimHumpDegrees = 0f;
+        [Tooltip("How much of that rise a PLANING hull gives back once she is over the hump " +
+                 "(degrees, taken off in full by GameConfig.HullTrim.PlaningFroude; never more than " +
+                 "the rise). 0 = a displacement hull: she keeps her rise and never planes.")]
+        [Min(0f)] public float TrimPlaningDropDegrees = 0f;
+        [Tooltip("The squat under power: degrees of bow-up per m/s² of acceleration along the keel " +
+                 "that her own drive and drag produce — the kick when the throttle opens. The wind " +
+                 "and the sea are not read. 0 for a hull whose drive presses the bow DOWN (a sail).")]
+        [Min(0f)] public float TrimAccelDegreesPerMps2 = 0f;
+        [Tooltip("The dip when she slows: degrees of bow-down per m/s² of deceleration, weighted by " +
+                 "the way she carried — in full at the hump, nothing at rest, so a boat creeping into " +
+                 "her berth does not nod. 0 = she never dips.")]
+        [Min(0f)] public float TrimDecelDegreesPerMps2 = 0f;
+        [Tooltip("The most her bow may rise (degrees). 0 = GameConfig.HullTrim.DefaultMaxBowUpDegrees.")]
+        [Min(0f)] public float TrimMaxBowUpDegrees = 0f;
+        [Tooltip("The most her bow may dip (degrees). 0 = GameConfig.HullTrim.DefaultMaxBowDownDegrees.")]
+        [Min(0f)] public float TrimMaxBowDownDegrees = 0f;
+        [Tooltip("How long her drawn trim takes to follow (seconds, one exponential lag) — a longer, " +
+                 "heavier hull answers slower. 0 = GameConfig.HullTrim.DefaultResponseSeconds.")]
+        [Min(0f)] public float TrimResponseSeconds = 0f;
+
         [Header("Camera")]
         [Tooltip("World height in metres the camera frames for this hull — bigger boat = more water.")]
         public float CameraWorldHeightMeters = 14f;
@@ -255,6 +281,22 @@ namespace HiddenHarbours.Boats
                  "question that matters — 'would she be drawn flogging at a cell the polar says " +
                  "she sails?' — without transcribing a number out of the sidecar.")]
         [Min(0f)] public float SpriteIronsApparentDeg = 25f;
+
+        [Tooltip("Slow pay-off while drawn in irons, design torque units. Zero leaves existing handling unchanged.")]
+        [Min(0f)] public float IronsPayOffTorque = 0f;
+
+        [Tooltip("Way (m/s) at full rudder authority; the irons assist fades to zero here.")]
+        [Min(0.01f)] public float RudderFullAuthorityWayMs = 2f;
+
+        [Tooltip("Wind (kn) at full sail yaw authority. Below it both yaw terms fade together; calm gives no yaw.")]
+        [Min(0.01f)] public float SailYawReferenceWindKn = 10f;
+
+        [Tooltip("Unmanned windward restoring torque at the no-go edge, design units. Zero disables round-up. " +
+                 "A wind-loaded floor keeps her luffing against pay-off; sail drive increases the torque.")]
+        [Min(0f)] public float UnmannedRoundUpTorque = 0f;
+
+        [Tooltip("Polar target speed (kn) at which unmanned round-up reaches twice its wind-loaded floor.")]
+        [Min(0.01f)] public float RoundUpReferenceDriveKn = 6f;
 
         /// <summary>True when this hull is driven by her sails and has a table to sail to. A hull
         /// declared <see cref="PropulsionType.Sail"/> with no polar is NOT sailable — she falls back

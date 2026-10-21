@@ -506,6 +506,19 @@ namespace HiddenHarbours.Tests.PlayMode
             return mf.sharedMesh.vertices;
         }
 
+        /// <summary>The material her ashore figure's drawn child draws with: the one the figure pixel look moves
+        /// into its queue. Ashore the child hangs under the figure's AshoreFrame.</summary>
+        private static Material FacetMaterial(IsoCharacterFigureRenderer figure)
+        {
+            Assert.IsNotNull(figure, "the figure has not been built");
+            Transform child = figure.transform.Find("AshoreFrame/FacetFigure");
+            Assert.IsNotNull(child, "harness: ashore the drawn child hangs under the figure's AshoreFrame");
+            var mr = child.GetComponent<MeshRenderer>();
+            Assert.IsNotNull(mr, "the drawn child carries the MeshRenderer");
+            Assert.IsNotNull(mr.sharedMaterial, "the drawn child draws with a material");
+            return mr.sharedMaterial;
+        }
+
         private static void AssertSamePose(Vector3[] a, Vector3[] b, string what)
         {
             Assert.AreEqual(a.Length, b.Length, what + " — vertex counts differ");
@@ -908,6 +921,176 @@ namespace HiddenHarbours.Tests.PlayMode
                 "on any def whose balance sheet came up short.");
         }
 
+        // ---- the wheel, the oars and the look (character PR 2a) ----------------------------------------
+
+        /// <summary>The pace a carrier states in these guards: past the fixture's walk threshold (0.35 m/s)
+        /// and well short of its run (4.5 m/s).</summary>
+        private const float WalkingPace = 1f;
+
+        /// <summary>Frames a stated carry is held before a guard reads the drawn clip: enough for the
+        /// sprite's LateUpdate to settle its gait on the stated speed and the presenter to pose after it,
+        /// whichever of the two runs first.</summary>
+        private const int CarrySettleFrames = 3;
+
+        private static readonly string IdleHelm =
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Idle, CharacterSkinStateMap.HelmCarry);
+        private static readonly string WalkHelm =
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Walk, CharacterSkinStateMap.HelmCarry);
+        private static readonly string IdleOars =
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Idle, CharacterSkinStateMap.OarsCarry);
+        private static readonly string WalkOars =
+            CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Walk, CharacterSkinStateMap.OarsCarry);
+
+        /// <summary>A rig 9 carry clip, keyed the way the bake keys it: <c>anim_carry</c>
+        /// (<see cref="CharacterSkinStateMap.CarryKey"/>), with the anim and the carry on the clip.</summary>
+        private static CharacterSkinDef.SkinClip CarryClip(string anim, string carry)
+        {
+            CharacterSkinDef.SkinClip clip = Clip(CharacterSkinStateMap.CarryKey(anim, carry), ClipFrames);
+            clip.Anim = anim;
+            clip.Carry = carry;
+            return clip;
+        }
+
+        /// <summary>State a carry at <paramref name="stance"/> and <paramref name="speed"/>, and state it
+        /// again every frame for <see cref="CarrySettleFrames"/>, as a carrier does from its Update.</summary>
+        private static IEnumerator Ride(Rig rig, CharacterStance stance, float speed)
+        {
+            rig.Rider.Carry(rig.BoatRoot.transform, Vector3.zero, stance, 0f, speed);
+            for (int f = 0; f < CarrySettleFrames; f++)
+            {
+                yield return null;
+                rig.Rider.Carry(rig.BoatRoot.transform, Vector3.zero, stance, 0f, speed);
+            }
+            yield return null;
+        }
+
+        /// <summary>A look source that counts every ask and would answer every one.</summary>
+        private sealed class CountingLookSource : ICharacterLookTargetSource
+        {
+            public int Asks;
+            public Vector3 Answer;
+
+            public bool TryGetLookTarget(string figureKey, Vector3 figureWorldPosition, out Vector3 targetWorldPosition)
+            {
+                Asks++;
+                targetWorldPosition = Answer;
+                return true;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator AtTheWheelAndAtTheOars_SheDrawsTheRigsOwnClips()
+        {
+            // A3: Helm and Oars are the rig's carry stances and rig 9 bakes them. A def that carries
+            // idle_helm, walk_helm, idle_oars and walk_oars draws exactly those, standing and walking, and
+            // reports no fall-back. Driven through the carrier's seam, which states the stance and the speed
+            // every frame. (A run at either asks for the free run by design. That is the state map's, pinned
+            // in CharacterSkinStateMapTests, and this fixture's sprite def has no run art for her gait to
+            // reach.)
+            Rig rig = NewRig(meshOn: true, CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk,
+                             IdleHelm, WalkHelm, IdleOars, WalkOars);
+            var clips = new List<CharacterSkinDef.SkinClip>(rig.Skin.Clips)
+            {
+                CarryClip(CharacterSkinStateMap.Idle, CharacterSkinStateMap.HelmCarry),
+                CarryClip(CharacterSkinStateMap.Walk, CharacterSkinStateMap.HelmCarry),
+                CarryClip(CharacterSkinStateMap.Idle, CharacterSkinStateMap.OarsCarry),
+                CarryClip(CharacterSkinStateMap.Walk, CharacterSkinStateMap.OarsCarry),
+            };
+            rig.Skin.Clips = clips.ToArray();
+            Assert.IsTrue(rig.Skin.IsUsable(), "harness: the skin must stay usable with the stance clips added");
+
+            var cases = new (CharacterStance stance, float speed, CharacterGait gait, string key)[]
+            {
+                (CharacterStance.Helm, 0f, CharacterGait.Idle, IdleHelm),
+                (CharacterStance.Helm, WalkingPace, CharacterGait.Walk, WalkHelm),
+                (CharacterStance.Oars, 0f, CharacterGait.Idle, IdleOars),
+                (CharacterStance.Oars, WalkingPace, CharacterGait.Walk, WalkOars),
+            };
+            foreach (var c in cases)
+            {
+                yield return Ride(rig, c.stance, c.speed);
+                string at = c.stance + " at " + c.speed + " m/s";
+                Assert.IsNull(rig.Presenter.NotDrawingReason, "harness: she must be drawing, " + at);
+                Assert.AreEqual(c.stance, rig.Rider.RequestedStance, "harness: the carrier's word is her stance, " + at);
+                Assert.AreEqual(c.gait, rig.Character.Gait, "harness: the stated speed is her gait, " + at);
+                Assert.AreEqual(c.key, rig.Presenter.DrawnStateKey, at + " must draw the rig's own clip");
+                Assert.IsFalse(rig.Presenter.FellBackToGait, at + " reported a fall-back with its clip right there");
+            }
+
+            rig.Rider.Release();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ADefWithoutTheWheelOrTheOars_DrawsTheFreeGait_AndSaysSo()
+        {
+            // Every rig 7 def bakes neither stance. At the wheel or the oars it draws the free gait clip,
+            // and FellBackToGait says the bake came up short, so a plate and a test can both see the gap.
+            Rig rig = NewRig(meshOn: true, CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk);
+            Assert.IsFalse(rig.Skin.TryGetClip(IdleHelm, out _) || rig.Skin.TryGetClip(WalkOars, out _),
+                           "harness: this def must lack the stance clips");
+
+            var cases = new (CharacterStance stance, float speed, string key)[]
+            {
+                (CharacterStance.Helm, 0f, CharacterSkinStateMap.Idle),
+                (CharacterStance.Helm, WalkingPace, CharacterSkinStateMap.Walk),
+                (CharacterStance.Oars, 0f, CharacterSkinStateMap.Idle),
+                (CharacterStance.Oars, WalkingPace, CharacterSkinStateMap.Walk),
+            };
+            foreach (var c in cases)
+            {
+                yield return Ride(rig, c.stance, c.speed);
+                string at = c.stance + " at " + c.speed + " m/s";
+                Assert.IsNull(rig.Presenter.NotDrawingReason, "harness: she must be drawing, " + at);
+                Assert.AreEqual(c.key, rig.Presenter.DrawnStateKey, at + " must draw the free gait clip");
+                Assert.IsTrue(rig.Presenter.FellBackToGait, at + " hid a missing stance clip");
+            }
+
+            rig.Rider.Release();
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator HerOwnFigureLooksAtNothing_ItNeverAsksTheSeam()
+        {
+            // A2: a skipper or a villager looks at the player; the player looks at nothing. Her skin carries
+            // a look here and the installed source would answer every ask with a point a step to her right,
+            // so the one thing keeping her head the clip's is that her presenter never asks.
+            Rig rig = NewRig(meshOn: true, CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk);
+            rig.Skin.LookChestBone = 1;
+            rig.Skin.LookNeckBone = 1;
+            rig.Skin.LookHeadBone = 2;
+            rig.Skin.LookSplitNeck = 0.4f;
+            rig.Skin.LookSplitHead = 0.6f;
+            rig.Skin.LookYawLimits = new Vector2(-60f, 60f);
+            rig.Skin.LookPitchLimits = new Vector2(-30f, 30f);
+            rig.Skin.LookHeadShare = 0.7f;
+            rig.Skin.LookEyesBeyondDeg = 8f;
+            Assert.IsTrue(rig.Skin.HasLook && rig.Skin.IsUsable(), "harness: the skin must carry a look and stay usable");
+            Assert.IsTrue(GameServices.CharacterHeadLook && GameServices.CharacterEyeLook,
+                          "harness: both look switches must be on, or the guard proves only that they are off");
+
+            var source = new CountingLookSource { Answer = rig.BoatRoot.transform.position + new Vector3(1f, 0.5f, 0f) };
+            CharacterLookTargets.Source = source;
+            try
+            {
+                yield return Ride(rig, CharacterStance.Helm, 0f);
+                Assert.IsNull(rig.Presenter.NotDrawingReason, "harness: she must be drawing");
+                Assert.AreEqual(0, source.Asks, "the player's own figure asked the look seam for a target");
+                Assert.AreEqual(0.0, rig.Presenter.Figure.DrawnLookYaw, "the player's own figure turned her head");
+                Assert.AreEqual(0.0, rig.Presenter.Figure.DrawnLookPitch, "the player's own figure tipped her head");
+                Assert.AreEqual(CharacterFigureLook.GazeOpen, rig.Presenter.Figure.DrawnGaze,
+                                "the player's own eyes looked aside");
+            }
+            finally
+            {
+                CharacterLookTargets.Restore();
+            }
+
+            rig.Rider.Release();
+            yield return null;
+        }
+
         // ---- ashore: the hand-over ----------------------------------------------------------------
         //
         // THE BAR at every hand-over A1 names — board, step ashore, the vault, the intro's carried
@@ -1073,6 +1256,67 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return null;
                 AssertDrawnBy(rig, AshoreMesh, "loaded ashore, frame " + f);
             }
+        }
+
+        [UnityTest]
+        public IEnumerator SteppingOff_HandsHerToThePixelTarget_OnTheCall()
+        {
+            // The figure pixel look draws a figure in art pixels only once she is handed in: her facet material
+            // in the figure queue and the frame marked live (IsoFacetFigureTarget.Sync). Her LateUpdate does that
+            // every frame, but the step-off shows her inside SetMode, and a capture on the call or a presenter's
+            // later pose comes before that LateUpdate: unless the call hands her in, that frame draws her at full
+            // size. She boards before she ever stood ashore, so the step-off BUILDS her ashore figure, a new
+            // material at its shader's queue with no earlier frame to lean on. The look OFF goes first, so a red
+            // ON arm cannot hide it: OFF hands nothing in, on the call or after.
+            yield return null;
+
+            Rig off = NewAshoreRig();
+            off.Config.FigurePixelTarget = false;
+            yield return Board(off);
+            Assert.IsNull(off.Presenter.AshoreFigure,
+                "harness, OFF: she boarded before she ever stood ashore, so the step-off builds her ashore figure");
+            IsoFacetFigureTarget.ResetLive();
+            off.Rider.SetMode(ControlMode.OnFoot, null);
+            AssertDrawnBy(off, AshoreMesh, "OFF, on the call that lands her");
+            Material offFacet = FacetMaterial(off.Presenter.AshoreFigure);
+            int own = offFacet.shader.renderQueue;
+            Assert.AreNotEqual(IsoFacetFigureTarget.FigureRenderQueue, own,
+                "harness: the facet shader's own queue is not the figure queue, so a reading can tell them apart");
+            bool offLiveOnCall = IsoFacetFigureTarget.FiguresLive;
+            int offQueueOnCall = offFacet.renderQueue;
+            yield return null;
+            bool offLiveAfter = IsoFacetFigureTarget.FiguresLive;
+            int offQueueAfter = offFacet.renderQueue;
+            string offRead = $" (on the call: live {offLiveOnCall}, queue {offQueueOnCall}; a frame later: " +
+                             $"live {offLiveAfter}, queue {offQueueAfter}; the shader's own {own})";
+            Assert.IsTrue(!offLiveOnCall && offQueueOnCall == own && !offLiveAfter && offQueueAfter == own,
+                "OFF: the look hands nothing in, on the call or after: no live frame, her facet at its shader's " +
+                "own queue" + offRead);
+
+            TearDown();
+            SetUp();
+            Rig on = NewAshoreRig();
+            on.Config.FigurePixelTarget = true;
+            yield return Board(on);
+            Assert.IsNull(on.Presenter.AshoreFigure,
+                "harness, ON: she boarded before she ever stood ashore, so the step-off builds her ashore figure");
+            IsoFacetFigureTarget.ResetLive();
+            on.Rider.SetMode(ControlMode.OnFoot, null);
+            AssertDrawnBy(on, AshoreMesh, "ON, on the call that lands her");
+            Material onFacet = FacetMaterial(on.Presenter.AshoreFigure);
+            bool liveOnCall = IsoFacetFigureTarget.FiguresLive;
+            int queueOnCall = onFacet.renderQueue;
+            yield return null;
+            bool liveAfter = IsoFacetFigureTarget.FiguresLive;
+            int queueAfter = onFacet.renderQueue;
+            int figureQueue = IsoFacetFigureTarget.FigureRenderQueue;
+            string onRead = $" (on the call: live {liveOnCall}, queue {queueOnCall}; a frame later: " +
+                            $"live {liveAfter}, queue {queueAfter}; the figure queue {figureQueue})";
+            Assert.IsTrue(liveAfter && queueAfter == figureQueue,
+                "harness, ON: a frame later her own LateUpdate has handed her in" + onRead);
+            Assert.IsTrue(liveOnCall && queueOnCall == figureQueue,
+                "ON: the call that lands her hands her to the pixel target, the frame live and her facet in the " +
+                "figure queue, as her LateUpdate does a frame later" + onRead);
         }
 
         [UnityTest]

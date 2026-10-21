@@ -1,5 +1,10 @@
 # `hiddenharbours.scene/1` — the contract
 
+> **RETIRED 2026-09-27.** The scene exporter that implements this contract is retired on the owner's
+> word, "Retired until needed further": its committed packages and its CI job are gone, and its code
+> and tests stay parked in `tools/scene-export/`. The format stays documented here for a revival; the
+> steps to revive it are under "To revive" in [`tools/scene-export/README.md`](../../tools/scene-export/README.md).
+
 **What this is.** The scene editor's package format. It began as a reconstruction from
 [`scene-editor-review.md`](scene-editor-review.md) (#571, corrected by #576) with seventeen
 fields the review named but never specified; **lead-architect settled all seventeen on PR #588**
@@ -187,6 +192,16 @@ judged it no richer, and emptied the coast.)
 
 Refusal is all-or-nothing. A `MANIFEST.json` naming sha256s of packages we declined to write
 would be a third state, worse than either honest one.
+
+**A `--region` run keeps every region in `MANIFEST.json`.** It exports only the regions it
+names, but there is one manifest, so each region it did not export is copied across from the
+committed `MANIFEST.json` byte for byte — after its `sha256` is checked against the package file
+on disk, read with universal newlines (the rule `--check` uses). A missing manifest, a missing
+entry or package, or a sha256 that no longer matches is refused the same all-or-nothing way:
+exit 2, nothing written, and the region named with "run all regions". `--check --region`
+compares the named packages and that merged manifest, so it never calls an untouched region
+STALE. (Before this, `--region NineMileCreek` wrote a manifest holding NineMileCreek alone and
+St Peters' entry was dropped — ledger, 09-19.)
 
 ⚠ **The third row had no test, and its absence cost three.** Two rows of that table were pinned;
 *"anything | can read the bytes | recomputed normally"* was not. The three carry-forward tests
@@ -549,6 +564,10 @@ than shipping an empty layer that reads as an oversight.
 The R8 height texture is a Git LFS object. On a pointer-only checkout the ground layer stays
 unpainted with `x-unavailable` naming the reason; on a checkout with the bytes, the exporter
 decodes the PNG and bands each cell by the shore map's **declared floor elevations**.
+⚠ Since terrain pass 9 PR 4 ([ADR 0046](../adr/0046-still-water-above-the-tide.md) §8) the paint
+tool writes the map at **16 bits**, and the first stroke widens a committed 8-bit map. `decode_r8`
+refuses a 16-bit PNG the same way, with the reason "the height texture did not decode as an 8-bit
+greyscale PNG", until the exporter decodes 16 bits.
 
 ⚠ **That contour is not the ground Unity paints, and the package says so in
 `layers.ground.x-derived`.** `ShoreMaterialAt` also wiggles the elevation so the rings meander,

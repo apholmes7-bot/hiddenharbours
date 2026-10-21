@@ -26,6 +26,14 @@ namespace HiddenHarbours.World
     /// null registration leaves "open water". Clears the accessor on disable only if it still points here
     /// (don't stomp a region that registered after us during an additive swap).</para>
     ///
+    /// <para><b>Still water goes with the terrain (ADR 0046).</b> On enable this also registers its map's
+    /// still water (<see cref="PaintedHeightMap.StillWater"/>) into <see cref="GameServices.StillWater"/> —
+    /// null when the map carries none, so a region that arrives without ponds never inherits the last
+    /// region's — and on disable clears it only if it is still the one it registered. The analytic
+    /// <see cref="TidalTerrain"/> registers none and clears nothing: travel switches the leaving region off
+    /// before the arriving one on, so a painted region's still water has always gone before an analytic
+    /// region arrives.</para>
+    ///
     /// <para><b>Determinism (rule 5).</b> Authored data read at runtime, sampled purely; no RNG, nothing
     /// saved at runtime. The tide is still recomputed from <c>(worldSeed, gameTime)</c>; only the elevation
     /// source changed.</para>
@@ -49,17 +57,29 @@ namespace HiddenHarbours.World
             set => _map = value;
         }
 
+        // The still water this terrain registered on enable (null = none), so teardown clears only its own.
+        private IStillWater _registeredStill;
+
         private void OnEnable()
         {
             // Decode the painted field up front (off the hot path) so the first ElevationAt is cheap.
             if (_map != null) _map.Rebuild();
             GameServices.TidalTerrain = this;
+
+            // The still water goes with the terrain — null (none) included, last writer wins (ADR 0046).
+            _registeredStill = _map != null ? _map.StillWater : null;
+            GameServices.StillWater = _registeredStill;
         }
 
         private void OnDisable()
         {
             if (ReferenceEquals(GameServices.TidalTerrain, this))
                 GameServices.TidalTerrain = null;
+
+            // Compare the RAW slot (the getter answers the empty stand-in, never null).
+            if (GameServices.IsRegisteredStillWater(_registeredStill))
+                GameServices.StillWater = null;
+            _registeredStill = null;
         }
 
         /// <inheritdoc/>

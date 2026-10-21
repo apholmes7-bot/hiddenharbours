@@ -1,3 +1,4 @@
+using UnityEngine;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
@@ -76,5 +77,85 @@ namespace HiddenHarbours.UI
                 ? NavClusterPlacement.Hidden
                 : NavClusterPlacement.ClearOfTheDash;
         }
+
+        // ---- keeping out of what the helm covers (ADR 0050) -----------------------------------------
+
+        /// <summary>
+        /// <see cref="NavCluster(bool, HelmControlStyle, in HelmFit)"/>, kept out of what the helm's UI
+        /// covers (<see cref="HelmFootprint"/>). A CARD that reaches the cluster at home moves it
+        /// BESIDE the card — bottom-left, the move S4.5 already makes for a compass-less dash — so the
+        /// tiller's card now does what the dash's always did. Everything else is the S4.5 answer
+        /// unchanged; <see cref="NavClusterLiftRef"/> then raises whatever still meets the covered area
+        /// (above a full-width band; above a card the cluster could not step beside).
+        ///
+        /// <para>Nothing covered: exactly the S4.5 answer.</para>
+        /// </summary>
+        public static NavClusterPlacement NavCluster(bool aboard, HelmControlStyle style, in HelmFit fit,
+                                                     in HelmFootprintArea covered,
+                                                     float screenW, float screenH)
+        {
+            NavClusterPlacement placement = NavCluster(aboard, style, in fit);
+            if (placement == NavClusterPlacement.BottomCentre
+                && covered.Kind == HelmFootprintKind.Card
+                && covered.Overlaps(NavClusterScreenRect(placement, screenW, screenH)))
+                return NavClusterPlacement.ClearOfTheDash;
+            return placement;
+        }
+
+        /// <summary>
+        /// How far (HUD reference units) the whole cluster rises to keep out of what the helm's UI
+        /// covers, at <paramref name="placement"/>. Its five lines rise together, so its reading order
+        /// and its spacing never change. Keep the same four-reference-pixel bottom inset above
+        /// a covered area, including room for the glyph descenders and outline. Exactly 0 with nothing covered.
+        /// </summary>
+        public static float NavClusterLiftRef(NavClusterPlacement placement, in HelmFootprintArea covered,
+                                              float screenW, float screenH)
+        {
+            if (placement == NavClusterPlacement.Hidden || covered.IsNone) return 0f;
+            float scale = HudBandLayout.ScaleFactor(screenW, screenH);
+            float gap = (ApparentWindTopRef - HudController.LabelBoxHeightRef) * scale;
+            float px = covered.LiftToClear(NavClusterScreenRect(placement, screenW, screenH), gap);
+            // A tall card must never push the heading off the screen. A full-width band reserves
+            // far less than the screen's height, so this ceiling never compromises its clearance.
+            return Mathf.Clamp(px / scale, 0f, Mathf.Max(0f, screenH / scale - HeadingTopRef));
+        }
+
+        /// <summary>
+        /// The cluster's box in SCREEN pixels (bottom-left origin) at <paramref name="placement"/>,
+        /// unlifted: the five label boxes together, from the apparent-wind line's box
+        /// (four reference pixels above the bottom) to the heading line's top. Empty when hidden.
+        /// </summary>
+        public static Rect NavClusterScreenRect(NavClusterPlacement placement, float screenW, float screenH)
+        {
+            if (placement == NavClusterPlacement.Hidden) return default;
+            float s = HudBandLayout.ScaleFactor(screenW, screenH);
+            float bottom = (ApparentWindTopRef - HudController.LabelBoxHeightRef) * s;
+            float top = HeadingTopRef * s;
+            bool clear = placement == NavClusterPlacement.ClearOfTheDash;
+            float xMin = clear ? ClearMarginXRef * s : HomeMinX01 * screenW;
+            float xMax = clear ? ClearWidth01 * screenW + ClearMarginXRef * s : HomeMaxX01 * screenW;
+            return Rect.MinMaxRect(xMin, bottom, xMax, top);
+        }
+
+        // ---- the cluster's geometry: HudController builds the five labels from these ---------------
+        // HUD reference units (the 1280×720 canvas); x anchors as fractions of the canvas width.
+
+        /// <summary>The five labels' shared horizontal anchors at home (bottom-centre).</summary>
+        public const float HomeMinX01 = 0.2f, HomeMaxX01 = 0.8f;
+
+        /// <summary>Each line's top edge above the screen's bottom, lowest first: apparent wind,
+        /// set-and-drift, the rose ribbon, the fixed needle, the heading.</summary>
+        // Port-drift descenders need four more units than the audit's resting COG line, including Outline.
+        public const float ApparentWindTopRef = 60f, SetDriftTopRef = 94f, RibbonTopRef = 142f,
+                           NeedleTopRef = 170f, HeadingTopRef = 212f;
+
+        /// <summary>
+        /// The moved cluster's column: its right anchor, as a fraction of the canvas width, and its left
+        /// margin. It was set clear of the retired small dash card (whose left edge sat at 0.42); the
+        /// tiller's card (120 rig px at SmallScale, centred) sits further in still, and above a
+        /// full-width band the column is lifted clear instead (<see cref="NavClusterLiftRef"/>).
+        /// Left-aligned text then grows rightward from the margin only as far as its own length.
+        /// </summary>
+        public const float ClearWidth01 = 0.34f, ClearMarginXRef = 16f;
     }
 }

@@ -1,0 +1,666 @@
+{
+ "schema": "hidden-harbours/wharf-building-gameplay@1",
+ "rig": "wharfBuildingRig2.geo.js + wharfBuildingRig2.js",
+ "exportSymbol": "WharfBuilding2",
+ "revision": "2.0",
+ "generated": "WharfBuilding2.gameplay() off the live model — do not hand-edit, regenerate",
+ "frame": {
+  "units": "metres",
+  "axes": "+x the dock wall, +y out of the show gable (the main door), +z up from the ground",
+  "origin": "the ground centre under the building (the cell pivot)",
+  "scale_px_per_m": 32,
+  "elev_deg": 40,
+  "dirs": 8,
+  "cell": [
+   1200,
+   1160
+  ],
+  "pivot": [
+   600,
+   780
+  ]
+ },
+ "build": {
+  "Wd": 6.52,
+  "Ln": 9.2,
+  "fH": 0.45,
+  "eaveZ": 5.01,
+  "ridgeZ": 8.205,
+  "loftZ": 3.33,
+  "loftKind": "loft",
+  "wallH": 4.56,
+  "type": "storage",
+  "shape": "gambrel",
+  "size": 0.6,
+  "door": "slidingBarn",
+  "mirror": false,
+  "dock": false,
+  "preset": "gambrelBarn"
+ },
+ "PLACEMENT": {
+  "show": "+Y",
+  "entry": "+Y",
+  "dockSide": null,
+  "facings": [
+   {
+    "dir": 3,
+    "doorFaces": "SW",
+    "via": "door",
+    "showSide": null
+   },
+   {
+    "dir": 5,
+    "doorFaces": "SE",
+    "via": "door",
+    "showSide": null
+   },
+   {
+    "dir": 4,
+    "doorFaces": "S",
+    "via": "door",
+    "showSide": null
+   },
+   {
+    "dir": 2,
+    "doorFaces": "W",
+    "via": "side",
+    "showSide": null
+   },
+   {
+    "dir": 6,
+    "doorFaces": "E",
+    "via": "side",
+    "showSide": null
+   }
+  ]
+ },
+ "FOOTPRINT": [
+  {
+   "id": "building",
+   "x0": -3.31,
+   "x1": 3.31,
+   "y0": -4.65,
+   "y1": 4.65,
+   "walk": false
+  },
+  {
+   "id": "ramp",
+   "x0": -1.65,
+   "x1": 1.65,
+   "y0": 4.6,
+   "y1": 6.1,
+   "walk": true
+  }
+ ],
+ "WALK": [
+  {
+   "id": "floor",
+   "z": 0.45,
+   "rect": {
+    "x0": -3.12,
+    "x1": 3.12,
+    "y0": -4.46,
+    "y1": 4.46
+   },
+   "surface": "plank"
+  },
+  {
+   "id": "loft",
+   "z": 3.33,
+   "rect": {
+    "x0": -3.12,
+    "x1": 3.12,
+    "y0": -4.46,
+    "y1": 4.46
+   },
+   "holes": [
+    {
+     "x0": -3.14,
+     "x1": -2.12,
+     "y0": -3.46,
+     "y1": -0.32
+    }
+   ],
+   "headroom": {
+    "minM": 2,
+    "standHalfX": 3.1
+   },
+   "surface": "plank"
+  },
+  {
+   "id": "ramp",
+   "z": 0,
+   "rect": {
+    "id": "ramp",
+    "x0": -1.65,
+    "x1": 1.65,
+    "y0": 4.6,
+    "y1": 6.1,
+    "walk": true
+   },
+   "surface": "plank"
+  }
+ ],
+ "BLOCKERS": [
+  {
+   "id": "stair",
+   "x0": -3.12,
+   "x1": -2.17,
+   "y0": -3.46,
+   "y1": 0.44,
+   "level": 0
+  },
+  {
+   "id": "traps",
+   "x0": 2.54,
+   "x1": 3.12,
+   "y0": 2.11,
+   "y1": 4.01,
+   "level": 0
+  },
+  {
+   "id": "freezer",
+   "x0": 2.4,
+   "x1": 3.12,
+   "y0": -4.16,
+   "y1": -2.86,
+   "level": 0
+  },
+  {
+   "id": "bench",
+   "x0": -1.77,
+   "x1": -0.07,
+   "y0": -4.46,
+   "y1": -3.86,
+   "level": 0
+  },
+  {
+   "id": "buoyRack",
+   "x0": 2.73,
+   "x1": 3.12,
+   "y0": -3.86,
+   "y1": -1.66,
+   "level": 1
+  }
+ ],
+ "DOORS": [
+  {
+   "id": "door",
+   "kind": "door",
+   "verb": "enter",
+   "also": [
+    "leave"
+   ],
+   "clip": "walk",
+   "at": [
+    0,
+    4.6,
+    0.45
+   ],
+   "stand": [
+    0,
+    6.6
+   ],
+   "standZ": 0,
+   "level": 0,
+   "doorKind": "slidingBarn",
+   "opens": "the leaves slide along the track",
+   "clearWidth": 2.95,
+   "clearHeight": 2.63,
+   "entry": {
+    "kind": "ramp",
+    "len": 1.5,
+    "slopeDeg": 16.699,
+    "x0": -1.65,
+    "x1": 1.65,
+    "y0": 4.6,
+    "y1": 6.1,
+    "zTop": 0.45
+   },
+   "seq": [
+    {
+     "clip": "walk",
+     "loop": true,
+     "rootMotion": "z linear from the ramp foot to the sill",
+     "request": "walkSlope",
+     "slopeDeg": 16.699
+    }
+   ],
+   "path": [
+    [
+     0,
+     6.6,
+     0
+    ],
+    [
+     0,
+     6.3,
+     0
+    ],
+    [
+     0,
+     4.75,
+     0.45
+    ],
+    [
+     0,
+     3.86,
+     0.45
+    ]
+   ],
+   "fits": true,
+   "faceYaw": 180,
+   "reachable": true
+  }
+ ],
+ "CLIMB": [],
+ "STAIRS": [
+  {
+   "id": "loftStair",
+   "kind": "stair",
+   "verb": "climbStair",
+   "also": [
+    "descendStair"
+   ],
+   "clip": "walk",
+   "n": 16,
+   "riser": 0.18,
+   "going": 0.26,
+   "width": 0.95,
+   "pitchDeg": 34.695,
+   "outside": false,
+   "at": [
+    -2.645,
+    0.44,
+    0.45
+   ],
+   "stand": [
+    -2.645,
+    0.94
+   ],
+   "standZ": 0.45,
+   "level": 0,
+   "faceYaw": -180,
+   "top": {
+    "stand": [
+     -2.645,
+     -3.96
+    ],
+    "z": 3.33,
+    "level": 1
+   },
+   "headroomOpening": {
+    "y0": -3.46,
+    "y1": -0.32
+   },
+   "seq": [
+    {
+     "clip": "walk",
+     "loop": true,
+     "rootMotion": {
+      "from": [
+       -2.645,
+       0.44,
+       0.45
+      ],
+      "to": [
+       -2.645,
+       -3.46,
+       3.33
+      ],
+      "rate": 0.727
+     },
+     "request": "stairWalk",
+     "note": "root z linear along the pitch line; the feet float at most ±2.2 px"
+    }
+   ],
+   "exact": {
+    "up": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "reverse": true,
+      "opts": {
+       "railZ": 0.18
+      },
+      "repeat": 16,
+      "advance": 0.26
+     }
+    ],
+    "down": [
+     {
+      "clip": "boardDown",
+      "once": true,
+      "opts": {
+       "railZ": 0.18
+      },
+      "repeat": 16,
+      "advance": 0.26
+     }
+    ],
+    "note": "one riser per clip: fits every creator body (0.06–1.30)"
+   },
+   "fits": true,
+   "reachable": true,
+   "topReachable": true
+  }
+ ],
+ "STATIONS": [
+  {
+   "kind": "fixture",
+   "standZ": 3.33,
+   "level": 1,
+   "id": "buoyRack",
+   "verb": "stowBuoys",
+   "clip": "reach",
+   "also": [
+    "takeBuoy"
+   ],
+   "fixture": "rest",
+   "fixtureZ": 0.95,
+   "at": [
+    2.87,
+    -2.76,
+    4.28
+   ],
+   "stand": [
+    2.25,
+    -2.76
+   ],
+   "opts": {
+    "lift": 0.95
+   },
+   "fits": true,
+   "fit": [
+    0,
+    1.012
+   ],
+   "faceYaw": 90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 0.45,
+   "level": 0,
+   "id": "traps",
+   "verb": "fetchTrap",
+   "clip": "lift",
+   "also": [
+    "place"
+   ],
+   "fixture": "load",
+   "fixtureZ": 0.78,
+   "at": [
+    2.82,
+    3.06,
+    1.23
+   ],
+   "stand": [
+    1.92,
+    3.06
+   ],
+   "opts": {
+    "workZ": 0.78
+   },
+   "fits": true,
+   "fit": [
+    0.718,
+    0.978
+   ],
+   "faceYaw": 90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 0.45,
+   "level": 0,
+   "id": "freezer",
+   "verb": "fetchBait",
+   "clip": "lift",
+   "also": [
+    "place"
+   ],
+   "fixture": "load",
+   "fixtureZ": 0.85,
+   "at": [
+    2.4,
+    -3.51,
+    1.3
+   ],
+   "stand": [
+    1.85,
+    -3.51
+   ],
+   "note": "a chest freezer of bait: lift the lid, lift the box out",
+   "opts": {
+    "workZ": 0.85
+   },
+   "fits": true,
+   "fit": [
+    0.718,
+    0.978
+   ],
+   "faceYaw": 90,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 0.45,
+   "level": 0,
+   "id": "bench",
+   "verb": "paintBuoys",
+   "clip": "bench",
+   "also": [
+    "mendTrap"
+   ],
+   "fixture": "bench",
+   "fixtureZ": 0.8,
+   "at": [
+    -0.92,
+    -4.16,
+    1.25
+   ],
+   "stand": [
+    -0.92,
+    -3.44
+   ],
+   "opts": {
+    "workZ": 0.8
+   },
+   "fits": true,
+   "fit": [
+    0.643,
+    0.853
+   ],
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "hoist",
+   "standZ": 0,
+   "level": 0,
+   "id": "hoist",
+   "verb": "hoist",
+   "clip": "haul",
+   "fixture": null,
+   "at": [
+    0,
+    6.12,
+    1.05
+   ],
+   "stand": [
+    0,
+    6.57
+   ],
+   "note": "haul the loft whip from the wharf; the beam runs out past the ramp",
+   "opts": {},
+   "fits": true,
+   "faceYaw": 180,
+   "reachable": true
+  },
+  {
+   "kind": "fixture",
+   "standZ": 3.33,
+   "level": 1,
+   "id": "loftDoor",
+   "verb": "takeHoisted",
+   "clip": "lift",
+   "also": [
+    "place"
+   ],
+   "fixture": "load",
+   "fixtureZ": 0.85,
+   "at": [
+    0,
+    4.46,
+    4.18
+   ],
+   "stand": [
+    0,
+    3.84
+   ],
+   "note": "swing the load in at the open loft door",
+   "opts": {
+    "workZ": 0.85
+   },
+   "fits": true,
+   "fit": [
+    0.718,
+    0.978
+   ],
+   "faceYaw": 0,
+   "reachable": true
+  }
+ ],
+ "APPROACH": [
+  0,
+  6.6
+ ],
+ "LIGHTS": {
+  "schedule": {
+   "name": "store",
+   "hours": [
+    [
+     6.5,
+     7.5
+    ],
+    [
+     16,
+     18.5
+    ]
+   ]
+  },
+  "lamps": [
+   {
+    "id": "door",
+    "kind": "door",
+    "m": [
+     0,
+     4.95,
+     3.52
+    ],
+    "pool": {
+     "m": [
+      0,
+      5.9
+     ],
+     "r": 3.6
+    },
+    "colour": "#ffc774",
+    "burns": "from dusk while in use"
+   }
+  ],
+  "windows": "emitters win:<ground|loft|office>:n glow with the room while it is in use after dark",
+  "fire": null
+ },
+ "SMOKE": [],
+ "SIGN": null,
+ "CHAR": {
+  "rig": "characterIsoRig9.js",
+  "revision": "9.2",
+  "radiusMax": 0.229,
+  "footprintMax": [
+   0.458,
+   0.37
+  ],
+  "fits": {
+   "bench": [
+    0.643,
+    0.853
+   ],
+   "knife": [
+    0.598,
+    0.76
+   ],
+   "load": [
+    0.718,
+    0.978
+   ],
+   "rest": [
+    0,
+    1.012
+   ],
+   "rail": [
+    0.549,
+    0.724
+   ],
+   "rung": [
+    0.211,
+    0.273
+   ],
+   "stepDown": [
+    0.06,
+    1.3
+   ],
+   "stepUp": [
+    0.549,
+    0.724
+   ],
+   "stepUpNoGrip": [
+    0.06,
+    1.3
+   ]
+  },
+  "rung": 0.24,
+  "standoff": 0.275,
+  "ladderRate": 0.436,
+  "topOut": 0.72,
+  "topAdvance": 0.6,
+  "walk": 0.727,
+  "clearDoor": 0.758,
+  "headroom": 2,
+  "stair": {
+   "riserMax": 0.19,
+   "goingMin": 0.26,
+   "widthMin": 0.9,
+   "outsideRiserMax": 0.2
+  }
+ },
+ "CHAR_REQUESTS": [
+  {
+   "clip": "stairWalk",
+   "why": "v9.2 walk plants on a level; a flight of 0.17–0.19 m risers wants a stepped stride",
+   "now": "walk at 0.727 m/s along the flight, root z linear from the bottom nosing to the top: the feet float at most ± riser / 2 (2.1–2.3 px). Exact for every creator body instead: boardDown per riser (played backward going up), 0.57 s a riser"
+  },
+  {
+   "clip": "walkSlope",
+   "why": "the gear ramps at the wide doors are 16–17°",
+   "now": "walk at 0.727 m/s, root z linear from the foot to the sill (as the wharf gangways)"
+  },
+  {
+   "clip": "ladderOn / ladderOff",
+   "why": "v9.2 has the ladder loop and no way on or off it at the top",
+   "now": "up: board at railZ 0.72 from the top station (three rungs down), the root advanced 0.60 m onto the loft over t 0.28–0.88. Down: blend 300 ms from idle 0.55 m back from the hatch edge to ladderDown u 0 at the top station"
+  },
+  {
+   "clip": "sit",
+   "why": "nets are mended and tallies kept sitting",
+   "now": "the bench clip at the bench height (0.80), standing"
+  },
+  {
+   "clip": "carry box",
+   "why": "a fish box goes in two hands",
+   "now": "the tray carry (CARRIES.tray) over walk, idle, board and boardDown"
+  }
+ ]
+}

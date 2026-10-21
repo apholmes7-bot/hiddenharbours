@@ -1,0 +1,799 @@
+fileFormatVersion: 2
+guid: 8a614ef38fda5304995f0125138df38f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -763137445676356671
+    second: Apron_sandstone_barnacled_mask_0
+  - first:
+      213: 7803499695284617853
+    second: Apron_sandstone_barnacled_mask_1
+  - first:
+      213: 2442912351238255091
+    second: Apron_sandstone_barnacled_mask_2
+  - first:
+      213: -7641331538003179859
+    second: Apron_sandstone_barnacled_mask_3
+  - first:
+      213: -3284166979369397215
+    second: Apron_sandstone_barnacled_mask_4
+  - first:
+      213: -6987185520447569434
+    second: Apron_sandstone_barnacled_mask_5
+  - first:
+      213: -7361362132911367363
+    second: Apron_sandstone_barnacled_mask_6
+  - first:
+      213: 5147635983053567846
+    second: Apron_sandstone_barnacled_mask_7
+  - first:
+      213: 3888343589898847064
+    second: Apron_sandstone_barnacled_mask_8
+  - first:
+      213: 2618941282010762279
+    second: Apron_sandstone_barnacled_mask_9
+  - first:
+      213: -6625594726483441129
+    second: Apron_sandstone_barnacled_mask_10
+  - first:
+      213: 5570194420046728613
+    second: Apron_sandstone_barnacled_mask_11
+  - first:
+      213: -8458148073768265666
+    second: Apron_sandstone_barnacled_mask_12
+  - first:
+      213: 1922618337152109323
+    second: Apron_sandstone_barnacled_mask_13
+  - first:
+      213: -5691538353670143589
+    second: Apron_sandstone_barnacled_mask_14
+  - first:
+      213: 1765518476961002578
+    second: Apron_sandstone_barnacled_mask_15
+  - first:
+      213: 8577123370655724750
+    second: Apron_sandstone_barnacled_mask_16
+  - first:
+      213: 1256669892853558815
+    second: Apron_sandstone_barnacled_mask_17
+  - first:
+      213: -384021034385210130
+    second: Apron_sandstone_barnacled_mask_18
+  - first:
+      213: 6641701296427825226
+    second: Apron_sandstone_barnacled_mask_19
+  - first:
+      213: -308728904085542633
+    second: Apron_sandstone_barnacled_mask_20
+  - first:
+      213: 412901062538076890
+    second: Apron_sandstone_barnacled_mask_21
+  - first:
+      213: -6610482439791229139
+    second: Apron_sandstone_barnacled_mask_22
+  - first:
+      213: 7773906209031756076
+    second: Apron_sandstone_barnacled_mask_23
+  - first:
+      213: 2538341552423138465
+    second: Apron_sandstone_barnacled_mask_24
+  - first:
+      213: 5375359063824554327
+    second: Apron_sandstone_barnacled_mask_25
+  - first:
+      213: -8578500005893881111
+    second: Apron_sandstone_barnacled_mask_26
+  - first:
+      213: -26013402754549258
+    second: Apron_sandstone_barnacled_mask_27
+  - first:
+      213: 1283899710038158518
+    second: Apron_sandstone_barnacled_mask_28
+  - first:
+      213: 4332155220243988058
+    second: Apron_sandstone_barnacled_mask_29
+  - first:
+      213: -8328814076737278698
+    second: Apron_sandstone_barnacled_mask_30
+  - first:
+      213: -7448342870855956665
+    second: Apron_sandstone_barnacled_mask_31
+  - first:
+      213: -2511662456067569588
+    second: Apron_sandstone_barnacled_mask_32
+  - first:
+      213: -3790161232938680004
+    second: Apron_sandstone_barnacled_mask_33
+  - first:
+      213: 1293506188301758449
+    second: Apron_sandstone_barnacled_mask_34
+  - first:
+      213: -3258269809528255104
+    second: Apron_sandstone_barnacled_mask_35
+  - first:
+      213: -5771172326393930765
+    second: Apron_sandstone_barnacled_mask_36
+  - first:
+      213: 8772737054806155035
+    second: Apron_sandstone_barnacled_mask_37
+  - first:
+      213: -3198692825324709998
+    second: Apron_sandstone_barnacled_mask_38
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a633bd2aa04220743a0a912db774858b
+      internalID: -577718508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99090bf3d89a6ae478feadcc8a4517b1
+      internalID: -891570997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 380b48961e90c8140a1b27cd6a096ccc
+      internalID: -193676944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a10940a42c342a7438e85e4253087e1f
+      internalID: 732452610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12962e483b45af4458ba68edd7ab28ff
+      internalID: -949029030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 807250c9b4bb788419ae21cc18822c40
+      internalID: -1598227617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b54423ec36c3640459932ebb50cc24da
+      internalID: -177734528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 116
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aea7b5979758d42459422901d9855850
+      internalID: -226079009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fc8fe56dda7843468566738afa51912
+      internalID: 1520683063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b79e549e07e0994cbf7d85bc8128b3f
+      internalID: 1879745871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d62409b8c852ba4cbab6a8e6a06979d
+      internalID: 473045032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77d8952afb9e60c4da5c48e7e6150ddb
+      internalID: -1650903141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 545fe45a59436164a84680d9a48e26c2
+      internalID: 813015804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e51ac38d3e13f294cac2b0798056b9d4
+      internalID: -907859743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6bbceebe22f5354ebe7e3be32c10a67
+      internalID: 472883188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 58
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdf484d4e5fcb5b4db8cd7a175bc577a
+      internalID: 751068380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12de940dc9c771b409632e2cba309e06
+      internalID: -868024286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7b5710af81026d4481f4730b1251138
+      internalID: -36141185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d98a110f3459fa14385d90b74f591f80
+      internalID: -81152823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61117c181b6c5eb48b0a728363d8ca20
+      internalID: -1522066775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b34f8725fd6d50b489e48bee74fcaf1b
+      internalID: -1137669345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31034482}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 490b3204edee53348bdcd54f24a6c5d4
+      internalID: 1884337760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 696
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.18965517}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99ec922f949226d4b8afc1aea6521260
+      internalID: 1783979201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Apron_sandstone_barnacled_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 0
+        width: 116
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20689656}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54fef37bcd6864d49a8ef680c19da55b
+      internalID: -307220532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e875deda3025735458c1a9048e3ee22a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Apron_sandstone_barnacled_mask_c0_r0: -577718508
+      Apron_sandstone_barnacled_mask_c0_r1: 1520683063
+      Apron_sandstone_barnacled_mask_c0_r2: -868024286
+      Apron_sandstone_barnacled_mask_c1_r0: -891570997
+      Apron_sandstone_barnacled_mask_c1_r1: 1879745871
+      Apron_sandstone_barnacled_mask_c1_r2: -36141185
+      Apron_sandstone_barnacled_mask_c2_r0: -193676944
+      Apron_sandstone_barnacled_mask_c2_r1: 473045032
+      Apron_sandstone_barnacled_mask_c2_r2: -81152823
+      Apron_sandstone_barnacled_mask_c3_r0: 732452610
+      Apron_sandstone_barnacled_mask_c3_r1: -1650903141
+      Apron_sandstone_barnacled_mask_c3_r2: -1522066775
+      Apron_sandstone_barnacled_mask_c4_r0: -949029030
+      Apron_sandstone_barnacled_mask_c4_r1: 813015804
+      Apron_sandstone_barnacled_mask_c4_r2: -1137669345
+      Apron_sandstone_barnacled_mask_c5_r0: -1598227617
+      Apron_sandstone_barnacled_mask_c5_r1: -907859743
+      Apron_sandstone_barnacled_mask_c5_r2: 1884337760
+      Apron_sandstone_barnacled_mask_c6_r0: -177734528
+      Apron_sandstone_barnacled_mask_c6_r1: 472883188
+      Apron_sandstone_barnacled_mask_c6_r2: 1783979201
+      Apron_sandstone_barnacled_mask_c7_r0: -226079009
+      Apron_sandstone_barnacled_mask_c7_r1: 751068380
+      Apron_sandstone_barnacled_mask_c7_r2: -307220532
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

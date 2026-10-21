@@ -45,6 +45,10 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class InteractPriority
     {
+        /// <summary>A deck container's lid: yields to doors, fuel work and every other fixture.
+        /// Helm stations are resolved before this candidate ladder.</summary>
+        public const int DeckStorage = -10;
+
         /// <summary>A thing bolted to the world that you walk up to and work — the seawater spot, Ginny's
         /// freezer, a shop counter. The default rung.</summary>
         public const int Fixture = 0;

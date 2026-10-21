@@ -485,15 +485,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <para><b>⭐ Why a move.</b> The walls reference a face by the GUID in its <c>.meta</c>, and
         /// those GUIDs exist only in the checkout that baked them (the bake is gitignored). A move keeps
         /// the GUID, so a coast built on the v10 look samples the px pixels with no rebuild and no scene
-        /// change; a fresh file would mint a new GUID and leave every wall pointing at nothing. The
-        /// rename to an honest field name is PR 3's.</para>
+        /// change; a fresh file would mint a new GUID and leave every wall pointing at nothing. The band
+        /// field keeps its v10 name (<see cref="CliffCatalog.ColourChannel"/> says what it holds).</para>
         /// </summary>
         public static void ClaimSlot(string outputFolder, string rock, string aspect, int batter, bool px)
         {
-            string want = FaceAssetPath(outputFolder, rock, aspect, batter,
-                                        px ? CliffCatalog.IndexChannel : CliffCatalog.UnlitChannel);
-            string other = FaceAssetPath(outputFolder, rock, aspect, batter,
-                                         px ? CliffCatalog.UnlitChannel : CliffCatalog.IndexChannel);
+            string want = FaceAssetPath(outputFolder, rock, aspect, batter, CliffCatalog.ColourChannel(px));
+            string other = FaceAssetPath(outputFolder, rock, aspect, batter, CliffCatalog.ColourChannel(!px));
             bool haveWant = OnDisk(want), haveOther = OnDisk(other);
 
             if (haveWant && haveOther)

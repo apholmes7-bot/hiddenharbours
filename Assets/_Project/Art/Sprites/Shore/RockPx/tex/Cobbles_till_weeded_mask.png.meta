@@ -1,0 +1,835 @@
+fileFormatVersion: 2
+guid: 3ed2c9111550fe44891b5c6c410ec2dc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5377845375682392797
+    second: Cobbles_till_weeded_mask_0
+  - first:
+      213: -8966751485308859924
+    second: Cobbles_till_weeded_mask_1
+  - first:
+      213: 6695915344887288251
+    second: Cobbles_till_weeded_mask_2
+  - first:
+      213: 8399907412757196780
+    second: Cobbles_till_weeded_mask_3
+  - first:
+      213: 2084870983693667494
+    second: Cobbles_till_weeded_mask_4
+  - first:
+      213: -2322610007263503848
+    second: Cobbles_till_weeded_mask_5
+  - first:
+      213: -6245844285262146029
+    second: Cobbles_till_weeded_mask_6
+  - first:
+      213: 8612664124244683302
+    second: Cobbles_till_weeded_mask_7
+  - first:
+      213: 8220881516552562158
+    second: Cobbles_till_weeded_mask_8
+  - first:
+      213: 1521195183501330121
+    second: Cobbles_till_weeded_mask_9
+  - first:
+      213: 3585024445057491672
+    second: Cobbles_till_weeded_mask_10
+  - first:
+      213: -6088928637391582525
+    second: Cobbles_till_weeded_mask_11
+  - first:
+      213: -4546092062629502052
+    second: Cobbles_till_weeded_mask_12
+  - first:
+      213: -4525745573882716701
+    second: Cobbles_till_weeded_mask_13
+  - first:
+      213: -1162467861561838543
+    second: Cobbles_till_weeded_mask_14
+  - first:
+      213: 2717176568096552965
+    second: Cobbles_till_weeded_mask_15
+  - first:
+      213: -1042728450602715976
+    second: Cobbles_till_weeded_mask_16
+  - first:
+      213: -5326071475681669375
+    second: Cobbles_till_weeded_mask_17
+  - first:
+      213: -7000209643355812450
+    second: Cobbles_till_weeded_mask_18
+  - first:
+      213: 7960650070479738580
+    second: Cobbles_till_weeded_mask_19
+  - first:
+      213: 1404222787601870994
+    second: Cobbles_till_weeded_mask_20
+  - first:
+      213: -870947967853006493
+    second: Cobbles_till_weeded_mask_21
+  - first:
+      213: 7008660550340042967
+    second: Cobbles_till_weeded_mask_22
+  - first:
+      213: 9218747818847083866
+    second: Cobbles_till_weeded_mask_23
+  - first:
+      213: 3693248972083193807
+    second: Cobbles_till_weeded_mask_24
+  - first:
+      213: -2365655530415382238
+    second: Cobbles_till_weeded_mask_25
+  - first:
+      213: 1043234047194247526
+    second: Cobbles_till_weeded_mask_26
+  - first:
+      213: 6124440816543131095
+    second: Cobbles_till_weeded_mask_27
+  - first:
+      213: -6036970253330683100
+    second: Cobbles_till_weeded_mask_28
+  - first:
+      213: 3742033138596333438
+    second: Cobbles_till_weeded_mask_29
+  - first:
+      213: -2403033302551377342
+    second: Cobbles_till_weeded_mask_30
+  - first:
+      213: -870150042865720330
+    second: Cobbles_till_weeded_mask_31
+  - first:
+      213: 6698926697182235500
+    second: Cobbles_till_weeded_mask_32
+  - first:
+      213: -122383673275429516
+    second: Cobbles_till_weeded_mask_33
+  - first:
+      213: -2734904425745249229
+    second: Cobbles_till_weeded_mask_34
+  - first:
+      213: 2850889584561851688
+    second: Cobbles_till_weeded_mask_35
+  - first:
+      213: 4054695627674747068
+    second: Cobbles_till_weeded_mask_36
+  - first:
+      213: 4176384190072334938
+    second: Cobbles_till_weeded_mask_37
+  - first:
+      213: 8567641961690128949
+    second: Cobbles_till_weeded_mask_38
+  - first:
+      213: 9096194903295178398
+    second: Cobbles_till_weeded_mask_39
+  - first:
+      213: 9219775508595119787
+    second: Cobbles_till_weeded_mask_40
+  - first:
+      213: 4106887104608372264
+    second: Cobbles_till_weeded_mask_41
+  - first:
+      213: 8437527710075884079
+    second: Cobbles_till_weeded_mask_42
+  - first:
+      213: 4146132296986803053
+    second: Cobbles_till_weeded_mask_43
+  - first:
+      213: 2559742399215562844
+    second: Cobbles_till_weeded_mask_44
+  - first:
+      213: 6342223144770104804
+    second: Cobbles_till_weeded_mask_45
+  - first:
+      213: 1903030757117594803
+    second: Cobbles_till_weeded_mask_46
+  - first:
+      213: 2230996301859461449
+    second: Cobbles_till_weeded_mask_47
+  - first:
+      213: 577597473023401009
+    second: Cobbles_till_weeded_mask_48
+  - first:
+      213: -3618621356080842739
+    second: Cobbles_till_weeded_mask_49
+  - first:
+      213: 7759236476429288981
+    second: Cobbles_till_weeded_mask_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c0_r0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abd290fb2e3cfc4419ed83b7159a1ae1
+      internalID: 683759388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c1_r0
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08ac8b389323246498731dcf41cf2193
+      internalID: -767697304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c2_r0
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f858e70ab20fd904895a81b9f024fc20
+      internalID: 990262815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c3_r0
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59c2d4629ebb7ee45b7f7fb8144a80d2
+      internalID: -1063588728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c4_r0
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a02ed195b8bb0345a29941cd0df03db
+      internalID: -1035913396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c5_r0
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f69d7d974e22ea540a702fd41c558f5c
+      internalID: -364559682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c6_r0
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90cfd979bc7d6ac4997e50218eeb345f
+      internalID: 331307995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c7_r0
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 64
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21e1f81e588e6334b9802c377a2fa265
+      internalID: -1815445249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c0_r1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2cf01d491806daf4da74facef4a3bb76
+      internalID: 1349518661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c1_r1
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c07ebf1c804e9e43bcb2de5cac1d96b
+      internalID: 2130699919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c2_r1
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be0102d3e7786c647a8ee6151cd650ae
+      internalID: -143512205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c3_r1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12e711b67efadc146a7ee68edc18ea78
+      internalID: -199249831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c4_r1
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88db4faeeebe4654d9857843df3807ec
+      internalID: -1018927158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c5_r1
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e076b15f110ffce489d02ee77170413d
+      internalID: 577567632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c6_r1
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8fe4872cbb80174584cc66223a526e5
+      internalID: 2018689235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c7_r1
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 32
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33eeb53a063090743b902bd148785304
+      internalID: -2126872996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c0_r2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb9d3e9e60ae9754db7ad556ff3d98eb
+      internalID: -636338554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c1_r2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f1d2496c4e2e13468343b93d588d762
+      internalID: 508900459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c2_r2
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3aafff11d8eddf84da6f65ec6f44f3b2
+      internalID: -582470443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c3_r2
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9474e7789cd519c428064e534bdfafdf
+      internalID: 1049764418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c4_r2
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.25}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8acb72a5370debc45b24412e058483de
+      internalID: -903120558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c5_r2
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21875}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5683b3f2d4e46f45bc77620e61af85b
+      internalID: 398449311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c6_r2
+      rect:
+        serializedVersion: 2
+        x: 348
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30826a9ec15085b409f66daeef4afeee
+      internalID: -1418529315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cobbles_till_weeded_mask_c7_r2
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 0
+        width: 58
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34375}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73ca9b6b34f2bb54394707b3f7ed42cf
+      internalID: 2036714816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 08593e434ef4c3240b6dc24b63feedab
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cobbles_till_weeded_mask_c0_r0: 683759388
+      Cobbles_till_weeded_mask_c0_r1: 1349518661
+      Cobbles_till_weeded_mask_c0_r2: -636338554
+      Cobbles_till_weeded_mask_c1_r0: -767697304
+      Cobbles_till_weeded_mask_c1_r1: 2130699919
+      Cobbles_till_weeded_mask_c1_r2: 508900459
+      Cobbles_till_weeded_mask_c2_r0: 990262815
+      Cobbles_till_weeded_mask_c2_r1: -143512205
+      Cobbles_till_weeded_mask_c2_r2: -582470443
+      Cobbles_till_weeded_mask_c3_r0: -1063588728
+      Cobbles_till_weeded_mask_c3_r1: -199249831
+      Cobbles_till_weeded_mask_c3_r2: 1049764418
+      Cobbles_till_weeded_mask_c4_r0: -1035913396
+      Cobbles_till_weeded_mask_c4_r1: -1018927158
+      Cobbles_till_weeded_mask_c4_r2: -903120558
+      Cobbles_till_weeded_mask_c5_r0: -364559682
+      Cobbles_till_weeded_mask_c5_r1: 577567632
+      Cobbles_till_weeded_mask_c5_r2: 398449311
+      Cobbles_till_weeded_mask_c6_r0: 331307995
+      Cobbles_till_weeded_mask_c6_r1: 2018689235
+      Cobbles_till_weeded_mask_c6_r2: -1418529315
+      Cobbles_till_weeded_mask_c7_r0: -1815445249
+      Cobbles_till_weeded_mask_c7_r1: -2126872996
+      Cobbles_till_weeded_mask_c7_r2: 2036714816
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

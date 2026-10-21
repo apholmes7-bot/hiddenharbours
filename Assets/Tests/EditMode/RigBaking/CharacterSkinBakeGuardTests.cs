@@ -40,7 +40,7 @@ namespace HiddenHarbours.Tests.RigBaking
     /// face chain no hash covers — because a composed def is current by construction, and the def
     /// the game LOADS is the one that can go stale.</para>
     /// </summary>
-    public class CharacterSkinBakeGuardTests
+    public partial class CharacterSkinBakeGuardTests
     {
         const string Player = CharacterRigBakeMenu.PlayerPreset;
 
@@ -511,12 +511,23 @@ namespace HiddenHarbours.Tests.RigBaking
         /// guard the moment it is committed. Red means RE-BAKE, never re-pin: for the player the menu is
         /// "Bake character SKIN (the player, ADR 0044 d)". A hash edited by hand says the skin matches
         /// rigs it was never baked from, which is the one thing this pin exists to rule out.</para>
+        ///
+        /// <para><b>The pair it reads is the pair the baker writes today</b>, which
+        /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names: rig 7 over rig 6; rig 9 over its poses
+        /// file from the character intake's Phase B (2026-09-26); rig 10 over its own since the rig 10
+        /// intake's Phase B (2026-10-02). <c>ComposeV9</c> pins the script and the poses of the kit it
+        /// bakes (<see cref="CharacterSkinAssetBaker.LiveKit"/>).</para>
         /// </summary>
         [Test]
         public void EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday()
         {
-            string liveRig7 = CharacterSkinExtractor.SourceSha256();
-            string liveRig6 = CharacterPoseMeshExtractor.SourceSha256();
+            CharacterRigKit kit = CharacterSkinAssetBaker.LiveKit;
+            bool v9 = kit != null;
+            string sourcePath = v9 ? kit.ScriptPath : CharacterSkinExtractor.ScriptPath;
+            string basePath = v9 ? kit.PosesPath : CharacterPoseMeshExtractor.ScriptPath;
+            string liveSource = v9 ? CharacterSkinExtractor.SourceSha256V9(kit) : CharacterSkinExtractor.SourceSha256();
+            string liveBase = v9 ? CharacterSkinExtractor.PosesSha256V9(kit) : CharacterPoseMeshExtractor.SourceSha256();
+            string sourceName = v9 ? kit.Name : "rig 7", baseName = v9 ? kit.Name + "'s poses" : "rig 6";
             string[] guids = UnityEditor.AssetDatabase.FindAssets(
                 "t:" + nameof(CharacterSkinDef), new[] { "Assets" });
             Assert.IsNotEmpty(guids,
@@ -529,15 +540,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
                 Assert.IsNotNull(committed, $"{path} is indexed as a CharacterSkinDef and does not load as one.");
-                Assert.AreEqual(CharacterSkinExtractor.ScriptPath, committed.SourceRigPath,
-                    $"{path} was baked from a different skinned export");
-                Assert.AreEqual(CharacterPoseMeshExtractor.ScriptPath, committed.BaseRigPath,
-                    $"{path} was baked from a different body rig");
+                Assert.AreEqual(sourcePath, committed.SourceRigPath,
+                    $"{path} was baked from a different skinned export than {sourceName}");
+                Assert.AreEqual(basePath, committed.BaseRigPath,
+                    $"{path} was baked from a different body rig than {baseName}");
 
-                if (!string.Equals(liveRig7, committed.SourceRigSha256, StringComparison.Ordinal))
-                    stale.Add($"{path}: rig 7 {Head(committed.SourceRigSha256)} baked, {Head(liveRig7)} live");
-                if (!string.Equals(liveRig6, committed.BaseRigSha256, StringComparison.Ordinal))
-                    stale.Add($"{path}: rig 6 {Head(committed.BaseRigSha256)} baked, {Head(liveRig6)} live");
+                if (!string.Equals(liveSource, committed.SourceRigSha256, StringComparison.Ordinal))
+                    stale.Add($"{path}: {sourceName} {Head(committed.SourceRigSha256)} baked, {Head(liveSource)} live");
+                if (!string.Equals(liveBase, committed.BaseRigSha256, StringComparison.Ordinal))
+                    stale.Add($"{path}: {baseName} {Head(committed.BaseRigSha256)} baked, {Head(liveBase)} live");
             }
 
             Assert.IsEmpty(stale,
@@ -546,7 +557,48 @@ namespace HiddenHarbours.Tests.RigBaking
                 "(the player: \"Bake character SKIN (the player, ADR 0044 d)\") and commit the asset with " +
                 "the rig change. Never edit the hash.");
             Debug.Log($"[char-skin guard] {guids.Length} committed def(s) pin the live rigs: " +
-                      $"rig 7 {Head(liveRig7)} / rig 6 {Head(liveRig6)}");
+                      $"{sourceName} {Head(liveSource)} / {baseName} {Head(liveBase)}");
+        }
+
+        /// <summary>
+        /// <b>Every committed def records its real reach past the cell</b> (the rig 10 intake, Phase B):
+        /// <see cref="CharacterSkinDef.ReachPx"/> is what <see cref="CharacterSkinPose.MeasureReach"/>
+        /// measures on the def's own mesh and clips today, and the ashore overlay pads by it. A def baked
+        /// before the measure, or edited by hand, reds here, before a figure is cut at the overlay's edge.
+        /// </summary>
+        [Test]
+        public void EveryCommittedSkinDef_RecordsItsReachPastTheCell()
+        {
+            string[] guids = UnityEditor.AssetDatabase.FindAssets(
+                "t:" + nameof(CharacterSkinDef), new[] { "Assets" });
+            Assert.IsNotEmpty(guids,
+                "the search found no CharacterSkinDef, and the player's is committed — the search is " +
+                "broken, and every check below would pass on nothing.");
+
+            static string Px(Vector4 r) => $"({r.x:F3}, {r.y:F3}, {r.z:F3}, {r.w:F3})";
+            var wrong = new List<string>();
+            var report = new StringBuilder();
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var def = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
+                Assert.IsNotNull(def, $"{path} is indexed as a CharacterSkinDef and does not load as one.");
+                Vector4 measured = CharacterSkinPose.MeasureReach(def), recorded = def.ReachPx;
+                for (int k = 0; k < 4; k++)
+                    if (!(Mathf.Abs(measured[k] - recorded[k]) <= 1e-3f))
+                    {
+                        wrong.Add($"{path}: records {Px(recorded)} px, measures {Px(measured)}");
+                        break;
+                    }
+                report.Append($"\n  {def.Preset}: {Px(measured)}");
+            }
+
+            Assert.IsEmpty(wrong,
+                "a committed skin def does not record the reach its own mesh and clips measure " +
+                "(left, top, right, bottom past the cell):\n  " + string.Join("\n  ", wrong) +
+                "\nRe-bake it: the bake measures it. Never edit the numbers.");
+            Debug.Log($"[char-skin guard] {guids.Length} committed def(s) record their reach past the cell " +
+                      "(px: left, top, right, bottom):" + report);
         }
 
         /// <summary>
@@ -573,6 +625,17 @@ namespace HiddenHarbours.Tests.RigBaking
         ///
         /// <para>Hashing the face chain into the def (a <c>FaceChainSha256</c> field) would say the same
         /// more cheaply. It is a Core schema change and the lead-architect's call, so it is not here.</para>
+        ///
+        /// <para><b>"The chain" is the one the baker runs today</b>, which
+        /// <see cref="CharacterSkinAssetBaker.LiveRig"/> names. Since the character intake's Phase B
+        /// (2026-09-26) that is a <see cref="CharacterSkinAssetBaker.ComposeV9"/> kit, rig 9 and since
+        /// the rig 10 intake's Phase B (2026-10-02) rig 10 (<see cref="LiveBake"/>), so the composed side
+        /// is <c>ComposeV9</c> for the player, held to the kit's own tolerance
+        /// (<see cref="CharacterSkinExtractor.GateTolerance9"/>: rig 10.3's <c>TOL.gate_m</c>, rig 9's
+        /// <see cref="CharacterSkinExtractor.V9Tolerance"/>, the same 1e-6 m for both), and the face is
+        /// the kit's whole face, every face group bound since character PR 2a
+        /// (<see cref="CharacterSkinExtractor.FaceMeshJs9"/>) and on rig 10 its point marks, not the
+        /// pass-06 layers above.</para>
         /// </summary>
         [Test]
         public void TheCommittedBindMeshIsTheFaceTheChainComposesToday()
@@ -580,7 +643,8 @@ namespace HiddenHarbours.Tests.RigBaking
             string path = CharacterSkinAssetBaker.AssetPathFor(Player);
             var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
             Assert.IsNotNull(committed, $"no CharacterSkinDef at {path}: the player's skin is committed content.");
-            Mesh disk = committed.BindMesh, live = _def.BindMesh;
+            CharacterSkinAssetBaker.SkinBake bake = CharacterSkinAssetBaker.LiveRigIsV9 ? LiveBake(Player) : _bake;
+            Mesh disk = committed.BindMesh, live = bake.Def.BindMesh;
             Assert.IsNotNull(disk, $"{path} carries no bind mesh sub-asset.");
             const string rebake = " The face chain moved her face and the committed skin still wears the " +
                                   "old one: re-bake the player (\"Bake character SKIN (the player, ADR 0044 " +
@@ -609,9 +673,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 double d = Vector3.Distance(lv[i], dv[i]);
                 if (d > worst) { worst = d; worstAt = i; }
             }
-            Assert.LessOrEqual(worst, _bake.Tolerance,
+            Assert.LessOrEqual(worst, bake.Tolerance,
                 $"corner {worstAt} is {worst:E3} m from where the committed mesh has it, against the rig's " +
-                $"tolerance of {_bake.Tolerance:E1} m." + rebake);
+                $"tolerance of {bake.Tolerance:E1} m." + rebake);
 
             BoneWeight[] lw = live.boneWeights, dw = disk.boneWeights;
             Assert.AreEqual(lw.Length, dw.Length, "the bone weight count differs." + rebake);

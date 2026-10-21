@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_CliffWalk
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_cliff_walk
+  DisplayName: Cliff walk
+  Kind: 0
+  Width: 1
+  Points:
+  - {x: 178, y: -2.5}
+  - {x: 177, y: -7}
+  - {x: 177.6, y: -11.5}
+  - {x: 178.8, y: -18.9}
+  - {x: 174.8, y: -24.8}
+  - {x: 170.1, y: -30.3}
+  - {x: 164.7, y: -35.4}
+  - {x: 160.4, y: -38.7}
+  - {x: 156.5, y: -41}
+  - {x: 152.8, y: -43.8}
+  - {x: 146.1, y: -47.4}
+  - {x: 139.2, y: -50.7}
+  - {x: 132.1, y: -53.5}
+  - {x: 124.8, y: -56}
+  - {x: 117.4, y: -58.1}
+  - {x: 109.9, y: -59.9}
+  - {x: 102.3, y: -61.3}
+  - {x: 94.6, y: -62.5}
+  - {x: 86.9, y: -63.3}
+  - {x: 79.1, y: -63.8}
+  - {x: 71.4, y: -64}
+  - {x: 65.4, y: -62.6}
+  - {x: 59.6, y: -58.6}
+  - {x: 52, y: -54.6}
+  - {x: 43, y: -53.4}
+  - {x: 35, y: -54.2}
+  - {x: 28, y: -55.6}
+  - {x: 22.5, y: -57.1}
+  - {x: 17.8, y: -56.9}
+  - {x: 12.5, y: -55.3}
+  - {x: 7.7, y: -53.5}
+  - {x: 0.6, y: -50.6}
+  - {x: -6.3, y: -47.3}
+  - {x: -12.9, y: -43.7}
+  - {x: -19.2, y: -39.6}
+  - {x: -25.1, y: -35}
+  - {x: -30.5, y: -29.9}
+  - {x: -35.2, y: -24.4}
+  - {x: -39.1, y: -18.4}
+  - {x: -41.5, y: -11}
+  - {x: -43.5, y: -4}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: path.stp_cliff_walk
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'The owner''s paths carried round the island: 6 m inside the brows from the slip road to the bar-head road, over the Gap Brook and the Heath Brook on stepping stones. Round the head of the main beach by its key scene''s paint (keyscene.stp_main_beach, the package''s island.json sha256 61f8673f...: points (71.4, -64) to (12.5, -55.3)). Its first leg moved clear of the bait store (M8): (183, -6.5) and (181.7, -12.5) became (177, -7) and (177.6, -11.5), 1.71 m from the store''s footprint (drop 13''s tealShack, 4.12 x 5.5 m at (182.3, -8.8), door SE) and 10.2 m inside the brows there.'

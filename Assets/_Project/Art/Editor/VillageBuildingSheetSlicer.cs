@@ -37,6 +37,12 @@ namespace HiddenHarbours.Art.Editor
     /// <para>Mesh type stays <see cref="SpriteMeshType.FullRect"/> — the tree kit needs Tight because its
     /// wind shader evaluates a bend curve per vertex, and a building has no such shader. FullRect is also
     /// the cheaper quad, which matters when a village is a few dozen of these.</para>
+    ///
+    /// <para><b>A house has four sheets</b> (drop 14, L2): the albedo and its three light channels —
+    /// <c>_mask</c>, <c>_normal</c> and <c>_emit</c> (<see cref="VillageBuildingKit.Channel"/>). The
+    /// channels are sliced on the albedo's grid with the albedo's pivot, and locked as DATA: sRGB off,
+    /// no alpha-is-transparency bleed, and the emitter sheet named <b>R8</b> for Standalone so its one
+    /// byte a texel stays one byte. The lit sprite path samples all four at the albedo's UV.</para>
     /// </summary>
     public static class VillageBuildingSheetSlicer
     {
@@ -106,7 +112,7 @@ namespace HiddenHarbours.Art.Editor
             string[] guids = AssetDatabase.FindAssets("t:Texture2D",
                                                       new[] { BuildingsRoot.TrimEnd('/') });
             int sliced = 0;
-            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var seen = new HashSet<string>(StringComparer.Ordinal);   // the stems sliced
 
             foreach (string guid in guids)
             {
@@ -127,20 +133,33 @@ namespace HiddenHarbours.Art.Editor
                     continue;
                 }
 
-                seen.Add(entry.key);
+                seen.Add(stem);
                 if (SliceOne(path, stem, entry)) sliced++;
                 else failed++;
             }
 
             // The other direction: a contract entry with no sheet on disk. Silence here would mean a
-            // placement tool offering a building whose art is missing.
+            // placement tool offering a building whose art is missing — or, for a house's light
+            // channels, lighting it from a sheet that is not there.
             foreach (var entry in contract.buildings)
             {
-                if (seen.Contains(entry.key)) continue;
-                Debug.LogError(
-                    $"[VillageBuildingSheetSlicer] {VillageBuildingKit.ContractFileName} claims " +
-                    $"'{entry.key}' but {VillageBuildingKit.SheetPath(entry.key)} is not there. Re-bake.");
-                failed++;
+                if (!seen.Contains(VillageBuildingKit.StemFor(entry.key)))
+                {
+                    Debug.LogError(
+                        $"[VillageBuildingSheetSlicer] {VillageBuildingKit.ContractFileName} claims " +
+                        $"'{entry.key}' but {VillageBuildingKit.SheetPath(entry.key)} is not there. Re-bake.");
+                    failed++;
+                }
+                if (!VillageBuildingKit.HasLightChannels(entry)) continue;
+                foreach (VillageBuildingKit.Channel c in VillageBuildingKit.LightChannels)
+                {
+                    if (seen.Contains(VillageBuildingKit.StemFor(entry.key, c))) continue;
+                    Debug.LogError(
+                        $"[VillageBuildingSheetSlicer] '{entry.key}' is a {VillageBuildingKit.LightChannelRig} " +
+                        $"and bakes its light channels, but {VillageBuildingKit.SheetPath(entry.key, c)} is " +
+                        "not there. Re-bake.");
+                    failed++;
+                }
             }
 
             AssetDatabase.SaveAssets();
@@ -159,7 +178,8 @@ namespace HiddenHarbours.Art.Editor
 
             // Stamp the import settings BEFORE reading the texture.
             int cap = VillageBuildingKit.ImportCapFor(entry);
-            ApplyImportSettings(importer, cap);
+            VillageBuildingKit.Channel channel = VillageBuildingKit.ChannelOf(entry, stem);
+            ApplyImportSettings(importer, cap, channel);
 
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
             if (tex == null)
@@ -245,7 +265,7 @@ namespace HiddenHarbours.Art.Editor
                                 .GroupBy(r => r.name)
                                 .ToDictionary(g => g.Key, g => g.First().spriteID);
 
-            SpriteRect[] rects = BuildRects(entry, existingIds);
+            SpriteRect[] rects = BuildRects(entry, existingIds, channel);
             dp.SetSpriteRects(rects);
 
             var nameIdDp = dp.GetDataProvider<ISpriteNameFileIdDataProvider>();
@@ -258,9 +278,14 @@ namespace HiddenHarbours.Art.Editor
                       $"({entry.rows} row(s) × {entry.cols} of {entry.cellW}×{entry.cellH}), " +
                       $"ground-centre pivot {VillageBuildingKit.NormalizedPivot(entry)} " +
                       $"({VillageBuildingKit.BelowGroundPad(entry)} px of art below the ground line — " +
-                      "bottom-centre would sink it by that much).");
+                      "bottom-centre would sink it by that much)" +
+                      (channel == VillageBuildingKit.Channel.Albedo ? "." : $", {channel} channel locked as data."));
             return true;
         }
+
+        /// <summary>The build-target group the emitter sheet's R8 override is written for (Windows, Mac
+        /// and Linux players, and the editor on any of them) — <c>PaintedHeightPng</c>'s.</summary>
+        public const string StandalonePlatform = "Standalone";
 
         /// <summary>
         /// The kit's import lock. Starts from <see cref="ArtImportPipeline.ApplyLockedSettings"/> (PPU 32,
@@ -272,7 +297,10 @@ namespace HiddenHarbours.Art.Editor
         /// Not the kit constant: one build (the cannery) does not pack under it, and importing a sheet
         /// at a cap smaller than it was packed for downscales it SILENTLY with the sprite count still
         /// correct.</param>
-        public static void ApplyImportSettings(TextureImporter importer, int cap = 0)
+        /// <param name="channel">Which of the build's sheets this is. The light channels are numbers:
+        /// sRGB off, no alpha-is-transparency, and the emitter sheet named R8 for Standalone.</param>
+        public static void ApplyImportSettings(TextureImporter importer, int cap = 0,
+                                               VillageBuildingKit.Channel channel = VillageBuildingKit.Channel.Albedo)
         {
             ArtImportPipeline.ApplyLockedSettings(importer, importer.assetPath);
 
@@ -289,9 +317,12 @@ namespace HiddenHarbours.Art.Editor
             // wind bend needs Tight), and a quad is the cheaper mesh for a village of these.
             s.spriteMeshType = SpriteMeshType.FullRect;
 
-            // The albedo IS colour, unlike the tree kit's mask/normal channels.
-            s.sRGBTexture = true;
-            s.alphaIsTransparency = true;
+            // The albedo IS colour. Its light channels are numbers, as the tree kit's are: an sRGB decode
+            // would bend every mask, normal and emitter byte on the way in, and alpha-is-transparency
+            // bleeds RGB into the transparent margin — where the mask's A IS the coverage signal.
+            bool colour = VillageBuildingKit.IsColourChannel(channel);
+            s.sRGBTexture = colour;
+            s.alphaIsTransparency = colour;
             s.alphaSource = TextureImporterAlphaSource.FromInput;
 
             // The real pivot is set per SPRITE RECT (BuildRects). Leave the sheet-level default honest
@@ -300,6 +331,20 @@ namespace HiddenHarbours.Art.Editor
             s.spriteAlignment = (int)SpriteAlignment.Custom;
 
             importer.SetTextureSettings(s);
+
+            // 🔴 The emitter sheet NAMES R8 for Standalone rather than leaving the format on Automatic:
+            // an importer may widen a one-byte grayscale PNG (four times the memory for the same byte),
+            // and every test of what the bake WROTE would stay green over it. The R16 height maps'
+            // rule (PaintedHeightPng), at eight bits. A mobile port adds its own override here.
+            if (channel == VillageBuildingKit.Channel.Emit)
+            {
+                TextureImporterPlatformSettings standalone = importer.GetPlatformTextureSettings(StandalonePlatform);
+                standalone.overridden = true;
+                standalone.maxTextureSize = importer.maxTextureSize;   // an override must not rescale
+                standalone.format = TextureImporterFormat.R8;
+                standalone.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.SetPlatformTextureSettings(standalone);
+            }
         }
 
         /// <summary>
@@ -313,7 +358,8 @@ namespace HiddenHarbours.Art.Editor
         /// empty cell is a transparent rect that a placement tool would happily offer.</para>
         /// </summary>
         public static SpriteRect[] BuildRects(VillageBuildingKit.Entry entry,
-                                              IReadOnlyDictionary<string, GUID> existingIds = null)
+                                              IReadOnlyDictionary<string, GUID> existingIds = null,
+                                              VillageBuildingKit.Channel channel = VillageBuildingKit.Channel.Albedo)
         {
             Vector2 pivot = VillageBuildingKit.NormalizedPivot(entry);
             string stem = VillageBuildingKit.StemFor(entry.key);
@@ -326,7 +372,9 @@ namespace HiddenHarbours.Art.Editor
                     int facing = r * entry.cols + c;
                     if (facing >= entry.facings) break;
 
-                    string name = VillageBuildingKit.SpriteNameFor(entry.key, facing);
+                    string name = channel == VillageBuildingKit.Channel.Albedo
+                        ? VillageBuildingKit.SpriteNameFor(entry.key, facing)
+                        : VillageBuildingKit.SpriteNameFor(entry.key, channel, facing);
                     rects.Add(new SpriteRect
                     {
                         name = name,
@@ -421,15 +469,72 @@ namespace HiddenHarbours.Art.Editor
                                 Mathf.RoundToInt(sprite.rect.height) == entry.cellH);
                 }
 
+                if (VillageBuildingKit.HasLightChannels(entry))
+                    foreach (VillageBuildingKit.Channel c in VillageBuildingKit.LightChannels)
+                        ok &= VerifyChannel(entry, c);
+
                 if (!ok) allOk = false;
                 else if (logEachPass)
                     Debug.Log($"[VillageBuildingSheetSlicer] VERIFY OK: {stem} = {sprites.Length} " +
-                              $"facing(s) of {entry.cellW}×{entry.cellH}, pivot {expectedPivot}.");
+                              $"facing(s) of {entry.cellW}×{entry.cellH}, pivot {expectedPivot}" +
+                              (VillageBuildingKit.HasLightChannels(entry) ? ", with its three light channels." : "."));
             }
 
             Debug.Log($"[VillageBuildingSheetSlicer] VERIFY: checked {checkedCount} sheet(s) of " +
                       $"{contract.buildings.Length} claimed — " + (allOk ? "ALL PASS" : "FAILURES PRESENT"));
             return allOk && checkedCount == contract.buildings.Length;
+        }
+
+        /// <summary>
+        /// One light channel of a house: on disk, the albedo's size and grid, the same facings and
+        /// pivot, locked as data — and, for the emitter sheet, R8 for Standalone.
+        /// </summary>
+        static bool VerifyChannel(VillageBuildingKit.Entry entry, VillageBuildingKit.Channel channel)
+        {
+            string path = VillageBuildingKit.SheetPath(entry.key, channel);
+            string stem = VillageBuildingKit.StemFor(entry.key, channel);
+            if (!File.Exists(path))
+            {
+                Debug.LogError($"[VillageBuildingSheetSlicer] VERIFY: '{path}' missing on disk — " +
+                               $"'{entry.key}' bakes its light channels.");
+                return false;
+            }
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (importer == null || tex == null)
+            {
+                Debug.LogError($"[VillageBuildingSheetSlicer] VERIFY: '{stem}' did not import as a texture.");
+                return false;
+            }
+
+            bool ok = true;
+            ok &= Check(stem, "Multiple-mode", importer.spriteImportMode == SpriteImportMode.Multiple);
+            ok &= Check(stem, "Point filter", importer.filterMode == FilterMode.Point);
+            ok &= Check(stem, "Compression None",
+                        importer.textureCompression == TextureImporterCompression.Uncompressed);
+            ok &= Check(stem, "mips off", !importer.mipmapEnabled);
+            ok &= Check(stem, "sRGB OFF (this sheet is data, not colour)", !VillageBuildingKit.SRgbOf(importer));
+            ok &= Check(stem, "alpha-is-transparency OFF", !importer.alphaIsTransparency);
+            ok &= Check(stem, $"the albedo's {entry.sheetW}×{entry.sheetH}, got {tex.width}×{tex.height}",
+                        tex.width == entry.sheetW && tex.height == entry.sheetH);
+            if (channel == VillageBuildingKit.Channel.Emit)
+            {
+                TextureImporterPlatformSettings standalone = importer.GetPlatformTextureSettings(StandalonePlatform);
+                ok &= Check(stem, "an R8 Standalone override, uncompressed",
+                            standalone.overridden && standalone.format == TextureImporterFormat.R8 &&
+                            standalone.textureCompression == TextureImporterCompression.Uncompressed);
+            }
+
+            var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
+            ok &= Check(stem, $"{entry.facings} facing sprite(s), got {sprites.Length}", sprites.Length == entry.facings);
+            Vector2 expectedPivot = VillageBuildingKit.PivotPixels(entry);
+            foreach (var sprite in sprites)
+                ok &= Check(sprite.name, $"the albedo's cell {entry.cellW}×{entry.cellH} and pivot {expectedPivot}",
+                            Mathf.RoundToInt(sprite.rect.width) == entry.cellW &&
+                            Mathf.RoundToInt(sprite.rect.height) == entry.cellH &&
+                            Mathf.Abs(sprite.pivot.x - expectedPivot.x) < 0.01f &&
+                            Mathf.Abs(sprite.pivot.y - expectedPivot.y) < 0.01f);
+            return ok;
         }
 
         public static void VerifyAllFromCommandLine()
