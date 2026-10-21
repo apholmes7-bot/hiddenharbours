@@ -303,10 +303,10 @@ MonoBehaviour:
     CapEnvelopeThreshold: 0.62
     EnvelopeBandStrength: 0.35
     DefaultOn: 1
-  TerrainUnderwaterClip: 0
-  ShallowsFloor: 0
+  TerrainUnderwaterClip: 1
+  ShallowsFloor: 1
   ShallowsFloorRefraction: 0.25
-  ShallowsSubmergedProps: 0
+  ShallowsSubmergedProps: 1
   HullKeylineFlood: 0
   HullMeshReflections: 0
   HullReflectionResolutionDivisor: 1

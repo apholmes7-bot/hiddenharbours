@@ -209,9 +209,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "no push writes a material-carried value");
         }
 
-        /// <summary>Each step's switch ships OFF and, off, is today's pixels bit for bit: OFF in the code's
-        /// default and in the shipped asset (a GameConfig.asset lagging the code reads a bool's default,
-        /// false, also off), no config wired reads OFF, and the shader's change sits wholly behind it.</summary>
+        /// <summary>Each step's switch, off, is today's pixels bit for bit: OFF in the code's default (a
+        /// GameConfig.asset lagging the code reads a bool's default, false, also off), no config wired reads
+        /// OFF, and the shader's change sits wholly behind it. The shipped asset turns each ON since the
+        /// project lead accepted the plates (10-20).</summary>
         [TestCase("clip")]
         [TestCase("floor")]
         [TestCase("props")]
@@ -220,9 +221,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             switch (step)
             {
                 case "clip":
-                    // W4-4a ships OFF (the handoff's switches: OFF in data until the plates are accepted).
+                    // W4-4a ships ON in the asset since the project lead accepted its plates (10-20); the
+                    // code's default and an unwired config stay OFF.
                     Assert.IsFalse(GameConfig.DefaultTerrainUnderwaterClip);
-                    Assert.AreEqual("0", AssetKey("TerrainUnderwaterClip"));
+                    Assert.AreEqual("1", AssetKey("TerrainUnderwaterClip"));
                     StringAssert.Contains("publicboolTerrainUnderwaterClip=DefaultTerrainUnderwaterClip;",
                         Squash(Code(ConfigPath)));
                     StringAssert.Contains(
@@ -248,9 +250,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     StringAssert.StartsWith("float2wp=i.worldXY;", after, "nothing between the gate and the ground");
                     break;
                 case "floor":
-                    // W4-4b ships OFF, pushed by the sea itself from its own config, beside the salience knobs.
+                    // W4-4b ships ON in the asset since the project lead accepted its plates (10-20), pushed by
+                    // the sea itself from its own config, beside the salience knobs; the code's default and a sea
+                    // with no config wired stay OFF.
                     Assert.IsFalse(GameConfig.DefaultShallowsFloor);
-                    Assert.AreEqual("0", AssetKey("ShallowsFloor"));
+                    Assert.AreEqual("1", AssetKey("ShallowsFloor"));
                     StringAssert.Contains("publicboolShallowsFloor=DefaultShallowsFloor;", Squash(Code(ConfigPath)));
                     // The bend, read only while the floor is on: 0.25, about 1 - 1/1.33 (light entering sea
                     // water from straight above). An asset lagging the code reads the initializer.
@@ -285,10 +289,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                             output + " is written by the sample alone");
                     break;
                 case "props":
-                    // W4-4c ships OFF: the plants under the water draw as before, seen only where the shore
-                    // fades the sea. An asset lagging the code reads a bool's default, false, also off.
+                    // W4-4c ships ON in the asset since the project lead accepted its plates (10-20). The code's
+                    // default and an unwired config stay OFF, and there the plants under the water draw as before,
+                    // seen only where the shore fades the sea. An asset lagging the code reads a bool's default,
+                    // false, also off.
                     Assert.IsFalse(GameConfig.DefaultShallowsSubmergedProps);
-                    Assert.AreEqual("0", AssetKey("ShallowsSubmergedProps"));
+                    Assert.AreEqual("1", AssetKey("ShallowsSubmergedProps"));
                     StringAssert.Contains("publicboolShallowsSubmergedProps=DefaultShallowsSubmergedProps;",
                         Squash(Code(ConfigPath)));
                     StringAssert.Contains(
