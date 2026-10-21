@@ -24,20 +24,22 @@ namespace HiddenHarbours.Tests.EditMode
     /// <item><b>The ground, station by station:</b> a station end read off G3 sits on it within 2 cm; an end that kept the
     /// scene's own height is within 10 cm of G3 (the kept rule), but a banked wall's toe, which stands as built where G3's
     /// face is one the default bake does not draw (plan B).</item>
-    /// <item><b>The scene:</b> a kept end is the committed scene's own, to the bit.</item>
+    /// <item><b>The scene:</b> a kept end is the scene's own as it stood before step 11, to the bit.</item>
     /// <item><b>The faces:</b> no wall stands where its face is under the builder's minimum; each is a class the plan calls
     /// rock, wears a face the aspect law allows and sorts over no more world Y than the cut allows.</item>
     /// <item><b>The ids:</b> 000 to 117 with no gap, each live, retired or held; each live id one wall in the scene step 11
     /// writes, named by its Def; a retired or held id none.</item>
-    /// <item><b>The round trip:</b> the walls the Defs make are the ones step 11 writes, to the bit, and planning it again
-    /// is empty; it deletes only the retired walls, four documents each, and keeps every standing wall's ids.</item>
+    /// <item><b>The round trip:</b> the walls the Defs make are the ones step 11 writes, to the bit, and the committed
+    /// scene is what it writes (planned on it, the step is empty); it deleted only the retired walls, four documents each,
+    /// and kept every standing wall's ids.</item>
     /// <item><b>The openings:</b> the ramp's eight (the chunks step 07 stood down) are retired and no wall stands in their
     /// place; no wall is drawn over the berth, the gangway or Wharf Road.</item>
     /// </list>
     ///
     /// <para><b>It needs no faces.</b> Every claim reads the Defs, the scene's text and G3; no baked PNG is loaded and no
-    /// wall is built, so it holds on a CI runner, which has none. The committed scene is read and step 11 applied to it in
-    /// memory: the file is not written.</para>
+    /// wall is built, so it holds on a CI runner, which has none. The committed scene is step 11's output; the walls as
+    /// the scene held them before it are a fixture (<see cref="BeforePath"/>): the 86 walls' own documents, copied byte
+    /// for byte from the scene at the base step 11 was applied to.</para>
     /// </summary>
     public class NineMileCreekWallsAgreeWithGroundTests
     {
@@ -64,6 +66,14 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>G3's extent, either side of its centre at the origin (m).</summary>
         static readonly Vector2 HalfExtent = new Vector2(380f, 280f);
 
+        /// <summary>The walls before step 11: the scene's preamble, its <c>CliffWalls</c> root and each wall's documents,
+        /// as the committed scene held them before the step was applied (NMC H3 Phase B).</summary>
+        internal const string BeforePath = "Assets/Tests/EditMode/Fixtures/NineMileCreekWallsBeforeG3.txt";
+
+        /// <summary>The ramp half of PR 2 row 9's rule: no standing wall's station comes within this of Wharf Road's ramp
+        /// (m; carried from <c>NineMileCreekSceneRoutesTests</c>).</summary>
+        const float RampCorridorMetres = 4.1f;
+
         string _committed;
         List<CliffWallDef> _defs;
         List<CliffWallDef> _live;
@@ -81,7 +91,9 @@ namespace HiddenHarbours.Tests.EditMode
             _defs = defs;
             _live = _defs.Where(d => d.IsLive).ToList();
             _committed = File.ReadAllText(NineMileCreekLayerRefresh.ScenePath);
-            _before = StPetersCliffWalls.WallsInScene(_committed).ToDictionary(w => w.RealId);
+            // The fixture is text: a checkout may give it CR line ends, which the scene reader refuses.
+            _before = StPetersCliffWalls.WallsInScene(File.ReadAllText(BeforePath).Replace("\r\n", "\n"))
+                                        .ToDictionary(w => w.RealId);
             _step = CliffWalls(SceneYaml.Parse(_committed), _defs, NineMileCreekCliffWalls.ChunkToeSpanMetres,
                                NineMileCreekGroundSteps.WallsStep);
             _after = _step.ApplyTo(_committed);
@@ -164,10 +176,11 @@ namespace HiddenHarbours.Tests.EditMode
                       $"the {Banked.Length} banked walls' toes stand {bankedLeast:F2} to {bankedMost:F2} m off it, as built");
         }
 
-        /// <summary>⭐ A kept end is the committed scene's own, to the bit: the station its k names on the wall it came from
-        /// (its own, or the one it was cut from). Where both ends kept, so did its drop and its toe's height.</summary>
+        /// <summary>⭐ A kept end is the scene's own as it stood before step 11, to the bit: the station its k names on the
+        /// wall it came from (its own, or the one it was cut from). Where both ends kept, so did its drop and its toe's
+        /// height.</summary>
         [Test]
-        public void AKeptEnd_IsTheCommittedScenesOwn_ToTheBit()
+        public void AKeptEnd_IsTheScenesOwnBeforeStep11_ToTheBit()
         {
             int ends = 0;
             var off = new List<string>();
@@ -323,10 +336,10 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(n >= FirstNew && n < FirstHeld, !string.IsNullOrEmpty(d.SplitFrom),
                     $"{d.Id}: a new id is cut from a wall, and only a new live id is ({d.SplitFrom})");
                 Assert.AreEqual(n < SceneCount, _before.ContainsKey(d.RealId),
-                    $"{d.Id}: the committed scene's walls are 000 to {SceneCount - 1:D3}, by their own ids");
+                    $"{d.Id}: the scene's walls before step 11 were 000 to {SceneCount - 1:D3}, by their own ids");
                 if (d.Status == CliffWallStatus.Retired) retired.Add(d.Id);
             }
-            Assert.AreEqual(SceneCount, _before.Count, "the committed scene's walls");
+            Assert.AreEqual(SceneCount, _before.Count, "the scene's walls before step 11");
             foreach (CliffWallDef d in _live)
             {
                 Assert.IsFalse(retired.Contains(d.Follows), $"{d.Id} follows {d.Follows}, which is retired");
@@ -389,10 +402,12 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>⭐ Step 11 deletes only the retired walls, each one's four documents, and keeps every standing wall's
-        /// ids (a split's new wall takes new ones); planned again on what it writes, it is empty.</summary>
+        /// ids (a split's new wall takes new ones); planned again on what it wrote, the committed scene, it is empty.</summary>
         [Test]
         public void Step11_DeletesOnlyTheRetiredWalls_KeepsTheStandingWallsIds_AndPlannedAgainIsEmpty()
         {
+            Assert.IsTrue(_step.IsEmpty, "the committed scene is not what step 11 writes: apply it (Hidden Harbours > " +
+                                         "Nine Mile Creek Layers > Apply named patches)\n" + _step.Summary());
             var after = _walls.ToDictionary(w => w.RealId);
             SceneYaml scene = SceneYaml.Parse(_after);
             foreach (CliffWallDef d in _defs.Where(d => _before.ContainsKey(d.RealId)))
@@ -425,11 +440,28 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>⭐ The ramp's opening: the eight chunks step 07 stood down across Wharf Road's ramp are retired, step 11
         /// writes no wall of theirs, and no live wall stands where they stood (their footprints, brow to toe, as their Defs
-        /// keep them). (Takes over <c>NineMileCreekSceneRoutesTests.OnlyRow9sEightCliffFacesStandDown_TheirIdsAndMaterialKept</c>
-        /// once step 11 is applied.)</summary>
+        /// keep them); no standing wall comes within <see cref="RampCorridorMetres"/> of Wharf Road's ramp, and every wall
+        /// still wears the one material. (Replaces <c>NineMileCreekSceneRoutesTests.OnlyRow9sEightCliffFacesStandDown_TheirIdsAndMaterialKept</c>,
+        /// whose eight walls step 11 deletes.)</summary>
         [Test]
         public void TheRampsOpening_TheEightStep07StoodDownAreRetired_AndNoWallStandsWhereTheyStood()
         {
+            int neck = System.Array.FindLastIndex(G.WharfRoad, v => v.y == G.WharfRoad[0].y);
+            Vector2[] ramp = G.WharfRoad.Skip(neck).ToArray();
+            var near = new List<string>();
+            foreach (CliffWallDef d in _live)
+                for (int i = 0; i < d.Brow.Length; i++)
+                    foreach (Vector2 p in new[] { d.Brow[i], d.Toe[i] })
+                    {
+                        float r = Enumerable.Range(0, ramp.Length - 1).Min(s => ToSegment(p, ramp[s], ramp[s + 1]));
+                        if (r <= RampCorridorMetres) near.Add($"{At(d, i)} {r:F2} m");
+                    }
+            Assert.IsEmpty(near, $"walls draw across Wharf Road's ramp: {string.Join("; ", near.Take(12))}");
+
+            SceneYaml scene = SceneYaml.Parse(_after);
+            string[] materials = _walls.Select(w => scene.Get(w.Surface).Field("_material")).Distinct().ToArray();
+            Assert.AreEqual(1, materials.Length, $"the walls wear {materials.Length} materials; the kit is one: {string.Join(", ", materials)}");
+
             Assert.AreEqual(8, NineMileCreekGroundSteps.Pr2CliffChunks.Length, "the ramp's eight");
             var names = new HashSet<string>(_walls.Select(w => w.Name));
             var footprints = new List<Vector2[]>();
