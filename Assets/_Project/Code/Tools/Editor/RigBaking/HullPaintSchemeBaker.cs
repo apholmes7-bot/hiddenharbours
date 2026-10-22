@@ -219,6 +219,47 @@ namespace HiddenHarbours.Tools.RigBaking
                             schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
                                             "return [id,s.name||'',s.note||''];})",
                             defaultSchemeExpr: "defaultScheme"),
+            // Published hull-layout paints: scheme-stable groups, exterior only, in mesh palette order.
+            new PaintedHull("goFast", "hullmesh.go_fast_iso", "GoFastIso", "paint.go_fast_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('go_fast'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
+
+            // Published hull-layout paints: scheme-stable groups, exterior only, in mesh palette order.
+            new PaintedHull("bowrider", "hullmesh.bowrider_iso", "BowriderIso", "paint.bowrider_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('bowrider'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
+
+            // Published hull-layout paints: scheme-stable groups, exterior only, in mesh palette order.
+            new PaintedHull("expressCruiser", "hullmesh.express_cruiser_iso", "ExpressCruiserIso", "paint.express_cruiser_",
+                matsExpr: "schemeIds.slice(0,1).reduce(function(t){" +
+                          "var H={G}.byId('express_cruiser'),D=H.matsFor().MATS,M=H.matsFor({0}).MATS," +
+                          "A=H.schemeIds.map(function(s){return H.matsFor(s).MATS;})," +
+                          "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
+                          "F.forEach(function(f){u[f.mat]=1;});" +
+                          "Object.keys(D).forEach(function(n){if(u[n]){" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp];}));" +
+                          "g[n]=k;if(!r[k])r[k]=n;}});" +
+                          "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
+                schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
+                defaultSchemeExpr: "defaultScheme"),
         };
 
         /// <summary>

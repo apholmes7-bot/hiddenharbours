@@ -64,6 +64,49 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(error.Message, Is.EqualTo("box_walk: geometry.units: unsupported unit \"feet\""));
         }
 
+        static RigMeshData WithPaintSchemes(bool split, bool singleScheme = false, bool declareSchemes = true)
+        {
+            using var host = RigScriptHostFactory.Create();
+            host.Execute(File.ReadAllText(Path.Combine(RigCatalog.RepoRoot, HullWalkFixture.Rig)));
+            // Give the synthetic fixture two exterior paint names, then vary only their
+            // in-memory scheme tables. Its file and its walk stamp remain untouched.
+            host.Execute("const paintFaces = BoxWalk.faceList, paintMats = BoxWalk.matsFor; " +
+                "BoxWalk.faceList = () => {const f=paintFaces();f[0].mat='stripe';return f;}; " +
+                "BoxWalk.matsFor = s => {const M=paintMats().MATS;" +
+                "M.stripe=Object.assign({},M.paint,{ramp:" +
+                (split ? "s==='two'?['#abcdef','#fedcba']:M.paint.ramp" : "M.paint.ramp") + "});return {MATS:M};};");
+            if (declareSchemes)
+                host.Execute("BoxWalk.schemeIds=" + (singleScheme ? "['one']" : "['one','two']") + ";");
+            return HullWalkRigExtractor.Extract(host, HullWalkFixture.Rig, "BoxWalk", "BoxWalk",
+                Path.Combine(RigCatalog.RepoRoot, HullWalkFixture.Walk));
+        }
+
+        [Test]
+        public void PaintNamesIdenticalInEveryScheme_ShareOneIndex()
+        {
+            var data = WithPaintSchemes(false);
+            Assert.That(data.Materials.Count, Is.EqualTo(1));
+            Assert.That(data.Faces[0].Mat, Is.EqualTo(data.Faces[1].Mat));
+            Assert.That(data.Materials[0].Name, Is.EqualTo("paint"), "representative follows the rig's key order");
+        }
+
+        [Test]
+        public void PaintNamesThatPartInAnotherScheme_GetSeparateIndices()
+        {
+            var data = WithPaintSchemes(true);
+            Assert.That(data.Materials.Count, Is.EqualTo(2));
+            Assert.That(data.Faces[0].Mat, Is.Not.EqualTo(data.Faces[1].Mat));
+            CollectionAssert.AreEqual(data.Materials[0].RampHex, data.Materials[1].RampHex,
+                "the default colours agree, but the second scheme must still be expressible");
+        }
+
+        [Test]
+        public void OneScheme_KeepsLegacyExtraction()
+        {
+            Assert.That(GeometrySnapshot(WithPaintSchemes(false, singleScheme: true)),
+                Is.EqualTo(GeometrySnapshot(WithPaintSchemes(false, declareSchemes: false))));
+        }
+
         [Test]
         public void LiftSets_KeepWholeLevelsAndExactRoleSubsets()
         {
