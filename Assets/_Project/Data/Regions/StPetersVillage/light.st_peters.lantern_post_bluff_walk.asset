@@ -17,7 +17,7 @@ MonoBehaviour:
   CommonsId: "commons.st_peters.west_garden"
   RouteId: "route.stpeters.bluff_walk"
   KitPiece: "lanternPost"
-  Position: {x: -16.08, y: 26.515}
+  Position: {x: -16.08, y: 26.714264}
   Preset: "HungLantern"
   LitBy: "lit at dusk by Junior or Basil, whoever is home first"
   Reach: 3.6

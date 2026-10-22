@@ -17,7 +17,7 @@ MonoBehaviour:
   CommonsId: "commons.st_peters.flake_yard"
   RouteId: "route.stpeters.farm_walk"
   KitPiece: "lanternPost"
-  Position: {x: 32.58, y: 26.515}
+  Position: {x: 32.58, y: 26.714264}
   Preset: "HungLantern"
   LitBy: "lit at dusk by Eileen, home from the school"
   Reach: 3.6

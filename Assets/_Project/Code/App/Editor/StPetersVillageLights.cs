@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using HiddenHarbours.Art;
+using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
 using HiddenHarbours.World;
 using UnityEngine;
@@ -31,6 +32,9 @@ namespace HiddenHarbours.App.Editor
             : id == "light.st_peters.doorstep_lantern_post_office" ? PostOfficeGlassHeight
             : HouseGlassHeight;
 
+        public static Vector2 PostSpriteOffset => new Vector2(0,-.31f * IsoGround.GroundDepthScale);
+        public static float BloomLift(string id,string piece) => FittingHeight(id,piece) * IsoGround.HeightScale;
+
         public static void Configure(GameObject go, LightPostDef def)
         {
             if (!IsLit(def.Id)) return;
@@ -44,7 +48,7 @@ namespace HiddenHarbours.App.Editor
             light.ReachMetres = def.Reach;
             light.CastsShadows = def.CastsShadow;
             light.LampHeightMeters = FittingHeight(def.Id, def.KitPiece);
-            light.BloomLiftMetres = FittingHeight(def.Id, def.KitPiece);
+            light.BloomLiftMetres = BloomLift(def.Id, def.KitPiece);
             var preset = go.AddComponent<PreconfiguredLight>();
             preset.Preset = kind;
             preset.FittingWidthMetres = width;
@@ -64,9 +68,12 @@ namespace HiddenHarbours.App.Editor
                     int facing = IsoPackSprites.FacingForHeading("wharfDecor", 180f);
                     Sprite sprite = IsoPackSprites.Facing("wharfDecor", LampPosts.LanternPost, facing);
                     if (sprite == null) throw new InvalidOperationException("Missing village lantern post sheet.");
-                    go.AddComponent<SpriteRenderer>().sprite = sprite;
-                    go.AddComponent<YSortSprite>();
-                    go.AddComponent<SpriteShadow>().CastsGroundContact = false;
+                    var post = new GameObject("Post");
+                    post.transform.SetParent(go.transform,false);
+                    post.transform.localPosition = PostSpriteOffset;
+                    post.AddComponent<SpriteRenderer>().sprite = sprite;
+                    post.AddComponent<YSortSprite>();
+                    post.AddComponent<SpriteShadow>().CastsGroundContact = false;
                 }
                 Configure(go, def);
             }

@@ -17,7 +17,7 @@ MonoBehaviour:
   CommonsId: "commons.st_peters.flake_yard"
   RouteId: "route.stpeters.barren_gap"
   KitPiece: "lanternPost"
-  Position: {x: 42.42, y: 30.085}
+  Position: {x: 42.42, y: 30.284264}
   Preset: "HungLantern"
   LitBy: "lit at dusk by the cannery hands at the cream saltbox"
   Reach: 3.6

@@ -17,7 +17,7 @@ MonoBehaviour:
   CommonsId: "commons.st_peters.square"
   RouteId: ""
   KitPiece: "lanternPost"
-  Position: {x: 3.92, y: 8.3}
+  Position: {x: 3.92, y: 8.499264}
   Preset: "HungLantern"
   LitBy: "lit at dusk by whoever is last up from the slip"
   Reach: 3.6

@@ -213,6 +213,19 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(ParseFloat(preset.Field("_reachOverrideMetres")), Is.EqualTo(def.Reach));
                 Assert.That(ParseInt(preset.Field("_preset")), Is.EqualTo((int)Enum.Parse(typeof(LightPresets.Kind), def.Preset)));
                 Assert.That(light.Field("_castsShadows"), Is.EqualTo(def.CastsShadow ? "1" : "0"));
+                float modelHeight = def.KitPiece == LampPosts.LanternPost ? 2.09f :
+                    def.Id == "light.st_peters.doorstep_lantern_general_store" ? 2.7f :
+                    def.Id == "light.st_peters.doorstep_lantern_post_office" ? 2.75f : 2.462f;
+                Assert.That(ParseFloat(light.Field("_lampHeightMeters")),Is.EqualTo(modelHeight));
+                Assert.That(ParseFloat(light.Field("_bloomLiftMetres")),
+                    Is.EqualTo(modelHeight*(float)Math.Cos(40*Math.PI/180)).Within(.000001f));
+                if (def.KitPiece == LampPosts.LanternPost)
+                {
+                    var post = after.ChildNamed(tr,"Post");
+                    var offset = ParseVec3(after.TransformOf(post).Field("m_LocalPosition"));
+                    Assert.That(offset.x,Is.Zero);
+                    Assert.That(offset.y,Is.EqualTo(-.31f*(float)Math.Sin(40*Math.PI/180)).Within(.000001f));
+                }
             }
             Assert.That(VillageLights(after, defs, assets).IsEmpty, Is.True);
             Assert.That(patch.ApplyTo(after.Render()), Is.EqualTo(after.Render()));

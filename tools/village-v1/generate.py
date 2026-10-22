@@ -31,6 +31,7 @@ DOORSTEP_FITTINGS = {
     'general_store': [1.64, 32.047365],
     'post_office': [15.8728, 40.059247],
 }
+POST_FITTING_Y = 0.19926415900282722
 HOME_BAKE_KEYS = {'harbour_gable': 'harbourGable', 'cream_saltbox': 'creamSaltbox',
                   'white_gable': 'whiteGable'}
 
@@ -276,6 +277,8 @@ def build(plan, scene):
         lamp = lamp_by_key[(r['k'],r['of'])]
         if r['k'] == 'doorstepLantern' and r['of'] in DOORSTEP_FITTINGS:
             pos = DOORSTEP_FITTINGS[r['of']][:]
+        if r['k'] == 'lanternPost':
+            pos[1] = round(pos[1] + POST_FITTING_Y, 6)
         lot_id = lots[r['of']]['Id'] if r['of'] in lots else ''
         commons = 'square' if r['of'] in ('square','green','green_walk') else 'west_garden' if r['of']=='bluff_walk' else 'flake_yard'
         add('LightPostDef', Id=renames[old], LotId=lot_id, CommonsId='' if lot_id else 'commons.st_peters.'+commons,

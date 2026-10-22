@@ -1492,7 +1492,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_green_walk"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 3.92, y: 26.515}
+    Position: {x: 3.92, y: 26.714264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1502,7 +1502,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_green"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 3.92, y: 8.3}
+    Position: {x: 3.92, y: 8.499264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1512,7 +1512,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_farm_walk"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 32.58, y: 26.515}
+    Position: {x: 32.58, y: 26.714264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1522,7 +1522,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_barren_gap"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 42.42, y: 30.085}
+    Position: {x: 42.42, y: 30.284264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1532,7 +1532,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_bluff_walk"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: -16.08, y: 26.515}
+    Position: {x: -16.08, y: 26.714264}
     Z: 6
     Dir: 4
     Pending: 0

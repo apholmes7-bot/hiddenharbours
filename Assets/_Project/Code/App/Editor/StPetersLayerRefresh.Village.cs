@@ -86,23 +86,27 @@ namespace HiddenHarbours.App.Editor
                 string name = def.Id;
                 long go = Next(name, "GameObject"), tr = Next(name, "Transform");
                 var components = new List<long> { tr };
+                var postChildren = new List<long>();
                 bool post = def.KitPiece == LampPosts.LanternPost;
                 if (post)
                 {
                     var sprite = assets.Post;
                     if (string.IsNullOrEmpty(sprite.Sprite.Guid)) throw new Refusal("Village lantern post has no sprite asset.");
                     long sr = Next(name, "SpriteRenderer"), sort = Next(name, "YSortSprite"), shadow = Next(name, "SpriteShadow");
-                    components.AddRange(new[] { sr, sort, shadow });
-                    int order = YSortSprite.OrderFor(def.Position.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                    long pg = Next(name + "/Post", "GameObject"), pt = Next(name + "/Post", "Transform");
+                    postChildren.Add(pt);
+                    wanted.Add(Want(GameObjectYaml(pg,"Post",new[] { pt,sr,sort,shadow }),name+"/Post","GameObject"));
+                    wanted.Add(Want(TransformYaml(pt,pg,StPetersVillageLights.PostSpriteOffset,new List<long>(),tr),name+"/Post","Transform"));
+                    int order = YSortSprite.OrderFor(def.Position.y + StPetersVillageLights.PostSpriteOffset.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                         SortingBands.DecorFloor, SortingBands.DecorCeiling);
-                    wanted.Add(Want(SpriteRendererYaml(sr, go, assets.Material, sprite, order), name, "SpriteRenderer"));
-                    wanted.Add(Want(MonoBehaviourYaml(sort, go, assets.ScriptFor(typeof(YSortSprite)), new[]
+                    wanted.Add(Want(SpriteRendererYaml(sr, pg, assets.Material, sprite, order), name, "SpriteRenderer"));
+                    wanted.Add(Want(MonoBehaviourYaml(sort, pg, assets.ScriptFor(typeof(YSortSprite)), new[]
                     {
                         "  _dynamic: 0", "  _baseOrder: " + F(SortingBands.DecorBase),
                         "  _orderPerUnit: " + F(SortingBands.OrdersPerMetre), "  _minOrder: " + Int(SortingBands.DecorFloor),
                         "  _maxOrder: " + Int(SortingBands.DecorCeiling), "  _pivotYOffset: 0",
                     }), name, "YSortSprite"));
-                    wanted.Add(Want(MonoBehaviourYaml(shadow, go, assets.ScriptFor(typeof(SpriteShadow)), new[]
+                    wanted.Add(Want(MonoBehaviourYaml(shadow, pg, assets.ScriptFor(typeof(SpriteShadow)), new[]
                     {
                         "  _sortingOffset: -1", "  _pixelSnap: 1", "  _pixelsPerUnit: 32", "  _castsGroundContact: 0",
                         "  _footOffset: 0", "  _fallbackHour: 10", "  _refreshHz: 10", "  _profile: {fileID: 0}",
@@ -128,7 +132,7 @@ namespace HiddenHarbours.App.Editor
                         "  _flickerAmount: " + F(look.FlickerAmount), "  _flickerSpeed: 1", "  _sortingOrder: " + Int(SceneLight.MaxSortingOrder),
                         "  _cameraDepthOffset: " + F(SceneLight.DefaultCameraDepthOffset),
                         "  _castsShadows: " + (def.CastsShadow ? "1" : "0"), "  _lampHeightMeters: " + F(height),
-                        "  _bloomLiftMetres: " + F(height), "  _reachMetres: " + F(def.Reach),
+                        "  _bloomLiftMetres: " + F(StPetersVillageLights.BloomLift(name,def.KitPiece)), "  _reachMetres: " + F(def.Reach),
                         "  _originOffset: " + Vec2Yaml(look.OriginOffset), "  _refreshHz: 20",
                     }), name, "SceneLight"));
                     wanted.Add(Want(MonoBehaviourYaml(preset, go, assets.ScriptFor(typeof(PreconfiguredLight)), new[]
@@ -138,7 +142,7 @@ namespace HiddenHarbours.App.Editor
                     }), name, "PreconfiguredLight"));
                 }
                 wanted.Add(Want(GameObjectYaml(go, name, components), name, "GameObject"));
-                wanted.Add(Want(TransformYaml(tr, go, def.Position, new List<long>(), rootTr), name, "Transform"));
+                wanted.Add(Want(TransformYaml(tr, go, def.Position, postChildren, rootTr), name, "Transform"));
                 children.Add(tr);
             }
             wanted.Insert(0, Want(GameObjectYaml(rootGo, rootName, new[] { rootTr }), rootName, "GameObject"));
