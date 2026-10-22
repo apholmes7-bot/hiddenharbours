@@ -793,10 +793,10 @@ namespace HiddenHarbours.Boats
         /// <see cref="DrawnTrains"/> — character-for-character <see cref="WaveFieldAnimator.DominantPhaseDegrees"/>,
         /// pointed at the shared sea. Returns 0 on an empty field, exactly as that method does;
         /// callers gate calm on the envelope, not on this.</summary>
-        private float DrawnDominantPhaseDegrees(Vector2 worldPos)
+        private float DrawnDominantPhaseDegrees(Vector2 worldPos, int dominantIndex)
         {
             WaveTrains trains = DrawnTrains;
-            return trains.Count > 0 ? WaveMath.TrainPhaseDegrees(trains.Dominant, worldPos, 0.0) : 0f;
+            return trains.Count > 0 ? WaveMath.TrainPhaseDegrees(trains[dominantIndex], worldPos, 0.0) : 0f;
         }
 
         /// <summary>
@@ -890,8 +890,23 @@ namespace HiddenHarbours.Boats
             hull.VisualTiltDegrees = 0f;
 
             WaveTrains field = DrawnTrains;   // the published sea, or the local animator's fallback
+            // Pose the sea that reaches this hull, just as the height/slope sampler does.
+            // An ocean-wide peak can be silent here; it must neither start the canned rock
+            // nor supply its phase while a different train is moving the local water.
+            int dominantIndex = field.DominantIndex;
+            float peak = field.Count > 0
+                ? field.Dominant.Amplitude * fetchEnvelope01.ForTrain(dominantIndex, field.Dominant.Wavelength)
+                : 0f;
+            float amplitude = 0f;
+            for (int i = 0; i < field.Count; i++)
+            {
+                WaveTrain train = field[i];
+                float reached = train.Amplitude * fetchEnvelope01.ForTrain(i, train.Wavelength);
+                amplitude += reached;
+                if (reached > peak) { peak = reached; dominantIndex = i; }
+            }
             bool calm = field.Count <= 0 ||
-                        field.TotalAmplitude <= Mathf.Max(0f, _calmAmplitudeThreshold);
+                        amplitude <= Mathf.Max(0f, _calmAmplitudeThreshold);
 
             // The shared displaced ride (ADR 0023 phase 3 step 2; 0 with the sea off — and now
             // WEIGHTED by the caller in a storm). A continuous-rock hull (the mesh) takes it
@@ -923,7 +938,7 @@ namespace HiddenHarbours.Boats
                 float phaseDegrees = 0f;
                 if (!calm)
                 {
-                    phaseDegrees = DrawnDominantPhaseDegrees((Vector2)transform.position)
+                    phaseDegrees = DrawnDominantPhaseDegrees((Vector2)transform.position, dominantIndex)
                                  + _crestFrameCalibrationDegrees;
                     // THE ORDINARY-SEA HEAD-SEA PITCH (owner report 2026-08-11) rides the SAME
                     // decomposition the storm extras do — so the block below now runs when EITHER
@@ -934,12 +949,12 @@ namespace HiddenHarbours.Boats
                     bool headSeaPitch = _meshHeadSeaPitchDegreesPerSlope > 0f;
                     if (stormBlend > 0f || headSeaPitch)
                     {
-                        WaveTrain dominant = field.Dominant;
+                        WaveTrain dominant = field[dominantIndex];
                         float freqScale = DisplacedSea.TryGet(out DisplacedSeaState sea)
                             ? sea.FreqScale : 1f;
                         float slopeEnvelope = dominant.Amplitude
                                             * ((2f * Mathf.PI) / dominant.Wavelength)
-                                            * freqScale * fetchEnvelope01.ForTrain(field.DominantIndex, dominant.Wavelength);
+                                            * freqScale * fetchEnvelope01.ForTrain(dominantIndex, dominant.Wavelength);
 
                         Vector2 up = (Vector2)transform.up;
                         float sqr = up.x * up.x + up.y * up.y;
@@ -1082,7 +1097,7 @@ namespace HiddenHarbours.Boats
 
             // Quantised: the SAME forward phase as the mesh path (the owner's 2026-07-22 ruling —
             // see the doc above), rounded to the sheet's frames exactly as before.
-            float phaseDeg = DrawnDominantPhaseDegrees((Vector2)transform.position);
+            float phaseDeg = DrawnDominantPhaseDegrees((Vector2)transform.position, dominantIndex);
 
             _currentRockFrame = DoryRockMath.AdvanceFrame(
                 _currentRockFrame, phaseDeg, _rockFrameCount, _crestFrameCalibrationDegrees, _frameHysteresisDegrees);
