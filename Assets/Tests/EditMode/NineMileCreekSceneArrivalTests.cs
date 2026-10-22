@@ -308,7 +308,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Is.EqualTo(new[] { "  - Key: bar", "    ArrivalPoint: {fileID: 0}", "    DisembarkPoint: {fileID: 600323448}" }),
                 "one way in, over the bar, landing at the bar's own point");
             Doc bar = Scene.Require(Scene.Require(600323448, "the bar landing").FieldRef("m_GameObject"), "the bar landing");
-            Assert.That(Vector2.Distance(WorldPosition(bar), new Vector2(350f, -200f)), Is.LessThan(1e-4f), "the bar's landing stays put");
+            Assert.That(Vector2.Distance(WorldPosition(bar), (Vector2)NineMileCreekMainland.WalkArrivalPos), Is.LessThan(1e-4f),
+                "the bar's landing stands where the builder puts it");
             Doc sea = Scene.Docs.Where(p => p.IsScript("HiddenHarbours.World.RegionPassage")).Select(GameObjectOf)
                            .Single(p => Name(p) == "PassageToWestWater");
             Assert.That(WorldPosition(sea).y, Is.EqualTo(38f), "the sea door stays at y 38");

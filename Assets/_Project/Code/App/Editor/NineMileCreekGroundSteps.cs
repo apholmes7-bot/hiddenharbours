@@ -23,7 +23,12 @@ namespace HiddenHarbours.App.Editor
     /// essential roads, 07 the loop's wall contacts, 08 the loop's contacts, 09 the nav marks. Each step is one
     /// or more one-root text patches (<see cref="LayerPatch"/>): every edited document keeps its id, every new
     /// one is named and hangs under its root, nothing is deleted, and planning the result again is empty.
-    /// Steps 01 and 02 are unchanged; 03 is never planned.
+    /// Steps 01 and 02 are unchanged; 03 is never planned; 10 is held for Dan's farmhouse.
+    ///
+    /// <para>H3 adds 11, the cliff walls by their real ids on G3: the <c>CliffWalls</c> root written from the walls'
+    /// Defs (<see cref="NineMileCreekCliffWalls.WallsFolder"/>) by St Peters' own step,
+    /// <see cref="StPetersLayerRefresh.CliffWalls"/>. It is the one step that deletes: a retired wall's four documents,
+    /// each named, its Def keeping the id.</para>
     /// </summary>
     public static class NineMileCreekGroundSteps
     {
@@ -33,7 +38,8 @@ namespace HiddenHarbours.App.Editor
         public const string CliffStep = "07-loop-wall-contacts-g3";
         public const string ContactsStep = "08-loop-contacts-g3";
         public const string MarksStep = "09-nav-marks-g3";
-        public static readonly string[] Steps = { GroundStep, WharfStep, RoadsStep, CliffStep, ContactsStep, MarksStep };
+        public const string WallsStep = "11-cliff-walls-g3";
+        public static readonly string[] Steps = { GroundStep, WharfStep, RoadsStep, CliffStep, ContactsStep, MarksStep, WallsStep };
 
         public const string PaintedTerrainScriptPath = "Assets/_Project/Code/World/PaintedTidalTerrain.cs";
         public const string TerrainRootName = "TidalTerrain";
@@ -189,13 +195,20 @@ namespace HiddenHarbours.App.Editor
             readonly Dictionary<string, RoadTile> _tiles = new Dictionary<string, RoadTile>(StringComparer.Ordinal);
             NavBuoyPrefab _navPrefab;
             Dictionary<string, NavMarkDef> _navDefs;
+            IReadOnlyList<CliffWallDef> _walls;
 
-            public Inputs(ITidalTerrain ground, IWallBerths berths, string projectRoot = ".")
+            public Inputs(ITidalTerrain ground, IWallBerths berths, string projectRoot = ".",
+                          IReadOnlyList<CliffWallDef> walls = null)
             {
                 Ground = ground ?? throw new ArgumentNullException(nameof(ground));
                 Berths = berths ?? throw new ArgumentNullException(nameof(berths));
                 ProjectRoot = projectRoot;
+                _walls = walls;
             }
+
+            /// <summary>The region's wall Defs, live, retired and held (11): the ones handed in, else the walls
+            /// folder's, read once.</summary>
+            public IReadOnlyList<CliffWallDef> Walls => _walls ?? (_walls = NineMileCreekCliffWalls.LoadDefs());
 
             /// <summary>The GUID an asset's .meta records.</summary>
             public string Guid(string assetPath)
@@ -257,7 +270,7 @@ namespace HiddenHarbours.App.Editor
             public string Summary() => string.Join("\n", Patches.Select(p => p.Summary()));
         }
 
-        /// <summary>Plan 04 to 09 in order, each patch on the text the one before it leaves; returns the steps
+        /// <summary>Plan 04 to 09, then 11, in order, each patch on the text the one before it leaves; returns the steps
         /// and, in <paramref name="after"/>, the scene they write.</summary>
         public static List<Step> PlanAll(string sceneText, Inputs inputs, out string after)
         {
@@ -272,13 +285,14 @@ namespace HiddenHarbours.App.Editor
                 (WharfStep, WharfPumps),
                 (WharfStep, s => WallBerths(s, WharfStep, inputs.Berths)),
                 (RoadsStep, s => Roads(s, inputs)),
-                (CliffStep, Cliffs),
+                (CliffStep, s => Cliffs(s, inputs)),
                 (ContactsStep, s => Marker(s, ArrivalName, G.ArrivalPos, G.ArrivalRotation)),
                 (ContactsStep, s => Marker(s, DockZoneName, G.DockZonePos, null)),
                 (ContactsStep, s => Marker(s, DisembarkName, G.DisembarkPos, null)),
                 (ContactsStep, Anchor),
                 (ContactsStep, Otter),
                 (MarksStep, s => Marks(s, inputs)),
+                (WallsStep, s => Walls(s, inputs)),
             };
             var steps = new List<Step>();
             string text = sceneText;
@@ -927,20 +941,43 @@ namespace HiddenHarbours.App.Editor
         // =====================================================================================================
 
         /// <summary>Row 9: the eight selected chunks' obsolete face inside the ramp opening stops drawing. Their
-        /// ids, definitions and material GUIDs stay; every other face is the later H3 decoration.</summary>
-        static LayerPatch Cliffs(SceneYaml scene)
+        /// ids, definitions and material GUIDs stay; every other face is the later H3 decoration. A chunk the scene
+        /// no longer holds is passed over only where its Def is retired: 11 deleted it, and the Def keeps the id.</summary>
+        static LayerPatch Cliffs(SceneYaml scene, Inputs inputs)
         {
             Doc root = scene.RootNamed(NineMileCreekCliffWalls.RootName);
             Doc rootTr = scene.TransformOf(root);
             var patch = new LayerPatch(CliffStep, NineMileCreekCliffWalls.RootName, root.FileId);
+            int retired = 0;
             foreach (string name in Pr2CliffChunks)
             {
-                Doc go = RequireChild(scene, rootTr, name, CliffStep);
+                Doc go = Child(scene, rootTr, name, CliffStep);
+                if (go == null && IsRetired(inputs, name)) { retired++; continue; }
+                go = go ?? RequireChild(scene, rootTr, name, CliffStep);
                 patch.Edit(go, Set(go.Text, "m_IsActive", "0"), name);
             }
-            patch.Note(NineMileCreekCliffWalls.RootName, "ramp opening", $"{Pr2CliffChunks.Length} chunks inactive, ids kept");
+            patch.Note(NineMileCreekCliffWalls.RootName, "ramp opening", retired == 0
+                ? $"{Pr2CliffChunks.Length} chunks inactive, ids kept"
+                : $"{Pr2CliffChunks.Length - retired} chunks inactive and {retired} retired by {WallsStep}, ids kept");
             return patch.Seal(scene);
         }
+
+        /// <summary>A chunk whose wall Def (by the last three digits of its name) is retired.</summary>
+        static bool IsRetired(Inputs inputs, string chunk)
+        {
+            string realId = chunk.Substring(Math.Max(0, chunk.Length - 3));
+            return inputs.Walls.Any(d => d != null && d.RealId == realId && d.Status == CliffWallStatus.Retired);
+        }
+
+        // =====================================================================================================
+        //  11: the cliff walls by their real ids on G3
+        // =====================================================================================================
+
+        /// <summary>The <c>CliffWalls</c> root as the walls' Defs have it, by St Peters' step under this step's name:
+        /// a standing wall edited in place on its kept ids, a split's new wall copied from its parent under named new
+        /// ids, a retired wall's four documents deleted and named. Cut at the span the walls were cut at.</summary>
+        static LayerPatch Walls(SceneYaml scene, Inputs inputs) =>
+            CliffWalls(scene, inputs.Walls, NineMileCreekCliffWalls.ChunkToeSpanMetres, WallsStep);
 
         // =====================================================================================================
         //  08: the loop's contacts

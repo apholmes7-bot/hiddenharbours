@@ -74,6 +74,13 @@ namespace HiddenHarbours.Core
         /// <summary>The frame of the running clip currently on screen. For tests / tooling.</summary>
         public int Frame => _frame;
 
+        /// <summary>The live compass heading supplied by the clip's caller, before any drawing dial.</summary>
+        public float HeadingDegrees => _headingDegrees;
+
+        /// <summary>True only while this clip is the sole claimant on its resolved skin. A nested
+        /// fight or work animator must retain the sprite even when this clip has a mesh pose.</summary>
+        public bool OwnsOnlySkinClaim => IsPlaying && _isoSkin != null && _isoSkin.SuspensionCount == 1;
+
         /// <summary>The direction ROW of the running clip currently on screen. For tests / tooling.</summary>
         public int FacingRow => _facingRow;
 

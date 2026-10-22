@@ -128,11 +128,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static Take At(Station s, bool arm = false, bool census = false) => new Take(s, arm, census);
 
-        static readonly Station N1 = new Station("n1-nmc-east-wall-brow", "CliffWall_DeepShoreCliff_E_steep_071",
-            new Vector2(51.5f, 88f), new Vector2(50.21f, 89.55f),
-            "Nine Mile Creek: the tallest east wall (drop 12.00 m), its upper face, her for scale");
-        static readonly Station N2 = new Station("n2-nmc-east-wall-toe", "CliffWall_DeepShoreCliff_E_steep_071",
-            new Vector2(52f, 82.5f), null,
+        static readonly Station N1 = new Station("n1-nmc-east-wall-brow", "CliffWall_Cliff_E_steep_040",
+            new Vector2(34.5f, 27f), new Vector2(33.38f, 28.27f),
+            "Nine Mile Creek: the tallest east wall (drop 9.19 m), its upper face, her for scale");
+        static readonly Station N2 = new Station("n2-nmc-east-wall-toe", "CliffWall_Cliff_E_steep_040",
+            new Vector2(35f, 23.5f), null,
             "Nine Mile Creek: the same east wall at its toe");
         static readonly Station N3 = new Station("n3-nmc-east-ramp", "CliffWall_Cliff_E_ramp_031",
             new Vector2(33.5f, 10f), new Vector2(31.66f, 12.2f),

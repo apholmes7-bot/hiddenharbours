@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_087
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_087
+  Status: 4
+  SplitFrom: wall.nmc_022
+  Follows: wall.nmc_022
+  Rock: sandstone
+  Class: 5
+  Aspect: E
+  Batter: ramp
+  Brow:
+  - {x: 33.633537, y: -29.00609}
+  - {x: 33.625206, y: -28.75623}
+  - {x: 33.61688, y: -28.506369}
+  - {x: 33.60855, y: -28.256508}
+  - {x: 33.60022, y: -28.006647}
+  Toe:
+  - {x: 36.282066, y: -28.917805}
+  - {x: 36.273735, y: -28.667944}
+  - {x: 36.265408, y: -28.418083}
+  - {x: 36.25708, y: -28.168222}
+  - {x: 36.24875, y: -27.918362}
+  DropMetres:
+  - 5.6818156
+  - 5.452248
+  - 5.1980534
+  - 4.9444056
+  - 4.690387
+  ToeElevations:
+  - 0.31818444
+  - 0.54775196
+  - 0.80194664
+  - 1.0555946
+  - 1.3096132
+  TextureBrow: []
+  Stations:
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 5.966948
+  - 5.967306
+  - 5.9673395
+  - 5.9673076
+  - 5.9669256
+  ToePass9:
+  - 0.31818444
+  - 0.54775196
+  - 0.80194664
+  - 1.0555946
+  - 1.3096132
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 22
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 
+  Why: 'Toe lifted: k4 k5 k6 k7 k8 to the foot of G3''s face (62-66 deg), read off G3; cut from wall.nmc_022 (its k4-k8).'

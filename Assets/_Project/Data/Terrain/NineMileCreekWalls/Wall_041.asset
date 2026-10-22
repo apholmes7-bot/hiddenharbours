@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_041
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_041
+  Status: 2
+  SplitFrom: 
+  Follows: wall.nmc_040
+  Rock: sandstone
+  Class: 3
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 34.33373, y: 29.723873}
+  - {x: 34.392075, y: 29.966969}
+  - {x: 34.450417, y: 30.210066}
+  - {x: 34.50876, y: 30.453163}
+  - {x: 34.5671, y: 30.69626}
+  - {x: 34.625446, y: 30.939356}
+  - {x: 34.68379, y: 31.182453}
+  - {x: 34.74213, y: 31.42555}
+  - {x: 34.800476, y: 31.668648}
+  Toe:
+  - {x: 37.250893, y: 29.023754}
+  - {x: 37.309235, y: 29.26685}
+  - {x: 37.367577, y: 29.509947}
+  - {x: 37.42592, y: 29.753044}
+  - {x: 37.48426, y: 29.996141}
+  - {x: 37.54261, y: 30.239237}
+  - {x: 37.600952, y: 30.482334}
+  - {x: 37.659294, y: 30.725431}
+  - {x: 37.717636, y: 30.968529}
+  DropMetres:
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  ToeElevations:
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.980313
+  - 5.982268
+  - 5.984529
+  - 5.9868326
+  - 5.989285
+  - 5.991265
+  - 5.9930596
+  - 5.99452
+  - 5.995657
+  ToePass9:
+  - 5.110306
+  - 5.0638833
+  - 5.0188694
+  - 4.9739285
+  - 4.9300137
+  - 4.886157
+  - 4.843009
+  - 4.7998652
+  - 4.757201
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 41
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 
+  Why: 'Banked on G3 (plan B): stations k0-k8 as built, the brow on the ground (worst 0.020 m), the toe 7.9-8.3 m off it, where G3''s face is 43-43 deg, which the default bake does not draw. It stands as built until that face has its own wall.'
