@@ -220,14 +220,14 @@ namespace HiddenHarbours.Boats
         /// Her acceleration along the keel (m/s²) from the along-keel force her drive and her drag
         /// applied (<paramref name="alongForce"/>, in the body's own force units) on a body of
         /// <paramref name="bodyMass"/> — less the body's own damping, <c>c · v</c>, which the physics
-        /// engine applies against her velocity OVER THE GROUND. The continuous-time acceleration;
+        /// pass applies against her velocity THROUGH THE WATER. The continuous-time acceleration;
         /// 0 for a body with no mass.
         /// </summary>
         public static float DriveAcceleration(float alongForce, float bodyMass, float linearDamping,
-                                              float groundSpeedAlong)
+                                              float waterSpeedAlong)
         {
             if (!(bodyMass > 0f)) return 0f;
-            return alongForce / bodyMass - Mathf.Max(0f, linearDamping) * groundSpeedAlong;
+            return alongForce / bodyMass - Mathf.Max(0f, linearDamping) * waterSpeedAlong;
         }
 
         /// <summary>
