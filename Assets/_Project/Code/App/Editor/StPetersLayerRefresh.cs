@@ -808,7 +808,7 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>The scene's one SceneRoots document: the list of its top-level transforms.</summary>
-        static Doc SceneRootsOf(SceneYaml scene)
+        internal static Doc SceneRootsOf(SceneYaml scene)
         {
             List<Doc> hits = scene.Docs.Where(d => d.ClassId == SceneRootsClass).ToList();
             if (hits.Count != 1) throw new Refusal($"the scene holds {hits.Count} SceneRoots documents; a new root needs exactly one.");
@@ -817,7 +817,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>A SceneRoots document with one more root listed at the end of <c>m_Roots</c>. Refuses a
         /// root that is listed already.</summary>
-        static string WithRootListed(string rootsDoc, long rootTransform)
+        internal static string WithRootListed(string rootsDoc, long rootTransform)
         {
             var lines = new List<string>(rootsDoc.Split('\n'));
             int at = lines.FindIndex(l => l == "  m_Roots:" || l == "  m_Roots: []");
@@ -833,7 +833,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The builder puts these roots at the origin, so a child's local position is its world
         /// position. Refuse a root that has been moved, rather than write positions off by its offset.</summary>
-        static void RequireIdentity(Doc tr, string what)
+        internal static void RequireIdentity(Doc tr, string what)
         {
             if (tr.Field("m_LocalPosition") != "{x: 0, y: 0, z: 0}" ||
                 tr.Field("m_LocalRotation") != "{x: 0, y: 0, z: 0, w: 1}" ||

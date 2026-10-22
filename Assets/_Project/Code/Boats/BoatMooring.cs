@@ -537,6 +537,16 @@ namespace HiddenHarbours.Boats
                                        hull.ForwardDrag, hull.LateralDrag, hull.WindExposure);
             _rb.AddForce(drift * _driftFeelScale, ForceMode2D.Force);
 
+            // Disembarking disables the controller: this is the other owner of the hull's force
+            // pass. Share its body-damping correction, once, before the rope restrains the result.
+            // If the helm is still enabled it owns that correction itself.
+            if (_boat != null && !_boat.enabled)
+            {
+                Vector2 dampingCurrent = BoatController.BodyDampingCurrentForce(
+                    env.CurrentVector, _rb.mass, _rb.linearDamping);
+                if (dampingCurrent.sqrMagnitude > 0f) _rb.AddForce(dampingCurrent, ForceMode2D.Force);
+            }
+
             // --- What the rope can actually reach, and from where. ------------------------------------
             // HELD/ROOTED: the painter runs from the hull's origin to the player's hand or a ground spot,
             // and its whole length lies flat on the water — reach IS rope length.

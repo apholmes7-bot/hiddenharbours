@@ -212,6 +212,10 @@ namespace HiddenHarbours.Tools.RigBaking
             CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Idle, CharacterSkinStateMap.OarsCarry),
             CharacterSkinStateMap.CarryKey(CharacterSkinStateMap.Walk, CharacterSkinStateMap.OarsCarry),
             "idle_buckets", "walk_buckets", "run_buckets",
+            "board", "boardDown", "ladderDown", "haul",
+            "hauler", "bench", "chop", "lift",
+            "place", "toss", "board_buckets", "board_tray",
+            "board_pot", "boardDown_buckets", "boardDown_tray", "boardDown_pot",
         };
 
         /// <summary>Where the characters' art defs live, one <c>{stem}Iso.asset</c> each. The
