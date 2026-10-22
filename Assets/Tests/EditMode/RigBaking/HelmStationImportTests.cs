@@ -48,6 +48,16 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach ((string stem, string path, BoatDeckDef def) in ShippedDecks())
             {
                 string sidecar = SidecarPathOf(def, stem);
+                if (sidecar.EndsWith(".walk.json", System.StringComparison.Ordinal))
+                {
+                    var walk = HullWalkSidecarReader.Read(File.ReadAllText(sidecar), sidecar, RigBytesFor(sidecar));
+                    Assert.IsTrue(walk.Ok, string.Join(" | ", walk.Errors));
+                    Assert.IsTrue(def.HasHelmStation, stem);
+                    Assert.AreEqual(HullLayoutJson.Point(walk.Anchors["helm"], "anchors.helm"), def.HelmStationLocalMeters, stem);
+                    Assert.AreEqual("anchors.helm", def.HelmStationSource, stem);
+                    withStation++;
+                    continue;
+                }
                 Assert.IsTrue(File.Exists(sidecar),
                               $"{stem}: the asset names sidecar '{def.SourceSidecar}' and it is not there");
 

@@ -181,6 +181,11 @@ namespace HiddenHarbours.Tests.EditMode
             // belongs to the SailRigDef.
             "visual.sloop_iso",
             "visual.sloop88_iso",
+
+            // Recreation intake: mesh-only, with native pixel acceptance and plates still required.
+            "visual.go_fast_iso",
+            "visual.bowrider_iso",
+            "visual.express_cruiser_iso",
         };
 
         [Test]

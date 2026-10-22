@@ -1,14 +1,61 @@
 using System.Linq;
+using System.IO;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEditor;
 
 namespace HiddenHarbours.Tests.RigBaking
 {
     public sealed class HullWalkImportParityTests
     {
+        [TestCase("goFast", 23, 0)]
+        [TestCase("bowrider", 4, 0)]
+        [TestCase("expressCruiser", 25, 1)]
+        public void RecreationWalk_EqualsItsCommittedDeckAndRoom(string key, int areaCount, int roomLevels)
+        {
+            var hull = HullMeshFleet.Get(key);
+            using var host = RigScriptHostFactory.Create();
+            var rig = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName, hull: hull.Extraction);
+            string stem = Path.GetFileName(hull.MeshAssetPath).Replace("HullMesh.asset", "");
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var room = ScriptableObject.CreateInstance<BoatInteriorDef>();
+            try
+            {
+                Assert.That(HullWalkSidecarImporter.Populate(rig.Walk, rig, stem, deck, room).Ok, Is.True);
+                var committed = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(DeckSidecarImporter.DeckAssetPath(stem));
+                Assert.That(committed, Is.Not.Null, key);
+                Assert.That(deck.Areas.Length, Is.EqualTo(areaCount));
+                Assert.That(committed.Id, Is.EqualTo(deck.Id));
+                Assert.That(committed.DerivedFromRigSha256, Is.EqualTo(deck.DerivedFromRigSha256));
+                Assert.That(committed.HelmStationLocalMeters, Is.EqualTo(deck.HelmStationLocalMeters));
+                Assert.That(committed.Areas.Length, Is.EqualTo(deck.Areas.Length));
+                for (int i = 0; i < deck.Areas.Length; i++)
+                {
+                    Assert.That(committed.Areas[i].Id, Is.EqualTo(deck.Areas[i].Id));
+                    CollectionAssert.AreEqual(committed.Areas[i].Outline, deck.Areas[i].Outline);
+                    Assert.That(committed.Areas[i].HeightPlane, Is.EqualTo(deck.Areas[i].HeightPlane));
+                    Assert.That(committed.Areas[i].Holes.Length, Is.EqualTo(deck.Areas[i].Holes.Length));
+                }
+                Assert.That(room.Levels.Length, Is.EqualTo(roomLevels));
+                if (rig.Walk.House != null)
+                {
+                    var saved = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>("Assets/_Project/Data/Boats/Interiors/" + stem + ".asset");
+                    Assert.That(saved, Is.Not.Null, key);
+                    Assert.That(saved.Id, Is.EqualTo(room.Id));
+                    Assert.That(saved.Levels.Select(l => l.Id), Is.EqualTo(room.Levels.Select(l => l.Id)));
+                    Assert.That(saved.Door.ThresholdPoint, Is.EqualTo(room.Door.ThresholdPoint));
+                    Assert.That(saved.Door.KeepClear, Is.EqualTo(room.Door.KeepClear));
+                }
+                var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+                Assert.That(mesh, Is.Not.Null, key);
+                Assert.That(mesh.LayoutSchema, Is.EqualTo(rig.Walk.Schema));
+            }
+            finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
+        }
+
         [Test]
         public void BoxWalk_EqualsHandBuiltDeckRoomHelmAndStair()
         {

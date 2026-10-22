@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
@@ -116,6 +117,12 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static IEnumerable<Subject> Photographed()
         {
+            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser" })
+            {
+                var h = HullMeshFleet.Get(key);
+                string asset = Path.GetFileName(h.MeshAssetPath).Replace("HullMesh.asset", "");
+                yield return new Subject(h.Key, h.Label, h.ScriptPath, h.GlobalName, asset, h.Extraction);
+            }
             foreach (ZodiacBuild b in ZodiacFleet.All)
                 yield return new Subject(b.Key, b.Label, ZodiacFleet.ScriptPath,
                                          ZodiacFleet.GlobalName, b.AssetName, b.Extraction);

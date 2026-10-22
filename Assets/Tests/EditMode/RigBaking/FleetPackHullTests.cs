@@ -33,6 +33,20 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         static string RepoRoot => RigCatalog.RepoRoot;
 
+        [TestCase("goFast", "hullmesh.go_fast_iso", "go_fast")]
+        [TestCase("bowrider", "hullmesh.bowrider_iso", "bowrider")]
+        [TestCase("expressCruiser", "hullmesh.express_cruiser_iso", "express_cruiser")]
+        public void RecreationHull_HasItsWalkScopeAndBothAuthoredRows(string key, string meshId, string hull)
+        {
+            var row = HullMeshFleet.Get(key);
+            Assert.That(row.MeshId, Is.EqualTo(meshId));
+            Assert.That(row.HasBakedSheet, Is.False);
+            Assert.That(row.IsVariant, Is.False, "one hull per rig");
+            Assert.That(row.Extraction.HullScope, Is.EqualTo("byId('" + hull + "')"));
+            Assert.That(FleetFlotationTableTests.Authored.ContainsKey(meshId), Is.True);
+            Assert.That(FleetDeckOccupancyTableTests.Authored.ContainsKey(meshId), Is.True);
+        }
+
         static IRigScriptHost Host(string scriptPath)
         {
             var host = RigScriptHostFactory.Create();

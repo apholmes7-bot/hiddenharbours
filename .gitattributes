@@ -334,5 +334,16 @@ docs/art/rigs/modern2500-kit/modern2500.rig.js text eol=lf
 docs/art/rigs/modern2500-kit/modern2500.contract.json text eol=lf
 docs/art/rigs/modern2500-kit/preview.html text eol=lf
 docs/art/rigs/modern2500-kit/README.md text eol=lf
+
+# Recreation hull layout: preserve the delivered rig/walk hashes and Node comparisons exactly.
+docs/art/hull-layout-spec.md text eol=lf
+docs/art/rigs/goFastIsoRig.js text eol=lf
+docs/art/rigs/bowriderIsoRig.js text eol=lf
+docs/art/rigs/cruiserIsoRig.js text eol=lf
+docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json text eol=lf
+docs/art/rigs/gameplay/bowriderIsoRig.bowrider.walk.json text eol=lf
+docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json text eol=lf
+tools/rig-recipes/hull-walk.mjs text eol=lf
+tools/rig-recipes/hull-layout-check.mjs text eol=lf
 docs/art/rigs/gameplay/vehicles/modern2500.rig.gameplay.json text eol=lf
 docs/art/rigs/modern2500-kit/reference/SHA256SUMS.txt text eol=lf

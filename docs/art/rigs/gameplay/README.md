@@ -4,6 +4,15 @@ One file per **hull**. Authored by **art-director** (this folder is that role's 
 `agents/art-director.md`); consumed by the deck sidecar importer and the deck-boarding/mooring
 work (M2-37..39).
 
+**Switched hulls (`hull-walk@1`).** The recreation boats use one generated
+`<rig stem>.<hull id>.walk.json` per hull. `HullWalkSidecarReader` reads it and
+`HullWalkSidecarImporter` creates its deck and, when authored, room Defs; the mesh bake reads the
+same hull through its global's `byId`. `LayoutSchema` and `NoHullReadsBothLayoutsTests` keep this
+path exclusive of the legacy sidecar/kit path. Run `node tools/rig-recipes/hull-walk.mjs` to compare
+the published walks and `node tools/rig-recipes/hull-layout-check.mjs` to check the layout. Never
+hand-edit a generated walk or change its rig to work around a reader. See
+[the intake note](../../recreation-boats-intake.md) for the recreation rows and current limits.
+
 **Naming, and where the rig name comes from.** The original eleven are named mechanically from
 their rig (`lobsterBoatIsoRig.js` → `lobsterBoatIsoRig.gameplay.json`), which works while a rig
 makes exactly one boat. `lobsterBoatVariantsIsoRig.js` makes **eighteen**, and eighteen sidecars

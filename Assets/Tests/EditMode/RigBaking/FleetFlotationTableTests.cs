@@ -62,6 +62,9 @@ namespace HiddenHarbours.Tests.RigBaking
         /// fails loudly, and the flag can only be wrong if the file system is.</para>
         /// </summary>
         static string RigFileFor(string meshId) =>
+            meshId == "hullmesh.go_fast_iso" ? "goFastIsoRig.js" :
+            meshId == "hullmesh.bowrider_iso" ? "bowriderIsoRig.js" :
+            meshId == "hullmesh.express_cruiser_iso" ? "cruiserIsoRig.js" :
             meshId.StartsWith("hullmesh.lobster_") ? "lobsterBoatVariantsIsoRig.js" :
             meshId.StartsWith("hullmesh.zodiac_") ? "zodiacIsoRig.js" :
             meshId.StartsWith("hullmesh.sport_fisher_") ? "sportFisherIsoRig2.js" :
@@ -82,6 +85,12 @@ namespace HiddenHarbours.Tests.RigBaking
         public static readonly IReadOnlyDictionary<string, Flotation> Authored =
             new Dictionary<string, Flotation>
             {
+                // Walk DWL and cockpitZ, with the existing 1.126 beam margin rounded to centimetres.
+                // Bowrider's sole is below DWL. Keep both art numbers; the existing floor guard
+                // remains unchanged and its expected failure is carried in the intake note.
+                ["hullmesh.go_fast_iso"] = new Flotation("go_fast", 0.52f, 0.62f, 1.24f, 1.100f),
+                ["hullmesh.bowrider_iso"] = new Flotation("bowrider", 0.40f, 0.34f, 1.29f, 1.145f),
+                ["hullmesh.express_cruiser_iso"] = new Flotation("express_cruiser", 0.58f, 0.95f, 1.72f, 1.525f),
                 // ---- 18 lobster variants: draft = deck = 0.50 * the rig's own depth scalar ---------
                 // Region gets NO draft delta on purpose: the hydrostatic delta is <= 37 mm (~1 px at
                 // 32 px/m) and would float Fundy above her own cockpit sole. Doc §3.

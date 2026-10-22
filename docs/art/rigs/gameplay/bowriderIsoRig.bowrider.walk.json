@@ -1,0 +1,1242 @@
+{
+ "schema": "hidden-harbours/hull-walk@1",
+ "rig": "bowriderIsoRig.js",
+ "exportSymbol": "BowriderIso",
+ "hull": "bowrider",
+ "label": "Bowrider 18",
+ "kind": "open",
+ "derivedFromRigSha256": "023fef45856e0f7a0f471ce00d886bfc203b8e4b2b9cbca58b4635dd0b0361bb",
+ "authoring": "Written by the rig: BowriderIso.byId('bowrider').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
+ "units": "metres",
+ "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
+ "loa_m": 5.98,
+ "loh_m": 5.64,
+ "beam_m": 2.29,
+ "DWL": 0.4,
+ "cockpitZ": 0.34,
+ "cell": {
+  "W": 240,
+  "H": 212,
+  "pivot": {
+   "x": 120,
+   "y": 108
+  },
+  "pxPerM": 32,
+  "defaultElev": 40,
+  "order": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ]
+ },
+ "tags": {
+  "lv": {
+   "hull": 0,
+   "main_deck": 1,
+   "house": 2,
+   "bridge": 3,
+   "below": 4,
+   "rigging": 5,
+   "foredeck": 6,
+   "top": 7
+  },
+  "ro": {
+   "shell": 0,
+   "wall": 1,
+   "roof": 2,
+   "lining": 3,
+   "part": 4,
+   "floor": 5,
+   "fit": 6,
+   "tall": 7,
+   "trim": 8,
+   "rig": 9
+  },
+  "ghostRoles": [
+   "shell",
+   "wall",
+   "roof",
+   "lining",
+   "part",
+   "tall",
+   "trim"
+  ]
+ },
+ "walk": {
+  "radius": 0.23,
+  "stepTol": 0.34,
+  "rule": "A step is legal when the target point is inside an area polygon and outside its holes, and |area z - player z| < stepTol. Ramps interpolate z along their axis (x or y) between a0 and a1, and hold z0 / z1 beyond them. cut = the cutaway key while standing there; cutHi / cutLo replace it above / below zMid (stairs and ladders). Polygons are player-centre: already inset by radius, so the reader never insets them again.",
+  "spawn": {
+   "x": 0,
+   "y": -1,
+   "area": "cockpit"
+  },
+  "areas": [
+   {
+    "id": "cockpit",
+    "cut": "cockpit",
+    "z": 0.34,
+    "poly": [
+     [
+      0.678,
+      -1.19
+     ],
+     [
+      0.659,
+      -1.06
+     ],
+     [
+      0.64,
+      -0.93
+     ],
+     [
+      0.621,
+      -0.8
+     ],
+     [
+      0.601,
+      -0.67
+     ],
+     [
+      0.574,
+      -0.54
+     ],
+     [
+      0.548,
+      -0.41
+     ],
+     [
+      0.524,
+      -0.28
+     ],
+     [
+      0.5,
+      -0.15
+     ],
+     [
+      0.01,
+      -0.15
+     ],
+     [
+      0.01,
+      0.95
+     ],
+     [
+      -0.01,
+      0.95
+     ],
+     [
+      -0.01,
+      -0.15
+     ],
+     [
+      -0.5,
+      -0.15
+     ],
+     [
+      -0.524,
+      -0.28
+     ],
+     [
+      -0.548,
+      -0.41
+     ],
+     [
+      -0.574,
+      -0.54
+     ],
+     [
+      -0.601,
+      -0.67
+     ],
+     [
+      -0.621,
+      -0.8
+     ],
+     [
+      -0.64,
+      -0.93
+     ],
+     [
+      -0.659,
+      -1.06
+     ],
+     [
+      -0.678,
+      -1.19
+     ]
+    ],
+    "holes": [
+     [
+      [
+       -0.955,
+       -0.96
+      ],
+      [
+       -0.045,
+       -0.96
+      ],
+      [
+       -0.045,
+       0.065
+      ],
+      [
+       -0.955,
+       0.065
+      ]
+     ],
+     [
+      [
+       0.045,
+       -0.96
+      ],
+      [
+       0.955,
+       -0.96
+      ],
+      [
+       0.955,
+       0.065
+      ],
+      [
+       0.045,
+       0.065
+      ]
+     ]
+    ],
+    "note": "the helm and passenger buckets are holes; the aisle between them is 0.09 m for the centre, the walk-through 0.02 m"
+   },
+   {
+    "id": "bow",
+    "cut": "deck",
+    "ramp": {
+     "axis": "y",
+     "a0": 0.99,
+     "a1": 1.35,
+     "z0": 0.34,
+     "z1": 0.358
+    },
+    "poly": [
+     [
+      0.005,
+      0.85
+     ],
+     [
+      0.005,
+      1.07
+     ],
+     [
+      0.01,
+      1.07
+     ],
+     [
+      0.01,
+      1.11
+     ],
+     [
+      0.015,
+      1.11
+     ],
+     [
+      0.015,
+      1.13
+     ],
+     [
+      0.02,
+      1.13
+     ],
+     [
+      0.02,
+      1.15
+     ],
+     [
+      0.03,
+      1.15
+     ],
+     [
+      0.03,
+      1.17
+     ],
+     [
+      0.04,
+      1.17
+     ],
+     [
+      0.04,
+      1.19
+     ],
+     [
+      0.05,
+      1.19
+     ],
+     [
+      0.05,
+      1.21
+     ],
+     [
+      0.045,
+      1.21
+     ],
+     [
+      0.045,
+      1.23
+     ],
+     [
+      0.04,
+      1.23
+     ],
+     [
+      0.04,
+      1.25
+     ],
+     [
+      0.035,
+      1.25
+     ],
+     [
+      0.035,
+      1.27
+     ],
+     [
+      0.03,
+      1.27
+     ],
+     [
+      0.03,
+      1.29
+     ],
+     [
+      0.02,
+      1.29
+     ],
+     [
+      0.02,
+      1.31
+     ],
+     [
+      0.015,
+      1.31
+     ],
+     [
+      0.015,
+      1.33
+     ],
+     [
+      0.01,
+      1.33
+     ],
+     [
+      0.01,
+      1.35
+     ],
+     [
+      -0.01,
+      1.35
+     ],
+     [
+      -0.01,
+      1.33
+     ],
+     [
+      -0.015,
+      1.33
+     ],
+     [
+      -0.015,
+      1.31
+     ],
+     [
+      -0.02,
+      1.31
+     ],
+     [
+      -0.02,
+      1.29
+     ],
+     [
+      -0.03,
+      1.29
+     ],
+     [
+      -0.03,
+      1.27
+     ],
+     [
+      -0.035,
+      1.27
+     ],
+     [
+      -0.035,
+      1.25
+     ],
+     [
+      -0.04,
+      1.25
+     ],
+     [
+      -0.04,
+      1.23
+     ],
+     [
+      -0.045,
+      1.23
+     ],
+     [
+      -0.045,
+      1.21
+     ],
+     [
+      -0.05,
+      1.21
+     ],
+     [
+      -0.05,
+      1.19
+     ],
+     [
+      -0.04,
+      1.19
+     ],
+     [
+      -0.04,
+      1.17
+     ],
+     [
+      -0.03,
+      1.17
+     ],
+     [
+      -0.03,
+      1.15
+     ],
+     [
+      -0.02,
+      1.15
+     ],
+     [
+      -0.02,
+      1.13
+     ],
+     [
+      -0.015,
+      1.13
+     ],
+     [
+      -0.015,
+      1.11
+     ],
+     [
+      -0.01,
+      1.11
+     ],
+     [
+      -0.01,
+      1.07
+     ],
+     [
+      -0.005,
+      1.07
+     ],
+     [
+      -0.005,
+      0.85
+     ]
+    ],
+    "holes": [],
+    "note": "the walk-through’s far end and the strip between the lounge’s seat fronts: the bow is for sitting (waits on sit)"
+   },
+   {
+    "id": "sun_pad",
+    "cut": "cockpit",
+    "z": 1.035,
+    "poly": [
+     [
+      -0.63,
+      -2.51
+     ],
+     [
+      0.63,
+      -2.51
+     ],
+     [
+      0.63,
+      -2.17
+     ],
+     [
+      -0.63,
+      -2.17
+     ]
+    ],
+    "holes": [],
+    "note": "with the hatch shut (hatch 0). Folded (top 0) the bimini’s boot lies across its forward edge, 0.18 m high: stepped over"
+   },
+   {
+    "id": "transom_steps",
+    "cut": "cockpit",
+    "cutHi": "cockpit",
+    "cutLo": "cockpit",
+    "zMid": 0.688,
+    "kind": "stair",
+    "ramp": {
+     "axis": "y",
+     "a0": -2.17,
+     "a1": -1.19,
+     "z0": 1.035,
+     "z1": 0.34
+    },
+    "poly": [
+     [
+      -0.63,
+      -2.2
+     ],
+     [
+      0.63,
+      -2.2
+     ],
+     [
+      0.63,
+      -1.15
+     ],
+     [
+      -0.63,
+      -1.15
+     ]
+    ],
+    "holes": [],
+    "note": "sun pad 1.035 -> bench cushion 0.73 -> sole 0.34; walked as a ramp until stairDown / stairUp exist",
+    "waitsOn": [
+     "stairDown",
+     "stairUp"
+    ]
+   }
+  ]
+ },
+ "anchors": {
+  "helm": {
+   "x": 0.5,
+   "y": -0.38,
+   "z": 0.7
+  },
+  "wheel": {
+   "x": 0.5,
+   "y": 0.02,
+   "z": 1
+  },
+  "pilot": {
+   "x": 0.5,
+   "y": -0.1,
+   "z": 0.34
+  },
+  "seats": [
+   {
+    "id": "helm",
+    "x": 0.5,
+    "y": -0.38,
+    "z": 0.7
+   },
+   {
+    "id": "passenger",
+    "x": -0.5,
+    "y": -0.38,
+    "z": 0.7
+   },
+   {
+    "id": "bench_port",
+    "x": -0.56,
+    "y": -1.64,
+    "z": 0.73
+   },
+   {
+    "id": "bench_centre",
+    "x": 0,
+    "y": -1.64,
+    "z": 0.73
+   },
+   {
+    "id": "bench_stbd",
+    "x": 0.56,
+    "y": -1.64,
+    "z": 0.73
+   },
+   {
+    "id": "bow_port",
+    "x": -0.417,
+    "y": 1.5,
+    "z": 0.754
+   },
+   {
+    "id": "bow_stbd",
+    "x": 0.417,
+    "y": 1.5,
+    "z": 0.754
+   },
+   {
+    "id": "bow_fwd",
+    "x": 0,
+    "y": 2.041,
+    "z": 0.82
+   }
+  ],
+  "painter": {
+   "x": 0,
+   "y": 2.46,
+   "z": 0.66
+  },
+  "ladder": {
+   "x": -0.6,
+   "y": -3.06,
+   "z": 0.54
+  },
+  "sunPad": {
+   "x": 0,
+   "y": -2.32,
+   "z": 1.035
+  },
+  "driveMount": {
+   "x": 0,
+   "y": -2.9,
+   "z": 0.34
+  }
+ },
+ "interact": [
+  {
+   "id": "helm",
+   "action": "enter_helm",
+   "label": "Helm",
+   "prompt": "Take the wheel",
+   "at": {
+    "x": 0.5,
+    "y": 0.02,
+    "z": 1
+   },
+   "reach": {
+    "x": 0.02,
+    "y": -0.4,
+    "z": 0.34
+   },
+   "area": "cockpit",
+   "seat": {
+    "x": 0.5,
+    "y": -0.38,
+    "z": 0.7
+   },
+   "stand": {
+    "x": 0.5,
+    "y": -0.1,
+    "z": 0.34
+   },
+   "note": "seated: drive, 30 of 30 on 10.3; standing: helm_idle (see the fit)"
+  },
+  {
+   "id": "seat_passenger",
+   "action": "enter_ride",
+   "label": "Passenger seat",
+   "prompt": "Ride",
+   "at": {
+    "x": -0.5,
+    "y": -0.38,
+    "z": 0.7
+   },
+   "reach": {
+    "x": -0.02,
+    "y": -0.4,
+    "z": 0.34
+   },
+   "area": "cockpit",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "seat_bench_port",
+   "action": "enter_ride",
+   "label": "Aft bench",
+   "prompt": "Ride",
+   "at": {
+    "x": -0.56,
+    "y": -1.64,
+    "z": 0.73
+   },
+   "reach": {
+    "x": -0.56,
+    "y": -1.15,
+    "z": 0.34
+   },
+   "area": "cockpit",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "seat_bench_centre",
+   "action": "enter_ride",
+   "label": "Aft bench",
+   "prompt": "Ride",
+   "at": {
+    "x": 0,
+    "y": -1.64,
+    "z": 0.73
+   },
+   "reach": {
+    "x": 0,
+    "y": -1.15,
+    "z": 0.34
+   },
+   "area": "cockpit",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "seat_bench_stbd",
+   "action": "enter_ride",
+   "label": "Aft bench",
+   "prompt": "Ride",
+   "at": {
+    "x": 0.56,
+    "y": -1.64,
+    "z": 0.73
+   },
+   "reach": {
+    "x": 0.56,
+    "y": -1.15,
+    "z": 0.34
+   },
+   "area": "cockpit",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "seat_bow_port",
+   "action": "enter_ride",
+   "label": "Bow lounge",
+   "prompt": "Ride",
+   "at": {
+    "x": -0.417,
+    "y": 1.5,
+    "z": 0.754
+   },
+   "reach": {
+    "x": 0,
+    "y": 1.31,
+    "z": 0.358
+   },
+   "area": "bow",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "seat_bow_stbd",
+   "action": "enter_ride",
+   "label": "Bow lounge",
+   "prompt": "Ride",
+   "at": {
+    "x": 0.417,
+    "y": 1.5,
+    "z": 0.754
+   },
+   "reach": {
+    "x": 0,
+    "y": 1.31,
+    "z": 0.358
+   },
+   "area": "bow",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "seat_bow_fwd",
+   "action": "enter_ride",
+   "label": "Bow lounge",
+   "prompt": "Ride",
+   "at": {
+    "x": 0,
+    "y": 2.041,
+    "z": 0.82
+   },
+   "reach": {
+    "x": 0,
+    "y": 1.31,
+    "z": 0.358
+   },
+   "area": "bow",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "engine",
+   "action": "open_close_engine",
+   "label": "Sun pad / engine",
+   "prompt": "Lift the sun pad",
+   "state": "hatch",
+   "at": {
+    "x": 0,
+    "y": -2.32,
+    "z": 1.035
+   },
+   "reach": {
+    "x": 0,
+    "y": -1.17,
+    "z": 0.34
+   },
+   "area": "cockpit",
+   "note": "the sun pad is the hatch; it lifts aft edge first on its forward hinge, so it is opened from the cockpit side, not stood on"
+  },
+  {
+   "id": "bimini",
+   "action": "open_close",
+   "label": "Bimini",
+   "prompt": "Raise / stow the top",
+   "state": "top",
+   "at": {
+    "x": 0.964,
+    "y": -0.8,
+    "z": 1.047
+   },
+   "reach": {
+    "x": 0.4,
+    "y": -1,
+    "z": 0.34
+   },
+   "area": "cockpit"
+  },
+  {
+   "id": "ski_locker",
+   "action": "storage",
+   "label": "Ski locker",
+   "prompt": "Store · retrieve",
+   "at": {
+    "x": 0,
+    "y": -0.71,
+    "z": 0.348
+   },
+   "reach": {
+    "x": 0,
+    "y": -1,
+    "z": 0.34
+   },
+   "area": "cockpit"
+  },
+  {
+   "id": "glovebox",
+   "action": "storage",
+   "label": "Glovebox",
+   "prompt": "Store · retrieve",
+   "at": {
+    "x": -0.58,
+    "y": 0.076,
+    "z": 0.82
+   },
+   "reach": {
+    "x": -0.02,
+    "y": -0.17,
+    "z": 0.34
+   },
+   "area": "cockpit"
+  },
+  {
+   "id": "bench_locker",
+   "action": "storage",
+   "label": "Bench locker",
+   "prompt": "Store · retrieve",
+   "at": {
+    "x": 0,
+    "y": -1.42,
+    "z": 0.5
+   },
+   "reach": {
+    "x": 0,
+    "y": -1.15,
+    "z": 0.34
+   },
+   "area": "cockpit",
+   "note": "under the aft bench’s cushion (10-03)"
+  },
+  {
+   "id": "bow_locker_port",
+   "action": "storage",
+   "label": "Bow locker",
+   "prompt": "Store · retrieve",
+   "at": {
+    "x": -0.62,
+    "y": 1.7,
+    "z": 0.74
+   },
+   "reach": {
+    "x": 0,
+    "y": 1.31,
+    "z": 0.358
+   },
+   "area": "bow",
+   "note": "under the bow lounge’s port seat (10-03)"
+  },
+  {
+   "id": "bow_locker_stbd",
+   "action": "storage",
+   "label": "Bow locker",
+   "prompt": "Store · retrieve",
+   "at": {
+    "x": 0.62,
+    "y": 1.7,
+    "z": 0.74
+   },
+   "reach": {
+    "x": 0,
+    "y": 1.31,
+    "z": 0.358
+   },
+   "area": "bow",
+   "note": "under the bow lounge’s starboard seat (10-03)"
+  },
+  {
+   "id": "anchor",
+   "action": "anchor",
+   "label": "Anchor locker",
+   "prompt": "Let go / weigh anchor",
+   "at": {
+    "x": 0,
+    "y": 2.482,
+    "z": 1.33
+   },
+   "reach": {
+    "x": 0,
+    "y": 1.31,
+    "z": 0.358
+   },
+   "area": "bow",
+   "note": "the anchor locker lid on the closed bow deck, reached over the forward backrest"
+  },
+  {
+   "id": "swim",
+   "action": "enter_water",
+   "label": "Swim platform",
+   "prompt": "Swim",
+   "at": {
+    "x": -0.6,
+    "y": -3.06,
+    "z": 0.54
+   },
+   "reach": {
+    "x": -0.6,
+    "y": -2.49,
+    "z": 1.035
+   },
+   "area": "sun_pad",
+   "waitsOn": [
+    "ladderOn"
+   ],
+   "note": "down into the water is ladderDown (fits, see the fit); back aboard from the swim waits on ladderOn"
+  }
+ ],
+ "cleats": [
+  {
+   "id": "stern_port",
+   "type": "cleat",
+   "pos": [
+    -0.983,
+    -2.651,
+    1.026
+   ]
+  },
+  {
+   "id": "stern_star",
+   "type": "cleat",
+   "pos": [
+    0.983,
+    -2.651,
+    1.026
+   ]
+  },
+  {
+   "id": "bow_1",
+   "type": "cleat",
+   "pos": [
+    0,
+    2.662,
+    1.347
+   ],
+   "note": "build(): on the bow deck ahead of the anchor locker’s lid (10-03’s sidecar said there was none)"
+  },
+  {
+   "id": "bow_eye",
+   "type": "bow_eye",
+   "pos": [
+    0,
+    2.44,
+    0.66
+   ],
+   "note": "the painter and trailer eye on the stem"
+  }
+ ],
+ "washboards": [],
+ "_excluded": [
+  {
+   "id": "swim_platform",
+   "of": "area",
+   "z": 0.54,
+   "reason": "0.34 m deep fore and aft: shallower than the walker’s 0.46 m, so no centre point fits. The way aboard from the water is the swim ladder.",
+   "waitsOn": [
+    "ladderOn"
+   ]
+  },
+  {
+   "id": "gunwale_port",
+   "of": "area",
+   "reason": "the deck cap: 0.116-0.156 m of moulding beside the cockpit, narrower than the walker. An open boat is boarded over it (board / boardDown), not walked."
+  },
+  {
+   "id": "gunwale_stbd",
+   "of": "area",
+   "reason": "as gunwale_port."
+  },
+  {
+   "id": "bow_deck",
+   "of": "area",
+   "z": 1.307,
+   "reason": "the closed bow deck over the anchor locker: 0.87 m above the bow sole, over the lounge’s backrest, tapering to the stem in 0.47 m. No walkway; the anchor is worked from the bow (interact anchor)."
+  },
+  {
+   "id": "seat_passenger",
+   "of": "seat",
+   "at": {
+    "x": -0.5,
+    "y": -0.38,
+    "z": 0.7
+   },
+   "reason": "a seat, not a standing surface: sitting waits on a sit clip (10.3 has none).",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "aft_bench",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": -1.64,
+    "z": 0.73
+   },
+   "reason": "a seat for three; it is also the middle step of transom_steps. Sitting waits on sit.",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "bow_lounge",
+   "of": "seat",
+   "at": {
+    "x": -0.417,
+    "y": 1.5,
+    "z": 0.754
+   },
+   "reason": "the U-lounge (port, starboard, forward): seats. Sitting waits on sit.",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "washboards",
+   "of": "washboards",
+   "reason": "an open boat: no side deck to work from; the cap is 0.15-0.19 m of moulding (gunwale_port, gunwale_stbd). Lines are worked from the cockpit and the bow."
+  },
+  {
+   "id": "stern_eyes",
+   "of": "cleat",
+   "at": {
+    "x": -0.8,
+    "y": -2.832,
+    "z": 0.84
+   },
+   "reason": "the transom’s two tie-down eyes (anchors.sternEyes) are trailer and ski-tow eyes, not mooring cleats."
+  },
+  {
+   "id": "grab_rails",
+   "of": "cleat",
+   "reason": "the bow grab rails along the cap are handholds, not tie-offs (10-03)."
+  }
+ ],
+ "rock": {
+  "frames": 8,
+  "rollA": 4.2,
+  "pitchA": 2.4,
+  "heaveA": 1.4,
+  "period": 2.2
+ },
+ "qa": {
+  "fitCheck": {
+   "tol": 0.01,
+   "faces": 0,
+   "outside": 0,
+   "worst": 0,
+   "note": "an open boat: no room faces to check"
+  },
+  "character": {
+   "rig": "characterIsoRig10.js",
+   "exportSymbol": "CharacterIso10",
+   "revision": "10.3",
+   "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+   "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+   "builds": 30,
+   "crown_m": [
+    1.257,
+    1.8641
+   ],
+   "collision_radius_m": [
+    0.142,
+    0.23
+   ],
+   "board_range_m": [
+    0.06,
+    1
+   ],
+   "boardDown_range_m": [
+    0.06,
+    1.3
+   ],
+   "method": "every frame of each clip for all thirty builds (evalClip + pinsOf), world opts from the walk; hands vs the wheel rim, the lying body vs the berth outline and deckhead, crowns vs headroom, shoulders (2 x collision radius) vs clear widths",
+   "fixtures": [
+    {
+     "id": "helm_seated",
+     "what": "seated at the wheel",
+     "clip": "drive",
+     "world_opts": {
+      "seatZ": 0.36,
+      "wheelZ": 0.66,
+      "wheelY": 0.38
+     },
+     "range": {
+      "seatZ": [
+       0.25,
+       0.7
+      ],
+      "wheelZ": [
+       0.45,
+       0.95
+      ],
+      "wheelY": [
+       0.2,
+       0.45
+      ]
+     },
+     "clamped": false,
+     "wheel": {
+      "hub": [
+       0.5,
+       0.02,
+       1
+      ],
+      "rim_m": 0.175,
+      "rake_deg": -12,
+      "clip_tilt_deg": 28
+     },
+     "worst_grip_miss_m": 0.031,
+     "worst_hub_offset_m": 0,
+     "worst_ikShort_m": 0,
+     "note": "every build’s hands land on the rim (within 0.04 m) on every frame, the clip’s wheel on the hub",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "helm_standing",
+     "what": "standing at the wheel",
+     "clip": "helm_idle",
+     "pivot": [
+      0.5,
+      -0.1,
+      0.34
+     ],
+     "worst_grip_miss_m": 0.579,
+     "worst_hands_to_hub_m": 0.676,
+     "hub_over_floor_m": 0.66,
+     "hub_ahead_of_pilot_m": 0.12,
+     "grip_by_build": {
+      "over_floor_m": [
+       0.784,
+       1.231
+      ],
+      "ahead_m": [
+       0.312,
+       0.482
+      ]
+     },
+     "waitsOn": [
+      "helm_idle.wheelOpts"
+     ],
+     "note": "Why not: helm_idle takes no wheel opts, so each build holds its hands where its own arms put them: 0.784 to 1.231 m over the floor and 0.312 to 0.482 m ahead of its feet. One wheel is within 0.02 m of a few of those grips at most. This wheel is set for drive (seated, 30 of 30), which takes it no higher than 0.95 m over the floor (this hub: 0.66 m), and its seat is 0.4 m behind the hub, so a figure standing at the reach helm_idle holds would stand in the seat. At the rig’s pilot spot (0.12 m behind the hub) the hands’ midpoint misses the hub by up to 0.676 m. Standing waits on helm_idle taking wheelZ / wheelY (as drive does) and a helm with standing room in front of its seat.",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "walk_areas",
+     "what": "walk every area (4 of them) at the walker’s radius 0.23 m",
+     "clip": "walk",
+     "note": "each outline is inset by the walker’s radius, the widest 10.3 build’s collision radius or more: every build’s shoulders fit wherever the walker goes. Headroom is the stand fixtures’; steps are the step fixtures’.",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "climb_transom_steps",
+     "what": "transom_steps (a stair), walked as its ramp 1.035 → 0.34 m, upright",
+     "clip": "walk",
+     "clear_width_m": 1.72,
+     "headroom_m": null,
+     "ramp": {
+      "axis": "y",
+      "a0": -2.17,
+      "a1": -1.19,
+      "z0": 1.035,
+      "z1": 0.34
+     },
+     "waitsOn": [
+      "stairDown",
+      "stairUp"
+     ],
+     "note": "the ramp carries the root; the feet on the treads wait on stairDown / stairUp",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "swim_ladder",
+     "what": "down the swim ladder (reversed to climb aboard)",
+     "clip": "ladderDown",
+     "world_opts": {
+      "rung": 0.3
+     },
+     "note": "rungs at 0.30 m (the rig draws the ladder stowed); the top-out onto the platform waits on ladderOn",
+     "waitsOn": [
+      "ladderOn"
+     ],
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "seats",
+     "what": "sit as a passenger (seat_passenger, aft_bench, bow_lounge)",
+     "clip": null,
+     "waitsOn": [
+      "sit"
+     ],
+     "note": "10.3 has no sit clip: drive is its only seated clip, and its hands hold a wheel",
+     "builds_ok": 0,
+     "of": 30
+    }
+   ],
+   "waitsOn": [
+    "helm_idle.wheelOpts",
+    "ladderOn",
+    "sit",
+    "stairDown",
+    "stairUp"
+   ]
+  }
+ }
+}
