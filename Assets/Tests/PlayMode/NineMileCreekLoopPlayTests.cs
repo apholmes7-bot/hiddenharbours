@@ -153,7 +153,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GameRoot[] roots = Object.FindObjectsByType<GameRoot>();
             Assert.That(roots.Length, Is.EqualTo(1),
                 $"{roots.Length} cores in play after the load; the creek's own dev core must be the only one.");
-            _core = roots[0].transform.root.gameObject;   // DevCore: the GameRoot is one of its children
+            _core = roots[0].transform.parent.gameObject;   // DevCore: the GameRoot is one of its children
             _switcher = _core.GetComponentInChildren<ControlSwitcher>(true);
             _walk = _core.GetComponentInChildren<PlayerWalkController>(true);
             Assert.That(_switcher, Is.Not.Null, "the dev core carries no ControlSwitcher.");
