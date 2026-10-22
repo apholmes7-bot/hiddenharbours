@@ -2291,6 +2291,18 @@ namespace HiddenHarbours.App.Editor
                                  "so the opening has nowhere to sail in from. Commit the def and re-run.");
             }
 
+            // Rice Point (NR1a) is no door of the island's: it is reached through the creek. But the loader
+            // and the registrar list every region a trip can end in, so they learn it too, guarded and
+            // null-filtered like the rest. (The crossing card names it from its scene's own name.)
+            var ricePoint = AssetDatabase.LoadAssetAtPath<RegionDef>(NineMileCreekRicePointDoors.RegionAssetPath);
+            if (ricePoint != null)
+            {
+                Object[] withRicePoint = new Object[] { stPeters, nineMileCreek, westWater, eastWater, ricePoint }
+                                             .Where(r => r != null).ToArray();
+                SetRefArray(loader, "_regions", withRicePoint);
+                SetRefArray(registrar, "_regions", withRicePoint);
+            }
+
             // --- ST PETERS DOCK + ARRIVAL ANCHOR (the persistent rig binds here on the sail home) --------
             // St Peters' own board/dock geometry, mirroring the cove/Nine Mile Creek pattern. The persistent
             // ControlSwitcher starts pointed at this slip so you can board the moored Dory once she's yours;

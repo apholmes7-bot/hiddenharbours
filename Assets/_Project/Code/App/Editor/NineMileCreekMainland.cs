@@ -343,6 +343,37 @@ namespace HiddenHarbours.App.Editor
             new Vector3(RegionWorldCenter.x + RegionWorldSize.x * 0.5f - 24f, HarbourBeaconPos.y, 0f);
         public static readonly Vector2 WestWaterPassageBandSize = new Vector2(6f, 120f);
 
+        // --- ⭐ RICE POINT'S SEA AND STRAND DOORS: the creek's halves, west over the seam (NR1a) -----------
+        // Rice Point (#956) lies west of the creek, its east edge on the creek's west edge, and authored its own
+        // halves in its plan (RicePointPlan.asset, door.rpt_sea and door.rpt_strand). These are the other two.
+        //
+        // THE SUM. Rice Point's frame is the creek's shifted by RicePointFrameOffset: (x, y)_RPT = (x, y)_NMC +
+        // (760, 100). 760 m east is the two half-widths (380 + 380); 100 m north because Rice Point's 360 m
+        // raster meets the creek's 560 m one 200 m below the creek's north edge (its row r is the creek's row
+        // r + 400), so its centre stands at the creek's y = 280 − 200 − 180 = −100. Each band here is Rice Point's
+        // band MIRRORED across the seam (x = −380), so the two halves meet edge to edge and neither overlaps the
+        // other region:
+        //   x_NMC = −380 + (380 − x_RPT) = −380 + (380 − 377) = −377    (the creek's −380..−374, Rice Point's 374..380)
+        //   y_NMC = y_RPT − 100: sea −162.5 − 100 = −262.5 (y −280..−245); strand −96 − 100 = −196 (y −200..−192)
+        // and each takes Rice Point's band size. The ground is the same both sides (Rice Point's east column
+        // is G3's west column, all 720 rows): the sea band's bed is −3.37..−2.21 m, water at every tide; the
+        // strand's ground is 0.33..1.34 m, walkable from mid-ebb to mid-flood and awash at spring high.
+        //
+        // The ARRIVALS mirror Rice Point's own (366 = its band centre less 11 m): 11 m east of the creek's bands'
+        // centres, so 8 m clear of their inner edge, and no arrival stands in the door it came in by.
+        public static readonly Vector2 RicePointFrameOffset = new Vector2(760f, 100f);
+        public static readonly Vector3 ToRicePointSeaPassagePos = new Vector3(-377f, -262.5f, 0f);
+        public static readonly Vector2 RicePointSeaPassageBandSize = new Vector2(6f, 35f);
+        public static readonly Vector3 ToRicePointStrandPassagePos = new Vector3(-377f, -196f, 0f);
+        public static readonly Vector2 RicePointStrandPassageBandSize = new Vector2(6f, 8f);
+        /// <summary>Where a BOAT lands coming in by Rice Point's sea door: open water, bed −2.90 m.</summary>
+        public static readonly Vector3 RicePointSeaArrivalPos = new Vector3(-366f, -262.5f, 0f);
+        /// <summary>Where a WALKER lands coming in by Rice Point's sea door: the high strand, 1.53 m (Rice
+        /// Point's (366, −90), mirrored).</summary>
+        public static readonly Vector3 RicePointSeaLandingPos = new Vector3(-366f, -190f, 0f);
+        /// <summary>Where a walker lands coming in by Rice Point's strand: the high strand, 0.76 m.</summary>
+        public static readonly Vector3 RicePointStrandLandingPos = new Vector3(-366f, -196f, 0f);
+
         /// <summary>The bar's total length across BOTH regions (m) — St Peters' half plus this one.
         /// Derived from the two builders rather than restated, so neither can move without the other
         /// noticing.</summary>

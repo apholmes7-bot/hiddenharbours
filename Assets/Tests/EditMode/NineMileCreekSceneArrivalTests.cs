@@ -304,9 +304,18 @@ namespace HiddenHarbours.Tests.EditMode
 
             int ways = Array.IndexOf(anchor.Lines, "  _arrivals:");
             Assert.That(ways, Is.GreaterThan(0), "the anchor names its ways in");
-            Assert.That(anchor.Lines.Skip(ways + 1).TakeWhile(l => !l.StartsWith("  _", StringComparison.Ordinal)).ToArray(),
+            string[] named = anchor.Lines.Skip(ways + 1).TakeWhile(l => !l.StartsWith("  _", StringComparison.Ordinal)).ToArray();
+            Assert.That(named.Take(3).ToArray(),
                 Is.EqualTo(new[] { "  - Key: bar", "    ArrivalPoint: {fileID: 0}", "    DisembarkPoint: {fileID: 600323448}" }),
-                "one way in, over the bar, landing at the bar's own point");
+                "the first way in is over the bar, landing at the bar's own point");
+            // NR1: once Rice Point's halves stand (step 12), its two ways in follow the bar's; until then the bar's is the only one.
+            bool ricePoint = Scene.Docs.Any(p => p.IsScript("HiddenHarbours.World.RegionPassage") &&
+                                                 Name(GameObjectOf(p)) == NineMileCreekRicePointDoors.SeaDoorName);
+            Assert.That(named.Skip(3).Where(l => l.StartsWith("  - Key: ", StringComparison.Ordinal)).ToArray(),
+                Is.EqualTo(ricePoint ? new[] { "  - Key: " + NineMileCreekRicePointDoors.SeaArrivalKey,
+                                               "  - Key: " + NineMileCreekRicePointDoors.StrandArrivalKey } : new string[0]),
+                "after the bar's, only Rice Point's ways in, and only once its doors stand");
+            Assert.That(named.Length, Is.EqualTo(ricePoint ? 9 : 3), "each way in is its key and its two points");
             Doc bar = Scene.Require(Scene.Require(600323448, "the bar landing").FieldRef("m_GameObject"), "the bar landing");
             Assert.That(Vector2.Distance(WorldPosition(bar), (Vector2)NineMileCreekMainland.WalkArrivalPos), Is.LessThan(1e-4f),
                 "the bar's landing stands where the builder puts it");

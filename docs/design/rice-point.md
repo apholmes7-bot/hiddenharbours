@@ -69,23 +69,47 @@ No existing region builder is edited.
 
 ## Door contract for NR1
 
-All positions and sizes below are ground metres. Every outgoing target is `region.nine_mile_creek`.
+All positions and sizes below are ground metres in Rice Point's frame; NMC's frame is Rice Point's less (760, 100),
+so the seam is Rice Point's x 380 and NMC's x −380. Every outgoing target is `region.nine_mile_creek`.
 An absent target produces no passage; loader lists exclude absent targets. Arrivals sit beyond the trigger bands.
 
 | Door | Band centre | Band size | Target arrival in NMC | Own arrival for NMC | Own arrival position |
 |---|---|---|---|---|---|
 | Sea | (377, −162.5) | 6 × 35 | `rpt_sea` | `nmc_sea` | (366, −162.5) |
 | Strand | (377, −96) | 6 × 8 | `rpt_strand` | `nmc_strand` | (366, −96) |
-| Route 91 | (377, −42) | 6 × 5.8 | `rpt_route_91` | `nmc_route_91` | (366, −42) |
+| Route 91 | (377, −42) | 6 × 5.8 | `rpt_route_91` | `nmc_route_91` | (366, −42); shut until NR1b |
 
 The strand and road accept a known on-foot controller only. Walking arrivals leave the boat point unset.
 `IRegionPassageAccess` is the small new Core contract; App reads the control mode, and World evaluates the policy.
 It fails closed if a configured policy has the wrong type. Existing passages without policies retain their behaviour.
 The seat's lead-architect review is needed for that Core interface. No truck is transferred.
 
-NR1 must author NMC's reciprocal bands and these target keys. Until then, do not attempt the trips:
-the current loader would fall back to NMC's default arrival when a named arrival is absent.
 This wave proves each band's target, key, size and guard, not end-to-end travel or crossing-card timing.
+
+### NMC's halves (NR1a)
+
+NR1a gives NMC its halves of the sea and the strand: step 12 of NMC's updater (`NineMileCreekRicePointDoors`) and
+the same section of `NineMileCreekBuilder`. Each half mirrors Rice Point's across the seam:
+
+| NMC half | Band centre (NMC / Rice Point frame) | Band size | Asks Rice Point for | NMC's way in | Boat point; landing (NMC frame) |
+|---|---|---|---|---|---|
+| `PassageToRicePointSea` | (−377, −262.5) / (383, −162.5) | 6 × 35 | `nmc_sea` | `rpt_sea` | (−366, −262.5); (−366, −190) |
+| `PassageToRicePointStrand` | (−377, −196) / (383, −96) | 6 × 8 | `nmc_strand` | `rpt_strand` | unset (on foot); (−366, −196) |
+
+Each half, and Rice Point's place in NMC's loader, stands only while Rice Point's `RegionDef` does. Both halves keep
+the 1.5 s re-fire guard. The strand half takes Rice Point's on-foot policy: a truck, an ATV or a boat at the strand
+raises no crossing, and boats cross by the sea door, whose band starts 45 m south of the strand's. Every way in, on
+either side, stands at least 8 m from every band on its side, beyond a Cape Islander's 6.9 m reach.
+
+Route 91 waits for NR1b, after H4's road: Rice Point's plan marks it `Shut`, and CREATE and REFRESH keep a shut
+door's band off, so the road leads nowhere until NMC has its half. The crossing card names Rice Point from the scene
+it loads (`RegionFade.ArrivalTitle`), so no name registrar must know it first. A save made at Rice Point does not
+load back there yet. Only a rest writes the region into the save, and Rice Point has no bed (St Peters holds the
+only two); nothing yet travels to a saved region on load; and the wake restorer declines an anchor from a region
+other than the one loaded (ADR 0037).
+
+NMC's scene changes only by step 12's own output, in NR1's Phase B bake; Rice Point's REFRESH then turns
+Route 91's band off.
 
 ## Edges and later capability
 
