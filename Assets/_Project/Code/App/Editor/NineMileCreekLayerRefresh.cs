@@ -177,7 +177,7 @@ namespace HiddenHarbours.App.Editor
         public static void DryRun() => Run(false);
         [MenuItem("Hidden Harbours/Nine Mile Creek Layers/Apply named patches")]
         public static void Apply() => Run(true);
-        /// <summary>Plans NMC H2's steps, 04 to 09 (NineMileCreekGroundSteps), on the committed scene. 01 is
+        /// <summary>Plans NMC H2's steps, 04 to 09, and H3's 11 (NineMileCreekGroundSteps), on the committed scene. 01 is
         /// in the scene already and 03 is never run again; 02 stays the carried debt it names.</summary>
         public static List<NineMileCreekGroundSteps.Step> Run(bool apply)
         {

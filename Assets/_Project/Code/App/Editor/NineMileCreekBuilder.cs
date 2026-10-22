@@ -1164,22 +1164,15 @@ namespace HiddenHarbours.App.Editor
             // ⚠ EnsureBaked FIRST: the Cliff Face kit's pixels are gitignored by design (the rig is the
             // committed source), so a fresh checkout has no faces and the coast would stand up untextured
             // without a word. St Peters' builder makes the same call for the same reason.
+            //
+            // ⚠ THE WALLS COME FROM THEIR DEFS (NMC H3), never the premise: the premise is the coast plan
+            // before G3, and walking it would stand the old walls back up. The Defs are what N1 step
+            // 11-cliff-walls-g3 writes into the scene; the eight chunks 07 stood down across Wharf Road's
+            // ramp are retired there, so they spawn nothing here either.
             HiddenHarbours.Tools.RigBaking.CliffBakeMenu.EnsureBaked();
-            int cliffChunks = NineMileCreekCliffWalls.Build(premise);
+            int cliffChunks = NineMileCreekCliffWalls.Build(NineMileCreekCliffWalls.LoadDefs());
             var shore = NineMileCreekShorePainter.Paint(premise);
             shore.CliffChunks = cliffChunks;
-
-            // The chunks 07-loop-wall-contacts-g3 stands down: they draw a face G3 does not have across Wharf
-            // Road's ramp. The builder stands down the same eight, by the step's own names.
-            var cliffRoot = GameObject.Find(NineMileCreekCliffWalls.RootName);
-            foreach (string chunk in NineMileCreekGroundSteps.Pr2CliffChunks)
-            {
-                var standDown = cliffRoot != null ? cliffRoot.transform.Find(chunk) : null;
-                if (standDown == null)
-                    throw new System.InvalidOperationException("[NineMileCreekBuilder] no cliff chunk " + chunk +
-                        " to stand down — the premise's coast no longer resolves the chunks 07 names.");
-                standDown.gameObject.SetActive(false);
-            }
             Object.DestroyImmediate(premiseGo);
 
             // --- SAVE & REGISTER ------------------------------------------------------------

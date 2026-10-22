@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_071
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_071
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 50.689594, y: 89.11313}
+  - {x: 50.772182, y: 89.3491}
+  - {x: 50.85477, y: 89.58506}
+  - {x: 50.93736, y: 89.82102}
+  - {x: 51.019947, y: 90.05699}
+  - {x: 51.102535, y: 90.29295}
+  - {x: 51.18512, y: 90.528915}
+  - {x: 51.267708, y: 90.764885}
+  - {x: 51.350296, y: 91.00085}
+  Toe:
+  - {x: 53.521168, y: 88.12208}
+  - {x: 53.603756, y: 88.35805}
+  - {x: 53.686344, y: 88.59401}
+  - {x: 53.768932, y: 88.82997}
+  - {x: 53.85152, y: 89.06594}
+  - {x: 53.93411, y: 89.3019}
+  - {x: 54.016693, y: 89.537865}
+  - {x: 54.09928, y: 89.773834}
+  - {x: 54.18187, y: 90.009796}
+  DropMetres:
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  ToeElevations:
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 71
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 2.51-2.54 m off the ground, no face under it). Step 07 of the ground swap (#959) set it inactive; step 11 removes its objects. Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'

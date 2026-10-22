@@ -218,10 +218,10 @@ namespace HiddenHarbours.Tests.EditMode
             // binaries. The property this test is FOR is idempotence — that a second pass replaces the
             // first rather than stacking on it — and equality holds perfectly well at zero. That the
             // walls are cut at all is proved where it belongs, by
-            // NineMileCreekShoreTests.TheCliffWallsResolveIdenticallyTwice, which resolves chunks purely
-            // and needs no pixels.
+            // NineMileCreekWallsAgreeWithGroundTests.TheDefsCutTheSameWallsTwice, which cuts them from their
+            // Defs and needs no pixels.
 
-            NineMileCreekCliffWalls.Build(_premise);
+            NineMileCreekCliffWalls.Build(NineMileCreekCliffWalls.LoadDefs());
             NineMileCreekShorePainter.Paint(_premise);
             Remember(NineMileCreekCliffWalls.RootName);
             Remember(NineMileCreekShorePainter.RootName);
@@ -303,8 +303,8 @@ namespace HiddenHarbours.Tests.EditMode
                 _seaGo.SetActive(true);
             }
 
-            // 4. The pass under test, on the premise the builder hands it.
-            NineMileCreekCliffWalls.Build(_premise);
+            // 4. The pass under test, as the builder runs it: the walls from their Defs, the shore on the premise.
+            NineMileCreekCliffWalls.Build(NineMileCreekCliffWalls.LoadDefs());
             NineMileCreekShorePainter.Paint(_premise);
             Remember(NineMileCreekCliffWalls.RootName);
             Remember(NineMileCreekShorePainter.RootName);

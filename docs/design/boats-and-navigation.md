@@ -77,6 +77,9 @@ Eight tiers, **a branching tree near the top** (canon): the **Lobster Boat** (sh
 
 ### 2.1 The rigid body
 
+The [hull drag water-frame note](hull-drag.md) specifies body damping, the mooring's force
+ownership, the ground-relative restraints and the native integration gate for this change.
+
 - Each boat is a `Rigidbody2D` (dynamic), `gravityScale = 0` (top-down), with **mass scaled to displacement** (bigger tier → much larger mass + moment of inertia). Mass and `inertia` come from `BoatHullData` (roughly `mass ∝ length³` so the ladder's inertia gap is dramatic — a tanker has orders of magnitude more mass than a dory).
 - **Linear & angular drag** model water resistance, but we override Unity's simple drag with a **directional hydrodynamic model** (§2.4) because boats resist *sideways* motion far more than forward motion — that anisotropy is what makes a boat feel like a boat (it tracks forward, skids reluctantly sideways).
 

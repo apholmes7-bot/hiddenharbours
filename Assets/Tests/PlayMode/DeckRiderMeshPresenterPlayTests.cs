@@ -62,7 +62,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// the occupant slot says she stands". Both feed the MESH only — a knob that also moved the sprite
     /// would leave the two sides agreeing and the guard measuring nothing.</para>
     /// </summary>
-    public class DeckRiderMeshPresenterPlayTests
+    public partial class DeckRiderMeshPresenterPlayTests
     {
         // ---- the clip's beat ---------------------------------------------------------------------
         //
@@ -101,7 +101,7 @@ namespace HiddenHarbours.Tests.PlayMode
             "inside something (a cab, or a helm that hides its pilot): she draws neither";
         private const string HiddenElsewhereReason =
             "ashore — her body's forceRenderingOff was set by something other than this figure";
-        private const string ClipReason = "ashore — a clip is playing, and the sprite draws every clip";
+        private const string ClipReason = "ashore — the running clip cannot draw as mesh; the sprite owns this move";
         /// <summary>The registry's warning for a figure the pool refuses, once per ask.</summary>
         private const string NoFacetIdWarning = "this figure gets NO facet id";
         /// <summary>The id no figure may take: a pool that has lent 1..254 is a pool at its end — the
@@ -1346,9 +1346,9 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator AClip_HandsTheDrawToTheSpriteForItsLength_AndTheMeshTakesItBackTheFrameItEnds()
+        public IEnumerator AnUnmappedClip_HandsBackForItsLength_AndTheMeshReturnsWhenItEnds()
         {
-            // Decision 4 and A1's vault: any clip hands the draw to the sprite for its whole length — every
+            // Deferred moves retain the sprite for their whole length — every
             // frame of it the sprite, drawing the CLIP'S cell — and the mesh takes it back on the frame the
             // clip ends. Twice: a clip played where she stands, and the vault's shape, where the landing and
             // the clip happen in one frame and the mesh the landing posed is never rendered.
@@ -1361,8 +1361,9 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertDrawnBy(rig, AshoreMesh, "standing ashore");
             int id = rig.Presenter.AshoreFigure.FigureId;
             CharacterClipPlayer clips = rig.Body.gameObject.AddComponent<CharacterClipPlayer>();
+            rig.Character.Visual.DriveClip = rig.Character.Visual.BoardClip; // complete sprite, intentionally unmapped mesh
 
-            Assert.IsTrue(clips.Play(CharacterClip.Board, 0f, VaultSeconds),
+            Assert.IsTrue(clips.Play(CharacterClip.Drive, 0f, VaultSeconds),
                           "harness: the clip must play, or the guard below watches nothing");
             yield return WaitOutTheClip(rig, clips, id, baseline, "a clip played ashore");
             AssertDrawnBy(rig, AshoreMesh, "the frame the clip ended: the mesh takes the draw back");
@@ -1373,7 +1374,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Board(rig);
             AssertDrawnBy(rig, AboardMesh, "aboard, before the vault");
             rig.Rider.SetMode(ControlMode.OnFoot, null);
-            Assert.IsTrue(clips.Play(CharacterClip.Board, 0f, VaultSeconds), "harness: the vault's clip must play");
+            Assert.IsTrue(clips.Play(CharacterClip.Drive, 0f, VaultSeconds), "harness: the vault's clip must play");
             yield return WaitOutTheClip(rig, clips, id, baseline, "the vault ashore");
             AssertDrawnBy(rig, AshoreMesh, "the frame the vault ended");
             AssertKeptId(rig, id, baseline, "the frame the vault ended");
