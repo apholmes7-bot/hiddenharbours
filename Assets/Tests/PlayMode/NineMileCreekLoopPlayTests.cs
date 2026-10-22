@@ -468,7 +468,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var stall = Only<WharfSellPoint>(p => p.gameObject.name == FishBuyerStallName, "the fish buyer's stall");
             Assert.That(Vector2.Distance(Body(), stall.transform.position), Is.LessThan(5f), "she is not at the fish buyer's counter.");
             before = wallet.Money;
+            PrintBodyDiagnostic("before clam sale");
             int paid = stall.Sell(bucket, wallet);
+            PrintBodyDiagnostic("after clam sale");
             Assert.That(paid, Is.GreaterThan(0), "the fish buyer paid nothing for a bucket of clams.");
             Assert.That(wallet.Money - before, Is.EqualTo(paid), "the payout and the wallet disagree.");
             Assert.That(stall.LastUnitsSold, Is.EqualTo(dug), "the buyer did not take the whole bucket.");
@@ -595,6 +597,80 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         float WalkerFloat(string name) => (float)WalkerField(name).GetValue(_walk);
+
+        // Read-only snapshots: never poll an intent source, create a persistent object or render a frame.
+        static string DiagnosticSnapshot(string label, System.Func<string> snapshot)
+        {
+            try { return label + " " + snapshot(); }
+            catch (System.Exception e) { return label + " exception=" + e.GetType().FullName + ": " + e.Message; }
+        }
+
+        static void PrintDiagnostic(string line)
+        {
+            line = "[loop-diag] " + line.Replace("\r", "\\r").Replace("\n", "\\n");
+            // A diagnostic sink must not change the case's outcome either.
+            try { TestContext.WriteLine(line); } catch (System.Exception) { }
+            try { Debug.Log(line); } catch (System.Exception) { }
+        }
+
+        void PrintBodyDiagnostic(string label) => PrintDiagnostic(DiagnosticSnapshot(label, () =>
+        {
+            WalkIntents held = _held.Current;
+            // Do not use WalkerField here: its assertion is part of the fixture, not a diagnostic.
+            var raw = (Vector2)typeof(PlayerWalkController).GetField("_moveInput", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_walk);
+            var sprint = (bool)typeof(PlayerWalkController).GetField("_sprintHeld", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_walk);
+            return $"held(move={held.Move}, sprint={held.Sprint}, interact={held.Interact}, cancel={held.Cancel}) " +
+                   $"raw(move={raw}, sprint={sprint}) reads={_held.Reads} walker.enabled={_walk.enabled} " +
+                   $"body.simulated={_rb.simulated} bodyType={_rb.bodyType} constraints={_rb.constraints} " +
+                   $"velocity={_rb.linearVelocity} position={_rb.position} timeScale={Time.timeScale} " +
+                   $"fixedDeltaTime={Time.fixedDeltaTime} layer={_rb.gameObject.layer} " +
+                   $"collisionMask={Physics2D.GetLayerCollisionMask(_rb.gameObject.layer)} graphics={SystemInfo.graphicsDeviceType}";
+        }));
+
+        static string ColliderDiagnostic(Collider2D collider)
+        {
+            Bounds bounds = collider.bounds;
+            Rigidbody2D attached = collider.attachedRigidbody;
+            return $"name={collider.name} scene={collider.gameObject.scene.name} layer={collider.gameObject.layer} " +
+                   $"isTrigger={collider.isTrigger} attachedRigidbody={(attached == null ? "none" : attached.name)} " +
+                   $"bounds.center={bounds.center} bounds.size={bounds.size}";
+        }
+
+        void PrintStalledWalkDiagnostic(Walk walk, Planner planner)
+        {
+            PrintDiagnostic(DiagnosticSnapshot("first plan " + walk.Leg, () =>
+                $"refused probes recorded={planner.FirstPlanRefusals.Count} (first 24 only)"));
+            foreach (string refusal in planner.FirstPlanRefusals) PrintDiagnostic(refusal);
+            PrintBodyDiagnostic("ended " + walk.Leg);
+            PrintDiagnostic(DiagnosticSnapshot("loaded scenes", () =>
+            {
+                var names = new List<string>();
+                for (int i = 0; i < SceneManager.sceneCount; i++) names.Add(SceneManager.GetSceneAt(i).name);
+                return string.Join("; ", names);
+            }));
+            PrintDiagnostic(DiagnosticSnapshot("DontDestroyOnLoad roots (first 40)", () =>
+            {
+                var names = new List<string>();
+                foreach (Transform root in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
+                {
+                    if (root.parent != null || root.gameObject.scene.name != "DontDestroyOnLoad") continue;
+                    names.Add(root.name);
+                    if (names.Count == 40) break;
+                }
+                return $"count={names.Count}: " + string.Join("; ", names);
+            }));
+            PrintDiagnostic(DiagnosticSnapshot("enabled non-trigger colliders within 3 m", () =>
+            {
+                Vector2 body = Body();
+                var colliders = new List<string>();
+                foreach (Collider2D collider in Object.FindObjectsByType<Collider2D>(FindObjectsInactive.Exclude))
+                {
+                    if (!collider.enabled || collider.isTrigger || Vector2.Distance(body, collider.ClosestPoint(body)) > 3f) continue;
+                    colliders.Add(DiagnosticSnapshot("collider", () => ColliderDiagnostic(collider)));
+                }
+                return $"count={colliders.Count}: " + string.Join("; ", colliders);
+            }));
+        }
 
         void StandHerAt(Vector2 body)
         {
@@ -803,6 +879,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 _held.Release();
                 Time.timeScale = 1f;
+                if (walk.Stalled || walk.TimedOut) PrintStalledWalkDiagnostic(walk, planner);
             }
         }
 
@@ -861,6 +938,8 @@ namespace HiddenHarbours.Tests.PlayMode
             readonly float _radius, _maxDepth;
             readonly ContactFilter2D _filter;
             readonly List<Collider2D> _hits = new List<Collider2D>();
+            public readonly List<string> FirstPlanRefusals = new List<string>(24);
+            int _planCount;
             public int Probes;
 
             public Planner(Rigidbody2D self, Vector2 footOffset, float radius, float maxDepth)
@@ -876,17 +955,50 @@ namespace HiddenHarbours.Tests.PlayMode
             bool Clear(Vector2 body)
             {
                 Probes++;
-                if (Depth(body) > _maxDepth) return false;
+                float depth = Depth(body);
+                if (depth > _maxDepth)
+                {
+                    RecordRefusal(body, "depth", depth);
+                    return false;
+                }
                 _hits.Clear();
                 Physics2D.OverlapCircle(body + _footOffset, _radius, _filter, _hits);
                 for (int i = 0; i < _hits.Count; i++)
-                    if (_hits[i].attachedRigidbody != _self) return false;
+                    if (_hits[i].attachedRigidbody != _self)
+                    {
+                        RecordRefusal(body, "hit", depth);
+                        return false;
+                    }
                 return true;
+            }
+
+            void RecordRefusal(Vector2 body, string reason, float depth)
+            {
+                if (_planCount != 1 || FirstPlanRefusals.Count >= 24) return;
+                try
+                {
+                    string label = $"first-plan refusal {FirstPlanRefusals.Count + 1} probe={Probes} at={body} reason={reason}";
+                    string details;
+                    if (reason == "depth") details = $"depth={depth} maxDepth={_maxDepth}";
+                    else
+                    {
+                        var colliders = new List<string>();
+                        foreach (Collider2D collider in _hits)
+                            colliders.Add(DiagnosticSnapshot("collider", () => ColliderDiagnostic(collider)));
+                        details = string.Join("; ", colliders);
+                    }
+                    FirstPlanRefusals.Add(label + " " + details);
+                }
+                catch (System.Exception e)
+                {
+                    PrintDiagnostic("record first-plan refusal exception=" + e.GetType().FullName + ": " + e.Message);
+                }
             }
 
             public List<Vector2> Plan(Vector2 from, Vector2 goal, float goalRadius, float cell, float margin, int maxExpansions,
                                       out string why)
             {
+                _planCount++;   // Keep the initial coarse plan's record; fallback plans and replans never overwrite it.
                 Vector2 min = Vector2.Min(from, goal) - Vector2.one * margin;
                 Vector2 max = Vector2.Max(from, goal) + Vector2.one * margin;
                 float ox = Mathf.Floor(min.x / cell) * cell, oy = Mathf.Floor(min.y / cell) * cell;

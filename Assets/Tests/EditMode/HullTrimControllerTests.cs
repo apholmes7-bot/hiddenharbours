@@ -150,6 +150,16 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void AtFullWaterSpeed_InFollowingCurrent_TheSquatIsGone()
+        {
+            var boat = Boat(Hull(), out var rb);
+            _sea.Current = new Vector2(0f, 2f);
+            // 6 m/s over ground, 4 through water: 12 - 4 of force, over 10, less 0.2*4 = 0.
+            // The old ground-speed damping signal invented a -0.4 m/s² check and a bow dip.
+            Assert.AreEqual(1.0f, TickAt(boat, rb, 1f, new Vector2(0f, 6f)), Tol);
+        }
+
+        [Test]
         public void WhenTheThrottleIsCut_TheNoseDips()
         {
             var boat = Boat(Hull(), out var rb);
@@ -174,7 +184,7 @@ namespace HiddenHarbours.Tests.EditMode
             var boat = Boat(Hull(), out var rb);
             _sea.Current = new Vector2(0f, 2f);
             // She drifts with a 2 m/s stream along her keel: no way through the water, so no drag, no
-            // rise, and the body's own damping (−0.4 m/s²) is a dip weighted by no way at all.
+            // rise, and no damping acceleration in the water frame.
             Assert.AreEqual(0f, TickAt(boat, rb, 0f, new Vector2(0f, 2f)), Tol);
         }
 

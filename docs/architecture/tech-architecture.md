@@ -315,6 +315,24 @@ that seam (rule 4). It calls for the birds near the view, panned to the bird, qu
 and more often for feeding birds; its knobs are the director's `GullCallTuning`. The always-on gull
 bed is gone. Nothing is saved: the schedule is recomputed from seed and time.
 
+### Explicit mesh character moves
+
+`CharacterClipStateMap` in Core maps an explicit `CharacterClip` and carry key to an authored
+skin state. Vaults include buckets, tray and pot; ladder, haul and deck work use their own states.
+Null means the sprite retains the move. A key also requires a baked skin clip and MeshStates
+permission. The player presenter reads `CharacterClipPlayer.Frame` and `HeadingDegrees`, including
+quantity-driven seeks; it does not start another animation clock. Normal gait keeps its clock.
+
+`CharacterClipPlayer.OwnsOnlySkinClaim` uses Core's internal `IsoCharacterSprite.SuspensionCount`:
+only this clip's sole claim may pass the mesh fence. Fishing or another nested claimant retains
+the sprite. These are presentation facts; no save field or simulation state changes. Compass
+heading becomes a deck bearing aboard before the existing figure heading dial is applied.
+
+Stern gear seeks its worker at order 90 after hull facing/rock (-110/-120); the rider consumes it
+at 100 before choosing the single visible drawer. Its five order-100 peers retain their order.
+The cast and fresh-bake lists enable the same 27 states; the cast presenter still refuses claimed
+sprites and poses only stance/gait. No shipped cast caller plays these explicit moves yet.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
