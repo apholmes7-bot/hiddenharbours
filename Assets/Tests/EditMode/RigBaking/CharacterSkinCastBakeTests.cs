@@ -61,6 +61,10 @@ namespace HiddenHarbours.Tests.RigBaking
             "idle", "walk", "run", "balance",
             "idle_helm", "walk_helm", "idle_oars", "walk_oars",
             "idle_buckets", "walk_buckets", "run_buckets",
+            "board", "boardDown", "ladderDown", "haul",
+            "hauler", "bench", "chop", "lift",
+            "place", "toss", "board_buckets", "board_tray",
+            "board_pot", "boardDown_buckets", "boardDown_tray", "boardDown_pot",
         };
 
         IRigScriptHost _host, _host9;
