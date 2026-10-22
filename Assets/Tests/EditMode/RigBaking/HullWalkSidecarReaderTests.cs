@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
 using UnityEngine;
@@ -27,6 +28,43 @@ namespace HiddenHarbours.Tests.RigBaking
 
     public sealed class HullWalkSidecarReaderTests
     {
+        // The synthetic fixture is a cabin. Make the open fixture in memory only;
+        // retain its house so the individual cases change exactly one premise.
+        static string OpenFixtureJson => HullWalkFixture.Json.Replace("\"kind\": \"cabin\"", "\"kind\": \"open\"");
+
+        static string WithoutHouse(string json)
+        {
+            var house = new Regex(@"(?ms)^  ""house"": \{.*?^  \},\r?\n");
+            Assert.That(house.Matches(json).Count, Is.EqualTo(1), "remove exactly the fixture's root house");
+            return house.Replace(json, "", 1);
+        }
+
+        [Test]
+        public void OpenHullWithoutHouse_ReadsWithNoHouse()
+        {
+            var read = HullWalkFixture.Read(WithoutHouse(OpenFixtureJson));
+            Assert.That(read.Ok, Is.True, string.Join(";", read.Errors));
+            Assert.That(read.Kind, Is.EqualTo("open"));
+            Assert.That(read.House, Is.Null);
+            Assert.That(read.Fields.ContainsKey("house"), Is.False);
+        }
+
+        [Test]
+        public void CabinHullWithoutHouse_RefusesRequiredField()
+        {
+            var read = HullWalkFixture.Read(WithoutHouse(HullWalkFixture.Json));
+            Assert.That(read.Ok, Is.False);
+            Assert.That(read.Errors.Single(), Is.EqualTo("box_walk: house: required field missing"));
+        }
+
+        [Test]
+        public void OpenHullWithHouseObject_RefusesExpectedNull()
+        {
+            var read = HullWalkFixture.Read(OpenFixtureJson);
+            Assert.That(read.Ok, Is.False);
+            Assert.That(read.Errors.Single(), Is.EqualTo("box_walk: house: expected null on open hull"));
+        }
+
         [Test]
         public void CompleteWalk_KeepsPolygonsHolesClimbsAndUnusedFields()
         {
