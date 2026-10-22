@@ -599,6 +599,24 @@ namespace HiddenHarbours.App.Editor
         // past its far tip and short of the scene edge.
         public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(-356f, 0f, 0f);
 
+        /// <summary>The walk door's band: 6 m along the bar by 120 m across it, the owner's size of
+        /// 2026-10-17 ("a larger door to NMC and vice versa"). The old 3 × 60 m band was the bar's own
+        /// width, so a walker who stepped off the crest at the tip could walk round it; this one reaches
+        /// 30 m into the water either side of the bar. It ends 30 m short of the west sea door's band
+        /// above it (<see cref="ToWestWaterPassagePos"/>), so the two never overlap.</summary>
+        public static readonly Vector2 NineMileCreekPassageBandSize = new Vector2(6f, 120f);
+
+        /// <summary>The name this island's anchor answers a walker coming over from the creek with. Both
+        /// ends of the crossing name it for the bar: the walk door asks the creek for its own
+        /// <see cref="NineMileCreekBuilder.BarArrivalKey"/> landing, and the creek's door asks this island
+        /// for the same name.</summary>
+        public const string FromNineMileCreekArrivalKey = NineMileCreekBuilder.BarArrivalKey;
+
+        /// <summary>Where a walker coming over from the creek is put down: on the bar's crest, 6 m short of
+        /// its west tip and 9 m east of the walk door's band, so a walker who arrives standing still is
+        /// never left inside the band that would send them back.</summary>
+        public static readonly Vector3 FromNineMileCreekWalkArrivalPos = new Vector3(-344f, 0f, 0f);
+
         // --- ⭐ THE SEA DOOR: out west into THE WEST WATER (world-map-plan §6 step 1) -------------------
         // The island's second way off, and its first BY BOAT. The bar at y = 0 is the WALK; this is the
         // sail — 150 m north of the bar's centre-line, which puts it in open water on three counts at
@@ -609,8 +627,9 @@ namespace HiddenHarbours.App.Editor
         //
         // ⚠ NOT a full-height band like the west water's own doors. This is a LAND region: its west edge
         // carries the crossing, and a band spanning the region would swallow the walk passage below it.
-        // 120 m tall leaves a 60 m gap between the two, which is more than a hull's width of daylight at
-        // the one place both could plausibly fire.
+        // 120 m tall, over the walk door's own 120 m band (NineMileCreekPassageBandSize), leaves a 30 m gap
+        // between the two, which is still more than a hull's width of daylight at the one place both
+        // could plausibly fire.
         public static readonly Vector3 ToWestWaterPassagePos = new Vector3(-356f, 150f, 0f);
         public static readonly Vector2 WestWaterPassageBandSize = new Vector2(6f, 120f);
 
@@ -2142,7 +2161,13 @@ namespace HiddenHarbours.App.Editor
 
             // Light onboarding: one nudge per beat of the new earned-dory loop, then it bows out and persists
             // 'onboarded' (on the dory being REPAIRED) so the opening never re-triggers on reload.
-            new GameObject("Onboarding").AddComponent<OnboardingDirector>();
+            //
+            // ⚠️ AND IT TRAVELS WITH THE CORE (PersistentObject): most of its beats are heard AWAY from here.
+            // The licence, the rod, buying the dory and repairing her all happen at the Nine Mile Creek
+            // shipwright, and a crossing switches off every root of the region left behind — so a guide left
+            // in this scene went deaf at the first crossing, never heard the repair, and the opening never
+            // closed. Quit to title takes it down with the rest of the core; the boot reload makes one fresh.
+            new GameObject("Onboarding", typeof(OnboardingDirector), typeof(PersistentObject));
 
             // --- ⭐ THE ARRIVAL (owner ruling, 2026-08-19) ------------------------------------------
             // Onboarding's step ZERO, and the reason the east berth was dredged: a new game does not
@@ -2171,7 +2196,7 @@ namespace HiddenHarbours.App.Editor
             // The persistent travel rig (loader + coordinator) was built with the core; here we fill the
             // loader's region list and wire this region's passage to it. Consistent with the TidalTerrain:
             // the bar is a WALK path at low water (the first trip is on foot). The passage band sits at the
-            // Nine Mile Creek (east) end of the bar; triggering is forgiving (greybox) — gameplay gates the actual
+            // Nine Mile Creek (west) end of the bar; triggering is forgiving (greybox) — gameplay gates the actual
             // crossing on the bar being EXPOSED (TidalExposure) and on the player being on foot.
             var loader = core.Loader;
             SetRefArray(loader, "_regions", new Object[] { stPeters, nineMileCreek });
@@ -2180,10 +2205,12 @@ namespace HiddenHarbours.App.Editor
             passageGo.transform.position = ToNineMileCreekPassagePos;
             var trigger = passageGo.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
-            trigger.size = new Vector2(3f, SandbarHalfWidth * 2f);   // a band across the bar's Nine Mile Creek end
+            trigger.size = NineMileCreekPassageBandSize;   // 120 m across the bar's Nine Mile Creek end
             var passage = passageGo.AddComponent<RegionPassage>();
             SetRef(passage, "_target", nineMileCreek);
             SetRef(passage, "_loader", loader);
+            // It asks the creek for its bar landing, which stands out of the creek's own door.
+            SetString(passage, "_arrivalKey", NineMileCreekBuilder.BarArrivalKey);
 
             // ⭐ THE SEA DOOR — out west into THE WEST WATER (world-map-plan §6 step 1), the island's
             // first way off that is not the tide's to grant. Sail north round the island and west, and
@@ -2291,12 +2318,22 @@ namespace HiddenHarbours.App.Editor
             // of a region apart, so the anchor carries a table: a boat coming home from the EAST WATER
             // lands inside the east door on the fairway, not alongside the wharf.
             //
-            // ⚠ Only the BOAT's point is named. DisembarkPoint is left blank so it falls back to the
+            // ⚠ The east row names only the BOAT's point. DisembarkPoint is left blank so it falls back to the
             // wharf ladder — where you step ashore is a fact about the DOCK and not about the way you
             // came in, and pinning it to the arrival is the one hazard PerPassageArrivalTests exists to
             // hold (a player who moors at the wharf stepping off it onto somewhere else entirely).
-            if (eastWaterArrival != null)
-                anchor.ConfigureArrivals(new NamedArrival(FromEastWaterArrivalKey, eastWaterArrival, null));
+            //
+            // ⭐ AND THE WAY IN ON FOOT (owner ruling 2026-10-17). A walker coming over from the creek is put
+            // down on this bar, 9 m east of the walk door's band, not at the wharf ladder the island's
+            // length away. The bar row names only the WALKER's point, as the creek's own bar landing does: a
+            // boat that comes this way is laid where a keyless arrival lays her, and the wharf's step-off
+            // (SetDock) is unchanged.
+            var barLandingGo = new GameObject("StPetersBarLanding");
+            barLandingGo.transform.position = FromNineMileCreekWalkArrivalPos;
+            var bar = new NamedArrival(FromNineMileCreekArrivalKey, null, barLandingGo.transform);
+            anchor.ConfigureArrivals(eastWaterArrival != null
+                ? new[] { new NamedArrival(FromEastWaterArrivalKey, eastWaterArrival, null), bar }
+                : new[] { bar });
 
             // --- SAVE & REGISTER ------------------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);

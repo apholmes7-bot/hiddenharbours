@@ -1,0 +1,40 @@
+{
+  "schema": "hidden-harbours/land-starter-paint@1",
+  "bands": [
+    {
+      "below": -2.2,
+      "channel": 6
+    },
+    {
+      "below": 0,
+      "channel": 4
+    },
+    {
+      "below": 2.2,
+      "channel": 2
+    },
+    {
+      "below": 3.6,
+      "channel": 1
+    },
+    {
+      "below": 7,
+      "channel": 0
+    }
+  ],
+  "marsh": [
+    {
+      "centre": [
+        -16,
+        -27
+      ],
+      "radii": [
+        30,
+        8
+      ],
+      "rotation": 16,
+      "channel": 8
+    }
+  ],
+  "stillChannel": 19
+}

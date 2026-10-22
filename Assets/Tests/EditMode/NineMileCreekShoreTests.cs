@@ -153,28 +153,8 @@ namespace HiddenHarbours.Tests.EditMode
             finally { Destroy(host); }
         }
 
-        [Test]
-        public void TheCliffWallsResolveIdenticallyTwice()
-        {
-            var terrain = MakeTerrain(out GameObject host);
-            try
-            {
-                var a = NineMileCreekCliffWalls.ResolveChunks(terrain);
-                var b = NineMileCreekCliffWalls.ResolveChunks(terrain);
-
-                Assert.That(a.Count, Is.GreaterThan(0), "the plan authors rock; the walls must stand");
-                Assert.That(b.Count, Is.EqualTo(a.Count), "two resolves must cut the same chunks");
-                for (int i = 0; i < a.Count; i++)
-                {
-                    Assert.That(b[i].Samples.Count, Is.EqualTo(a[i].Samples.Count), $"chunk {i} restationed");
-                    Assert.That(b[i].AspectIndex, Is.EqualTo(a[i].AspectIndex), $"chunk {i} changed aspect");
-                    Assert.That(b[i].BatterIndex, Is.EqualTo(a[i].BatterIndex), $"chunk {i} changed batter");
-                    Assert.That(b[i].AlongOffsetMetres,
-                        Is.EqualTo(a[i].AlongOffsetMetres).Within(1e-4f), $"chunk {i} changed its u origin");
-                }
-            }
-            finally { Destroy(host); }
-        }
+        // The cliff walls are cut from their Defs since NMC H3, never resolved from this premise: that the cut is
+        // the same twice is NineMileCreekWallsAgreeWithGroundTests.TheDefsCutTheSameWallsTwice.
 
         // =============================================================================================
         //  3. the seam with #538 — the two passes ABUT, they do not overlap
@@ -385,96 +365,13 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
-        //  6. the walls stand where the PLAN says, and nowhere else
+        //  6. the walls: laid from their Defs on G3 since NMC H3 (NineMileCreekWallsAgreeWithGroundTests);
+        //     the soil on their faces is this region's own
         // =============================================================================================
 
-        [Test]
-        public void EveryCliffChunkStandsOnASectorThePlanCallsRock()
-        {
-            var terrain = MakeTerrain(out GameObject host);
-            try
-            {
-                var chunks = NineMileCreekCliffWalls.ResolveChunks(terrain);
-                Assert.That(chunks.Count, Is.GreaterThan(0));
-
-                foreach (var c in chunks)
-                    Assert.That(CoastPlan.IsCliff(c.Class), Is.True,
-                        $"a wall was cut for class {c.Class}, which the plan does not call rock — an art " +
-                        "pass may draw what the plan declares and must never invent geometry");
-            }
-            finally { Destroy(host); }
-        }
-
-        [Test]
-        public void NoWallStandsPastEitherEndOfTheOpenRun()
-        {
-            // ⚠ THE OPEN-RUN HAZARD. MainlandCoast.ClassAt CLAMPS, so a sweep that ran off the end would
-            // read the first/last sector's class from beyond the coastline — and both of this run's ends
-            // are soft, so the bug would be invisible today and would appear the moment someone authored
-            // rock at either end.
-            var terrain = MakeTerrain(out GameObject host);
-            try
-            {
-                float run = terrain.CoastRunLength;
-                foreach (var c in NineMileCreekCliffWalls.ResolveChunks(terrain))
-                foreach (var s in c.Samples)
-                {
-                    MainlandCoast.Project(terrain.CoastPoints, s.BrowPlan, out float along, out _);
-                    Assert.That(along, Is.GreaterThanOrEqualTo(-0.01f).And.LessThanOrEqualTo(run + 0.01f),
-                        $"a wall station projects to {along:F2} m along a {run:F2} m run — it is standing " +
-                        "off the end of the coastline");
-                }
-            }
-            finally { Destroy(host); }
-        }
-
-        [Test]
-        public void EveryChunkWearsAFaceTheAspectLawAllows()
-        {
-            // The batter SNAPS and the azimuth runs free, but the azimuth must still land inside the
-            // kit's tolerance of one of the five authored facings — otherwise the wall is drawn wearing a
-            // face chosen for a direction it does not point.
-            var terrain = MakeTerrain(out GameObject host);
-            try
-            {
-                foreach (var c in NineMileCreekCliffWalls.ResolveChunks(terrain))
-                {
-                    float error = CoastPlan.AspectSnapError(c.WallAzimuth);
-                    Assert.That(error, Is.LessThanOrEqualTo(CoastPlan.AspectSnapToleranceDegrees + 0.01f),
-                        $"a chunk facing {c.WallAzimuth:F1}° is {error:F1}° from the nearest authored " +
-                        $"facing — the aspect law's ceiling is {CoastPlan.AspectSnapToleranceDegrees}°");
-                }
-            }
-            finally { Destroy(host); }
-        }
-
-        [Test]
-        public void NoChunkSortsOverMoreWorldYThanOneCharacterIsTall()
-        {
-            // ADR 0032: a chunk has ONE sorting order and spans a stretch of world Y, so what makes an
-            // order dishonest is the Y span, not the length. Measured off the BUILT chunks rather than
-            // trusting the cut rule — StPetersCliffWallTests' own discipline.
-            var terrain = MakeTerrain(out GameObject host);
-            try
-            {
-                float worst = 0f;
-                foreach (var c in NineMileCreekCliffWalls.ResolveChunks(terrain))
-                {
-                    float lo = float.MaxValue, hi = float.MinValue;
-                    foreach (var s in c.Samples)
-                    {
-                        float y = HiddenHarbours.Art.CliffWallGeometry.ToeScreen(s).y;
-                        lo = Mathf.Min(lo, y); hi = Mathf.Max(hi, y);
-                    }
-                    worst = Mathf.Max(worst, hi - lo);
-                }
-                Assert.That(worst,
-                    Is.LessThanOrEqualTo(NineMileCreekCliffWalls.ChunkToeSpanMetres + 0.01f),
-                    $"the worst chunk's foot wanders {worst:F2} m of world Y — a walker standing at its " +
-                    "shallowest foot would be sorted by the wall at the other end");
-            }
-            finally { Destroy(host); }
-        }
+        // Where the walls stand, the class, the aspect law and the sorting span are held on their Defs, in
+        // NineMileCreekWallsAgreeWithGroundTests: EveryWall_IsAClassThePlanCallsRock_AndWearsAFaceTheAspectLawAllows,
+        // EveryStation_StandsInsideG3sExtent and NoWallSortsOverMoreWorldYThanOneCharacterIsTall.
 
         [Test]
         public void TheSoilHorizonIsThisRegionsOwnMeadowBand()

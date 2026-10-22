@@ -155,6 +155,8 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Stable id of the structure this pier registers as a standable surface.</summary>
         public const string SurfaceId = "wharf.st_peters";
+        /// <summary>The mooring edge is the footprint's southern face.</summary>
+        public const float MooringFaceHeadingDegrees = 180f;
 
         /// <summary>
         /// The deck's world-space footprint — the rectangle of planks the on-foot sim treats as floor.
@@ -471,6 +473,7 @@ namespace HiddenHarbours.App.Editor
             // overlay sheet is art, and whether a wharf can be moored to must not depend on whether that
             // art has been imported.
             int cleats = PlaceMooringCleats(root, deckElevation);
+            PlaceLadders(root, deckElevation);
 
             // THE LAMPS. Deck posts, so they are checked against the PLANKS and not against the terrain —
             // the slip beneath this pier is dredged to -1.0 m and a dryness check would reject a perfectly
@@ -518,6 +521,24 @@ namespace HiddenHarbours.App.Editor
                 n++;
             }
             return n;
+        }
+
+        // Runtime boarding uses the same fitting and measured deck as the picture and mooring.
+        // Like the cleats, the climb remains available when overlay art has not been imported.
+        static void PlaceLadders(GameObject root, float deckElevation)
+        {
+            var ladderRoot = new GameObject("Ladders");
+            ladderRoot.transform.SetParent(root.transform, worldPositionStays: false);
+            int n = 0;
+            foreach (var f in Fittings())
+            {
+                if (!string.Equals(f.Name, "ladder", System.StringComparison.Ordinal)) continue;
+                var go = new GameObject($"Ladder_{n}");
+                go.transform.SetParent(ladderRoot.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
+                go.AddComponent<HiddenHarbours.World.WharfLadder>()
+                    .Configure($"{SurfaceId}.ladder_{n++}", deckElevation, MooringFaceHeadingDegrees);
+            }
         }
 
         /// <summary>A sliced sheet's sub-sprites keyed by their trailing slice INDEX (the slicer names them

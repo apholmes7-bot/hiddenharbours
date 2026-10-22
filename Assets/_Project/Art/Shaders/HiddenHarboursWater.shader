@@ -1177,6 +1177,52 @@ Shader "HiddenHarbours/Water"
             #include "Assets/_Project/Art/Shaders/Include/StillWater.hlsl"
             #include "Assets/_Project/Art/Shaders/Include/DaylightSwellRead.hlsl"
 
+            // ==== W4-4b — THE FLOOR IN THE SHALLOWS (ruling 7 of 2026-10-10: "Shallows: 2B") ==================
+            // In clear shallow water the bed the seabed composite lays under the column is the GROUND'S OWN
+            // albedo, drawn by the one include the terrain draws the ground with (ShallowsFloorBed, after the
+            // seabed readers below). DESKTOP ONLY: a mobile target keeps the painted bed (2A, unbuilt, is the
+            // mobile fallback) and never declares the floor's seven textures, which would crowd the sixteen
+            // units an ES 3.0 fragment stage is promised.
+            //
+            // Plain GLOBALS, never Properties and outside UnityPerMaterial: the region's ground writes them
+            // into this renderer's block (TerrainSplatSurface.WriteGroundFloor, by the terrain's own names and
+            // types) and WaterSurface pushes the switch, so no preset or Water.mat field can carry a stale
+            // floor. Unset, each reads 0: the switch off and the kit unloaded, the painted bed.
+            #if !defined(SHADER_API_MOBILE)
+                #define HH_SHALLOWS_FLOOR 1
+            #endif
+            #if defined(HH_SHALLOWS_FLOOR)
+                float  _ShallowsFloor;             // GameConfig.ShallowsFloor: 0 = the painted bed, bit for bit
+                float  _ShallowsFloorRefraction;   // GameConfig.ShallowsFloorRefraction: the view's bend
+                float  _DetailLoaded, _DetailOffsetCellMetres;
+                float  _FloorPaint, _FloorRipple, _FloorSand, _FloorMarram, _FloorGrass, _FloorShingle;
+                float  _BandBlendMetres, _EdgeFadeMetres;
+                float  _BandWiggleMetres, _BandWiggleScale, _BandDetailMetres, _BandDetailScale;
+                float4 _IslandCenter, _WeatherFacing;
+                float  _IslandAspect, _SectorFeather, _SectorBlend;
+                float4 _BarFrom, _BarTo;
+                float  _BarHalfWidth, _BarSpineHalfWidth, _BarSpineFloor, _BarEdgeBlend;
+                float  _PixelsPerMetre, _MacroScale, _MacroStrength;
+                float4 _MacroTint;
+                float  _WetBandMetres, _WetStrength;
+                float4 _WetTint;
+                TEXTURE2D(_SplatA); TEXTURE2D(_SplatB); TEXTURE2D(_SplatC);
+                TEXTURE2D(_SplatD); TEXTURE2D(_SplatE); TEXTURE2D(_SplatF);
+                TEXTURE2D_ARRAY(_DetailArr256);
+                // W4-4c: the props under the water (IsoFacetHullFeature's HHUnderWater list: albedo,
+                // premultiplied, camera resolution, LOADed so no sampler) and the flag its pass raises
+                // once they are drawn. GLOBALS, never in Properties: unset, the flag reads 0, no prop.
+                TEXTURE2D(_HHUnderWaterTex);
+                float  _HHUnderWaterLive;
+                // URP's inline samplers (Core.hlsl's GlobalSamplers) in the ground's own sampler states (the
+                // include's header says why they match): two slots, where the textures' own seven would pass
+                // the sixteen a D3D11 stage allows. The splats have no mips, so level 0 IS the texture, and
+                // the floor reads them inside its branch with no gradient.
+                #define TSA_SAMPLE_SPLAT(tex, smp, uv) SAMPLE_TEXTURE2D_LOD(tex, sampler_LinearClamp, uv, 0)
+                #define TSA_SAMPLE_KIT(uv, slice, duvx, duvy) SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr256, sampler_PointRepeat, uv, slice, duvx, duvy)
+                #include "Assets/_Project/Art/Shaders/Include/TerrainSplatAlbedo.hlsl"
+            #endif
+
             // GLOBAL sun direction from the day/night cycle (Shader.SetGlobalVector by DayNightController,
             // ADR 0013). NOT per-material, so it lives OUTSIDE the per-material CBUFFER (like the grass
             // shader's _WindWorld). _SunDir.xy = the ground-plane direction TOWARD the sun; (0,0,0,0) when
@@ -2186,6 +2232,88 @@ Shader "HiddenHarbours/Water"
                 return _HeightMin;   // no height map => everywhere deep (matches SeabedElevation)
             #endif
             }
+
+            #if defined(HH_SHALLOWS_FLOOR)
+            // W4-4b — THE FLOOR IN THE SHALLOWS: the bed under the column, where the floor switch is on, is
+            // the GROUND'S OWN albedo (ruling 7, "Shallows: 2B"), drawn by the terrain's include at the
+            // terrain's own coordinates: its weights, its kit, its macro drift and its wet band, from the
+            // same height read the terrain makes (SeabedElevationLod: one map, no mips, byte for byte). With
+            // the water still, the floor is the ground's albedo texel for texel. The light is the sea's: the
+            // column's absorption, the caustics and the grade light it as they lit the painted bed; the
+            // terrain's relight stays its own.
+            //
+            // THE BEND. The view into the column turns at the surface by the water's tilt. For a near-vertical
+            // view a floor point depth metres down is seen k x slope x depth away, with k near 1 - 1/1.33
+            // for light entering sea water (GameConfig.ShallowsFloorRefraction; 0 holds the floor still).
+            // slope is the shared wave field's gradient, the surface the swell draws and the hulls ride. The
+            // offset is rounded to whole ground pixels (_PixelsPerMetre): the floor moves by whole texels of
+            // its own grid and never resamples between them, a wobble and never a smear.
+            //
+            // THE SHARE. The ground's hem (the terrain's alpha) lays the ground over the painted bed, the
+            // over operator in straight alpha: a = hem + bed.a x (1 - hem), colour lerp(bed, ground, hem / a).
+            // Hem 1 is the ground at full coverage; hem 0 (below the ground's paint floor) returns the bed
+            // untouched. level is the water's own level at the pixel (the tide, or still water above it).
+            //
+            // Visual only: reads the height map the sea already reads, writes nothing the sim sees (rule 5).
+            //
+            // ShallowsBend is THE BEND above, once, for the floor and for the props laid over it (W4-4c):
+            // the point the view reaches at this depth, in whole ground pixels.
+            float2 ShallowsBend(float2 worldXY, float2 slope, float depth)
+            {
+                float ppm = max(_PixelsPerMetre, 1.0);
+                return worldXY + round(slope * depth * _ShallowsFloorRefraction * ppm) / ppm;
+            }
+
+            half4 ShallowsFloorBed(half4 bed, float2 worldXY, float2 slope, float depth, float level,
+                                   float2 dwx, float2 dwy)
+            {
+                float ppm = max(_PixelsPerMetre, 1.0);
+                float2 wp = ShallowsBend(worldXY, slope, depth);
+                float e = SeabedElevationLod(wp);
+                float hem = TSA_Hem(e);
+                [branch]
+                if (hem <= 0.0)
+                    return bed;
+                float2 wpx = floor(wp * ppm) / ppm;
+                float2 uv = (wp - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                float w[HH_MAT_COUNT], intensity[HH_MAT_COUNT];
+                TSA_GroundWeights(wp, wpx, uv, e, w, intensity);
+                float3 ground = TSA_KitAlbedo(wp, w, intensity, dwx, dwy);
+                ground = TSA_Macro(ground, wp);
+                ground = TSA_Wet(ground, e, level);
+                float a = lerp(bed.a, 1.0, hem);
+                return half4(lerp(bed.rgb, ground, saturate(hem / max(a, 1e-4))), a);
+            }
+
+            // W4-4c — THE PROPS UNDER THE WATER: a shore plant wholly under the live water, drawn where it
+            // stands into _HHUnderWaterTex by its own HHUnderWater pass (albedo, unlit, premultiplied),
+            // laid over the bed at the point the floor reads: the same bend in the same whole ground
+            // pixels, so the plant and the ground under it wobble together. The column below then takes
+            // both as ONE bed: the mood's absorption per channel, the caustics and the grade light the
+            // plant as they light the floor beside it, and no prop's shader carries a copy of that law.
+            //
+            // The read is the bent point's own screen pixel, by this pass's view projection: the pixel the
+            // HHUnderWater pass drew that ground point to (the props are not lifted; the bed rides the
+            // sea's lift as the floor does). Pixels from _ScreenParams, as ObjectReflection turns its
+            // points into pixels; off the target, no prop.
+            //
+            // The share, premultiplied over straight: a = prop.a + bed.a x (1 - prop.a), colour
+            // (prop + bed x bed.a x (1 - prop.a)) / a. A clear texel returns the bed untouched.
+            half4 ShallowsPropsBed(half4 bed, float2 worldXY, float2 slope, float depth)
+            {
+                float2 wp = ShallowsBend(worldXY, slope, depth);
+                float2 ndc = ComputeNormalizedDeviceCoordinates(float3(wp, 0.0), UNITY_MATRIX_VP);
+                int2 px = int2(floor(ndc * _ScreenParams.xy));
+                if (any(px < 0) || any(px >= int2(_ScreenParams.xy)))
+                    return bed;
+                half4 prop = LOAD_TEXTURE2D(_HHUnderWaterTex, px);
+                [branch]
+                if (prop.a <= 0.0)
+                    return bed;
+                float a = lerp(bed.a, 1.0, prop.a);
+                return half4((prop.rgb + bed.rgb * bed.a * (1.0 - prop.a)) / max(a, 1e-4), a);
+            }
+            #endif
 
             // The HLSL TWIN of HiddenHarbours.Core.ShoreFadeMath.Fade01 (ADR 0023) — the SHORE SEAM:
             // exactly 0 at and beyond the walkable waterline (depth <= 0), smoothstep up through the
@@ -5006,6 +5134,20 @@ Shader "HiddenHarbours/Water"
                     col.rgb = lerp(col.rgb, _DeepBlueColor.rgb, deepT * saturate(_DeepBlueStrength));
                 }
 
+                // ---- THE SHARED WAVE FIELD's sample (W4-4b moved it up from the rolling swell below, which
+                // describes it): one per pixel, taken ahead of the seabed composite so the floor in the
+                // shallows bends its view by the same surface the swell draws. A pure function of the pixel
+                // and the published trains, the same call on the same inputs as it was below, so the move
+                // moves no pixel.
+                #define WAVE_LEGACY_SCALE_REF 0.025
+                float waveHeight;
+                float2 waveSlope;
+                float waveCrest;
+                float wavePrimCos;
+                float waveFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
+                WaveFieldSample(Pixelize(worldXY), waveFreqScale, waveFetchFactors,
+                                waveHeight, waveSlope, waveCrest, wavePrimCos);
+
             #if defined(_USE_SEABEDTEX)
                 // ---- SEABED ABSORPTION (col.rgb ONLY; ADR 0027 #7 — SUPERSEDES the Arc C see-through) --------
                 // The bottom is composited HERE by the shader itself, so col.a stays OPAQUE and the alpha-blend
@@ -5030,6 +5172,12 @@ Shader "HiddenHarbours/Water"
                 // _Turbidity = 0 skips the whole block — the EXACT passthrough (and the toggle above compiles
                 // it out entirely on the shipped material).
                 float3 absSigma = AbsorptionSigma();
+            #if defined(HH_SHALLOWS_FLOOR)
+                // The floor's screen gradients (W4-4b), the terrain's own dwx/dwy: taken HERE, outside every
+                // branch, because the floor reads the ground's kit inside its own with explicit gradients.
+                float2 floorDx = ddx(worldXY);
+                float2 floorDy = ddy(worldXY);
+            #endif
                 if (dot(absSigma, float3(1.0, 1.0, 1.0)) > ABSORPTION_EPS)
                 {
                     // depthC = the cosmetic organic-fringe depth (== depth when _ShoreNoise = 0), so the bottom
@@ -5045,6 +5193,24 @@ Shader "HiddenHarbours/Water"
 
                     float3 bedT = AbsorptionTransmission(absSigma, max(depthC, 0.0));
                     bedT = AbsorptionBand(bedT, _AbsorptionBands);
+            #if defined(HH_SHALLOWS_FLOOR)
+                    // W4-4b: the floor in the shallows (ShallowsFloorBed, after the seabed readers). Off, outside
+                    // the bake's rect, or where the column passes nothing (every channel's banded transmission
+                    // 0, so the lerp below weighs the bed 0), the bed stays the bake's, bit for bit. On, the bed
+                    // is the ground, through the SAME column below: absorbed per channel by the mood's own
+                    // depths, then lit by the caustics and graded like the painted bed it replaces.
+                    [branch]
+                    if (_ShallowsFloor > 0.5 && _DetailLoaded > 0.5 && bedIn > 0.0
+                        && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
+                        bed = ShallowsFloorBed(bed, worldXY, waveSlope, max(depthC, 0.0), elevation + depth,
+                                               floorDx, floorDy);
+                    // W4-4c: the props under the water (ShallowsPropsBed), over the floor, through the SAME
+                    // column below. Lowered (the switch off, nothing under, a camera without the pass), off
+                    // the rect or where the column passes nothing, the bed is the floor's, bit for bit.
+                    [branch]
+                    if (_HHUnderWaterLive > 0.5 && bedIn > 0.0 && max(bedT.r, max(bedT.g, bedT.b)) > 0.0)
+                        bed = ShallowsPropsBed(bed, worldXY, waveSlope, max(depthC, 0.0));
+            #endif
                     col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
                 }
             #endif
@@ -5090,14 +5256,8 @@ Shader "HiddenHarbours/Water"
                 // NOT carried over (out of Arc B scope, ADR §(5): shore breakers are a later arc): the
                 // legacy path's shoreward crest-bias — the trains run downwind everywhere. The foam DRIFT
                 // shoreward bias below is untouched. All of it col.rgb-only dressing (P1, rule 5).
-                #define WAVE_LEGACY_SCALE_REF 0.025
-                float waveHeight;
-                float2 waveSlope;
-                float waveCrest;
-                float wavePrimCos;
-                float waveFreqScale = max(_OceanSwellScale, 1e-4) / WAVE_LEGACY_SCALE_REF;
-                WaveFieldSample(Pixelize(worldXY), waveFreqScale, waveFetchFactors,
-                                waveHeight, waveSlope, waveCrest, wavePrimCos);
+                // (W4-4b: the field's one sample per pixel, waveHeight / waveSlope / waveCrest / wavePrimCos,
+                // is taken above the seabed composite, whose floor bends its view by the slope.)
                 bool trainsLive = _WaveFieldParams.x >= 0.5;
 
                 float swellCrest;   // the 0..1 crest driver every downstream layer reads (spec bias,

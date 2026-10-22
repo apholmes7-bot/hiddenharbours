@@ -154,10 +154,10 @@ MonoBehaviour:
     B: {x: 316, y: 40}
     Radius: 10
   - Name: Nine Mile Creek band
-    Source: 'StPetersBuilder.ToNineMileCreekPassagePos, 3 by SandbarHalfWidth times 2'
+    Source: 'StPetersBuilder.ToNineMileCreekPassagePos, NineMileCreekPassageBandSize'
     Shape: 1
-    A: {x: -357.5, y: -30}
-    B: {x: -354.5, y: 30}
+    A: {x: -359, y: -60}
+    B: {x: -353, y: 60}
     Radius: 0
   - Name: West Water band
     Source: 'StPetersBuilder.ToWestWaterPassagePos, WestWaterPassageBandSize'

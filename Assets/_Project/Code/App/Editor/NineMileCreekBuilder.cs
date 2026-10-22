@@ -140,12 +140,21 @@ namespace HiddenHarbours.App.Editor
         /// A passage trigger's band, in metres — wide ACROSS the way you are travelling and deep enough
         /// that you cannot slip through it at speed between two physics steps.
         ///
-        /// <para>Both of this region's passages use it and both are crossed heading roughly east/west, so
-        /// the band is a tall north–south gate. Forgiving on purpose (P5): the re-fire guard on
-        /// <c>RegionPassage</c> is what makes a wide band safe, so width costs nothing and narrowness
-        /// costs a crossing that silently does not fire.</para>
+        /// <para>The Coddle Cove door's, crossed heading roughly east/west, so the band is a tall
+        /// north–south gate. Forgiving on purpose (P5): the re-fire guard on <c>RegionPassage</c> is what
+        /// makes a wide band safe, so width costs nothing and narrowness costs a crossing that silently
+        /// does not fire. The crossing to St Peters has its own, <see cref="StPetersPassageBandSize"/>.</para>
         /// </summary>
         public static readonly Vector2 PassageBandSize = new Vector2(6f, 40f);
+
+        /// <summary>
+        /// The crossing door's band at the bar's tip: 6 m deep like the region's other doors, and 120 m
+        /// across, the owner's size for the doors between the creek and St Peters (2026-10-17). The bared
+        /// bar at the tip is about 33 m wide at spring low, so a 40 m band barely covered it; at 120 m the
+        /// door reaches well past the bar into the open water either side, a door for the boat as well as
+        /// the walker. It ends 20 m inside the region's south edge and 118 m short of the sea door.
+        /// </summary>
+        public static readonly Vector2 StPetersPassageBandSize = new Vector2(6f, 120f);
 
         /// <summary>Where the boat parks arriving under power — alongside berth 0 at the north face, its
         /// design beam off the fender line (NineMileCreekGroundPlan; the anchor re-lays a live beam).</summary>
@@ -164,7 +173,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>⭐ The SEA door: hold east past the breakwater head and the west water takes over —
         /// the wharf's way out that does not wait on the tide (world-map-plan §6 step 1). The bar is the
-        /// same trip on foot, 158 m south of this band and only at low water.</summary>
+        /// same trip on foot, 118 m south of this band and only at low water.</summary>
         public static Vector3 ToWestWaterPassagePos => NineMileCreekMainland.ToWestWaterPassagePos;
 
         /// <summary>Where the player STANDS arriving from St Peters ON FOOT, mid-crossing — the other end
@@ -180,12 +189,21 @@ namespace HiddenHarbours.App.Editor
         /// arrival, a fisher who has just walked 610 m of wet cobble is teleported onto the wharf deck the
         /// moment they step ashore.</para>
         ///
-        /// <para>⚠ The MATCHING half is a passage in the St Peters scene pointing here with this key, and
+        /// <para>⚠ The MATCHING half is St Peters' door to this region, which must ask for this key, and
         /// it is <b>not</b> wired by this builder — a region builder may not reach into another region's
-        /// scene. It is StPetersBuilder's, and until it lands the walk-in lands at the wharf exactly as it
+        /// scene. It is StPetersBuilder's; a door that asks for nothing lands at the wharf exactly as it
         /// did before, which is the fallback the seam was built to give.</para>
         /// </summary>
         public const string BarArrivalKey = "bar";
+
+        /// <summary>
+        /// The landing this region's crossing door asks St Peters for: the same word, because it is the
+        /// same bar, and a walker arriving either way lands on the far bar to walk its second half rather
+        /// than on the far wharf. The island authors that landing in its own scene; until it answers to
+        /// the name, <c>RegionAnchor</c> falls back to the island's own disembark point, which is where
+        /// the crossing landed before this door named anything.
+        /// </summary>
+        public const string StPetersBarArrivalKey = BarArrivalKey;
 
         // --- CREEKSIDE SITES (named, because other things are derived FROM them) ---------------------
         // Same windows-onto-the-plan rule as the block above: the people, the dory's sightline, the
@@ -897,10 +915,11 @@ namespace HiddenHarbours.App.Editor
             // load is hidden on flat open flats with nothing happening, which is why the seam sits at the
             // bar's midpoint rather than at the landing (plan §3.2).
             //
-            // ⚠ The MATCHING half — a passage on St Peters' side pointing here with BarArrivalKey — is
-            // StPetersBuilder's and is NOT wired here; a region builder may not reach into another
-            // region's scene. Until it lands, walking in from the island falls back to the wharf, which
-            // is precisely the fallback #456's seam was built to give.
+            // The door is StPetersPassageBandSize, 120 m across, and it NAMES the island's bar landing
+            // (StPetersBarArrivalKey), so a walker arrives on the far bar. The island authors that landing
+            // in its own scene, and its door back here asks for BarArrivalKey: a region builder may not
+            // reach into another region's scene. Until the island answers to the name, walking in from
+            // here lands at St Peters' own disembark point, the fallback #456's seam was built to give.
             var stPetersRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/StPeters.asset");
             if (stPetersRegion != null)
             {
@@ -908,10 +927,11 @@ namespace HiddenHarbours.App.Editor
                 barGo.transform.position = ToStPetersPassagePos;
                 var barTrigger = barGo.AddComponent<BoxCollider2D>();
                 barTrigger.isTrigger = true;
-                barTrigger.size = PassageBandSize;
+                barTrigger.size = StPetersPassageBandSize;
                 var barPassage = barGo.AddComponent<RegionPassage>();
                 SetRef(barPassage, "_target", stPetersRegion);
                 SetRef(barPassage, "_loader", loader);
+                SetString(barPassage, "_arrivalKey", StPetersBarArrivalKey);
                 SetRefArray(loader, "_regions", new Object[] { nineMileCreek, cove, stPetersRegion });
             }
             else
@@ -989,6 +1009,10 @@ namespace HiddenHarbours.App.Editor
             // The BOAT point is deliberately left unset. You walked; your boat is not with you, and an
             // unset point on a named arrival means "leave this one alone" — so she stays at the berth
             // rather than being dragged across the region after you.
+            //
+            // The landing stands on the crest 8 m short of the bar's tip, 11 m clear of the crossing
+            // door's band: a walker who arrives is outside the door they came in by, so the re-fire guard
+            // is never the only thing between a slow first frame and a crossing straight back.
             var gwBarLanding = new GameObject("NineMileCreekBarLanding");
             gwBarLanding.transform.position = WalkArrivalPos;
             gwAnchor.ConfigureArrivals(
@@ -1140,22 +1164,15 @@ namespace HiddenHarbours.App.Editor
             // ⚠ EnsureBaked FIRST: the Cliff Face kit's pixels are gitignored by design (the rig is the
             // committed source), so a fresh checkout has no faces and the coast would stand up untextured
             // without a word. St Peters' builder makes the same call for the same reason.
+            //
+            // ⚠ THE WALLS COME FROM THEIR DEFS (NMC H3), never the premise: the premise is the coast plan
+            // before G3, and walking it would stand the old walls back up. The Defs are what N1 step
+            // 11-cliff-walls-g3 writes into the scene; the eight chunks 07 stood down across Wharf Road's
+            // ramp are retired there, so they spawn nothing here either.
             HiddenHarbours.Tools.RigBaking.CliffBakeMenu.EnsureBaked();
-            int cliffChunks = NineMileCreekCliffWalls.Build(premise);
+            int cliffChunks = NineMileCreekCliffWalls.Build(NineMileCreekCliffWalls.LoadDefs());
             var shore = NineMileCreekShorePainter.Paint(premise);
             shore.CliffChunks = cliffChunks;
-
-            // The chunks 07-loop-wall-contacts-g3 stands down: they draw a face G3 does not have across Wharf
-            // Road's ramp. The builder stands down the same eight, by the step's own names.
-            var cliffRoot = GameObject.Find(NineMileCreekCliffWalls.RootName);
-            foreach (string chunk in NineMileCreekGroundSteps.Pr2CliffChunks)
-            {
-                var standDown = cliffRoot != null ? cliffRoot.transform.Find(chunk) : null;
-                if (standDown == null)
-                    throw new System.InvalidOperationException("[NineMileCreekBuilder] no cliff chunk " + chunk +
-                        " to stand down — the premise's coast no longer resolves the chunks 07 names.");
-                standDown.gameObject.SetActive(false);
-            }
             Object.DestroyImmediate(premiseGo);
 
             // --- SAVE & REGISTER ------------------------------------------------------------
