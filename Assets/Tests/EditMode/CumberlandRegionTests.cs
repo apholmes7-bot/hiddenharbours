@@ -16,17 +16,23 @@ namespace HiddenHarbours.Tests.EditMode
 {
     public sealed class CumberlandRegionTests
     {
-        const string ProofSource = "Assets/_Project/Scenes/CumberlandRefreshSource.unity";
-        const string ProofCopy = "Assets/_Project/Scenes/CumberlandRefreshCopy.unity";
-        const string ProofFolder = "Assets/_Project/Scenes/CumberlandRefreshProof";
-        const string CreateProofScene = "Assets/_Project/Scenes/CumberlandCreateProof.unity";
-        const string CreateProofFolder = "Assets/_Project/Scenes/CumberlandCreatePlan";
+        const string Scenes = "Assets/_Project/Scenes/";
+        string _proofSuffix;
+        string ProofName(string stem) => stem + "_" + _proofSuffix;
+        string ProofSource => Scenes + ProofName("CumberlandRefreshSource") + ".unity";
+        string ProofCopy => Scenes + ProofName("CumberlandRefreshCopy") + ".unity";
+        string ProofFolder => Scenes + ProofName("CumberlandRefreshProof");
+        string CreateProofScene => Scenes + ProofName("CumberlandCreateProof") + ".unity";
+        string CreateProofFolder => Scenes + ProofName("CumberlandCreatePlan");
         EditorBuildSettingsScene[] _buildList;
         SceneSetup[] _sceneSetup;
         LandScenePlanDef _proofPlan;
 
+        [SetUp]
+        public void UseFreshProofPaths() => _proofSuffix = Guid.NewGuid().ToString("N");
+
         [TearDown]
-        public void RemoveDisposableRefreshScenes()
+        public void RestoreEditorAfterDisposableProof()
         {
             if (_sceneSetup == null) return;
             var setup = _sceneSetup;
@@ -36,13 +42,8 @@ namespace HiddenHarbours.Tests.EditMode
             _buildList = null;
             Action[] cleanup = {
                 () => EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single),
-                () => AssetDatabase.DeleteAsset(ProofCopy),
-                () => AssetDatabase.DeleteAsset(ProofSource),
-                () => AssetDatabase.DeleteAsset(CreateProofScene),
                 () => EditorBuildSettings.scenes = buildList,
-                // The scenes reference the proofs' regions, so their folders go after them.
-                () => AssetDatabase.DeleteAsset(ProofFolder),
-                () => AssetDatabase.DeleteAsset(CreateProofFolder),
+                // Retain the proof files for inspection. This fixture never deletes project files.
                 () => { if (setup.Length > 0) EditorSceneManager.RestoreSceneManagerSetup(setup); }
             };
             // Each remaining step runs even when an earlier cleanup throws. Reset fixture state
@@ -65,12 +66,12 @@ namespace HiddenHarbours.Tests.EditMode
             _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
             _buildList = EditorBuildSettings.scenes;
             StartFromAnEmptyScene();
-            Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", "CumberlandRefreshProof"), Is.Not.Empty);
-            _proofPlan = SaveProofPlan(ProofFolder, "CumberlandRefreshSource");
+            Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", ProofName("CumberlandRefreshProof")), Is.Not.Empty);
+            _proofPlan = SaveProofPlan(ProofFolder, ProofName("CumberlandRefreshSource"));
             LandSceneTemplate.Create(_proofPlan);
             Assert.That(System.IO.File.Exists(ProofSource), Is.True, "CREATE returned without saving its scene.");
             Assert.That(AssetDatabase.CopyAsset(ProofSource, ProofCopy), Is.True);
-            _proofPlan.Region.SceneName = "CumberlandRefreshCopy";
+            _proofPlan.Region.SceneName = ProofName("CumberlandRefreshCopy");
             var copy = EditorSceneManager.OpenScene(ProofCopy, OpenSceneMode.Single);
             var visual = copy.GetRootGameObjects().Single(g => g.name == "LandRegion")
                 .transform.Find("Visuals/ReviewCamera");
@@ -102,8 +103,8 @@ namespace HiddenHarbours.Tests.EditMode
             _sceneSetup = EditorSceneManager.GetSceneManagerSetup();
             _buildList = EditorBuildSettings.scenes;
             StartFromAnEmptyScene();
-            Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", "CumberlandCreatePlan"), Is.Not.Empty);
-            SaveProofPlan(CreateProofFolder, "CumberlandCreateProof");
+            Assert.That(AssetDatabase.CreateFolder("Assets/_Project/Scenes", ProofName("CumberlandCreatePlan")), Is.Not.Empty);
+            SaveProofPlan(CreateProofFolder, ProofName("CumberlandCreateProof"));
             // The batch CREATE's flow: the plan comes from disk, and nothing static holds it across the new scene.
             var handed = AssetDatabase.LoadAssetAtPath<LandScenePlanDef>(CreateProofFolder + "/Plan.asset");
             LandSceneTemplate.Create(handed);
