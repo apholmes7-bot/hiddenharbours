@@ -1079,7 +1079,7 @@ namespace HiddenHarbours.App.Editor
             // Nine Mile Creek is a region scene: the real player arrives with the persistent core from St Peters,
             // so playing this scene directly used to give "no character loads" (the owner's report). The
             // fix: bake a minimal, self-contained DEV CORE — services + follow camera + a walkable,
-            // rod-fishing player on the wharf — as an INACTIVE root, plus an active DevRegionBootstrap
+            // rod-fishing player on the wharf — INACTIVE below an active envelope, plus an active DevRegionBootstrap
             // that activates it ONLY when the scene is played directly in the editor and destroys it
             // (never awakened — no service stomp, no duplicate player) when the real core travels in.
             Transform devPlayer = BuildDevBootstrap(config, cam, DisembarkPos);
@@ -1291,7 +1291,11 @@ namespace HiddenHarbours.App.Editor
         /// <see cref="PlaceDialogueDriver"/> and <c>GameServices.PlayerTransform</c>.</returns>
         static Transform BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn)
         {
-            var devCore = new GameObject("DevCore");
+            // Travel activates destination roots before Start. Keep the inactive core one level
+            // below an active envelope so that root activation cannot awaken a second rig.
+            var envelope = new GameObject(NineMileCreekDevCoreEnvelope.EnvelopeName);
+            var devCore = new GameObject(NineMileCreekDevCoreEnvelope.CoreName);
+            devCore.transform.SetParent(envelope.transform, false);
 
             // Services root (mirrors PersistentCoreBuilder's GameRoot block; GameRoot wires GameServices
             // on activation). Nine Mile Creek's own authored tide (RegionDef NineMileCreek: mean 0, amp 0.8,
