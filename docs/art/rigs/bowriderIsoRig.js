@@ -1104,7 +1104,7 @@
   const STERN_EYES = [ {x:-0.80,y:-L/2-0.012,z:0.84}, {x:0.80,y:-L/2-0.012,z:0.84} ];
   const LADDER  = { x:-0.60, y:PL.y1+0.10, z:PL.zt };
   const SUNPAD  = { x:0, y:-2.32, z:SP.zl+SP.cz };
-  const WATERLINE = 0.40;
+  const WATERLINE = 0.34;
   const many=(list)=>function(dir,opts){ return list.map(P=>_at(P,dir,opts)); };
 
   const SPEC = { reference:'18 ft sterndrive bowrider (185 class)', loa_hull:5.64, loa_platform:0.34, beam:2.29,

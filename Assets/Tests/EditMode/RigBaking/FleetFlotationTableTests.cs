@@ -86,10 +86,9 @@ namespace HiddenHarbours.Tests.RigBaking
             new Dictionary<string, Flotation>
             {
                 // Walk DWL and cockpitZ, with the existing 1.126 beam margin rounded to centimetres.
-                // Bowrider's sole is below DWL. Keep both art numbers; the existing floor guard
-                // remains unchanged and its expected failure is carried in the intake note.
+                // Bowrider's waterline meets her sole by Art desk R1; the floor guard is unchanged.
                 ["hullmesh.go_fast_iso"] = new Flotation("go_fast", 0.52f, 0.62f, 1.24f, 1.100f),
-                ["hullmesh.bowrider_iso"] = new Flotation("bowrider", 0.40f, 0.34f, 1.29f, 1.145f),
+                ["hullmesh.bowrider_iso"] = new Flotation("bowrider", 0.34f, 0.34f, 1.29f, 1.145f),
                 ["hullmesh.express_cruiser_iso"] = new Flotation("express_cruiser", 0.58f, 0.95f, 1.72f, 1.525f),
                 // ---- 18 lobster variants: draft = deck = 0.50 * the rig's own depth scalar ---------
                 // Region gets NO draft delta on purpose: the hydrostatic delta is <= 37 mm (~1 px at
