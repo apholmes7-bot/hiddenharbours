@@ -87,7 +87,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// call with no frame between; S5 is Nine Mile Creek, where the facet-id pool may refuse her, and
     /// then the refusal is the frame. A claim a plate cannot decide is written "unknown", never passed.</para>
     /// </summary>
-    public class AshoreFigurePlatePlayTests
+    public partial class AshoreFigurePlatePlayTests
     {
         const string PlateDir           = "ashore-figure-plates";
         const string StPetersScene      = "StPeters";

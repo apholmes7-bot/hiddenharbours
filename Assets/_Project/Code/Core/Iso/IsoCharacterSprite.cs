@@ -165,6 +165,9 @@ namespace HiddenHarbours.Core
         /// <summary>True while another driver has claimed the renderer via <see cref="Suspend"/>.</summary>
         public bool IsSuspended => _suspendCount > 0;
 
+        // Core's clip seam distinguishes its own claim from another simultaneous animator.
+        internal int SuspensionCount => _suspendCount;
+
         /// <summary>True while the facing is pinned by <see cref="HoldHeading"/> rather than following motion.</summary>
         public bool IsHeadingHeld => _headingHeld;
 

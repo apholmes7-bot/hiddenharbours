@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_015
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_015
+  Status: 0
+  SplitFrom: 
+  Follows: wall.nmc_014
+  Rock: sandstone
+  Class: 5
+  Aspect: E
+  Batter: ramp
+  Brow:
+  - {x: 34.66907, y: -42.50902}
+  - {x: 34.604656, y: -42.26746}
+  - {x: 34.54024, y: -42.025906}
+  - {x: 34.475826, y: -41.784344}
+  - {x: 34.411407, y: -41.542786}
+  - {x: 34.346992, y: -41.301228}
+  - {x: 34.282578, y: -41.05967}
+  - {x: 34.218163, y: -40.818108}
+  - {x: 34.153748, y: -40.57655}
+  Toe:
+  - {x: 37.567776, y: -41.736034}
+  - {x: 37.50336, y: -41.494473}
+  - {x: 37.438946, y: -41.25292}
+  - {x: 37.37453, y: -41.011356}
+  - {x: 37.310112, y: -40.7698}
+  - {x: 37.245697, y: -40.52824}
+  - {x: 37.181282, y: -40.286682}
+  - {x: 37.116867, y: -40.04512}
+  - {x: 37.052452, y: -39.803562}
+  DropMetres:
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  - 7.65
+  ToeElevations:
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  - -1.6500001
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 5.980989
+  - 5.9677896
+  - 5.935952
+  - 5.919362
+  - 5.914036
+  - 5.9307384
+  - 5.9696207
+  - 6
+  - 5.973636
+  ToePass9:
+  - -1.5862598
+  - -1.5901103
+  - -1.6115224
+  - -1.6167843
+  - -1.6275448
+  - -1.6398219
+  - -1.6070229
+  - -1.5834984
+  - -1.5862755
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 15
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 
+  Why: 'Kept on G3: every station within 10 cm of the ground at both ends.'

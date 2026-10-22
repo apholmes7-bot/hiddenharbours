@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_065
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_065
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 46.06469, y: 75.89912}
+  - {x: 46.147278, y: 76.13508}
+  - {x: 46.229866, y: 76.37104}
+  - {x: 46.312454, y: 76.60701}
+  - {x: 46.39504, y: 76.84297}
+  - {x: 46.477627, y: 77.07893}
+  - {x: 46.560215, y: 77.3149}
+  - {x: 46.642803, y: 77.550865}
+  - {x: 46.72539, y: 77.786835}
+  - {x: 46.80798, y: 78.0228}
+  - {x: 46.890568, y: 78.25876}
+  Toe:
+  - {x: 48.896263, y: 74.908066}
+  - {x: 48.97885, y: 75.14403}
+  - {x: 49.06144, y: 75.37999}
+  - {x: 49.144028, y: 75.61596}
+  - {x: 49.226612, y: 75.85192}
+  - {x: 49.3092, y: 76.08788}
+  - {x: 49.39179, y: 76.32385}
+  - {x: 49.474377, y: 76.559814}
+  - {x: 49.556965, y: 76.795784}
+  - {x: 49.639553, y: 77.031746}
+  - {x: 49.72214, y: 77.26771}
+  DropMetres:
+  - 9.492575
+  - 9.549407
+  - 9.609027
+  - 9.670918
+  - 9.734569
+  - 9.799461
+  - 9.865084
+  - 9.93092
+  - 9.996455
+  - 10.061176
+  - 10.124569
+  ToeElevations:
+  - -3.4925742
+  - -3.549407
+  - -3.6090267
+  - -3.6709187
+  - -3.7345686
+  - -3.7994616
+  - -3.8650837
+  - -3.9309196
+  - -3.9964554
+  - -4.061177
+  - -4.1245685
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 65
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 3.59-4.42 m off the ground, the only face under it 78-85 deg). Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'
