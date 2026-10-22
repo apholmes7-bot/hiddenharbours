@@ -44,9 +44,12 @@ namespace HiddenHarbours.Tools.RigBaking
             var geometry = Json(host, scope + ".geometry()");
             var data = new RigMeshData { RigKey = global, GlobalName = global, Walk = walk, WalkGeometry = geometry };
             ReadGeometry(data, geometry);
-            foreach (string field in new[] { "rig", "exportSymbol", "hull", "units", "frame" })
+            foreach (string field in new[] { "rig", "exportSymbol", "hull", "frame" })
                 if (HullLayoutJson.Text(geometry, field, "geometry") != HullLayoutJson.Text(walk.Fields, field))
                     throw new FormatException(walk.Hull + ": geometry." + field + ": differs from walk");
+            string units = HullLayoutJson.Text(geometry, "units", "geometry");
+            if (units != "metres" && units != "m")
+                throw new FormatException(walk.Hull + ": geometry.units: unsupported unit \"" + units + "\"");
             if (HullLayoutJson.Number(geometry, "dwlZ", "geometry") != walk.Dwl)
                 throw new FormatException(walk.Hull + ": geometry.dwlZ: differs from walk.DWL");
             var tags = HullLayoutJson.Child(walk.Fields, "tags");
