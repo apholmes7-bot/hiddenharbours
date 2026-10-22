@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -141,6 +142,38 @@ namespace HiddenHarbours.Art
         private static readonly int IdBarSpineHalfWidth = Shader.PropertyToID("_BarSpineHalfWidth");
         private static readonly int IdBarSpineFloor = Shader.PropertyToID("_BarSpineFloor");
 
+        // W4-4: the values the terrain MATERIAL carries (its Properties defaults; no push writes them)
+        // that Include/TerrainSplatAlbedo.hlsl also reads. The sea's floor copies them from this
+        // ground's own material on each bind (WriteGroundFloor), so one retune reaches both.
+        private static readonly int[] s_GroundMaterialFloats =
+        {
+            Shader.PropertyToID("_DetailOffsetCellMetres"),
+            Shader.PropertyToID("_EdgeFadeMetres"),
+            Shader.PropertyToID("_BandBlendMetres"),
+            Shader.PropertyToID("_SectorBlend"),
+            Shader.PropertyToID("_BarEdgeBlend"),
+            Shader.PropertyToID("_MacroScale"),
+            Shader.PropertyToID("_MacroStrength"),
+            Shader.PropertyToID("_WetBandMetres"),
+            Shader.PropertyToID("_WetStrength"),
+            Shader.PropertyToID("_PixelsPerMetre"),
+        };
+        private static readonly int[] s_GroundMaterialColors =
+        {
+            Shader.PropertyToID("_MacroTint"),
+            Shader.PropertyToID("_WetTint"),
+        };
+
+        // W4-4: the live grounds, so the sea of the same region can find the ground it is drawn over
+        // (FindSharing) and bind that ground's look to its floor (WriteGroundFloor). LiveVersion moves on
+        // every enable, disable and full push, so a sea re-binds only when something changed.
+        private static readonly List<TerrainSplatSurface> s_Live = new List<TerrainSplatSurface>();
+
+        /// <summary>Moves whenever a ground enables, disables or pushes its whole look (never on the
+        /// throttled water-level push). A sea re-binds its floor only when this has moved since its
+        /// last bind (W4-4).</summary>
+        public static int LiveVersion { get; private set; }
+
         /// <summary>The builder's one-call wiring (the WaterSurface Configure convention).</summary>
         public void Configure(Vector2 worldCenter, Vector2 worldSize, Material material, int sortingOrder)
         {
@@ -283,11 +316,15 @@ namespace HiddenHarbours.Art
             _mpb ??= new MaterialPropertyBlock();
             EnsureBuilt();
             PushAll();
+            if (!s_Live.Contains(this)) s_Live.Add(this);
+            LiveVersion++;
         }
 
         private void OnDisable()
         {
             if (_meshGo != null) _meshGo.SetActive(false);
+            s_Live.Remove(this);
+            LiveVersion++;
         }
 
         private void OnDestroy()
@@ -394,16 +431,7 @@ namespace HiddenHarbours.Art
                 _mpb.SetVector(IdHWorldSize, new Vector4(_worldSize.x, _worldSize.y, 0f, 0f));
             }
 
-            bool detailLoaded = _detailArray256 != null;
-            if (detailLoaded)
-                _mpb.SetTexture(IdDetailArr256, _detailArray256);
-            _mpb.SetFloat(IdDetailLoaded, detailLoaded ? 1f : 0f);
-            _mpb.SetTexture(IdSplatA, _splatA != null ? _splatA : ClearSplat());
-            _mpb.SetTexture(IdSplatB, _splatB != null ? _splatB : ClearSplat());
-            _mpb.SetTexture(IdSplatC, _splatC != null ? _splatC : ClearSplat());
-            _mpb.SetTexture(IdSplatD, _splatD != null ? _splatD : ClearSplat());
-            _mpb.SetTexture(IdSplatE, _splatE != null ? _splatE : ClearSplat());
-            _mpb.SetTexture(IdSplatF, _splatF != null ? _splatF : ClearSplat());
+            WriteLook(_mpb);
 
             // Terrain pass 9: the relight, only when all four maps fit the detail array. A map given
             // but refused is a stale or partial build: say so once, and keep the albedo.
@@ -426,30 +454,94 @@ namespace HiddenHarbours.Art
             }
             _mpb.SetFloat(IdRelightLoaded, relight ? 1f : 0f);
 
-            _mpb.SetFloat(IdFloorPaint, _floorPaint);
-            _mpb.SetFloat(IdFloorRipple, _floorRipple);
-            _mpb.SetFloat(IdFloorSand, _floorSand);
-            _mpb.SetFloat(IdFloorMarram, _floorMarram);
-            _mpb.SetFloat(IdFloorGrass, _floorGrass);
-            _mpb.SetFloat(IdFloorShingle, _floorShingle);
-            _mpb.SetFloat(IdWiggleMetres, _bandWiggleMetres);
-            _mpb.SetFloat(IdWiggleScale, _bandWiggleScale);
-            _mpb.SetFloat(IdDetailMetres, _bandDetailMetres);
-            _mpb.SetFloat(IdDetailScale, _bandDetailScale);
-
-            _mpb.SetVector(IdIslandCenter, new Vector4(_islandCenter.x, _islandCenter.y, 0f, 0f));
-            _mpb.SetFloat(IdIslandAspect, _islandAspect);
-            _mpb.SetVector(IdWeatherFacing, new Vector4(_weatherFacing.x, _weatherFacing.y, 0f, 0f));
-            _mpb.SetFloat(IdSectorFeather, _sectorFeather);
-
-            _mpb.SetVector(IdBarFrom, new Vector4(_barFrom.x, _barFrom.y, 0f, 0f));
-            _mpb.SetVector(IdBarTo, new Vector4(_barTo.x, _barTo.y, 0f, 0f));
-            _mpb.SetFloat(IdBarHalfWidth, _barHalfWidth);
-            _mpb.SetFloat(IdBarSpineHalfWidth, _barSpineHalfWidth);
-            _mpb.SetFloat(IdBarSpineFloor, _barSpineFloor);
-
             _mpb.SetFloat(IdWaterLevel, ResolveWaterLevel());
             _renderer.SetPropertyBlock(_mpb);
+            LiveVersion++;
+        }
+
+        /// <summary>The ground's look, less its height, relight and water level: the kit, the six
+        /// splats, the band ladder and its meander, the weather sector and the sandbar. The ONE writer
+        /// of these, for this ground's own block (<see cref="PushAll"/>) and for the sea's floor
+        /// (<see cref="WriteGroundFloor"/>), so the two can never bind different values (W4-4).</summary>
+        private void WriteLook(MaterialPropertyBlock mpb)
+        {
+            bool detailLoaded = _detailArray256 != null;
+            if (detailLoaded)
+                mpb.SetTexture(IdDetailArr256, _detailArray256);
+            mpb.SetFloat(IdDetailLoaded, detailLoaded ? 1f : 0f);
+            mpb.SetTexture(IdSplatA, _splatA != null ? _splatA : ClearSplat());
+            mpb.SetTexture(IdSplatB, _splatB != null ? _splatB : ClearSplat());
+            mpb.SetTexture(IdSplatC, _splatC != null ? _splatC : ClearSplat());
+            mpb.SetTexture(IdSplatD, _splatD != null ? _splatD : ClearSplat());
+            mpb.SetTexture(IdSplatE, _splatE != null ? _splatE : ClearSplat());
+            mpb.SetTexture(IdSplatF, _splatF != null ? _splatF : ClearSplat());
+
+            mpb.SetFloat(IdFloorPaint, _floorPaint);
+            mpb.SetFloat(IdFloorRipple, _floorRipple);
+            mpb.SetFloat(IdFloorSand, _floorSand);
+            mpb.SetFloat(IdFloorMarram, _floorMarram);
+            mpb.SetFloat(IdFloorGrass, _floorGrass);
+            mpb.SetFloat(IdFloorShingle, _floorShingle);
+            mpb.SetFloat(IdWiggleMetres, _bandWiggleMetres);
+            mpb.SetFloat(IdWiggleScale, _bandWiggleScale);
+            mpb.SetFloat(IdDetailMetres, _bandDetailMetres);
+            mpb.SetFloat(IdDetailScale, _bandDetailScale);
+
+            mpb.SetVector(IdIslandCenter, new Vector4(_islandCenter.x, _islandCenter.y, 0f, 0f));
+            mpb.SetFloat(IdIslandAspect, _islandAspect);
+            mpb.SetVector(IdWeatherFacing, new Vector4(_weatherFacing.x, _weatherFacing.y, 0f, 0f));
+            mpb.SetFloat(IdSectorFeather, _sectorFeather);
+
+            mpb.SetVector(IdBarFrom, new Vector4(_barFrom.x, _barFrom.y, 0f, 0f));
+            mpb.SetVector(IdBarTo, new Vector4(_barTo.x, _barTo.y, 0f, 0f));
+            mpb.SetFloat(IdBarHalfWidth, _barHalfWidth);
+            mpb.SetFloat(IdBarSpineHalfWidth, _barSpineHalfWidth);
+            mpb.SetFloat(IdBarSpineFloor, _barSpineFloor);
+        }
+
+        /// <summary>
+        /// The live ground the sea of the same region is drawn over: the one holding the SAME height
+        /// texture over the same world rectangle and elevation range (<see cref="ShallowsFloorMath.SameFrame"/>),
+        /// so the floor the sea draws is this ground's own, by construction, and never a guess. Null when no
+        /// live ground shares the frame (a baked sea, a region with no splat ground, two regions mid-hop).
+        /// </summary>
+        public static TerrainSplatSurface FindSharing(Texture heightTexture, Vector2 worldMin, Vector2 worldSize,
+                                                      float heightMin, float heightMax)
+        {
+            if (heightTexture == null) return null;
+            for (int i = 0; i < s_Live.Count; i++)
+            {
+                TerrainSplatSurface ground = s_Live[i];
+                if (ground == null || ground._heightTexture != heightTexture) continue;
+                if (ShallowsFloorMath.SameFrame(ground._worldCenter - ground._worldSize * 0.5f, ground._worldSize,
+                                                ground._heightMin, ground._heightMax,
+                                                worldMin, worldSize, heightMin, heightMax))
+                    return ground;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Bind this ground's look to the SEA's block (W4-4b), so the sea's floor reads the same kit,
+        /// splats and ladder the ground draws with: <see cref="WriteLook"/>, the one writer, plus the
+        /// values the terrain material carries, copied from this ground's own material. Never the height
+        /// (the sea feeds its own, the same texture by <see cref="FindSharing"/>), never
+        /// <c>_WaterLevel</c> (the sea's own) and never the relight (the floor is albedo only). With no
+        /// built renderer it writes <c>_DetailLoaded</c> 0, which keeps the sea's floor off.
+        /// </summary>
+        public void WriteGroundFloor(MaterialPropertyBlock mpb)
+        {
+            Material ground = _renderer != null ? _renderer.sharedMaterial : null;
+            if (ground == null)
+            {
+                mpb.SetFloat(IdDetailLoaded, 0f);
+                return;
+            }
+            WriteLook(mpb);
+            for (int i = 0; i < s_GroundMaterialFloats.Length; i++)
+                mpb.SetFloat(s_GroundMaterialFloats[i], ground.GetFloat(s_GroundMaterialFloats[i]));
+            for (int i = 0; i < s_GroundMaterialColors.Length; i++)
+                mpb.SetColor(s_GroundMaterialColors[i], ground.GetColor(s_GroundMaterialColors[i]));
         }
 
         private void PushWaterLevel()

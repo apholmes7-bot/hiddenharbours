@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_112
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_112
+  Status: 6
+  SplitFrom: 
+  Follows: wall.nmc_111
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: bank
+  Brow:
+  - {x: -251.67407, y: -161.75092}
+  - {x: -250.70898, y: -161.77658}
+  - {x: -249.6611, y: -161.75163}
+  - {x: -248.62465, y: -162.73363}
+  Toe:
+  - {x: -251.64229, y: -165.25078}
+  - {x: -250.6021, y: -165.22491}
+  - {x: -249.6582, y: -165.25163}
+  - {x: -248.76222, y: -165.22984}
+  DropMetres:
+  - 3.1704245
+  - 3.1271133
+  - 3.1656125
+  - 2.2010522
+  ToeElevations:
+  - 2.4985867
+  - 2.4949098
+  - 2.4535391
+  - 2.5380502
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: -1
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 'S bank (not in the default bake)'
+  Why: 'Held: a face G3 holds and no wall covers, the south shore''s bluff (G3 piece 1): 3 m along, brow 4.74 to 5.67 m, toe 2.45 to 2.54 m, falling 2.20 to 3.17 m over 2.50 to 3.50 m (41 to 42 deg), facing S. The kit''s bank rung is not in the default bake; it stands in no scene until its wall is built.'

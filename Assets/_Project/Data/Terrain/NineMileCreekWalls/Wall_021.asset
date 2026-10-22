@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_021
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_021
+  Status: 4
+  SplitFrom: 
+  Follows: wall.nmc_020
+  Rock: sandstone
+  Class: 5
+  Aspect: E
+  Batter: ramp
+  Brow:
+  - {x: 33.733482, y: -32.00444}
+  - {x: 33.72515, y: -31.75458}
+  - {x: 33.716824, y: -31.504719}
+  - {x: 33.708496, y: -31.254856}
+  - {x: 33.700165, y: -31.004995}
+  - {x: 33.691837, y: -30.755135}
+  Toe:
+  - {x: 36.731815, y: -31.904495}
+  - {x: 36.723484, y: -31.654634}
+  - {x: 36.71516, y: -31.404774}
+  - {x: 36.70683, y: -31.154911}
+  - {x: 36.74847, y: -30.903383}
+  - {x: 36.290394, y: -30.668516}
+  DropMetres:
+  - 7.65
+  - 7.65
+  - 7.545703
+  - 7.4654694
+  - 7.403362
+  - 6.8892317
+  ToeElevations:
+  - -1.6500001
+  - -1.6500001
+  - -1.545703
+  - -1.4654694
+  - -1.4033618
+  - -0.88923156
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9:
+  - 6
+  - 6
+  - 6
+  - 6
+  - 6
+  - 6
+  ToePass9:
+  - -1.641509
+  - -1.6084121
+  - -1.545703
+  - -1.4654694
+  - -1.4033618
+  - -0.88923156
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 21
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 
+  Why: 'Kept: 2 stations within 10 cm of the ground at both ends; toe lifted: k2 k3 k4 k5 to the foot of G3''s face (68-70 deg), read off G3; its k0-k5; the rest of the wall is wall.nmc_086; its stations snap to ramp 5, steep 1: it wears ramp.'

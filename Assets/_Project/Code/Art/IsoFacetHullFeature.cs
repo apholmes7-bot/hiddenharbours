@@ -170,6 +170,14 @@ namespace HiddenHarbours.Art
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
+            // W4-4a: the ground's underwater clip is OFF for this camera until its own water pass
+            // raises it (the HH Displaced Water block). Lowered first, before every early return, so a
+            // camera without that pass (no displaced sea, a preview, the Null device) never reads a
+            // flag the previous camera left raised, nor a coverage texture that is not its own.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
+            // W4-4c: so is the sea's read of the props under it, raised only by this camera's own
+            // under-water pass (below), for the same reason.
+            Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
             // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
             // this camera's recording publishes its own. A no-op once zero.
             IsoFacetFigureTarget.Unpublish();
@@ -223,8 +231,18 @@ namespace HiddenHarbours.Art
             }
             if (!foam)
                 FoamInjectionRegistry.BindIdle();   // never leave a frozen wake bound on the sea
-            if (!hulls && !water && !reflect && !meshSubjects && !foam)
-                return;   // the zero-cost guarantee — scenes without mesh hulls, displaced water, reflectors or churn pay nothing
+            // W4-4c: the props under the water join as one more filtered renderer list, on the same
+            // zero-cost-when-idle contract. The switch off (the ship default) or nothing under the
+            // water, and nothing is recorded, no target is held, and the sea's read stays lowered:
+            // today's pixels.
+            bool props = GameServices.ShallowsSubmergedProps && UnderWaterRegistry.Count > 0;
+            if (!props)
+            {
+                UnderWaterRegistry.BindIdle();
+                _pass?.ReleaseUnderWater();
+            }
+            if (!hulls && !water && !reflect && !meshSubjects && !foam && !props)
+                return;   // the zero-cost guarantee — scenes without mesh hulls, displaced water, reflectors, churn or props under the water pay nothing
             // CI runs Unity with NO graphics device ("Null Device"), where recording a raster pass
             // can crash the editor outright (exit 1, no results XML) — and phase 4's PlayMode tests
             // legitimately keep a live mesh hull while other fixtures own cameras. Never enqueue
@@ -279,8 +297,10 @@ namespace HiddenHarbours.Art
             _pass.KeylineFlood = IsoFacetKeylineGate.Enabled;
             _pass.DrawHulls = hulls;
             _pass.DrawWater = water;
+            _pass.ClipTerrain = water && GameServices.TerrainUnderwaterClip;
             _pass.DrawGuard = _interiorMask;
             _pass.DrawReflections = reflect;
+            _pass.DrawUnderWater = props;
             _pass.MeshReflections = meshReflect;
             _pass.DrawFoam = foam;
             _pass.FoamMaterial = _foamMaterial;
@@ -312,6 +332,10 @@ namespace HiddenHarbours.Art
 
         protected override void Dispose(bool disposing)
         {
+            // W4-4a: never leave the ground clipping against a coverage nobody draws any more.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
+            // W4-4c: nor the sea reading props nobody draws any more.
+            Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
             _pass?.Dispose();
             _pass = null;
             CoreUtils.Destroy(_resolveMaterial);
@@ -334,6 +358,9 @@ namespace HiddenHarbours.Art
             // ADR 0027 #8: object reflections. The tag says "this renderer KNOWS how to draw a
             // reflection"; ReflectionRegistry.RenderingLayer says "…and it should" (see below).
             private static readonly ShaderTagId s_ReflectTag = new ShaderTagId("HHReflect");
+            // W4-4c: the props under the water. The tag says "this renderer KNOWS how to draw under the
+            // water"; UnderWaterRegistry.RenderingLayer says "…and it is under it now".
+            private static readonly ShaderTagId s_UnderWaterTag = new ShaderTagId("HHUnderWater");
 
             public Material ResolveMaterial;
             internal bool MeshReflections;
@@ -369,8 +396,14 @@ namespace HiddenHarbours.Art
             public bool KeylineFlood;
             /// <summary>Record the displaced-water pass this frame (any active DisplacedWaterSurface)?</summary>
             public bool DrawWater;
+            /// <summary>W4-4a: raise the ground's underwater clip once the water's coverage is drawn
+            /// (<see cref="DrawWater"/> AND <c>GameServices.TerrainUnderwaterClip</c>)?</summary>
+            public bool ClipTerrain;
             /// <summary>Record the object-reflection pass this frame (any live ReflectiveObject)?</summary>
             public bool DrawReflections;
+            /// <summary>W4-4c: record the under-water pass this frame (<c>GameServices.ShallowsSubmergedProps</c>
+            /// AND a renderer under the water)?</summary>
+            public bool DrawUnderWater;
 
             // One persistent resolve target per camera: game view, scene view and any inset view
             // differ in size, and thrashing a single handle between sizes would reallocate every
@@ -387,6 +420,10 @@ namespace HiddenHarbours.Art
             // divided by the day/night tint (far above 1) so the §11.6 post-grade compensation can
             // recover it, and an 8-bit target would clamp that to nothing.
             private readonly Dictionary<EntityId, RTHandle> _reflectTargets = new Dictionary<EntityId, RTHandle>();
+            // W4-4c's persistent per-camera under-water target (same lifetime rules, and released while
+            // nothing is under the water). ARGB32 sRGB, as the resolve target: the pass writes unlit
+            // albedo, never above 1, so the half float the night-lit targets need would buy nothing.
+            private readonly Dictionary<EntityId, RTHandle> _underWaterTargets = new Dictionary<EntityId, RTHandle>();
             // ADR 0027 #6's advected foam buffer: a PING-PONG PAIR plus the world window it is
             // anchored to, per camera. Per camera rather than per world because the game view and the
             // scene view frame different places and pan independently — one shared buffer would have
@@ -563,6 +600,7 @@ namespace HiddenHarbours.Art
             {
                 public RendererListHandle Renderers;
                 public TextureHandle ClearReflection;
+                public bool ClipTerrain;
             }
 
             private class GuardPassData
@@ -571,6 +609,11 @@ namespace HiddenHarbours.Art
             }
 
             private class ReflectPassData
+            {
+                public RendererListHandle Renderers;
+            }
+
+            private class UnderWaterPassData
             {
                 public RendererListHandle Renderers;
             }
@@ -683,8 +726,9 @@ namespace HiddenHarbours.Art
                     }
                 }
                 if (!DrawReflections && mesh == null) ReflectionRegistry.BindIdle();
-                if (!drawHulls && !DrawWater && !DrawReflections && !drawFoam && mesh == null) return;
+                if (!drawHulls && !DrawWater && !DrawReflections && !drawFoam && mesh == null && !DrawUnderWater) return;
                 TextureHandle reflectTex = default;
+                TextureHandle underTex = default;
                 TextureHandle foamTex = default;
                 TextureHandle clearReflection = default;
                 if (DrawReflections || mesh != null)
@@ -752,6 +796,43 @@ namespace HiddenHarbours.Art
                     });
                 }
                 if (mesh != null) RecordMeshReflection(renderGraph, mesh, reflectTex, w, h);
+                // ---- THE PROPS UNDER THE WATER (W4-4c) --------------------------------------------
+                // One more filtered renderer list: every renderer that BOTH has an HHUnderWater pass AND
+                // carries UnderWaterRegistry.RenderingLayer (a shore plant wholly under the live water),
+                // drawn where it stands into one target at camera resolution. The sea's composite reads
+                // it at the point its floor reads, bent by the same whole ground pixels, and lays it over
+                // the floor BEFORE the column, so a plant darkens, shifts colour, catches the caustics and
+                // grades exactly as the floor beside it does. Sorted as the main pass sorts the same
+                // renderers (CommonTransparent, the camera's own distance), so overlapping plants keep
+                // the order they would draw in; premultiplied inside the pass.
+                if (DrawUnderWater)
+                {
+                    RTHandle underTarget = GetUnderWaterTarget(cameraData.camera.GetEntityId(), w, h);
+                    underTex = renderGraph.ImportTexture(underTarget,
+                        new ImportResourceParams { clearOnFirstUse = true, clearColor = Color.clear, discardOnLastUse = false });
+                    using var builder = renderGraph.AddRasterRenderPass<UnderWaterPassData>(
+                        "HH Under Water", out UnderWaterPassData passData, profilingSampler);
+                    var sorting = new SortingSettings(cameraData.camera) { criteria = SortingCriteria.CommonTransparent };
+                    var drawing = new DrawingSettings(s_UnderWaterTag, sorting) { perObjectData = PerObjectData.None };
+                    var filtering = new FilteringSettings(RenderQueueRange.all, -1,
+                                                          UnderWaterRegistry.RenderingLayer);
+                    passData.Renderers = renderGraph.CreateRendererList(
+                        new RendererListParams(renderingData.cullResults, drawing, filtering));
+
+                    builder.UseRendererList(passData.Renderers);
+                    builder.SetRenderAttachment(underTex, 0);
+                    // The consumer is the sea, whose read the graph cannot always see (the flat Sea
+                    // sprite draws in the main pass) — never cull, publish the result, and raise the
+                    // sea's read once the props are drawn.
+                    builder.AllowPassCulling(false);
+                    builder.AllowGlobalStateModification(true);
+                    builder.SetGlobalTextureAfterPass(underTex, UnderWaterShaderIds.UnderWaterTex);
+                    builder.SetRenderFunc((UnderWaterPassData data, RasterGraphContext ctx) =>
+                    {
+                        ctx.cmd.DrawRendererList(data.Renderers);
+                        ctx.cmd.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 1f);
+                    });
+                }
                 // ---- THE ADVECTED FOAM BUFFER (ADR 0027 #6) -------------------------------------
                 // One persistent single-channel target, ping-ponged: scroll the previous frame by a
                 // WHOLE number of world cells, decay it exponentially, and inject a capsule of foam
@@ -1091,8 +1172,14 @@ namespace HiddenHarbours.Art
                             builder.AllowGlobalStateModification(true);
                             builder.SetGlobalTextureAfterPass(clearReflection, ReflectionShaderIds.ReflectTex);
                         }
+                        // W4-4a: the pass raises the ground's clip flag, a global, once its coverage
+                        // is drawn (AddRenderPasses lowered it for this camera).
+                        passData.ClipTerrain = ClipTerrain;
+                        if (ClipTerrain) builder.AllowGlobalStateModification(true);
                         if (reflectTex.IsValid()) builder.UseTexture(reflectTex, AccessFlags.Read);
                         if (foamTex.IsValid()) builder.UseTexture(foamTex, AccessFlags.Read);
+                        // W4-4c: the sea reads the props under it; declaring the read puts their pass first.
+                        if (underTex.IsValid()) builder.UseTexture(underTex, AccessFlags.Read);
                         builder.UseRendererList(passData.Renderers);
                         // The water fragment SAMPLES the guard. Declaring the read makes
                         // guard-before-water a real dependency edge in the graph rather than an
@@ -1110,6 +1197,10 @@ namespace HiddenHarbours.Art
                             if (data.ClearReflection.IsValid())
                                 ctx.cmd.SetGlobalTexture(ReflectionShaderIds.ReflectTex, data.ClearReflection);
                             ctx.cmd.DrawRendererList(data.Renderers);
+                            // The ground draws after this pass (BeforeRenderingSprites on the lowest
+                            // layer), so from here to the end of this camera it reads this coverage.
+                            if (data.ClipTerrain)
+                                ctx.cmd.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 1f);
                         });
                     }
                 }
@@ -1360,6 +1451,31 @@ namespace HiddenHarbours.Art
                 return handle;
             }
 
+            private RTHandle GetUnderWaterTarget(EntityId cameraId, int w, int h)
+            {
+                _underWaterTargets.TryGetValue(cameraId, out RTHandle handle);
+                // ARGB32 sRGB (see the field doc). Camera render resolution + POINT filtering: the sea
+                // LOADs it at whole pixels, so nothing is ever filtered between two plants' texels.
+                var desc = new RenderTextureDescriptor(w, h, RenderTextureFormat.ARGB32, 0)
+                {
+                    sRGB = true,
+                    msaaSamples = 1,
+                };
+                _allocateTarget(ref handle, desc, "_HHUnderWaterTex");
+                _underWaterTargets[cameraId] = handle;
+                return handle;
+            }
+
+            /// <summary>W4-4c: release every camera's under-water target while nothing is under the
+            /// water or the switch is off, so the idle case holds no memory either.</summary>
+            internal void ReleaseUnderWater()
+            {
+                if (_underWaterTargets.Count == 0) return;
+                foreach (var kv in _underWaterTargets)
+                    kv.Value?.Release();
+                _underWaterTargets.Clear();
+            }
+
             /// <summary>
             /// The camera's foam ping-pong pair, allocated (or re-allocated when the window
             /// resolution changes) to <paramref name="resolution"/> square.
@@ -1452,6 +1568,8 @@ namespace HiddenHarbours.Art
                 foreach (var kv in _reflectTargets)
                     kv.Value?.Release();
                 _reflectTargets.Clear();
+                ReleaseUnderWater();
+                UnderWaterRegistry.BindIdle();
                 foreach (var kv in _foamStates)
                     kv.Value?.Release();
                 _foamStates.Clear();

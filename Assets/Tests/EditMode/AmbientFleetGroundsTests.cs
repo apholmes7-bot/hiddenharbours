@@ -519,7 +519,7 @@ namespace HiddenHarbours.Tests.EditMode
             Point("East Water passage", StPetersBuilder.ToEastWaterPassagePos, PassageRoundMetres);
             Point("East Water arrival", StPetersBuilder.FromEastWaterArrivalPos, PassageRoundMetres);
             Box("Nine Mile Creek band", Band(StPetersBuilder.ToNineMileCreekPassagePos,
-                                             new Vector2(3f, StPetersBuilder.SandbarHalfWidth * 2f)));
+                                             StPetersBuilder.NineMileCreekPassageBandSize));
             Box("West Water band", Band(StPetersBuilder.ToWestWaterPassagePos, StPetersBuilder.WestWaterPassageBandSize));
             Box("East Water band", Band(StPetersBuilder.ToEastWaterPassagePos, StPetersBuilder.EastWaterPassageBandSize));
 

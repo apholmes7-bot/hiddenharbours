@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_081
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_081
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 56.305553, y: 105.15872}
+  - {x: 56.38814, y: 105.394684}
+  - {x: 56.470726, y: 105.63065}
+  - {x: 56.553314, y: 105.866615}
+  Toe:
+  - {x: 59.137127, y: 104.16767}
+  - {x: 59.219715, y: 104.40363}
+  - {x: 59.3023, y: 104.6396}
+  - {x: 59.384888, y: 104.875565}
+  DropMetres:
+  - 8.642385
+  - 8.372923
+  - 8.108997
+  - 7.852748
+  ToeElevations:
+  - -2.6423848
+  - -2.3729234
+  - -2.1089969
+  - -1.8527477
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 81
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 2.35-2.36 m off the ground, no face under it). Step 07 of the ground swap (#959) set it inactive; step 11 removes its objects. Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'

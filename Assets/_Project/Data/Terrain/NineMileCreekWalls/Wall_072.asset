@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_072
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_072
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 51.350296, y: 91.00085}
+  - {x: 51.432884, y: 91.23682}
+  - {x: 51.515472, y: 91.47278}
+  - {x: 51.59806, y: 91.70874}
+  - {x: 51.68065, y: 91.94471}
+  - {x: 51.763233, y: 92.18067}
+  - {x: 51.84582, y: 92.41663}
+  - {x: 51.92841, y: 92.6526}
+  - {x: 52.010998, y: 92.888565}
+  Toe:
+  - {x: 54.18187, y: 90.009796}
+  - {x: 54.264458, y: 90.245766}
+  - {x: 54.347046, y: 90.48173}
+  - {x: 54.429634, y: 90.71769}
+  - {x: 54.512222, y: 90.95366}
+  - {x: 54.594807, y: 91.18962}
+  - {x: 54.677395, y: 91.42558}
+  - {x: 54.759983, y: 91.66155}
+  - {x: 54.84257, y: 91.897514}
+  DropMetres:
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  - 12
+  ToeElevations:
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  - -6
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 72
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 2.49-2.51 m off the ground, no face under it). Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'
