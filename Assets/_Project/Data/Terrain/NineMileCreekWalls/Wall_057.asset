@@ -1,0 +1,101 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_057
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_057
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 41.801662, y: 60.840263}
+  - {x: 41.86001, y: 61.083363}
+  - {x: 41.91835, y: 61.32646}
+  - {x: 41.976692, y: 61.569553}
+  - {x: 42.035038, y: 61.812653}
+  - {x: 42.09338, y: 62.055748}
+  - {x: 42.151722, y: 62.298847}
+  - {x: 42.210068, y: 62.541943}
+  - {x: 42.26841, y: 62.785038}
+  Toe:
+  - {x: 44.718826, y: 60.140144}
+  - {x: 44.77717, y: 60.383244}
+  - {x: 44.83551, y: 60.626343}
+  - {x: 44.893852, y: 60.869434}
+  - {x: 44.9522, y: 61.112534}
+  - {x: 45.010544, y: 61.35563}
+  - {x: 45.068886, y: 61.59873}
+  - {x: 45.127228, y: 61.841824}
+  - {x: 45.18557, y: 62.08492}
+  DropMetres:
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  - 9.190001
+  ToeElevations:
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  - -3.19
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 57
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 6.38-6.67 m off the ground, the only face under it 50-50 deg). Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'

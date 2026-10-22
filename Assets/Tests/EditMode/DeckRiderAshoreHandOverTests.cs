@@ -40,7 +40,7 @@ namespace HiddenHarbours.Tests.EditMode
             "ashore — no rider child is wired, so the rider cannot tell a deck from the shore";
         private const string NoBody = "ashore — there is no body sprite to stand in for";
         private const string Inside = "inside something (a cab, or a helm that hides its pilot): she draws neither";
-        private const string Clip = "ashore — a clip is playing, and the sprite draws every clip";
+        private const string Clip = "ashore — the running clip cannot draw as mesh; the sprite owns this move";
         private const string Wading = "ashore — wading, and the sprite draws her in the water";
         private const string Swimming = "ashore — swimming, and the sprite draws her in the water";
 
@@ -161,6 +161,22 @@ namespace HiddenHarbours.Tests.EditMode
                 true, true, true, true, false, OnFootWaterState.Wade), "wading: the sprite draws her");
             Assert.AreEqual(Swimming, DeckRiderMeshPresenter.WhyNotShownAshore(
                 true, true, true, true, false, OnFootWaterState.Swim), "swimming: the sprite draws her");
+        }
+
+        [Test]
+        public void WhyNotShownAshore_AClip_HandsBackOnlyWhenTheSkinCannotDrawIt()
+        {
+            Assert.IsNull(DeckRiderMeshPresenter.WhyNotShownAshore(true, true, true, true,
+                true, OnFootWaterState.Dry, skinSuspended: true, clipDrawsAsMesh: true));
+            Assert.AreEqual(Clip, DeckRiderMeshPresenter.WhyNotShownAshore(true, true, true, true,
+                true, OnFootWaterState.Dry, skinSuspended: true, clipDrawsAsMesh: false));
+            Assert.AreEqual(Wading, DeckRiderMeshPresenter.WhyNotShownAshore(true, true, true, true,
+                true, OnFootWaterState.Wade, skinSuspended: true, clipDrawsAsMesh: true));
+            Assert.AreEqual(Inside, DeckRiderMeshPresenter.WhyNotShownAshore(true, true, true, false,
+                true, OnFootWaterState.Dry, skinSuspended: true, clipDrawsAsMesh: true));
+            Assert.IsNotNull(DeckRiderMeshPresenter.WhyNotShownAshore(true, true, true, true,
+                false, OnFootWaterState.Dry, skinSuspended: true, clipDrawsAsMesh: true),
+                "a readiness fact without a playing clip cannot exempt somebody else's claim");
         }
 
         [Test]

@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_028
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_028
+  Status: 2
+  SplitFrom: 
+  Follows: wall.nmc_027
+  Rock: sandstone
+  Class: 5
+  Aspect: E
+  Batter: ramp
+  Brow:
+  - {x: 33.36702, y: -21.010532}
+  - {x: 33.35869, y: -20.76067}
+  - {x: 33.35036, y: -20.51081}
+  - {x: 33.342033, y: -20.260948}
+  Toe:
+  - {x: 36.365353, y: -20.910587}
+  - {x: 36.35702, y: -20.660725}
+  - {x: 36.348694, y: -20.410866}
+  - {x: 36.340366, y: -20.161003}
+  DropMetres:
+  - 4.716032
+  - 4.579412
+  - 4.4532495
+  - 4.3388896
+  ToeElevations:
+  - 1.2839681
+  - 1.4205881
+  - 1.5467507
+  - 1.6611104
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9:
+  - 6
+  - 6
+  - 6
+  - 6
+  ToePass9:
+  - 5.9761686
+  - 5.9772105
+  - 5.9782043
+  - 5.9791684
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 28
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 
+  Why: 'Banked on G3 (plan B): stations k0-k3 as built, the brow on the ground (worst 0.000 m), the toe 4.3-4.7 m off it, where G3''s face is 44-44 deg, which the default bake does not draw. It stands as built until that face has its own wall.'

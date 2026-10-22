@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_096
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_096
+  Status: 6
+  SplitFrom: 
+  Follows: wall.nmc_095
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: bank
+  Brow:
+  - {x: -334.53983, y: -164.76521}
+  - {x: -333.49072, y: -164.76482}
+  - {x: -332.59494, y: -164.76073}
+  - {x: -331.70154, y: -164.28749}
+  - {x: -330.5634, y: -164.26787}
+  - {x: -329.51224, y: -164.27089}
+  Toe:
+  - {x: -334.34293, y: -167.75874}
+  - {x: -333.38794, y: -167.76306}
+  - {x: -332.27762, y: -167.7439}
+  - {x: -331.2135, y: -167.7533}
+  - {x: -330.34653, y: -167.71106}
+  - {x: -329.39792, y: -167.719}
+  DropMetres:
+  - 3.1238198
+  - 2.9578526
+  - 2.8507402
+  - 3.2998579
+  - 3.2782845
+  - 3.3186197
+  ToeElevations:
+  - 2.6690006
+  - 2.7002451
+  - 2.7057803
+  - 2.5639045
+  - 2.5122452
+  - 2.4444351
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: -1
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 'S bank (not in the default bake)'
+  Why: 'Held: a face G3 holds and no wall covers, the south shore''s bluff (G3 piece 1): 5 m along, brow 5.56 to 5.86 m, toe 2.44 to 2.71 m, falling 2.85 to 3.32 m over 3.00 to 3.50 m (43 to 46 deg), facing S. The kit''s bank rung is not in the default bake; it stands in no scene until its wall is built.'
