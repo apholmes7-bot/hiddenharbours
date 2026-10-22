@@ -1,0 +1,3665 @@
+{
+ "schema": "hidden-harbours/cmb-ground-plan@1",
+ "id": "terrain_plan.cmb",
+ "name": "Cumberland, the ground: part 1",
+ "status": "pass C (2026-10-12): the ground as pass B left it, on the owner's rulings of the four layout calls (10-11 14:06 ADT) and on the lane's leans where the owner has not ruled; the views, the key scenes proposed for part 2, NOTES-part1.md and README.md",
+ "date": "2026-10-11",
+ "brief": "briefs/BRIEF-2026-10-11-cumberland.md (main at b9e31bcf)",
+ "charter": "CHARTER-2026-10-11-cumberland-ground-part-1.md (the Art desk)",
+ "units": {
+  "position": "Cumberland's region metres: centre (0, 0), 760 x 560 m (x -380..380, y -280..280); x metres east, y metres north, both ground metres",
+  "world": "in the game's world units (ADR 0034) x is the same and a metre of ground northward is 0.643 of a unit (world y = 0.643 x y); every y in this file is ground metres, and so are heights and sizes",
+  "offset": {
+   "dx": 0,
+   "dy": 560,
+   "rule": "Nine Mile Creek's metres: x_nmc = x + 0, y_nmc = y + 560. Cumberland's south edge (y -280) is Nine Mile Creek's north edge (y 280); the two frames' x ranges are the same, so Cumberland's column c is Nine Mile Creek's column c"
+  },
+  "height": "metres about mean sea level; spring low -2.20, neap low -0.99, mean 0, neap high +0.99, spring high +2.20",
+  "profile": "cross-shore profiles are [distance from the reference line in metres, + inland, elevation in metres]; a section runs along the line from its from point to its to point (from_s, to_s: metres along the smoothed line)",
+  "slope": "a slope 1:n is n metres across for every metre of rise",
+  "texture": "ground/CumberlandSeabed_HeightTex_plan.png: 16-bit grey, 1520 x 1120, 2 texels a metre, texel (col, row) from the top-left centred at x = -380 + (col + 0.5) / 2, y = 280 - (row + 0.5) / 2; height = -6 + 12 x code / 65535. ground/CumberlandSeabed_StillTex_plan.png: the still water on the same scale, code 0 = none (filter the codes, then decode: ADR 0046 s5)",
+  "boats": "a boat lies wherever the water over the bed is deeper than her draught (the brief, section 3: a standing ruling, never a rule). A berth's bed is the shallowest on its keel line (for slips, on every slip's); afloat_from = bed + draught; way_in_from = the least bed on the best way in from the open sea + draught; springs and neaps = the share of a spring (amplitude 2.2) or neap (0.99) tide's cycle when both hold",
+  "checkpoints": "checkpoints: plan (the design height where the plan sets one, else the composer's ground before encoding) against texture (the height texture read bilinear at the point, the game's read), within tol metres; the seam's are Nine Mile Creek's row 0 against Cumberland's row 1119 read along the row, tol 0. stillpoints: the planned still-water level against the still texture's texel nearest the point, within tol"
+ },
+ "tide": {
+  "mean": 0,
+  "amplitude": 2.2,
+  "levels": {"spring_low":-2.2,"neap_low":-0.99,"mean":0,"neap_high":0.99,"spring_high":2.2},
+  "rule": "Nine Mile Creek's tide: regions that share ground share a tide"
+ },
+ "region": {
+  "id": "region.cumberland",
+  "name": "Cumberland",
+  "centre": [0,0],
+  "size": [760,560],
+  "texels": [1520,1120],
+  "perMetre": 2,
+  "range": [-6,6],
+  "nmc": {"centre":[0,560],"box":[-380,380,280,840],"meets":"Nine Mile Creek's north edge from its x -380 to 380"}
+ },
+ "seam": {
+  "rule": "Cumberland's row 1119 (y -279.75) carries Nine Mile Creek's row 0 (its y 279.75) code for code, in the height texture and the still texture; Cumberland's column c is Nine Mile Creek's column c",
+  "columns": 1520,
+  "height_codes_equal": 1520,
+  "still_codes_equal": 1520,
+  "composer_vs_row0_max_codes": 0,
+  "composer_vs_row0_still_texels": 0,
+  "blend": {
+   "value": 20,
+   "slope": 4,
+   "what": "north of the seam, the composer's ground takes Nine Mile Creek's row 0 height (eased out over 20 m) and its slope from row 1 to row 0 (eased out over 4 m): no step and no kink"
+  },
+  "measured": {
+   "step_max": 0.047,
+   "step_at": [45.25,-279.5],
+   "kink_max": 0.094,
+   "kink_at": [34.75,-279.5],
+   "what": "step: Cumberland's rows 1119 against 1118; kink: the slope across them against Nine Mile Creek's from row 1 to row 0 (metres a metre)"
+  },
+  "nmc_row0_row1": {"max":0.047,"at_nmc":[36.75,279.5],"what":"Nine Mile Creek's own change from row 0 to row 1"},
+  "crossings": [
+   {
+    "id": "seam.cmb_plateau",
+    "what": "the plateau at the texture's ceiling (+6.0): the town's north row, its north lane and the four waterfront houses south of it; the south pasture, Route 91, the shore wood north of it",
+    "x": [-380,35],
+    "at": [[-380,-280],[35,-280]],
+    "at_nmc": [[-380,280],[35,280]],
+    "table": 1,
+    "ground": [{"cmb_row1119":6,"nmc_row0":6},{"cmb_row1119":5.976,"nmc_row0":5.976}],
+    "range": [6,6]
+   },
+   {
+    "id": "seam.cmb_route_91",
+    "what": "Route 91's centre line: the town's street ends at the seam (call 87); Cumberland's Route 91 starts here",
+    "x": -186,
+    "at": [[-186,-280]],
+    "at_nmc": [[-186,280]],
+    "ground": [{"cmb_row1119":6,"nmc_row0":6}]
+   },
+   {
+    "id": "seam.cmb_bank_top",
+    "what": "the north beach's bank top: where the ground leaves the ceiling",
+    "x": 34.75,
+    "at": [[34.75,-280]],
+    "at_nmc": [[34.75,280]],
+    "ground": [{"cmb_row1119":6,"nmc_row0":6}]
+   },
+   {
+    "id": "seam.cmb_bank",
+    "what": "the bank, from the plateau to the beach",
+    "x": [35,46.5],
+    "at": [[35,-280],[46.5,-280]],
+    "at_nmc": [[35,280],[46.5,280]],
+    "table": 2,
+    "ground": [{"cmb_row1119":5.976,"nmc_row0":5.976},{"cmb_row1119":2.282,"nmc_row0":2.282}],
+    "range": [2.282,5.976]
+   },
+   {
+    "id": "seam.cmb_spring_high",
+    "what": "the spring high line (+2.2)",
+    "x": 46.72,
+    "at": [[46.72,-280]],
+    "at_nmc": [[46.72,280]],
+    "ground": [{"cmb_row1119":2.2,"nmc_row0":2.2}]
+   },
+   {
+    "id": "seam.cmb_beach",
+    "what": "the beach, from the spring high line to the low-tide terrace",
+    "x": [46.5,58],
+    "at": [[46.5,-280],[58,-280]],
+    "at_nmc": [[46.5,280],[58,280]],
+    "table": 3,
+    "ground": [{"cmb_row1119":2.282,"nmc_row0":2.282},{"cmb_row1119":-1.012,"nmc_row0":-1.012}],
+    "range": [-1.012,2.282]
+   },
+   {
+    "id": "seam.cmb_neap_high",
+    "what": "the neap high line (+0.99)",
+    "x": 49.56,
+    "at": [[49.56,-280]],
+    "at_nmc": [[49.56,280]],
+    "ground": [{"cmb_row1119":0.989,"nmc_row0":0.989}]
+   },
+   {
+    "id": "seam.cmb_mean",
+    "what": "the mean (0): the north beach's reference line crosses the seam",
+    "x": 52.31,
+    "at": [[52.31,-280]],
+    "at_nmc": [[52.31,280]],
+    "ground": [{"cmb_row1119":0.001,"nmc_row0":0.001}]
+   },
+   {
+    "id": "seam.cmb_neap_low",
+    "what": "the neap low line (-0.99)",
+    "x": 57.52,
+    "at": [[57.52,-280]],
+    "at_nmc": [[57.52,280]],
+    "ground": [{"cmb_row1119":-0.99,"nmc_row0":-0.99}]
+   },
+   {
+    "id": "seam.cmb_flat",
+    "what": "the flat: the low-tide terrace at -1.01, then down to the spring low line",
+    "x": [58,99],
+    "at": [[58,-280],[99,-280]],
+    "at_nmc": [[58,280],[99,280]],
+    "table": 4,
+    "ground": [{"cmb_row1119":-1.012,"nmc_row0":-1.012},{"cmb_row1119":-2.212,"nmc_row0":-2.212}],
+    "range": [-2.212,-1.012]
+   },
+   {
+    "id": "seam.cmb_low_terrace",
+    "what": "the low-tide terrace at -1.01",
+    "x": [58,62],
+    "at": [[58,-280],[62,-280]],
+    "at_nmc": [[58,280],[62,280]],
+    "ground": [{"cmb_row1119":-1.012,"nmc_row0":-1.012},{"cmb_row1119":-1.012,"nmc_row0":-1.012}],
+    "range": [-1.012,-1.012]
+   },
+   {
+    "id": "seam.cmb_spring_low",
+    "what": "the spring low line (-2.2)",
+    "x": 98.88,
+    "at": [[98.88,-280]],
+    "at_nmc": [[98.88,280]],
+    "ground": [{"cmb_row1119":-2.2,"nmc_row0":-2.2}]
+   },
+   {
+    "id": "seam.cmb_drop",
+    "what": "the flat's outer edge and the drop to the floor",
+    "x": [99,141],
+    "at": [[99,-280],[141,-280]],
+    "at_nmc": [[99,280],[141,280]],
+    "table": 5,
+    "ground": [{"cmb_row1119":-2.212,"nmc_row0":-2.212},{"cmb_row1119":-5.976,"nmc_row0":-5.976}],
+    "range": [-5.976,-2.212]
+   },
+   {
+    "id": "seam.cmb_floor",
+    "what": "the bay's floor at -6.0 (the texture's floor, code 0)",
+    "x": [141,380],
+    "at": [[141,-280],[380,-280]],
+    "at_nmc": [[141,280],[380,280]],
+    "table": 6,
+    "ground": [{"cmb_row1119":-5.976,"nmc_row0":-5.976},{"cmb_row1119":-6,"nmc_row0":-6}],
+    "range": [-6,-5.976]
+   }
+  ],
+  "carried": [
+   {
+    "what": "Route 91: the town's street ends at the seam (call 87); Cumberland's Route 91 is the road, 5.8 m of asphalt with gravel shoulders",
+    "cmb": "road.cmb.route_91",
+    "nmc": "road.nmc.route_91",
+    "at": [-186,-280],
+    "at_nmc": [-186,280]
+   },
+   {
+    "what": "the north beach, its bank and its flat",
+    "cmb": "coast.cmb_north_beach",
+    "nmc": "coast.nmc_north_beach",
+    "at": [52.31,-280],
+    "at_nmc": [52.31,280],
+    "note": "Nine Mile Creek's north beach is a section of its east coast (coast.nmc_east_coast, s 551 to 596), whose line meets the edge at (34, 280); its ground crosses the mean at x 52.31 on row 0, where Cumberland's reference line (on the mean) starts"
+   }
+  ],
+  "neighbours": {
+   "source": "inputs/nmc-near-seam.json (tools/cmbNmcNear.cjs: Nine Mile Creek's ids and geometry within 100 m of its north edge, unchanged; 60 items)",
+   "rule": "nearest_at: the item's nearest point to the seam; from_edge_m: from its edge (a line's half width counted) to the seam",
+   "groups": [
+    {
+     "what": "the town's north row: the public lot at its west end, then five shops facing south, their backs at Nine Mile Creek's y 279.8, 0.2 m inside the edge",
+     "cmb": "hedge.cmb_town_back and field.cmb_south_pasture behind them, 5 m north of the seam",
+     "items": [
+      {
+       "id": "lot.nmc_main_street_row_n0",
+       "in": "lots.sites",
+       "shape": "centre line, 5.5 m wide",
+       "nearest_at_nmc": [-268,271.45],
+       "nearest_at": [-268,-288.55],
+       "from_edge_m": 5.8
+      },
+      {
+       "id": "lot.nmc_main_street_gallery",
+       "in": "lots.town",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-234,279.8],
+       "nearest_at": [-234,-280.2],
+       "from_edge_m": 0.2
+      },
+      {
+       "id": "lot.nmc_main_street_pharmacy",
+       "in": "lots.town",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-223,279.8],
+       "nearest_at": [-223,-280.2],
+       "from_edge_m": 0.2
+      },
+      {
+       "id": "lot.nmc_main_street_wine",
+       "in": "lots.town",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-214.5,279.8],
+       "nearest_at": [-214.5,-280.2],
+       "from_edge_m": 0.2
+      },
+      {
+       "id": "lot.nmc_main_street_visitor",
+       "in": "lots.town",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-201.75,279.8],
+       "nearest_at": [-201.75,-280.2],
+       "from_edge_m": 0.2
+      },
+      {
+       "id": "lot.nmc_main_street_post_office",
+       "in": "lots.town",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-191.99,279.8],
+       "nearest_at": [-191.99,-280.2],
+       "from_edge_m": 0.2
+      }
+     ]
+    },
+    {
+     "what": "Nine Mile Creek's north lane, about six metres inside the edge",
+     "cmb": "the shore wood's edge and the south pasture north of it; nothing of Cumberland's comes nearer than 5 m",
+     "items": [
+      {
+       "id": "road.nmc.north_creek_lane",
+       "in": "roads",
+       "shape": "centre line, 4.2 m wide",
+       "nearest_at_nmc": [-110,274.5],
+       "nearest_at": [-110,-285.5],
+       "from_edge_m": 3.4
+      }
+     ]
+    },
+    {
+     "what": "the four waterfront houses",
+     "cmb": "wood.cmb_shore_wood north of them, from 8 m north of the seam",
+     "items": [
+      {
+       "id": "lot.nmc_waterfront_1",
+       "in": "lots.waterfront",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-61.75,269.25],
+       "nearest_at": [-61.75,-290.75],
+       "from_edge_m": 10.75
+      },
+      {
+       "id": "lot.nmc_waterfront_2",
+       "in": "lots.waterfront",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-37.9,267.4],
+       "nearest_at": [-37.9,-292.6],
+       "from_edge_m": 12.6
+      },
+      {
+       "id": "lot.nmc_waterfront_3",
+       "in": "lots.waterfront",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [-8.9,266.23],
+       "nearest_at": [-8.9,-293.77],
+       "from_edge_m": 13.77
+      },
+      {
+       "id": "lot.nmc_waterfront_4",
+       "in": "lots.waterfront",
+       "shape": "footprint (at, size, faces)",
+       "nearest_at_nmc": [16.55,263.33],
+       "nearest_at": [16.55,-296.67],
+       "from_edge_m": 16.67
+      }
+     ]
+    },
+    {
+     "what": "Route 91: the town's street ends at the seam (call 87)",
+     "cmb": "road.cmb.route_91, carried on north",
+     "items": [
+      {
+       "id": "road.nmc.route_91",
+       "in": "roads",
+       "shape": "centre line, 5.8 m wide",
+       "nearest_at_nmc": [-186,280],
+       "nearest_at": [-186,-280],
+       "from_edge_m": 0
+      },
+      {
+       "id": "road.nmc_route_91_town",
+       "in": "roads.sections",
+       "shape": "centre line, 5.8 m wide",
+       "nearest_at_nmc": [-186,281],
+       "nearest_at": [-186,-279],
+       "from_edge_m": 0
+      }
+     ]
+    },
+    {
+     "what": "the north beach, a section of Nine Mile Creek's east coast, its line meeting the edge at (34, 280)",
+     "cmb": "coast.cmb_north_beach, carried on",
+     "items": [
+      {
+       "id": "coast.nmc_north_beach",
+       "in": "coast.east_coast.sections",
+       "s": [551,596],
+       "of": "coast.nmc_east_coast",
+       "what": "a section of coast.nmc_east_coast, its s (metres along that line) as given"
+      },
+      {
+       "id": "coast.nmc_east_coast",
+       "in": "coast.east_coast",
+       "shape": "line",
+       "nearest_at_nmc": [34,280],
+       "nearest_at": [34,-280],
+       "from_edge_m": 0
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "coast": {
+  "line": [[48.7,-300],[52.3,-280],[56,-260],[60,-240],[65,-220],[71.5,-200],[80,-182],[91,-166],[105,-152],[122,-141],[142,-133],[165,-128],[190,-126.5],[220,-126],[250,-126],[282,-126.5],[285,-134],[287,-146],[288,-160],[291,-174],[297,-185],[306,-192],[317,-195],[328,-193],[337,-186],[342,-174],[344,-160],[346,-148],[350,-138],[358,-131],[370,-127],[384,-125],[400,-123],[430,-121]],
+  "sections": [
+   {
+    "id": "coast.cmb_north_beach",
+    "name": "the north beach",
+    "type": "sand beach under a bank, a low-tide flat before it (Nine Mile Creek's coast.nmc_north_beach, carried on)",
+    "from": [48.7,-300],
+    "to": [80,-182],
+    "rise": 20,
+    "profile": [[21.97,6],[17.29,6],[16.06,5.859],[14.59,5.6],[12.62,5.059],[11.14,4.541],[9.66,3.976],[8.18,3.365],[7.2,2.941],[6.21,2.494],[5.51,2.2],[4.24,1.624],[2.71,0.989],[1.29,0.447],[0,0],[-1.66,-0.471],[-3.63,-0.847],[-5.13,-0.99],[-6.1,-1.012],[-9.54,-1.012],[-13.48,-1.082],[-17.42,-1.153],[-22.35,-1.318],[-27.27,-1.482],[-32.19,-1.671],[-37.12,-1.882],[-42.04,-2.071],[-45.86,-2.2],[-49.92,-2.353],[-54.84,-2.471],[-59.77,-2.565],[-63.71,-2.612],[-66.66,-2.682],[-69.62,-2.988],[-72.57,-3.459],[-75.03,-3.976],[-77.49,-4.518],[-79.96,-5.012],[-82.42,-5.482],[-84.88,-5.788],[-87.59,-6]],
+    "why": "Nine Mile Creek's north beach crosses the seam as its row 0 gives it: the bank from the ceiling at +6.0, the beach, the low-tide terrace at -1.01, the flat to the spring low, the drop to the floor. Carried on north-north-east on the same profile, so the beach crosses the seam unchanged.",
+    "from_s": 0,
+    "to_s": 122.64,
+    "length_m": 122.64
+   },
+   {
+    "id": "coast.cmb_bay_head",
+    "name": "the bay head",
+    "type": "gravel and sand beach under a low bank; the brook's mouth",
+    "from": [80,-182],
+    "to": [122,-141],
+    "rise": 25,
+    "profile": [[60,6],[40,5.6],[24,4.9],[17,3.4],[12,2.6],[6,1.4],[0,0],[-10,-0.7],[-25,-1.3],[-45,-1.9],[-60,-2.5],[-75,-3.6],[-88,-5],[-98,-6]],
+    "why": "Where the shore turns from north to east round the bay's head: a low bank, a gravel beach and a flat that narrows eastward. The brook comes out here.",
+    "from_s": 122.64,
+    "to_s": 182.19,
+    "length_m": 59.55
+   },
+   {
+    "id": "coast.cmb_resort_beach",
+    "name": "the resort beach",
+    "type": "sand beach under a grassed bank: the resort's swimming beach",
+    "from": [122,-141],
+    "to": [180,-126.5],
+    "rise": 25,
+    "profile": [[70,6],[45,5.5],[28,4.6],[18,3.6],[12,2.6],[6,1.3],[0,0],[-12,-0.8],[-28,-1.7],[-48,-3],[-66,-4.4],[-82,-5.5],[-92,-6]],
+    "why": "The resort's beach, west of the marina's jetty: a gentle sand beach facing south across the bay, the bank grassed over above it.",
+    "from_s": 182.19,
+    "to_s": 242.39,
+    "length_m": 60.2
+   },
+   {
+    "id": "coast.cmb_marina_shore",
+    "name": "the marina shore",
+    "type": "a stony shore under a low bank: the marina's bulkhead and apron",
+    "from": [180,-126.5],
+    "to": [284,-128],
+    "rise": 25,
+    "profile": [[60,6],[36,5.2],[20,4],[10,3.5],[6,2.8],[3,1.4],[0,0],[-6,-1.2],[-15,-2.4],[-30,-3.6],[-48,-4.8],[-62,-5.6],[-72,-6]],
+    "why": "The natural shore under the marina, steeper than the beach: the basin is dredged off it and the apron filled over it to a bulkhead at y -126.",
+    "from_s": 242.39,
+    "to_s": 347.04,
+    "length_m": 104.66
+   },
+   {
+    "id": "coast.cmb_marina_point",
+    "name": "the marina point",
+    "type": "a low point of sandstone ledges under a bank 3 m tall",
+    "from": [284,-128],
+    "to": [350,-138],
+    "rise": 25,
+    "relax": 30,
+    "profile": [[30,5.1],[20,5],[16,4.6],[13,3.3],[10,2],[6,0.95],[3,0.4],[0,0],[-6,-0.5],[-14,-1.3],[-24,-2.5],[-34,-3.8],[-44,-5],[-52,-6]],
+    "why": "A blunt low point, 56 m across, running 65 m south from the shore, its top a flat bank: it shelters the marina from the east, and the breakwater runs west from its west face. Pass B eased the bank (4.6 m to 2.0 m over 6 m, no steeper than 1 in 2.3) so no texel steps more than half a metre on it.",
+    "from_s": 347.04,
+    "to_s": 502.1,
+    "length_m": 155.05
+   },
+   {
+    "id": "coast.cmb_peninsula_shore",
+    "name": "the peninsula shore",
+    "type": "shingle beach under a red bank: Rocky Point's south shore, running on east",
+    "from": [350,-138],
+    "to": [430,-121],
+    "rise": 25,
+    "profile": [[45,6],[30,5.7],[18,5.2],[13,2.6],[9,1.7],[4,0.8],[0,0],[-8,-0.7],[-20,-1.8],[-34,-3.3],[-48,-4.7],[-58,-5.6],[-65,-6]],
+    "why": "Rocky Point's south shore east of the marina point: a red bank and a shingle beach, running on east past the edge toward the lighthouse.",
+    "from_s": 502.1,
+    "to_s": 585.84,
+    "length_m": 83.75
+   }
+  ],
+  "blend": {"tau":8},
+  "relax": 60,
+  "floor": {"base":-6,"grades":[]},
+  "plateau": {"base":6,"lows":[]},
+  "line_length_m": 585.84
+ },
+ "water": {
+  "rule": "the water's shapes in plan order: the marina's basin and approach dredged, then the breakwater and the jetty built over them",
+  "shapes": [
+   {
+    "id": "dredge.cmb_marina_basin",
+    "name": "the marina basin",
+    "kind": "dredge",
+    "outline": [[186,-127],[264,-127],[268,-146],[264,-170],[196,-170],[186,-150]],
+    "z": -6,
+    "side": 3,
+    "clip": [[[300,-126],[170,-126]],[[179,-100],[179,-200]]],
+    "why": "Dredged to the floor, -6.0, between the bulkhead (y -126) and the breakwater; its side slopes 1 in 3. The bulkhead's face holds the dredge back at y -126, and the jetty holds it back on the west (x 179, under the jetty's crest): the resort beach west of the jetty keeps its own slope."
+   },
+   {
+    "id": "dredge.cmb_marina_approach",
+    "name": "the marina's mouth and approach",
+    "kind": "dredge",
+    "outline": [[188,-150],[212,-174],[184,-232],[158,-220]],
+    "z": -6,
+    "side": 3,
+    "why": "The mouth between the jetty's head and the breakwater's, dredged to -6.0 and out south-west to the bay's own floor."
+   },
+   {
+    "id": "ridge.cmb_breakwater",
+    "name": "the breakwater",
+    "kind": "ridge",
+    "pts": [[296,-170],[276,-182],[252,-188],[230,-189],[214,-186]],
+    "crest": [3.6,3.6,3.6,3.6,3.6],
+    "toe": [2.8,2.8,2.8,2.8,2.8],
+    "hw": [3,3,3,3,3],
+    "side": [1.5,1.5,1.5,1.5,1.5],
+    "why": "A rubble mound from the marina point's west face, curving west 85 m: its crest at +3.6 (1.4 m over the spring high), its sides 1 in 1.5 to the floor. It shelters the basin from the south."
+   },
+   {
+    "id": "ridge.cmb_jetty",
+    "name": "the jetty",
+    "kind": "ridge",
+    "pts": [[180,-122],[181,-134],[182,-146]],
+    "crest": [3.4,3.2,3],
+    "toe": [3,2.8,2.6],
+    "hw": [1.5,1.5,1.5],
+    "side": [1.25,1.25,1.25],
+    "why": "A short rubble jetty on the basin's west side, between the marina and the resort beach: it closes the basin from the west and leaves the mouth facing south-west. Its root meets the apron at the apron's height (+3.4) and its crest falls to +3.0 at its head."
+   }
+  ],
+  "streams": [
+   {
+    "id": "stream.cmb_brook",
+    "name": "the brook",
+    "pts": [[42,154],[46,130],[44,106],[50,82],[56,58],[60,34],[64,10],[70,-14],[72,-29],[76,-50],[82,-75],[86,-100],[90,-125],[95,-145],[102,-163]],
+    "z": [4.35,4.2,4.05,3.9,3.7,3.5,3.3,3.05,2.9,2.6,2.2,1.7,1.1,0.5,-0.4],
+    "w": [2.2,2.3,2.3,2.4,2.5,2.6,2.7,2.9,3,3.1,3.3,3.6,3.8,4.2,4.6],
+    "depth": [0.25,0.25,0.26,0.28,0.28,0.3,0.3,0.3,0.3,0.3,0.3,0.32,0.3,0.25,0.2],
+    "banks": {"left":[["slope",2,0.6],["flat",3],["slope",3,7]],"right":[["slope",2,0.6],["flat",3],["slope",3,7]]},
+    "source": "pond.cmb_brook_pond",
+    "culvert": {"id":"culvert.cmb_brook","at":[72,-28.6],"under":"road.cmb.rocky_point_road"},
+    "why": "Out of the brook pond on the course, south across the first hole's fairway, under the road to Rocky Point by a culvert, and down a wooded valley between the village and the resort to the bay's head.",
+    "length_m": 324.2,
+    "head": {"at":[42,154],"from":"pond.cmb_brook_pond's outlet","bed":4.35,"ground":4.385,"level":4.6},
+    "mouth": {
+     "at": [102,-163],
+     "into": "the bay head, over its gravel beach (coast.cmb_bay_head)",
+     "bed": -0.4,
+     "ground": -0.701,
+     "what": "bed: the brook's own bed (its last z); ground: the texture there, where the beach takes the brook"
+    },
+    "head_of_tide": {
+     "at": [82,-75],
+     "ground": 2.212,
+     "rule": "where the brook's bed falls below the spring high (+2.2): above it the brook is fresh at every tide"
+    },
+    "fresh_reach_m": 233.6,
+    "tidal_reach_m": 90.6,
+    "level": {
+     "rule": "the brook's water stands its depth over its bed (still water, ADR 0046) from its head to where the sea takes it (level -2.1 and below)",
+     "head": 4.6,
+     "culvert": 3.2,
+     "head_of_tide": 2.5,
+     "mouth": -0.2
+    }
+   }
+  ],
+  "ponds": [
+   {
+    "id": "pond.cmb_brook_pond",
+    "name": "the brook pond",
+    "kind": "spring pond (the course's water hazard)",
+    "c": [42,172],
+    "r": [26,16],
+    "rot": 0,
+    "surface": 4.6,
+    "bed": 3.2,
+    "shoulder": 2,
+    "bank": 0.25,
+    "outlet": "stream.cmb_brook",
+    "why": "A spring pond between the first and third holes, the brook's head.",
+    "level": 4.6,
+    "above_tide": 2.4,
+    "measured": {"bed_at_centre":3.2,"still_at_centre":4.6}
+   },
+   {
+    "id": "pond.cmb_course_west",
+    "name": "the west pond",
+    "kind": "course pond",
+    "c": [-110,228],
+    "r": [18,12],
+    "rot": 0,
+    "surface": 5,
+    "bed": 3.8,
+    "shoulder": 2,
+    "bank": 0.25,
+    "why": "In front of the second hole's green: the par 3 carries over it.",
+    "level": 5,
+    "above_tide": 2.8,
+    "measured": {"bed_at_centre":3.801,"still_at_centre":5}
+   },
+   {
+    "id": "pond.cmb_course_east",
+    "name": "the east pond",
+    "kind": "course pond",
+    "c": [318,165],
+    "r": [20,13],
+    "rot": 0,
+    "surface": 5,
+    "bed": 3.8,
+    "shoulder": 2,
+    "bank": 0.25,
+    "why": "Beside the fourth hole's green, on its left.",
+    "level": 5,
+    "above_tide": 2.8,
+    "measured": {"bed_at_centre":3.801,"still_at_centre":5}
+   }
+  ]
+ },
+ "marina": {
+  "id": "marina.cmb",
+  "name": "the marina",
+  "status": "pass B: the marina whole, on the owner's ruling of call 3 (the point's lee), with the bar float at the owner's word of 10-11; its own name stays open",
+  "basin": "dredge.cmb_marina_basin",
+  "shelter": ["coast.cmb_marina_point","ridge.cmb_breakwater","ridge.cmb_jetty"],
+  "apron": "apron.cmb_marina",
+  "mouth": {
+   "at": [198,-166],
+   "faces": "SW",
+   "width_m": 50,
+   "what": "between the jetty's head and the breakwater's, 50 m apart at their crests"
+  },
+  "approach": {
+   "shape": "dredge.cmb_marina_approach",
+   "from": "the open sea at the frame's edges (every edge texel below the spring low)",
+   "to": "the mouth",
+   "what": "dredged to -6.0 from the mouth out south-west to the bay's own floor; its least depth and its steering line are measured (approach.least, approach.route)",
+   "measured": {
+    "least": -6,
+    "controlling": {"at":[187.75,-279.75],"bed":-6},
+    "from": [187.75,-279.75],
+    "to": [198.25,-166.25],
+    "length_m": 118,
+    "route": [[187.75,-279.75],[187.75,-271.75],[187.75,-263.75],[187.75,-255.75],[187.75,-247.75],[187.75,-239.75],[187.75,-231.75],[187.75,-223.75],[188.25,-215.75],[194.25,-207.75],[194.25,-199.75],[194.25,-191.75],[194.25,-183.75],[194.25,-175.75],[196.75,-167.75],[198.25,-166.25]],
+    "rule": "least: the shallowest bed a boat must cross on the best way from the open sea (every edge texel below the spring low) to the mouth; route: the steering line, the shortest way through water no shallower than that, every 16th texel and the last; controlling: the shallowest texel on it (where the bed is flat, the first from the sea)",
+    "boats": [
+     {"draught":0.5,"boats":["boat.sport_skiff"],"afloat_from":-5.5,"springs":1,"neaps":1,"reads":"every tide"},
+     {
+      "draught": 0.55,
+      "boats": ["boat.sport_skiff_twin","boat.console_skiff"],
+      "afloat_from": -5.45,
+      "springs": 1,
+      "neaps": 1,
+      "reads": "every tide"
+     },
+     {
+      "draught": 0.95,
+      "boats": ["boat.sport_skiff_mk2"],
+      "afloat_from": -5.05,
+      "springs": 1,
+      "neaps": 1,
+      "reads": "every tide"
+     },
+     {
+      "draught": 1.75,
+      "boats": ["boat.sport_fisher_convertible"],
+      "afloat_from": -4.25,
+      "springs": 1,
+      "neaps": 1,
+      "reads": "every tide"
+     },
+     {"draught":1.9,"boats":["boat.sloop_30"],"afloat_from":-4.1,"springs":1,"neaps":1,"reads":"every tide"},
+     {
+      "draught": 2.95,
+      "boats": ["boat.sport_fisher_skybridge"],
+      "afloat_from": -3.05,
+      "springs": 1,
+      "neaps": 1,
+      "reads": "every tide"
+     },
+     {
+      "draught": 4.6,
+      "boats": ["boat.sloop_88"],
+      "afloat_from": -1.4,
+      "springs": 0.72,
+      "neaps": 1,
+      "reads": "from -1.40: every tide but the bottom of the springs"
+     }
+    ]
+   }
+  },
+  "docks": [
+   {
+    "id": "dock.cmb_main_pier",
+    "kind": "a fixed pier on piles from the bulkhead",
+    "pts": [[225,-126],[225,-158]],
+    "width": 3
+   },
+   {
+    "id": "dock.cmb_t_head",
+    "kind": "a float across the main pier's head; the fuel pump and the pump-out on its north face",
+    "pts": [[202,-158],[252,-158]],
+    "width": 3
+   },
+   {
+    "id": "dock.cmb_east_pier",
+    "kind": "a float from the bulkhead: finger slips on its west side, the bar float moored along its east",
+    "pts": [[252,-126],[252,-148]],
+    "width": 2.4
+   },
+   {
+    "id": "dock.cmb_main_pier_fingers",
+    "kind": "five finger floats off the main pier's west side, 12 m long, 1 m wide",
+    "along": "dock.cmb_main_pier",
+    "side": "W",
+    "width": 1,
+    "lines": [
+     [[223.5,-128.5],[211.5,-128.5]],
+     [[223.5,-135],[211.5,-135]],
+     [[223.5,-141.5],[211.5,-141.5]],
+     [[223.5,-148],[211.5,-148]],
+     [[223.5,-154.5],[211.5,-154.5]]
+    ]
+   },
+   {
+    "id": "dock.cmb_east_pier_fingers",
+    "kind": "five finger floats off the east pier's west side, 8 m long, 1 m wide",
+    "along": "dock.cmb_east_pier",
+    "side": "W",
+    "width": 1,
+    "lines": [
+     [[250.8,-128.5],[242.8,-128.5]],
+     [[250.8,-133],[242.8,-133]],
+     [[250.8,-137.5],[242.8,-137.5]],
+     [[250.8,-142],[242.8,-142]],
+     [[250.8,-146.5],[242.8,-146.5]]
+    ]
+   },
+   {
+    "id": "dock.cmb_bar_float",
+    "name": "the bar float",
+    "kind": "a moored float, 10 m by 18 m, carrying a bar and a stage: the marina's floating performance area",
+    "along": "dock.cmb_east_pier",
+    "side": "E",
+    "pts": [[258.4,-128],[258.4,-146]],
+    "width": 10,
+    "outline": [[253.4,-146],[263.4,-146],[263.4,-128],[253.4,-128]],
+    "draught": 0.6,
+    "parts": [
+     {
+      "id": "structure.cmb_float_bar",
+      "name": "the bar",
+      "footprint": [[254.4,-132.5],[262.4,-132.5],[262.4,-128.5],[254.4,-128.5]],
+      "faces": "S",
+      "what": "the bar at the float's north end, its counter facing south over the deck to the stage"
+     },
+     {
+      "id": "structure.cmb_float_stage",
+      "name": "the stage",
+      "footprint": [[254.9,-145.5],[261.9,-145.5],[261.9,-141],[254.9,-141]],
+      "faces": "N",
+      "what": "the stage at the float's south end, facing north over the deck to the bar and the apron beyond"
+     }
+    ],
+    "ways": "from the east pier, along the float's west side; ashore by the east pier to the apron",
+    "what": "added at the owner's word: a floating performance area, a bar and a stage. The deck between them, 8.5 m by 10 m, holds the audience, and the apron looks on from above. Its east face is a berth for the bar's visitors by boat",
+    "measured": {
+     "bed": {"min":-6,"max":-6,"mean":-6,"texels":720},
+     "deck_m2": 180,
+     "water_at_spring_low": 3.8,
+     "afloat": "at every tide",
+     "rule": "bed: the texels inside the outline; water at the spring low: the spring low less the shallowest bed under it; afloat at every tide while that is more than its draught"
+    }
+   }
+  ],
+  "berths": [
+   {
+    "id": "berth.cmb_t_head_outer",
+    "name": "the T-head's outer face",
+    "kind": "alongside",
+    "dock": "dock.cmb_t_head",
+    "keel": [[206,-162],[248,-162]],
+    "length": 42,
+    "lie": [[204,-166],[250,-166],[250,-159.5],[204,-159.5]],
+    "what": "alongside the T-head's south face, just inside the mouth: the longest berth, and the visitors' berth",
+    "measured": {
+     "keel": {"deepest":-6,"shallowest":-6,"mean":-6,"shallowest_at":[206,-162],"samples":85},
+     "lie_bed": {"min":-6,"max":-6,"mean":-6,"texels":1196},
+     "way_in_least": -6,
+     "from_mouth_least": -6,
+     "boats": [
+      {
+       "draught": 0.5,
+       "boats": ["boat.sport_skiff"],
+       "afloat_from": -5.5,
+       "way_in_from": -5.5,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.55,
+       "boats": ["boat.sport_skiff_twin","boat.console_skiff"],
+       "afloat_from": -5.45,
+       "way_in_from": -5.45,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.95,
+       "boats": ["boat.sport_skiff_mk2"],
+       "afloat_from": -5.05,
+       "way_in_from": -5.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.75,
+       "boats": ["boat.sport_fisher_convertible"],
+       "afloat_from": -4.25,
+       "way_in_from": -4.25,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.9,
+       "boats": ["boat.sloop_30"],
+       "afloat_from": -4.1,
+       "way_in_from": -4.1,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 2.95,
+       "boats": ["boat.sport_fisher_skybridge"],
+       "afloat_from": -3.05,
+       "way_in_from": -3.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 4.6,
+       "boats": ["boat.sloop_88"],
+       "afloat_from": -1.4,
+       "way_in_from": -1.4,
+       "springs": 0.72,
+       "neaps": 1,
+       "reads": "from -1.40: every tide but the bottom of the springs"
+      }
+     ]
+    }
+   },
+   {
+    "id": "berth.cmb_main_pier_west",
+    "name": "the main pier's west slips",
+    "kind": "slips",
+    "dock": "dock.cmb_main_pier_fingers",
+    "slips": 4,
+    "slip": [15,5.5],
+    "keels": [
+     [[223,-131.75],[208,-131.75]],
+     [[223,-138.25],[208,-138.25]],
+     [[223,-144.75],[208,-144.75]],
+     [[223,-151.25],[208,-151.25]]
+    ],
+    "lie": [[207,-155],[223.5,-155],[223.5,-128],[207,-128]],
+    "what": "four slips between the main pier's fingers, each 5.5 m clear and 15 m long",
+    "measured": {
+     "keel": {"deepest":-6,"shallowest":-6,"mean":-6,"shallowest_at":[223,-131.75],"samples":124,"slips":[-6,-6,-6,-6]},
+     "lie_bed": {"min":-6,"max":-6,"mean":-6,"texels":1782},
+     "way_in_least": -6,
+     "from_mouth_least": -6,
+     "boats": [
+      {
+       "draught": 0.5,
+       "boats": ["boat.sport_skiff"],
+       "afloat_from": -5.5,
+       "way_in_from": -5.5,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.55,
+       "boats": ["boat.sport_skiff_twin","boat.console_skiff"],
+       "afloat_from": -5.45,
+       "way_in_from": -5.45,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.95,
+       "boats": ["boat.sport_skiff_mk2"],
+       "afloat_from": -5.05,
+       "way_in_from": -5.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.75,
+       "boats": ["boat.sport_fisher_convertible"],
+       "afloat_from": -4.25,
+       "way_in_from": -4.25,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.9,
+       "boats": ["boat.sloop_30"],
+       "afloat_from": -4.1,
+       "way_in_from": -4.1,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 2.95,
+       "boats": ["boat.sport_fisher_skybridge"],
+       "afloat_from": -3.05,
+       "way_in_from": -3.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 4.6,
+       "boats": ["boat.sloop_88"],
+       "afloat_from": -1.4,
+       "way_in_from": -1.4,
+       "springs": 0.72,
+       "neaps": 1,
+       "reads": "from -1.40: every tide but the bottom of the springs"
+      }
+     ]
+    }
+   },
+   {
+    "id": "berth.cmb_main_pier_east",
+    "name": "the main pier's east side",
+    "kind": "alongside",
+    "dock": "dock.cmb_main_pier",
+    "keel": [[229,-130],[229,-154]],
+    "length": 24,
+    "lie": [[226.5,-156],[232.5,-156],[232.5,-128],[226.5,-128]],
+    "what": "alongside the main pier's east side",
+    "measured": {
+     "keel": {"deepest":-6,"shallowest":-6,"mean":-6,"shallowest_at":[229,-130],"samples":49},
+     "lie_bed": {"min":-6,"max":-6,"mean":-6,"texels":672},
+     "way_in_least": -6,
+     "from_mouth_least": -6,
+     "boats": [
+      {
+       "draught": 0.5,
+       "boats": ["boat.sport_skiff"],
+       "afloat_from": -5.5,
+       "way_in_from": -5.5,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.55,
+       "boats": ["boat.sport_skiff_twin","boat.console_skiff"],
+       "afloat_from": -5.45,
+       "way_in_from": -5.45,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.95,
+       "boats": ["boat.sport_skiff_mk2"],
+       "afloat_from": -5.05,
+       "way_in_from": -5.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.75,
+       "boats": ["boat.sport_fisher_convertible"],
+       "afloat_from": -4.25,
+       "way_in_from": -4.25,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.9,
+       "boats": ["boat.sloop_30"],
+       "afloat_from": -4.1,
+       "way_in_from": -4.1,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 2.95,
+       "boats": ["boat.sport_fisher_skybridge"],
+       "afloat_from": -3.05,
+       "way_in_from": -3.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 4.6,
+       "boats": ["boat.sloop_88"],
+       "afloat_from": -1.4,
+       "way_in_from": -1.4,
+       "springs": 0.72,
+       "neaps": 1,
+       "reads": "from -1.40: every tide but the bottom of the springs"
+      }
+     ]
+    }
+   },
+   {
+    "id": "berth.cmb_fuel_berth",
+    "name": "the fuel berth",
+    "kind": "alongside",
+    "dock": "dock.cmb_t_head",
+    "keel": [[235,-154],[249,-154]],
+    "length": 14,
+    "lie": [[233,-156.5],[251,-156.5],[251,-151.5],[233,-151.5]],
+    "what": "alongside the T-head's north face east of the main pier: the fuel pump and the pump-out; boats come and go",
+    "measured": {
+     "keel": {"deepest":-6,"shallowest":-6,"mean":-6,"shallowest_at":[235,-154],"samples":29},
+     "lie_bed": {"min":-6,"max":-6,"mean":-6,"texels":360},
+     "way_in_least": -6,
+     "from_mouth_least": -6,
+     "boats": [
+      {
+       "draught": 0.5,
+       "boats": ["boat.sport_skiff"],
+       "afloat_from": -5.5,
+       "way_in_from": -5.5,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.55,
+       "boats": ["boat.sport_skiff_twin","boat.console_skiff"],
+       "afloat_from": -5.45,
+       "way_in_from": -5.45,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.95,
+       "boats": ["boat.sport_skiff_mk2"],
+       "afloat_from": -5.05,
+       "way_in_from": -5.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.75,
+       "boats": ["boat.sport_fisher_convertible"],
+       "afloat_from": -4.25,
+       "way_in_from": -4.25,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.9,
+       "boats": ["boat.sloop_30"],
+       "afloat_from": -4.1,
+       "way_in_from": -4.1,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 2.95,
+       "boats": ["boat.sport_fisher_skybridge"],
+       "afloat_from": -3.05,
+       "way_in_from": -3.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 4.6,
+       "boats": ["boat.sloop_88"],
+       "afloat_from": -1.4,
+       "way_in_from": -1.4,
+       "springs": 0.72,
+       "neaps": 1,
+       "reads": "from -1.40: every tide but the bottom of the springs"
+      }
+     ]
+    }
+   },
+   {
+    "id": "berth.cmb_east_pier_west",
+    "name": "the east pier's west slips",
+    "kind": "slips",
+    "dock": "dock.cmb_east_pier_fingers",
+    "slips": 4,
+    "slip": [8,3.5],
+    "keels": [
+     [[250.5,-130.75],[244,-130.75]],
+     [[250.5,-135.25],[244,-135.25]],
+     [[250.5,-139.75],[244,-139.75]],
+     [[250.5,-144.25],[244,-144.25]]
+    ],
+    "lie": [[242.5,-147],[250.8,-147],[250.8,-128],[242.5,-128]],
+    "what": "four slips on the east pier's west side, each 3.5 m clear and 8 m long",
+    "measured": {
+     "keel": {"deepest":-6,"shallowest":-6,"mean":-6,"shallowest_at":[250.5,-130.75],"samples":56,"slips":[-6,-6,-6,-6]},
+     "lie_bed": {"min":-6,"max":-6,"mean":-6,"texels":646},
+     "way_in_least": -6,
+     "from_mouth_least": -6,
+     "boats": [
+      {
+       "draught": 0.5,
+       "boats": ["boat.sport_skiff"],
+       "afloat_from": -5.5,
+       "way_in_from": -5.5,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.55,
+       "boats": ["boat.sport_skiff_twin","boat.console_skiff"],
+       "afloat_from": -5.45,
+       "way_in_from": -5.45,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.95,
+       "boats": ["boat.sport_skiff_mk2"],
+       "afloat_from": -5.05,
+       "way_in_from": -5.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.75,
+       "boats": ["boat.sport_fisher_convertible"],
+       "afloat_from": -4.25,
+       "way_in_from": -4.25,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.9,
+       "boats": ["boat.sloop_30"],
+       "afloat_from": -4.1,
+       "way_in_from": -4.1,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 2.95,
+       "boats": ["boat.sport_fisher_skybridge"],
+       "afloat_from": -3.05,
+       "way_in_from": -3.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 4.6,
+       "boats": ["boat.sloop_88"],
+       "afloat_from": -1.4,
+       "way_in_from": -1.4,
+       "springs": 0.72,
+       "neaps": 1,
+       "reads": "from -1.40: every tide but the bottom of the springs"
+      }
+     ]
+    }
+   },
+   {
+    "id": "berth.cmb_bar_float_east",
+    "name": "the bar float's east face",
+    "kind": "alongside",
+    "dock": "dock.cmb_bar_float",
+    "keel": [[266.2,-129],[266.2,-145]],
+    "length": 16,
+    "lie": [[263.6,-146],[269,-146],[269,-128],[263.6,-128]],
+    "what": "alongside the bar float's east face, over the foot of the basin's east side slope: the bar's visitors' berth, reached from the south",
+    "measured": {
+     "keel": {"deepest":-6,"shallowest":-5.42,"mean":-5.841,"shallowest_at":[266.2,-129],"samples":33},
+     "lie_bed": {"min":-6,"max":-4.536,"mean":-5.717,"texels":396},
+     "way_in_least": -6,
+     "from_mouth_least": -6,
+     "boats": [
+      {
+       "draught": 0.5,
+       "boats": ["boat.sport_skiff"],
+       "afloat_from": -4.92,
+       "way_in_from": -5.5,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.55,
+       "boats": ["boat.sport_skiff_twin","boat.console_skiff"],
+       "afloat_from": -4.87,
+       "way_in_from": -5.45,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 0.95,
+       "boats": ["boat.sport_skiff_mk2"],
+       "afloat_from": -4.47,
+       "way_in_from": -5.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.75,
+       "boats": ["boat.sport_fisher_convertible"],
+       "afloat_from": -3.67,
+       "way_in_from": -4.25,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 1.9,
+       "boats": ["boat.sloop_30"],
+       "afloat_from": -3.52,
+       "way_in_from": -4.1,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 2.95,
+       "boats": ["boat.sport_fisher_skybridge"],
+       "afloat_from": -2.47,
+       "way_in_from": -3.05,
+       "springs": 1,
+       "neaps": 1,
+       "reads": "every tide"
+      },
+      {
+       "draught": 4.6,
+       "boats": ["boat.sloop_88"],
+       "afloat_from": -0.82,
+       "way_in_from": -1.4,
+       "springs": 0.62,
+       "neaps": 0.81,
+       "reads": "from -0.82: part of every tide, neaps too"
+      }
+     ]
+    }
+   }
+  ],
+  "ashore": [
+   {
+    "id": "structure.cmb_marina_office",
+    "lot": "lot.cmb_marina_office",
+    "what": "the harbourmaster's office, showers and a chandlery, at the apron's west end by the drive"
+   },
+   {
+    "id": "structure.cmb_marina_shed",
+    "lot": "lot.cmb_marina_shed",
+    "what": "the boat shed and workshop, its doors to the apron"
+   },
+   {
+    "id": "yard.cmb_marina_parking",
+    "poly": [[206,-122],[233,-122],[233,-106],[206,-106]],
+    "what": "the car park, on the apron between the office and the shed"
+   },
+   {
+    "id": "yard.cmb_marina_hard",
+    "poly": [[262,-123],[284,-123],[284,-106],[262,-106]],
+    "what": "hard standing for boats ashore, east of the shed: the room for the business (boats laid up, and the yard's growth)"
+   },
+   {
+    "id": "slip.cmb_launch_ramp",
+    "grading": "slip.cmb_launch_ramp",
+    "track": "drive.cmb_ramp_track",
+    "what": "the launch ramp on the resort beach's east end, in the jetty's lee, its track from the apron"
+   }
+  ],
+  "business": "part 1 draws only what stands; the business (who runs the marina, its berth fees, its staff) is the game's, and the hard standing and the shed's yard are its room to grow",
+  "measured": {
+   "basin": {"min":-6,"max":0.394,"mean":-5.821,"texels":13360},
+   "berths_water": {"min":-6,"max":-4.536,"mean":-5.978,"texels":5052},
+   "sea_edge_texels": 823,
+   "rule": "a berth's bed is the shallowest on its keel line (for slips, on every slip's); its lie is the water it takes; its way in is the least bed on the best way from the open sea at the frame's edges (minimax over 8 neighbours), from the mouth the least bed from the mouth; basin: the dredge's outline, the jetty's and the breakwater's toes inside it; berths_water: the berths' lies together"
+  }
+ },
+ "roads": [
+  {
+   "id": "road.cmb.route_91",
+   "name": "Route 91",
+   "cls": "route",
+   "surface": "asphalt",
+   "width": 5.8,
+   "pts": [[-181,-318],[-186,-280],[-188.6,-260],[-191,-240],[-193.6,-220],[-195.8,-200],[-197.6,-180],[-198.9,-160],[-199.8,-140],[-200.2,-120],[-200.3,-100],[-200,-60],[-199,-20],[-197.5,20],[-196.8,60],[-198,100],[-201.5,140],[-206,180],[-210,220],[-212.5,260],[-213.2,290]],
+   "grade": [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]
+  },
+  {
+   "id": "road.cmb.rocky_point_road",
+   "name": "the road to Rocky Point",
+   "cls": "road",
+   "surface": "asphalt",
+   "width": 5.8,
+   "pts": [[-200.3,-110],[-190,-100],[-176,-88],[-160,-76],[-140,-64],[-115,-54],[-85,-46],[-55,-40],[-25,-36],[5,-33],[35,-31],[60,-30],[85,-27],[110,-19],[135,-8],[160,0],[190,5],[220,8],[250,10],[280,12],[310,14],[340,16],[380,18],[420,20]],
+   "grade": [6,6,6,6,6,6,6,6,6,6,6,5.8,5.8,6,6,6,6,6,6,6,6,6,6,6]
+  }
+ ],
+ "junctions": [
+  {
+   "id": "junction.cmb_fork",
+   "name": "the fork",
+   "at": [-200.3,-110],
+   "roads": ["road.cmb.route_91","road.cmb.rocky_point_road"],
+   "form": "a Y: the road to Rocky Point bears off north-east from Route 91, the store in its south angle",
+   "why": "170 m north of the seam, past the town's street end: far enough north for the village to stand along the road, near enough that the road reaches the resort before the course."
+  }
+ ],
+ "lanes": [
+  {
+   "id": "lane.cmb_south_farm_lane",
+   "name": "the south farm lane",
+   "cls": "lane",
+   "surface": "gravel",
+   "width": 3.5,
+   "pts": [[-199.35,-150],[-230,-150],[-257,-150]],
+   "leaves": "road.cmb.route_91",
+   "to": "lot.cmb_south_farmhouse"
+  },
+  {
+   "id": "lane.cmb_north_farm_lane",
+   "name": "the north farm lane",
+   "cls": "lane",
+   "surface": "gravel",
+   "width": 3.5,
+   "pts": [[-200.1,124],[-220,123.5],[-235,122]],
+   "leaves": "road.cmb.route_91",
+   "to": "lot.cmb_north_farmhouse"
+  }
+ ],
+ "drives": [
+  {
+   "id": "drive.cmb_store_forecourt",
+   "name": "the store's forecourt",
+   "cls": "drive",
+   "surface": "asphalt",
+   "width": 12,
+   "pts": [[-200.16,-122],[-185,-122]],
+   "leaves": "road.cmb.route_91",
+   "to": "lot.cmb_store",
+   "what": "the gas bar's forecourt, between Route 91 and the store's porch"
+  },
+  {
+   "id": "drive.cmb_hall_drive",
+   "name": "the hall's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 4,
+   "pts": [[-150,-70],[-150,-56]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_hall"
+  },
+  {
+   "id": "drive.cmb_church_walk",
+   "name": "the church walk",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-98,-49.47],[-98,-39]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_church"
+  },
+  {
+   "id": "drive.cmb_house_1_drive",
+   "name": "house 1's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-120,-56],[-120,-76]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_house_1"
+  },
+  {
+   "id": "drive.cmb_house_2_drive",
+   "name": "house 2's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-70,-43],[-70,-60]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_house_2"
+  },
+  {
+   "id": "drive.cmb_house_3_drive",
+   "name": "house 3's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-40,-38],[-40,-20]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_house_3"
+  },
+  {
+   "id": "drive.cmb_house_4_drive",
+   "name": "house 4's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-10,-34.5],[-10,-54]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_house_4"
+  },
+  {
+   "id": "drive.cmb_house_5_drive",
+   "name": "house 5's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[20,-32],[20,-16]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_house_5"
+  },
+  {
+   "id": "drive.cmb_route_house_1_drive",
+   "name": "route house 1's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-192.04,-232],[-176,-232]],
+   "leaves": "road.cmb.route_91",
+   "to": "lot.cmb_route_house_1"
+  },
+  {
+   "id": "drive.cmb_route_house_2_drive",
+   "name": "route house 2's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-195.98,-198],[-218,-198]],
+   "leaves": "road.cmb.route_91",
+   "to": "lot.cmb_route_house_2"
+  },
+  {
+   "id": "drive.cmb_south_barn_track",
+   "name": "the south farm's barn track",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-254,-150],[-254,-164],[-268,-178],[-296,-178]],
+   "leaves": "lane.cmb_south_farm_lane",
+   "to": "lot.cmb_south_farm_barn",
+   "what": "round the farmhouse to the barn's doors"
+  },
+  {
+   "id": "drive.cmb_north_barn_track",
+   "name": "the north farm's barn track",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[-232,123],[-232,133],[-272,133],[-272,139]],
+   "leaves": "lane.cmb_north_farm_lane",
+   "to": "lot.cmb_north_farm_barn",
+   "what": "past the farmhouse's north side to the barn's doors"
+  },
+  {
+   "id": "drive.cmb_resort_drive",
+   "name": "the resort's drive",
+   "cls": "drive",
+   "surface": "asphalt",
+   "width": 5,
+   "pts": [[232,8.8],[232,-20],[226,-40],[225,-46]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_resort_lodge",
+   "what": "from the resort's gate on the road to the lodge's porch on its north side: the guests' way to the road"
+  },
+  {
+   "id": "drive.cmb_club_drive",
+   "name": "the club's drive",
+   "cls": "drive",
+   "surface": "asphalt",
+   "width": 5,
+   "pts": [[232,8.8],[234,30],[240,52]],
+   "leaves": "road.cmb.rocky_point_road",
+   "to": "lot.cmb_clubhouse",
+   "what": "from the road, across from the resort's gate, to the clubhouse"
+  },
+  {
+   "id": "drive.cmb_marina_drive",
+   "name": "the marina's drive",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 4,
+   "pts": [[228.4,-32],[204,-38],[184,-46],[182,-70],[186,-92],[190,-104]],
+   "leaves": "drive.cmb_resort_drive",
+   "to": "lot.cmb_marina_office",
+   "what": "off the resort's drive, west of the lodge and down the bank to the apron"
+  },
+  {
+   "id": "drive.cmb_cottage_lane",
+   "name": "the cottage lane",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 3,
+   "pts": [[228.6,-23],[262,-32],[292,-40],[310,-48],[314,-62],[309,-78],[304,-90]],
+   "leaves": "drive.cmb_resort_drive",
+   "to": ["lot.cmb_resort_cottage_1","lot.cmb_resort_cottage_2","lot.cmb_resort_cottage_3","lot.cmb_resort_cottage_4"],
+   "what": "off the resort's drive, behind the four cottages"
+  },
+  {
+   "id": "drive.cmb_ramp_track",
+   "name": "the ramp track",
+   "cls": "drive",
+   "surface": "gravel",
+   "width": 4,
+   "pts": [[184,-110],[172,-111],[166,-113]],
+   "leaves": "apron.cmb_marina",
+   "to": "slip.cmb_launch_ramp",
+   "what": "from the apron's west end to the launch ramp's head"
+  }
+ ],
+ "paths": [
+  {
+   "id": "path.cmb_beach_walk",
+   "name": "the beach walk",
+   "cls": "footpath",
+   "pts": [[193,-62],[178,-66],[160,-80],[142,-98],[130,-114],[126,-126]],
+   "what": "the guests' way to the beach: from the lodge's west end down the grassed bank to the sand"
+  },
+  {
+   "id": "path.cmb_marina_steps",
+   "name": "the marina steps",
+   "cls": "footpath",
+   "pts": [[225,-69],[225,-80],[222,-92],[222,-104]],
+   "what": "the guests' way to the marina: steps down the bank from the lodge's verandah to the apron"
+  },
+  {
+   "id": "path.cmb_club_walk",
+   "name": "the club walk",
+   "cls": "footpath",
+   "pts": [[218,-46],[220,-24],[224,4],[226,14],[232,40],[236,52]],
+   "what": "the guests' way to the course: beside the drive to the gate, across the road, to the clubhouse"
+  },
+  {
+   "id": "path.cmb_cottage_walk",
+   "name": "the cottage walk",
+   "cls": "footpath",
+   "pts": [[257,-74],[280,-78],[300,-75.5],[312,-70],[318,-61.5],[326,-61],[330,-70],[324,-91],[312,-92],[304,-104],[296,-105]],
+   "what": "along the cottages' fronts from the lodge's lawn"
+  },
+  {
+   "id": "path.cmb_brook_path",
+   "name": "the brook path",
+   "cls": "footpath",
+   "pts": [[78.88,-27.69],[82.84,-48.51],[88.86,-73.63],[92.91,-98.89],[96.86,-123.63],[101.79,-143.3]],
+   "what": "down the brook's east bank, 7 m off its line, from the road to the bay head"
+  },
+  {
+   "id": "path.cmb_wood_path",
+   "name": "the wood path",
+   "cls": "footpath",
+   "pts": [[5,-33],[12,-80],[22,-140],[30,-190],[36,-232],[40,-246]],
+   "what": "from the road south through the shore wood to the north beach's bank top"
+  },
+  {
+   "id": "path.cmb_cart_path",
+   "name": "the cart path",
+   "cls": "cart path",
+   "pts": [[232,30],[216,46],[214,80],[220,112],[196,132],[120,132],[20,134],[-70,132],[-88,140],[-90,196],[-72,222],[-40,226],[60,224],[200,230],[282,226],[288,200],[287,150],[292,124],[262,114],[250,76]],
+   "what": "round the four holes from the clubhouse and back, in the rough inside their loop"
+  }
+ ],
+ "grading": [
+  {
+   "id": "road.cmb.route_91.bed",
+   "kind": "road",
+   "road": "road.cmb.route_91",
+   "bed": 9,
+   "side": 2.5,
+   "keep": 0.12,
+   "fillReach": 30
+  },
+  {
+   "id": "road.cmb.rocky_point_road.bed",
+   "kind": "road",
+   "road": "road.cmb.rocky_point_road",
+   "bed": 9,
+   "side": 2.5,
+   "keep": 0.12,
+   "fillReach": 30
+  },
+  {
+   "id": "apron.cmb_marina",
+   "kind": "pad",
+   "outline": [[182,-126],[286,-126],[286,-104],[182,-104]],
+   "z": 3.4,
+   "side": 2,
+   "reach": 14,
+   "fill": false,
+   "why": "the marina's apron, filled level at +3.4 behind a bulkhead along y -126 from the jetty's root (x 182) to the marina point (x 286); its face and its two returns are the only walls in the ground (the checker's step check spares them)"
+  },
+  {
+   "id": "slip.cmb_launch_ramp",
+   "kind": "slip",
+   "from": [166,-114],
+   "to": [166,-158],
+   "z": [3.2,-2.4],
+   "w": 5,
+   "shoulder": 3,
+   "why": "the launch ramp: concrete, 5 m wide, 1 in 7.9 down the resort beach's east end in the jetty's lee, from the bank (+3.2) to -2.4, below the spring low; it meets the beach at both ends, and between them stands up to 1.5 m over the beach on fill, its sides eased over 3 m"
+  },
+  {
+   "id": "lot.cmb_store",
+   "kind": "pad",
+   "outline": [[-186,-131],[-174,-131],[-174,-113],[-186,-113]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_hall",
+   "kind": "pad",
+   "outline": [[-162,-57],[-138,-57],[-138,-43],[-162,-43]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_church",
+   "kind": "pad",
+   "outline": [[-104,-40],[-92,-40],[-92,-20],[-104,-20]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_house_1",
+   "kind": "pad",
+   "outline": [[-126,-85],[-114,-85],[-114,-75],[-126,-75]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_house_2",
+   "kind": "pad",
+   "outline": [[-76,-69],[-64,-69],[-64,-59],[-76,-59]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_house_3",
+   "kind": "pad",
+   "outline": [[-46,-21],[-34,-21],[-34,-11],[-46,-11]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_house_4",
+   "kind": "pad",
+   "outline": [[-16,-63],[-4,-63],[-4,-53],[-16,-53]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_house_5",
+   "kind": "pad",
+   "outline": [[14,-17],[26,-17],[26,-7],[14,-7]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_route_house_1",
+   "kind": "pad",
+   "outline": [[-177,-238],[-167,-238],[-167,-226],[-177,-226]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_route_house_2",
+   "kind": "pad",
+   "outline": [[-227,-204],[-217,-204],[-217,-192],[-227,-192]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_south_farmhouse",
+   "kind": "pad",
+   "outline": [[-267,-156.5],[-257,-156.5],[-257,-143.5],[-267,-143.5]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_south_farm_barn",
+   "kind": "pad",
+   "outline": [[-310,-175.5],[-282,-175.5],[-282,-160.5],[-310,-160.5]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_north_farmhouse",
+   "kind": "pad",
+   "outline": [[-245,115.5],[-235,115.5],[-235,128.5],[-245,128.5]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_north_farm_barn",
+   "kind": "pad",
+   "outline": [[-285,139],[-259,139],[-259,153],[-285,153]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_resort_lodge",
+   "kind": "pad",
+   "outline": [[192,-70],[258,-70],[258,-46],[192,-46]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_resort_cottage_1",
+   "kind": "pad",
+   "outline": [[292.5,-102.5],[303.5,-102.5],[303.5,-93.5],[292.5,-93.5]],
+   "z": 5.1,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_resort_cottage_2",
+   "kind": "pad",
+   "outline": [[312.5,-88.5],[323.5,-88.5],[323.5,-79.5],[312.5,-79.5]],
+   "z": 5.95,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_resort_cottage_3",
+   "kind": "pad",
+   "outline": [[294.5,-72.5],[305.5,-72.5],[305.5,-63.5],[294.5,-63.5]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_resort_cottage_4",
+   "kind": "pad",
+   "outline": [[320.5,-58.5],[331.5,-58.5],[331.5,-49.5],[320.5,-49.5]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  },
+  {
+   "id": "lot.cmb_marina_office",
+   "kind": "pad",
+   "outline": [[188,-117.5],[204,-117.5],[204,-106.5],[188,-106.5]],
+   "z": 3.4,
+   "side": 2,
+   "reach": 8,
+   "fill": false
+  },
+  {
+   "id": "lot.cmb_marina_shed",
+   "kind": "pad",
+   "outline": [[235,-120],[261,-120],[261,-104],[235,-104]],
+   "z": 3.4,
+   "side": 2,
+   "reach": 8,
+   "fill": false
+  },
+  {
+   "id": "lot.cmb_clubhouse",
+   "kind": "pad",
+   "outline": [[222,52],[258,52],[258,72],[222,72]],
+   "z": 6,
+   "side": 2,
+   "reach": 8,
+   "fill": true
+  }
+ ],
+ "lots": {
+  "rule": "a lot is its building's footprint (w x d, metres, before facing), its facing (the side its door looks to), its stand point `at` and its pad height `z` (the footprint and a metre round it graded level, its sides at 1 in 2 out to 8 m; the marina's lots stand on the apron and never fill toward the basin); pass A placed them, pass B settled each with its drive or lane (drives[].to), clear of every road, lane and drive but its own",
+  "village": [
+   {
+    "id": "lot.cmb_store",
+    "name": "the store",
+    "z": 6,
+    "at": [-180,-122],
+    "size": [16,10],
+    "faces": "W",
+    "building": {"id":"structure.cmb_store","kind":"a general store and gas bar, its porch to Route 91"},
+    "why": "In the fork's south angle, facing Route 91.",
+    "footprint": [[-185,-130],[-175,-130],[-175,-114],[-185,-114]],
+    "ways": ["drive.cmb_store_forecourt"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":640},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 10.7,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_hall",
+    "name": "the hall",
+    "z": 6,
+    "at": [-150,-50],
+    "size": [22,12],
+    "faces": "S",
+    "building": {"id":"structure.cmb_hall","kind":"a community hall, one storey, clapboard"},
+    "why": "On the road's north side, the first building past the fork.",
+    "footprint": [[-161,-56],[-139,-56],[-139,-44],[-161,-44]],
+    "ways": ["drive.cmb_hall_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":1056},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 3.89,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_church",
+    "name": "the church",
+    "z": 6,
+    "at": [-98,-30],
+    "size": [10,18],
+    "faces": "S",
+    "building": {"id":"structure.cmb_church","kind":"a white wooden church, its steeple to the road"},
+    "why": "North of the road, on the village's rise.",
+    "footprint": [[-103,-39],[-93,-39],[-93,-21],[-103,-21]],
+    "ways": ["drive.cmb_church_walk"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":720},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 5.75,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_house_1",
+    "name": "house 1",
+    "z": 6,
+    "at": [-120,-80],
+    "size": [10,8],
+    "faces": "N",
+    "building": {"id":"structure.cmb_house_1","kind":"a storey-and-a-half house"},
+    "footprint": [[-125,-84],[-115,-84],[-115,-76],[-125,-76]],
+    "ways": ["drive.cmb_house_1_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":320},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 14.25,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_house_2",
+    "name": "house 2",
+    "z": 6,
+    "at": [-70,-64],
+    "size": [10,8],
+    "faces": "N",
+    "building": {"id":"structure.cmb_house_2","kind":"a storey-and-a-half house"},
+    "footprint": [[-75,-68],[-65,-68],[-65,-60],[-75,-60]],
+    "ways": ["drive.cmb_house_2_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":320},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 12.96,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_house_3",
+    "name": "house 3",
+    "z": 6,
+    "at": [-40,-16],
+    "size": [10,8],
+    "faces": "S",
+    "building": {"id":"structure.cmb_house_3","kind":"a bungalow"},
+    "footprint": [[-45,-20],[-35,-20],[-35,-12],[-45,-12]],
+    "ways": ["drive.cmb_house_3_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":320},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 14.16,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_house_4",
+    "name": "house 4",
+    "z": 6,
+    "at": [-10,-58],
+    "size": [10,8],
+    "faces": "N",
+    "building": {"id":"structure.cmb_house_4","kind":"a two-storey house"},
+    "footprint": [[-15,-62],[-5,-62],[-5,-54],[-15,-54]],
+    "ways": ["drive.cmb_house_4_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":320},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 16.1,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_house_5",
+    "name": "house 5",
+    "z": 6,
+    "at": [20,-12],
+    "size": [10,8],
+    "faces": "S",
+    "building": {"id":"structure.cmb_house_5","kind":"a storey-and-a-half house"},
+    "footprint": [[15,-16],[25,-16],[25,-8],[15,-8]],
+    "ways": ["drive.cmb_house_5_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":320},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 12.64,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   }
+  ],
+  "route": [
+   {
+    "id": "lot.cmb_route_house_1",
+    "name": "route house 1",
+    "z": 6,
+    "at": [-172,-232],
+    "size": [10,8],
+    "faces": "W",
+    "building": {"id":"structure.cmb_route_house_1","kind":"a bungalow facing Route 91"},
+    "footprint": [[-176,-237],[-168,-237],[-168,-227],[-176,-227]],
+    "ways": ["drive.cmb_route_house_1_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":320},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.route_91",
+      "m": 12.36,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_route_house_2",
+    "name": "route house 2",
+    "z": 6,
+    "at": [-222,-198],
+    "size": [10,8],
+    "faces": "E",
+    "building": {"id":"structure.cmb_route_house_2","kind":"a storey-and-a-half house facing Route 91"},
+    "footprint": [[-226,-203],[-218,-203],[-218,-193],[-226,-193]],
+    "ways": ["drive.cmb_route_house_2_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":320},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.route_91",
+      "m": 18.53,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   }
+  ],
+  "farms": [
+   {
+    "id": "lot.cmb_south_farmhouse",
+    "name": "the south farmhouse",
+    "z": 6,
+    "at": [-262,-150],
+    "size": [11,8],
+    "faces": "E",
+    "building": {"id":"structure.cmb_south_farmhouse","kind":"a two-storey farmhouse"},
+    "footprint": [[-266,-155.5],[-258,-155.5],[-258,-144.5],[-266,-144.5]],
+    "ways": ["lane.cmb_south_farm_lane"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":352},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "drive.cmb_south_barn_track",
+      "m": 2.5,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_south_farm_barn",
+    "name": "the south farm's barn",
+    "z": 6,
+    "at": [-296,-168],
+    "size": [26,13],
+    "faces": "S",
+    "building": {"id":"structure.cmb_south_farm_barn","kind":"a gambrel barn"},
+    "footprint": [[-309,-174.5],[-283,-174.5],[-283,-161.5],[-309,-161.5]],
+    "ways": ["drive.cmb_south_barn_track"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":1352},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "lane.cmb_south_farm_lane",
+      "m": 26.68,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_north_farmhouse",
+    "name": "the north farmhouse",
+    "z": 6,
+    "at": [-240,122],
+    "size": [11,8],
+    "faces": "E",
+    "building": {"id":"structure.cmb_north_farmhouse","kind":"a two-storey farmhouse"},
+    "footprint": [[-244,116.5],[-236,116.5],[-236,127.5],[-244,127.5]],
+    "ways": ["lane.cmb_north_farm_lane"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":352},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "drive.cmb_north_barn_track",
+      "m": 2.5,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_north_farm_barn",
+    "name": "the north farm's barn",
+    "z": 6,
+    "at": [-272,146],
+    "size": [24,12],
+    "faces": "S",
+    "building": {"id":"structure.cmb_north_farm_barn","kind":"a barn and silo"},
+    "why": "Pass B moved it 4 m west and 8 m north of pass A's (-268, 138), so its track passes the farmhouse's north side with room.",
+    "footprint": [[-284,140],[-260,140],[-260,152],[-284,152]],
+    "ways": ["drive.cmb_north_barn_track"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":1152},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "lane.cmb_north_farm_lane",
+      "m": 29.06,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   }
+  ],
+  "resort": [
+   {
+    "id": "lot.cmb_resort_lodge",
+    "name": "the resort's lodge",
+    "z": 6,
+    "at": [225,-58],
+    "size": [64,22],
+    "faces": "S",
+    "building": {"id":"structure.cmb_resort_lodge","kind":"the resort's main building: three storeys, a verandah to the bay"},
+    "why": "On the bank top over the marina, facing south across the bay; its gate on the road, the clubhouse across it.",
+    "footprint": [[193,-69],[257,-69],[257,-47],[193,-47]],
+    "ways": ["drive.cmb_resort_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":5632},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "drive.cmb_marina_drive",
+      "m": 2.27,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_resort_cottage_1",
+    "name": "cottage 1",
+    "z": 5.1,
+    "at": [298,-98],
+    "size": [9,7],
+    "faces": "S",
+    "building": {"id":"structure.cmb_resort_cottage_1","kind":"a guest cottage"},
+    "footprint": [[293.5,-101.5],[302.5,-101.5],[302.5,-94.5],[293.5,-94.5]],
+    "ways": ["drive.cmb_cottage_lane"],
+    "measured": {
+     "ground_at": 5.1,
+     "footprint": {"min":5.1,"max":5.1,"mean":5.1,"texels":252},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "drive.cmb_resort_drive",
+      "m": 81.43,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_resort_cottage_2",
+    "name": "cottage 2",
+    "z": 5.95,
+    "at": [318,-84],
+    "size": [9,7],
+    "faces": "S",
+    "building": {"id":"structure.cmb_resort_cottage_2","kind":"a guest cottage"},
+    "footprint": [[313.5,-87.5],[322.5,-87.5],[322.5,-80.5],[313.5,-80.5]],
+    "ways": ["drive.cmb_cottage_lane"],
+    "measured": {
+     "ground_at": 5.95,
+     "footprint": {"min":5.95,"max":5.95,"mean":5.95,"texels":252},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 91.62,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_resort_cottage_3",
+    "name": "cottage 3",
+    "z": 6,
+    "at": [300,-68],
+    "size": [9,7],
+    "faces": "S",
+    "building": {"id":"structure.cmb_resort_cottage_3","kind":"a guest cottage"},
+    "footprint": [[295.5,-71.5],[304.5,-71.5],[304.5,-64.5],[295.5,-64.5]],
+    "ways": ["drive.cmb_cottage_lane"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":252},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "drive.cmb_resort_drive",
+      "m": 70.39,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_resort_cottage_4",
+    "name": "cottage 4",
+    "z": 6,
+    "at": [326,-54],
+    "size": [9,7],
+    "faces": "S",
+    "building": {"id":"structure.cmb_resort_cottage_4","kind":"a guest cottage"},
+    "footprint": [[321.5,-57.5],[330.5,-57.5],[330.5,-50.5],[321.5,-50.5]],
+    "ways": ["drive.cmb_cottage_lane"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":252},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 62.23,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   }
+  ],
+  "marina": [
+   {
+    "id": "lot.cmb_marina_office",
+    "name": "the marina office",
+    "z": 3.4,
+    "at": [196,-112],
+    "size": [14,9],
+    "faces": "S",
+    "building": {"id":"structure.cmb_marina_office","kind":"the harbourmaster's office, showers and a chandlery"},
+    "footprint": [[189,-116.5],[203,-116.5],[203,-107.5],[189,-107.5]],
+    "ways": ["drive.cmb_marina_drive"],
+    "measured": {
+     "ground_at": 3.4,
+     "footprint": {"min":3.4,"max":3.4,"mean":3.4,"texels":504},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "drive.cmb_ramp_track",
+      "m": 3,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   },
+   {
+    "id": "lot.cmb_marina_shed",
+    "name": "the marina shed",
+    "z": 3.4,
+    "at": [248,-112],
+    "size": [24,14],
+    "faces": "S",
+    "building": {"id":"structure.cmb_marina_shed","kind":"a boat shed and workshop, its doors to the apron"},
+    "footprint": [[236,-119],[260,-119],[260,-105],[236,-105]],
+    "ways": [],
+    "measured": {
+     "ground_at": 3.4,
+     "footprint": {"min":3.4,"max":3.4,"mean":3.4,"texels":1344},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "drive.cmb_marina_drive",
+      "m": 44.01,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   }
+  ],
+  "club": [
+   {
+    "id": "lot.cmb_clubhouse",
+    "name": "the clubhouse",
+    "z": 6,
+    "at": [240,62],
+    "size": [34,18],
+    "faces": "S",
+    "building": {"id":"structure.cmb_clubhouse","kind":"the golf club's clubhouse: one storey and a deck to the 18th green"},
+    "why": "Across the road from the resort's gate, between the first tee and the 18th green.",
+    "footprint": [[223,53],[257,53],[257,71],[223,71]],
+    "ways": ["drive.cmb_club_drive"],
+    "measured": {
+     "ground_at": 6,
+     "footprint": {"min":6,"max":6,"mean":6,"texels":2448},
+     "off_pad": 0,
+     "clear_of": {
+      "id": "road.cmb.rocky_point_road",
+      "m": 39.54,
+      "rule": "the nearest road, lane or drive not its own: metres from the footprint's edge to the way's edge"
+     }
+    }
+   }
+  ]
+ },
+ "resort": {
+  "id": "resort.cmb",
+  "name": "the resort",
+  "status": "pass B; its own name stays open",
+  "main": "lot.cmb_resort_lodge",
+  "lots": ["lot.cmb_resort_lodge","lot.cmb_resort_cottage_1","lot.cmb_resort_cottage_2","lot.cmb_resort_cottage_3","lot.cmb_resort_cottage_4"],
+  "grounds": [
+   {
+    "id": "lawn.cmb_resort_front_lawn",
+    "poly": [[193,-82],[257,-82],[257,-70],[193,-70]],
+    "what": "the lawn before the lodge's verandah, to the bank's brow over the marina",
+    "area_m2": 768,
+    "ground": {"min":5.529,"max":5.896,"mean":5.715,"texels":3072}
+   },
+   {
+    "id": "lawn.cmb_resort_west_lawn",
+    "poly": [[150,-40],[188,-40],[186,-66],[160,-78],[140,-96],[126,-96],[128,-60]],
+    "what": "the west lawn, falling to the beach bank: croquet and the beach walk",
+    "area_m2": 2286,
+    "ground": {"min":5.201,"max":6,"mean":5.885,"texels":9142}
+   },
+   {
+    "id": "lawn.cmb_resort_cottage_green",
+    "poly": [[262,-40],[292,-44],[306,-54],[306,-60],[290,-70],[262,-70]],
+    "what": "the green between the lodge and the cottages",
+    "area_m2": 1054,
+    "ground": {"min":5.904,"max":6,"mean":5.994,"texels":4214}
+   }
+  ],
+  "beach": "coast.cmb_resort_beach",
+  "ways": {
+   "road": "drive.cmb_resort_drive",
+   "course": "path.cmb_club_walk",
+   "marina": "path.cmb_marina_steps",
+   "beach": "path.cmb_beach_walk",
+   "cottages": "path.cmb_cottage_walk"
+  }
+ },
+ "course": {
+  "id": "course.cmb",
+  "name": "the golf course",
+  "status": "pass B: on the owner's ruling of call 4 (holes 1 to 4 north of the road); the club's own name stays open",
+  "area": [[-150,280],[380,280],[380,40],[300,34],[160,36],[60,34],[-60,40],[-150,50]],
+  "clubhouse": "lot.cmb_clubhouse",
+  "ponds": ["pond.cmb_brook_pond","pond.cmb_course_west","pond.cmb_course_east"],
+  "drive": "drive.cmb_club_drive",
+  "cart_path": "path.cmb_cart_path",
+  "holes": [
+   {
+    "id": "hole.cmb_1",
+    "n": 1,
+    "par": 4,
+    "tee": [205,96],
+    "green": [-95,102],
+    "line": [[205,96],[120,106],[20,106],[-95,102]],
+    "width": 34,
+    "what": "west along the course's south side, over the brook",
+    "length_m": 301,
+    "in_frame_m": 301,
+    "green_ground": 6
+   },
+   {
+    "id": "hole.cmb_2",
+    "n": 2,
+    "par": 3,
+    "tee": [-125,118],
+    "green": [-112,262],
+    "line": [[-125,118],[-112,262]],
+    "width": 26,
+    "what": "north over the west pond to a green by the north edge",
+    "length_m": 145,
+    "in_frame_m": 145,
+    "green_ground": 6
+   },
+   {
+    "id": "hole.cmb_3",
+    "n": 3,
+    "par": 5,
+    "tee": [-85,262],
+    "green": [330,252],
+    "line": [[-85,262],[60,248],[200,256],[330,252]],
+    "width": 36,
+    "what": "east along the north edge, the long hole",
+    "length_m": 416,
+    "in_frame_m": 416,
+    "green_ground": 6
+   },
+   {
+    "id": "hole.cmb_4",
+    "n": 4,
+    "par": 3,
+    "tee": [352,236],
+    "green": [338,132],
+    "line": [[352,236],[338,132]],
+    "width": 26,
+    "what": "south, the east pond on the left of the green",
+    "length_m": 105,
+    "in_frame_m": 105,
+    "green_ground": 6
+   },
+   {
+    "id": "hole.cmb_5",
+    "n": 5,
+    "par": 4,
+    "tee": [362,106],
+    "green": null,
+    "line": [[362,106],[420,110]],
+    "width": 34,
+    "what": "its tee only: the hole runs east past the edge",
+    "length_m": 58,
+    "in_frame_m": 18,
+    "green_ground": null
+   },
+   {
+    "id": "hole.cmb_18",
+    "n": 18,
+    "par": 4,
+    "tee": null,
+    "green": [290,95],
+    "line": [[440,78],[380,84],[290,95]],
+    "width": 34,
+    "what": "its approach and green only: it comes in from the east to the clubhouse",
+    "length_m": 151,
+    "in_frame_m": 97,
+    "green_ground": 6
+   }
+  ],
+  "greens": {"r":13},
+  "bunkers": [[-80,92,6],[-104,114,5],[60,114,7],[-96,270,5],[318,262,6],[346,248,5],[326,118,5],[278,84,6],[300,106,5]],
+  "off_frame": "holes 5 (but its tee) to 17, east past the edge along Rocky Point: a full course needs about 60 hectares; the frame shows a quarter of it"
+ },
+ "areas": [
+  {
+   "id": "area.cmb_resort",
+   "name": "the resort's grounds",
+   "poly": [[124,-10],[345,-10],[345,-126],[124,-126]],
+   "what": "lawns and paths between the road and the shore: the lodge, the cottages, the beach and the marina"
+  },
+  {
+   "id": "area.cmb_village",
+   "name": "the village",
+   "poly": [[-196,-128],[36,-128],[36,2],[-196,2]],
+   "what": "Cumberland itself: the store, the hall, the church and five houses along the road to Rocky Point"
+  },
+  {
+   "id": "area.cmb_south_farm",
+   "name": "the south farm",
+   "poly": [[-380,-280],[-208,-280],[-208,-60],[-380,-60]],
+   "what": "hay and pasture west of Route 91, behind the town's north row"
+  },
+  {
+   "id": "area.cmb_north_farm",
+   "name": "the north farm",
+   "poly": [[-380,60],[-206,60],[-212,280],[-380,280]],
+   "what": "grain, hay and potatoes west of Route 91, north of the village"
+  }
+ ],
+ "fields": [
+  {
+   "id": "field.cmb_south_pasture",
+   "name": "the south pasture",
+   "crop": "pasture",
+   "poly": [[-372,-273],[-198.01,-273],[-199.52,-261.36],[-201.92,-241.36],[-204.52,-221.31],[-205.55,-212],[-232,-212],[-232,-188],[-316,-188],[-316,-134],[-372,-134]],
+   "what": "behind the town's north row, from the hedge 5 m north of the seam: sheep and cattle",
+   "area_m2": 16765
+  },
+  {
+   "id": "field.cmb_south_paddock",
+   "name": "the south paddock",
+   "crop": "pasture",
+   "poly": [[-248,-184],[-208.29,-184],[-208.57,-180.85],[-209.88,-160.6],[-210.09,-156],[-248,-156]],
+   "what": "between the farmyard and Route 91, south of the lane",
+   "area_m2": 1085
+  },
+  {
+   "id": "field.cmb_south_farmyard",
+   "name": "the south farmyard",
+   "crop": "yard",
+   "poly": [[-316,-184],[-250,-184],[-250,-136],[-316,-136]],
+   "what": "the farmhouse, the barn and their yard, at the lane's end",
+   "area_m2": 3168
+  },
+  {
+   "id": "field.cmb_south_hay",
+   "name": "the south hayfield",
+   "crop": "hay",
+   "poly": [[-372,-132],[-250,-132],[-250,-145],[-210.58,-145],[-210.79,-140.36],[-211.2,-120.14],[-211.3,-99.96],[-211.02,-62],[-372,-62]],
+   "what": "north of the lane and the farmyard",
+   "area_m2": 11767
+  },
+  {
+   "id": "field.cmb_west_pasture",
+   "name": "the west pasture",
+   "crop": "pasture",
+   "poly": [[-372,-56],[-210.9,-56],[-209.99,-19.66],[-208.5,20.3],[-207.87,56],[-372,56]],
+   "what": "between the two farms",
+   "area_m2": 18223
+  },
+  {
+   "id": "field.cmb_north_grain",
+   "name": "the north grainfield",
+   "crop": "grain",
+   "poly": [[-372,60],[-207.8,60],[-208.98,99.35],[-210.62,118],[-228,118],[-228,104],[-372,104]],
+   "what": "south of the north farm's lane and yard",
+   "area_m2": 7447
+  },
+  {
+   "id": "field.cmb_north_farmyard",
+   "name": "the north farmyard",
+   "crop": "yard",
+   "poly": [[-292,106],[-228,106],[-228,160],[-292,160]],
+   "what": "the farmhouse, the barn and silo and their yard, at the lane's end",
+   "area_m2": 3456
+  },
+  {
+   "id": "field.cmb_north_hay",
+   "name": "the north hayfield",
+   "crop": "hay",
+   "poly": [[-372,106],[-296,106],[-296,160],[-372,160]],
+   "what": "west of the north farmyard",
+   "area_m2": 4104
+  },
+  {
+   "id": "field.cmb_north_potatoes",
+   "name": "the potato field",
+   "crop": "potatoes",
+   "poly": [[-372,168],[-228,168],[-228,129],[-211.58,129],[-212.45,138.91],[-216.94,178.84],[-220.96,219.11],[-223.49,259.5],[-223.78,272],[-372,272]],
+   "what": "north of the yard and the lane, to the north edge's hedge",
+   "area_m2": 16318
+  }
+ ],
+ "hedges": {
+  "rule": "hawthorn and wild rose on a low bank, about 2 m wide; along Route 91 10 m west of its centre line (its bed's 4.5 m, then 5.5 m of verge), along a lane 4 m off its centre line; none crosses the seam, and Nine Mile Creek has none at its north edge to join",
+  "lines": [
+   {
+    "id": "hedge.cmb_town_back",
+    "pts": [[-372,-275],[-196.74,-275]],
+    "what": "behind the town's north row, 5 m north of the seam (the shops' backs stand at Nine Mile Creek's y 279.8)",
+    "length_m": 175.3
+   },
+   {
+    "id": "hedge.cmb_route_west_1",
+    "pts": [[-196.74,-275],[-198.52,-261.24],[-200.92,-241.24],[-203.53,-221.19],[-205.2,-206]],
+    "what": "Route 91's west verge, from the town's back hedge to route house 2's drive",
+    "length_m": 69.5
+   },
+   {
+    "id": "hedge.cmb_route_west_2",
+    "pts": [[-206.74,-190],[-207.57,-180.77],[-208.88,-160.55],[-209.13,-155]],
+    "what": "Route 91's west verge, route house 2's drive to the south farm lane",
+    "length_m": 35.1
+   },
+   {
+    "id": "hedge.cmb_route_west_3",
+    "pts": [[-209.58,-145],[-209.79,-140.32],[-210.2,-120.12],[-210.3,-99.97],[-210,-59.84],[-209,-19.69],[-207.5,20.27],[-206.8,59.94],[-207.98,99.41],[-209.61,118]],
+    "what": "Route 91's west verge, the south farm lane to the north farm lane",
+    "length_m": 263.1
+   },
+   {
+    "id": "hedge.cmb_route_west_4",
+    "pts": [[-210.57,129],[-211.45,139],[-215.94,178.94],[-219.97,219.19],[-222.49,259.54],[-222.85,275]],
+    "what": "Route 91's west verge, the north farm lane to the north edge",
+    "length_m": 146.6
+   },
+   {
+    "id": "hedge.cmb_south_lane_north",
+    "pts": [[-209.53,-146],[-250,-146]],
+    "what": "the south farm lane's north side",
+    "length_m": 40.5
+   },
+   {
+    "id": "hedge.cmb_south_lane_south",
+    "pts": [[-209.17,-154],[-248,-154]],
+    "what": "the south farm lane's south side",
+    "length_m": 38.8
+   },
+   {
+    "id": "hedge.cmb_north_lane_north",
+    "pts": [[-210.49,128],[-228,128]],
+    "what": "the north farm lane's north side",
+    "length_m": 17.5
+   },
+   {
+    "id": "hedge.cmb_north_lane_south",
+    "pts": [[-209.7,119],[-228,119]],
+    "what": "the north farm lane's south side",
+    "length_m": 18.3
+   },
+   {
+    "id": "hedge.cmb_south_divide",
+    "pts": [[-372,-59],[-209.98,-59]],
+    "what": "between the south hayfield and the west pasture",
+    "length_m": 162
+   },
+   {
+    "id": "hedge.cmb_north_divide",
+    "pts": [[-372,58],[-206.83,58]],
+    "what": "between the west pasture and the north grainfield",
+    "length_m": 165.2
+   }
+  ]
+ },
+ "woods": [
+  {
+   "id": "wood.cmb_shore_wood",
+   "name": "the shore wood",
+   "kind": "spruce and fir",
+   "poly": [[-160,-272],[26,-272],[34,-236],[42,-204],[40,-160],[-160,-160]],
+   "what": "on the bank top between Route 91's houses and the north beach; the verge of Nine Mile Creek's north lane south of it",
+   "area_m2": 22020
+  },
+  {
+   "id": "wood.cmb_brook_wood",
+   "name": "the brook wood",
+   "kind": "alder, birch and spruce",
+   "poly": [[72,-150],[112,-150],[106,-110],[100,-70],[92,-36],[86,-8],[58,-8],[60,-36],[66,-70],[70,-110]],
+   "what": "the brook's valley, from behind the village down to the bay head; the road to Rocky Point crosses it at the culvert",
+   "area_m2": 4882
+  },
+  {
+   "id": "wood.cmb_route_wood",
+   "name": "the route wood",
+   "kind": "mixed: maple, birch and spruce",
+   "poly": [[-156,50],[-156,272],[-202.78,272],[-202.51,260.46],[-200.03,220.81],[-196.06,181.06],[-191.55,141],[-188.02,100.59],[-186.8,60.06],[-186.97,50]],
+   "what": "between Route 91 and the course, 10 m east of the road",
+   "area_m2": 8468
+  },
+  {
+   "id": "wood.cmb_village_wood",
+   "name": "the village wood",
+   "kind": "mixed",
+   "poly": [[-186,8],[40,8],[40,28],[-60,36],[-150,46],[-186,46]],
+   "what": "behind the village, between it and the course",
+   "area_m2": 6738
+  },
+  {
+   "id": "wood.cmb_point_spruce",
+   "name": "the point's spruce",
+   "kind": "spruce, wind-shorn",
+   "poly": [[298,-130],[334,-130],[338,-150],[330,-170],[312,-176],[302,-164]],
+   "what": "on the marina point's top",
+   "area_m2": 1442
+  },
+  {
+   "id": "wood.cmb_farm_windbreak",
+   "name": "the windbreak",
+   "kind": "a row of spruce",
+   "poly": [[-300,162],[-228,162],[-228,166],[-300,166]],
+   "what": "north of the north farmyard",
+   "area_m2": 288
+  }
+ ],
+ "depths": {
+  "rule": "each sounding is the texture's bed at its point (bilinear, the game's read), with the water over it at spring low, mean and spring high; each shoal is the ground inside its outline: its bed's range, its highest point and how much of it dries at spring low; water: the level less the bed (below 0, the bed is dry by that much)",
+  "soundings": [
+   {
+    "id": "depth.cmb_basin",
+    "at": [237.5,-142],
+    "what": "the basin, in the fairway between the main pier's east side and the east pier's slips",
+    "bed": -6,
+    "water": {"spring_low":3.8,"mean":6,"spring_high":8.2}
+   },
+   {
+    "id": "depth.cmb_mouth",
+    "at": [198,-166],
+    "what": "the mouth",
+    "bed": -6,
+    "water": {"spring_low":3.8,"mean":6,"spring_high":8.2}
+   },
+   {
+    "id": "depth.cmb_approach",
+    "at": [178,-200],
+    "what": "the approach, halfway out",
+    "bed": -6,
+    "water": {"spring_low":3.8,"mean":6,"spring_high":8.2}
+   },
+   {
+    "id": "depth.cmb_approach_outer",
+    "at": [171,-226],
+    "what": "the approach's outer end, on the bay's floor",
+    "bed": -5.995,
+    "water": {"spring_low":3.8,"mean":6,"spring_high":8.2}
+   },
+   {
+    "id": "depth.cmb_bay_floor",
+    "at": [260,-250],
+    "what": "the bay's floor off the marina",
+    "bed": -6,
+    "water": {"spring_low":3.8,"mean":6,"spring_high":8.2}
+   },
+   {
+    "id": "depth.cmb_off_point",
+    "at": [330,-222],
+    "what": "off the marina point",
+    "bed": -3.059,
+    "water": {"spring_low":0.86,"mean":3.06,"spring_high":5.26}
+   },
+   {
+    "id": "depth.cmb_north_flat",
+    "at": [80,-262],
+    "what": "the north beach's low-tide flat, near the seam",
+    "bed": -1.37,
+    "water": {"spring_low":-0.83,"mean":1.37,"spring_high":3.57}
+   },
+   {
+    "id": "depth.cmb_bay_head_flat",
+    "at": [124,-180],
+    "what": "the bay head's flat, off the brook's mouth",
+    "bed": -1.732,
+    "water": {"spring_low":-0.47,"mean":1.73,"spring_high":3.93}
+   },
+   {
+    "id": "depth.cmb_resort_beach_low",
+    "at": [150,-160],
+    "what": "off the resort beach, west of the jetty",
+    "bed": -1.76,
+    "water": {"spring_low":-0.44,"mean":1.76,"spring_high":3.96}
+   }
+  ],
+  "shoals": [
+   {
+    "id": "shoal.cmb_north_flat",
+    "name": "the north flat",
+    "poly": [[56,-280],[100,-280],[112,-250],[124,-222],[128,-196],[104,-190],[82,-212],[66,-246]],
+    "what": "the north beach's low-tide flat and its terrace (-1.01): it dries at spring low",
+    "measured": {
+     "area_m2": 3825,
+     "bed": [-2.472,-0.826],
+     "mean": -1.649,
+     "highest_at": [56.25,-279.25],
+     "dry_at_spring_low_m2": 3312.5
+    }
+   },
+   {
+    "id": "shoal.cmb_bay_head_flat",
+    "name": "the bay head flat",
+    "poly": [[96,-172],[114,-158],[140,-152],[150,-176],[132,-200],[108,-196]],
+    "what": "off the brook's mouth: sand and gravel, part of it dry at spring low",
+    "measured": {
+     "area_m2": 1705,
+     "bed": [-2.654,-0.678],
+     "mean": -1.595,
+     "highest_at": [98.25,-170.25],
+     "dry_at_spring_low_m2": 1466.75
+    }
+   },
+   {
+    "id": "shoal.cmb_point_shelf",
+    "name": "the point shelf",
+    "poly": [[296,-190],[306,-200],[318,-206],[334,-204],[348,-192],[356,-176],[346,-170],[338,-188],[326,-196],[312,-196],[302,-188]],
+    "what": "the sandstone ledges off the marina point's south face",
+    "measured": {"area_m2":648.5,"bed":[-1.285,0.144],"mean":-0.54,"highest_at":[302.25,-188.25],"dry_at_spring_low_m2":648.5}
+   }
+  ]
+ },
+ "marsh": {
+  "rule": "none: the brook comes out over the bay head's gravel beach, and the shore is beach, bank and ledge; no ground in the frame lies wet between the tides behind a bar",
+  "marshes": []
+ },
+ "edges": {
+  "south": {
+   "y": -280,
+   "y_nmc": 280,
+   "what": "the seam: Nine Mile Creek's north edge, x -380 to 380",
+   "ground": [-6,6],
+   "runs": [
+    {"kind":"land","from":-379.75,"to":46.25,"ground":[2.376,6]},
+    {"kind":"the shore (between the tides)","from":46.75,"to":98.75,"ground":[-2.188,2.188]},
+    {"kind":"open water (below the spring low)","from":99.25,"to":379.75,"ground":[-6,-2.235]}
+   ]
+  },
+  "east": {
+   "x": 380,
+   "what": "Rocky Point runs on east: the road to Rocky Point leaves at (380, 18) for the lighthouse at the point's end, which marks the harbour channel; holes 5 to 17 lie along it; the peninsula shore runs on east from (380, -125)",
+   "ground": [-6,6],
+   "runs": [
+    {"kind":"open water (below the spring low)","from":-279.75,"to":-149.25,"ground":[-6,-2.244]},
+    {"kind":"the shore (between the tides)","from":-148.75,"to":-114.25,"ground":[-2.186,2.115]},
+    {"kind":"land","from":-113.75,"to":279.75,"ground":[2.227,6]}
+   ]
+  },
+  "north": {
+   "y": 280,
+   "what": "Route 91 runs on north from (-213, 280) about 300 m to the West River, which runs east along the peninsula's north side to the harbour channel; the course's north holes and the north farm stop at the edge",
+   "ground": [6,6],
+   "runs": [{"kind":"land","from":-379.75,"to":379.75,"ground":[6,6]}]
+  },
+  "west": {
+   "x": -380,
+   "what": "farmland at the plateau, west of Route 91 (the south farm and the north farm run on)",
+   "ground": [6,6],
+   "runs": [{"kind":"land","from":-279.75,"to":279.75,"ground":[6,6]}]
+  }
+ },
+ "past_edges": {
+  "north": "Route 91 runs on north from (-213, 280) about 300 m to the West River, which runs east along the peninsula's north side to the harbour channel; the course's north holes and the north farm stop at the edge",
+  "east": "Rocky Point runs on east: the road to Rocky Point leaves at (380, 18) for the lighthouse at the point's end, which marks the harbour channel; holes 5 to 17 lie along it; the peninsula shore runs on east from (380, -125)",
+  "south": "the seam: Nine Mile Creek, its north edge from x -380 to 380",
+  "west": "farmland at the plateau, west of Route 91 (the south farm and the north farm run on)"
+ },
+ "boats": [
+  {"id":"boat.sport_skiff","asset":"SportSkiff.asset","length":7,"draught":0.5},
+  {"id":"boat.sport_skiff_twin","asset":"SportSkiffTwin.asset","length":7,"draught":0.55},
+  {"id":"boat.console_skiff","asset":"ConsoleSkiff.asset","length":7,"draught":0.55},
+  {"id":"boat.sport_skiff_mk2","asset":"SportSkiffMk2.asset","length":7,"draught":0.95},
+  {"id":"boat.sport_fisher_convertible","asset":"SportFisherConvertible.asset","length":16.2,"draught":1.75},
+  {"id":"boat.sloop_30","asset":"Sloop30.asset","length":9.4,"draught":1.9},
+  {"id":"boat.sport_fisher_skybridge","asset":"SportFisherSkybridge.asset","length":27.4,"draught":2.95},
+  {"id":"boat.sloop_88","asset":"Sloop88.asset","length":27,"draught":4.6}
+ ],
+ "ids": {
+  "prefix": "cmb",
+  "rule": "type.cmb_snake_case, roads road.cmb.<name> as Nine Mile Creek's road.nmc.<name>; append-only and stable from pass B on"
+ },
+ "calls": [
+  {
+   "id": "call.cmb_frame",
+   "n": 1,
+   "pass": "A",
+   "state": "RULED",
+   "ask": "the frame: its size, and where it sits against Nine Mile Creek",
+   "lean": "760 x 560 m on Nine Mile Creek's own x range (x -380 to 380, y -280 to 280), offset (0, +560): it meets the whole of Nine Mile Creek's north edge, from the plateau west of Route 91 to the bay's floor, and has the room north for the course",
+   "options": ["760 x 560 m, offset (0, +560): the lean","760 x 520 m, offset (0, +540): 40 m less to the north; the course loses its north row","560 x 560 m on Nine Mile Creek's x -220 to 340, offset (+60, +560): narrower; the marina and the course squeezed"],
+   "ruled": {"at":"2026-10-11 14:06 ADT","answer":"760 x 560 m (Recommended)","as":"the lean"}
+  },
+  {
+   "id": "call.cmb_fork",
+   "n": 2,
+   "pass": "A",
+   "state": "RULED",
+   "ask": "the fork: where it leaves Route 91, and where it leaves the frame (it runs east, ruled 10-11)",
+   "lean": "a Y at (-200, -110), 170 m north of the seam: the road to Rocky Point bears north-east through the village, crosses the brook, passes the resort's gate and leaves the east edge at (380, 18) for Rocky Point and its lighthouse",
+   "options": ["a Y at (-200, -110): the lean","farther north, at about (-205, 120): the road runs east along the course's south side, the village on Route 91","near the seam, at about (-190, -230), just past the town's street end: the road runs east close behind the shore"],
+   "ruled": {"at":"2026-10-11 14:06 ADT","answer":"Y at (-200, -110) (Recommended)","as":"the lean"}
+  },
+  {
+   "id": "call.cmb_marina",
+   "n": 3,
+   "pass": "A",
+   "state": "RULED",
+   "ask": "the marina: where it stands on the resort's south shore, and what shelters it",
+   "lean": "below the resort, in the lee of a low point (the marina point): a basin dredged to the floor (-6.0) behind a rubble breakwater curving west from the point, a short jetty on its west side, its mouth facing south-west. The T-head's bed reads -6.00 and its way in -6.00: the Sloop 88 floats there from -1.40, so at every neap tide and 72% of a spring tide; to take her at every tide the berth needs ground below -6 m (call 10) or a sill basin",
+   "options": ["the low point's lee, a breakwater from it: the lean","at the bay's head (about (100, -160)), behind two short jetties","an L-shaped breakwater off the open shore, no point"],
+   "ruled": {"at":"2026-10-11 14:06 ADT","answer":"The point's lee (Recommended)","as":"the lean"}
+  },
+  {
+   "id": "call.cmb_course",
+   "n": 4,
+   "pass": "A",
+   "state": "RULED",
+   "ask": "the golf course: how much of it the frame shows, and how it still reads as a course",
+   "lean": "north of the road: holes 1 to 4 whole, the 5th's tee and the 18th's approach and green, the clubhouse across the road from the resort's gate; holes 5 to 17 run east past the edge along Rocky Point. It reads as a course by its tees, mown fairways, greens with flags, bunkers, three ponds and the cart path",
+   "options": ["holes 1 to 4, the 5th tee and the 18th green in frame, north of the road: the lean","the course wrapped round the resort, between the road and the shore","a compressed nine-hole course wholly in frame"],
+   "ruled": {"at":"2026-10-11 14:06 ADT","answer":"Holes 1-4 north (Recommended)","as":"the lean"}
+  }
+ ],
+ "later_calls": {
+  "state": "OPEN",
+  "lean": "pass B built each on the lane's lean; NOTES-part1.md gives each with its lean",
+  "list": ["Route 91's line through the frame, and where it leaves it","the coast's sections north of the seam","the marina whole: its docks and slips, the berths' beds and the approach, which boats lie there at which tides, what stands ashore","the resort: its buildings and grounds, and its way to the water","the golf club: the clubhouse","Cumberland beyond the resort: what else stands along the road","what lies past the edges: Route 91 north, Rocky Point and its lighthouse, the West River","ground above +6 m or below -6 m","Cumberland's id prefix (the lean: cmb)","the key scenes for part 2"]
+ },
+ "keyscenes": {
+  "state": "OPEN",
+  "lean": "these six, in this order; part 2 builds the ones the owner keeps",
+  "rule": "keyscene.cmb_<name>: its site, what makes it the signature place, its clock, tide and weather (the brief, section 6); box [x0, x1, y0, y1] in Cumberland's metres; view: its picture in pictures/views/",
+  "list": [
+   {
+    "id": "keyscene.cmb_marina",
+    "name": "the marina and its bar float",
+    "site": "the basin, its docks and slips, the bar float on the east pier, the apron behind the bulkhead",
+    "box": [180,290,-192,-104],
+    "view": "marina",
+    "signature": "the region's new kind of place: a marina of floats and slips in the lee of the point, with the bar float the owner asked for moored along the east pier, its stage facing north over the slips",
+    "clock": "20:30",
+    "tide": 1,
+    "weather": "calm"
+   },
+   {
+    "id": "keyscene.cmb_resort_from_the_water",
+    "name": "the resort from the bay",
+    "site": "the resort beach, the jetty and the launch ramp, the west lawn, the lodge's front",
+    "box": [136,236,-149,-40],
+    "view": "resort_water",
+    "signature": "the resort's face to the bay, as a player arriving by water first sees Cumberland: the beach under its grassed bank, the jetty and the ramp, the lodge over its lawns",
+    "clock": "19:00",
+    "tide": 1.4,
+    "weather": "calm"
+   },
+   {
+    "id": "keyscene.cmb_clubhouse",
+    "name": "the clubhouse and the 18th green",
+    "site": "the clubhouse's pad, the 18th green and its bunkers, the 1st tee, the cart path's start",
+    "box": [198,306,27,143],
+    "view": "course_clubhouse",
+    "signature": "the golf club, a kind of ground the game has not drawn before: the 18th green below the clubhouse, the 1st tee beside it, the cart path leaving round the holes",
+    "clock": "09:30",
+    "tide": 0,
+    "weather": "clear"
+   },
+   {
+    "id": "keyscene.cmb_fork",
+    "name": "the fork and the store",
+    "site": "the Y where the road to Rocky Point leaves Route 91, the store and its forecourt, the south farm lane",
+    "box": [-236,-156,-155,-85],
+    "view": "fork",
+    "signature": "the crossroads every drive north of Nine Mile Creek passes: the store south of the Y with its forecourt, the two roads parting",
+    "clock": "17:30",
+    "tide": 0,
+    "weather": "clear"
+   },
+   {
+    "id": "keyscene.cmb_route_91_town_end",
+    "name": "Route 91 at the town's end",
+    "site": "Route 91 across the seam, Nine Mile Creek's town street ending at it, the town's north row",
+    "box": [-261,-169,-325,-244],
+    "view": "seam_route_91",
+    "signature": "the one scene on both regions' ground: Nine Mile Creek's town street gives way to the country road at the seam, the north row's backs to Cumberland",
+    "clock": "13:00",
+    "tide": 0,
+    "weather": "clear"
+   },
+   {
+    "id": "keyscene.cmb_north_beach",
+    "name": "the north beach at a spring low",
+    "site": "the north beach, its bank and its low-tide flat where they cross the seam",
+    "box": [18,110,-320,-230],
+    "view": "seam_shore",
+    "signature": "the shore that runs on from Nine Mile Creek: its north beach, bank and flat carried across the seam, the flat out at a spring low",
+    "clock": "10:30",
+    "tide": -1.8,
+    "weather": "clear"
+   }
+  ]
+ },
+ "checkpoints": [
+  {
+   "id": "berth.cmb_t_head_outer.keel_mid",
+   "at": [227,-162],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of its keel line"
+  },
+  {
+   "id": "berth.cmb_t_head_outer.keel_shallowest",
+   "at": [206,-162],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the shallowest bed on its keel line: the berth's bed"
+  },
+  {
+   "id": "berth.cmb_main_pier_west.slip_1.keel_mid",
+   "at": [215.5,-131.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 1's keel line"
+  },
+  {
+   "id": "berth.cmb_main_pier_west.slip_2.keel_mid",
+   "at": [215.5,-138.25],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 2's keel line"
+  },
+  {
+   "id": "berth.cmb_main_pier_west.slip_3.keel_mid",
+   "at": [215.5,-144.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 3's keel line"
+  },
+  {
+   "id": "berth.cmb_main_pier_west.slip_4.keel_mid",
+   "at": [215.5,-151.25],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 4's keel line"
+  },
+  {
+   "id": "berth.cmb_main_pier_west.keel_shallowest",
+   "at": [223,-131.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the shallowest bed on its keel lines: the berth's bed"
+  },
+  {
+   "id": "berth.cmb_main_pier_east.keel_mid",
+   "at": [229,-142],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of its keel line"
+  },
+  {
+   "id": "berth.cmb_main_pier_east.keel_shallowest",
+   "at": [229,-130],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the shallowest bed on its keel line: the berth's bed"
+  },
+  {
+   "id": "berth.cmb_fuel_berth.keel_mid",
+   "at": [242,-154],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of its keel line"
+  },
+  {
+   "id": "berth.cmb_fuel_berth.keel_shallowest",
+   "at": [235,-154],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the shallowest bed on its keel line: the berth's bed"
+  },
+  {
+   "id": "berth.cmb_east_pier_west.slip_1.keel_mid",
+   "at": [247.25,-130.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 1's keel line"
+  },
+  {
+   "id": "berth.cmb_east_pier_west.slip_2.keel_mid",
+   "at": [247.25,-135.25],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 2's keel line"
+  },
+  {
+   "id": "berth.cmb_east_pier_west.slip_3.keel_mid",
+   "at": [247.25,-139.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 3's keel line"
+  },
+  {
+   "id": "berth.cmb_east_pier_west.slip_4.keel_mid",
+   "at": [247.25,-144.25],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed at the middle of slip 4's keel line"
+  },
+  {
+   "id": "berth.cmb_east_pier_west.keel_shallowest",
+   "at": [250.5,-130.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the shallowest bed on its keel lines: the berth's bed"
+  },
+  {
+   "id": "berth.cmb_bar_float_east.keel_mid",
+   "at": [266.2,-137],
+   "plan": -5.958,
+   "texture": -5.957,
+   "tol": 0.001,
+   "what": "the bed at the middle of its keel line"
+  },
+  {
+   "id": "berth.cmb_bar_float_east.keel_shallowest",
+   "at": [266.2,-129],
+   "plan": -5.42,
+   "texture": -5.42,
+   "tol": 0.001,
+   "what": "the shallowest bed on its keel line: the berth's bed"
+  },
+  {
+   "id": "marina.cmb.mouth",
+   "at": [198,-166],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the mouth, where the approach arrives"
+  },
+  {
+   "id": "marina.cmb.approach_least",
+   "at": [187.75,-279.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the approach's controlling bed (its least depth)"
+  },
+  {
+   "id": "dock.cmb_bar_float.mid_deck",
+   "at": [258.4,-137],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bed under the middle of its deck"
+  },
+  {
+   "id": "apron.cmb_marina",
+   "at": [220,-116],
+   "plan": 3.4,
+   "texture": 3.4,
+   "tol": 0.001,
+   "what": "the apron, in the car park"
+  },
+  {"id":"yard.cmb_marina_hard","at":[273,-114],"plan":3.4,"texture":3.4,"tol":0.001,"what":"the hard standing"},
+  {
+   "id": "slip.cmb_launch_ramp.mid",
+   "at": [166,-136],
+   "plan": 0.4,
+   "texture": 0.4,
+   "tol": 0.001,
+   "what": "the launch ramp, halfway down"
+  },
+  {
+   "id": "ridge.cmb_breakwater.crest",
+   "at": [252,-188],
+   "plan": 3.594,
+   "texture": 3.594,
+   "tol": 0.001,
+   "what": "the breakwater's crest line (+3.6 on the line, rounding over its 3 m half-width)"
+  },
+  {
+   "id": "ridge.cmb_jetty.crest",
+   "at": [181,-134],
+   "plan": 3.189,
+   "texture": 3.189,
+   "tol": 0.001,
+   "what": "the jetty's crest line, halfway out (+3.2 on the line)"
+  },
+  {
+   "id": "seam.cmb_plateau.west",
+   "at": [-380,-279.75],
+   "at_nmc": [-380,279.75],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_plateau.east",
+   "at": [35,-279.75],
+   "at_nmc": [35,279.75],
+   "plan": 5.976,
+   "texture": 5.976,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_route_91",
+   "at": [-186,-279.75],
+   "at_nmc": [-186,279.75],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_bank_top",
+   "at": [34.75,-279.75],
+   "at_nmc": [34.75,279.75],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_bank.west",
+   "at": [35,-279.75],
+   "at_nmc": [35,279.75],
+   "plan": 5.976,
+   "texture": 5.976,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_bank.east",
+   "at": [46.5,-279.75],
+   "at_nmc": [46.5,279.75],
+   "plan": 2.282,
+   "texture": 2.282,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_spring_high",
+   "at": [46.72,-279.75],
+   "at_nmc": [46.72,279.75],
+   "plan": 2.2,
+   "texture": 2.2,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_beach.west",
+   "at": [46.5,-279.75],
+   "at_nmc": [46.5,279.75],
+   "plan": 2.282,
+   "texture": 2.282,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_beach.east",
+   "at": [58,-279.75],
+   "at_nmc": [58,279.75],
+   "plan": -1.012,
+   "texture": -1.012,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_neap_high",
+   "at": [49.56,-279.75],
+   "at_nmc": [49.56,279.75],
+   "plan": 0.989,
+   "texture": 0.989,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_mean",
+   "at": [52.31,-279.75],
+   "at_nmc": [52.31,279.75],
+   "plan": 0.001,
+   "texture": 0.001,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_neap_low",
+   "at": [57.52,-279.75],
+   "at_nmc": [57.52,279.75],
+   "plan": -0.99,
+   "texture": -0.99,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_flat.west",
+   "at": [58,-279.75],
+   "at_nmc": [58,279.75],
+   "plan": -1.012,
+   "texture": -1.012,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_flat.east",
+   "at": [99,-279.75],
+   "at_nmc": [99,279.75],
+   "plan": -2.212,
+   "texture": -2.212,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_low_terrace.west",
+   "at": [58,-279.75],
+   "at_nmc": [58,279.75],
+   "plan": -1.012,
+   "texture": -1.012,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_low_terrace.east",
+   "at": [62,-279.75],
+   "at_nmc": [62,279.75],
+   "plan": -1.012,
+   "texture": -1.012,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_spring_low",
+   "at": [98.88,-279.75],
+   "at_nmc": [98.88,279.75],
+   "plan": -2.2,
+   "texture": -2.2,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_drop.west",
+   "at": [99,-279.75],
+   "at_nmc": [99,279.75],
+   "plan": -2.212,
+   "texture": -2.212,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_drop.east",
+   "at": [141,-279.75],
+   "at_nmc": [141,279.75],
+   "plan": -5.976,
+   "texture": -5.976,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_floor.west",
+   "at": [141,-279.75],
+   "at_nmc": [141,279.75],
+   "plan": -5.976,
+   "texture": -5.976,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {
+   "id": "seam.cmb_floor.east",
+   "at": [380,-279.75],
+   "at_nmc": [380,279.75],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0,
+   "what": "Nine Mile Creek's row 0 (plan) against Cumberland's row 1119 (texture), read along the row: equal to the bit"
+  },
+  {"id":"lot.cmb_store","at":[-180,-122],"plan":6,"texture":6,"tol":0.001,"what":"the store: its pad"},
+  {"id":"lot.cmb_hall","at":[-150,-50],"plan":6,"texture":6,"tol":0.001,"what":"the hall: its pad"},
+  {"id":"lot.cmb_church","at":[-98,-30],"plan":6,"texture":6,"tol":0.001,"what":"the church: its pad"},
+  {"id":"lot.cmb_house_1","at":[-120,-80],"plan":6,"texture":6,"tol":0.001,"what":"house 1: its pad"},
+  {"id":"lot.cmb_house_2","at":[-70,-64],"plan":6,"texture":6,"tol":0.001,"what":"house 2: its pad"},
+  {"id":"lot.cmb_house_3","at":[-40,-16],"plan":6,"texture":6,"tol":0.001,"what":"house 3: its pad"},
+  {"id":"lot.cmb_house_4","at":[-10,-58],"plan":6,"texture":6,"tol":0.001,"what":"house 4: its pad"},
+  {"id":"lot.cmb_house_5","at":[20,-12],"plan":6,"texture":6,"tol":0.001,"what":"house 5: its pad"},
+  {
+   "id": "lot.cmb_route_house_1",
+   "at": [-172,-232],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "route house 1: its pad"
+  },
+  {
+   "id": "lot.cmb_route_house_2",
+   "at": [-222,-198],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "route house 2: its pad"
+  },
+  {
+   "id": "lot.cmb_south_farmhouse",
+   "at": [-262,-150],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "the south farmhouse: its pad"
+  },
+  {
+   "id": "lot.cmb_south_farm_barn",
+   "at": [-296,-168],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "the south farm's barn: its pad"
+  },
+  {
+   "id": "lot.cmb_north_farmhouse",
+   "at": [-240,122],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "the north farmhouse: its pad"
+  },
+  {
+   "id": "lot.cmb_north_farm_barn",
+   "at": [-272,146],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "the north farm's barn: its pad"
+  },
+  {
+   "id": "lot.cmb_resort_lodge",
+   "at": [225,-58],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "the resort's lodge: its pad"
+  },
+  {
+   "id": "lot.cmb_resort_cottage_1",
+   "at": [298,-98],
+   "plan": 5.1,
+   "texture": 5.1,
+   "tol": 0.001,
+   "what": "cottage 1: its pad"
+  },
+  {
+   "id": "lot.cmb_resort_cottage_2",
+   "at": [318,-84],
+   "plan": 5.95,
+   "texture": 5.95,
+   "tol": 0.001,
+   "what": "cottage 2: its pad"
+  },
+  {"id":"lot.cmb_resort_cottage_3","at":[300,-68],"plan":6,"texture":6,"tol":0.001,"what":"cottage 3: its pad"},
+  {"id":"lot.cmb_resort_cottage_4","at":[326,-54],"plan":6,"texture":6,"tol":0.001,"what":"cottage 4: its pad"},
+  {
+   "id": "lot.cmb_marina_office",
+   "at": [196,-112],
+   "plan": 3.4,
+   "texture": 3.4,
+   "tol": 0.001,
+   "what": "the marina office: its pad"
+  },
+  {
+   "id": "lot.cmb_marina_shed",
+   "at": [248,-112],
+   "plan": 3.4,
+   "texture": 3.4,
+   "tol": 0.001,
+   "what": "the marina shed: its pad"
+  },
+  {"id":"lot.cmb_clubhouse","at":[240,62],"plan":6,"texture":6,"tol":0.001,"what":"the clubhouse: its pad"},
+  {"id":"hole.cmb_1.green","at":[-95,102],"plan":6,"texture":6,"tol":0.001,"what":"the 1st hole's green"},
+  {"id":"hole.cmb_2.green","at":[-112,262],"plan":6,"texture":6,"tol":0.001,"what":"the 2nd hole's green"},
+  {"id":"hole.cmb_3.green","at":[330,252],"plan":6,"texture":6,"tol":0.001,"what":"the 3rd hole's green"},
+  {"id":"hole.cmb_4.green","at":[338,132],"plan":6,"texture":6,"tol":0.001,"what":"the 4th hole's green"},
+  {"id":"hole.cmb_18.green","at":[290,95],"plan":6,"texture":6,"tol":0.001,"what":"the 18th hole's green"},
+  {
+   "id": "pond.cmb_brook_pond.bed",
+   "at": [42,172],
+   "plan": 3.2,
+   "texture": 3.2,
+   "tol": 0.001,
+   "what": "the brook pond: its bed at the middle"
+  },
+  {
+   "id": "pond.cmb_course_west.bed",
+   "at": [-110,228],
+   "plan": 3.801,
+   "texture": 3.801,
+   "tol": 0.001,
+   "what": "the west pond: its bed at the middle"
+  },
+  {
+   "id": "pond.cmb_course_east.bed",
+   "at": [318,165],
+   "plan": 3.801,
+   "texture": 3.801,
+   "tol": 0.001,
+   "what": "the east pond: its bed at the middle"
+  },
+  {
+   "id": "stream.cmb_brook.head",
+   "at": [42,154],
+   "plan": 4.385,
+   "texture": 4.385,
+   "tol": 0.001,
+   "what": "the brook's head at the pond's outlet: its bed"
+  },
+  {
+   "id": "stream.cmb_brook.mouth",
+   "at": [102,-163],
+   "plan": -0.701,
+   "texture": -0.701,
+   "tol": 0.001,
+   "what": "the brook's mouth: its bed"
+  },
+  {
+   "id": "stream.cmb_brook.head_of_tide",
+   "at": [82,-75],
+   "plan": 2.212,
+   "texture": 2.212,
+   "tol": 0.001,
+   "what": "the brook's head of tide: its bed at the spring high"
+  },
+  {"id":"junction.cmb_fork","at":[-200.3,-110],"plan":6,"texture":6,"tol":0.001,"what":"the fork"},
+  {
+   "id": "culvert.cmb_brook",
+   "at": [72,-28.6],
+   "plan": 5.8,
+   "texture": 5.8,
+   "tol": 0.001,
+   "what": "the road to Rocky Point over the brook's culvert"
+  },
+  {
+   "id": "road.cmb.route_91.north_edge",
+   "at": [-212.96,279.75],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "Route 91 where it leaves the north edge"
+  },
+  {
+   "id": "road.cmb.rocky_point_road.east_edge",
+   "at": [379.75,17.99],
+   "plan": 6,
+   "texture": 6,
+   "tol": 0.001,
+   "what": "the road to Rocky Point where it leaves the east edge"
+  },
+  {
+   "id": "depth.cmb_basin",
+   "at": [237.5,-142],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the basin, in the fairway between the main pier's east side and the east pier's slips"
+  },
+  {"id":"depth.cmb_mouth","at":[198,-166],"plan":-6,"texture":-6,"tol":0.001,"what":"the mouth"},
+  {
+   "id": "depth.cmb_approach",
+   "at": [178,-200],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the approach, halfway out"
+  },
+  {
+   "id": "depth.cmb_approach_outer",
+   "at": [171,-226],
+   "plan": -5.995,
+   "texture": -5.995,
+   "tol": 0.001,
+   "what": "the approach's outer end, on the bay's floor"
+  },
+  {
+   "id": "depth.cmb_bay_floor",
+   "at": [260,-250],
+   "plan": -6,
+   "texture": -6,
+   "tol": 0.001,
+   "what": "the bay's floor off the marina"
+  },
+  {
+   "id": "depth.cmb_off_point",
+   "at": [330,-222],
+   "plan": -3.059,
+   "texture": -3.059,
+   "tol": 0.001,
+   "what": "off the marina point"
+  },
+  {
+   "id": "depth.cmb_north_flat",
+   "at": [80,-262],
+   "plan": -1.37,
+   "texture": -1.37,
+   "tol": 0.001,
+   "what": "the north beach's low-tide flat, near the seam"
+  },
+  {
+   "id": "depth.cmb_bay_head_flat",
+   "at": [124,-180],
+   "plan": -1.732,
+   "texture": -1.732,
+   "tol": 0.001,
+   "what": "the bay head's flat, off the brook's mouth"
+  },
+  {
+   "id": "depth.cmb_resort_beach_low",
+   "at": [150,-160],
+   "plan": -1.759,
+   "texture": -1.76,
+   "tol": 0.001,
+   "what": "off the resort beach, west of the jetty"
+  }
+ ],
+ "stillpoints": [
+  {
+   "id": "stream.cmb_brook.head",
+   "at": [42.25,153.75],
+   "plan": 4.6,
+   "texture": 4.597,
+   "tol": 0.15,
+   "what": "the brook at its head"
+  },
+  {
+   "id": "stream.cmb_brook.course",
+   "at": [60.25,33.75],
+   "plan": 3.8,
+   "texture": 3.8,
+   "tol": 0.15,
+   "what": "the brook across the first hole"
+  },
+  {
+   "id": "stream.cmb_brook.above_culvert",
+   "at": [70.25,-14.25],
+   "plan": 3.35,
+   "texture": 3.349,
+   "tol": 0.15,
+   "what": "the brook above the culvert"
+  },
+  {
+   "id": "stream.cmb_brook.wood",
+   "at": [86.25,-100.25],
+   "plan": 2.02,
+   "texture": 2.019,
+   "tol": 0.15,
+   "what": "the brook in the wood, below the head of tide"
+  },
+  {
+   "id": "stream.cmb_brook.beach",
+   "at": [95.25,-145.25],
+   "plan": 0.75,
+   "texture": 0.747,
+   "tol": 0.15,
+   "what": "the brook across the bay head's beach"
+  },
+  {
+   "id": "pond.cmb_brook_pond",
+   "at": [42.25,171.75],
+   "plan": 4.6,
+   "texture": 4.6,
+   "tol": 0.15,
+   "what": "the brook pond's surface"
+  },
+  {
+   "id": "pond.cmb_course_west",
+   "at": [-109.75,227.75],
+   "plan": 5,
+   "texture": 5,
+   "tol": 0.15,
+   "what": "the west pond's surface"
+  },
+  {
+   "id": "pond.cmb_course_east",
+   "at": [318.25,164.75],
+   "plan": 5,
+   "texture": 5,
+   "tol": 0.15,
+   "what": "the east pond's surface"
+  }
+ ],
+ "stats": {
+  "texels": 1702400,
+  "heightRange": [-6,6],
+  "stillTexels": 18053,
+  "dryM2": {"spring_low":392962,"neap_low":385271.5,"mean":380987.5,"neap_high":378843.25,"spring_high":376210},
+  "rule": "dry: above the tide's level and under no still water"
+ },
+ "textures": {
+  "height": {
+   "file": "ground/CumberlandSeabed_HeightTex_plan.png",
+   "format": "16-bit grey PNG (IHDR, one IDAT, IEND), 1520 x 1120, codes big-endian, filter 0, deflate 9",
+   "decode": "height = -6 + 12 x code / 65535",
+   "fileBytes": 497703,
+   "fileSha256": "649a864b7b55a6449f66a91db9194aaafbd4a883a5e1b9dd6f65181e9dd06718",
+   "pixelsSha256": "bf4196bee986bd29273ff735df4ab981cb4c32205fc89dd786fb9c02d98b0623"
+  },
+  "still": {
+   "file": "ground/CumberlandSeabed_StillTex_plan.png",
+   "format": "16-bit grey PNG (IHDR, one IDAT, IEND), 1520 x 1120, codes big-endian, filter 0, deflate 9",
+   "decode": "code 0 = no still water; else level = -6 + 12 x code / 65535 (filter the codes, then decode: ADR 0046 s5)",
+   "fileBytes": 16471,
+   "fileSha256": "be744d8b7858294fb6e87ce0ada40bc01722ea28b0ab8456fa0c03094569052c",
+   "pixelsSha256": "857b306fed77771a350a53dd796babff0c5013c24320bbf9d0a71d6a69669f6e"
+  },
+  "inputs": {
+   "height": {
+    "file": "inputs/NineMileCreekSeabed_HeightTex_plan.png",
+    "what": "Nine Mile Creek's third issue, unchanged",
+    "fileBytes": 985352,
+    "fileSha256": "9a6c465002cb229d2853191757fb498af66cb81a635f6973f59bf95723ed9f47",
+    "pixelsSha256": "5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0"
+   },
+   "still": {
+    "file": "inputs/NineMileCreekSeabed_StillTex_plan.png",
+    "what": "the same",
+    "fileBytes": 60809,
+    "fileSha256": "0046179b7e66517f79b685807357aa82f5327d70c6d48d1b8d2c566582b5406b",
+    "pixelsSha256": "2c796a61961309de81777224c5c7f089aa2d1e1d35797895808bbcb8841e0d64"
+   },
+   "near_seam": {
+    "file": "inputs/nmc-near-seam.json",
+    "what": "Nine Mile Creek's own lines near the seam, cut from its third issue's ground/plan.json for Cumberland's plan.json (its seam's neighbours) and pictures; ids and geometry only, unchanged (Nine Mile Creek's metres)",
+    "source": {
+     "file": "HH-nmc-ground-part-1-reissue-3-2026-10-07/ground/plan.json",
+     "sha256": "06d0217c8c389c6b97582e2eb6b0cc44ff5bd042bde3af538ac47fd1fe89577a",
+     "bytes": 212937,
+     "id": "terrain_plan.nmc"
+    },
+    "sha256": "5a676dd47554243fcc002fbb5c659c2b659596fd1b4dc9c583b924c540a18802"
+   }
+  }
+ }
+}
