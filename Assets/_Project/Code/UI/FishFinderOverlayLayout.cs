@@ -4,16 +4,17 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// The fish finder card's PURE placement, cadence and hit maths (ADR 0025 S3b) — split out of its host
+    /// The fish finder card's PURE cadence and hit maths (ADR 0025 S3b) — split out of its host
     /// so all of it is EditMode-testable without a canvas, exactly as <see cref="SounderOverlayLayout"/> is
     /// for the sounder. Screen space is Unity's (origin bottom-left, y up); RIG space is the rigs'
     /// (origin top-left, y down) and the screen→rig mapping is shared with the control card
     /// (<see cref="HelmOverlayLayout.ScreenToRig"/>) — one mapper, so a hit box can never mean two things.
     ///
     /// <para><b>⚠ It is NOT <see cref="SounderOverlayLayout"/> with a different settings struct.</b> The
-    /// finder's rig is PORTRAIT — 480×660, aspect 0.727, against the sounder's 480×330 at 1.455 — so none
-    /// of the sounder's rect maths transfers, and its native card would be 61% of a 1080p screen's height
-    /// where the sounder's is 31%. Hence its own scales and its own corner inset.</para>
+    /// finder's rig is PORTRAIT — 480×660, aspect 0.727, against the sounder's 480×330 at 1.455 — so its
+    /// native card is 61% of a 1080p screen's height where the sounder's is 31%. Since H2 both are
+    /// placed by the one raised-card rule (<see cref="HelmBandLayout.RaisedCardRect"/>), which is why
+    /// neither layout keeps a rect of its own.</para>
     ///
     /// <para><b>Why the card is a SCALED BLIT of the native rig and not a smaller RENDER.</b> Drawing a
     /// half-size instrument looks like the cheaper, crisper option and is not: the rig picks its font
@@ -21,9 +22,8 @@ namespace HiddenHarbours.UI
     /// GLASS WIDTH (<c>:149</c>). Those are two different scaling laws, and below ~83% of native they
     /// disagree — the 5-character key legends grow wider than the pusher column and the strip's text grows
     /// taller than the strip. The rig is authored for one size. So the surface is always 480×660 and the
-    /// card state simply blits it at <c>CardScale</c>; at the shipped 0.5 that is an exact 2:1 decimation
-    /// of point-filtered pixel art, which is the best a downscale can do, and the FOCUSED state the player
-    /// reads properly is native and pixel-exact.</para>
+    /// raised card blits it whole: native and pixel-exact wherever the screen has room, a little under
+    /// native only on a screen too short for it.</para>
     /// </summary>
     public static class FishFinderOverlayLayout
     {
@@ -37,42 +37,9 @@ namespace HiddenHarbours.UI
         /// <summary>The right-edge depth scale — a tap toggles feet/metres (Ruling A).</summary>
         public const int RulerHit = 5;
 
-        /// <summary>Smallest the card may shrink to, as a fraction of the rig's native size, so a
-        /// mis-dialled scale or a tiny window degrades to "small" rather than to nothing.</summary>
-        private const float MinScale = 0.2f;
-
-        /// <summary>The on-screen scale of the native 480×660 blit in a given state, clamped so the card
-        /// always fits the screen it has to sit on whatever the owner dials in. One scale drives both
-        /// axes — a portrait instrument must never be stretched.</summary>
-        public static float CardScale(bool focused, in FishFinderSettings s, float screenW, float screenH)
-        {
-            float scale = focused ? s.FocusScale : s.CardScale;
-            if (!(scale > 0f)) scale = 1f;
-            if (screenW > 0f) scale = Mathf.Min(scale, screenW / FishRigGeometry.W);
-            if (screenH > 0f)
-                scale = Mathf.Min(scale, Mathf.Max(0f, screenH - s.MarginY * 2f) / FishRigGeometry.H);
-            return scale < MinScale ? MinScale : scale;
-        }
-
         /// <summary>
-        /// The finder card's screen rect: SMALL sits inset from the TOP-RIGHT corner, FOCUSED is centred
-        /// on the configured anchor. Same corner as the depth sounder — it is the same brow cutout and the
-        /// player only ever has one of the two — but its own scales, because a portrait instrument does
-        /// not sit where a landscape one did.
-        /// </summary>
-        public static Rect CardRect(bool focused, in FishFinderSettings s, float screenW, float screenH)
-        {
-            float scale = CardScale(focused, in s, screenW, screenH);
-            float w = FishRigGeometry.W * scale, h = FishRigGeometry.H * scale;
-            if (!focused)
-                return new Rect(screenW - s.MarginX - w, screenH - s.MarginY - h, w, h);
-            return new Rect(screenW * s.FocusCenterX01 - w * 0.5f,
-                            screenH * s.FocusCenterY01 - h * 0.5f, w, h);
-        }
-
-        /// <summary>
-        /// Hit-test the finder's controls in RIG space against the standalone mount box, so focus scaling
-        /// needs no special-casing (the S1 discipline). The pushers win over the glass regions, which are
+        /// Hit-test the finder's controls in RIG space against the standalone mount box, so the card's
+        /// scale needs no special-casing (the S1 discipline). The pushers win over the glass regions, which are
         /// disjoint anyway.
         /// </summary>
         public static int HitTest(Vector2 rigPx)

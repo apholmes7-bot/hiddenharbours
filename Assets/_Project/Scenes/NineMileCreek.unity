@@ -2519,132 +2519,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &13689513
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 13689514}
-  - component: {fileID: 13689516}
-  - component: {fileID: 13689515}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_054
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &13689514
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 13689513}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 40.401424, y: 55.005943, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &13689515
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 13689513}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1013
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &13689516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 13689513}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 40.401424, y: 55.005943}
-  - {x: 40.45977, y: 55.24904}
-  - {x: 40.518112, y: 55.492138}
-  - {x: 40.576454, y: 55.735233}
-  - {x: 40.6348, y: 55.97833}
-  - {x: 40.693142, y: 56.221428}
-  - {x: 40.751488, y: 56.464523}
-  - {x: 40.80983, y: 56.70762}
-  - {x: 40.86817, y: 56.950718}
-  _toePlan:
-  - {x: 43.31859, y: 54.305824}
-  - {x: 43.37693, y: 54.54892}
-  - {x: 43.435272, y: 54.79202}
-  - {x: 43.493614, y: 55.035114}
-  - {x: 43.551964, y: 55.27821}
-  - {x: 43.610306, y: 55.52131}
-  - {x: 43.668648, y: 55.764404}
-  - {x: 43.72699, y: 56.0075}
-  - {x: 43.78533, y: 56.2506}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 50.28342
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &14809219
 GameObject:
   m_ObjectHideFlags: 0
@@ -5208,8 +5082,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 16.283306
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 2.0000005
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -5550,132 +5424,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &29683401
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 29683402}
-  - component: {fileID: 29683404}
-  - component: {fileID: 29683403}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_049
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &29683402
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 29683401}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.067696, y: 45.28207, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &29683403
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 29683401}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1052
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &29683404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 29683401}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 38.067696, y: 45.28207}
-  - {x: 38.126038, y: 45.525166}
-  - {x: 38.184383, y: 45.76826}
-  - {x: 38.242725, y: 46.01136}
-  - {x: 38.30107, y: 46.254456}
-  - {x: 38.359413, y: 46.497555}
-  - {x: 38.417755, y: 46.74065}
-  - {x: 38.4761, y: 46.983746}
-  - {x: 38.534443, y: 47.226845}
-  _toePlan:
-  - {x: 40.984856, y: 44.58195}
-  - {x: 41.043198, y: 44.825047}
-  - {x: 41.101547, y: 45.068142}
-  - {x: 41.15989, y: 45.31124}
-  - {x: 41.21823, y: 45.554337}
-  - {x: 41.276573, y: 45.797436}
-  - {x: 41.334915, y: 46.04053}
-  - {x: 41.393265, y: 46.283627}
-  - {x: 41.451607, y: 46.526726}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 40.283363
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &30561795
 GameObject:
   m_ObjectHideFlags: 0
@@ -10985,132 +10733,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &55652765
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 55652766}
-  - component: {fileID: 55652768}
-  - component: {fileID: 55652767}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_055
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &55652766
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 55652765}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 40.86817, y: 56.950718, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &55652767
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 55652765}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1005
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &55652768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 55652765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 40.86817, y: 56.950718}
-  - {x: 40.926514, y: 57.193813}
-  - {x: 40.98486, y: 57.436913}
-  - {x: 41.0432, y: 57.680008}
-  - {x: 41.101543, y: 57.923103}
-  - {x: 41.15989, y: 58.166203}
-  - {x: 41.21823, y: 58.409298}
-  - {x: 41.276573, y: 58.652393}
-  - {x: 41.33492, y: 58.895493}
-  _toePlan:
-  - {x: 43.78533, y: 56.2506}
-  - {x: 43.843674, y: 56.493694}
-  - {x: 43.902023, y: 56.736794}
-  - {x: 43.960365, y: 56.97989}
-  - {x: 44.018707, y: 57.222984}
-  - {x: 44.07705, y: 57.466084}
-  - {x: 44.13539, y: 57.70918}
-  - {x: 44.193733, y: 57.952274}
-  - {x: 44.252083, y: 58.195374}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 52.283432
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &55903140
 GameObject:
   m_ObjectHideFlags: 0
@@ -16279,124 +15901,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &98533052
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 98533053}
-  - component: {fileID: 98533055}
-  - component: {fileID: 98533054}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_061
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &98533053
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 98533052}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 43.668648, y: 68.61936, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &98533054
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 98533052}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 958
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &98533055
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 98533052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 43.668648, y: 68.61936}
-  - {x: 43.72699, y: 68.86246}
-  - {x: 43.785336, y: 69.10556}
-  - {x: 43.843678, y: 69.348656}
-  - {x: 43.90202, y: 69.59175}
-  - {x: 43.960365, y: 69.83485}
-  - {x: 43.999996, y: 69.999985}
-  _toePlan:
-  - {x: 46.585808, y: 67.91924}
-  - {x: 46.64415, y: 68.16234}
-  - {x: 46.7025, y: 68.40544}
-  - {x: 46.76084, y: 68.64854}
-  - {x: 46.819183, y: 68.89163}
-  - {x: 46.877525, y: 69.13473}
-  - {x: 46.91716, y: 69.299866}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 64.28349
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &99541422
 GameObject:
   m_ObjectHideFlags: 0
@@ -18168,132 +17672,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &104600300
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 104600301}
-  - component: {fileID: 104600303}
-  - component: {fileID: 104600302}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_062
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &104600301
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104600300}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 43.999996, y: 69.999985, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &104600302
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104600300}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 954
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &104600303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 104600300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 43.999996, y: 69.999985}
-  - {x: 44.08259, y: 70.23596}
-  - {x: 44.165176, y: 70.47193}
-  - {x: 44.247765, y: 70.70789}
-  - {x: 44.33035, y: 70.943855}
-  - {x: 44.412937, y: 71.179825}
-  - {x: 44.495525, y: 71.41579}
-  - {x: 44.578114, y: 71.65175}
-  - {x: 44.6607, y: 71.88772}
-  _toePlan:
-  - {x: 46.83157, y: 69.008934}
-  - {x: 46.91416, y: 69.24491}
-  - {x: 46.99675, y: 69.48088}
-  - {x: 47.079338, y: 69.71684}
-  - {x: 47.161922, y: 69.952805}
-  - {x: 47.24451, y: 70.188774}
-  - {x: 47.3271, y: 70.424736}
-  - {x: 47.409687, y: 70.6607}
-  - {x: 47.492275, y: 70.89667}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 65.70333
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &104772542
 GameObject:
   m_ObjectHideFlags: 0
@@ -23454,7 +22832,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1337
+  m_SortingOrder: 1328
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
 --- !u!114 &134322301
@@ -23474,39 +22852,27 @@ MonoBehaviour:
   - {x: 33.591892, y: -27.756784}
   - {x: 33.583565, y: -27.506924}
   - {x: 33.575237, y: -27.257063}
-  - {x: 33.566906, y: -27.007202}
-  - {x: 33.55858, y: -26.75734}
-  - {x: 33.55025, y: -26.507479}
-  - {x: 33.54192, y: -26.257618}
+  - {x: 33.766796, y: -27.00054}
   _toePlan:
-  - {x: 36.598553, y: -27.906702}
-  - {x: 36.590225, y: -27.65684}
-  - {x: 36.581898, y: -27.406979}
-  - {x: 36.57357, y: -27.157118}
-  - {x: 36.56524, y: -26.907257}
-  - {x: 36.55691, y: -26.657394}
-  - {x: 36.548584, y: -26.407534}
-  - {x: 36.540253, y: -26.157673}
+  - {x: 36.24875, y: -27.918362}
+  - {x: 36.24042, y: -27.6685}
+  - {x: 36.232094, y: -27.41864}
+  - {x: 36.223766, y: -27.168777}
+  - {x: 36.215435, y: -26.918917}
   _dropMetres:
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.6437035
-  - 7.6174808
+  - 4.690387
+  - 4.4217033
+  - 4.1387944
+  - 3.8603148
+  - 3.5064518
   _toeElevations:
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6437036
-  - -1.6174808
-  _alongOffsetMetres: 47.096718
-  _rowsBasisSurfaceMetres: 8.217208
+  - 1.3096132
+  - 1.5782967
+  - 1.8612056
+  - 2.1396852
+  - 2.4112456
+  _alongOffsetMetres: 12.000015
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -23524,7 +22890,7 @@ MonoBehaviour:
   _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
   _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
   _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
-  _wallAzimuth: 88.090836
+  _wallAzimuth: 88.090866
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
   _faceMetresS: 12
@@ -23732,132 +23098,6 @@ MonoBehaviour:
   _owner: {fileID: 0}
   _reviewVisual: {fileID: 11400000, guid: 6c9dac1a42d97a74b914cfa157c61b9f, type: 2}
   _headingDegrees: 90
---- !u!1 &135922532
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 135922533}
-  - component: {fileID: 135922535}
-  - component: {fileID: 135922534}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_057
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &135922533
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 135922532}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 41.801662, y: 60.840263, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &135922534
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 135922532}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 990
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &135922535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 135922532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 41.801662, y: 60.840263}
-  - {x: 41.86001, y: 61.083363}
-  - {x: 41.91835, y: 61.32646}
-  - {x: 41.976692, y: 61.569553}
-  - {x: 42.035038, y: 61.812653}
-  - {x: 42.09338, y: 62.055748}
-  - {x: 42.151722, y: 62.298847}
-  - {x: 42.210068, y: 62.541943}
-  - {x: 42.26841, y: 62.785038}
-  _toePlan:
-  - {x: 44.718826, y: 60.140144}
-  - {x: 44.77717, y: 60.383244}
-  - {x: 44.83551, y: 60.626343}
-  - {x: 44.893852, y: 60.869434}
-  - {x: 44.9522, y: 61.112534}
-  - {x: 45.010544, y: 61.35563}
-  - {x: 45.068886, y: 61.59873}
-  - {x: 45.127228, y: 61.841824}
-  - {x: 45.18557, y: 62.08492}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 56.28345
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &136257819
 GameObject:
   m_ObjectHideFlags: 0
@@ -24974,8 +24214,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 14.283305
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 0
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -26528,132 +25768,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &147413359
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 147413360}
-  - component: {fileID: 147413362}
-  - component: {fileID: 147413361}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_056
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &147413360
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 147413359}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 41.33492, y: 58.895493, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &147413361
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 147413359}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 997
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &147413362
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 147413359}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 41.33492, y: 58.895493}
-  - {x: 41.39326, y: 59.138588}
-  - {x: 41.451603, y: 59.381687}
-  - {x: 41.50995, y: 59.62478}
-  - {x: 41.56829, y: 59.867878}
-  - {x: 41.626633, y: 60.110977}
-  - {x: 41.68498, y: 60.354073}
-  - {x: 41.74332, y: 60.597168}
-  - {x: 41.801662, y: 60.840263}
-  _toePlan:
-  - {x: 44.252083, y: 58.195374}
-  - {x: 44.310425, y: 58.43847}
-  - {x: 44.368767, y: 58.68157}
-  - {x: 44.42711, y: 58.92466}
-  - {x: 44.48545, y: 59.16776}
-  - {x: 44.543793, y: 59.41086}
-  - {x: 44.602142, y: 59.653954}
-  - {x: 44.660484, y: 59.89705}
-  - {x: 44.718826, y: 60.140144}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 54.283443
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &148067102
 GameObject:
   m_ObjectHideFlags: 0
@@ -41199,41 +40313,29 @@ MonoBehaviour:
   - {x: 33.708496, y: -31.254856}
   - {x: 33.700165, y: -31.004995}
   - {x: 33.691837, y: -30.755135}
-  - {x: 33.68351, y: -30.505259}
-  - {x: 33.67518, y: -30.255398}
-  - {x: 33.66685, y: -30.005535}
   _toePlan:
   - {x: 36.731815, y: -31.904495}
   - {x: 36.723484, y: -31.654634}
-  - {x: 36.715157, y: -31.404774}
+  - {x: 36.71516, y: -31.404774}
   - {x: 36.70683, y: -31.154911}
-  - {x: 36.698498, y: -30.90505}
-  - {x: 36.69017, y: -30.65519}
-  - {x: 36.681843, y: -30.405313}
-  - {x: 36.67351, y: -30.155453}
-  - {x: 36.665184, y: -29.90559}
+  - {x: 36.74847, y: -30.903383}
+  - {x: 36.290394, y: -30.668516}
   _dropMetres:
   - 7.65
   - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
+  - 7.545703
+  - 7.4654694
+  - 7.403362
+  - 6.8892317
   _toeElevations:
   - -1.6500001
   - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  _alongOffsetMetres: 43.096703
-  _rowsBasisSurfaceMetres: 8.217208
+  - -1.545703
+  - -1.4654694
+  - -1.4033618
+  - -0.88923156
+  _alongOffsetMetres: 8.000004
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -46704,132 +45806,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &268661265
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 268661266}
-  - component: {fileID: 268661268}
-  - component: {fileID: 268661267}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_059
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &268661266
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 268661265}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.735157, y: 64.72981, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &268661267
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 268661265}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 974
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &268661268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 268661265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 42.735157, y: 64.72981}
-  - {x: 42.7935, y: 64.97291}
-  - {x: 42.85184, y: 65.21601}
-  - {x: 42.910187, y: 65.45911}
-  - {x: 42.96853, y: 65.7022}
-  - {x: 43.02687, y: 65.9453}
-  - {x: 43.085217, y: 66.18839}
-  - {x: 43.14356, y: 66.431496}
-  - {x: 43.2019, y: 66.67459}
-  _toePlan:
-  - {x: 45.65232, y: 64.02969}
-  - {x: 45.710663, y: 64.27279}
-  - {x: 45.769005, y: 64.51589}
-  - {x: 45.827347, y: 64.75899}
-  - {x: 45.88569, y: 65.00208}
-  - {x: 45.94403, y: 65.24518}
-  - {x: 46.00238, y: 65.48827}
-  - {x: 46.060722, y: 65.73138}
-  - {x: 46.119064, y: 65.97447}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 60.283474
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &269748234
 GameObject:
   m_ObjectHideFlags: 0
@@ -48665,132 +47641,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &278855606
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 278855607}
-  - component: {fileID: 278855609}
-  - component: {fileID: 278855608}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_051
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &278855607
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 278855606}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.00119, y: 49.17162, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &278855608
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 278855606}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1036
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &278855609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 278855606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 39.00119, y: 49.17162}
-  - {x: 39.059532, y: 49.414715}
-  - {x: 39.117874, y: 49.65781}
-  - {x: 39.176216, y: 49.90091}
-  - {x: 39.234562, y: 50.144005}
-  - {x: 39.292904, y: 50.387104}
-  - {x: 39.351246, y: 50.6302}
-  - {x: 39.40959, y: 50.873295}
-  - {x: 39.467934, y: 51.116394}
-  _toePlan:
-  - {x: 41.91835, y: 48.4715}
-  - {x: 41.976692, y: 48.714596}
-  - {x: 42.035034, y: 48.95769}
-  - {x: 42.093376, y: 49.20079}
-  - {x: 42.151726, y: 49.443886}
-  - {x: 42.210068, y: 49.686985}
-  - {x: 42.26841, y: 49.93008}
-  - {x: 42.32675, y: 50.173176}
-  - {x: 42.385094, y: 50.416275}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 44.283386
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &278968235
 GameObject:
   m_ObjectHideFlags: 0
@@ -55086,8 +53936,8 @@ MonoBehaviour:
   - 1.4205881
   - 1.5467507
   - 1.6611104
-  _alongOffsetMetres: 54.096714
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 6
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -60499,120 +59349,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &350373619
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 350373620}
-  - component: {fileID: 350373622}
-  - component: {fileID: 350373621}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_ramp_083
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &350373620
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 350373619}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 56.883667, y: 106.81047, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &350373621
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 350373619}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 800
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &350373622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 350373619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 56.883667, y: 106.81047}
-  - {x: 56.966255, y: 107.04644}
-  - {x: 57.04884, y: 107.2824}
-  - {x: 57.131428, y: 107.51837}
-  - {x: 57.214016, y: 107.75433}
-  - {x: 57.296604, y: 107.990295}
-  _toePlan:
-  - {x: 59.71524, y: 105.81942}
-  - {x: 59.79783, y: 106.05539}
-  - {x: 59.880413, y: 106.29135}
-  - {x: 59.963, y: 106.52732}
-  - {x: 60.04559, y: 106.76328}
-  - {x: 60.128178, y: 106.999245}
-  _dropMetres:
-  - 6.94736
-  - 6.7616277
-  - 6.5964246
-  - 6.453894
-  - 6.336178
-  - 6.2454176
-  _toeElevations:
-  - -0.9473603
-  - -0.76162773
-  - -0.59642446
-  - -0.45389417
-  - -0.3361776
-  - -0.24541758
-  _alongOffsetMetres: 104.703705
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 2.0386264
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
-    StartSurfaceMetres: 2.0386264
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 62
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &350804913
 GameObject:
   m_ObjectHideFlags: 0
@@ -64424,8 +63160,8 @@ MonoBehaviour:
   - 0.9847391
   - 1.1382366
   - 1.2839681
-  _alongOffsetMetres: 52.846714
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 4.7500005
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -66126,132 +64862,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &380847590
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 380847591}
-  - component: {fileID: 380847593}
-  - component: {fileID: 380847592}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_063
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &380847591
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 380847590}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 44.6607, y: 71.88772, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &380847592
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 380847590}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 947
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &380847593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 380847590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 44.6607, y: 71.88772}
-  - {x: 44.74329, y: 72.12368}
-  - {x: 44.825874, y: 72.35964}
-  - {x: 44.908463, y: 72.59561}
-  - {x: 44.99105, y: 72.83157}
-  - {x: 45.07364, y: 73.06754}
-  - {x: 45.156227, y: 73.303505}
-  - {x: 45.238815, y: 73.53947}
-  - {x: 45.321404, y: 73.77544}
-  _toePlan:
-  - {x: 47.492275, y: 70.89667}
-  - {x: 47.574863, y: 71.13263}
-  - {x: 47.657448, y: 71.36859}
-  - {x: 47.740036, y: 71.60456}
-  - {x: 47.822624, y: 71.84052}
-  - {x: 47.905212, y: 72.07649}
-  - {x: 47.9878, y: 72.312454}
-  - {x: 48.07039, y: 72.548416}
-  - {x: 48.152977, y: 72.784386}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.191385
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.191385
-  _alongOffsetMetres: 67.70337
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &382002469
 GameObject:
   m_ObjectHideFlags: 0
@@ -67705,132 +66315,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &391942822
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 391942823}
-  - component: {fileID: 391942825}
-  - component: {fileID: 391942824}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_050
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &391942823
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 391942822}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.534443, y: 47.226845, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &391942824
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 391942822}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1044
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &391942825
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 391942822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 38.534443, y: 47.226845}
-  - {x: 38.592785, y: 47.46994}
-  - {x: 38.65113, y: 47.713036}
-  - {x: 38.709473, y: 47.956135}
-  - {x: 38.767815, y: 48.19923}
-  - {x: 38.82616, y: 48.44233}
-  - {x: 38.884502, y: 48.685425}
-  - {x: 38.942844, y: 48.92852}
-  - {x: 39.00119, y: 49.17162}
-  _toePlan:
-  - {x: 41.451607, y: 46.526726}
-  - {x: 41.50995, y: 46.76982}
-  - {x: 41.56829, y: 47.012917}
-  - {x: 41.626633, y: 47.256016}
-  - {x: 41.684975, y: 47.49911}
-  - {x: 41.743324, y: 47.74221}
-  - {x: 41.801666, y: 47.985306}
-  - {x: 41.86001, y: 48.2284}
-  - {x: 41.91835, y: 48.4715}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 42.283375
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &392040808
 GameObject:
   m_ObjectHideFlags: 0
@@ -72686,8 +71170,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 18.283306
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 4
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -74229,7 +72713,7 @@ MonoBehaviour:
   - -3.1708357
   - -3.1893208
   _alongOffsetMetres: 6.5000005
-  _rowsBasisSurfaceMetres: 12.369316
+  _rowsBasisSurfaceMetres: 9.66727
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -74382,140 +72866,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &432550660
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 432550661}
-  - component: {fileID: 432550663}
-  - component: {fileID: 432550662}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_068
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &432550661
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432550660}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48.294556, y: 82.27016, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &432550662
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432550660}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 910
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &432550663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432550660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 48.294556, y: 82.27016}
-  - {x: 48.377144, y: 82.50612}
-  - {x: 48.459732, y: 82.74209}
-  - {x: 48.542316, y: 82.97805}
-  - {x: 48.624905, y: 83.21402}
-  - {x: 48.707493, y: 83.44998}
-  - {x: 48.79008, y: 83.68594}
-  - {x: 48.87267, y: 83.92191}
-  - {x: 48.955257, y: 84.157875}
-  - {x: 49.037846, y: 84.39384}
-  - {x: 49.12043, y: 84.62981}
-  _toePlan:
-  - {x: 51.12613, y: 81.279106}
-  - {x: 51.208717, y: 81.51507}
-  - {x: 51.291306, y: 81.75104}
-  - {x: 51.37389, y: 81.987}
-  - {x: 51.45648, y: 82.22297}
-  - {x: 51.539066, y: 82.45893}
-  - {x: 51.621655, y: 82.69489}
-  - {x: 51.704243, y: 82.93086}
-  - {x: 51.78683, y: 83.166824}
-  - {x: 51.86942, y: 83.40279}
-  - {x: 51.952003, y: 83.638756}
-  _dropMetres:
-  - 10.673222
-  - 10.708403
-  - 10.748942
-  - 10.794327
-  - 10.844043
-  - 10.897574
-  - 10.954407
-  - 11.014027
-  - 11.075918
-  - 11.139568
-  - 11.204462
-  _toeElevations:
-  - -4.6732216
-  - -4.708402
-  - -4.7489424
-  - -4.7943273
-  - -4.844043
-  - -4.8975744
-  - -4.954407
-  - -5.0140266
-  - -5.0759187
-  - -5.1395683
-  - -5.2044616
-  _alongOffsetMetres: 78.70347
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &432656330
 GameObject:
   m_ObjectHideFlags: 0
@@ -77247,132 +75597,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &449439915
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 449439916}
-  - component: {fileID: 449439918}
-  - component: {fileID: 449439917}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_052
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &449439916
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449439915}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.467934, y: 51.116394, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &449439917
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449439915}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1028
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &449439918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449439915}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 39.467934, y: 51.116394}
-  - {x: 39.52628, y: 51.35949}
-  - {x: 39.58462, y: 51.602585}
-  - {x: 39.642963, y: 51.845684}
-  - {x: 39.70131, y: 52.08878}
-  - {x: 39.75965, y: 52.33188}
-  - {x: 39.817993, y: 52.574974}
-  - {x: 39.876335, y: 52.81807}
-  - {x: 39.93468, y: 53.06117}
-  _toePlan:
-  - {x: 42.385094, y: 50.416275}
-  - {x: 42.443443, y: 50.65937}
-  - {x: 42.501785, y: 50.902466}
-  - {x: 42.560127, y: 51.145565}
-  - {x: 42.61847, y: 51.38866}
-  - {x: 42.67681, y: 51.63176}
-  - {x: 42.735153, y: 51.874855}
-  - {x: 42.793495, y: 52.11795}
-  - {x: 42.851845, y: 52.36105}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 46.283398
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &450735828
 GameObject:
   m_ObjectHideFlags: 0
@@ -84105,132 +82329,6 @@ Transform:
   - {fileID: 1936397407}
   m_Father: {fileID: 959684785}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &479434768
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 479434769}
-  - component: {fileID: 479434771}
-  - component: {fileID: 479434770}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_060
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &479434769
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 479434768}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 43.2019, y: 66.67459, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &479434770
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 479434768}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 966
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &479434771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 479434768}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 43.2019, y: 66.67459}
-  - {x: 43.260246, y: 66.91769}
-  - {x: 43.31859, y: 67.16078}
-  - {x: 43.37693, y: 67.40388}
-  - {x: 43.435272, y: 67.64697}
-  - {x: 43.493618, y: 67.890076}
-  - {x: 43.55196, y: 68.13317}
-  - {x: 43.610306, y: 68.37627}
-  - {x: 43.668648, y: 68.61936}
-  _toePlan:
-  - {x: 46.119064, y: 65.97447}
-  - {x: 46.177406, y: 66.21757}
-  - {x: 46.23575, y: 66.46066}
-  - {x: 46.29409, y: 66.70376}
-  - {x: 46.352432, y: 66.94685}
-  - {x: 46.41078, y: 67.18996}
-  - {x: 46.469124, y: 67.43305}
-  - {x: 46.527466, y: 67.67615}
-  - {x: 46.585808, y: 67.91924}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 62.28349
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &480453830
 GameObject:
   m_ObjectHideFlags: 0
@@ -93454,8 +91552,8 @@ MonoBehaviour:
   - -1.3345699
   - -1.226065
   - -1.1051416
-  _alongOffsetMetres: 48.846718
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 0.7500005
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -94618,8 +92716,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 28.283312
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 13.999993
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -100098,116 +98196,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &579865708
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 579865709}
-  - component: {fileID: 579865711}
-  - component: {fileID: 579865710}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_080
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &579865709
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579865708}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 55.9752, y: 104.21487, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &579865710
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579865708}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 819
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &579865711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579865708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 55.9752, y: 104.21487}
-  - {x: 56.05779, y: 104.45083}
-  - {x: 56.140377, y: 104.6868}
-  - {x: 56.222965, y: 104.92276}
-  - {x: 56.305553, y: 105.15872}
-  _toePlan:
-  - {x: 58.806774, y: 103.223816}
-  - {x: 58.889362, y: 103.45978}
-  - {x: 58.97195, y: 103.69575}
-  - {x: 59.05454, y: 103.93171}
-  - {x: 59.137127, y: 104.16767}
-  _dropMetres:
-  - 9.732731
-  - 9.462553
-  - 9.189342
-  - 8.915238
-  - 8.642385
-  _toeElevations:
-  - -3.7327309
-  - -3.4625533
-  - -3.1893415
-  - -2.9152381
-  - -2.6423848
-  _alongOffsetMetres: 101.95369
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &580624278
 GameObject:
   m_ObjectHideFlags: 0
@@ -103893,7 +101881,7 @@ Transform:
   m_GameObject: {fileID: 600323447}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 350, y: -200, z: 0}
+  m_LocalPosition: {x: 338, y: -197.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -105008,116 +102996,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &608371475
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 608371476}
-  - component: {fileID: 608371478}
-  - component: {fileID: 608371477}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_079
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &608371476
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 608371475}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 55.64485, y: 103.271, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &608371477
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 608371475}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 826
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &608371478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 608371475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 55.64485, y: 103.271}
-  - {x: 55.72744, y: 103.50697}
-  - {x: 55.810028, y: 103.742935}
-  - {x: 55.892616, y: 103.9789}
-  - {x: 55.9752, y: 104.21487}
-  _toePlan:
-  - {x: 58.476425, y: 102.27995}
-  - {x: 58.559013, y: 102.51592}
-  - {x: 58.6416, y: 102.751884}
-  - {x: 58.72419, y: 102.98785}
-  - {x: 58.806774, y: 103.223816}
-  _dropMetres:
-  - 10.740255
-  - 10.503636
-  - 10.255415
-  - 9.997732
-  - 9.732731
-  _toeElevations:
-  - -4.740256
-  - -4.5036364
-  - -4.255415
-  - -3.9977322
-  - -3.7327309
-  _alongOffsetMetres: 100.95368
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &608502262
 GameObject:
   m_ObjectHideFlags: 0
@@ -107809,132 +105687,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1640873955}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &620363174
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 620363175}
-  - component: {fileID: 620363177}
-  - component: {fileID: 620363176}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_067
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &620363175
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 620363174}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 47.633854, y: 80.38244, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &620363176
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 620363174}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 917
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &620363177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 620363174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 47.633854, y: 80.38244}
-  - {x: 47.716442, y: 80.61841}
-  - {x: 47.79903, y: 80.85437}
-  - {x: 47.88162, y: 81.09033}
-  - {x: 47.964207, y: 81.3263}
-  - {x: 48.04679, y: 81.56226}
-  - {x: 48.12938, y: 81.79823}
-  - {x: 48.211967, y: 82.034195}
-  - {x: 48.294556, y: 82.27016}
-  _toePlan:
-  - {x: 50.465427, y: 79.39139}
-  - {x: 50.548016, y: 79.62736}
-  - {x: 50.630604, y: 79.86332}
-  - {x: 50.713192, y: 80.09928}
-  - {x: 50.79578, y: 80.33525}
-  - {x: 50.878365, y: 80.57121}
-  - {x: 50.960953, y: 80.80718}
-  - {x: 51.04354, y: 81.043144}
-  - {x: 51.12613, y: 81.279106}
-  _dropMetres:
-  - 10.550377
-  - 10.572176
-  - 10.586987
-  - 10.594293
-  - 10.596385
-  - 10.604982
-  - 10.620996
-  - 10.643915
-  - 10.673222
-  _toeElevations:
-  - -4.5503764
-  - -4.572176
-  - -4.586986
-  - -4.5942926
-  - -4.596385
-  - -4.6049824
-  - -4.620997
-  - -4.643915
-  - -4.6732216
-  _alongOffsetMetres: 76.703445
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &620463309
 GameObject:
   m_ObjectHideFlags: 0
@@ -110300,140 +108052,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &633656475
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 633656476}
-  - component: {fileID: 633656478}
-  - component: {fileID: 633656477}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_065
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &633656476
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633656475}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 46.06469, y: 75.89912, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &633656477
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633656475}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 931
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &633656478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 633656475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 46.06469, y: 75.89912}
-  - {x: 46.147278, y: 76.13508}
-  - {x: 46.229866, y: 76.37104}
-  - {x: 46.312454, y: 76.60701}
-  - {x: 46.39504, y: 76.84297}
-  - {x: 46.477627, y: 77.07893}
-  - {x: 46.560215, y: 77.3149}
-  - {x: 46.642803, y: 77.550865}
-  - {x: 46.72539, y: 77.786835}
-  - {x: 46.80798, y: 78.0228}
-  - {x: 46.890568, y: 78.25876}
-  _toePlan:
-  - {x: 48.896263, y: 74.908066}
-  - {x: 48.97885, y: 75.14403}
-  - {x: 49.06144, y: 75.37999}
-  - {x: 49.144028, y: 75.61596}
-  - {x: 49.226612, y: 75.85192}
-  - {x: 49.3092, y: 76.08788}
-  - {x: 49.39179, y: 76.32385}
-  - {x: 49.474377, y: 76.559814}
-  - {x: 49.556965, y: 76.795784}
-  - {x: 49.639553, y: 77.031746}
-  - {x: 49.72214, y: 77.26771}
-  _dropMetres:
-  - 9.492575
-  - 9.549407
-  - 9.609027
-  - 9.670918
-  - 9.734569
-  - 9.799461
-  - 9.865084
-  - 9.93092
-  - 9.996455
-  - 10.061176
-  - 10.124569
-  _toeElevations:
-  - -3.4925742
-  - -3.549407
-  - -3.6090267
-  - -3.6709187
-  - -3.7345686
-  - -3.7994616
-  - -3.8650837
-  - -3.9309196
-  - -3.9964554
-  - -4.061177
-  - -4.1245685
-  _alongOffsetMetres: 71.953415
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &634375918
 GameObject:
   m_ObjectHideFlags: 0
@@ -113359,8 +110977,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 24.28331
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 9.999996
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -120085,132 +117703,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &688034266
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 688034267}
-  - component: {fileID: 688034269}
-  - component: {fileID: 688034268}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_071
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &688034267
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 688034266}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 50.689594, y: 89.11313, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &688034268
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 688034266}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 886
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &688034269
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 688034266}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 50.689594, y: 89.11313}
-  - {x: 50.772182, y: 89.3491}
-  - {x: 50.85477, y: 89.58506}
-  - {x: 50.93736, y: 89.82102}
-  - {x: 51.019947, y: 90.05699}
-  - {x: 51.102535, y: 90.29295}
-  - {x: 51.18512, y: 90.528915}
-  - {x: 51.267708, y: 90.764885}
-  - {x: 51.350296, y: 91.00085}
-  _toePlan:
-  - {x: 53.521168, y: 88.12208}
-  - {x: 53.603756, y: 88.35805}
-  - {x: 53.686344, y: 88.59401}
-  - {x: 53.768932, y: 88.82997}
-  - {x: 53.85152, y: 89.06594}
-  - {x: 53.93411, y: 89.3019}
-  - {x: 54.016693, y: 89.537865}
-  - {x: 54.09928, y: 89.773834}
-  - {x: 54.18187, y: 90.009796}
-  _dropMetres:
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  _toeElevations:
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  _alongOffsetMetres: 85.95353
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &688531390
 GameObject:
   m_ObjectHideFlags: 0
@@ -121945,7 +119437,7 @@ MonoBehaviour:
   - -1.5392356
   - -1.7388015
   _alongOffsetMetres: 6.250001
-  _rowsBasisSurfaceMetres: 12.369316
+  _rowsBasisSurfaceMetres: 9.66727
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -124304,8 +121796,8 @@ MonoBehaviour:
   - -1.6500001
   - -1.6500001
   - -1.6500001
-  _alongOffsetMetres: 39.096725
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 4.000004
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -127769,132 +125261,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &724555798
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 724555799}
-  - component: {fileID: 724555801}
-  - component: {fileID: 724555800}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_073
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &724555799
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 724555798}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 52.010998, y: 92.888565, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &724555800
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 724555798}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 871
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &724555801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 724555798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 52.010998, y: 92.888565}
-  - {x: 52.093586, y: 93.12453}
-  - {x: 52.176174, y: 93.3605}
-  - {x: 52.25876, y: 93.59646}
-  - {x: 52.341347, y: 93.83242}
-  - {x: 52.423935, y: 94.06839}
-  - {x: 52.506523, y: 94.30435}
-  - {x: 52.58911, y: 94.54031}
-  - {x: 52.6717, y: 94.77628}
-  _toePlan:
-  - {x: 54.84257, y: 91.897514}
-  - {x: 54.92516, y: 92.13348}
-  - {x: 55.007748, y: 92.369446}
-  - {x: 55.090332, y: 92.60541}
-  - {x: 55.17292, y: 92.84137}
-  - {x: 55.25551, y: 93.07734}
-  - {x: 55.338097, y: 93.3133}
-  - {x: 55.420685, y: 93.54926}
-  - {x: 55.503273, y: 93.78523}
-  _dropMetres:
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  _toeElevations:
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  _alongOffsetMetres: 89.953575
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &727583235
 GameObject:
   m_ObjectHideFlags: 0
@@ -138341,8 +135707,8 @@ MonoBehaviour:
   - -1.6500001
   - -1.6500001
   - -1.6500001
-  _alongOffsetMetres: 41.096714
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 6.000004
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -149452,132 +146818,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &857334912
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 857334913}
-  - component: {fileID: 857334915}
-  - component: {fileID: 857334914}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_047
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &857334913
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857334912}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 37.134205, y: 41.39252, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &857334914
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857334912}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1067
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &857334915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857334912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 37.134205, y: 41.39252}
-  - {x: 37.192547, y: 41.635616}
-  - {x: 37.250893, y: 41.87871}
-  - {x: 37.309235, y: 42.12181}
-  - {x: 37.367577, y: 42.364906}
-  - {x: 37.425922, y: 42.608006}
-  - {x: 37.484264, y: 42.8511}
-  - {x: 37.542606, y: 43.094196}
-  - {x: 37.600952, y: 43.337296}
-  _toePlan:
-  - {x: 40.05137, y: 40.6924}
-  - {x: 40.10971, y: 40.935497}
-  - {x: 40.168053, y: 41.178593}
-  - {x: 40.226395, y: 41.42169}
-  - {x: 40.284737, y: 41.664787}
-  - {x: 40.343086, y: 41.907887}
-  - {x: 40.40143, y: 42.15098}
-  - {x: 40.45977, y: 42.394077}
-  - {x: 40.518112, y: 42.637177}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 36.28334
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &859088905
 GameObject:
   m_ObjectHideFlags: 0
@@ -151054,7 +148294,7 @@ MonoBehaviour:
   - -3.19
   - -3.19
   _alongOffsetMetres: 11.499998
-  _rowsBasisSurfaceMetres: 12.369316
+  _rowsBasisSurfaceMetres: 9.66727
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -252800,8 +250040,11 @@ Transform:
   - {fileID: 707502618}
   - {fileID: 787295735}
   - {fileID: 232413395}
+  - {fileID: 695871406}
   - {fileID: 2125269955}
+  - {fileID: 1789222692}
   - {fileID: 134322299}
+  - {fileID: 1875432371}
   - {fileID: 534218864}
   - {fileID: 1912610958}
   - {fileID: 1008289905}
@@ -252824,46 +250067,6 @@ Transform:
   - {fileID: 541479895}
   - {fileID: 1543995699}
   - {fileID: 1714914701}
-  - {fileID: 1076074984}
-  - {fileID: 857334913}
-  - {fileID: 1419625195}
-  - {fileID: 29683402}
-  - {fileID: 391942823}
-  - {fileID: 278855607}
-  - {fileID: 449439916}
-  - {fileID: 1485426933}
-  - {fileID: 13689514}
-  - {fileID: 55652766}
-  - {fileID: 147413360}
-  - {fileID: 135922533}
-  - {fileID: 1984866704}
-  - {fileID: 268661266}
-  - {fileID: 479434769}
-  - {fileID: 98533053}
-  - {fileID: 104600301}
-  - {fileID: 380847591}
-  - {fileID: 2110554933}
-  - {fileID: 633656476}
-  - {fileID: 1263233671}
-  - {fileID: 620363175}
-  - {fileID: 432550661}
-  - {fileID: 1750128179}
-  - {fileID: 1030379234}
-  - {fileID: 688034267}
-  - {fileID: 1453652398}
-  - {fileID: 724555799}
-  - {fileID: 2026735158}
-  - {fileID: 1887562505}
-  - {fileID: 1290150429}
-  - {fileID: 1857528011}
-  - {fileID: 1333327755}
-  - {fileID: 608371476}
-  - {fileID: 579865709}
-  - {fileID: 1999292576}
-  - {fileID: 1108682930}
-  - {fileID: 350373620}
-  - {fileID: 1073917348}
-  - {fileID: 1159594655}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &950691455
@@ -258915,7 +256118,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionPassage
   _target: {fileID: 11400000, guid: fe385f1cb59348d1adc3131b7f3d1c9b, type: 2}
   _loader: {fileID: 1475814763}
-  _arrivalKey: 
+  _arrivalKey: bar
   _reentryCooldownSeconds: 1.5
 --- !u!61 &985990410
 BoxCollider2D:
@@ -258961,7 +256164,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 6, y: 40}
+  m_Size: {x: 6, y: 120}
   m_EdgeRadius: 0
 --- !u!4 &985990411
 Transform:
@@ -263052,8 +260255,8 @@ MonoBehaviour:
   - 0.14786194
   - 0.3200037
   - 0.49110812
-  _alongOffsetMetres: 51.596718
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 3.500001
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -263584,8 +260787,8 @@ MonoBehaviour:
   - -1.6500001
   - -1.6500001
   - -1.6500001
-  _alongOffsetMetres: 37.096737
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 2.000004
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -266394,136 +263597,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1030379233
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1030379234}
-  - component: {fileID: 1030379236}
-  - component: {fileID: 1030379235}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_070
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1030379234
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1030379233}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 49.94631, y: 86.98945, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1030379235
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1030379233}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 894
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1030379236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1030379233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 49.94631, y: 86.98945}
-  - {x: 50.028896, y: 87.22542}
-  - {x: 50.11148, y: 87.46138}
-  - {x: 50.19407, y: 87.69734}
-  - {x: 50.276657, y: 87.93331}
-  - {x: 50.359245, y: 88.16927}
-  - {x: 50.441833, y: 88.405235}
-  - {x: 50.52442, y: 88.641205}
-  - {x: 50.60701, y: 88.87717}
-  - {x: 50.689594, y: 89.11313}
-  _toePlan:
-  - {x: 52.77788, y: 85.9984}
-  - {x: 52.86047, y: 86.23437}
-  - {x: 52.943054, y: 86.47033}
-  - {x: 53.025642, y: 86.70629}
-  - {x: 53.10823, y: 86.94226}
-  - {x: 53.19082, y: 87.17822}
-  - {x: 53.273407, y: 87.414185}
-  - {x: 53.355995, y: 87.650154}
-  - {x: 53.438583, y: 87.886116}
-  - {x: 53.521168, y: 88.12208}
-  _dropMetres:
-  - 11.8085785
-  - 11.853189
-  - 11.892868
-  - 11.927103
-  - 11.955377
-  - 11.977176
-  - 11.991985
-  - 11.999292
-  - 12
-  - 12
-  _toeElevations:
-  - -5.8085785
-  - -5.853189
-  - -5.8928685
-  - -5.9271026
-  - -5.9553766
-  - -5.9771757
-  - -5.991986
-  - -5.9992924
-  - -6
-  - -6
-  _alongOffsetMetres: 83.70351
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1030553594
 GameObject:
   m_ObjectHideFlags: 0
@@ -275257,128 +272330,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1073917347
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1073917348}
-  - component: {fileID: 1073917350}
-  - component: {fileID: 1073917349}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_ramp_084
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1073917348
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1073917347}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 57.296604, y: 107.990295, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1073917349
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1073917347}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 793
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1073917350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1073917347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 57.296604, y: 107.990295}
-  - {x: 57.379192, y: 108.22626}
-  - {x: 57.46178, y: 108.46223}
-  - {x: 57.54437, y: 108.69819}
-  - {x: 57.626953, y: 108.93416}
-  - {x: 57.70954, y: 109.17012}
-  - {x: 57.79213, y: 109.40608}
-  - {x: 57.874718, y: 109.64205}
-  _toePlan:
-  - {x: 60.128178, y: 106.999245}
-  - {x: 60.210766, y: 107.23521}
-  - {x: 60.293354, y: 107.471176}
-  - {x: 60.375942, y: 107.70714}
-  - {x: 60.458527, y: 107.94311}
-  - {x: 60.541115, y: 108.17907}
-  - {x: 60.623703, y: 108.41503}
-  - {x: 60.70629, y: 108.651}
-  _dropMetres:
-  - 6.2454176
-  - 6.1837564
-  - 6.153336
-  - 6.144624
-  - 6.1088305
-  - 6.0421534
-  - 5.946736
-  - 5.8247213
-  _toeElevations:
-  - -0.24541758
-  - -0.18375637
-  - -0.15333614
-  - -0.14462443
-  - -0.108830586
-  - -0.0421535
-  - 0.05326395
-  - 0.17527889
-  _alongOffsetMetres: 105.95372
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 2.0386264
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
-    StartSurfaceMetres: 2.0386264
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 62
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1074140961
 GameObject:
   m_ObjectHideFlags: 0
@@ -275990,132 +272941,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1076074983
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1076074984}
-  - component: {fileID: 1076074986}
-  - component: {fileID: 1076074985}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_046
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1076074984
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1076074983}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.667458, y: 39.447746, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1076074985
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1076074983}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1075
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1076074986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1076074983}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 36.667458, y: 39.447746}
-  - {x: 36.725803, y: 39.69084}
-  - {x: 36.784145, y: 39.933937}
-  - {x: 36.842487, y: 40.177036}
-  - {x: 36.900833, y: 40.42013}
-  - {x: 36.959175, y: 40.66323}
-  - {x: 37.017517, y: 40.906326}
-  - {x: 37.075863, y: 41.149426}
-  - {x: 37.134205, y: 41.39252}
-  _toePlan:
-  - {x: 39.584618, y: 38.747627}
-  - {x: 39.642967, y: 38.990723}
-  - {x: 39.70131, y: 39.233818}
-  - {x: 39.75965, y: 39.476917}
-  - {x: 39.817993, y: 39.720013}
-  - {x: 39.876335, y: 39.96311}
-  - {x: 39.934677, y: 40.206207}
-  - {x: 39.993027, y: 40.449306}
-  - {x: 40.05137, y: 40.6924}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 34.28333
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1076113605
 GameObject:
   m_ObjectHideFlags: 0
@@ -282723,116 +279548,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1108682929
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1108682930}
-  - component: {fileID: 1108682932}
-  - component: {fileID: 1108682931}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_ramp_082
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1108682930
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1108682929}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 56.553314, y: 105.866615, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1108682931
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1108682929}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 807
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1108682932
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1108682929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 56.553314, y: 105.866615}
-  - {x: 56.635902, y: 106.102585}
-  - {x: 56.71849, y: 106.33855}
-  - {x: 56.80108, y: 106.57451}
-  - {x: 56.883667, y: 106.81047}
-  _toePlan:
-  - {x: 59.384888, y: 104.875565}
-  - {x: 59.467476, y: 105.111534}
-  - {x: 59.550064, y: 105.347496}
-  - {x: 59.632652, y: 105.58346}
-  - {x: 59.71524, y: 105.81942}
-  _dropMetres:
-  - 7.852748
-  - 7.606317
-  - 7.371847
-  - 7.1514816
-  - 6.94736
-  _toeElevations:
-  - -1.8527477
-  - -1.6063169
-  - -1.3718474
-  - -1.1514814
-  - -0.9473603
-  _alongOffsetMetres: 103.7037
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 2.0386264
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
-    StartSurfaceMetres: 2.0386264
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 62
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1109246260
 GameObject:
   m_ObjectHideFlags: 0
@@ -285357,7 +282072,7 @@ MonoBehaviour:
   - -3.19
   - -3.19
   _alongOffsetMetres: 13.499996
-  _rowsBasisSurfaceMetres: 12.369316
+  _rowsBasisSurfaceMetres: 9.66727
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -297407,108 +294122,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1159594654
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1159594655}
-  - component: {fileID: 1159594657}
-  - component: {fileID: 1159594656}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_ramp_085
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1159594655
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1159594654}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 57.874718, y: 109.64205, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1159594656
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1159594654}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 785
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1159594657
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1159594654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 57.874718, y: 109.64205}
-  - {x: 57.957306, y: 109.87801}
-  - {x: 58, y: 110}
-  _toePlan:
-  - {x: 60.70629, y: 108.651}
-  - {x: 60.78888, y: 108.88696}
-  - {x: 60.831573, y: 109.00895}
-  _dropMetres:
-  - 5.8247213
-  - 5.6782494
-  - 5.593643
-  _toeElevations:
-  - 0.17527889
-  - 0.3217505
-  - 0.40635657
-  _alongOffsetMetres: 107.703735
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 2.0386264
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
-    StartSurfaceMetres: 2.0386264
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 62
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1159751599
 GameObject:
   m_ObjectHideFlags: 0
@@ -303459,8 +300072,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 22.28331
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 7.999998
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -316120,136 +312733,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!1 &1263233670
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1263233671}
-  - component: {fileID: 1263233673}
-  - component: {fileID: 1263233672}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_066
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1263233671
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1263233670}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 46.890568, y: 78.25876, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1263233672
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1263233670}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 924
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1263233673
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1263233670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 46.890568, y: 78.25876}
-  - {x: 46.973152, y: 78.49473}
-  - {x: 47.05574, y: 78.73069}
-  - {x: 47.13833, y: 78.96665}
-  - {x: 47.220917, y: 79.20262}
-  - {x: 47.303505, y: 79.43858}
-  - {x: 47.386093, y: 79.674545}
-  - {x: 47.468678, y: 79.910515}
-  - {x: 47.551266, y: 80.14648}
-  - {x: 47.633854, y: 80.38244}
-  _toePlan:
-  - {x: 49.72214, y: 77.26771}
-  - {x: 49.804726, y: 77.50368}
-  - {x: 49.887314, y: 77.73964}
-  - {x: 49.969902, y: 77.9756}
-  - {x: 50.05249, y: 78.21157}
-  - {x: 50.13508, y: 78.44753}
-  - {x: 50.217667, y: 78.683495}
-  - {x: 50.30025, y: 78.919464}
-  - {x: 50.38284, y: 79.155426}
-  - {x: 50.465427, y: 79.39139}
-  _dropMetres:
-  - 10.124569
-  - 10.186116
-  - 10.245306
-  - 10.301622
-  - 10.354551
-  - 10.403578
-  - 10.448189
-  - 10.487868
-  - 10.522102
-  - 10.550377
-  _toeElevations:
-  - -4.1245685
-  - -4.186116
-  - -4.2453055
-  - -4.301622
-  - -4.354551
-  - -4.4035783
-  - -4.448189
-  - -4.4878683
-  - -4.5221024
-  - -4.5503764
-  _alongOffsetMetres: 74.45344
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1265216237
 GameObject:
   m_ObjectHideFlags: 0
@@ -320590,132 +317073,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1290150428
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1290150429}
-  - component: {fileID: 1290150431}
-  - component: {fileID: 1290150430}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_076
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1290150429
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1290150428}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 53.9931, y: 98.55171, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1290150430
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1290150428}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 849
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1290150431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1290150428}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 53.9931, y: 98.55171}
-  - {x: 54.075687, y: 98.78768}
-  - {x: 54.158276, y: 99.02364}
-  - {x: 54.240864, y: 99.259605}
-  - {x: 54.323452, y: 99.495575}
-  - {x: 54.406036, y: 99.73154}
-  - {x: 54.488625, y: 99.9675}
-  - {x: 54.571213, y: 100.20347}
-  - {x: 54.6538, y: 100.43943}
-  _toePlan:
-  - {x: 56.824673, y: 97.56066}
-  - {x: 56.90726, y: 97.79663}
-  - {x: 56.98985, y: 98.03259}
-  - {x: 57.072437, y: 98.268555}
-  - {x: 57.155025, y: 98.504524}
-  - {x: 57.23761, y: 98.740486}
-  - {x: 57.320198, y: 98.97645}
-  - {x: 57.402786, y: 99.21242}
-  - {x: 57.485374, y: 99.44838}
-  _dropMetres:
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  _toeElevations:
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  _alongOffsetMetres: 95.953636
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1290262035
 GameObject:
   m_ObjectHideFlags: 0
@@ -328391,120 +324748,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1333327754
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1333327755}
-  - component: {fileID: 1333327757}
-  - component: {fileID: 1333327756}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_078
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1333327755
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333327754}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 55.231915, y: 102.09119, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1333327756
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333327754}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 833
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1333327757
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333327754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 55.231915, y: 102.09119}
-  - {x: 55.314503, y: 102.32715}
-  - {x: 55.39709, y: 102.56311}
-  - {x: 55.479675, y: 102.79908}
-  - {x: 55.562263, y: 103.03504}
-  - {x: 55.64485, y: 103.271}
-  _toePlan:
-  - {x: 58.063488, y: 101.100136}
-  - {x: 58.146076, y: 101.3361}
-  - {x: 58.228664, y: 101.57206}
-  - {x: 58.31125, y: 101.80803}
-  - {x: 58.393837, y: 102.04399}
-  - {x: 58.476425, y: 102.27995}
-  _dropMetres:
-  - 11.67433
-  - 11.527859
-  - 11.359074
-  - 11.170116
-  - 10.963129
-  - 10.740255
-  _toeElevations:
-  - -5.6743298
-  - -5.5278587
-  - -5.3590736
-  - -5.170116
-  - -4.9631295
-  - -4.740256
-  _alongOffsetMetres: 99.70368
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1334620332
 GameObject:
   m_ObjectHideFlags: 0
@@ -343062,8 +339305,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 20.283308
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 5.999999
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -345523,132 +341766,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1419625194
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1419625195}
-  - component: {fileID: 1419625197}
-  - component: {fileID: 1419625196}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_048
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1419625195
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1419625194}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 37.600952, y: 43.337296, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1419625196
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1419625194}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1060
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1419625197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1419625194}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 37.600952, y: 43.337296}
-  - {x: 37.659294, y: 43.58039}
-  - {x: 37.717636, y: 43.823486}
-  - {x: 37.77598, y: 44.066586}
-  - {x: 37.834324, y: 44.30968}
-  - {x: 37.892666, y: 44.55278}
-  - {x: 37.95101, y: 44.795876}
-  - {x: 38.009354, y: 45.03897}
-  - {x: 38.067696, y: 45.28207}
-  _toePlan:
-  - {x: 40.518112, y: 42.637177}
-  - {x: 40.576454, y: 42.880272}
-  - {x: 40.634796, y: 43.123367}
-  - {x: 40.693146, y: 43.366467}
-  - {x: 40.751488, y: 43.609562}
-  - {x: 40.80983, y: 43.85266}
-  - {x: 40.86817, y: 44.095757}
-  - {x: 40.926514, y: 44.338852}
-  - {x: 40.984856, y: 44.58195}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 38.28335
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1420800960
 GameObject:
   m_ObjectHideFlags: 0
@@ -352408,132 +348525,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1453652397
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1453652398}
-  - component: {fileID: 1453652400}
-  - component: {fileID: 1453652399}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_072
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1453652398
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1453652397}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.350296, y: 91.00085, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1453652399
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1453652397}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 879
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1453652400
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1453652397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 51.350296, y: 91.00085}
-  - {x: 51.432884, y: 91.23682}
-  - {x: 51.515472, y: 91.47278}
-  - {x: 51.59806, y: 91.70874}
-  - {x: 51.68065, y: 91.94471}
-  - {x: 51.763233, y: 92.18067}
-  - {x: 51.84582, y: 92.41663}
-  - {x: 51.92841, y: 92.6526}
-  - {x: 52.010998, y: 92.888565}
-  _toePlan:
-  - {x: 54.18187, y: 90.009796}
-  - {x: 54.264458, y: 90.245766}
-  - {x: 54.347046, y: 90.48173}
-  - {x: 54.429634, y: 90.71769}
-  - {x: 54.512222, y: 90.95366}
-  - {x: 54.594807, y: 91.18962}
-  - {x: 54.677395, y: 91.42558}
-  - {x: 54.759983, y: 91.66155}
-  - {x: 54.84257, y: 91.897514}
-  _dropMetres:
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  _toeElevations:
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  _alongOffsetMetres: 87.95355
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1454019793
 GameObject:
   m_ObjectHideFlags: 0
@@ -357864,132 +353855,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1485426932
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1485426933}
-  - component: {fileID: 1485426935}
-  - component: {fileID: 1485426934}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_053
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1485426933
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1485426932}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.93468, y: 53.06117, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1485426934
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1485426932}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1021
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1485426935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1485426932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 39.93468, y: 53.06117}
-  - {x: 39.993023, y: 53.304264}
-  - {x: 40.051365, y: 53.54736}
-  - {x: 40.10971, y: 53.79046}
-  - {x: 40.168053, y: 54.033554}
-  - {x: 40.226395, y: 54.276653}
-  - {x: 40.28474, y: 54.51975}
-  - {x: 40.343082, y: 54.762844}
-  - {x: 40.401424, y: 55.005943}
-  _toePlan:
-  - {x: 42.851845, y: 52.36105}
-  - {x: 42.910187, y: 52.604145}
-  - {x: 42.96853, y: 52.84724}
-  - {x: 43.02687, y: 53.09034}
-  - {x: 43.085213, y: 53.333435}
-  - {x: 43.143555, y: 53.576534}
-  - {x: 43.201904, y: 53.81963}
-  - {x: 43.260246, y: 54.062725}
-  - {x: 43.31859, y: 54.305824}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 48.28341
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49575
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1486064170
 GameObject:
   m_ObjectHideFlags: 0
@@ -457117,8 +452982,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 30.283314
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 15.999992
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -477354,7 +473219,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1385
+  m_SortingOrder: 1384
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
 --- !u!114 &1661832217
@@ -477380,7 +473245,7 @@ MonoBehaviour:
   - {x: 33.9417, y: -38.250973}
   - {x: 33.93337, y: -38.00111}
   _toePlan:
-  - {x: 36.998333, y: -39.90006}
+  - {x: 36.748474, y: -39.90839}
   - {x: 36.990005, y: -39.650192}
   - {x: 36.981674, y: -39.400333}
   - {x: 36.973347, y: -39.15047}
@@ -477390,7 +473255,7 @@ MonoBehaviour:
   - {x: 36.940033, y: -38.151028}
   - {x: 36.9317, y: -37.901165}
   _dropMetres:
-  - 7.65
+  - 7.404379
   - 7.65
   - 7.65
   - 7.65
@@ -477400,6 +473265,7 @@ MonoBehaviour:
   - 7.65
   - 7.65
   _toeElevations:
+  - -1.4043787
   - -1.6500001
   - -1.6500001
   - -1.6500001
@@ -477408,9 +473274,8 @@ MonoBehaviour:
   - -1.6500001
   - -1.6500001
   - -1.6500001
-  - -1.6500001
-  _alongOffsetMetres: 35.096745
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 0
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -485510,7 +481375,7 @@ MonoBehaviour:
   - 1.2152758
   - 1.1603982
   _alongOffsetMetres: 0
-  _rowsBasisSurfaceMetres: 12.369316
+  _rowsBasisSurfaceMetres: 9.66727
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -485856,27 +481721,12 @@ MonoBehaviour:
   - {x: 36.259056, y: 37.746067}
   - {x: 36.317398, y: 37.989166}
   - {x: 36.375744, y: 38.23226}
-  - {x: 36.434086, y: 38.475357}
-  - {x: 36.492428, y: 38.718456}
-  - {x: 36.550774, y: 38.96155}
-  - {x: 36.609116, y: 39.20465}
-  - {x: 36.667458, y: 39.447746}
   _toePlan:
   - {x: 39.117874, y: 36.802853}
   - {x: 39.176216, y: 37.045948}
   - {x: 39.23456, y: 37.289047}
   - {x: 39.292908, y: 37.532143}
-  - {x: 39.35125, y: 37.775238}
-  - {x: 39.40959, y: 38.018337}
-  - {x: 39.467934, y: 38.261433}
-  - {x: 39.526276, y: 38.50453}
-  - {x: 39.584618, y: 38.747627}
   _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
   - 9.190001
   - 9.190001
   - 9.190001
@@ -485886,13 +481736,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 32.283318
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 17.999994
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -485910,7 +481755,7 @@ MonoBehaviour:
   _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
   _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
   _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
+  _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
   _faceMetresS: 12
@@ -489530,7 +485375,7 @@ MonoBehaviour:
   - -1.3351597
   - -1.5392356
   _alongOffsetMetres: 2.2499988
-  _rowsBasisSurfaceMetres: 12.369316
+  _rowsBasisSurfaceMetres: 9.66727
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -490816,140 +486661,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1750128178
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1750128179}
-  - component: {fileID: 1750128181}
-  - component: {fileID: 1750128180}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_069
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1750128179
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1750128178}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 49.12043, y: 84.62981, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1750128180
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1750128178}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 902
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1750128181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1750128178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 49.12043, y: 84.62981}
-  - {x: 49.20302, y: 84.86577}
-  - {x: 49.285606, y: 85.10173}
-  - {x: 49.368195, y: 85.3377}
-  - {x: 49.450783, y: 85.57366}
-  - {x: 49.53337, y: 85.80962}
-  - {x: 49.615955, y: 86.04559}
-  - {x: 49.698544, y: 86.281555}
-  - {x: 49.78113, y: 86.517525}
-  - {x: 49.86372, y: 86.75349}
-  - {x: 49.94631, y: 86.98945}
-  _toePlan:
-  - {x: 51.952003, y: 83.638756}
-  - {x: 52.03459, y: 83.87472}
-  - {x: 52.11718, y: 84.11068}
-  - {x: 52.199768, y: 84.34665}
-  - {x: 52.282356, y: 84.58261}
-  - {x: 52.364944, y: 84.81857}
-  - {x: 52.44753, y: 85.05454}
-  - {x: 52.530117, y: 85.290504}
-  - {x: 52.612705, y: 85.526474}
-  - {x: 52.695293, y: 85.762436}
-  - {x: 52.77788, y: 85.9984}
-  _dropMetres:
-  - 11.204462
-  - 11.270083
-  - 11.33592
-  - 11.401455
-  - 11.466177
-  - 11.529568
-  - 11.591116
-  - 11.650306
-  - 11.706622
-  - 11.759551
-  - 11.8085785
-  _toeElevations:
-  - -5.2044616
-  - -5.2700834
-  - -5.33592
-  - -5.4014554
-  - -5.4661765
-  - -5.529568
-  - -5.591116
-  - -5.6503057
-  - -5.706622
-  - -5.759551
-  - -5.8085785
-  _alongOffsetMetres: 81.20349
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1751137316
 GameObject:
   m_ObjectHideFlags: 0
@@ -512300,128 +508011,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1857528010
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1857528011}
-  - component: {fileID: 1857528013}
-  - component: {fileID: 1857528012}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_077
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1857528011
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1857528010}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 54.6538, y: 100.43943, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1857528012
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1857528010}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 841
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1857528013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1857528010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 54.6538, y: 100.43943}
-  - {x: 54.73639, y: 100.67539}
-  - {x: 54.818977, y: 100.91136}
-  - {x: 54.901566, y: 101.14732}
-  - {x: 54.98415, y: 101.383286}
-  - {x: 55.06674, y: 101.619255}
-  - {x: 55.149326, y: 101.85522}
-  - {x: 55.231915, y: 102.09119}
-  _toePlan:
-  - {x: 57.485374, y: 99.44838}
-  - {x: 57.567963, y: 99.68434}
-  - {x: 57.65055, y: 99.92031}
-  - {x: 57.73314, y: 100.15627}
-  - {x: 57.815723, y: 100.392235}
-  - {x: 57.89831, y: 100.628204}
-  - {x: 57.9809, y: 100.86417}
-  - {x: 58.063488, y: 101.100136}
-  _dropMetres:
-  - 12
-  - 12
-  - 12
-  - 11.994234
-  - 11.958439
-  - 11.891763
-  - 11.796345
-  - 11.67433
-  _toeElevations:
-  - -6
-  - -6
-  - -6
-  - -5.9942336
-  - -5.9584394
-  - -5.8917627
-  - -5.796345
-  - -5.6743298
-  _alongOffsetMetres: 97.95366
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1857611172
 GameObject:
   m_ObjectHideFlags: 0
@@ -518293,132 +513882,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1887562504
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1887562505}
-  - component: {fileID: 1887562507}
-  - component: {fileID: 1887562506}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_075
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1887562505
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887562504}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 53.332397, y: 96.663994, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1887562506
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887562504}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 856
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1887562507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887562504}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 53.332397, y: 96.663994}
-  - {x: 53.414986, y: 96.89996}
-  - {x: 53.497574, y: 97.135925}
-  - {x: 53.580162, y: 97.37189}
-  - {x: 53.66275, y: 97.60786}
-  - {x: 53.74534, y: 97.84382}
-  - {x: 53.827923, y: 98.07978}
-  - {x: 53.91051, y: 98.31575}
-  - {x: 53.9931, y: 98.55171}
-  _toePlan:
-  - {x: 56.16397, y: 95.67294}
-  - {x: 56.24656, y: 95.90891}
-  - {x: 56.329147, y: 96.144875}
-  - {x: 56.411736, y: 96.38084}
-  - {x: 56.494324, y: 96.616806}
-  - {x: 56.576912, y: 96.85277}
-  - {x: 56.659496, y: 97.08873}
-  - {x: 56.742085, y: 97.3247}
-  - {x: 56.824673, y: 97.56066}
-  _dropMetres:
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  _toeElevations:
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  _alongOffsetMetres: 93.95361
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1888415571
 GameObject:
   m_ObjectHideFlags: 0
@@ -519115,7 +514578,7 @@ MonoBehaviour:
   - -3.19
   - -3.19
   _alongOffsetMetres: 9.499999
-  _rowsBasisSurfaceMetres: 12.369316
+  _rowsBasisSurfaceMetres: 9.66727
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -523382,8 +518845,8 @@ MonoBehaviour:
   - -0.6813113
   - -0.524167
   - -0.36133158
-  _alongOffsetMetres: 50.346718
-  _rowsBasisSurfaceMetres: 8.217208
+  _alongOffsetMetres: 2.2499995
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
@@ -536174,132 +531637,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1984866703
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1984866704}
-  - component: {fileID: 1984866706}
-  - component: {fileID: 1984866705}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_058
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1984866704
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984866703}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.26841, y: 62.785038, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1984866705
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984866703}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 982
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1984866706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984866703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 42.26841, y: 62.785038}
-  - {x: 42.32675, y: 63.028137}
-  - {x: 42.385098, y: 63.271236}
-  - {x: 42.44344, y: 63.51433}
-  - {x: 42.50178, y: 63.757427}
-  - {x: 42.560127, y: 64.00053}
-  - {x: 42.61847, y: 64.24362}
-  - {x: 42.67681, y: 64.48672}
-  - {x: 42.735157, y: 64.72981}
-  _toePlan:
-  - {x: 45.18557, y: 62.08492}
-  - {x: 45.24391, y: 62.32802}
-  - {x: 45.30226, y: 62.571117}
-  - {x: 45.360603, y: 62.814213}
-  - {x: 45.418945, y: 63.05731}
-  - {x: 45.477287, y: 63.300407}
-  - {x: 45.53563, y: 63.543503}
-  - {x: 45.59397, y: 63.7866}
-  - {x: 45.65232, y: 64.02969}
-  _dropMetres:
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  - 9.190001
-  _toeElevations:
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  - -3.19
-  _alongOffsetMetres: 58.283463
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 103.49573
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1985516132
 GameObject:
   m_ObjectHideFlags: 0
@@ -538402,112 +533739,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1999292575
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1999292576}
-  - component: {fileID: 1999292578}
-  - component: {fileID: 1999292577}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_081
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1999292576
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999292575}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 56.305553, y: 105.15872, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1999292577
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999292575}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 812
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &1999292578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1999292575}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 56.305553, y: 105.15872}
-  - {x: 56.38814, y: 105.394684}
-  - {x: 56.470726, y: 105.63065}
-  - {x: 56.553314, y: 105.866615}
-  _toePlan:
-  - {x: 59.137127, y: 104.16767}
-  - {x: 59.219715, y: 104.40363}
-  - {x: 59.3023, y: 104.6396}
-  - {x: 59.384888, y: 104.875565}
-  _dropMetres:
-  - 8.642385
-  - 8.372923
-  - 8.108997
-  - 7.852748
-  _toeElevations:
-  - -2.6423848
-  - -2.3729234
-  - -2.1089969
-  - -1.8527477
-  _alongOffsetMetres: 102.9537
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &1999390681
 GameObject:
   m_ObjectHideFlags: 0
@@ -543697,132 +538928,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &2026735157
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2026735158}
-  - component: {fileID: 2026735160}
-  - component: {fileID: 2026735159}
-  m_Layer: 0
-  m_Name: CliffWall_DeepShoreCliff_E_steep_074
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2026735158
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2026735157}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 52.6717, y: 94.77628, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &2026735159
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2026735157}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 864
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &2026735160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2026735157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 52.6717, y: 94.77628}
-  - {x: 52.754288, y: 95.012245}
-  - {x: 52.836872, y: 95.24821}
-  - {x: 52.91946, y: 95.48418}
-  - {x: 53.00205, y: 95.72014}
-  - {x: 53.084637, y: 95.9561}
-  - {x: 53.167225, y: 96.19207}
-  - {x: 53.24981, y: 96.42803}
-  - {x: 53.332397, y: 96.663994}
-  _toePlan:
-  - {x: 55.503273, y: 93.78523}
-  - {x: 55.58586, y: 94.021194}
-  - {x: 55.668446, y: 94.25716}
-  - {x: 55.751034, y: 94.493126}
-  - {x: 55.833622, y: 94.72909}
-  - {x: 55.91621, y: 94.96505}
-  - {x: 55.9988, y: 95.20102}
-  - {x: 56.081383, y: 95.43698}
-  - {x: 56.16397, y: 95.67294}
-  _dropMetres:
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  - 12
-  _toeElevations:
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  - -6
-  _alongOffsetMetres: 91.9536
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &2027332187
 GameObject:
   m_ObjectHideFlags: 0
@@ -555834,8 +550939,8 @@ MonoBehaviour:
   - -3.19
   - -3.19
   - -3.19
-  _alongOffsetMetres: 26.283312
-  _rowsBasisSurfaceMetres: 12.369316
+  _alongOffsetMetres: 11.999995
+  _rowsBasisSurfaceMetres: 9.667271
   _bands:
   - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
     Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
@@ -557030,136 +552135,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &2110554932
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2110554933}
-  - component: {fileID: 2110554935}
-  - component: {fileID: 2110554934}
-  m_Layer: 0
-  m_Name: CliffWall_Cliff_E_steep_064
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2110554933
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2110554932}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 45.321404, y: 73.77544, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 948819348}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &2110554934
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2110554932}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 939
-  m_SortAtRoot: 0
-  m_Sort3DAs2D: 0
---- !u!114 &2110554935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2110554932}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
-  _browPlan:
-  - {x: 45.321404, y: 73.77544}
-  - {x: 45.403988, y: 74.0114}
-  - {x: 45.486576, y: 74.24736}
-  - {x: 45.569164, y: 74.48333}
-  - {x: 45.651752, y: 74.71929}
-  - {x: 45.73434, y: 74.95525}
-  - {x: 45.81693, y: 75.19122}
-  - {x: 45.899513, y: 75.427185}
-  - {x: 45.9821, y: 75.66315}
-  - {x: 46.06469, y: 75.89912}
-  _toePlan:
-  - {x: 48.152977, y: 72.784386}
-  - {x: 48.23556, y: 73.02035}
-  - {x: 48.31815, y: 73.25631}
-  - {x: 48.400738, y: 73.49228}
-  - {x: 48.483326, y: 73.72824}
-  - {x: 48.565914, y: 73.9642}
-  - {x: 48.648502, y: 74.20017}
-  - {x: 48.731087, y: 74.436134}
-  - {x: 48.813675, y: 74.6721}
-  - {x: 48.896263, y: 74.908066}
-  _dropMetres:
-  - 9.191385
-  - 9.199983
-  - 9.215998
-  - 9.238915
-  - 9.268222
-  - 9.303402
-  - 9.343943
-  - 9.389328
-  - 9.439043
-  - 9.492575
-  _toeElevations:
-  - -3.191385
-  - -3.1999824
-  - -3.2159972
-  - -3.2389152
-  - -3.2682219
-  - -3.3034022
-  - -3.3439422
-  - -3.3893275
-  - -3.4390428
-  - -3.4925742
-  _alongOffsetMetres: 69.70339
-  _rowsBasisSurfaceMetres: 12.369316
-  _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
-    StartSurfaceMetres: 0
-    EndSurfaceMetres: 1.8551047
-    Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
-    StartSurfaceMetres: 1.8551047
-    EndSurfaceMetres: 0
-    Label: Rock
-  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
-  _wallAzimuth: 109.29005
-  _batter: 76
-  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
-  _faceMetresS: 12
-  _faceMetresT: 9
-  _subdivideMetres: 0.25
-  _profileMetres: 1.15
-  _stripMetresT: 4
-  _browLineAt: 0.42
 --- !u!1 &2111212611
 GameObject:
   m_ObjectHideFlags: 0
@@ -558985,7 +553960,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1345
+  m_SortingOrder: 1341
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
 --- !u!114 &2125269957
@@ -559006,42 +553981,348 @@ MonoBehaviour:
   - {x: 33.650192, y: -29.505814}
   - {x: 33.641865, y: -29.255953}
   - {x: 33.633537, y: -29.00609}
+  _toePlan:
+  - {x: 36.265408, y: -29.918917}
+  - {x: 36.25708, y: -29.669056}
+  - {x: 36.24875, y: -29.419195}
+  - {x: 36.24042, y: -29.169334}
+  - {x: 36.282066, y: -28.917805}
+  _dropMetres:
+  - 6.4424343
+  - 6.2592278
+  - 6.067522
+  - 5.8579545
+  - 5.6818156
+  _toeElevations:
+  - -0.44243425
+  - -0.259228
+  - -0.06752199
+  - 0.1420457
+  - 0.31818444
+  _alongOffsetMetres: 10.000018
+  _rowsBasisSurfaceMetres: 8.217207
+  _bands:
+  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
+    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
+    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+    StartSurfaceMetres: 0
+    EndSurfaceMetres: 2.0386264
+    Label: Overburden
+  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
+    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
+    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+    StartSurfaceMetres: 2.0386264
+    EndSurfaceMetres: 0
+    Label: Rock
+  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
+  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
+  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _wallAzimuth: 88.09085
+  _batter: 62
+  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
+  _faceMetresS: 12
+  _faceMetresT: 9
+  _subdivideMetres: 0.25
+  _profileMetres: 1.15
+  _stripMetresT: 4
+  _browLineAt: 0.42
+--- !u!1 &1627830850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 695871406}
+  - component: {fileID: 1127574575}
+  - component: {fileID: 542573333}
+  m_Layer: 0
+  m_Name: CliffWall_LedgeCliff_E_ramp_086
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &695871406
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627830850}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 33.691837, y: -30.755135, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 948819348}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &542573333
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627830850}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1346
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
+--- !u!114 &1127574575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627830850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
+  _browPlan:
+  - {x: 33.691837, y: -30.755135}
+  - {x: 33.68351, y: -30.505259}
+  - {x: 33.67518, y: -30.255398}
+  - {x: 33.66685, y: -30.005535}
+  _toePlan:
+  - {x: 36.290394, y: -30.668516}
+  - {x: 36.282066, y: -30.418638}
+  - {x: 36.273735, y: -30.16878}
+  - {x: 36.265408, y: -29.918917}
+  _dropMetres:
+  - 6.8892317
+  - 6.764541
+  - 6.6223927
+  - 6.4424343
+  _toeElevations:
+  - -0.88923156
+  - -0.76454115
+  - -0.62239254
+  - -0.44243425
+  _alongOffsetMetres: 9.250003
+  _rowsBasisSurfaceMetres: 8.217207
+  _bands:
+  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
+    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
+    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+    StartSurfaceMetres: 0
+    EndSurfaceMetres: 2.0386264
+    Label: Overburden
+  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
+    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
+    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+    StartSurfaceMetres: 2.0386264
+    EndSurfaceMetres: 0
+    Label: Rock
+  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
+  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
+  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _wallAzimuth: 88.09085
+  _batter: 62
+  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
+  _faceMetresS: 12
+  _faceMetresT: 9
+  _subdivideMetres: 0.25
+  _profileMetres: 1.15
+  _stripMetresT: 4
+  _browLineAt: 0.42
+--- !u!1 &2046294563
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1789222692}
+  - component: {fileID: 1694149304}
+  - component: {fileID: 1906286346}
+  m_Layer: 0
+  m_Name: CliffWall_LedgeCliff_E_ramp_087
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1789222692
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046294563}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 33.633537, y: -29.00609, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 948819348}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &1906286346
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046294563}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1335
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
+--- !u!114 &1694149304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046294563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
+  _browPlan:
+  - {x: 33.633537, y: -29.00609}
   - {x: 33.625206, y: -28.75623}
   - {x: 33.61688, y: -28.506369}
   - {x: 33.60855, y: -28.256508}
   - {x: 33.60022, y: -28.006647}
   _toePlan:
-  - {x: 36.665184, y: -29.90559}
-  - {x: 36.656857, y: -29.65573}
-  - {x: 36.648525, y: -29.405869}
-  - {x: 36.640198, y: -29.156008}
-  - {x: 36.63187, y: -28.906145}
-  - {x: 36.62354, y: -28.656284}
-  - {x: 36.61521, y: -28.406424}
-  - {x: 36.606884, y: -28.156563}
-  - {x: 36.598553, y: -27.906702}
+  - {x: 36.282066, y: -28.917805}
+  - {x: 36.273735, y: -28.667944}
+  - {x: 36.265408, y: -28.418083}
+  - {x: 36.25708, y: -28.168222}
+  - {x: 36.24875, y: -27.918362}
+  _dropMetres:
+  - 5.6818156
+  - 5.452248
+  - 5.1980534
+  - 4.9444056
+  - 4.690387
+  _toeElevations:
+  - 0.31818444
+  - 0.54775196
+  - 0.80194664
+  - 1.0555946
+  - 1.3096132
+  _alongOffsetMetres: 11.000017
+  _rowsBasisSurfaceMetres: 8.217207
+  _bands:
+  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
+    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
+    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+    StartSurfaceMetres: 0
+    EndSurfaceMetres: 2.0386264
+    Label: Overburden
+  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
+    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
+    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+    StartSurfaceMetres: 2.0386264
+    EndSurfaceMetres: 0
+    Label: Rock
+  _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
+  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
+  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _wallAzimuth: 88.09082
+  _batter: 62
+  _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
+  _faceMetresS: 12
+  _faceMetresT: 9
+  _subdivideMetres: 0.25
+  _profileMetres: 1.15
+  _stripMetresT: 4
+  _browLineAt: 0.42
+--- !u!1 &1436858361
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1875432371}
+  - component: {fileID: 610410583}
+  - component: {fileID: 832137367}
+  m_Layer: 0
+  m_Name: CliffWall_LedgeCliff_E_ramp_088
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1875432371
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436858361}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 33.566906, y: -27.007202, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 948819348}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!210 &832137367
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436858361}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1333
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
+--- !u!114 &610410583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436858361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54da58bd612c4da42b8ec4712a70b75c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffWallSurface
+  _browPlan:
+  - {x: 33.566906, y: -27.007202}
+  - {x: 33.55858, y: -26.75734}
+  - {x: 33.55025, y: -26.507479}
+  - {x: 33.54192, y: -26.257618}
+  _toePlan:
+  - {x: 36.56524, y: -26.907257}
+  - {x: 36.55691, y: -26.657394}
+  - {x: 36.548584, y: -26.407534}
+  - {x: 36.540253, y: -26.157673}
   _dropMetres:
   - 7.65
   - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
-  - 7.65
+  - 7.6437035
+  - 7.6174808
   _toeElevations:
   - -1.6500001
   - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  - -1.6500001
-  _alongOffsetMetres: 45.096718
-  _rowsBasisSurfaceMetres: 8.217208
+  - -1.6437036
+  - -1.6174808
+  _alongOffsetMetres: 0
+  _rowsBasisSurfaceMetres: 8.217207
   _bands:
   - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
     Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}

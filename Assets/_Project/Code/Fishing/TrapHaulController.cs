@@ -494,7 +494,7 @@ namespace HiddenHarbours.Fishing
             // The wind-fetch envelope at the pot (ADR 0027 #1): a haul in the lee of a headland rides
             // the calm water the player can see there. Exactly 1 while the model is off.
             Vector2 haulPos = (Vector2)_hauling.transform.position;
-            WaveSample wave = _animator.Sample(haulPos, GameServices.FetchEnvelopeAt(haulPos));
+            WaveSample wave = _animator.Sample(haulPos, GameServices.FetchAt(haulPos));
             float height = wave.Height;
 
             float lift = 0f;

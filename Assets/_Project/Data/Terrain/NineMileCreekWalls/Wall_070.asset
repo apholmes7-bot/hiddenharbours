@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_070
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_070
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: 49.94631, y: 86.98945}
+  - {x: 50.028896, y: 87.22542}
+  - {x: 50.11148, y: 87.46138}
+  - {x: 50.19407, y: 87.69734}
+  - {x: 50.276657, y: 87.93331}
+  - {x: 50.359245, y: 88.16927}
+  - {x: 50.441833, y: 88.405235}
+  - {x: 50.52442, y: 88.641205}
+  - {x: 50.60701, y: 88.87717}
+  - {x: 50.689594, y: 89.11313}
+  Toe:
+  - {x: 52.77788, y: 85.9984}
+  - {x: 52.86047, y: 86.23437}
+  - {x: 52.943054, y: 86.47033}
+  - {x: 53.025642, y: 86.70629}
+  - {x: 53.10823, y: 86.94226}
+  - {x: 53.19082, y: 87.17822}
+  - {x: 53.273407, y: 87.414185}
+  - {x: 53.355995, y: 87.650154}
+  - {x: 53.438583, y: 87.886116}
+  - {x: 53.521168, y: 88.12208}
+  DropMetres:
+  - 11.8085785
+  - 11.853189
+  - 11.892868
+  - 11.927103
+  - 11.955377
+  - 11.977176
+  - 11.991985
+  - 11.999292
+  - 12
+  - 12
+  ToeElevations:
+  - -5.8085785
+  - -5.853189
+  - -5.8928685
+  - -5.9271026
+  - -5.9553766
+  - -5.9771757
+  - -5.991986
+  - -5.9992924
+  - -6
+  - -6
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 70
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 2.54-2.57 m off the ground, no face under it). Step 07 of the ground swap (#959) set it inactive; step 11 removes its objects. Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'

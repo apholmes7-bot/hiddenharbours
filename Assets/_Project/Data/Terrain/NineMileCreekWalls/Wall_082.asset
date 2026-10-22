@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_082
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_082
+  Status: 5
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 4
+  Aspect: E
+  Batter: ramp
+  Brow:
+  - {x: 56.553314, y: 105.866615}
+  - {x: 56.635902, y: 106.102585}
+  - {x: 56.71849, y: 106.33855}
+  - {x: 56.80108, y: 106.57451}
+  - {x: 56.883667, y: 106.81047}
+  Toe:
+  - {x: 59.384888, y: 104.875565}
+  - {x: 59.467476, y: 105.111534}
+  - {x: 59.550064, y: 105.347496}
+  - {x: 59.632652, y: 105.58346}
+  - {x: 59.71524, y: 105.81942}
+  DropMetres:
+  - 7.852748
+  - 7.606317
+  - 7.371847
+  - 7.1514816
+  - 6.94736
+  ToeElevations:
+  - -1.8527477
+  - -1.6063169
+  - -1.3718474
+  - -1.1514814
+  - -0.9473603
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  BrowFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  ToeFrom:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: 82
+  MeasuredOn: 
+  FaceNeeded: 
+  Why: 'Retired: G3 holds no face here a wall can stand on (its brow 2.35-2.35 m off the ground, no face under it). Its lines are the scene''s at 286e231f, kept as a record; the id is never used again.'

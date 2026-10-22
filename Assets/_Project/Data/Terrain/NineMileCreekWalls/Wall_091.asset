@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_091
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_091
+  Status: 6
+  SplitFrom: 
+  Follows: wall.nmc_090
+  Rock: sandstone
+  Class: 3
+  Aspect: S
+  Batter: bank
+  Brow:
+  - {x: -361.44333, y: -165.75284}
+  - {x: -360.20337, y: -165.7623}
+  - {x: -359.14337, y: -165.77856}
+  - {x: -358.30032, y: -165.78885}
+  - {x: -357.39307, y: -165.78572}
+  - {x: -356.51923, y: -165.78079}
+  - {x: -355.60287, y: -165.76292}
+  Toe:
+  - {x: -361.23972, y: -168.74593}
+  - {x: -360.43842, y: -168.75307}
+  - {x: -359.53436, y: -169.25665}
+  - {x: -358.38004, y: -169.23793}
+  - {x: -357.29526, y: -169.23433}
+  - {x: -356.17435, y: -169.21352}
+  - {x: -355.0722, y: -169.22246}
+  DropMetres:
+  - 3.1703198
+  - 3.124205
+  - 3.4910011
+  - 3.2731228
+  - 3.190686
+  - 3.2361279
+  - 3.4041398
+  ToeElevations:
+  - 2.7231581
+  - 2.7472
+  - 2.3941717
+  - 2.5954666
+  - 2.6486213
+  - 2.573608
+  - 2.373987
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  BrowFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: -1
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: 'S bank (not in the default bake)'
+  Why: 'Held: a face G3 holds and no wall covers, the south shore''s bluff (G3 piece 1): 6 m along, brow 5.78 to 5.89 m, toe 2.37 to 2.75 m, falling 3.12 to 3.49 m over 3.00 to 3.50 m (43 to 47 deg), facing S. The kit''s bank rung is not in the default bake; it stands in no scene until its wall is built.'

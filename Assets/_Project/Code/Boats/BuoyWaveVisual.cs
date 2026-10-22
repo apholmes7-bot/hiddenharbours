@@ -276,7 +276,7 @@ namespace HiddenHarbours.Boats
                                                    sample.WindVector, sample.SeaState01, in field, in smoothing);
                 // sample at the ROOT, not the bobbing visual; fetch envelope read at the same place
                 Vector2 buoyPos = (Vector2)transform.position;
-                wave = _animator.Sample(buoyPos, GameServices.FetchEnvelopeAt(buoyPos));
+                wave = _animator.Sample(buoyPos, GameServices.FetchAt(buoyPos));
                 totalAmplitude = trains.TotalAmplitude;
             }
             else

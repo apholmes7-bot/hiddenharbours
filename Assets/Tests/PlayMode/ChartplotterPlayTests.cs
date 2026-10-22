@@ -11,7 +11,7 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
     /// On-water integration for the ADR 0025 S6 chartplotter (PR 3): buy → mount → use, on the two hulls
-    /// that carry a brow GPS slot. This is the half EditMode structurally cannot see — the equipment gate
+    /// that carry a GPS station. This is the half EditMode structurally cannot see — the equipment gate
     /// flipping on a purchase with no rebuild, the self-installing host actually drawing, and the
     /// preferences surviving the round trip to disk.
     ///
@@ -76,7 +76,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>A stand-in for the boat probe, so the plotter has a heading and a speed without a
         /// physics step. The real producer is <c>ActiveBoatProbe</c>; this seam is the same one the HUD
-        /// and the helm dash read.</summary>
+        /// and the helm band read.</summary>
         private sealed class FakeBoatProbe : IActiveBoatService
         {
             public BoatKinematics Value = BoatKinematics.None;
@@ -169,9 +169,12 @@ namespace HiddenHarbours.Tests.PlayMode
             return (boat, go.GetComponent<HelmControlRelay>());
         }
 
-        /// <summary>Stand a piloted, GPS-capable hull up and (optionally) buy the unit. Returns the live
-        /// host once it has had a frame to paint.</summary>
-        private IEnumerator Aboard(string hullId, ConsoleRigKind rig, bool buyGps, bool supportsGps = true)
+        /// <summary>Stand a piloted, GPS-capable hull up and (optionally) buy the unit. A fitted unit's
+        /// card is raised (H2): unraised, the housing in the band is the whole presentation — no bake, no
+        /// nav read, no raster — and the plotter's controls live on the raised card. Returns the live host
+        /// once it has had a frame to paint.</summary>
+        private IEnumerator Aboard(string hullId, ConsoleRigKind rig, bool buyGps, bool supportsGps = true,
+                                   bool raise = true)
         {
             var (boat, relay) = NewBoat(new Vector2(400f, 300f));
             yield return null;                                  // Awake + OnEnable have run
@@ -180,6 +183,11 @@ namespace HiddenHarbours.Tests.PlayMode
             if (buyGps) InstrumentLocker.Add(_save.Current, hullId, BoatEquipment.GpsId);
             yield return null;
             yield return null;                                  // one frame to resolve, one to paint
+            if (!raise || !buyGps || !supportsGps) yield break;
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);
+            yield return null;                                  // one frame to raise, one to paint
+            yield return null;
+            Assert.That(Host.Expanded, Is.True, "premise: the plotter's card is raised");
         }
 
         private static ChartplotterOverlayHost Host => ChartplotterOverlayHost.Instance;
@@ -230,8 +238,14 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
 
             Assert.That(glass.Fit.Gps, Is.True, "the fit is resolved fresh — a purchase lands at once");
-            Assert.That(Host.Showing, Is.True, "…and the brow lights up with no rebuild and no re-wire");
-            Assert.That(Host.RepaintCount, Is.GreaterThan(0), "it actually rastered something");
+            Assert.That(Host.Showing, Is.True, "…and it is presented with no rebuild and no re-wire");
+            Assert.That(Host.Expanded, Is.False, "…as its housing in the band (H2), until it is raised");
+
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);   // raised, it rasters (H2)
+            yield return null;
+            yield return null;
+            Assert.That(Host.Expanded, Is.True, "premise: the plotter's card is raised");
+            Assert.That(Host.RepaintCount, Is.GreaterThan(0), "raised, it actually rastered something");
         }
 
         [UnityTest]
@@ -262,8 +276,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheGlassExpandsAndCollapses_AndOnlyOneInstrumentIsEverOpen()
         {
-            yield return Aboard("boat.test_expand", ConsoleRigKind.Novi, buyGps: true);
-            Assert.That(Host.Expanded, Is.False, "flush is the default (S4.5)");
+            yield return Aboard("boat.test_expand", ConsoleRigKind.Novi, buyGps: true, raise: false);
+            Assert.That(Host.Expanded, Is.False, "a housing in the band is the default (H2)");
 
             HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);
             yield return null;
@@ -463,6 +477,10 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             yield return null;
             Assert.That(Host.Showing, Is.True);
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);   // raised, it rasters (H2)
+            yield return null;
+            yield return null;
+            Assert.That(Host.Expanded, Is.True, "premise: the plotter's card is raised");
             Assert.That(Host.RepaintCount, Is.GreaterThan(0),
                         "and the chart draws that existing history rather than starting from now");
         }
@@ -521,10 +539,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         // ---- the MAX face (S6 PR 4) --------------------------------------------------------------------
 
-        /// <summary>Expand and switch to the rig's MAX face, the way the pushers do.</summary>
+        /// <summary>Expand (if <see cref="Aboard"/> has not) and switch to the rig's MAX face, the way the
+        /// pushers do.</summary>
         private IEnumerator OnMaxFace()
         {
-            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);
+            if (!Host.Expanded) HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);
             yield return null;
             Assert.That(Press(ChartplotterOverlayLayout.KeyMax), Is.True);
             yield return null;
@@ -874,7 +893,11 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             yield return null;
 
-            Assert.That(Host.Showing, Is.True, "the bought plotter is on the brow");
+            Assert.That(Host.Showing, Is.True, "the bought plotter is presented");
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);   // raised, it rasters (H2)
+            yield return null;
+            yield return null;
+            Assert.That(Host.Expanded, Is.True, "premise: the plotter's card is raised");
 
             // K steps the BROW SOUNDER cutout (None -> Depth -> Fish -> None). The GPS lives in a
             // different slot and DevFit passes it through untouched, so cycling the sounder must never
@@ -889,6 +912,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.That(GameServices.HelmInstruments.Fit.Gps, Is.True,
                             $"step {i}: the brow cycle must not un-fit the GPS");
                 Assert.That(Host.Showing, Is.True, $"step {i}: …nor blank the chart");
+                Assert.That(Host.Expanded, Is.True, $"step {i}: …nor lower its raised card");
             }
         }
     }

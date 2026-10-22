@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c5b8a6bbfa195e87b8e0921fd70753, type: 3}
+  m_Name: Wall_117
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.CliffWallDef
+  Id: wall.nmc_117
+  Status: 6
+  SplitFrom: 
+  Follows: 
+  Rock: sandstone
+  Class: 3
+  Aspect: E
+  Batter: steep
+  Brow:
+  - {x: -377.2469, y: 229.33006}
+  - {x: -376.75616, y: 230.28215}
+  Toe:
+  - {x: -376.74695, y: 229.32132}
+  - {x: -376.24588, y: 230.07697}
+  DropMetres:
+  - 1.6300817
+  - 1.5875726
+  ToeElevations:
+  - 4.35971
+  - 4.4124274
+  TextureBrow: []
+  Stations:
+  - 0
+  - 1
+  BrowFrom:
+  - 1
+  - 1
+  ToeFrom:
+  - 1
+  - 1
+  BrowPass9: []
+  ToePass9: []
+  SourceList: 'inventory.csv (tools/nmc-walls/derive-walls.cjs, plan B)'
+  SourceListSha256: 5db63e57d2372609ff3bb33e722f9ee4e3f9ef7cae298da377ff921d02f51e5f
+  SourceRow: -1
+  MeasuredOn: 'G3: NineMileCreekGround_Height.png (pixels sha256 5924a6428d593bc80bc3eabe6c3887b39b05abe6aa5142b7ef9a0d6f9e8b02b0)'
+  FaceNeeded: E steep
+  Why: 'Held: a face G3 holds and no wall covers, Nine Mile Creek (the town river)''s bank (G3 piece 66): 1 m along, brow 5.99 to 6.00 m, toe 4.36 to 4.41 m, falling 1.59 to 1.63 m over 0.50 to 0.55 m (71 to 73 deg), facing E. The kit draws E steep; it stands in no scene until its wall is built.'

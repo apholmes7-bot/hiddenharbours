@@ -50,7 +50,7 @@ Every re-ruling is the owner's.
 | Starting the motor | C: tap to run or stop, hold to crank (pad R3), on the engine run state | §5.1 |
 | Motor-sailing | not in the first slice | §5.4 |
 | (M′): the throttle runs only the engine | deferred to the mast charter, with its re-ruling of (M) | §5.2 |
-| Leaving the helm under sail | she rounds up into the wind (today she stops dead); with the mast charter | §3.3 |
+| Leaving the helm under sail | round-up ruled 10-07; audited main sails on after a one-frame stop; Phase A draft ahead of the mast charter | §3.3 |
 | Reefing's teeth | control teeth (weather helm, then a knockdown), not speed | §4.3, §10 step 7 |
 | The lights | automatic, no switch. The sloops first need nav-light mounts in `HullMeshDef.Lamps`. D2 (a) is answered ([`helm-audit.md`](helm-audit.md) §3.4): the sloops' nav lights come with the lighting pass on each hull, like every hull's. | §5.6 |
 | Save | nothing new. The sails are derived `stored` whenever she's anchored or moored, and PR 3 carries that. | §5.3, §9 |
@@ -131,7 +131,7 @@ Neither is fixed here. Each is fixed in the charter named.
   default, and a trim term. That makes "tightening and loosening sails" real without reopening anything.
 - **Hoisting and furling at a station** needs three things:
   - the sloops' deck promotion (they have no deck walk today);
-  - a change to how leaving the helm works (today she stops dead);
+  - a change to how leaving the helm works (audited main sails on after a one-frame stop; §3.3);
   - a re-ruling of (M): a throttle that strikes the sails cannot live beside sails the player set by hand.
   So stations are the second step, and a D6 question.
 - **Auto-trim should give away "a few per cent."** The rig's own `AUTO_TRIM`, read through the rig's own
@@ -206,11 +206,11 @@ The sailing sidecars are `docs/art/rigs/gameplay/sail/sloopIsoRig.sailing.json` 
   - With no deck walk to ask, `ControlSwitcher` falls back to the boat's origin (:381) and finds no rail
     (:1873). The helm as a station you walk up to (OnDeck → `TakesTheHelmOnThisPress` :564 → `TakeHelm`
     :1190, at :904-909) is a deck path, so none of the rigs' stations can be walked to yet.
-- **Leaving the helm stops her dead.**
+- **Leaving the helm stops her for one frame, then she sails on (10-07 correction).**
   - `LeaveHelm` (`ControlSwitcher` :1214-1216) disables the `BoatController` and calls `Stop()`.
   - `Stop()` (`BoatController` :468-480) zeroes her velocity and spin.
-  - That is right for a lobster boat hauling at rest. It is wrong for a sloop whose player walks to the
-    halyard (§3.3).
+  - `ControlSwitcher.FixedUpdate` then runs `TickUnmannedDrift`, including sail drive. Oars and motors
+    contribute no propulsion; a sloop gathers way again (§3.3).
 
 **Every contract entry: what drives it today, and what it would drive:**
 
@@ -315,14 +315,17 @@ is 0.90 m on the 30 and 4.28 m on the 88.
 ### 3.3 The teeth of leaving the helm
 
 **Today:**
-- `LeaveHelm` disables the controller and zeroes her velocity (§2). A sloop whose player steps away stops
-  dead, which a sailing boat cannot do.
-- The unmanned gate in `DevBoatInput` (:323-327: `RowingStationManned` false, so the rudder is written to
-  centre) never gets a chance, because the controller is already off.
+- On audited main (`dcfe1962`, unchanged in `e9a4ba47`), `LeaveHelm` disables the controller and zeroes
+  velocity for one frame. `ControlSwitcher.FixedUpdate` then calls `TickUnmannedDrift`, whose full force
+  pass includes sail drive. The rudder is centred and she sails on: 59.5 m (30) and 85.6 m (88) in 27 s
+  after E, measured in the 10-07 audit. Oars and motors contribute no propulsion in this tick.
+- The owner ruled round-up on 2026-10-07. The Phase A draft adds windward torque in the unmanned tick;
+  the controller remains disabled. Proposed tuning and its interaction with irons pay-off await the
+  owner's bars and Phase B measurements. It does not require stations, hand sheets or the auxiliary.
 
-**What stations need** (gameplay-systems', PROPOSED):
-- For a hull with a sail plan, leaving the wheel keeps the `BoatController` running with the rudder
-  centred.
+**What stations need** (gameplay-systems'; the 10-07 draft uses the existing drift tick):
+- For a hull with a sail plan, leaving the wheel keeps physics running through `TickUnmannedDrift`
+  with the rudder centred. The component stays disabled, preserving the manned-helm contract.
 - The powerboats keep today's `Stop()`: hauling at rest depends on it.
 
 **What she then does** is a design choice, because nothing models weather helm:

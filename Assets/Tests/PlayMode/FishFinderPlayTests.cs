@@ -10,8 +10,8 @@ using HiddenHarbours.UI;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// On-water integration for the ADR 0025 S3b fish finder: the equipment gate handing the brow cutout
-    /// to the colour sonar (and the plain sounder standing down), the card's show/hide and focus, the
+    /// On-water integration for the ADR 0025 S3b fish finder: the equipment gate handing the sounder's
+    /// housing to the colour sonar (and the plain sounder standing down), the card's show/hide and raise, the
     /// owner's Ruling A controls reaching the persisted preferences through the Core seam, the fish
     /// arriving from <see cref="IFishSchools"/> — including the shipped EMPTY SEA — and the repaint
     /// cadence that keeps the instrument inside the frame budget. This is the half EditMode structurally
@@ -106,6 +106,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
+            HelmInstrumentExpansion.Collapse();   // a raised card is static state: never leak it
             GameServices.Reset();
             foreach (var o in _spawned)
                 if (o != null) Object.Destroy(o);
@@ -193,16 +194,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
             InstrumentLocker.Add(_save.Current, "boat.test_finder", BoatEquipment.DepthSounderId);
             yield return null;
-            Assert.That(sounder.Showing, Is.True, "the basic unit lights the brow first");
+            Assert.That(sounder.Showing, Is.True, "the basic unit is presented first");
             Assert.That(finder.Showing, Is.False);
 
             InstrumentLocker.Add(_save.Current, "boat.test_finder", BoatEquipment.FishFinderId);
             yield return null;
             Assert.That(GameServices.HelmInstruments.Fit.Sounder, Is.EqualTo(SounderKind.Fish),
                         "the upgrade wins the shared cutout");
-            Assert.That(finder.Showing, Is.True, "…and the sonar card is on screen");
-            Assert.That(sounder.Showing, Is.False, "…with the depth card stood down, never both");
-            Assert.That(finder.Focused, Is.False, "the finder starts as the small dash card");
+            Assert.That(finder.Showing, Is.True, "…and the finder is presented");
+            Assert.That(sounder.Showing, Is.False, "…with the depth sounder stood down, never both");
+            Assert.That(finder.Expanded, Is.False, "the finder starts as its housing in the band, not raised");
         }
 
         [UnityTest]
@@ -240,6 +241,12 @@ namespace HiddenHarbours.Tests.PlayMode
             InstrumentLocker.Add(_save.Current, "boat.test_empty", BoatEquipment.FishFinderId);
             yield return null;
             yield return null;
+            // Unraised, the housing in the band is the whole presentation (H2): the sonar scans, asks
+            // for fish and paints only on its raised card, so raise it.
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.FishFinder);
+            yield return null;
+            yield return null;
+            Assert.That(host.Expanded, Is.True, "premise: the finder's card is raised");
             Assert.That(host.Showing, Is.True, "an empty sonar is a picture, not an exception");
             Assert.That(host.RepaintCount, Is.GreaterThan(0), "…and it actually painted");
         }
@@ -257,6 +264,14 @@ namespace HiddenHarbours.Tests.PlayMode
             relay.DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.test_fish"));
             InstrumentLocker.Add(_save.Current, "boat.test_fish", BoatEquipment.FishFinderId);
+            yield return null;
+            yield return null;
+            // Unraised, the housing in the band is the whole presentation (H2): the sonar scans, asks
+            // for fish and paints only on its raised card, so raise it.
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.FishFinder);
+            yield return null;
+            yield return null;
+            Assert.That(host.Expanded, Is.True, "premise: the finder's card is raised");
             yield return WaitSeconds(0.3f);
 
             Assert.That(model.Calls, Is.GreaterThan(0), "the finder asked the seam where the fish are");
@@ -284,6 +299,12 @@ namespace HiddenHarbours.Tests.PlayMode
             InstrumentLocker.Add(_save.Current, "boat.test_cadence", BoatEquipment.FishFinderId);
             yield return null;
             yield return null;
+            // Unraised, the housing in the band is the whole presentation (H2): the sonar scans, asks
+            // for fish and paints only on its raised card, so raise it.
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.FishFinder);
+            yield return null;
+            yield return null;
+            Assert.That(host.Expanded, Is.True, "premise: the finder's card is raised");
 
             float hz = GameServices.FishFinder.WaterfallHz;
             int before = host.RepaintCount;

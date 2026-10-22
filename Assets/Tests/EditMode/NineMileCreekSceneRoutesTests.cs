@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using HiddenHarbours.App.Editor;
@@ -13,7 +12,8 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// ⭐ <b>THE ROADS NINE MILE CREEK SHIPS</b> (NMC H2, PR 2): the activated scene's two road layers, Route 91 and its
-    /// river bridge, Wharf Road's final ramp and turning pad, and the cliff faces that stand down for them, held to G3.
+    /// river bridge, and Wharf Road's final ramp and turning pad, held to G3. (The eight cliff faces that stood down for
+    /// the ramp are retired walls since NMC H3's step 11: <c>NineMileCreekWallsAgreeWithGroundTests</c> holds the opening.)
     /// Every fixture reads NineMileCreek.unity as N1 writes it (<see cref="NineMileCreekLiveGround.Scene"/>) and
     /// probes G3 through PR 1's seam (<see cref="NineMileCreekLiveGround.Plan"/>), so what passes is what ships.
     ///
@@ -355,62 +355,6 @@ namespace HiddenHarbours.Tests.EditMode
             TestContext.WriteLine($"turning pad: {pad} cells, {unpainted} unpainted; solids reaching into it: " +
                                   (onPad.Length == 0 ? "none" : string.Join(", ", onPad)));
             Assert.That(unpainted, Is.Zero, "the turning pad has holes");
-        }
-
-        // ---- row 9: the cliff faces that stand down ------------------------------------------------------------
-
-        /// <summary>Row 9's kept ids: the eight chunks' <c>CliffWallSurface</c> components.</summary>
-        static readonly long[] StoodDownSurfaces =
-            { 579865711, 608371478, 688034269, 1030379236, 1333327757, 1750128181, 1857528013, 1999292578 };
-
-        /// <summary>The ramp half of Phase A's rule: a face whose brow or toe station comes within this of Wharf Road's
-        /// ramp stands down (PR 2 row 9). No face comes that near; the eight that stand down are the walk half's (a
-        /// station within 1.5 m of Phase A's measured walk from the quay), which the scope names by their ids.</summary>
-        const float RampCorridorMetres = 4.1f;
-
-        static List<Vector2> Stations(Doc surface, string key)
-        {
-            var points = new List<Vector2>();
-            string[] lines = surface.Lines;
-            int at = Array.IndexOf(lines, "  " + key + ":");
-            for (int i = at + 1; at >= 0 && i < lines.Length && lines[i].StartsWith("  - {x: ", StringComparison.Ordinal); i++)
-                points.Add(Vector(lines[i].Substring(4)));
-            Assert.That(points, Is.Not.Empty, $"&{surface.FileId} has no {key}");
-            return points;
-        }
-
-        [Test]
-        public void OnlyRow9sEightCliffFacesStandDown_TheirIdsAndMaterialKept()
-        {
-            List<Doc> chunks = Children(At(NineMileCreekCliffWalls.RootName));
-            string[] down = chunks.Where(c => !Active(c)).Select(Name).OrderBy(n => n, StringComparer.Ordinal).ToArray();
-            Assert.That(down, Is.EqualTo(NineMileCreekGroundSteps.Pr2CliffChunks.OrderBy(n => n, StringComparer.Ordinal).ToArray()),
-                "the faces that stand down are not row 9's eight");
-
-            var surfaces = chunks.ToDictionary(c => c.FileId, c => Script(c, "HiddenHarbours.Art.CliffWallSurface"));
-            string[] materials = surfaces.Values.Select(s => RefGuid(s.Field("_material"))).Distinct().ToArray();
-            Assert.That(materials, Has.Length.EqualTo(1), "the cliff faces no longer share one material");
-            foreach (long id in StoodDownSurfaces)
-            {
-                Doc surface = Scene.Get(id);
-                Assert.That(surface, Is.Not.Null, $"&{id} is gone: row 9 keeps it");
-                Assert.That(surface.IsScript("HiddenHarbours.Art.CliffWallSurface") && Enabled(surface), Is.True, $"&{id} is not an enabled face");
-                Doc go = Scene.Require(surface.FieldRef("m_GameObject"), "a GameObject");
-                Assert.That(NineMileCreekGroundSteps.Pr2CliffChunks, Does.Contain(Name(go)), $"&{id} is on {Name(go)}");
-                Assert.That(RefGuid(surface.Field("_material")), Is.EqualTo(materials[0]), $"{Name(go)} lost its material");
-            }
-
-            int neck = Array.FindLastIndex(G.WharfRoad, v => v.y == G.WharfRoad[0].y);
-            Vector2[] ramp = G.WharfRoad.Skip(neck).ToArray();
-            foreach (Doc chunk in chunks)
-            {
-                Doc surface = surfaces[chunk.FileId];
-                float nearest = Stations(surface, "_browPlan").Concat(Stations(surface, "_toePlan"))
-                    .Min(p => Enumerable.Range(0, ramp.Length - 1).Min(s => DistanceToSegment(p, ramp[s], ramp[s + 1])));
-                if (!Active(chunk)) TestContext.WriteLine($"{Name(chunk)} stands down; its nearest station is {nearest:0.###} m from the ramp");
-                else Assert.That(nearest, Is.GreaterThan(RampCorridorMetres), $"{Name(chunk)} still draws across the ramp from {At2(ramp[0])}");
-            }
-            TestContext.WriteLine($"{chunks.Count} faces, {down.Length} stood down, material {materials[0]}");
         }
     }
 }

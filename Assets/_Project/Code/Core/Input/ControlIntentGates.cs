@@ -48,5 +48,15 @@ namespace HiddenHarbours.Core
         public static WalkIntents Apply(in WalkIntents raw) => Apply(raw, WorldStopped, MoveClaimed);
 
         public static DeckIntents Apply(in DeckIntents raw) => Apply(raw, WorldStopped, MoveClaimed);
+
+        /// <summary>
+        /// The HUD's gates (H2). A stopped world takes the press (the pause menu is not the place to
+        /// relayout the helm), and so does a text field that owns the keys (<see cref="HelmKeyCapture"/>:
+        /// an "M" belongs in a waypoint name). The move claim does not apply: the HUD has no move.
+        /// </summary>
+        public static HudIntents Apply(in HudIntents raw, bool worldStopped, bool keysCaptured)
+            => worldStopped || keysCaptured ? HudIntents.None : raw;
+
+        public static HudIntents Apply(in HudIntents raw) => Apply(raw, WorldStopped, HelmKeyCapture.IsCapturing);
     }
 }
