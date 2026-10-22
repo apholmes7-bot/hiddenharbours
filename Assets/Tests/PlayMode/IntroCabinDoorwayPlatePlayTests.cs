@@ -230,6 +230,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // The plates are evidence, read by eye: a committed hull's own complaints must not stop them.
             LogAssert.ignoreFailingMessages = true;
             Time.captureDeltaTime = FrameSeconds;
+            _keyNextFrame = Vector2.zero;           // one fixture runs every heading: no key carries over
             _root = new GameObject("IntroCabinDoorwayPlateFixture");
             _root.AddComponent<AudioListener>();   // one listener, or a full suite logs on every frame
             _player = new GameObject("Player");
@@ -352,6 +353,13 @@ namespace HiddenHarbours.Tests.PlayMode
             // ---- the harness's step to 1.5 m out on deck, re-aimed and not shot ----------------------
             yield return WalkTheDeckTo(opening, deckStart);
             yield return Stand(StandOnDeckSeconds);
+            // Where the step left her, as the caption says it: the deck's clamp or the room's keep-out may
+            // hold her short of the mark.
+            string startNote = opening.IsBelowDecks
+                ? "from below: the step to the deck mark took her down again"
+                : $"from {Vector2.Dot(opening.DeckLocalPosition - threshold, outward):0.00} m out on deck " +
+                  $"(asked {DeckStartMetres:0.0} m; {(opening.DeckLocalPosition - deckStart).magnitude:0.00} m " +
+                  "off the mark)";
 
             // ---- 2: in through his door on one held key ------------------------------------------------
             Vector2 keyIn = OneOfTheEightKeys(ScreenKeyFor(opening, -outward));
@@ -387,8 +395,8 @@ namespace HiddenHarbours.Tests.PlayMode
                               $"{_stationSource}; the sole '{_level.Id}'. {_shaderNote}");
             report.AppendLine(SaveWalk(h, walkOut, "the first walk out from the opening pose", keyOut,
                                        ScreenKeyFor(opening, outward), heading));
-            report.AppendLine(SaveWalk(h, walkIn, "in through his door on one held key, from " +
-                                       $"{DeckStartMetres:0.0} m out on deck", keyIn, null, heading));
+            report.AppendLine(SaveWalk(h, walkIn, "in through his door on one held key, " + startNote, keyIn,
+                                       null, heading));
             report.AppendLine(SaveWalk(h, back, "straight back out at once, on the opposite key", -keyIn, null,
                                        heading));
             report.AppendLine(SaveRoom(h, walkOut, interior, heading));

@@ -108,15 +108,45 @@ namespace HiddenHarbours.Tests.EditMode
         // fixture to publish CabinEntered logs their MissingReferenceException (#916's red).
         private void LightByHand(BoatLamps lamps)
         {
+            _litByHand.Add(lamps);                     // first, so a throw after OnEnable's Subscribe is still put out
             LampsOnEnable.Invoke(lamps, null);
-            _litByHand.Add(lamps);
         }
 
         private void PutOutTheLampsLitByHand()
         {
             for (int i = _litByHand.Count - 1; i >= 0; i--)
-                if (_litByHand[i] != null) LampsOnDisable.Invoke(_litByHand[i], null);
+            {
+                var lamps = _litByHand[i];
+                if (lamps != null) LampsOnDisable.Invoke(lamps, null);
+                // Destroyed while lit by a case of its own: OnDisable would read her destroyed lights, so her
+                // handlers come off the bus directly.
+                else if (!ReferenceEquals(lamps, null)) TakeOffTheCabinBus(lamps);
+            }
             _litByHand.Clear();
+        }
+
+        // The bus keeps each channel in a private Channel<T>; reading it names whose handlers are on it
+        // without publishing to every other fixture's.
+        private static Delegate[] OnTheBus<T>()
+        {
+            var channel = typeof(EventBus).GetNestedType("Channel`1", BindingFlags.NonPublic).MakeGenericType(typeof(T));
+            var handlers = (Delegate)channel.GetField("Handlers", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+            return handlers == null ? Array.Empty<Delegate>() : handlers.GetInvocationList();
+        }
+
+        private static bool OnTheCabinBus(BoatLamps lamps)
+        {
+            foreach (var d in OnTheBus<CabinEntered>()) if (ReferenceEquals(d.Target, lamps)) return true;
+            foreach (var d in OnTheBus<CabinLeft>()) if (ReferenceEquals(d.Target, lamps)) return true;
+            return false;
+        }
+
+        private static void TakeOffTheCabinBus(BoatLamps lamps)
+        {
+            foreach (var d in OnTheBus<CabinEntered>())
+                if (ReferenceEquals(d.Target, lamps)) EventBus.Unsubscribe((Action<CabinEntered>)d);
+            foreach (var d in OnTheBus<CabinLeft>())
+                if (ReferenceEquals(d.Target, lamps)) EventBus.Unsubscribe((Action<CabinLeft>)d);
         }
 
         private (BoatController boat, BoatAnchor anchor, BoatLamps lamps, SceneLight[] lights) Rig()
@@ -221,23 +251,24 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ABoatDestroyedWithHerLampsLit_LeavesTheCabinBus_SoACabinEnteredAfterwardsLogsNothing()
+        public void EveryLampLitByHand_LeavesTheCabinBusAtTeardown_EvenOneWhoseBoatWasDestroyedLit()
         {
-            var (boat, _, lamps, _) = Rig();
-            LightByHand(lamps);                        // on the cabin bus, as a lit boat in the game is
-            GameObject hull = boat.gameObject;
-            EntityId id = hull.GetEntityId();
+            var (_, _, lit, _) = Rig();
+            var (gone, _, destroyedLit, _) = Rig();
+            LightByHand(lit);                          // on the cabin bus, as a lit boat in the game is
+            LightByHand(destroyedLit);
+            Assert.IsTrue(OnTheCabinBus(lit) && OnTheCabinBus(destroyedLit), "lit by hand, her lamps listen for the cabin");
 
-            // Destroyed as the game destroys her: disabled first, then gone.
-            PutOutTheLampsLitByHand();
-            Object.DestroyImmediate(hull);
-            Assert.IsTrue(lamps == null, "the boat and her lamps are destroyed");
+            // EditMode's DestroyImmediate runs no OnDisable, so a case that destroys a lit boat itself leaves her on.
+            Object.DestroyImmediate(gone.gameObject);
+            Assert.IsTrue(OnTheCabinBus(destroyedLit), "destroyed with no OnDisable, her lamps are still on the bus");
 
-            // A handler left on the bus reads its own destroyed transform whatever hull is named, and the
-            // bus logs what it throws. Going below anywhere afterwards must log nothing.
-            EventBus.Publish(new CabinEntered(id, 0));
-            EventBus.Publish(new CabinLeft(id));
-            LogAssert.NoUnexpectedReceived();
+            // The teardown every case here ends on. A destroyed lamp left on the static bus reads its own
+            // destroyed hull at the next CabinEntered, and the bus logs it (#916's red).
+            TearDown();
+            Assert.IsTrue(lit == null && destroyedLit == null, "both boats and their lamps are destroyed");
+            Assert.IsFalse(OnTheCabinBus(lit), "the boat put out and destroyed has left the cabin bus");
+            Assert.IsFalse(OnTheCabinBus(destroyedLit), "the boat destroyed lit has left the cabin bus");
         }
 
         [TestCase(false)]
@@ -335,7 +366,10 @@ namespace HiddenHarbours.Tests.EditMode
             typeof(BoatFuelTank).GetMethod("OnDisable", flags).Invoke(tank, null);
             CollectionAssert.DoesNotContain(Interactables.Active, tank);
             typeof(BoatFuelTank).GetMethod("OnEnable", flags).Invoke(tank, null);
-            CollectionAssert.Contains(Interactables.Active, tank);
+            try { CollectionAssert.Contains(Interactables.Active, tank); }
+            // Enabled by hand, so put away by hand: DestroyImmediate runs no OnDisable here, and her GameLoaded
+            // handler would stay on the static bus.
+            finally { typeof(BoatFuelTank).GetMethod("OnDisable", flags).Invoke(tank, null); }
         }
 
         [Test]
