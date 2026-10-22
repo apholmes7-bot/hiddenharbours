@@ -12342,6 +12342,8 @@ MonoBehaviour:
     DisembarkPoint: {fileID: 385372341}
   _worldCenter: {x: 0, y: 0}
   _worldSizeMeters: {x: 760, y: 360}
+  _alongsideBerth: 0
+  _alongsideHalfBeamMetres: 0
 --- !u!1 &1007460720
 GameObject:
   m_ObjectHideFlags: 0
@@ -12709,7 +12711,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1380863884}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
