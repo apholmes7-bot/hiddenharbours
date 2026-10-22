@@ -253,7 +253,7 @@ namespace HiddenHarbours.Tests.EditMode
             RequireGpu();
             using (var rig = new RenderRig())
             {
-                rig.Initialize(0);
+                rig.InitializeAt(new Vector2(128f, -71f));
                 rig.Control = control;
                 for (int i = 0; i < 8; i++)
                 {
