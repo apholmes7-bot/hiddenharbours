@@ -8,6 +8,7 @@ using HiddenHarbours.Core;
 using HiddenHarbours.Player;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEditor;
 using Object = UnityEngine.Object;
 
@@ -41,7 +42,13 @@ namespace HiddenHarbours.Tests.EditMode
 
     public class HelmSwitchesTests
     {
+        private static readonly MethodInfo LampsOnEnable =
+            typeof(BoatLamps).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly MethodInfo LampsOnDisable =
+            typeof(BoatLamps).GetMethod("OnDisable", BindingFlags.NonPublic | BindingFlags.Instance);
+
         private readonly List<Object> _objects = new();
+        private readonly List<BoatLamps> _litByHand = new();
         private sealed class Sea : IEnvironmentService
         {
             public float Level;
@@ -71,6 +78,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            PutOutTheLampsLitByHand();
             for (int i = _objects.Count - 1; i >= 0; i--)
                 if (_objects[i] != null) Object.DestroyImmediate(_objects[i]);
             _objects.Clear();
@@ -93,6 +101,23 @@ namespace HiddenHarbours.Tests.EditMode
         }
         private static void Field(object obj, string name, object value)
             => obj.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(obj, value);
+
+        // EditMode runs neither OnEnable nor OnDisable, so a case that drives the first by hand owns the
+        // second. Unity disables an enabled behaviour before it destroys it, and OnDisable is where the lamps
+        // leave the cabin bus; skipped, DestroyImmediate leaves them subscribed to a static bus, and the next
+        // fixture to publish CabinEntered logs their MissingReferenceException (#916's red).
+        private void LightByHand(BoatLamps lamps)
+        {
+            LampsOnEnable.Invoke(lamps, null);
+            _litByHand.Add(lamps);
+        }
+
+        private void PutOutTheLampsLitByHand()
+        {
+            for (int i = _litByHand.Count - 1; i >= 0; i--)
+                if (_litByHand[i] != null) LampsOnDisable.Invoke(_litByHand[i], null);
+            _litByHand.Clear();
+        }
 
         private (BoatController boat, BoatAnchor anchor, BoatLamps lamps, SceneLight[] lights) Rig()
         {
@@ -177,8 +202,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.NotNull(new IsoFacetHullPresentationService().Install(host, def));
                 var lamps = host.GetComponent<BoatLamps>();
                 Assert.NotNull(lamps);
-                typeof(BoatLamps).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance)
-                    .Invoke(lamps, null);
+                LightByHand(lamps);
                 Assert.AreEqual(VesselWay.Moored, lamps.Way);
                 bool hasAnchor = false;
                 for (int i = 0; i < lamps.Lamps.Length; i++)
@@ -194,6 +218,26 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 Assert.IsTrue(hasAnchor, "the committed hull must actually carry an anchor lamp");
             }
+        }
+
+        [Test]
+        public void ABoatDestroyedWithHerLampsLit_LeavesTheCabinBus_SoACabinEnteredAfterwardsLogsNothing()
+        {
+            var (boat, _, lamps, _) = Rig();
+            LightByHand(lamps);                        // on the cabin bus, as a lit boat in the game is
+            GameObject hull = boat.gameObject;
+            EntityId id = hull.GetEntityId();
+
+            // Destroyed as the game destroys her: disabled first, then gone.
+            PutOutTheLampsLitByHand();
+            Object.DestroyImmediate(hull);
+            Assert.IsTrue(lamps == null, "the boat and her lamps are destroyed");
+
+            // A handler left on the bus reads its own destroyed transform whatever hull is named, and the
+            // bus logs what it throws. Going below anywhere afterwards must log nothing.
+            EventBus.Publish(new CabinEntered(id, 0));
+            EventBus.Publish(new CabinLeft(id));
+            LogAssert.NoUnexpectedReceived();
         }
 
         [TestCase(false)]
