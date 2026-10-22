@@ -56,9 +56,9 @@ namespace HiddenHarbours.Boats
     /// per-frame path allocates nothing.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    // A READER of the hull's drawn facing and her rock, exactly like DeckRiderVisual — and for the same
-    // reason it runs at 100: the gear stands on the deck the hull has already finished drawing.
-    [DefaultExecutionOrder(100)]
+    // Hull facing and rock are finished at -110/-120. Seek the worker at 90, before the rider's
+    // pose/mirror at 100 reads that same frame. No input here depends on the order-100 presenters.
+    [DefaultExecutionOrder(90)]
     public sealed class SternDeckGearPresenter : MonoBehaviour
     {
         [Header("Wiring")]

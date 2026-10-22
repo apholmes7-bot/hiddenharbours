@@ -28,12 +28,10 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>⚠ <c>aboard == false</c> is NOT "ashore".</b> The rider also says false in a cab and at
     /// a helm that hides its pilot. So the ashore figure draws only while the rider says her body is
-    /// shown on the root (<see cref="DeckRiderVisual.BodyShownOnRoot"/>), no clip is playing, nothing has
-    /// claimed her skin and she is dry (<see cref="WhyNotShownAshore"/>). Any clip (the boarding vault,
-    /// the ladders, the haul, the chop, the bench, sleep, swim, the open machines' Drive), a claim on her
-    /// skin (<see cref="IsoCharacterSprite.IsSuspended"/>: the fight, the haul; aboard as well) and
-    /// wading hand the draw back to the sprite for their length: the mesh follows stance and gait only
-    /// and has no pose for any of them. The held item stays at the sprite's hand.</para>
+    /// shown on the root (<see cref="DeckRiderVisual.BodyShownOnRoot"/>), is dry, and her current
+    /// move is drawable. Explicit supported moves take the clip player's frame and heading; its own
+    /// sole skin claim is allowed. Unmapped moves, missing skin states and any other claimant hand
+    /// back to the sprite. Fishing stays a sprite performance until body and rod move together.</para>
     ///
     /// <para><b>⚠ Her body is hidden with <see cref="Renderer.forceRenderingOff"/>, never
     /// <c>enabled</c>.</b> <c>enabled</c> is the rider's stand-down's alone, and the sprite shadow and
@@ -133,6 +131,8 @@ namespace HiddenHarbours.Player
         private SpriteRenderer _hiddenBody;
         private readonly AshoreArrivals _arrivals = new AshoreArrivals();
         private CharacterClipPlayer _clipPlayer;
+        private readonly System.Collections.Generic.HashSet<(CharacterSkinDef, string)> _missingMoves = new();
+        private const string ClipCannotDrawReason = "the running clip cannot draw as mesh; the sprite owns this move";
         private PlayerWalkController _walk;
 
         // Character PR 2b: her look (ADR 0051). The body her recipe resolved to and the colours of each
@@ -285,15 +285,17 @@ namespace HiddenHarbours.Player
             if (config == null) { Stop("no GameConfig"); return; }
             if (!config.MeshCharacter) { Stop("GameConfig.MeshCharacter is off"); return; }
 
-            // Claimed: the fight, the haul or a clip is writing her body sprite, and the rider's child
-            // mirrors it. The mesh has none of those poses, so the sprite shows what it is made to show.
-            if (SkinSuspended(stand))
+            CharacterSkinDef skin = ResolveSkin(stand);
+            bool clipPose = TryClipPose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
+            if (ClipPlaying() && !clipPose) { Stop(ClipCannotDrawReason); return; }
+            // A supported clip admits only its own claim. Fishing, legacy haul and nested claims
+            // retain the sprite until their own mesh performance replaces them.
+            if (SkinSuspended(stand) && !clipPose)
             {
                 Stop("her skin is suspended (the fight, the haul, a clip), and the sprite shows what it is made to show");
                 return;
             }
 
-            CharacterSkinDef skin = ResolveSkin(stand);
             if (skin == null) { Stop("no CharacterSkinDef — none set here and none on the art def"); return; }
             if (!skin.IsUsable()) { Stop($"CharacterSkinDef '{skin.Id}' is not usable — re-bake it"); return; }
 
@@ -309,8 +311,10 @@ namespace HiddenHarbours.Player
             // its own baked `balance` clip however well the bake covered it. Reading the request keeps
             // both paths on ONE authority, one step earlier — DeckRiderVisual wrote it itself, this
             // frame, in StateContext.
-            if (!CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
-                                               out string stateKey, out bool fellBack))
+            string stateKey = moveKey;
+            bool fellBack = false;
+            if (!clipPose && !CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
+                                                          out stateKey, out fellBack))
             {
                 Stop($"no clip for stance {character.Stance} / gait {character.Gait}");
                 return;
@@ -344,12 +348,12 @@ namespace HiddenHarbours.Player
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
             int frame = SabotageHoldFrameZero
                         ? 0
-                        : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
+                        : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
 
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false);
             if (!_figure.SetPose(stateKey, frame, life)) { Stop($"could not pose '{stateKey}' frame {frame}"); return; }
 
-            Place(stand, skin);
+            Place(stand, skin, clipPose, moveHeading);
             _figure.Visible = true;
             DrawsInsteadOfSprite = true;
             NotDrawingReason = null;
@@ -380,6 +384,8 @@ namespace HiddenHarbours.Player
             StandDownAboard();
 
             SpriteRenderer body = _rider != null ? _rider.BodyRenderer : null;
+            CharacterSkinDef skin = ResolveSkin(stand);
+            bool clipPose = TryClipPose(skin, stand, out string moveKey, out int moveFrame, out float moveHeading);
             string notShown = WhyNotShownAshore(
                 riderLive: _rider != null && _rider.isActiveAndEnabled,
                 hasRiderChild: _rider != null && _rider.HasRider,
@@ -387,7 +393,7 @@ namespace HiddenHarbours.Player
                 bodyShownOnRoot: _rider != null && _rider.BodyShownOnRoot,
                 clipPlaying: ClipPlaying(),
                 water: WaterAtFeet(),
-                skinSuspended: SkinSuspended(stand));
+                skinSuspended: SkinSuspended(stand), clipDrawsAsMesh: clipPose);
             if (notShown != null) { StopAshore(notShown); return; }
 
             // Shown ashore on her own feet. An ARRIVAL clears a refusal, so the pool is asked once more.
@@ -400,7 +406,6 @@ namespace HiddenHarbours.Player
                 return;
             }
 
-            CharacterSkinDef skin = ResolveSkin(stand);
             if (skin == null) { HoldSprite("no CharacterSkinDef — none set here and none on the art def"); return; }
             if (!skin.IsUsable()) { HoldSprite($"CharacterSkinDef '{skin.Id}' is not usable — re-bake it"); return; }
 
@@ -408,8 +413,10 @@ namespace HiddenHarbours.Player
             if (character == null) { HoldSprite("no IsoCharacterSprite to read stance and gait from"); return; }
 
             // Stance as REQUESTED, exactly as aboard (see there).
-            if (!CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
-                                               out string stateKey, out bool fellBack))
+            string stateKey = moveKey;
+            bool fellBack = false;
+            if (!clipPose && !CharacterSkinStateMap.Resolve(skin, character.Stance, character.Gait, CarryNow(),
+                                                          out stateKey, out fellBack))
             {
                 HoldSprite($"no clip for stance {character.Stance} / gait {character.Gait}");
                 return;
@@ -464,14 +471,14 @@ namespace HiddenHarbours.Player
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
             int frame = SabotageHoldFrameZero
                         ? 0
-                        : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
+                        : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false);
             if (!_ashoreFigure.SetPose(stateKey, frame, life)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
 
             // Her facing: the sprite's own compass heading, through the def's MEASURED azimuth sign. The
             // ashore frame is a hull frame at heading 0, where a deck bearing and a compass heading are
             // the same number, so this is the aboard rule with the hull taken out.
-            float heading = character.HeadingDegrees;
+            float heading = clipPose ? moveHeading : character.HeadingDegrees;
             heading = FigureHeadingDial.Heading(heading, FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is
             float yaw = skin.AzimuthCounterClockwise ? -heading : heading;
             _ashoreFigure.SetAshoreYaw(yaw);
@@ -504,14 +511,14 @@ namespace HiddenHarbours.Player
         /// </summary>
         public static string WhyNotShownAshore(bool riderLive, bool hasRiderChild, bool hasBody,
                                                bool bodyShownOnRoot, bool clipPlaying,
-                                               OnFootWaterState water, bool skinSuspended = false)
+                                               OnFootWaterState water, bool skinSuspended = false, bool clipDrawsAsMesh = false)
         {
             if (!riderLive) return "ashore — the rider is disabled, so nothing poses her each frame";
             if (!hasRiderChild) return "ashore — no rider child is wired, so the rider cannot tell a deck from the shore";
             if (!hasBody) return "ashore — there is no body sprite to stand in for";
             if (!bodyShownOnRoot) return "inside something (a cab, or a helm that hides its pilot): she draws neither";
-            if (clipPlaying) return "ashore — a clip is playing, and the sprite draws every clip";
-            if (skinSuspended)
+            if (clipPlaying && !clipDrawsAsMesh) return "ashore — the running clip cannot draw as mesh; the sprite owns this move";
+            if (skinSuspended && !(clipPlaying && clipDrawsAsMesh))
                 return "ashore — her skin is suspended (the fight, the haul), and the sprite shows what it is made to show";
             if (water == OnFootWaterState.Wade) return "ashore — wading, and the sprite draws her in the water";
             if (water != OnFootWaterState.Dry) return "ashore — swimming, and the sprite draws her in the water";
@@ -610,8 +617,33 @@ namespace HiddenHarbours.Player
         /// <summary>A missing clip player plays nothing.</summary>
         private bool ClipPlaying()
         {
+            // A missing component is retried: a caller may add the seam after the presenter seats.
             if (_clipPlayer == null) TryGetComponent(out _clipPlayer);
             return _clipPlayer != null && _clipPlayer.IsPlaying;
+        }
+
+        /// <summary>A whole-body move takes the sprite's clock and compass heading verbatim.
+        /// A missing move is refused once by name, never silently replaced with gait.</summary>
+        private bool TryClipPose(CharacterSkinDef skin, ICharacterFigureStand stand,
+                                 out string key, out int frame, out float heading)
+        {
+            key = null; frame = 0; heading = 0f;
+            if (!ClipPlaying() || !_clipPlayer.OwnsOnlySkinClaim ||
+                stand.FigureCharacter == null || stand.FigureCharacter.gameObject != _clipPlayer.gameObject) return false;
+            key = CharacterClipStateMap.StateKeyFor(_clipPlayer.Clip, CarryNow());
+            if (key == null) return false; // explicitly deferred: water, sleep, drive and reaches
+            if (skin == null) return false;
+            if (!skin.TryGetClip(key, out var clip) || !skin.DrawsAsMesh(key) ||
+                !clip.KeysWellFormed(skin.BoneCount))
+            {
+                if (_missingMoves.Add((skin, key)))
+                    Debug.LogWarning($"[DeckRiderMeshPresenter] Skin '{skin.Id}' cannot draw move '{key}' " +
+                                     "as mesh; that move keeps its sprite (ADR 0041).", this);
+                return false;
+            }
+            frame = _clipPlayer.Frame;
+            heading = _clipPlayer.HeadingDegrees;
+            return true;
         }
 
         /// <summary>A missing walk controller is dry ground.</summary>
@@ -810,10 +842,13 @@ namespace HiddenHarbours.Player
         /// figure at deck bearing 0 faces the bow. This lane has been CCW-mislabelled twice; the sign
         /// is read off the bake, not declared here.</para>
         /// </summary>
-        private void Place(ICharacterFigureStand stand, CharacterSkinDef skin)
+        private void Place(ICharacterFigureStand stand, CharacterSkinDef skin, bool clipPose, float clipHeading)
         {
             Vector3 local = stand.FigureStandRigMetres + SabotageStandOffsetMetres;
-            float bearing = stand.FigureDeckBearingDegrees;
+            float bearing = clipPose
+                ? DeckRiderFacingMath.DeckBearingFor(clipHeading,
+                    _rider.HullDrawnHeadingDegrees)
+                : stand.FigureDeckBearingDegrees;
             float yaw = skin.AzimuthCounterClockwise ? -bearing : bearing;
             yaw = FigureHeadingDial.DeckYaw(yaw, _hull != null ? _hull.HeadingDirUnits * HullMeshMath.DegreesPerDirUnit : 0f,
                                             FigureHeadingDial.LiveSteps);   // the pixel look's dial; 0: as is

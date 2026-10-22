@@ -364,6 +364,48 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void HeadingDegrees_IsTheLiveClipHeading()
+        {
+            var go = new GameObject("Heading");
+            try
+            {
+                var player = go.AddComponent<CharacterClipPlayer>();
+                player.Configure(NewDef(withClips: true));
+                Assert.IsTrue(player.Play(CharacterClip.Board, 37.25f));
+                Assert.AreEqual(37.25f, player.HeadingDegrees);
+                player.SetHeading(251.75f);
+                Assert.AreEqual(251.75f, player.HeadingDegrees);
+                Assert.IsTrue(player.PlayDriven(CharacterClip.Haul, 123.5f, 3f));
+                player.SeekFrame(5f);
+                Assert.AreEqual(123.5f, player.HeadingDegrees);
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        [Test]
+        public void AClipOwnsOnlyItsOwnSkinClaim()
+        {
+            var go = new GameObject("Claims");
+            try
+            {
+                var skin = go.AddComponent<IsoCharacterSprite>();
+                var player = go.AddComponent<CharacterClipPlayer>();
+                player.Configure(NewDef(withClips: true));
+                Assert.IsFalse(player.OwnsOnlySkinClaim);
+                Assert.IsTrue(player.PlayDriven(CharacterClip.Haul, 0f));
+                Assert.IsTrue(player.OwnsOnlySkinClaim);
+                skin.Suspend();
+                Assert.IsFalse(player.OwnsOnlySkinClaim, "another animator still owns the sprite");
+                skin.Release();
+                Assert.IsTrue(player.OwnsOnlySkinClaim);
+                player.Stop();
+                Assert.IsFalse(player.OwnsOnlySkinClaim);
+                Assert.IsFalse(skin.IsSuspended);
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        [Test]
         public void SeekingIsIgnored_ByAClockedClip_AndByNoClipAtAll()
         {
             var go = new GameObject("Clocked");
