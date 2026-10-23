@@ -336,3 +336,14 @@ docs/art/rigs/modern2500-kit/preview.html text eol=lf
 docs/art/rigs/modern2500-kit/README.md text eol=lf
 docs/art/rigs/gameplay/vehicles/modern2500.rig.gameplay.json text eol=lf
 docs/art/rigs/modern2500-kit/reference/SHA256SUMS.txt text eol=lf
+
+# Road / path kit v4 (Claude Design, docs/art/rigs/road-path-kit-v4/, drop of 2026-09-30), installed beside
+# v3 byte for byte. Its SHA256SUMS.txt lists the LF digests of its 18 text files as served (measured: 0 CR
+# in all of them), and the game's road-floor bake reads roadPathRig4.js and its lib by those bytes. Pin the
+# working-tree form so the checksum file verifies on any checkout, as for the kits above. BY EXTENSION, not
+# `docs/art/rigs/road-path-kit-v4/**`: renders/*.png must keep the `-text` inside [attr]lfs.
+docs/art/rigs/road-path-kit-v4/**/*.js                text eol=lf
+docs/art/rigs/road-path-kit-v4/**/*.cjs               text eol=lf
+docs/art/rigs/road-path-kit-v4/**/*.json              text eol=lf
+docs/art/rigs/road-path-kit-v4/**/*.md                text eol=lf
+docs/art/rigs/road-path-kit-v4/**/*.txt               text eol=lf

@@ -1,0 +1,464 @@
+{
+ "schema": "hidden-harbours/road-gameplay@1",
+ "rig": "roadPathRig4",
+ "scene": "wharfroad",
+ "frame": "scene metres · 32 px = 1 m · +x east · +y south (toward the camera) · +z up · heights at 24.5 px = 1 m on screen",
+ "routes": [
+  {
+   "id": "nmc.wharf_road",
+   "class": "paved",
+   "laneClass": "street",
+   "surface": "asphalt",
+   "foot": "stone",
+   "grip": 0.881,
+   "width_m": 5.6,
+   "length_m": 18.894,
+   "centreline_m": [
+    [
+     -1.25,
+     9.75
+    ],
+    [
+     -0.785,
+     9.702
+    ],
+    [
+     -0.32,
+     9.647
+    ],
+    [
+     0.144,
+     9.588
+    ],
+    [
+     0.607,
+     9.529
+    ],
+    [
+     1.072,
+     9.471
+    ],
+    [
+     1.536,
+     9.417
+    ],
+    [
+     2.002,
+     9.371
+    ],
+    [
+     2.468,
+     9.336
+    ],
+    [
+     2.935,
+     9.315
+    ],
+    [
+     3.403,
+     9.312
+    ],
+    [
+     3.87,
+     9.333
+    ],
+    [
+     4.335,
+     9.381
+    ],
+    [
+     4.798,
+     9.447
+    ],
+    [
+     5.259,
+     9.527
+    ],
+    [
+     5.719,
+     9.611
+    ],
+    [
+     6.179,
+     9.695
+    ],
+    [
+     6.641,
+     9.77
+    ],
+    [
+     7.104,
+     9.83
+    ],
+    [
+     7.571,
+     9.867
+    ],
+    [
+     8.038,
+     9.876
+    ],
+    [
+     8.506,
+     9.864
+    ],
+    [
+     8.972,
+     9.836
+    ],
+    [
+     9.438,
+     9.794
+    ],
+    [
+     9.903,
+     9.742
+    ],
+    [
+     10.367,
+     9.682
+    ],
+    [
+     10.83,
+     9.619
+    ],
+    [
+     11.293,
+     9.555
+    ],
+    [
+     11.757,
+     9.492
+    ],
+    [
+     12.221,
+     9.433
+    ],
+    [
+     12.685,
+     9.376
+    ],
+    [
+     13.149,
+     9.315
+    ],
+    [
+     13.612,
+     9.251
+    ],
+    [
+     14.075,
+     9.186
+    ],
+    [
+     14.538,
+     9.12
+    ],
+    [
+     15.001,
+     9.052
+    ],
+    [
+     15.464,
+     8.984
+    ],
+    [
+     15.926,
+     8.916
+    ],
+    [
+     16.389,
+     8.848
+    ],
+    [
+     16.852,
+     8.78
+    ],
+    [
+     17.315,
+     8.714
+    ],
+    [
+     17.5,
+     8.688
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 2.8,
+     "surface": "asphalt",
+     "z_m": 0.04
+    },
+    {
+     "role": "shoulder",
+     "from_m": 2.8,
+     "to_m": 3.3,
+     "surface": "shoulder",
+     "z_m": 0
+    },
+    {
+     "role": "verge",
+     "from_m": 3.3,
+     "to_m": 3.7,
+     "surface": "ground",
+     "z_m": 0
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": null,
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [],
+   "snow": "plough"
+  },
+  {
+   "id": "nmc.dune_boardwalk",
+   "class": "boardwalk",
+   "laneClass": "walk",
+   "surface": "deck",
+   "foot": "plank",
+   "grip": 0.76,
+   "width_m": 1.5,
+   "length_m": 6.441,
+   "centreline_m": [
+    [
+     7.813,
+     7.063
+    ],
+    [
+     7.653,
+     6.624
+    ],
+    [
+     7.514,
+     6.179
+    ],
+    [
+     7.537,
+     5.717
+    ],
+    [
+     7.704,
+     5.282
+    ],
+    [
+     7.936,
+     4.877
+    ],
+    [
+     8.212,
+     4.502
+    ],
+    [
+     8.552,
+     4.182
+    ],
+    [
+     8.901,
+     3.872
+    ],
+    [
+     9.203,
+     3.518
+    ],
+    [
+     9.456,
+     3.126
+    ],
+    [
+     9.667,
+     2.71
+    ],
+    [
+     9.816,
+     2.268
+    ],
+    [
+     9.887,
+     1.807
+    ],
+    [
+     9.938,
+     1.438
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 0.75,
+     "surface": "deck",
+     "z_m": 0.35
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": {
+    "z_m": 0.35,
+    "edge": "drop · no rail modelled"
+   },
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [],
+   "snow": "none"
+  },
+  {
+   "id": "nmc.dune_trail",
+   "class": "footpath",
+   "laneClass": "footpath",
+   "surface": "trodden",
+   "foot": "earth",
+   "grip": 0.7,
+   "width_m": 1,
+   "length_m": 5.912,
+   "centreline_m": [
+    [
+     13.438,
+     6.938
+    ],
+    [
+     13.575,
+     6.489
+    ],
+    [
+     13.71,
+     6.04
+    ],
+    [
+     13.744,
+     5.574
+    ],
+    [
+     13.575,
+     5.139
+    ],
+    [
+     13.351,
+     4.728
+    ],
+    [
+     13.248,
+     4.275
+    ],
+    [
+     13.324,
+     3.813
+    ],
+    [
+     13.466,
+     3.366
+    ],
+    [
+     13.602,
+     2.917
+    ],
+    [
+     13.69,
+     2.456
+    ],
+    [
+     13.764,
+     1.992
+    ],
+    [
+     13.832,
+     1.528
+    ],
+    [
+     13.875,
+     1.25
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 0.5,
+     "surface": "trodden",
+     "z_m": 0
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": null,
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [
+    "trodden centre"
+   ],
+   "snow": "trodden"
+  },
+  {
+   "id": "nmc.fish_market_walk",
+   "class": "walk",
+   "laneClass": "walk",
+   "surface": "shell",
+   "foot": "shell",
+   "grip": 0.66,
+   "width_m": 1.4,
+   "length_m": 2.792,
+   "centreline_m": [
+    [
+     4.688,
+     12.25
+    ],
+    [
+     4.621,
+     12.71
+    ],
+    [
+     4.565,
+     13.172
+    ],
+    [
+     4.58,
+     13.636
+    ],
+    [
+     4.662,
+     14.094
+    ],
+    [
+     4.771,
+     14.547
+    ],
+    [
+     4.875,
+     15
+    ],
+    [
+     4.875,
+     15
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 0.7,
+     "surface": "shell",
+     "z_m": 0
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": null,
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [],
+   "snow": "trodden"
+  }
+ ],
+ "_notes": [
+  "Sections are symmetric; the section table is the half-width, carriage centre outward.",
+  "Where routes of one group meet, the carriage edge is a circular fillet of the group radius; the bands follow it.",
+  "A footpath ends at a sidewalk; a vehicular class drops the kerb it crosses and fills the ditch."
+ ]
+}

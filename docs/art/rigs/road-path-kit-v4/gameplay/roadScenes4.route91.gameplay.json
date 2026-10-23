@@ -1,0 +1,416 @@
+{
+ "schema": "hidden-harbours/road-gameplay@1",
+ "rig": "roadPathRig4",
+ "scene": "route91",
+ "frame": "scene metres · 32 px = 1 m · +x east · +y south (toward the camera) · +z up · heights at 24.5 px = 1 m on screen",
+ "routes": [
+  {
+   "id": "nmc.route_91",
+   "class": "route",
+   "laneClass": "street",
+   "surface": "asphalt",
+   "foot": "stone",
+   "grip": 0.872,
+   "width_m": 5.8,
+   "length_m": 17.832,
+   "centreline_m": [
+    [
+     -1.25,
+     8.188
+    ],
+    [
+     -0.782,
+     8.15
+    ],
+    [
+     -0.314,
+     8.117
+    ],
+    [
+     0.154,
+     8.087
+    ],
+    [
+     0.622,
+     8.057
+    ],
+    [
+     1.091,
+     8.025
+    ],
+    [
+     1.558,
+     7.988
+    ],
+    [
+     2.026,
+     7.944
+    ],
+    [
+     2.492,
+     7.889
+    ],
+    [
+     2.956,
+     7.82
+    ],
+    [
+     3.418,
+     7.741
+    ],
+    [
+     3.88,
+     7.658
+    ],
+    [
+     4.341,
+     7.569
+    ],
+    [
+     4.799,
+     7.469
+    ],
+    [
+     5.254,
+     7.354
+    ],
+    [
+     5.704,
+     7.219
+    ],
+    [
+     6.145,
+     7.061
+    ],
+    [
+     6.576,
+     6.874
+    ],
+    [
+     6.996,
+     6.665
+    ],
+    [
+     7.406,
+     6.437
+    ],
+    [
+     7.804,
+     6.188
+    ],
+    [
+     8.186,
+     5.916
+    ],
+    [
+     8.551,
+     5.621
+    ],
+    [
+     8.893,
+     5.3
+    ],
+    [
+     9.207,
+     4.952
+    ],
+    [
+     9.494,
+     4.58
+    ],
+    [
+     9.751,
+     4.188
+    ],
+    [
+     9.98,
+     3.778
+    ],
+    [
+     10.181,
+     3.355
+    ],
+    [
+     10.356,
+     2.919
+    ],
+    [
+     10.503,
+     2.474
+    ],
+    [
+     10.61,
+     2.017
+    ],
+    [
+     10.686,
+     1.554
+    ],
+    [
+     10.74,
+     1.088
+    ],
+    [
+     10.781,
+     0.62
+    ],
+    [
+     10.815,
+     0.152
+    ],
+    [
+     10.848,
+     -0.316
+    ],
+    [
+     10.887,
+     -0.784
+    ],
+    [
+     10.938,
+     -1.25
+    ],
+    [
+     10.938,
+     -1.25
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 2.9,
+     "surface": "asphalt",
+     "z_m": 0.04
+    },
+    {
+     "role": "shoulder",
+     "from_m": 2.9,
+     "to_m": 3.45,
+     "surface": "shoulder",
+     "z_m": 0
+    },
+    {
+     "role": "ditch",
+     "from_m": 3.45,
+     "to_m": 4.9,
+     "surface": "ground",
+     "z_m": -0.34
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": null,
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [
+    "ditch bottom"
+   ],
+   "snow": "plough"
+  },
+  {
+   "id": "nmc.lot_drive",
+   "class": "lane",
+   "laneClass": "lane",
+   "surface": "gravel",
+   "foot": "gravel",
+   "grip": 0.624,
+   "width_m": 3,
+   "length_m": 9.837,
+   "centreline_m": [
+    [
+     9.375,
+     6.688
+    ],
+    [
+     9.738,
+     6.984
+    ],
+    [
+     10.107,
+     7.272
+    ],
+    [
+     10.477,
+     7.56
+    ],
+    [
+     10.839,
+     7.857
+    ],
+    [
+     11.186,
+     8.171
+    ],
+    [
+     11.509,
+     8.51
+    ],
+    [
+     11.811,
+     8.868
+    ],
+    [
+     12.1,
+     9.237
+    ],
+    [
+     12.371,
+     9.619
+    ],
+    [
+     12.619,
+     10.017
+    ],
+    [
+     12.84,
+     10.429
+    ],
+    [
+     13.031,
+     10.857
+    ],
+    [
+     13.185,
+     11.299
+    ],
+    [
+     13.301,
+     11.753
+    ],
+    [
+     13.389,
+     12.213
+    ],
+    [
+     13.458,
+     12.676
+    ],
+    [
+     13.516,
+     13.141
+    ],
+    [
+     13.569,
+     13.607
+    ],
+    [
+     13.622,
+     14.072
+    ],
+    [
+     13.68,
+     14.537
+    ],
+    [
+     13.75,
+     15
+    ],
+    [
+     13.75,
+     15
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 1.5,
+     "surface": "gravel",
+     "z_m": 0
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": null,
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [],
+   "snow": "plough"
+  },
+  {
+   "id": "nmc.lot_walk",
+   "class": "walk",
+   "laneClass": "walk",
+   "surface": "shell",
+   "foot": "shell",
+   "grip": 0.66,
+   "width_m": 1.3,
+   "length_m": 4.738,
+   "centreline_m": [
+    [
+     13.313,
+     12
+    ],
+    [
+     12.875,
+     12.157
+    ],
+    [
+     12.437,
+     12.309
+    ],
+    [
+     12.009,
+     12.492
+    ],
+    [
+     11.604,
+     12.718
+    ],
+    [
+     11.211,
+     12.966
+    ],
+    [
+     10.846,
+     13.252
+    ],
+    [
+     10.538,
+     13.598
+    ],
+    [
+     10.338,
+     14.016
+    ],
+    [
+     10.212,
+     14.463
+    ],
+    [
+     10.091,
+     14.912
+    ],
+    [
+     10.063,
+     15
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 0.65,
+     "surface": "shell",
+     "z_m": 0
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": null,
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [],
+   "snow": "trodden"
+  }
+ ],
+ "_notes": [
+  "Sections are symmetric; the section table is the half-width, carriage centre outward.",
+  "Where routes of one group meet, the carriage edge is a circular fillet of the group radius; the bands follow it.",
+  "A footpath ends at a sidewalk; a vehicular class drops the kerb it crosses and fills the ditch."
+ ]
+}
