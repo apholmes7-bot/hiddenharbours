@@ -101,6 +101,8 @@ namespace HiddenHarbours.App.Editor
                 Expect(passage, "_loader", loader);
                 if (passage.ArrivalKey != door.TargetArrival)
                     throw new InvalidOperationException("CREATE did not wire " + door.Id + " _arrivalKey.");
+                if (passage.GetComponent<BoxCollider2D>().enabled == door.Shut)
+                    throw new InvalidOperationException("CREATE left " + door.Id + "'s band " + (door.Shut ? "open." : "shut."));
             }
             int hulls = ExpectEach<BoatController>(roots, "_hull", plan.DevHull)
                 + ExpectEach<ShipHold>(roots, "_hull", plan.DevHull);
@@ -151,7 +153,18 @@ namespace HiddenHarbours.App.Editor
                     LandScenePlanDef.Project(door.Size), door.Target, loader, door.TargetArrival);
                 passage.transform.SetParent(doors, true);
                 if (door.OnFootOnly) passage.ConfigureAccess(passage.gameObject.AddComponent<LandPassageAccess>());
+                SetBand(passage, door);
             }
+        }
+
+        /// <summary>A shut door's band is off (<see cref="LandDoor.Shut"/>): a disabled trigger raises no crossing.
+        /// Writes only a change, so a no-op refresh stays a no-op.</summary>
+        static void SetBand(RegionPassage passage, LandDoor door)
+        {
+            var band = passage.GetComponent<BoxCollider2D>();
+            if (band.enabled != door.Shut) return;
+            band.enabled = !door.Shut;
+            EditorUtility.SetDirty(band);
         }
 
         public static void Refresh(LandScenePlanDef plan)
@@ -179,6 +192,7 @@ namespace HiddenHarbours.App.Editor
                 WaterSceneTemplate.SetRef(passage, "_target", door.Target);
                 WaterSceneTemplate.SetRef(passage, "_loader", loader);
                 WaterSceneTemplate.SetString(passage, "_arrivalKey", door.TargetArrival);
+                SetBand(passage, door);
             }
             // No destroy/recreate, no re-paint, no transform resets, no new file IDs on a no-op refresh.
             EditorSceneManager.SaveScene(scene);

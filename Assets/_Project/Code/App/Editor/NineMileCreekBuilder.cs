@@ -978,6 +978,29 @@ namespace HiddenHarbours.App.Editor
                                  "west water.");
             }
 
+            // ⭐ RICE POINT'S SEA AND STRAND DOORS, THIS SIDE OF THE SEAM (NR1a). Rice Point lies west of the
+            // creek (#956) and authored its halves on its east edge; these are ours: the SEA door across the
+            // bay mouth, and the STRAND door on the high strand above it, for walkers only — a truck, an ATV
+            // or a boat that runs into it gets no passage and stays here. Rice Point's third door, Route 91,
+            // waits on NR1b, and Rice Point keeps its half shut until then. The bands and the ways in are
+            // NineMileCreekMainland's, Rice Point's mirrored across the seam.
+            //
+            // Guarded on Rice Point's def existing, exactly like the west water above — until it is built
+            // the creek's west edge simply has no doors, which is what it has today.
+            var ricePointRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(NineMileCreekRicePointDoors.RegionAssetPath);
+            if (ricePointRegion != null)
+            {
+                NineMileCreekRicePointDoors.PlaceDoors(ricePointRegion, loader);
+                SetRefArray(loader, "_regions", NineMileCreekRicePointDoors.LoaderRegions(
+                                nineMileCreek, cove, stPetersRegion, westWaterRegion, ricePointRegion));
+            }
+            else
+            {
+                Debug.LogWarning("[NineMileCreekBuilder] No Rice Point RegionDef at " +
+                                 NineMileCreekRicePointDoors.RegionAssetPath + " — the creek's west edge has no " +
+                                 "doors, so Rice Point cannot be reached. Re-run after building Rice Point.");
+            }
+
             // VS-22 arrival anchor: where the persistent rig binds on arrival. The boat parks in the basin
             // off the north wall's face; you step ashore onto its deck. The App RegionTravelCoordinator
             // reads this to reposition the rig and re-point the dock.
@@ -1015,8 +1038,15 @@ namespace HiddenHarbours.App.Editor
             // is never the only thing between a slow first frame and a crossing straight back.
             var gwBarLanding = new GameObject("NineMileCreekBarLanding");
             gwBarLanding.transform.position = WalkArrivalPos;
-            gwAnchor.ConfigureArrivals(
-                new NamedArrival(BarArrivalKey, arrivalPoint: null, disembarkPoint: gwBarLanding.transform));
+            // ...and Rice Point's two ways in (NR1a), which its sea and strand doors ask for by name. A boat
+            // that sails in lies off the strand, 8 m east of the sea door's band; a walker stands on the high
+            // strand, 8 m east of the band they crossed. Neither stands in a door, so no arrival re-fires one.
+            // The strand's has no boat point, for the bar's reason: you walked, and she stays where she lies.
+            gwAnchor.ConfigureArrivals(new[]
+                {
+                    new NamedArrival(BarArrivalKey, arrivalPoint: null, disembarkPoint: gwBarLanding.transform),
+                }
+                .Concat(NineMileCreekRicePointDoors.PlaceArrivals(ricePointRegion, gwAnchor.transform)).ToArray());
 
             // The camera's bounds clamp reads this on arrival — the same extent the sea reads.
             gwAnchor.ConfigureExtent(NineMileCreekSeaCenter, NineMileCreekSeaSize);
@@ -1049,7 +1079,7 @@ namespace HiddenHarbours.App.Editor
             // Nine Mile Creek is a region scene: the real player arrives with the persistent core from St Peters,
             // so playing this scene directly used to give "no character loads" (the owner's report). The
             // fix: bake a minimal, self-contained DEV CORE — services + follow camera + a walkable,
-            // rod-fishing player on the wharf — as an INACTIVE root, plus an active DevRegionBootstrap
+            // rod-fishing player on the wharf — INACTIVE below an active envelope, plus an active DevRegionBootstrap
             // that activates it ONLY when the scene is played directly in the editor and destroys it
             // (never awakened — no service stomp, no duplicate player) when the real core travels in.
             Transform devPlayer = BuildDevBootstrap(config, cam, DisembarkPos);
@@ -1261,7 +1291,11 @@ namespace HiddenHarbours.App.Editor
         /// <see cref="PlaceDialogueDriver"/> and <c>GameServices.PlayerTransform</c>.</returns>
         static Transform BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn)
         {
-            var devCore = new GameObject("DevCore");
+            // Travel activates destination roots before Start. Keep the inactive core one level
+            // below an active envelope so that root activation cannot awaken a second rig.
+            var envelope = new GameObject(NineMileCreekDevCoreEnvelope.EnvelopeName);
+            var devCore = new GameObject(NineMileCreekDevCoreEnvelope.CoreName);
+            devCore.transform.SetParent(envelope.transform, false);
 
             // Services root (mirrors PersistentCoreBuilder's GameRoot block; GameRoot wires GameServices
             // on activation). Nine Mile Creek's own authored tide (RegionDef NineMileCreek: mean 0, amp 0.8,
