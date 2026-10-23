@@ -18,6 +18,7 @@ namespace HiddenHarbours.App.Editor
         {
             GroundFileIntake.ReadCumberlandFolder(GroundFolder);
             LandSceneTemplate.Create(LoadPlan());
+            CumberlandRoutines.BuildAndSave();
         }
 
         [MenuItem("Hidden Harbours/Regions/Cumberland/REFRESH Logic")]
@@ -25,6 +26,7 @@ namespace HiddenHarbours.App.Editor
         {
             GroundFileIntake.ReadCumberlandFolder(GroundFolder);
             LandSceneTemplate.Refresh(LoadPlan());
+            CumberlandRoutines.BuildAndSave();
         }
 
         // Batch entry points own scene selection and report success only after the saved output exists.

@@ -228,7 +228,7 @@ record**, and where it differs from the sketch above the sketch is the *target*,
 | Piece | Where | What it is |
 |---|---|---|
 | `RoutineActivity` | `World/Routines` | the four activity tags (`Home` · `Work` · `Errand` · `Recreation`), append-only |
-| `RoutineDef` + `RoutineEntry` | `World/Routines` | one asset per villager under `Data/Routines`, id `routine.snake_case`; a day is a list of `{StartHour, StationId, Activity, Why}` plus that person's walk speed and departure jitter |
+| `RoutineDef` + `RoutineEntry` | `World/Routines` | one asset per villager under `Data/Routines`, id `routine.snake_case`, naming its region with `RegionId`; a region reads its own days through `RoutineCatalog.LoadRegion`; a day is a list of `{StartHour, StationId, Activity, Why}` plus that person's walk speed and departure jitter |
 | `RoutineStations` / `RoutineStationEntry` | `World/Routines` | the region's named places — position, stance, optional interior, which lane node it hangs off. **Emitted by the region builder, never hand-placed** |
 | `RoutineLanes` + `RoutineLaneTree` | `World/Routines` | the walkable network, and the pure maths that walks it |
 | `RoutineSchedule` | `World/Routines` | the pure time maths: which block, how long it has run, how long a walk takes, the seeded jitter |

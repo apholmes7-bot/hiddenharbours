@@ -26,7 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
     {
         const string BuildsFolder = "Assets/_Project/Data/Characters/Builds";
         const string DataNpcs = "Assets/_Project/Data/NPCs";
-        const string RampsPath = "Assets/_Project/Data/Characters/CharacterRamps.asset";
+        const string RampsPath = "Assets/_Project/Data/Characters/CharacterRamps10.asset";
 
         static CharacterBuildDef[] Builds() =>
             AssetDatabase.FindAssets("t:CharacterBuildDef", new[] { BuildsFolder })
@@ -47,12 +47,15 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryBakedPreset_HasABuildAsset()
         {
-            var byPreset = Builds().ToDictionary(b => b.Preset, b => b, System.StringComparer.Ordinal);
+            var builds = Builds();
             foreach (var (preset, _) in CharacterBuildsBuilder.Presets)
-                Assert.IsTrue(byPreset.ContainsKey(preset),
-                    $"No CharacterBuildDef for baked preset '{preset}' under {BuildsFolder}. Run " +
-                    "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Character Builds + " +
-                    "Cast Mapping and commit the assets.");
+            {
+                string coreId = "char_build." + preset;
+                var samePreset = builds.Where(b => b.Preset == preset).ToArray();
+                Assert.That(samePreset.Count(b => b.Id == coreId), Is.EqualTo(1),
+                    $"Preset '{preset}' needs exactly one core build '{coreId}'; " +
+                    $"ids found: {string.Join(", ", samePreset.Select(b => b.Id))}.");
+            }
         }
 
         [Test]
