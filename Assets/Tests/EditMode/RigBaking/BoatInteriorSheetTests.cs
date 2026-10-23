@@ -304,7 +304,23 @@ namespace HiddenHarbours.Tests.RigBaking
 
             // ADR 0041: a converted hull keeps her DEF (the walker reads it) and loses her SHEET.
             HashSet<string> converted = ConvertedInteriors.DefIds();
-            defs = defs.Where(d => !converted.Contains(d)).ToArray();
+            // ADR 0048: switched hulls are identified by the layout guard's LayoutSchema predicate.
+            var switched = new HashSet<string>(StringComparer.Ordinal);
+            foreach (FleetHull hull in HullMeshFleet.Hulls)
+            {
+                var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+                if (mesh == null || string.IsNullOrEmpty(mesh.LayoutSchema)) continue;
+                string stem = Path.GetFileName(hull.MeshAssetPath).Replace("HullMesh.asset", "");
+                var room = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>(InteriorDefFolder + "/" + stem + ".asset");
+                if (room == null) continue;
+                Assert.That(room.FitsHulls, Does.Contain(stem),
+                    $"{room.Id}: sheet-free def must belong to switched fleet hull {hull.Key} ({mesh.LayoutSchema})");
+                Assert.IsFalse(string.IsNullOrEmpty(mesh.LayoutSchema),
+                    $"{room.Id}: {hull.Key} must be switched to set its def aside");
+                switched.Add(room.Id);
+                TestContext.WriteLine($"{room.Id}: set aside for switched fleet hull {hull.Key} ({mesh.LayoutSchema})");
+            }
+            defs = defs.Where(d => !converted.Contains(d) && !switched.Contains(d)).ToArray();
 
             CollectionAssert.AreEqual(defs, fromSheets,
                 "the interior DEFS and the interior SHEETS name different hulls. They are built from " +

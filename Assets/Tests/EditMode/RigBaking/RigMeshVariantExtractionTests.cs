@@ -113,8 +113,20 @@ namespace HiddenHarbours.Tests.RigBaking
             // Hulls would only mean asserting that a variant takes the static path, which is the
             // opposite of true.
             var report = new StringBuilder();
+            // Added after generators: one hull per rig through the rig's published scope.
+            var scopedSingles = new Dictionary<string, string>
+                { ["goFast"] = "go_fast", ["bowrider"] = "bowrider", ["expressCruiser"] = "express_cruiser" };
             foreach (FleetHull hull in HullMeshFleet.OneHullPerRig)
             {
+                if (scopedSingles.TryGetValue(hull.Key, out string id))
+                {
+                    Assert.IsNotNull(hull.Extraction, hull.Key + ": published hull scope missing");
+                    Assert.AreEqual("byId('" + id + "')", hull.Extraction.HullScope,
+                        hull.Key + ": one hull per rig through its published scope");
+                    Assert.IsFalse(hull.IsVariant, hull.Key + ": a scoped single hull is not a generator variant");
+                    report.Append(hull.Key).Append(" (published scope) ");
+                    continue;
+                }
                 Assert.IsNull(hull.Extraction,
                     $"{hull.Key} carries a hull extraction. Every hull in the table on 2026-08-12 " +
                     "took the static F array; if this one is now a generator variant, it belongs in " +
