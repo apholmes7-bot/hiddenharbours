@@ -1123,6 +1123,30 @@ namespace HiddenHarbours.Tools.RigBaking
             UnityEngine.Object.DestroyImmediate(old, allowDestroyingAssets: true);
         }
 
+        /// <summary>The drive's declared face set, beside the mesh rather than inside a channel.
+        /// Call after leaf separation and room append. RigMeshBuilder emits each face's corners
+        /// consecutively in this order without welding; this metadata never enters that builder.</summary>
+        public static Vector2Int[] DriveFaceRanges(RigMeshData data)
+        {
+            if (data.WalkGeometry == null || !data.WalkGeometry.TryGetValue("parts", out object raw))
+                return Array.Empty<Vector2Int>();
+            var drive = HullLayoutJson.List(raw, "geometry.parts")
+                .Select(p => HullLayoutJson.Object(p, "geometry.parts"))
+                .SingleOrDefault(p => HullLayoutJson.Text(p, "id", "geometry.parts") == "drive");
+            if (drive == null) return Array.Empty<Vector2Int>();
+            if (HullLayoutJson.Text(drive, "group", "geometry.parts.drive") != "tag")
+                throw new FormatException(data.Walk.Hull + ": geometry.parts.drive.group: expected tag");
+            int tag = HullLayoutJson.Integer(drive, "tag", "geometry.parts.drive");
+            var ranges = new List<Vector2Int>();
+            int first = 0;
+            foreach (var face in data.Faces)
+            {
+                if (face.PartTag == tag) ranges.Add(new Vector2Int(first, face.V.Length));
+                first += face.V.Length;
+            }
+            return ranges.ToArray();
+        }
+
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
                                        RigHullExtraction extraction = null)
         {
@@ -1304,6 +1328,7 @@ namespace HiddenHarbours.Tools.RigBaking
             def.LevelTags = LevelTableFor(data);
             def.LayoutSchema = data.Walk?.Schema ?? "";
             def.LiftSets = data.Walk == null ? Array.Empty<HullMeshDef.LiftSet>() : data.LiftSets;
+            def.DriveFaceVertexRanges = DriveFaceRanges(data);
 
             if (data.Walk == null && !created && beforeBake == EditorJsonUtility.ToJson(def) &&
                 MeshBytesEqual(def.Mesh, build.Mesh) && MeshBytesEqual(def.DoorLeafClosed, leafClosedBuild?.Mesh) &&

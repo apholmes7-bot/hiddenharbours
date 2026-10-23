@@ -176,7 +176,8 @@ namespace HiddenHarbours.Tools.RigBaking
                         return new Vector3d((double)a[0], (double)a[1], (double)a[2]);
                     }).ToArray(), Mat = mat, Level = lv, Role = ro, Interior = it,
                     LevelName = data.LevelIds.First(kv => kv.Value == lv).Key,
-                    B = (double)HullLayoutJson.Required(f, "b", "face"), Db = (double)HullLayoutJson.Required(f, "db", "face") };
+                    B = (double)HullLayoutJson.Required(f, "b", "face"), Db = (double)HullLayoutJson.Required(f, "db", "face"),
+                    PartTag = f.ContainsKey("tag") ? HullLayoutJson.Integer(f, "tag", "face") : (int?)null };
                 if (f.TryGetValue("sg", out object sg))
                 {
                     face.TexKind = sg as string == "plank" ? 1 : sg as string == "board" ? 2 : sg as string == "quilt" ? 3 :
