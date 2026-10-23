@@ -42,8 +42,15 @@ namespace HiddenHarbours.Art.Editor
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (path.EndsWith(".hhbathymetry", StringComparison.Ordinal))
+                {
+                    var timer = System.Diagnostics.Stopwatch.StartNew();
                     AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+                    LoadRequired(path, out _);
+                    Debug.Log("[W4-6a] IMPORT_OK " + path + " seconds="
+                        + timer.Elapsed.TotalSeconds.ToString("F3", System.Globalization.CultureInfo.InvariantCulture));
+                }
             }
+            Debug.Log("[W4-6a] IMPORT_REPORT_COMPLETE");
         }
     }
 }
