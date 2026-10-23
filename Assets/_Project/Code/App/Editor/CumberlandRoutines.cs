@@ -16,6 +16,8 @@ namespace HiddenHarbours.App.Editor
         public const string RootName = "HeronViewGolf";
         public const float TalkRadiusMetres = 1.8f;
 
+        public static RoutineDef[] LoadRoutines() => RoutineCatalog.LoadRegion(HeronViewRoster.RegionId);
+
         [MenuItem("Hidden Harbours/Regions/Cumberland/Build Golf Stations and Lanes")]
         public static void Build()
         {
@@ -49,9 +51,10 @@ namespace HiddenHarbours.App.Editor
             Build();
             var root = SceneManager.GetActiveScene().GetRootGameObjects().Single(g => g.name == RootName);
             var stations = root.GetComponent<RoutineStations>(); var lanes = root.GetComponent<RoutineLanes>();
+            RoutineDef[] routines = LoadRoutines();
             foreach (HeronViewRoster.Visitor person in HeronViewRoster.Visitors)
             {
-                var routine = AssetDatabase.LoadAssetAtPath<RoutineDef>(HeronViewRoutinesBuilder.Folder + "/" + person.AssetName + "Routine.asset");
+                var routine = routines.SingleOrDefault(r => r.Id == person.RoutineId);
                 if (routine == null || !routine.IsWalkable || !routine.Npc.HasBakedBody)
                     throw new InvalidOperationException("Approved golfer needs a routine and baked build: " + person.NpcId);
                 GameObject go = root.transform.Cast<Transform>().Select(t => t.gameObject).SingleOrDefault(g => g.name == person.AssetName);

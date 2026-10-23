@@ -9,6 +9,7 @@ namespace HiddenHarbours.App.Editor
     /// <summary>Proposed visitors. No assets are written by this table.</summary>
     public static class HeronViewRoster
     {
+        public const string RegionId = "region.cumberland";
         public const float WalkSpeed = 1.5f;
         public const float FileGapMinutes = 4f;
         public const float DwellMinutes = 4f;

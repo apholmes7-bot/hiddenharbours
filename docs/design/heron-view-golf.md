@@ -1,12 +1,14 @@
 # Heron View Golf Club — step 1, Phase A
 
-Phase A is STOPPED at base `f9276ec4b118957952046769961a77faa4564eb3` on
+Phase A2 is complete at base `f9276ec4b118957952046769961a77faa4564eb3` on
 `feat/heron-view-golf-step1`. All work was headless. This is a place for recreation;
 there is no ledger, booking, payment, membership, ball flight or swing simulation.
 
-## Stop finding: the routine catalog has no region boundary
+## Catalog boundary, resolved in Phase A2
 
-Final review found a conflict that needs a Planner amendment before Phase B:
+The Phase A stop was accepted. Charter amendment 1 authorizes the catalog boundary
+in one commit on this branch, followed by the golf builder's region in its own commit.
+The original conflict was:
 
 - `StPetersRoutines.LoadRoutines` searches all of `Assets/_Project/Data/Routines`
   with `AssetDatabase.FindAssets`, including subfolders. It has no region filter.
@@ -18,11 +20,23 @@ Final review found a conflict that needs a Planner amendment before Phase B:
   putting golf assets elsewhere would change the prescribed content layout.
   A subfolder does not isolate the assets from the recursive search.
 
-No golfer asset has been written, so the existing catalog still passes the
-headless pose comparison. The drafted engine rule, derivation, builders, proposed
-roster and tests below are preserved for review. They do not resolve this catalog
-conflict. Charter section 7 requires a stop for a finding that changes the plan.
-No protected loader change or alternate asset location has been attempted.
+`RoutineDef.RegionId` now sits immediately after `Id`, defaults to empty, and says
+which region owns the day. `RoutineCatalog.LoadRegion(string regionId)` reads the
+shared folder, selects that region by ordinal equality and orders the result by id.
+An empty request returns no routines; an empty or unknown asset region fails the
+new catalog guard. No region is assigned by default.
+
+The village's existing `LoadRoutines()` signature now delegates on
+`StPetersLayerRefresh.StPetersRegionId`. Its builder writes that region on created
+or rewritten days and repairs it on kept days without retiming them. Its roster
+and `StPetersRoutineContentTests.cs` remain byte-identical to the Phase A stop.
+The six village assets each gain exactly one line immediately after `Id`:
+`RegionId: region.st_peters`. The field order matches the source declaration.
+
+The golf builder writes `region.cumberland` on every created, rewritten or kept
+golf day, repairing only that bookkeeping field on a kept asset. Cumberland reads
+through the same loader. Every routine stays in `Data/Routines/`. No golfer asset
+has been written; the proposed slate below still awaits the Phase B word.
 
 ## Stations and walks
 
@@ -200,8 +214,8 @@ the complete slate before any asset is written.
 
 The region's Create and Refresh call `CumberlandRoutines.BuildAndSave` for the
 derived tables. Separate menu actions build tables or place the approved golfers.
-`HeronViewRoutinesBuilder.Build` creates missing routines only, preserving every
-field of an existing asset. Rewrite has a separate confirmation dialog; its CLI
+`HeronViewRoutinesBuilder.Build` creates missing routines only, preserving authored
+fields of an existing asset while repairing region bookkeeping. Rewrite has a separate confirmation dialog; its CLI
 entry is explicitly named `RewriteConfirmedCli`.
 
 CLI entry points are `CumberlandRoutines.BuildCli`, `CumberlandRoutines.PlaceGolfersCli`,
@@ -242,20 +256,118 @@ World (138 source files), App.Editor (157) and both new test fixtures without er
 The permitted donor inputs include World and Core DLLs dated 2026-10-22 10:18:51 UTC
 and App.Editor dated 10:18:54 UTC. They were copied read-only into the work folder;
 the changed assemblies were compiled from this checkout's source. No stale-symbol
-error occurred. Protected builders, village assets, all Data, all scenes and Core
-remain byte-identical to the base. No Library directory was created.
+error occurred. At the Phase A stop, protected builders, village assets, all Data,
+all scenes and Core were byte-identical to the base. A2 changes only the permitted
+catalog hunks and the six region lines there. All scenes and Core remain unchanged.
+No Library directory was created.
+
+The six asset additions, with no other asset changes:
+
+```diff
+diff --git a/Assets/_Project/Data/Routines/AuntGinnyRoutine.asset b/Assets/_Project/Data/Routines/AuntGinnyRoutine.asset
+index 7f3ce1ca7c..452ea6987c 100644
+--- a/Assets/_Project/Data/Routines/AuntGinnyRoutine.asset
++++ b/Assets/_Project/Data/Routines/AuntGinnyRoutine.asset
+@@ -15,0 +16 @@ MonoBehaviour:
++  RegionId: region.st_peters
+diff --git a/Assets/_Project/Data/Routines/BasilSamsonRoutine.asset b/Assets/_Project/Data/Routines/BasilSamsonRoutine.asset
+index 5963e9ee61..2124878cb6 100644
+--- a/Assets/_Project/Data/Routines/BasilSamsonRoutine.asset
++++ b/Assets/_Project/Data/Routines/BasilSamsonRoutine.asset
+@@ -15,0 +16 @@ MonoBehaviour:
++  RegionId: region.st_peters
+diff --git a/Assets/_Project/Data/Routines/EileenDoironRoutine.asset b/Assets/_Project/Data/Routines/EileenDoironRoutine.asset
+index 5ceecf734a..6b6874701c 100644
+--- a/Assets/_Project/Data/Routines/EileenDoironRoutine.asset
++++ b/Assets/_Project/Data/Routines/EileenDoironRoutine.asset
+@@ -15,0 +16 @@ MonoBehaviour:
++  RegionId: region.st_peters
+diff --git a/Assets/_Project/Data/Routines/JuniorPoirierRoutine.asset b/Assets/_Project/Data/Routines/JuniorPoirierRoutine.asset
+index e8fdc4a0d0..9d6b8fd176 100644
+--- a/Assets/_Project/Data/Routines/JuniorPoirierRoutine.asset
++++ b/Assets/_Project/Data/Routines/JuniorPoirierRoutine.asset
+@@ -15,0 +16 @@ MonoBehaviour:
++  RegionId: region.st_peters
+diff --git a/Assets/_Project/Data/Routines/MargueriteLeBlancRoutine.asset b/Assets/_Project/Data/Routines/MargueriteLeBlancRoutine.asset
+index d2efdb7a04..e9b5fbc17c 100644
+--- a/Assets/_Project/Data/Routines/MargueriteLeBlancRoutine.asset
++++ b/Assets/_Project/Data/Routines/MargueriteLeBlancRoutine.asset
+@@ -15,0 +16 @@ MonoBehaviour:
++  RegionId: region.st_peters
+diff --git a/Assets/_Project/Data/Routines/RoseMacIsaacRoutine.asset b/Assets/_Project/Data/Routines/RoseMacIsaacRoutine.asset
+index d27446dfd8..9ea96af01e 100644
+--- a/Assets/_Project/Data/Routines/RoseMacIsaacRoutine.asset
++++ b/Assets/_Project/Data/Routines/RoseMacIsaacRoutine.asset
+@@ -15,0 +16 @@ MonoBehaviour:
++  RegionId: region.st_peters
+```
+
+## A2 verification and commits
+
+The 17 headless source checks pass again. The village comparison now reads its six
+days through the production shared loader in the source host, with an asset facade
+and a synthetic golf day to check separation. All 25,920 village poses still match
+the pre-change planner and sampler exactly. Golf geometry, clocks, hours and the
+two branch lengths did not move. The builder preservation test also checks that
+region repair keeps an edited speed, entries and NPC assignment.
+
+The five pure geometry checks pass again directly from the rebuilt assembly.
+World (138 sources), App.Editor (158 sources) and the three lane test fixtures
+compile with no errors. Rebuilding World before App.Editor supplies the new field;
+the borrowed World DLL is not used as its substitute. The donor World/Core DLLs
+are dated 2026-10-22 10:18:51 UTC and App.Editor 10:18:54 UTC. There were no CS1061
+errors on `RegionId` or other stale-symbol errors.
+
+Four added guards compile but have NOT run. They read the asset database and wait
+for Phase B:
+
+- `RoutineCatalog_EveryRoutineNamesARegionThatExists`
+- `RoutineCatalog_IdsAreUniqueAcrossEveryRegion`
+- `RoutineCatalog_EachRegionReadsOnlyItsOwn`
+- `RoutineCatalog_EveryDayIsWellFormed`
+
+Boundary commit `3f96a61562a177fee402a09d7f50a346bdb14ca7`, fourteen files:
+
+- `Assets/_Project/Code/World/Routines/RoutineDef.cs`
+- `Assets/_Project/Code/App/Editor/RoutineCatalog.cs`
+- `Assets/_Project/Code/App/Editor/RoutineCatalog.cs.meta`
+- `Assets/_Project/Code/App/Editor/StPetersRoutines.cs`
+- `Assets/_Project/Code/App/Editor/RoutineDefsBuilder.cs`
+- `Assets/_Project/Data/Routines/AuntGinnyRoutine.asset`
+- `Assets/_Project/Data/Routines/BasilSamsonRoutine.asset`
+- `Assets/_Project/Data/Routines/EileenDoironRoutine.asset`
+- `Assets/_Project/Data/Routines/JuniorPoirierRoutine.asset`
+- `Assets/_Project/Data/Routines/MargueriteLeBlancRoutine.asset`
+- `Assets/_Project/Data/Routines/RoseMacIsaacRoutine.asset`
+- `Assets/Tests/EditMode/RoutineCatalogTests.cs`
+- `Assets/Tests/EditMode/RoutineCatalogTests.cs.meta`
+- `docs/design/npcs-and-routines.md`
+
+The separate golf follow-up contains five files; its SHA is in the A2 delivery:
+
+- `Assets/_Project/Code/App/Editor/HeronViewRoster.cs`
+- `Assets/_Project/Code/App/Editor/HeronViewRoutinesBuilder.cs`
+- `Assets/_Project/Code/App/Editor/CumberlandRoutines.cs`
+- `Assets/Tests/EditMode/CumberlandCourseTests.cs`
+- `docs/design/heron-view-golf.md`
 
 ## Phase B handoff
 
-After the catalog amendment, estimate one 90 minute keeper turn, including approximately 20–30 minutes for the
-cold import, 25–30 for approved assets, builder wiring and named tests, and 25–30
-for views and profiling. Import time is an estimate, not a measurement.
+Re-estimate one 105 minute keeper turn: 20–30 minutes for cold import, 35–40 for
+approved assets, builder wiring and named tests, and 30–35 for views and profiling.
+The increase from 90 minutes allows the village bookkeeping build and the expanded
+test set. Import time is an estimate, not a measurement.
 
 The next turn needs the approved names, looks and ids, then NPC, dialogue and build
 assets made on the character art available at that base. Run content validation
 for those assets and the new routines, the new fixtures, the existing village
 routine fixtures and the scene-dependent first-tee/hidden-party PlayMode test.
+Also run `RoutineDefsBuilder.Build` once, confirming all six kept assets remain
+byte-identical to their A2 versions, all four new catalog guards,
+`ConversationContentValidationTests`, `StoreClerkContentTests` and
+`VillagerRoutinePlayTests`. The seat's trial merge with the village pass precedes
+this turn. The boundary rides step 1's draft PR; no separate PR was opened.
 Check the three course views at 09:30 on day 6, the shared first-tee view at 07:20,
 and a back-pair view on green 18. Record p95 frame time and memory against the
 ground pass. No scene build, art choice, screenshot, profile or editor test is
-claimed by Phase A. Stop here for the Planner amendment and a later Phase B paste.
+claimed by Phase A or A2. Stop here for the seat's Phase B paste and the approved slate.

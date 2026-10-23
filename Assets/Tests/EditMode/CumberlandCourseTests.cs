@@ -30,6 +30,7 @@ namespace HiddenHarbours.Tests.EditMode
             CumberlandRoutines.Configure(course, stations, lanes);
             NpcDef npc = Keep(ScriptableObject.CreateInstance<NpcDef>());
             RoutineDef def = Keep(HeronViewRoutinesBuilder.Apply(day, npc, null, false));
+            Assert.That(def.RegionId, Is.EqualTo(HeronViewRoster.RegionId));
             var plan = RoutinePlanner.Build(def, stations, lanes, seed, out _, out string problem);
             Assert.That(plan, Is.Not.Null, problem);
             return plan;
@@ -245,9 +246,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(created.IsWalkable, Is.True);
             created.Entries = new[] { new RoutineEntry { StartHour = 3f, StationId = "edited" } };
             created.WalkSpeedMetresPerSecond = 0.75f; created.Npc = null;
+            created.RegionId = "";
             var kept = HeronViewRoutinesBuilder.Apply(day, npc, created, false);
             Assert.That(kept, Is.SameAs(created)); Assert.That(kept.Entries[0].StationId, Is.EqualTo("edited"));
             Assert.That(kept.Npc, Is.Null); Assert.That(kept.WalkSpeedMetresPerSecond, Is.EqualTo(0.75f));
+            Assert.That(kept.RegionId, Is.EqualTo(HeronViewRoster.RegionId));
             Assert.That(HeronViewRoutinesBuilder.Apply(day, npc, kept, true).Entries.Length, Is.EqualTo(day.Blocks.Length));
         }
 

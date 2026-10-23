@@ -9,7 +9,7 @@ namespace HiddenHarbours.App.Editor
 {
     public static class HeronViewRoutinesBuilder
     {
-        public const string Folder = "Assets/_Project/Data/Routines";
+        public const string Folder = RoutineCatalog.Folder;
         public const string NpcFolder = "Assets/_Project/Data/NPCs";
 
         [MenuItem("Hidden Harbours/Regions/Cumberland/Build Golf Routines (create missing)")]
@@ -40,20 +40,25 @@ namespace HiddenHarbours.App.Editor
                 HeronViewRoster.Day day = days[i];
                 string path = Folder + "/" + day.Person.AssetName + "Routine.asset";
                 RoutineDef existing = AssetDatabase.LoadAssetAtPath<RoutineDef>(path);
+                bool regionChanged = existing != null && existing.RegionId != HeronViewRoster.RegionId;
                 RoutineDef result = Apply(day, npcs[i], existing, overwrite);
                 if (existing == null) { AssetDatabase.CreateAsset(result, path); created++; }
-                else if (overwrite) { EditorUtility.SetDirty(result); rewritten++; }
-                else kept++;
+                else
+                {
+                    if (overwrite || regionChanged) EditorUtility.SetDirty(result);
+                    if (overwrite) rewritten++; else kept++;
+                }
             }
             AssetDatabase.SaveAssets();
             Debug.Log($"[HeronViewRoutines] created {created}; kept {kept}; rewritten {rewritten}.");
         }
 
-        /// <summary>Keeping an existing asset preserves every field, including its NPC.</summary>
+        /// <summary>Keep authored fields, including the NPC; region bookkeeping is always repaired.</summary>
         public static RoutineDef Apply(HeronViewRoster.Day day, NpcDef npc, RoutineDef existing, bool overwrite)
         {
-            if (existing != null && !overwrite) return existing;
             RoutineDef def = existing != null ? existing : ScriptableObject.CreateInstance<RoutineDef>();
+            def.RegionId = HeronViewRoster.RegionId;
+            if (existing != null && !overwrite) return def;
             def.Id = day.Person.RoutineId; def.Npc = npc;
             def.WalkSpeedMetresPerSecond = day.Speed; def.ScheduleJitterMinutes = day.JitterMinutes;
             def.CatchUpSpeedMultiplier = day.CatchUp;
