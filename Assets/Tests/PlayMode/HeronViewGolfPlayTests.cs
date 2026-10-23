@@ -81,6 +81,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator HeronViewGolf_FiveCoursePlates()
         {
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                Assert.Ignore("Plates need a graphics device.");
             _asyncShaders = ShaderUtil.allowAsyncCompilation; _shadersSaved = true;
             ShaderUtil.allowAsyncCompilation = false;
             yield return LoadDirect();
