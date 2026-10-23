@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BasilSamsonRoutine
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
   Id: routine.basil_samson
+  RegionId: region.st_peters
   Npc: {fileID: 11400000, guid: 70e4a1dce6de42f88b5f991f3b8c0d05, type: 2}
   Entries:
   - StartHour: 5

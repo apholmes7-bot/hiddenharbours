@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AuntGinnyRoutine
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
   Id: routine.aunt_ginny
+  RegionId: region.st_peters
   Npc: {fileID: 11400000, guid: 86882db9ae6d45fdb962f86b99592991, type: 2}
   Entries:
   - StartHour: 4.5

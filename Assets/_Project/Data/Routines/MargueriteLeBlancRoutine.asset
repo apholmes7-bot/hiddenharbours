@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MargueriteLeBlancRoutine
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
   Id: routine.marguerite_leblanc
+  RegionId: region.st_peters
   Npc: {fileID: 11400000, guid: 5b26b6a8c5154f86b2ea4b17e2511e1f, type: 2}
   Entries:
   - StartHour: 7

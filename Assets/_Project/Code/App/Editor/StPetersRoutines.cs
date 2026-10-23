@@ -859,15 +859,9 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public const int PreviewSeed = 0;
 
-        /// <summary>Every routine asset under <c>Data/Routines</c>, in a stable order (by id) so two
-        /// builder runs wire them identically and the log reads the same.</summary>
+        /// <summary>This island's routine assets, in a stable order by id.</summary>
         public static RoutineDef[] LoadRoutines() =>
-            AssetDatabase.FindAssets("t:RoutineDef", new[] { DataRoutines })
-                         .Select(AssetDatabase.GUIDToAssetPath)
-                         .Select(AssetDatabase.LoadAssetAtPath<RoutineDef>)
-                         .Where(r => r != null)
-                         .OrderBy(r => r.Id, System.StringComparer.Ordinal)
-                         .ToArray();
+            RoutineCatalog.LoadRegion(StPetersLayerRefresh.StPetersRegionId);
 
         // =====================================================================================
         //  THE NAMES (ids are content — one place, append-only, snake_case)

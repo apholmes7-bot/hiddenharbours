@@ -250,6 +250,11 @@ namespace HiddenHarbours.App.Editor
                 if (existing != null && !overwrite)
                 {
                     kept.Add($"{npc.DisplayName} ({existing.Entries.Length} block(s))");
+                    if (existing.RegionId != StPetersLayerRefresh.StPetersRegionId)
+                    {
+                        existing.RegionId = StPetersLayerRefresh.StPetersRegionId;
+                        EditorUtility.SetDirty(existing);
+                    }
                     // Re-point the NPC reference even when keeping the times: a routine whose Npc came
                     // loose stops being wired to anybody, and that is bookkeeping rather than tuning.
                     if (existing.Npc != npc)
@@ -262,6 +267,7 @@ namespace HiddenHarbours.App.Editor
 
                 RoutineDef def = existing != null ? existing : ScriptableObject.CreateInstance<RoutineDef>();
                 def.Id = day.RoutineId;
+                def.RegionId = StPetersLayerRefresh.StPetersRegionId;
                 def.Npc = npc;
                 def.WalkSpeedMetresPerSecond = day.WalkSpeed;
                 def.ScheduleJitterMinutes = day.JitterMinutes;

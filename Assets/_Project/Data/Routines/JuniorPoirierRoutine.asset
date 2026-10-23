@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: JuniorPoirierRoutine
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
   Id: routine.junior_poirier
+  RegionId: region.st_peters
   Npc: {fileID: 11400000, guid: 1812e1b614eb4f5da2ad5be5808f804f, type: 2}
   Entries:
   - StartHour: 6

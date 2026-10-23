@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: EileenDoironRoutine
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
   Id: routine.eileen_doiron
+  RegionId: region.st_peters
   Npc: {fileID: 11400000, guid: 2f8985f554ea4c9c84e248e9b8be1859, type: 2}
   Entries:
   - StartHour: 7.5
