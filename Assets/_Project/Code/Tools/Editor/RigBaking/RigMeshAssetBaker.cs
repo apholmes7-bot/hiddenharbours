@@ -1227,14 +1227,19 @@ namespace HiddenHarbours.Tools.RigBaking
             // --- the measured azimuth convention (quarter turn: broadside, least ambiguous) --------
             AzimuthConvention convention = MeasureAzimuth(host, globalName, data, extraction);
 
-            // --- the rock amplitudes, off the exported ROCK block (optional; 0 = no rock) ----------
-            // Read from the HULL's scope for a registry rig: a 16.2 m boat and a 27.4 m boat do not
-            // share a sea state, and SportFisherIso2.ROCK does not exist. Identical to the global for
-            // every other rig, so no committed amplitude moves.
+            // Hull ROCK owns its amplitudes. Only the rig's default hull may use global ROCK.
             string rockScope = extraction != null ? extraction.ScopeOr(globalName) : globalName;
+            string rockHullId = host.EvaluateString($"String({rockScope}.id || '')");
             float rollA = 0f, pitchA = 0f, heaveA = 0f;
             bool hasRock = host.EvaluateBool(
                 $"typeof {rockScope}.ROCK === 'object' && {rockScope}.ROCK !== null");
+            if (!hasRock && rockScope != globalName && host.EvaluateBool(
+                    $"typeof {rockScope}.id === 'string' && {rockScope}.id === {globalName}.defaultHull"))
+            {
+                rockScope = globalName;
+                hasRock = host.EvaluateBool(
+                    $"typeof {rockScope}.ROCK === 'object' && {rockScope}.ROCK !== null");
+            }
             if (hasRock)
             {
                 rollA = (float)host.EvaluateNumber($"{rockScope}.ROCK.rollA || 0");
@@ -1243,8 +1248,9 @@ namespace HiddenHarbours.Tools.RigBaking
             }
             else
             {
-                Debug.LogWarning($"[rig-mesh] {globalName} exports no ROCK block — the mesh hull will " +
-                                 "not rock. If the rig has one, ask the art director to export it.");
+                Debug.LogWarning($"[rig-mesh] {rockHullId} has no ROCK of its own and is not its rig's default hull " +
+                                 $"with an exported ROCK block — {globalName} will not rock. " +
+                                 "If the rig has one, ask the art director to export it.");
             }
 
             // --- write the asset (create or refresh in place — the guid must survive) --------------

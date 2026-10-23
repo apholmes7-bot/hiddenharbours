@@ -265,18 +265,22 @@ namespace HiddenHarbours.Tests.RigBaking
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 host.Execute(File.ReadAllText(Path.Combine(RepoRoot, hull.ScriptPath)));
 
-                // ⚠️ ROCK is not always on the GLOBAL, and assuming it was is how this went red on a
-                // CORRECT bake. sportFisherIsoRig2.js is a registry — her two hulls carry their own
-                // sea state and her global carries none. They genuinely differ, and the right way
-                // round: rollA 2.1 on the 16.2 m boat against 1.35 on the 27.4 m one. So this reads
-                // from the same scope the baker read from. For every other hull that scope IS the
-                // global, so nothing about the other thirty-two moves.
-                string g = hull.Extraction != null
+                // Resolve independently of the baker: a hull's own block wins. A module's
+                // default-hull aliases are available only to that declared default hull.
+                string scope = hull.Extraction != null
                     ? hull.Extraction.ScopeOr(hull.GlobalName)
                     : hull.GlobalName;
-
-                Assert.IsTrue(host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null"),
-                    $"{hull.Key} exports no ROCK block — a hull that cannot rock is not a hull.");
+                string id = host.EvaluateString($"String({scope}.id || '')");
+                string g = scope;
+                bool hasRock = host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null");
+                if (!hasRock && scope != hull.GlobalName && host.EvaluateBool(
+                        $"typeof {scope}.id === 'string' && {scope}.id === {hull.GlobalName}.defaultHull"))
+                {
+                    g = hull.GlobalName;
+                    hasRock = host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null");
+                }
+                Assert.IsTrue(hasRock,
+                    $"{(string.IsNullOrEmpty(id) ? hull.Key : id)} has no ROCK of its own and is not its rig's default hull");
 
                 Assert.AreEqual((float)host.EvaluateNumber($"{g}.ROCK.rollA || 0"),
                                 def.RockRollDegrees, 1e-4f, $"{hull.Key} roll");
@@ -284,6 +288,24 @@ namespace HiddenHarbours.Tests.RigBaking
                                 def.RockPitchDegrees, 1e-4f, $"{hull.Key} pitch");
                 Assert.AreEqual((float)host.EvaluateNumber($"{g}.ROCK.heaveA || 0"),
                                 def.RockHeavePixels, 1e-4f, $"{hull.Key} heave");
+
+                // The walk is a second source (ADR 0048 row 28), read from disk, not extraction.
+                string walkPath = Path.Combine(RepoRoot, HullWalkSidecarImporter.SidecarFolder,
+                    Path.GetFileNameWithoutExtension(hull.ScriptPath) + "." + id + ".walk.json");
+                if (File.Exists(walkPath))
+                {
+                    var walk = HullLayoutJson.Object(DeckSidecarJson.Parse(File.ReadAllText(walkPath)), "walk");
+                    if (walk.ContainsKey("rock"))
+                    {
+                        var rock = HullLayoutJson.Child(walk, "rock");
+                        Assert.AreEqual(HullLayoutJson.Number(rock, "rollA", "rock"),
+                            def.RockRollDegrees, 1e-4f, $"{hull.Key} walk.rock.rollA");
+                        Assert.AreEqual(HullLayoutJson.Number(rock, "pitchA", "rock"),
+                            def.RockPitchDegrees, 1e-4f, $"{hull.Key} walk.rock.pitchA");
+                        Assert.AreEqual(HullLayoutJson.Number(rock, "heaveA", "rock"),
+                            def.RockHeavePixels, 1e-4f, $"{hull.Key} walk.rock.heaveA");
+                    }
+                }
             }
         }
 
