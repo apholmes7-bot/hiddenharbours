@@ -13,11 +13,15 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("NineMileCreek", 80f, 30f, false, TestName = "NineMileCreekShelteredCove_TheSwellIsExactlyZero_AtEveryTide")]
         [TestCase("StPeters", 300f, -180f, true, TestName = "StPetersOpenCoast_CarriesTheClimateSwell_AtEveryTide")]
         [TestCase("NineMileCreek", 150f, -40f, true, TestName = "NineMileCreekOpenCoast_CarriesTheClimateSwell_AtEveryTide")]
+        [TestCase("Cumberland", 200f, -166f, false, TestName = "CumberlandMarina_TheSwellIsExactlyZero_AtEveryTide")]
+        [TestCase("Cumberland", 300f, -240f, true, TestName = "CumberlandSouthShore_CarriesTheClimateSwell_AtEveryTide")]
         public void ThePaintedCoast_RespectsSwellShelter(string regionName, float x, float y, bool open)
         {
             var region = AssetDatabase.LoadAssetAtPath<RegionDef>("Assets/_Project/Data/Regions/" + regionName + ".asset");
             var map = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>("Assets/_Project/Data/Terrain/" +
-                (regionName == "StPeters" ? "StPetersSeabed.asset" : "NineMileCreekGround/NineMileCreekGround.asset"));
+                (regionName == "StPeters" ? "StPetersSeabed.asset" :
+                 regionName == "Cumberland" ? "CumberlandGround/CumberlandSeabed.asset" :
+                 "NineMileCreekGround/NineMileCreekGround.asset"));
             Assert.IsNotNull(region); Assert.IsNotNull(map); Assert.IsNotNull(region.SwellClimate);
             Verify(new PaintedBed(map.Field), region.SwellClimate.Climate, region.SwellShelter, new Vector2(x, y), open);
         }
