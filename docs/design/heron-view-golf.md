@@ -371,3 +371,201 @@ Check the three course views at 09:30 on day 6, the shared first-tee view at 07:
 and a back-pair view on green 18. Record p95 frame time and memory against the
 ground pass. No scene build, art choice, screenshot, profile or editor test is
 claimed by Phase A or A2. Stop here for the seat's Phase B paste and the approved slate.
+
+## Phase B result
+
+The approved eight visitors now have NPC, routine, dialogue and build assets, and
+stand in Cumberland's saved scene on the derived stations and lanes. The
+missing-only check kept all 32 assets byte-identical. The six village routines
+also remain byte-identical to A2, and its routine content test file is unchanged.
+
+`HeronViewGolferColours` is new runtime code in Art. It resolves each golf build's
+colour fields through `CharacterBuilder.TryBuild`, then paints its ashore figure.
+`CumberlandRoutines.PlaceGolfers` adds and configures this component. The rendered
+ramps of all eight visitors matched their resolved colours: the front party at
+07:20, the first back pair at 14:56, and the later pair at 17:26. This is a new
+path for cast build colours, alongside the existing player resolver path.
+
+Two existing validation premises changed. `EveryBakedPreset_HasABuildAsset` now
+checks preset coverage as a set, allowing multiple builds to share a preset.
+`CharacterBuildContentTests.RampsPath` now selects `CharacterRamps10.asset`, the
+shipped resolver's ramps. `EveryColourOverride_ResolvesAgainstTheRamps` passed
+over every build, including the existing builds.
+
+### Named checks
+
+Each row below was a separate editor launch. Counts are total / passed / skipped /
+failed. All five new B checks ran once; none was a zero-match filter.
+
+| Filter | Counts |
+|---|---|
+| `CharacterBuildContentTests` | 9 / 9 / 0 / 0 |
+| `CharacterBuilderContentTests` | 10 / 10 / 0 / 0 |
+| `HeronViewContent_AllEightDefsResolve_AndKeepTheApprovedWords` | 1 / 1 / 0 / 0 |
+| `HeronViewAssets_BuildKeepsAllThirtyTwoFiles` | 1 / 1 / 0 / 0 |
+| `RoutineOutOfSight_OffByDefault_StPetersUnchanged` | 1 / 1 / 0 / 0 |
+| `CumberlandCourseTests` | 12 / 12 / 0 / 0 |
+| `RoutineOutOfSightTests` | 4 / 4 / 0 / 0 |
+| `RoutineCatalogTests` | 4 / 4 / 0 / 0 |
+| `StPetersRoutineContentTests` | 26 / 26 / 0 / 0 |
+| `ConversationContentValidationTests` | 9 / 9 / 0 / 0 |
+| `StoreClerkContentTests` | 14 / 14 / 0 / 0 |
+| `NpcContentValidationTests` | 8 / 8 / 0 / 0 |
+| `VillagerRoutinePlayTests` | 13 / 13 / 0 / 0 |
+| `HeronViewGolfer_StandsOnTheFirstTee_AtItsHour` | 1 / 1 / 0 / 0 |
+| `HeronViewGolf_FiveCoursePlates` | 1 / 1 / 0 / 0 |
+| `CumberlandPlayablePlayTests.Measure_SeparateSixtySecondWalkAndRow_AfterWarmup` | 1 / 1 / 0 / 0 |
+
+Totals: EditMode 99 / 99 / 0 / 0; PlayMode 16 / 16 / 0 / 0. Results and logs are
+under `artifacts/golf/b2/`, with one XML per filter. The golf content case checks
+all approved words and ids, every new Def's links and walkability, and `TryLook`
+for all eight builds. The plate case also compares the drawn palette ramps.
+
+### Plates and fixed-preset limits
+
+The five 1920 by 1080 plates use the 14 m high CD frames. All were written after
+the new floor at 16:02:25 UTC on 2026-10-23. The clock uses day index 6.
+
+| File under `artifacts/golf/b/plates/` | Hour | Centre |
+|---|---|---|
+| `first-tee-0930.png` | 09:30 | (214, 94) |
+| `green-18-0930.png` | 09:30 | (289, 96) |
+| `clubhouse-0930.png` | 09:30 | (238, 60) |
+| `first-tee-party.png` | 07:20 | (214, 94) |
+| `green-18-back-pair.png` | 14:56 | (289, 96) |
+
+The first-tee party and back-pair plates show their separate slots and colour
+choices. The clubhouse frame shows its empty ground pad; the later key-scene
+pieces remain CMB3's. The later pair's palette was checked at 17:26 within the
+same test, after the five required captures.
+
+The approved look sentences remain unchanged. The table records what the existing
+structures and colour fields can draw. The plate review still decides the fit of
+these approximations.
+
+| Visitor | Preset | Look details the preset cannot draw, and colour limits |
+|---|---|---|
+| Mara Fenwick | `hand` | Pullover becomes work shirt; a fixed cap covers much of the cropped hair. Silver uses `grey`; moss shirt and cream slacks are set. |
+| Tobin Rell | `hand` | Curls and polo become crop and work shirt, with a fixed cap. Rust shirt uses `red`; slate slacks are set. |
+| Elsi Brindle | `cutter` | Braid and cardigan become ponytail and apron. Copper uses `ginger`, blue uses `sky`; dark slacks use `char`. |
+| Orrin Vale | `skipper` | Cap and pullover become souwester and oilskins. The beard uses `grey`; ochre hat uses `oat`, and navy is set on outfit and shirt. |
+| Nella Tarn | `ginny` | Windbreaker and pale slacks become plum overalls with a cream shirt. The bob stays, partly covered by the fixed hood. |
+| Vey Corren | `hand` | Polo becomes work shirt, with a fixed cap over the crop. Teal shirt uses `moss`; charcoal slacks use `char`. |
+| Ione Merrow | `nan` | Curls, cardigan and slacks become bun, shawl and skirt, with a kerchief. Amber uses `ochre`; brown uses `khaki`. |
+| Pell Wickett | `hand` | Pullover becomes work shirt. Sandy hair uses `sand`, blue cap uses `navy`, and cream is set on shirt and outfit. |
+
+### Frame time and memory
+
+The existing CMB0 walking and rowing case ran at 640 by 480, Very Low, D3D11,
+vsync 0 and target frame rate -1. Both 60-second routes met the 16.67 ms p95 bar.
+The route clock is paused at 05:12:37, when the golf visitors are out of sight.
+The first-tee and back-pair renders are covered by the separate plate test.
+
+| Route | Samples | Distance m | Median ms | Golf p95 ms | CMB0 p95 ms |
+|---|---:|---:|---:|---:|---:|
+| Walk, six-second warmup | 36621 | 179.993 | 1.553 | 2.086 | 7.002 |
+| Row, three-second warmup | 38574 | 72.638 | 1.454 | 2.099 | 2.498 |
+
+CMB0's first rowing measure was 26.069 ms p95; its accepted repeat was 2.498 ms.
+The comparison above uses that accepted repeat. These are editor measurements.
+
+Memory is in MiB, with golf / CMB0 side by side. These totals describe the two
+recorded editor runs.
+
+| Point | Allocated | Reserved | Textures | Meshes |
+|---|---:|---:|---:|---:|
+| Before plan and scene | 610.957 / 622.38 | 1186.512 / 1176.51 | 57.986 / 57.99 | 6.263 / 6.26 |
+| Loaded | 1137.636 / 1102.04 | 1687.781 / 1631.78 | 601.379 / 549.70 | 172.012 / 169.59 |
+| After walk | 1140.115 / 1104.17 | 1687.781 / 1631.78 | 601.379 / 549.70 | 171.981 / 169.56 |
+| After row | 1142.811 / 1106.54 | 1687.781 / 1631.78 | 601.385 / 549.71 | 172.210 / 169.79 |
+
+The keeper returned at 16:14:44 UTC with all sixteen launched editor PIDs gone
+and the save unchanged after every launch and on return. The unrelated
+`ProjectSettings/ProjectSettings.asset` rewrite stays unstaged.
+
+### CI forecast
+
+Against main `58de4973`, the supplied counts are EditMode 15086 / 14820 / 266 / 0
+and PlayMode 1159 / 998 / 161 / 0, in total / passed / skipped / failed order.
+The branch adds 23 EditMode cases and two PlayMode cases. If those cases pass and
+the baseline outcomes repeat, the forecast is EditMode 15109 / 14843 / 266 / 0
+and PlayMode 1161 / 1000 / 161 / 0. This is a forecast for the eventual merge-ref
+run. The local named filters above are the recorded runs.
+
+New EditMode names, grouped by fixture:
+
+- `CumberlandCourseTests` (12): `CumberlandCourse_StationsDeriveFromThePlansHoles`,
+  `CumberlandCourse_FourStationsATee_NeverStack`,
+  `CumberlandCourse_LanesAreOneTree_RootedAtTheClubhouse`,
+  `CumberlandCourse_EdgeStationsSitOnTheEdge`,
+  `CumberlandCourse_NoLaneThroughWaterOrSand`,
+  `HeronViewRound_EveryWalkArrivesBeforeItsNextDeparture`,
+  `HeronViewRound_FrontPartyOutBeforeSunset`, `HeronViewParty_WalksInFile`,
+  `HeronViewRound_FirstTeeHasAnHourWithAllFourOnTheirSlots`,
+  `HeronViewRound_IsAPureFunctionOfTheClock`,
+  `HeronViewRoutines_BuilderCreatesMissing_NeverOverwrites`,
+  `HeronViewProposals_IdsAndDaysAreComplete`.
+- `RoutineOutOfSightTests` (4): `RoutineOutOfSight_OccupantNeitherDrawnNorTalkable`,
+  `RoutineOutOfSight_WalkDrawnToAndFromItsNode`,
+  `RoutineOutOfSight_BlockBetweenTwo_HasNoWalk`,
+  `RoutineOutOfSight_OffByDefault_MatchesUnmarkedPlan`.
+- `RoutineCatalogTests` (4, A2): `RoutineCatalog_EveryRoutineNamesARegionThatExists`,
+  `RoutineCatalog_IdsAreUniqueAcrossEveryRegion`,
+  `RoutineCatalog_EachRegionReadsOnlyItsOwn`, `RoutineCatalog_EveryDayIsWellFormed`.
+- `HeronViewContentTests` (3, B):
+  `HeronViewContent_AllEightDefsResolve_AndKeepTheApprovedWords`,
+  `HeronViewAssets_BuildKeepsAllThirtyTwoFiles`,
+  `RoutineOutOfSight_OffByDefault_StPetersUnchanged`.
+
+New PlayMode names in `HeronViewGolfPlayTests` (2, B):
+`HeronViewGolfer_StandsOnTheFirstTee_AtItsHour` and
+`HeronViewGolf_FiveCoursePlates`.
+
+The changed existing checks are `EveryBakedPreset_HasABuildAsset` and
+`EveryColourOverride_ResolvesAgainstTheRamps`, as described above; their names
+and case counts stay the same.
+
+### Gate accounting
+
+The lane's two approved serialization exceptions account for 47 added lines:
+32 empty metadata keys and 15 scene parent keys. Every other added line and
+each commit message passed the full word list. Per-file counts follow.
+
+| File | Empty metadata key | Scene parent key |
+|---|---:|---:|
+| `Assets/_Project/Data/Characters/Builds/ElsiBrindleBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Characters/Builds/IoneMerrowBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Characters/Builds/MaraFenwickBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Characters/Builds/NellaTarnBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Characters/Builds/OrrinValeBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Characters/Builds/PellWickettBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Characters/Builds/TobinRellBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Characters/Builds/VeyCorrenBuild.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/ElsiBrindleFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/IoneMerrowFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/MaraFenwickFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/NellaTarnFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/OrrinValeFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/PellWickettFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/TobinRellFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/Dialogue/VeyCorrenFirst.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/ElsiBrindle.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/IoneMerrow.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/MaraFenwick.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/NellaTarn.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/OrrinVale.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/PellWickett.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/TobinRell.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/NPCs/VeyCorren.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/ElsiBrindleRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/IoneMerrowRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/MaraFenwickRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/NellaTarnRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/OrrinValeRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/PellWickettRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/TobinRellRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Data/Routines/VeyCorrenRoutine.asset.meta` | 1 | 0 |
+| `Assets/_Project/Scenes/Cumberland.unity` | 0 | 15 |
+
+
+Asset and placement commit: `dc1465e974325014efde03d9f2a5ea070d22d63f` (71 files).
