@@ -58,6 +58,7 @@ When you add an ADR, add its row here in the same PR.
 | 0051 | Building a person without JS: the ten baked bodies, recoloured from the rig's own tables | **Proposed** (character PR 2b, 2026-10-07, on rig 10.3; the owner accepts it by merging; presets only, ruled 2026-10-01) |
 | 0052 | A failing event handler cannot cut its publisher short | **Proposed** (option A RULED 2026-10-08; ADR awaits owner approval in its PR) |
 | 0053 | Held props are facet meshes on the figure's sockets | **Proposed** (D1–D10 ruled by the owner 2026-10-08; lands with held props PR 2, the bake; the owner approves it in its PR) |
+| 0054 | [Bathymetric wave data](0054-bathymetric-wave-data.md) | **Proposed** (Stage D: W4-6a imported bake; W4-6b runtime consumers) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code
