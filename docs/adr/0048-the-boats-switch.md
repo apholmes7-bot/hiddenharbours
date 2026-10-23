@@ -897,8 +897,8 @@ reviews the engine corrections and this amendment; art-pipeline reviews the pain
 
 The walks retain character rig 10.3's stamps and fit counts. Zero fits and `_excluded` entries keep
 their published waits for 10.4; no stand-in clip, pose, fixture or navigation workaround is added.
-The go-fast has a cuddy mesh and leaf but no imported walkable room level. Bowrider's authored DWL
-0.40 m exceeds its 0.34 m cockpit sole and fails the existing flotation guard. F remains a speed
+The go-fast has a cuddy mesh and leaf but no imported walkable room level. R1 moves bowrider's
+WATERLINE from .40 to her .34 m cockpit sole and regenerates her walk; the floor guard passes. F remains a speed
 ramp followed by the size ladder. These are reported findings, not reasons to change art or guards.
 The unchanged sea-side classifier also predicts a deck-line agreement failure on all three; the
 intake note names the case and measurements. A green native run is not yet promised.
@@ -910,9 +910,10 @@ That table already carries the deck number; §9's old summary record did not hav
 column. See [the intake note](../art/recreation-boats-intake.md) for every proposed asset/id,
 tunable and source, zero-fit/exclusion record, costs and plate plan.
 
-Phase B waits for held props M1 (#972) **and** the St Peters crossing door (#969) to merge and for
-the coordinator's supplied base. Its builder run owns the F scene change; the scene exporter and
-`--check` must then show only the intended picker-roster entity delta. No scene is edited by hand.
+Phase B uses the supplied base containing held props M1 (#972) and the St Peters crossing door (#969).
+R4 keeps the builder roster as data and patches only three references into the existing scene.
+The scene must have exactly three insertions and its roster must match the builder in order.
+No scene rebuild or retired exporter runs.
 This slot addresses §10 questions 1 (gate instruction counts) and 5 (near-lining cull). Questions
 2 and 6 stay with the sport fishers; 3 and 4 need a ghost in play. The owner decides the looks.
 
