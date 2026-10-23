@@ -37,6 +37,8 @@ namespace HiddenHarbours.Boats
         /// ⭐ <b>The body's own velocity drag</b>, handed to <c>Rigidbody2D.linearDamping</c> in
         /// <c>Awake</c> — a SECOND velocity-proportional resistance beside the hull's
         /// <see cref="BoatHullDef.ForwardDrag"/>, acting on a mass of <c>MassKg / 100</c>.
+        /// The force pass adds <see cref="BodyDampingCurrentForce"/> so this resistance acts through
+        /// the water; the mooring owns that correction while the controller is disabled.
         ///
         /// <para>Public and named because it is invisible from the def and therefore the term a drive
         /// forgets. <see cref="SailDrive"/> must balance BOTH to make a hull settle at a stated speed,
@@ -44,6 +46,16 @@ namespace HiddenHarbours.Boats
         /// number must read it here rather than transcribe 0.2 and quietly stop tracking it.</para>
         /// </summary>
         public const float HullLinearDamping = 0.2f;
+
+        /// <summary>
+        /// Moves the body's built-in damping into the water frame without changing its integrator.
+        /// With implicit force-then-damping, adding m*d*current makes v'-current equal the damped
+        /// through-water step. Read the live body's damping so a deliberately undamped fixture stays
+        /// undamped. BoatMooring uses this same term while it owns the disabled controller's drift.
+        /// Zero current adds exactly zero force. See design/hull-drag.md for the native-order gate.
+        /// </summary>
+        public static Vector2 BodyDampingCurrentForce(Vector2 current, float bodyMass, float linearDamping)
+            => current * (bodyMass * linearDamping);
 
         /// <summary>
         /// Greybox feel-scale for the engine RUDDER torque. Matched to <see cref="ForceFeelScale"/> so the
@@ -639,6 +651,12 @@ namespace HiddenHarbours.Boats
                 ? GameServices.Environment.Sample()
                 : default;
 
+            // The same water frame as hull drag, for every propulsion and the unmanned deck tick.
+            // Do not wake a sleeping body in still water. No ForceFeelScale: this compensates the
+            // body's damping in native force units, not a design-unit force.
+            Vector2 dampingCurrent = BodyDampingCurrentForce(env.CurrentVector, _rb.mass, _rb.linearDamping);
+            if (dampingCurrent.sqrMagnitude > 0f) _rb.AddForce(dampingCurrent, ForceMode2D.Force);
+
             // --- Grounding: current terrain depth through Core, flat-bed fallback in unwired scenes. ---
             // NOTE: grounding is NON-killing. It SLOWS the boat (the grounded-slowdown drag below) so the
             // shallows feel heavy and sluggish — the "teeth" — but it NEVER zeroes thrust or cuts the rudder.
@@ -750,7 +768,7 @@ namespace HiddenHarbours.Boats
 
             float waterSpeed = Vector2.Dot(vel - env.CurrentVector, fwd);
             float acceleration = HullTrimMath.DriveAcceleration(_trimDrive + _trimResist, _rb.mass,
-                                                                _rb.linearDamping, Vector2.Dot(vel, fwd));
+                                                                _rb.linearDamping, waterSpeed);
             float resistance = SailDrive.LinearResistance(_hull.ForwardDrag, _rb.mass, _rb.linearDamping,
                                                           ForceFeelScale) * ForceFeelScale;
             float heldSpeed = HullTrimMath.HeldSpeed(_trimDrive, resistance);
@@ -913,11 +931,12 @@ namespace HiddenHarbours.Boats
             WaveTrain dominant = trains.Dominant;
 
             BreakerContour contour = BreakerMath.ContourFor(
-                in dominant, WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
+                in dominant, GameServices.SwellClimate != null && trains.DominantIndex >= SwellMath.FirstSlot
+                    ? 0f : WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch), in breakers);
             if (!contour.Breaks) return SurfState.Calm;
 
             float waterLevel = environment.WaterLevelAt(now);
-            float envelope = GameServices.FetchEnvelopeAt(pos);
+            WaveFetchSample envelope = GameServices.FetchAt(pos);
             // THE BORE-AWARE READ (ADR 0040 revision 3). The overload that takes the FIELD adds the surf's
             // clock: the published phase at the break line, read forward at minus the march's own travel
             // time, and from it the pulse, the birth energy and the run-up. The overload without it — the
@@ -970,9 +989,12 @@ namespace HiddenHarbours.Boats
             WaveFieldSettings waveField = GameServices.WaveField;
             bool published = SharedWaveField.TryGet(out WaveTrains trains);
             if (!published)
+            {
                 trains = GameServices.Environment is IWaveWindSource history
                     ? WaveMemory.TrainsAt(history, now, in waveField)
                     : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
+                trains = GameServices.WithSwell(in trains, now, waveField.Gravity);
+            }
             // Published travel is baked; a first-frame fallback carries raw phases at the clock.
             WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
 

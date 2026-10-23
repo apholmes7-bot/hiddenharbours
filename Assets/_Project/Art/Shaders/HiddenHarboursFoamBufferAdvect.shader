@@ -121,6 +121,10 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             // sea level and the seabed). Nothing here is a material property of the water.
             float4 _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3, _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7;
             float4 _WavePhases, _WavePhases2, _WaveFieldParams;
+            float4 _WaveSwell; // active, upstream.xy, step metres
+            float _WaveSwellBand;
+            float4 _WaveSwellHarbour, _WaveSwellCove;
+            float _WaveSwellFeather;
             float4 _WaveFetchGrowth;
             float _WaveFetchFullStrength;
             float _WaveFetchGrowthPower;
@@ -266,11 +270,12 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 return lerp(1.0, amplitude, strength);
             }
 
-            float FetchDominantEnvelope01(float fetch01)
+            float FetchDominantEnvelope01(float fetch01, float swellShelter)
             {
                 float4 trains[8] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
                                      _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
                 int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, 7);
+                if (_WaveSwell.x > 0.0 && dominant >= 6) return swellShelter;
                 float k = trains[dominant].z;
                 return FetchTrainEnvelope01(fetch01, k > 0.0 ? 6.28318530718 / k : 0.0);
             }
@@ -512,7 +517,33 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             // sqrt(g*k) (unscaled k: the drawn scale changes the wavelength on screen, never the beat).
             // ⚠ COST: this is a tenth train-loop call site per pixel (WaveFieldCostReport counts it), paid
             // only where the surf is alive and _BreakerBore.y > 0.
-            float WaveFieldSampleAt(float2 worldXY, float freqScale, float fetchEnv, float timeBack)
+            struct FetchFactors
+            {
+                float4 low;
+                float4 high;
+            };
+            float FetchSlotFactor(float fetch01, float k)
+            {
+                return FetchTrainEnvelope01(fetch01, k > 0.0 ? 6.28318530718 / k : 0.0);
+            }
+            FetchFactors FetchFactorsFrom(float fetch01, float swellShelter)
+            {
+                FetchFactors f;
+                f.low = float4(FetchSlotFactor(fetch01, _WaveTrain0.z), FetchSlotFactor(fetch01, _WaveTrain1.z),
+                               FetchSlotFactor(fetch01, _WaveTrain2.z), FetchSlotFactor(fetch01, _WaveTrain3.z));
+                f.high = float4(FetchSlotFactor(fetch01, _WaveTrain4.z), FetchSlotFactor(fetch01, _WaveTrain5.z),
+                                FetchSlotFactor(fetch01, _WaveTrain6.z), FetchSlotFactor(fetch01, _WaveTrain7.z));
+                if (_WaveSwell.x > 0.0) f.high.zw = swellShelter.xx;
+                return f;
+            }
+            float FetchFactorAt(FetchFactors f, int i)
+            {
+                int j = i & 3;                      // HLSL evaluates both sides of ?: -- keep both reads in range
+                return i < 4 ? f.low[j] : f.high[j];
+            }
+
+
+            float WaveFieldSampleAt(float2 worldXY, float freqScale, float fetchEnv, float timeBack, FetchFactors fetch)
             {
                 float4 trains[WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
                                                    _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
@@ -532,6 +563,7 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 for (int i = 0; i < WAVE_MAX_TRAINS; i++)          // FIXED bound; the count masks inside
                 {
                     float amplitude = trains[i].w;
+                    if (_WaveSwell.x > 0.0) amplitude *= FetchFactorAt(fetch, i);
                     if (i < count && amplitude > 0.0)
                     {
                         float k = trains[i].z;
@@ -540,7 +572,7 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                         height += amplitude * (2.0 * pow(max(s, 1e-6), p) - 1.0);
                     }
                 }
-                height *= saturate(fetchEnv);
+                if (_WaveSwell.x <= 0.0) height *= saturate(fetchEnv);
                 return saturate(height / dominantAmp);
             }
 
@@ -548,12 +580,12 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
             // crest factor at the break line when THAT crest passed it (the bore's birth, minus the time
             // since its crest), blended toward 1 by the set strength. A lone train reads exactly 1.
             float SurfBoreBirth01(float2 breakLinePoint, float travelS, float phaseDeg, float periodS,
-                                  float freqScale, float fetchEnv)
+                                  float freqScale, float fetchEnv, FetchFactors fetch)
             {
                 float setStrength = saturate(_BreakerBore.y);
                 if (setStrength <= 0.0) return 1.0;
                 float back = max(travelS, 0.0) + SurfSecondsSinceCrest(phaseDeg, periodS);
-                float crest = saturate(WaveFieldSampleAt(breakLinePoint, freqScale, fetchEnv, back));
+                float crest = saturate(WaveFieldSampleAt(breakLinePoint, freqScale, fetchEnv, back, fetch));
                 return lerp(1.0, crest, setStrength);
             }
 
@@ -585,6 +617,27 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                 return frontHeightM * dPulse * (omega / boreSpeed);
             }
 
+            float SwellBasinTransmission(float2 p, float4 bounds)
+            {
+                if (bounds.z <= 0.0 || bounds.w <= 0.0) return 1.0;
+                float distance = max(abs(p.x - bounds.x) - bounds.z, abs(p.y - bounds.y) - bounds.w);
+                float t = saturate(distance / max(_WaveSwellFeather, 1e-3));
+                return t * t * (3.0 - 2.0 * t);
+            }
+            // Stage C transmission: a swell cannot regrow in the shadow of land.
+            #define SWELL_MARCH_BODY(ELEV_FN) \
+                if (_WaveSwell.x <= 0.0) return 1.0; \
+                float transmission = SwellBasinTransmission(worldXY, _WaveSwellHarbour) \
+                                   * SwellBasinTransmission(worldXY, _WaveSwellCove); \
+                if (transmission <= 0.0) return 0.0; \
+                [unroll] for (int si = 1; si <= FETCH_MARCH_STEPS; si++) \
+                { \
+                    float2 p = FetchPixelize(worldXY + _WaveSwell.yz * (_WaveSwell.w * si)); \
+                    transmission *= smoothstep(0.0, _WaveSwellBand, _WaterLevel - ELEV_FN(p)); \
+                } \
+                return transmission;
+            float SwellShelter01(float2 worldXY) { SWELL_MARCH_BODY(SeabedElevation) }
+            float SwellShelter01Lod(float2 worldXY) { SWELL_MARCH_BODY(SeabedElevationLod) }
             // ==== TWIN B (end) ====
 
             // Distance from a point to a segment — the capsule that keeps a fast boat's trail
@@ -770,7 +823,8 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                     float outerMax = max(_BreakerOuter.x, max(_BreakerOuter.y, _BreakerOuter.z));
                     if (depth > 0.0 && depth <= outerMax)
                     {
-                        float fetchEnv = FetchDominantEnvelope01(FetchMarch01(worldXY));
+                        FetchFactors fetchFactors = FetchFactorsFrom(FetchMarch01(worldXY), SwellShelter01(worldXY));
+                        float fetchEnv = FetchFactorAt(fetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
                         float breaking = SurfBreaking01(depth, fetchEnv);
                         float2 dir = ShoreDir(worldXY);
                         if (breaking > 0.002 && dot(dir, dir) > 1e-6)
@@ -783,7 +837,7 @@ Shader "Hidden/HiddenHarbours/FoamBufferAdvect"
                             float omega = SurfBoreOmega();
                             float periodS = omega > 1e-6 ? 6.2831853 / omega : 0.0;
                             float phase = SurfBorePhaseDeg(breakLinePt, travelS, fs);
-                            float birth = SurfBoreBirth01(breakLinePt, travelS, phase, periodS, fs, fetchEnv);
+                            float birth = SurfBoreBirth01(breakLinePt, travelS, phase, periodS, fs, fetchEnv, fetchFactors);
                             float bore = SurfBorePulse01(phase, _BreakerBore.x) * birth;
                             // Twin: BreakerMath.SurfAt — Breaking01 * Whitewater01 * Bore01.
                             float front = breaking * alive * bore;

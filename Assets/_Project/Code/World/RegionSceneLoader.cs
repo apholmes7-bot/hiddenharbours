@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -35,6 +36,9 @@ namespace HiddenHarbours.World
         private void Awake()
         {
             _registry = new RegionRegistry(_regions);
+            if (_regions != null)
+                foreach (var r in _regions)
+                    if (r != null) GameServices.RegisterSwellClimate(r.Id, r.SwellClimate, r.SwellShelter);
             if (string.IsNullOrEmpty(_currentSceneName))
                 _currentSceneName = gameObject.scene.name;
         }

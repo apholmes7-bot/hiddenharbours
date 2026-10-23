@@ -328,7 +328,8 @@ namespace HiddenHarbours.World
             BuildingInterior interior = _hold.IsActive
                 ? InteriorFor(_hold.Shelter, _hold.ShelterBlockIndex)
                 : InteriorFor(pose);
-            bool visible = interior == null || interior.IsInside;
+            RoutineShelter shelter = _hold.IsActive ? _hold.Shelter : pose.Shelter;
+            bool visible = RoutinePlan.IsVisible(shelter, interior == null || interior.IsInside);
 
             if (_renderer != null && _renderer.enabled != visible) _renderer.enabled = visible;
             if (_talkable != null && _talkable.enabled != visible) _talkable.enabled = visible;

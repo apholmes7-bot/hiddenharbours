@@ -1,0 +1,40 @@
+{
+  "schema": "hidden-harbours/land-starter-paint@1",
+  "bands": [
+    {
+      "below": -2.2,
+      "channel": 6
+    },
+    {
+      "below": 0,
+      "channel": 4
+    },
+    {
+      "below": 2.2,
+      "channel": 2
+    },
+    {
+      "below": 3.6,
+      "channel": 1
+    },
+    {
+      "below": 7,
+      "channel": 0
+    }
+  ],
+  "marsh": [],
+  "stillChannel": 19,
+  "course": {
+    "lawnChannel": 18,
+    "grassChannel": 0,
+    "sandChannel": 2,
+    "stripeMetres": 4,
+    "stripeWeights": [
+      160,
+      208
+    ],
+    "collarMetres": 1.2,
+    "collarWeight": 128,
+    "teeRadius": 4.5
+  }
+}

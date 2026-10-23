@@ -205,7 +205,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void GlassIsStillSacred_EverySlotExactlyZeroAtSeaStateZero()
+        public void WindSeaOnly_EverySlotExactlyZeroAtSeaStateZero()
         {
             // Not redundant with the sweep above: this is the owner ruling (ADR 0018 §(1)) stated in
             // its own right, so a future re-weighting that introduces a spectral FLOOR — the obvious

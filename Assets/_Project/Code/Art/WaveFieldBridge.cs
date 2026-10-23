@@ -231,11 +231,13 @@ namespace HiddenHarbours.Art
             // hull consumers read — that shared instance is the whole reason the lee the player sees is
             // the lee the boat feels.
             PublishFetchGlobals(GameServices.WaveFetch, GameServices.FetchWindAt(env, time, in field));
+            PublishSwellGlobals(GameServices.SwellClimate, env.WorldSeed, time, GameServices.SecondsPerDay, GameServices.SwellShelter);
 
             // BREAKING (ADR 0040) rides alongside both: it consumes the SAME eased trains that were
             // just published and the SAME fetch settings, so the surf line the player sees stands on
             // the sea the hull is riding. One field, three readers.
-            PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch, GameServices.Breakers);
+            PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch, GameServices.Breakers,
+                GameServices.SwellClimate != null && trains.DominantIndex >= SwellMath.FirstSlot);
         }
 
         /// <summary>
@@ -280,6 +282,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static void PublishFetchGlobals(in WaveFetchSettings settings, Vector2 windVector)
         {
+            Shader.SetGlobalVector("_WaveSwell", Vector4.zero);
             Shader.SetGlobalVector("_WaveFetchGrowth", WaveFetch.GrowthShape(in settings));
             Shader.SetGlobalFloat("_WaveFetchGrowthPower", WaveFetch.GrowthPower(in settings));
             Shader.SetGlobalFloat("_WaveFetchFullStrength", WaveFetch.FullStrength(in settings));
@@ -301,7 +304,33 @@ namespace HiddenHarbours.Art
         /// session or a bare art scene can never leave a stale lee painted on the editor's globals
         /// (the <c>_DayNightTint</c>/<c>_MoonDir</c> "unset" convention).</summary>
         public static void PublishFetchOff()
-            => PublishFetchGlobals(default(WaveFetchSettings), Vector2.zero);
+        {
+            PublishFetchGlobals(default(WaveFetchSettings), Vector2.zero);
+            PublishSwellGlobals(null, 0, 0.0, 1f);
+        }
+
+        public static void PublishSwellGlobals(SwellClimateDef climate, int seed, double time, float secondsPerDay,
+                                              SwellShelterSettings shelter = default)
+        {
+            PublishSwellShelterGlobals(in shelter);
+            if (climate == null)
+            {
+                Shader.SetGlobalVector("_WaveSwell", Vector4.zero);
+                Shader.SetGlobalFloat("_WaveSwellBand", 0f);
+                return;
+            }
+            var data = climate.Climate;
+            Vector2 upstream = WaveFetch.Upwind(SwellMath.Direction(in data, seed, time, secondsPerDay));
+            Shader.SetGlobalVector("_WaveSwell", new Vector4(1f, upstream.x, upstream.y, SwellMath.ShelterStep(in data)));
+            Shader.SetGlobalFloat("_WaveSwellBand", SwellMath.ShelterBand(in data));
+        }
+
+        public static void PublishSwellShelterGlobals(in SwellShelterSettings shelter)
+        {
+            Shader.SetGlobalVector("_WaveSwellHarbour", shelter.Harbour);
+            Shader.SetGlobalVector("_WaveSwellCove", shelter.Cove);
+            Shader.SetGlobalFloat("_WaveSwellFeather", Mathf.Max(0f, shelter.FeatherMeters));
+        }
 
         /// <summary>
         /// Push the BREAKING-WAVE contour to the shader globals (ADR 0040). The inversion happens
@@ -319,9 +348,9 @@ namespace HiddenHarbours.Art
         /// interpolation becomes a no-op rather than a second thing to reason about.</para>
         /// </summary>
         public static void PublishBreakerGlobals(in WaveTrain dominant, in WaveFetchSettings fetch,
-                                                 in BreakerSettings breakers)
+                                                 in BreakerSettings breakers, bool swellDominant = false)
         {
-            float leeEnvelope = WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch);      // 1 when fetch is off
+            float leeEnvelope = swellDominant ? 0f : WaveFetch.TrainEnvelope01(0f, dominant.Wavelength, in fetch);
             BreakerContour contour = BreakerMath.ContourFor(in dominant, leeEnvelope, in breakers);
 
             Shader.SetGlobalVector(IdBreakerDepths, new Vector4(
@@ -539,7 +568,7 @@ namespace HiddenHarbours.Art
                 float phi = field.Phase(i);
                 float amplitude = train.w;
                 if (fetchEnvelope01.Spectral && train.z > 0f)
-                    amplitude *= fetchEnvelope01.ForWavelength((2f * Mathf.PI) / train.z);
+                    amplitude *= fetchEnvelope01.ForTrain(i, (2f * Mathf.PI) / train.z);
                 if (i >= count || amplitude <= 0f) continue;  // the shader masks on (i < count && amp > 0)
 
                 // `float k = trains[i].z * fs` — the shader scales the published wave number, and

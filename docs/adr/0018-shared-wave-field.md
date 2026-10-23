@@ -726,3 +726,126 @@ These are steady-wind, centre-fetch footprint results, before material exaggerat
 and mesh pose gains; the visual and sailing verdict remains the editor stage.
 NMC's existing 256-square shader bake still differs from the CPU painted map. A shared
 wind line does not cure that terrain seam; its plates must inspect it explicitly.
+
+## Amendment (2026-10-21): Stage C built
+
+Stage C adds an ocean swell after wind memory. It takes slots 6 and 7, formerly the
+6.34 m and 5.00 m wind rungs, by ruling 5 of the water-four decision. This amends the
+2026-09-09 ladder ruling for those two slots. The other six wind trains retain their
+amplitudes, wavelengths, directions and phases without renormalization. The field,
+packed payload and shader arrays remain eight trains wide. `WaveMath.TrainsFrom`
+and `WaveMemory` continue to derive wind sea; `GameServices.WithSwell` composes the
+ocean field, and `WaveFieldAnimator` then bakes travel for publication. The first
+seakeeping read before publication uses the same composition at the clock.
+
+### Climate data and drift
+
+`Data/Swell/HomeBaySwell.asset`, id `swell.home_bay`, is one `SwellClimateDef` assigned
+to all six bay region assets. `RegionSceneLoader` registers each wired region's data
+through Core. Adjacent regions share ocean parameters and seed/time phases; a region
+does not author its own distant storm. An unwired region keeps the wind-only path.
+All numeric climate fields are serialized in the asset:
+
+| Field | Default | Unit and range | Zero and purpose |
+|---|---:|---|---|
+| FromBearingDegrees | 145 | degrees clockwise from north, 0–360 | From north; incoming ocean bearing |
+| WavelengthMeters | 40 | metres, 1–200 | Falls back to 40; fixed primary crest spacing |
+| SecondaryWavelengthRatio | 0.81 | ratio, 0.5–1 | Falls back to 0.81; a second group frequency |
+| HeightMeters | 0.24 | combined crest-to-trough envelope metres, 0–2 | Silences both swell slots |
+| PrimaryShare | 0.65 | amplitude share, 0–1 | All height goes to the secondary train |
+| DirectionDriftDegrees | 12 | degrees either side, 0–45 | Fixed bearing |
+| HeightDriftFraction | 0.35 | fraction, 0–1 | Fixed envelope height |
+| DirectionCycleDays | 6 | game days, 1–60 | Falls back to 6; slow bearing drift |
+| HeightCycleDays | 4 | game days, 1–60 | Falls back to 4; independent size drift |
+| ShelterStepMeters | 4 | metres, 0.05–16 | Falls back to 4; 24-step incoming reach |
+| ShelterDepthBandMeters | 0.25 | metres, 0.001–2 | Falls back to 0.25; smooth wetness gate |
+
+Independent integer-hash streams of the world seed set the two drift phases and the
+two train phases. Bearing and height use continuous sine cycles in game days, with
+`GameServices.SecondsPerDay` as the clock scale. Height is an envelope, not significant
+wave height: total swell amplitude is half that height, split by PrimaryShare. The
+second wavelength is 32.4 m at defaults. Both wavelengths stay fixed through time,
+so the dispersion law alone sets speed; changing wind never changes swell parameters.
+There is no saved swell, accumulated phase, random generator, package or new clock.
+
+### Shelter and calm
+
+One additional 24-step march follows the incoming swell bearing, shared by both swell
+trains. It uses the fetch march's world grid and wetness product, but returns final
+transmission instead of averaged clear distance. Land anywhere within the reach stops
+the swell exactly: it cannot regrow behind land like wind sea. The default reach is
+96 m. This is local shadowing; bathymetric turning and longer-range shadowing remain
+Stage D.
+
+The St Peters east pier has a clear southeast approach. The 2026-10-21 ruling permits
+swell at that exposed pier while sheltered coves stay glass. Its harbour basin is
+disabled. To keep protected water silent across tide and bearing changes,
+`RegionDef.SwellShelter` carries two optional authored glass basins.
+Each Vector4 is centre XY and nonnegative half extents ZW in world metres. Zero extents
+disable that basin. FeatherMeters ranges 0–32 m; zero gives a sharp edge. Inside a basin
+transmission is exactly zero at any tide or ocean bearing; outside, a Hermite feather
+returns to one. These are glass-policy data, independent of future refraction data.
+
+| Region | Harbour centre / half extents (m) | Cove centre / half extents (m) | Outer feather |
+|---|---|---|---:|
+| St Peters | Disabled | (0, 140) / (35, 22) | 8 m |
+| Nine Mile Creek | (132, 80) / (48, 35) | (80, 30) / (20, 18) | 8 m |
+
+Other regions have empty authored basins and use the directional reach. The climate
+and basin factors compose multiplicatively. A protected basin exits before terrain
+reads. With no terrain, the basin factor still applies; outside basins no terrain
+means open water. Wind-fetch strength zero never disables swell shelter.
+
+A settled glass wind leaves six silent wind slots. Sheltered swell slots are also
+exactly silent, including in the packed twin. Open water may carry two low swell
+trains. The water's existing swell-read gate now admits their locally transmitted
+amplitude in a calm. The legacy `SwellField`, `_OceanSwellDir` and `_CrossSwellDir`
+retain their decorative roles; `SwellField` still runs only with no published trains,
+so it cannot add another swell to this field. No material or foam-colour dial changes.
+
+### Consumers, parity and cost
+
+`WaveFetchSample` carries wind growth and independent swell transmission.
+`ForTrain(slot, wavelength)` gives slots 6–7 the swell factor; other slots keep the
+Stage B curve. CPU sampling, the packed twin, the water fragment and vertex, boat
+footprints, the buoy and trap rides all use this rule. TotalAmplitude remains the
+unfetched mixed envelope, bounding the hull clamp and setting the buoy swamp threshold.
+Sheltered sampled height is zero, so a silent buoy still bobs zero and stays visible.
+
+`FetchEnvelopeAt` retains its scalar contract: the global dominant train's own factor.
+Breakers, spray, the shore fringe and weed follow that factor. Breaker contours still
+follow one global peak, which may now be swell; they do not choose a different local
+peak when a stronger wind train is sheltered. A swell can drive surf in a weak wind's
+lee, while a strong globally dominant wind train can still withhold that contour.
+The bore's birth read and foam deposit now use each system's factor inside the sum,
+reusing the pixel's factors with no additional march. Scalar overloads retain their
+prior arithmetic. Water and foam keep byte-identical shared fetch and bore blocks.
+
+The new per-sample work is two box gates and up to 24 terrain reads, without heap
+allocation. The shader adds the same two gates and up to 24 height-texture samples
+per water fragment, and per displaced vertex; the active foam-deposit pass also pays
+for swell shelter and constructs the per-train factors. It adds no train iterations
+or arrays. A protected basin pays no swell terrain reads. Headless warm timings are
+about 1.29 microseconds for Sample with resolved factors, and 6.03 microseconds for
+fetch plus shelter plus Sample, versus 4.22 for wind fetch plus Sample. These exclude
+the separate wind-memory evaluation and native publication. The 100,000-read loops
+allocate zero bytes. GPU timings and pixels remain an editor-slot proof.
+
+At seed 12345 and time zero the swell envelope is 0.165602 m on both open-coast probes,
+at mean and high tide, including the exposed St Peters pier, and exactly zero in the
+St Peters cove and the creek's harbour and cove. Three protected wet sites and two
+open sites are swept across 25 times and 45 tide levels. The three basin-zero
+claims also hold independently of tide by construction. The inherited slope convention
+is still E grad(h), omitting h grad(E). For each 8 m basin feather, the omitted
+mask-slope bound per basin is 0.030375 at the largest default swell height, before draw gains;
+the quantized march shadow can be sharper. Boat crossings of those edges need plates.
+
+The wind-only glass guards are renamed to state their scope:
+`GlassIsStillSacred_EverySlotExactlyZeroAtSeaStateZero` to
+`WindSeaOnly_EverySlotExactlyZeroAtSeaStateZero`;
+`GlassIsStillSacred_AtFullBlend` to `WindSeaOnly_AtFullBlend_GlassIsSilent`;
+`GlassCalm_PacksASilentField_AndTheTwinReadsFlat` to
+`WindSeaOnly_GlassCalm_PacksASilentField_AndTheTwinReadsFlat`.
+New whole-field glass and packed-twin guards cover sheltered swell; open calm is
+explicitly tested with two live swell slots. Other spectral and packing guards stay
+wind-derivation guards, including the ladder and peak tests. No cases gain a skip.

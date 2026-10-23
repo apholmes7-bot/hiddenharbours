@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: RoseMacIsaacRoutine
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
   Id: routine.rose_macisaac
+  RegionId: region.st_peters
   Npc: {fileID: 11400000, guid: 4083b8134ca747f68837268d2bd45653, type: 2}
   Entries:
   - StartHour: 7

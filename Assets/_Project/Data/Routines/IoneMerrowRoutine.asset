@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: IoneMerrowRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.ione_merrow
+  RegionId: region.cumberland
+  Npc: {fileID: 11400000, guid: 6330b347d1d531a46b2f0383fe31e99b, type: 2}
+  Entries:
+  - StartHour: 0
+    StationId: station.cumberland.clubhouse_door
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 11
+    StationId: station.cumberland.east_edge_in
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 16.5
+    StationId: station.cumberland.green_18_d
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 17.510658
+    StationId: station.cumberland.clubhouse_door
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  WalkSpeedMetresPerSecond: 1.5
+  ScheduleJitterMinutes: 0
+  CatchUpSpeedMultiplier: 1.6

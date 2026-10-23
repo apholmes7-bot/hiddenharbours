@@ -26,3 +26,4 @@ MonoBehaviour:
   TideAmplitude: 2.2
   TidePhaseHours: 1
   SpawnFishIds: []
+  SwellClimate: {fileID: 11400000, guid: 623b44edae2d4b39b64165776e2ab76d, type: 2}

@@ -77,6 +77,10 @@ namespace HiddenHarbours.World
                  "Content-validated for uniqueness.")]
         public string Id = "routine.example";
 
+        [Tooltip("Which region this day belongs to (region.snake_case). Station positions are " +
+                 "region-local, so without this a station id could resolve somewhere else entirely.")]
+        public string RegionId = "";
+
         [Tooltip("Whose day this is. The region builder matches a placed villager to their routine " +
                  "through this reference, so a routine with no NPC is authored but unused — which is a " +
                  "legal work-in-progress state and is reported, not thrown on.")]

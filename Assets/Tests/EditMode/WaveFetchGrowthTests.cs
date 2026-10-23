@@ -153,7 +153,7 @@ namespace HiddenHarbours.Tests.EditMode
                  .Replace("Vector4", "float4");
             Assert.AreEqual(Canonical(c), Canonical(a), "complete curve expression parity");
             StringAssert.Contains("amplitude *= FetchFactorAt(fetch, i)", water);
-            StringAssert.Contains("FetchDominantEnvelope01(FetchMarch01(worldXY))", foam);
+            StringAssert.Contains("FetchFactorsFrom(FetchMarch01(worldXY), SwellShelter01(worldXY))", foam);
             Assert.AreEqual(1, Regex.Matches(water, "float waveFetch01 = FetchMarch01\\(worldXY\\)").Count);
         }
 

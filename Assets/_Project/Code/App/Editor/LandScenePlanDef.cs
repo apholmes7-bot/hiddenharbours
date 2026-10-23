@@ -19,6 +19,10 @@ namespace HiddenHarbours.App.Editor
         public Vector2 Arrival;
         public Vector2 Disembark;
         public bool OnFootOnly;
+        /// <summary>Placed and wired, with its band off: nothing crosses here, and the closed edge just beyond
+        /// the band stops whoever walks on. A door waits shut until the far region's half is placed, and both
+        /// open together (Rice Point's Route 91 door waits on NR1b).</summary>
+        public bool Shut;
     }
 
     /// <summary>Authoring data in ground metres. No region's dimensions live in the template.</summary>

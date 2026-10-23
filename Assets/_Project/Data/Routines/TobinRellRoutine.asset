@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: TobinRellRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.tobin_rell
+  RegionId: region.cumberland
+  Npc: {fileID: 11400000, guid: b88fa00313b72c346abc0f4518eeae98, type: 2}
+  Entries:
+  - StartHour: 0
+    StationId: station.cumberland.clubhouse_door
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 6.5666666
+    StationId: station.cumberland.tee_1_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 7.4495335
+    StationId: station.cumberland.green_1_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 10.412356
+    StationId: station.cumberland.tee_2_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 10.923601
+    StationId: station.cumberland.green_2_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 12.421336
+    StationId: station.cumberland.tee_3_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 12.817838
+    StationId: station.cumberland.green_3_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 16.631893
+    StationId: station.cumberland.tee_4_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 17.084764
+    StationId: station.cumberland.green_4_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 18.134144
+    StationId: station.cumberland.tee_5_b
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 18.602312
+    StationId: station.cumberland.east_edge_out
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 18.86758
+    StationId: station.cumberland.clubhouse_door
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  WalkSpeedMetresPerSecond: 1.5
+  ScheduleJitterMinutes: 0
+  CatchUpSpeedMultiplier: 1.6
