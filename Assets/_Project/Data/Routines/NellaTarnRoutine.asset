@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: NellaTarnRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.nella_tarn
+  RegionId: region.cumberland
+  Npc: {fileID: 11400000, guid: d075ec7e653da73458f66fe89db02c59, type: 2}
+  Entries:
+  - StartHour: 0
+    StationId: station.cumberland.clubhouse_door
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 11
+    StationId: station.cumberland.east_edge_in
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 14
+    StationId: station.cumberland.green_18_d
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  - StartHour: 15.010658
+    StationId: station.cumberland.clubhouse_door
+    Activity: 3
+    Why: One round; the remaining holes are past the east edge.
+    Uninterruptible: 0
+  WalkSpeedMetresPerSecond: 1.5
+  ScheduleJitterMinutes: 0
+  CatchUpSpeedMultiplier: 1.6

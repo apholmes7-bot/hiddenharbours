@@ -63,6 +63,9 @@ namespace HiddenHarbours.App.Editor
                 SpriteRenderer sprite = go.GetComponent<SpriteRenderer>();
                 if (sprite == null) sprite = go.AddComponent<SpriteRenderer>();
                 NpcBodyDresser.Dress(go, sprite, routine.Npc, "", null, Color.white, 180f);
+                HeronViewGolferColours colours = go.GetComponent<HeronViewGolferColours>();
+                if (colours == null) colours = go.AddComponent<HeronViewGolferColours>();
+                colours.Configure(routine.Npc.Build);
                 Interactable talk = go.GetComponent<Interactable>();
                 if (talk == null) talk = go.AddComponent<Interactable>();
                 talk.Configure(routine.Npc);

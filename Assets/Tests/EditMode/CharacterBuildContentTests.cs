@@ -26,7 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
     {
         const string BuildsFolder = "Assets/_Project/Data/Characters/Builds";
         const string DataNpcs = "Assets/_Project/Data/NPCs";
-        const string RampsPath = "Assets/_Project/Data/Characters/CharacterRamps.asset";
+        const string RampsPath = "Assets/_Project/Data/Characters/CharacterRamps10.asset";
 
         static CharacterBuildDef[] Builds() =>
             AssetDatabase.FindAssets("t:CharacterBuildDef", new[] { BuildsFolder })
@@ -47,9 +47,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryBakedPreset_HasABuildAsset()
         {
-            var byPreset = Builds().ToDictionary(b => b.Preset, b => b, System.StringComparer.Ordinal);
+            var byPreset = new HashSet<string>(Builds().Select(b => b.Preset), System.StringComparer.Ordinal);
             foreach (var (preset, _) in CharacterBuildsBuilder.Presets)
-                Assert.IsTrue(byPreset.ContainsKey(preset),
+                Assert.IsTrue(byPreset.Contains(preset),
                     $"No CharacterBuildDef for baked preset '{preset}' under {BuildsFolder}. Run " +
                     "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Character Builds + " +
                     "Cast Mapping and commit the assets.");
