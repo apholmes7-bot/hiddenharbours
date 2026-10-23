@@ -40,12 +40,22 @@ namespace HiddenHarbours.Tools.RigBaking
                 HullWalkImportResult result = Populate(rig.Walk, rig, hullStem, deck, room);
                 if (!result.Ok) return result;
                 var savedDeck = Save(deck, deckPath);
-                if (rig.Walk.House != null) Save(room, roomPath);
+                var savedRoom = rig.Walk.House != null ? Save(room, roomPath) : null;
                 mesh.LayoutSchema = rig.Walk.Schema;
                 mesh.LiftSets = rig.LiftSets;
                 EditorUtility.SetDirty(mesh);
                 foreach (BoatVisualDef visual in visuals)
                 {
+                    if (savedRoom != null && savedRoom.HasInterior())
+                    {
+                        if (visual.Interior != null && visual.Interior != savedRoom)
+                        {
+                            result.Refusals.Add(hullStem + ": visual '" + visual.name +
+                                "': Interior references a different interior asset ('" + visual.Interior.Id + "')");
+                            continue;
+                        }
+                        visual.Interior = savedRoom;
+                    }
                     visual.Deck = savedDeck;
                     EditorUtility.SetDirty(visual);
                 }
