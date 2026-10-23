@@ -46,7 +46,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 EditorUtility.SetDirty(mesh);
                 foreach (BoatVisualDef visual in visuals)
                 {
-                    if (savedRoom != null && savedRoom.HasInterior())
+                    // Preserve measured room metadata even when a held room has no enterable level.
+                    if (savedRoom != null)
                     {
                         if (visual.Interior != null && visual.Interior != savedRoom)
                         {
@@ -235,7 +236,12 @@ namespace HiddenHarbours.Tools.RigBaking
         static Vector3 RampEnd(HullWalkArea area, bool last)
         {
             HullWalkRamp r = area.Ramp;
-            float at = last ? r.A1 : r.A0, z = last ? r.Z1 : r.Z0;
+            // The walk clamps z beyond a0/a1: a flat landing can extend to the climb's boundary.
+            // Join floors at that authored boundary, not at the interior interpolation endpoint.
+            float[] extent = area.Polygon.Select(p => r.Axis == "x" ? p.x : p.y).ToArray();
+            bool increasing = r.A1 >= r.A0;
+            float at = last == increasing ? extent.Max() : extent.Min();
+            float z = last ? r.Z1 : r.Z0;
             var crossings = new List<float>();
             for (int i = 0; i < area.Polygon.Length; i++)
             {

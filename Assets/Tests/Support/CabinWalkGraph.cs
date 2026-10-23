@@ -7,10 +7,26 @@ using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
+using HiddenHarbours.Tools.RigBaking;
 using UnityEngine;
 
 namespace HiddenHarbours.Tests.Support
 {
+    /// <summary>Read the hull's committed walk, with its own rig hash, independently of imported floors.</summary>
+    public static class CommittedHullWalk
+    {
+        public static HullWalkRead Read(string sidecar, string projectRoot)
+        {
+            string json = File.ReadAllText(Path.Combine(projectRoot, sidecar));
+            string rig = DeckSidecarReader.ResolveRigFileName(Path.GetFileName(sidecar), json);
+            string rigPath = DeckSidecarReader.ResolveRigPath(projectRoot, rig);
+            if (rigPath == null) throw new FileNotFoundException("walk's declared rig is missing", rig);
+            HullWalkRead walk = HullWalkSidecarReader.Read(json, sidecar, File.ReadAllBytes(rigPath));
+            if (!walk.Ok) throw new FormatException(string.Join("; ", walk.Errors));
+            return walk;
+        }
+    }
+
     // =============================================================================================
     // ⭐ Phase B, 2026-09-19, C6 — THE WALK GRAPH the fleet's cabin guards stand on.
     //
@@ -519,6 +535,7 @@ namespace HiddenHarbours.Tests.Support
 
         private readonly List<int>[] _linksOf;
         private readonly CabinLevelGrid[] _grids;
+        private readonly HullWalkRead _walk;
 
         public CabinWalkGraph(BoatInteriorDef def, BoatDeckDef deck, string projectRoot)
         {
@@ -542,6 +559,10 @@ namespace HiddenHarbours.Tests.Support
             if (deck == null) notes.Add("the hull has no deck def");
             else if (DeckSidecarPath.Length == 0) notes.Add("the deck def names no sidecar, so no step is read");
             else if (!File.Exists(DeckSidecarPath)) notes.Add("the deck sidecar is missing: " + DeckSidecarPath);
+
+            if (deck != null && !string.IsNullOrEmpty(deck.SourceSidecar)
+                && deck.SourceSidecar.EndsWith(".walk.json", StringComparison.Ordinal))
+                _walk = CommittedHullWalk.Read(deck.SourceSidecar, projectRoot);
 
             Links = LinkTheDecks(notes);
             for (int l = 0; l < Links.Count; l++)
@@ -992,7 +1013,9 @@ namespace HiddenHarbours.Tests.Support
             {
                 Vector2 q = NearestOn(b, p, out float sqr);
                 if (sqr > tolSqr) continue;
-                if (Mathf.Abs(HeightOn(a, p) - HeightOn(b, q)) > tol) continue;
+                float rise = Mathf.Abs(HeightOn(a, p) - HeightOn(b, q));
+                // ADR 0048 walk contacts use their declared stepTol; plan contact and legacy rules keep tol.
+                if (rise > tol && (_walk == null || rise > _walk.StepTolerance)) continue;
                 hitsFrom.Add(p);
                 hitsTo.Add(q);
             }

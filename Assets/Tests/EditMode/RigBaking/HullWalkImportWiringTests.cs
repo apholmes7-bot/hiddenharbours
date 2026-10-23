@@ -23,16 +23,18 @@ namespace HiddenHarbours.Tests.RigBaking
                 {
                     var result = Import(key, visual);
                     Assert.That(result.Ok, Is.True, key + ": " + string.Join("; ", result.Refusals));
-                    if (key == "expressCruiser")
+                    if (key != "bowrider")
                     {
+                        string stem = key == "expressCruiser" ? "ExpressCruiserIso" : "GoFastIso";
                         var saved = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>(
-                            "Assets/_Project/Data/Boats/Interiors/ExpressCruiserIso.asset");
+                            "Assets/_Project/Data/Boats/Interiors/" + stem + ".asset");
                         Assert.That(saved, Is.Not.Null);
-                        Assert.That(saved.Id, Is.EqualTo("interior.express_cruiser_iso"));
-                        Assert.That(saved.HasInterior(), Is.True);
+                        Assert.That(saved.Id, Is.EqualTo(key == "expressCruiser" ? "interior.express_cruiser_iso" : "interior.go_fast_iso"));
+                        Assert.That(saved.HasInterior(), Is.EqualTo(key == "expressCruiser"),
+                            "metadata wiring does not make the held go-fast room enterable");
                         Assert.That(visual.Interior, Is.SameAs(saved));
                     }
-                    else Assert.That(visual.Interior, Is.Null, key + ": open or held-shut room remains unlinked");
+                    else Assert.That(visual.Interior, Is.Null, key + ": open hull has no room metadata");
                 }
                 finally { Object.DestroyImmediate(visual); }
             }

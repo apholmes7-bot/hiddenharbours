@@ -65,15 +65,44 @@ namespace HiddenHarbours.Tests.RigBaking
                 yield break;
             }
 
-            // ADR 0041: a converted hull keeps her def and has NO sheet — there is nothing for the
-            // two halves to agree on, so she is not a case here. Derived from the bake's switch.
-            var converted = new HashSet<string>(ConvertedInteriors.All().Select(c => c.DefAssetPath),
-                                                StringComparer.Ordinal);
-
             foreach (string path in guids.Select(AssetDatabase.GUIDToAssetPath)
-                                         .Where(p => !converted.Contains(p))
                                          .OrderBy(p => p, StringComparer.Ordinal))
+            {
+                if (RoomIsGeometry(path)) continue; // Discovery reads no contract or setup state.
                 yield return new TestCaseData(path).SetName($"Def_{Path.GetFileNameWithoutExtension(path)}");
+            }
+        }
+
+        // Same RoomIsGeometry predicate as placement and the installer, never a hull-name list.
+        static bool RoomIsGeometry(string path)
+        {
+            string stem = Path.GetFileNameWithoutExtension(path);
+            var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(
+                "Assets/_Project/Data/Boats/Visuals/" + stem + ".asset");
+            return visual != null && visual.HullMesh != null && visual.HullMesh.HasMeshInterior();
+        }
+
+        [Test]
+        public void GeometryRoomDefs_ShipNoSheetPageOrCells()
+        {
+            int seen = 0;
+            foreach (string path in AssetDatabase.FindAssets("t:BoatInteriorDef", new[] { InteriorDefFolder })
+                         .Select(AssetDatabase.GUIDToAssetPath).OrderBy(p => p, StringComparer.Ordinal))
+            {
+                if (!RoomIsGeometry(path)) continue;
+                BoatInteriorDef def = Def(path);
+                string stem = Path.GetFileNameWithoutExtension(path);
+                Assert.IsNull(Contract().sheets.FirstOrDefault(s => s.defId == def.Id),
+                    def.Id + ": a mesh room ships no sheet contract entry");
+                Assert.IsEmpty(Directory.GetFiles(Path.Combine(RepoRoot, "Assets/_Project/Art/Boats/Interiors"),
+                    stem + "Interior*.png"), def.Id + ": a mesh room ships no sheet page");
+                Assert.IsNull(AssetDatabase.LoadAssetAtPath<BoatInteriorCellsDef>(
+                    "Assets/_Project/Resources/" + BoatInteriorCellsDef.ResourcesFolder + "/" +
+                    BoatInteriorCellsDef.FileNameFor(def.Id) + ".asset"), def.Id + ": a mesh room ships no cells");
+                TestContext.WriteLine("[geometry-room-no-sheet] " + stem + " " + def.Id);
+                seen++;
+            }
+            Assert.Greater(seen, 0, "mesh-room retirement must check at least one committed def");
         }
 
         static BoatInteriorKit.Contract Contract()

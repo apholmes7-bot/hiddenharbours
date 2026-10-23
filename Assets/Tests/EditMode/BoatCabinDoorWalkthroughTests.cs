@@ -433,18 +433,29 @@ namespace HiddenHarbours.Tests.EditMode
             int measured = 0;
             float worstGap = 0f;
             string worstHull = "none";
+            var measuredNames = new List<string>();
+            var heldNames = new List<string>();
 
             foreach (string guid in AssetDatabase.FindAssets("t:BoatVisualDef"))
             {
                 var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(
                     AssetDatabase.GUIDToAssetPath(guid));
-                if (visual == null || visual.Interior == null || visual.Deck == null) continue;
+                if (visual == null || visual.Interior == null) continue;
+                if (!visual.Interior.HasInterior())
+                {
+                    // Metadata alone installs no cabin: the same predicate BoatInteriorInstaller.Build reads.
+                    BoatInteriorPlacementTests.AssertHeldRoomHasNoEntry(visual.name, visual.Interior, _spawned);
+                    heldNames.Add(visual.name);
+                    continue;
+                }
+                if (visual.Deck == null) continue;
 
                 BoatInteriorDoor door = visual.Interior.Door;
                 if (door == null || !BoatCabinThreshold.HasBand(door)) continue;
                 if (!visual.Deck.HasWalkableDeck()) continue;
 
                 measured++;
+                measuredNames.Add(visual.name);
                 Vector2 doorway = BoatCabinThreshold.PointOf(door);
                 float band = BoatCabinThreshold.BandRadiusMetres(door);
                 float gap = DistanceToWalkableDeck(visual.Deck, doorway);
@@ -461,6 +472,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.Greater(measured, 0,
                            "no measured hull carries both a deck and a doorway — this guard is asleep");
+
+            measuredNames.Sort(System.StringComparer.Ordinal);
+            heldNames.Sort(System.StringComparer.Ordinal);
+            Debug.Log("[cabin-doorways-census] measured=" + string.Join(",", measuredNames)
+                + "; held=" + string.Join(",", heldNames));
 
             Debug.Log($"[cabin-doorways] {measured} measured hulls, worst gap {worstGap:F3} m " +
                       $"({worstHull}):\n{report}");
