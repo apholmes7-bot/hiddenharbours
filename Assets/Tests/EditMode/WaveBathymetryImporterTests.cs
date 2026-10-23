@@ -13,6 +13,12 @@ namespace HiddenHarbours.Tests.EditMode
 {
     public class WaveBathymetryImporterTests
     {
+        [OneTimeSetUp]
+        public void ReportRunBegin() => Debug.Log("[W4-6a] EDITMODE_CASES_BEGIN");
+
+        [OneTimeTearDown]
+        public void ReportRunComplete() => Debug.Log("[W4-6a] EDITMODE_CASES_COMPLETE");
+
         [TestCase("StPeters")]
         [TestCase("NineMileCreek")]
         [TestCase("RicePoint")]
