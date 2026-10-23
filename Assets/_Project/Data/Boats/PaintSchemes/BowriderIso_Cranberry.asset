@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: BowriderIso_Cranberry
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.bowrider_cranberry
+  Label: Cranberry
+  Note: "the fleet\u2019s bog red, black pin, black top"
+  HullMeshId: hullmesh.bowrider_iso
+  SourceRigPath: docs/art/rigs/bowriderIsoRig.js
+  RigPaintId: cranberry
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279959648
+    - serializedVersion: 2
+      rgba: 4280686705
+    - serializedVersion: 2
+      rgba: 4281018495
+    - serializedVersion: 2
+      rgba: 4281415308
+    - serializedVersion: 2
+      rgba: 4281746328
+    - serializedVersion: 2
+      rgba: 4282866605
+    - serializedVersion: 2
+      rgba: 4285696214
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280557595
+    - serializedVersion: 2
+      rgba: 4280952353
+    - serializedVersion: 2
+      rgba: 4281215525
+    - serializedVersion: 2
+      rgba: 4281544490
+    - serializedVersion: 2
+      rgba: 4286281586
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281544234
+    - serializedVersion: 2
+      rgba: 4282860351
+    - serializedVersion: 2
+      rgba: 4284110161
+    - serializedVersion: 2
+      rgba: 4285623400
+    - serializedVersion: 2
+      rgba: 4288650391
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284839283
+    - serializedVersion: 2
+      rgba: 4287602848
+    - serializedVersion: 2
+      rgba: 4290102985
+    - serializedVersion: 2
+      rgba: 4292339693
+    - serializedVersion: 2
+      rgba: 4293062645
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279959904
+    - serializedVersion: 2
+      rgba: 4280820345
+    - serializedVersion: 2
+      rgba: 4281416079
+    - serializedVersion: 2
+      rgba: 4282405797
+    - serializedVersion: 2
+      rgba: 4285762004
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280557595
+    - serializedVersion: 2
+      rgba: 4280952353
+    - serializedVersion: 2
+      rgba: 4281281318
+    - serializedVersion: 2
+      rgba: 4282005041
+    - serializedVersion: 2
+      rgba: 4286281586
+    Offset: -1

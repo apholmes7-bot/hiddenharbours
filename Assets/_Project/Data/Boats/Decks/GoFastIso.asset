@@ -1,0 +1,340 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.go_fast_iso
+  SourceSidecar: docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json
+  SourceRig: docs/art/rigs/goFastIsoRig.js
+  DerivedFromRigSha256: 77394353fc048ee56e4dd722d94fb73ad7be9be2443608d059699151f7704cef
+  LoaMeters: 12.36
+  Areas:
+  - Id: foredeck_1c
+    Kind: 0
+    Outline:
+    - {x: 0.38, y: -1.035}
+    - {x: 0.38, y: 3.265}
+    - {x: -0.38, y: 3.265}
+    - {x: -0.38, y: -1.035}
+    Holes: []
+    HeightPlane: {x: 0, y: 0.030232556, z: 1.6152906}
+    HeightResidualMax: 0
+    Bounds: {x: -0.38, y: -1.035, z: 0.38, w: 3.265}
+  - Id: foredeck_1s1
+    Kind: 0
+    Outline:
+    - {x: 0.38, y: 3.265}
+    - {x: 0.38, y: -1.035}
+    - {x: 0.54, y: -1.035}
+    - {x: 0.54, y: 3.265}
+    Holes: []
+    HeightPlane: {x: 0, y: 0.032093026, z: 1.5892162}
+    HeightResidualMax: 0
+    Bounds: {x: 0.38, y: -1.035, z: 0.54, w: 3.265}
+  - Id: foredeck_1p1
+    Kind: 0
+    Outline:
+    - {x: -0.54, y: 3.265}
+    - {x: -0.54, y: -1.035}
+    - {x: -0.38, y: -1.035}
+    - {x: -0.38, y: 3.265}
+    Holes: []
+    HeightPlane: {x: 0, y: 0.032093026, z: 1.5892162}
+    HeightResidualMax: 0
+    Bounds: {x: -0.54, y: -1.035, z: -0.38, w: 3.265}
+  - Id: foredeck_1s2
+    Kind: 0
+    Outline:
+    - {x: 0.54, y: 3.265}
+    - {x: 0.54, y: -1.035}
+    - {x: 0.66, y: -1.035}
+    - {x: 0.66, y: 3.115}
+    - {x: 0.642, y: 3.265}
+    Holes: []
+    HeightPlane: {x: 0.000000059211576, y: 0.033488385, z: 1.5626605}
+    HeightResidualMax: 0
+    Bounds: {x: 0.54, y: -1.035, z: 0.66, w: 3.265}
+  - Id: foredeck_1p2
+    Kind: 0
+    Outline:
+    - {x: -0.642, y: 3.265}
+    - {x: -0.66, y: 3.115}
+    - {x: -0.66, y: -1.035}
+    - {x: -0.54, y: -1.035}
+    - {x: -0.54, y: 3.265}
+    Holes: []
+    HeightPlane: {x: -0.000000059211576, y: 0.033488385, z: 1.5626605}
+    HeightResidualMax: 0
+    Bounds: {x: -0.66, y: -1.035, z: -0.54, w: 3.265}
+  - Id: foredeck_1s3
+    Kind: 0
+    Outline:
+    - {x: 0.66, y: 3.065}
+    - {x: 0.66, y: -1.035}
+    - {x: 0.74, y: -1.035}
+    - {x: 0.738, y: 2.365}
+    - {x: 0.669, y: 3.065}
+    Holes: []
+    HeightPlane: {x: 0.0000002745206, y: 0.035348844, z: 1.5385858}
+    HeightResidualMax: 0.00000011920929
+    Bounds: {x: 0.66, y: -1.035, z: 0.74, w: 3.065}
+  - Id: foredeck_1p3
+    Kind: 0
+    Outline:
+    - {x: -0.669, y: 3.065}
+    - {x: -0.738, y: 2.365}
+    - {x: -0.74, y: -1.035}
+    - {x: -0.66, y: -1.035}
+    - {x: -0.66, y: 3.065}
+    Holes: []
+    HeightPlane: {x: -0.0000002745206, y: 0.035348844, z: 1.5385858}
+    HeightResidualMax: 0.00000011920929
+    Bounds: {x: -0.74, y: -1.035, z: -0.66, w: 3.065}
+  - Id: foredeck_1s4
+    Kind: 0
+    Outline:
+    - {x: 0.74, y: 2.265}
+    - {x: 0.74, y: -1.035}
+    - {x: 0.834, y: -1.035}
+    - {x: 0.756, y: 2.115}
+    - {x: 0.746, y: 2.265}
+    Holes: []
+    HeightPlane: {x: -0.00000003951123, y: 0.037441865, z: 1.5187523}
+    HeightResidualMax: 0
+    Bounds: {x: 0.74, y: -1.035, z: 0.834, w: 2.265}
+  - Id: foredeck_1p4
+    Kind: 0
+    Outline:
+    - {x: -0.746, y: 2.265}
+    - {x: -0.756, y: 2.115}
+    - {x: -0.834, y: -1.035}
+    - {x: -0.74, y: -1.035}
+    - {x: -0.74, y: 2.265}
+    Holes: []
+    HeightPlane: {x: 0.00000003951123, y: 0.037441865, z: 1.5187523}
+    HeightResidualMax: 0
+    Bounds: {x: -0.834, y: -1.035, z: -0.74, w: 2.265}
+  - Id: foredeck_2c
+    Kind: 0
+    Outline:
+    - {x: 0.44, y: 3.265}
+    - {x: 0.439, y: 4.353}
+    - {x: 0.227, y: 4.996}
+    - {x: 0.021, y: 5.49}
+    - {x: -0.021, y: 5.49}
+    - {x: -0.227, y: 4.996}
+    - {x: -0.411, y: 4.452}
+    - {x: -0.439, y: 4.353}
+    - {x: -0.44, y: 3.265}
+    Holes: []
+    HeightPlane: {x: 0.000000021289534, y: 0.03865169, z: 1.5958022}
+    HeightResidualMax: 0.00000011920929
+    Bounds: {x: -0.44, y: 3.265, z: 0.44, w: 5.49}
+  - Id: foredeck_2s1
+    Kind: 0
+    Outline:
+    - {x: 0.44, y: 4.303}
+    - {x: 0.44, y: 3.265}
+    - {x: 0.642, y: 3.265}
+    - {x: 0.51, y: 4.056}
+    - {x: 0.452, y: 4.303}
+    Holes: []
+    HeightPlane: {x: 0.000000031593938, y: 0.04943822, z: 1.5295842}
+    HeightResidualMax: 0
+    Bounds: {x: 0.44, y: 3.265, z: 0.642, w: 4.303}
+  - Id: foredeck_2p1
+    Kind: 0
+    Outline:
+    - {x: -0.452, y: 4.303}
+    - {x: -0.51, y: 4.056}
+    - {x: -0.642, y: 3.265}
+    - {x: -0.44, y: 3.265}
+    - {x: -0.44, y: 4.303}
+    Holes: []
+    HeightPlane: {x: -0.000000031593938, y: 0.04943822, z: 1.5295842}
+    HeightResidualMax: 0
+    Bounds: {x: -0.642, y: 3.265, z: -0.44, w: 4.303}
+  - Id: engine_hatch_1c
+    Kind: 0
+    Outline:
+    - {x: 0.32, y: -5.55}
+    - {x: 0.32, y: -5.25}
+    - {x: -0.32, y: -5.25}
+    - {x: -0.32, y: -5.55}
+    Holes: []
+    HeightPlane: {x: 0, y: 0.17333297, z: 2.510998}
+    HeightResidualMax: 0
+    Bounds: {x: -0.32, y: -5.55, z: 0.32, w: -5.25}
+  - Id: engine_hatch_1s1
+    Kind: 0
+    Outline:
+    - {x: 0.32, y: -5.25}
+    - {x: 0.32, y: -5.55}
+    - {x: 0.49, y: -5.55}
+    - {x: 0.497, y: -5.25}
+    Holes: []
+    HeightPlane: {x: -0.10169479, y: -0.00000009066218, z: 1.6025419}
+    HeightResidualMax: 0
+    Bounds: {x: 0.32, y: -5.55, z: 0.497, w: -5.25}
+  - Id: engine_hatch_1p1
+    Kind: 0
+    Outline:
+    - {x: -0.497, y: -5.25}
+    - {x: -0.49, y: -5.55}
+    - {x: -0.32, y: -5.55}
+    - {x: -0.32, y: -5.25}
+    Holes: []
+    HeightPlane: {x: 0.10169479, y: -0.00000009066218, z: 1.6025419}
+    HeightResidualMax: 0
+    Bounds: {x: -0.497, y: -5.55, z: -0.32, w: -5.25}
+  - Id: engine_hatch_2c
+    Kind: 0
+    Outline:
+    - {x: 0.26, y: -5.25}
+    - {x: 0.26, y: -4.09}
+    - {x: -0.26, y: -4.09}
+    - {x: -0.26, y: -5.25}
+    Holes: []
+    HeightPlane: {x: 0, y: 0.0051723476, z: 1.6501548}
+    HeightResidualMax: 0
+    Bounds: {x: -0.26, y: -5.25, z: 0.26, w: -4.09}
+  - Id: engine_hatch_2s1
+    Kind: 0
+    Outline:
+    - {x: 0.26, y: -4.09}
+    - {x: 0.26, y: -5.25}
+    - {x: 0.497, y: -5.25}
+    - {x: 0.52, y: -4.09}
+    Holes: []
+    HeightPlane: {x: -0.31153825, y: -0.000000026282732, z: 1.6979998}
+    HeightResidualMax: 0
+    Bounds: {x: 0.26, y: -5.25, z: 0.52, w: -4.09}
+  - Id: engine_hatch_2p1
+    Kind: 0
+    Outline:
+    - {x: -0.52, y: -4.09}
+    - {x: -0.497, y: -5.25}
+    - {x: -0.26, y: -5.25}
+    - {x: -0.26, y: -4.09}
+    Holes: []
+    HeightPlane: {x: 0.31153825, y: -0.000000026282732, z: 1.6979998}
+    HeightResidualMax: 0
+    Bounds: {x: -0.52, y: -5.25, z: -0.26, w: -4.09}
+  - Id: engine_hatch_3c
+    Kind: 0
+    Outline:
+    - {x: 0.32, y: -4.09}
+    - {x: 0.32, y: -3.8}
+    - {x: -0.32, y: -3.8}
+    - {x: -0.32, y: -4.09}
+    Holes: []
+    HeightPlane: {x: 0, y: -0.1586206, z: 0.9572417}
+    HeightResidualMax: 0
+    Bounds: {x: -0.32, y: -4.09, z: 0.32, w: -3.8}
+  - Id: engine_hatch_3s1
+    Kind: 0
+    Outline:
+    - {x: 0.32, y: -3.8}
+    - {x: 0.32, y: -4.09}
+    - {x: 0.52, y: -4.09}
+    - {x: 0.524, y: -3.8}
+    Holes: []
+    HeightPlane: {x: -0.09313757, y: 0.000000037952677, z: 1.6088042}
+    HeightResidualMax: 0.00000011920929
+    Bounds: {x: 0.32, y: -4.09, z: 0.524, w: -3.8}
+  - Id: engine_hatch_3p1
+    Kind: 0
+    Outline:
+    - {x: -0.524, y: -3.8}
+    - {x: -0.52, y: -4.09}
+    - {x: -0.32, y: -4.09}
+    - {x: -0.32, y: -3.8}
+    Holes: []
+    HeightPlane: {x: 0.09313757, y: 0.000000037952677, z: 1.6088042}
+    HeightResidualMax: 0.00000011920929
+    Bounds: {x: -0.524, y: -4.09, z: -0.32, w: -3.8}
+  - Id: washboard_port
+    Kind: 1
+    Outline:
+    - {x: -1.015, y: -5.78}
+    - {x: -1.023, y: -5.392}
+    - {x: -1.032, y: -5.004}
+    - {x: -1.041, y: -4.616}
+    - {x: -1.048, y: -4.228}
+    - {x: -1.054, y: -3.84}
+    - {x: -1.059, y: -3.452}
+    - {x: -1.063, y: -3.064}
+    - {x: -1.065, y: -2.676}
+    - {x: -1.066, y: -2.288}
+    - {x: -1.066, y: -1.9}
+    - {x: -0.766, y: -1.9}
+    - {x: -0.766, y: -2.288}
+    - {x: -0.76500005, y: -2.676}
+    - {x: -0.76299995, y: -3.064}
+    - {x: -0.759, y: -3.452}
+    - {x: -0.754, y: -3.84}
+    - {x: -0.74799997, y: -4.228}
+    - {x: -0.741, y: -4.616}
+    - {x: -0.73199993, y: -5.004}
+    - {x: -0.723, y: -5.392}
+    - {x: -0.715, y: -5.78}
+    Holes: []
+    HeightPlane: {x: 0.00030160343, y: 0.0075017717, z: 1.3927141}
+    HeightResidualMax: 0.0028607845
+    Bounds: {x: -1.066, y: -5.78, z: -0.715, w: -1.9}
+  - Id: washboard_starboard
+    Kind: 1
+    Outline:
+    - {x: 1.015, y: -5.78}
+    - {x: 1.023, y: -5.392}
+    - {x: 1.032, y: -5.004}
+    - {x: 1.041, y: -4.616}
+    - {x: 1.048, y: -4.228}
+    - {x: 1.054, y: -3.84}
+    - {x: 1.059, y: -3.452}
+    - {x: 1.063, y: -3.064}
+    - {x: 1.065, y: -2.676}
+    - {x: 1.066, y: -2.288}
+    - {x: 1.066, y: -1.9}
+    - {x: 0.766, y: -1.9}
+    - {x: 0.766, y: -2.288}
+    - {x: 0.76500005, y: -2.676}
+    - {x: 0.76299995, y: -3.064}
+    - {x: 0.759, y: -3.452}
+    - {x: 0.754, y: -3.84}
+    - {x: 0.74799997, y: -4.228}
+    - {x: 0.741, y: -4.616}
+    - {x: 0.73199993, y: -5.004}
+    - {x: 0.723, y: -5.392}
+    - {x: 0.715, y: -5.78}
+    Holes: []
+    HeightPlane: {x: -0.00030160343, y: 0.0075017717, z: 1.3927141}
+    HeightResidualMax: 0.0028607845
+    Bounds: {x: 0.715, y: -5.78, z: 1.066, w: -1.9}
+  Cleats:
+  - Id: stern_port
+    Type: cleat
+    PositionMeters: {x: -0.9, y: -5.55, z: 1.382}
+  - Id: stern_star
+    Type: cleat
+    PositionMeters: {x: 0.9, y: -5.55, z: 1.382}
+  - Id: bow_1
+    Type: cleat
+    PositionMeters: {x: 0, y: 5.414, z: 1.823}
+  - Id: bow_eye
+    Type: bow_eye
+    PositionMeters: {x: 0, y: 5.24, z: 0.92}
+  HasHelmStation: 1
+  HelmStationLocalMeters: {x: 0.42, y: -2.2, z: 1.18}
+  HelmStationSource: anchors.helm
+  WalkCenter: {x: 0, y: -0.03000021}
+  WalkHalfExtents: {x: 0.834, y: 5.52}
