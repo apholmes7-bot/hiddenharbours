@@ -20,7 +20,9 @@ namespace HiddenHarbours.App
     /// <para><b>⛔ IT ADDS NO SECOND CLAMP, NO SECOND PROJECTION AND NO SECOND BEARING.</b> That is the
     /// whole design. Every quantity here is computed by the component that already owns it:</para>
     /// <list type="bullet">
-    ///   <item>the step and the clamp are <see cref="DeckWalkController.StepOnDeckPolygon"/> — the
+    ///   <item>the step is her key in the hull's frame as <see cref="DeckWalkController.HeldInHullFrame"/>
+    ///   turns it — the direction <see cref="DeckWalkController.StepOnDeckPolygon"/> steps along — and the
+    ///   clamp is the deck's own <see cref="BoatDeckDef.ClampToWalkable"/>, the one that step calls: the
     ///   authored polygons, in the hull's own metres;</item>
     ///   <item>the projection onto the drawn hull is <see cref="DeckAreaMath.DeckToWorld"/>, the same
     ///   foreshortened transform the deck walk places the player's own boat by;</item>
@@ -32,6 +34,15 @@ namespace HiddenHarbours.App
     /// </list>
     /// <para>One quantity, one computation: a second clamp is precisely the shape this project has paid
     /// for before.</para>
+    ///
+    /// <para><b>⭐ His doorway (owner ruling D1 (a), 2026-09-30).</b> Within one clear width of his aft
+    /// door, a key held within 30° of its axis is bent toward the opening
+    /// (<see cref="BoatCabinDoor.SteerHeld"/>). And the deck may not stand her INSIDE the house it is
+    /// measured under: the cape's cockpit sole runs forward under the whole deckhouse, and a walker who
+    /// could stand in the house's outline on deck would walk through its walls onto the bow and come at
+    /// the doorway from the wrong side of its wall line. So a step that ends in the room is put back out
+    /// of it by its nearest edge (<see cref="BoatCabinWalkMath.PushOutOfTheRoom"/>) — for the arrival's
+    /// passenger only; the fleet's own deck walk steers from inside its wheelhouses.</para>
     ///
     /// <para><b>Why a plain class and not a component</b> — <see cref="ArrivalCabinWalk"/>'s reason,
     /// verbatim. It never writes her transform: it holds where she is standing and how fast, and
@@ -69,11 +80,16 @@ namespace HiddenHarbours.App
         private float _deckBearingDegrees;
         private float _speedMetresPerSecond;
         private bool _seated;
+        private Vector2 _held;
+        private float _paceMetresPerSecond;
+        private float _paceFromMetresPerSecond;
+        private float _sinceSeedSeconds = float.PositiveInfinity;
 
         public ArrivalDeckWalk(GameObject boat, float walkSpeedMetresPerSecond)
         {
             _boat = boat;
             _walkSpeedMetresPerSecond = Mathf.Max(0f, walkSpeedMetresPerSecond);
+            _paceMetresPerSecond = _walkSpeedMetresPerSecond;
         }
 
         /// <summary>This hull's imported walkable areas, read live off the boat root. Null until she is
@@ -106,8 +122,24 @@ namespace HiddenHarbours.App
 
         /// <summary>Her honest travelling speed: metres of DECK per second, which is the planking she
         /// actually crosses. Zero on a tick she took no step — including one spent pressed into a
-        /// bulkhead, because a clamped step is no step.</summary>
+        /// bulkhead, because a clamped step is no step — and on the tick she comes out through his doorway,
+        /// the pace she came through at (<see cref="SeedFromCabin"/>).</summary>
         public float SpeedMetresPerSecond => _speedMetresPerSecond;
+
+        /// <summary>The pace her keys walk her at, metres of deck per second: the deck's own walk speed, or
+        /// on its way to it from the pace she came through his doorway at.</summary>
+        public float PaceMetresPerSecond => _paceMetresPerSecond;
+
+        /// <summary>The gait she carries in through his doorway (<see cref="ArrivalCabinWalk.SeedFromDeck"/>):
+        /// her travelling speed, or the pace her key was asking for when the doorway cut the step short —
+        /// at the wall line, or at the deck's edge short of it — so a figure walking through a doorway is
+        /// never drawn slowing in it.</summary>
+        public float GaitThroughTheDoorwayMetresPerSecond
+            => Mathf.Max(_speedMetresPerSecond, _paceMetresPerSecond * Mathf.Min(1f, _held.magnitude));
+
+        /// <summary>Her key this tick in the hull's frame, as her step turned it and before any doorway bent
+        /// it — what his doorway is asked with. Zero for no key.</summary>
+        public Vector2 HeldHullLocal => _held;
 
         /// <summary>Where she is looking RELATIVE TO THE DECK (0 = at the bow, +90 = to starboard). The
         /// half of her facing that only her own walking changes.</summary>
@@ -144,20 +176,35 @@ namespace HiddenHarbours.App
         /// exactly that read. The deck frame is heading-independent by construction, so a turning hull
         /// contributes nothing to it.</para>
         ///
+        /// <para>⭐ <b>Near his doorway</b> (<paramref name="door"/>, null on a hull with no cabin): the key
+        /// is bent toward the opening within its pull, the step is kept out of the house the door opens,
+        /// and the pace eases from the one she came through at to the deck's over
+        /// <paramref name="paceBlendSeconds"/>.</para>
+        ///
         /// <para>Returns false when there is no measured deck to walk (the caller then leaves the shipped
         /// seat alone) or when nothing has seated her yet.</para>
         /// </summary>
         public bool Step(Vector2 moveInput, float deltaSeconds, float drawnHeadingDegrees,
-                         float bakeElevationDegrees)
+                         float bakeElevationDegrees, BoatCabinDoor door, float paceBlendSeconds)
         {
             BoatDeckDef deck = Deck;
             if (deck == null || !deck.HasWalkableDeck() || !_seated) return false;
 
+            float step = Mathf.Max(0f, deltaSeconds);
+            _sinceSeedSeconds += step;
+            _paceMetresPerSecond = ArrivalCabinWalk.BlendedPace(_paceFromMetresPerSecond,
+                                                                _walkSpeedMetresPerSecond,
+                                                                _sinceSeedSeconds, paceBlendSeconds);
+
+            _held = DeckWalkController.HeldInHullFrame(moveInput, drawnHeadingDegrees, bakeElevationDegrees);
+            // `!= null`, never `?.` — the door is a UnityEngine.Object (see ArrivalOpening.WalkTheCabin).
+            Vector2 steered = door != null ? door.SteerHeld(_deckLocal, _held) : _held;
+
             Vector2 before = _deckLocal;
-            _deckLocal = DeckWalkController.StepOnDeckPolygon(_deckLocal, moveInput,
-                                                              _walkSpeedMetresPerSecond, deltaSeconds,
-                                                              drawnHeadingDegrees, bakeElevationDegrees,
-                                                              deck, ref _areaHint, out _deckHeightMetres);
+            float beforeHeight = _deckHeightMetres;
+            _deckLocal = deck.ClampToWalkable(before + steered * (_paceMetresPerSecond * step), ref _areaHint,
+                                              out _deckHeightMetres);
+            KeepOutOfTheRoom(deck, door, before, beforeHeight);
 
             float dt = Mathf.Max(1e-4f, deltaSeconds);
             Vector2 deckVelocity = (_deckLocal - before) / dt;
@@ -229,6 +276,61 @@ namespace HiddenHarbours.App
                                                               includeWashboards: false,
                                                               ref _areaHint, out _deckHeightMetres);
             Settle(compassHeadingDegrees, drawnHeadingDegrees);
+        }
+
+        /// <summary>
+        /// ⭐ <b>SEED HER FROM THE CABIN WALK'S OWN POINT</b> — the doorway's join coming out. The sole and
+        /// the deck both speak the hull's own metres, and his doorway only lets her out standing on its
+        /// wall line — the one place both floors can hold her — so the deck's clamp, and the step out of
+        /// the house's outline (<see cref="KeepOutOfTheRoom"/>), move her by a hair at most. No round trip
+        /// through a world point drawn by last frame's hull, which is what used to jump her.
+        ///
+        /// <para>Her facing, her gait and her pace come across with her: she keeps looking where she was
+        /// looking, she is drawn walking on the tick she comes through, and her pace eases from the
+        /// cabin's to the deck's in <see cref="Step"/>.</para>
+        /// </summary>
+        public void SeedFromCabin(Vector2 hullLocalMetres, float carriedPaceMetresPerSecond,
+                                  float carriedSpeedMetresPerSecond, float compassHeadingDegrees,
+                                  float drawnHeadingDegrees, BoatCabinDoor door)
+        {
+            BoatDeckDef deck = Deck;
+            if (deck == null || !deck.HasWalkableDeck()) return;
+
+            _deckLocal = deck.ClampToWalkable(hullLocalMetres, ref _areaHint, out _deckHeightMetres);
+            KeepOutOfTheRoom(deck, door, _deckLocal, _deckHeightMetres);
+            Settle(compassHeadingDegrees, drawnHeadingDegrees);
+            _paceFromMetresPerSecond = Mathf.Max(0f, carriedPaceMetresPerSecond);
+            _paceMetresPerSecond = _paceFromMetresPerSecond;
+            _sinceSeedSeconds = 0f;
+            _speedMetresPerSecond = Mathf.Max(0f, carriedSpeedMetresPerSecond);
+        }
+
+        /// <summary>
+        /// Out of the house his doorway opens, if the step just taken ended in it: by its nearest edge
+        /// (<see cref="BoatCabinWalkMath.PushOutOfTheRoom"/>) and back onto the planking. Only on the floor
+        /// the doorway's sill is on — a deck stacked over the room is not in it — and only where the
+        /// planking outside will hold her; where it will not, she stays where she was
+        /// (<paramref name="before"/>).
+        /// </summary>
+        private void KeepOutOfTheRoom(BoatDeckDef deck, BoatCabinDoor door, Vector2 before, float beforeHeight)
+        {
+            BoatInteriorLevel room = door != null ? door.RoomLevel : null;
+            BoatInteriorDef def = room != null && door.Interior != null ? door.Interior.Def : null;
+            if (def == null || !BoatCabinThreshold.IsOnTheSill(door.Door, _deckHeightMetres, def.FloorTolerance))
+                return;
+
+            Vector2 pushed = BoatCabinWalkMath.PushOutOfTheRoom(room, _deckLocal);
+            if (pushed == _deckLocal) return;
+
+            Vector2 onDeck = deck.ClampToWalkable(pushed, ref _areaHint, out float height);
+            if (DeckAreaMath.Contains(room.Outline, onDeck))
+            {
+                _deckLocal = before;
+                _deckHeightMetres = beforeHeight;
+                return;
+            }
+            _deckLocal = onDeck;
+            _deckHeightMetres = height;
         }
 
         /// <summary>The half of a seat that is the same whichever way she was seated: she is standing

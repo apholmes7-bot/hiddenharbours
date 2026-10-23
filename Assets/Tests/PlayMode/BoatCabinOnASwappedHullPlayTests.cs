@@ -525,19 +525,48 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
         }
 
+        /// <summary>
+        /// Through her doorway on the shipped deck walk.
+        ///
+        /// <para>She is snapped onto the doorway's wall line and holds her key through it — out of the room
+        /// while she is inside, into it from the deck (owner ruling D1, 2026-09-30: in the band with the key
+        /// pointing through, she goes) — until the doorway takes her or <see cref="CrossingFrames"/> frames pass, on a clock pinned
+        /// to <see cref="FrameSeconds"/> so the doorway's settle is the same number of frames on any machine. The key is handed
+        /// over as the keys would hand it, in the world: the hull-frame direction through the doorway turned
+        /// by her hull's drawn heading, which the walk turns back. ⚠ The snap is the only way in — the walk
+        /// INTEGRATES its hull-frame point and never reads it back off the transform, so moving the
+        /// player's transform would leave the frame it actually asks the doorway with untouched.</para>
+        /// </summary>
         private static IEnumerator SheWalksThroughTheDoorway(Rig rig, BoatCabinDoor door)
         {
             var walk = rig.Player.GetComponent<DeckWalkController>();
             Assert.IsNotNull(walk, "the shipped deck walk is what carries her through a doorway");
+            Assert.IsTrue(BoatCabinThreshold.TryWallLine(door.Interior.Def, door.Door, out _, out Vector2 onLine,
+                                                         out Vector2 outward),
+                          "the premise: her doorway is cut in a wall");
 
-            Vector2 doorway = BoatCabinThreshold.PointOf(door.Door);
-            Vector2 clear = doorway + Vector2.right *
-                            (BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + 1f);
-
-            walk.SnapToDeckLocal(clear);
-            yield return null;
-            walk.SnapToDeckLocal(doorway);
-            yield return null;
+            BoatInterior cabin = door.Interior;
+            bool wasInside = cabin.IsInside;
+            Transform boat = rig.Boat.transform;
+            Vector2 key = DeckAreaMath.DeckToWorld(wasInside ? outward : -outward, 0f,
+                                                   DeckWalkController.DrawnHeadingDegreesOf(boat),
+                                                   DeckWalkController.BakeElevationDegreesOf(boat)).normalized;
+            var held = new HeldDeckIntents();
+            float captureBefore = Time.captureDeltaTime;
+            Time.captureDeltaTime = FrameSeconds;
+            walk.ConfigureDeckInput(held);
+            try
+            {
+                walk.SnapToDeckLocal(onLine);
+                held.Walk(key);
+                for (int f = 0; f < CrossingFrames && cabin.IsInside == wasInside; f++) yield return null;
+            }
+            finally
+            {
+                held.Release();
+                walk.ConfigureDeckInput(null);
+                Time.captureDeltaTime = captureBefore;
+            }
         }
 
         private static IEnumerator WaitForCue(BoatCabinDoor door)
@@ -801,9 +830,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>
         /// Into the band of door <paramref name="k"/> (the planner's index: 0 is the main door), E if it
-        /// is shut, and the frames the crossing takes. A latch seeded or spent in its band arms again on
-        /// her first step clear of it (R1), so where she does not cross she steps clear ONCE and walks
-        /// back in, as a player would.
+        /// is shut, and her key held through it for the frames the crossing takes (owner ruling D1,
+        /// 2026-09-30: in the band with the key pointing through, she goes). Nothing has to be armed first,
+        /// so a doorway that does not take her from its band is the finding.
         /// </summary>
         private static IEnumerator ThroughADoor(HelmWalk w, CabinNode live, int k)
         {
@@ -831,28 +860,15 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return OpenAndCross(w, door, crossed);
             if (w.Failed || crossed()) yield break;
 
-            float beyond = BoatCabinThreshold.ReleaseRadiusMetres(door.Door) + CabinLegs.TargetMargin;
-            if (CabinLegs.TryBackOff(g, live, w.At, sill, beyond, out Vector2 back))
-            {
-                w.Report.AppendLine($"    stepped clear of {spec.Name} to ({back.x:0.00}, {back.y:0.00}) and back, " +
-                                    "to arm its latch");
-                yield return Steer(w, LegTo(w, live, $"clear of {spec.Name}", back), crossed);
-                if (w.Failed || crossed()) yield break;
-                yield return Steer(w, LegTo(w, live, $"back into the band of {spec.Name}", target), crossed);
-                if (w.Failed || crossed()) yield break;
-                yield return OpenAndCross(w, door, crossed);
-                if (w.Failed || crossed()) yield break;
-            }
-
-            w.Fail($"in the band of {spec.Name}, {w.Where}, she never went through: open {door.IsOpen}, " +
-                   $"cueing {door.IsCueing}, latch armed {door.PassageIsArmed}, in its band " +
+            w.Fail($"in the band of {spec.Name}, {w.Where}, her key held through it, she never went through: " +
+                   $"open {door.IsOpen}, cueing {door.IsCueing}, settled {door.PassageIsSettled}, in its band " +
                    $"{BoatCabinThreshold.IsInBand(door.Door, w.At)}, on its sill " +
                    $"{BoatCabinThreshold.IsOnTheSill(door.Door, w.Deck.DeckHeightMeters, g.Tolerance)} " +
                    $"(sill at {sill.z:0.00} m)");
         }
 
         /// <summary>E where the offer names the door, if it is shut — what she sees is what the press
-        /// does — then the frames the crossing takes.</summary>
+        /// does — then the frames the crossing takes, her key held through it.</summary>
         private static IEnumerator OpenAndCross(HelmWalk w, BoatCabinDoor door, Func<bool> crossed)
         {
             if (!door.IsOpen && !door.IsCueing)
@@ -888,7 +904,23 @@ namespace HiddenHarbours.Tests.PlayMode
                     yield break;
                 }
             }
-            for (int f = 0; f < CrossingFrames && !crossed(); f++) yield return null;
+            for (int f = 0; f < CrossingFrames && !crossed(); f++)
+            {
+                w.Held.Walk(KeyThrough(w, door));
+                yield return null;
+            }
+            w.Held.Release();
+        }
+
+        /// <summary>Her key through <paramref name="door"/> as the deck walk reads it: along its axis, out of
+        /// the room while she is inside and into it from the deck, turned into the world by her hull's drawn
+        /// heading, which the walk turns back.</summary>
+        private static Vector2 KeyThrough(HelmWalk w, BoatCabinDoor door)
+        {
+            Transform boat = w.Rig.Boat.transform;
+            Vector2 through = door.WouldEnter ? -door.OutwardAxis : door.OutwardAxis;
+            return DeckAreaMath.DeckToWorld(through, 0f, DeckWalkController.DrawnHeadingDegreesOf(boat),
+                                            DeckWalkController.BakeElevationDegreesOf(boat)).normalized;
         }
 
         /// <summary>

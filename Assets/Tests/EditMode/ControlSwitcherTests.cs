@@ -603,7 +603,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             public void Interact(in InteractActor actor) => Calls++;
 
-            public bool TryWalkThrough(Vector2 hullLocalMetres) => false;
+            public bool TryWalkThrough(Vector2 hullLocalMetres, Vector2 heldHullLocal, float deltaSeconds) => false;
         }
 
         private static FakeDoor DoorAt(Vector3 at)

@@ -18,15 +18,17 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para><b>Why this fixture is EditMode.</b> Everything the ruling says is a rule about STATE and a
     /// rule about a POINT, and neither needs a frame: the cue is driven through
     /// <see cref="BoatCabinDoor.Tick"/> on a clock this fixture owns, and the passage is
-    /// <see cref="BoatCabinDoor.TryWalkThrough"/> handed a hull-local metre. The walkers that supply that
-    /// metre every tick are proved in PlayMode, where they exist; asserting them here would assert
-    /// something the shipped game never does.</para>
+    /// <see cref="BoatCabinDoor.TryWalkThrough"/> handed a hull-local metre, the key she holds and her
+    /// tick. The walkers that supply those every tick are proved in PlayMode, where they exist; asserting
+    /// them here would assert something the shipped game never does.</para>
     ///
     /// <para><b>⚠ The band is DATA, so the numbers below are derived and not typed.</b> The fixture's
     /// door states a 0.72 m opening — the cape islander's and the lobster boat's own measured clear
-    /// width — which makes the band 0.36 m and the release 0.72 m. Both are read off
+    /// width — which makes the band 0.36 m and the pull's reach 0.72 m. Both are read off
     /// <see cref="BoatCabinThreshold"/> rather than mirrored, so a re-measured doorway does not need a
-    /// second edit here.</para>
+    /// second edit here. The doorway crosses her on its wall line, the sole's aft edge, 0.1 m inside
+    /// the threshold, with her key held through it (owner ruling D1, 2026-09-30); the first tests hold
+    /// the fixture's points to that line.</para>
     /// </summary>
     public class BoatCabinDoorWalkthroughTests
     {
@@ -42,8 +44,24 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly Vector2 Doorway = new(0f, -2.1f);
 
         /// <summary>Somewhere unambiguously not in the doorway — the middle of the sole, 2.1 m off
-        /// against a 0.72 m release radius.</summary>
+        /// against a 0.36 m band and a 0.72 m pull.</summary>
         private static readonly Vector2 WellClear = new(0f, 0f);
+
+        /// <summary>Where the doorway's wall line crosses its axis: the house sole's aft edge, 0.1 m inside
+        /// the threshold (<see cref="BoatCabinThreshold.TryWallLine"/>; held to it below).</summary>
+        private static readonly Vector2 OnTheLine = new(0f, -2f);
+
+        /// <summary>The key held through the doorway, in the hull's own frame: into the room from the deck…</summary>
+        private static readonly Vector2 In = Vector2.up;
+
+        /// <summary>…and out of it from the sole.</summary>
+        private static readonly Vector2 Out = Vector2.down;
+
+        /// <summary>One of her walker's ticks.</summary>
+        private const float Tick = 1f / 60f;
+
+        /// <summary>The owner's S6 (2026-09-30): no two crossings within this long.</summary>
+        private const float NoTwoCrossingsWithinSeconds = 0.15f;
 
         private readonly List<Object> _spawned = new();
 
@@ -61,18 +79,24 @@ namespace HiddenHarbours.Tests.EditMode
         // =====================================================================================
 
         [Test]
-        public void TheBandIsHalfTheMeasuredOpening_AndTheReleaseIsAWholeOne()
+        public void TheBandIsHalfTheMeasuredOpening_AndThePullReachesAWholeOne()
         {
             Rig rig = NewRig();
             BoatInteriorDoor door = rig.Door.Door;
 
             Assert.AreEqual(ClearWidth * 0.5f, BoatCabinThreshold.BandRadiusMetres(door), 1e-6f,
                             "standing in the doorway is standing within half its own width of the sill");
-            Assert.AreEqual(ClearWidth, BoatCabinThreshold.ReleaseRadiusMetres(door), 1e-6f,
-                            "and one whole width of daylight is the nearest she is unambiguously clear");
-            Assert.Greater(BoatCabinThreshold.ReleaseRadiusMetres(door),
-                           BoatCabinThreshold.BandRadiusMetres(door),
-                           "the gap between the two IS the hysteresis; without it the sill strobes");
+            Assert.AreEqual(ClearWidth * door.PullReach, BoatCabinThreshold.PullReachMetres(door), 1e-6f,
+                            "D1 (a)'s pull reaches the door's own count of its clear widths");
+
+            // The owner's D1 (a), 2026-09-30: "within one clear width … within 30° of the doorway's axis",
+            // as fields beside the measured width, and those are their values on a door that states none.
+            Assert.AreEqual(1f, BoatInteriorDoor.DefaultPullReachClearWidths, "one clear width");
+            Assert.AreEqual(30f, BoatInteriorDoor.DefaultPullConeDegrees, "within 30° of the axis");
+            door.PullReachClearWidths = 0f;
+            door.PullConeDegrees = 0f;
+            Assert.AreEqual(BoatInteriorDoor.DefaultPullReachClearWidths, door.PullReach);
+            Assert.AreEqual(BoatInteriorDoor.DefaultPullConeDegrees, door.PullCone);
         }
 
         [Test]
@@ -91,16 +115,24 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void BetweenTheBandAndTheRelease_SheIsNeitherInTheDoorwayNorClearOfIt()
+        public void TheWallLineIsTheSolesOwnEdge_AndItsNormalIsTheWayOut()
         {
-            // The hysteresis gap, asserted as the thing it is: a ring in which nothing changes. A walker
-            // resting here has neither crossed nor re-armed, which is why the sill cannot flicker.
+            // Where the passage crosses her (owner ruling D1, 2026-09-30): the one place both walkers can
+            // stand, so a crossing there moves her no farther than their own clamps do. The fixture's
+            // points are this line's; were it elsewhere, every test below would be asserting elsewhere.
             Rig rig = NewRig();
             BoatInteriorDoor door = rig.Door.Door;
-            Vector2 between = Doorway + new Vector2(0.5f, 0f);   // 0.36 < 0.5 < 0.72
 
-            Assert.IsFalse(BoatCabinThreshold.IsInBand(door, between));
-            Assert.IsFalse(BoatCabinThreshold.IsClearOfBand(door, between));
+            Assert.IsTrue(BoatCabinThreshold.TryWallLine(rig.Def, door, out int level, out Vector2 onLine,
+                                                         out Vector2 outward));
+            Assert.AreEqual(0, level, "the room it opens is the house sole");
+            Assert.AreEqual(0f, Vector2.Distance(OnTheLine, onLine), 1e-6f,
+                            "the sole's aft edge, 0.1 m inside the threshold");
+            Assert.AreEqual(0f, Vector2.Distance(Out, outward), 1e-6f, "and out of the room is aft");
+            Assert.IsTrue(BoatCabinThreshold.IsInBand(door, onLine),
+                          "standing on the line is standing in the doorway");
+            Assert.AreEqual(level, rig.Door.RoomLevelIndex, "the door says the same of itself");
+            Assert.IsTrue(rig.Door.ThresholdIsWalkable);
         }
 
         [Test]
@@ -117,8 +149,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0f, BoatCabinThreshold.BandRadiusMetres(door));
             Assert.IsFalse(BoatCabinThreshold.IsInBand(door, Doorway),
                            "not even standing exactly on the sill");
-            Assert.IsFalse(BoatCabinThreshold.IsClearOfBand(door, WellClear),
-                           "and nothing may ARM a threshold that cannot be crossed");
+            Assert.AreEqual(0f, BoatCabinThreshold.PullReachMetres(door),
+                            "and nothing may pull her toward a threshold that cannot be crossed");
+            Assert.IsFalse(BoatCabinThreshold.IsInThePull(door, Out, true, Doorway, In));
         }
 
         [Test]
@@ -126,10 +159,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Assert.AreEqual(Vector2.zero, BoatCabinThreshold.PointOf(null));
             Assert.AreEqual(0f, BoatCabinThreshold.BandRadiusMetres(null));
-            Assert.AreEqual(0f, BoatCabinThreshold.ReleaseRadiusMetres(null));
+            Assert.AreEqual(0f, BoatCabinThreshold.PullReachMetres(null));
             Assert.IsFalse(BoatCabinThreshold.HasBand(null));
             Assert.IsFalse(BoatCabinThreshold.IsInBand(null, Vector2.zero));
-            Assert.IsFalse(BoatCabinThreshold.IsClearOfBand(null, Vector2.zero));
+            Assert.IsFalse(BoatCabinThreshold.TryWallLine(null, null, out _, out _, out _));
+            Assert.IsFalse(BoatCabinThreshold.IsHeldThrough(null, Out, true, In));
+            Assert.IsFalse(BoatCabinThreshold.IsInThePull(null, Out, true, Vector2.zero, In));
+            Assert.IsFalse(BoatCabinThreshold.IsLeaningThrough(null, Out, In));
+            Assert.IsFalse(BoatCabinThreshold.IsAgainstFurnitureJustInside(null, null, Vector2.zero));
+            Assert.AreEqual(In, BoatCabinThreshold.Steer(null, OnTheLine, Out, true, Vector2.zero, In),
+                            "no door bends no key");
         }
 
         // =====================================================================================
@@ -212,17 +251,16 @@ namespace HiddenHarbours.Tests.EditMode
             Rig rig = NewRig();
             Open(rig);
 
-            // IN. One tick clear of the doorway arms her approach; the next, standing in it, spends it.
-            Assert.IsFalse(rig.Door.TryWalkThrough(WellClear), "clear of it is not through it");
-            Assert.IsTrue(rig.Door.PassageIsArmed);
-            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "she walks in");
+            // IN. On her way to the wall line with the key held in is not through it; on it, she goes.
+            Assert.IsFalse(rig.Door.TryWalkThrough(Doorway + Out * 0.1f, In, Tick), "short of it is not through it");
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, In, Tick), "she walks in");
             Assert.IsTrue(rig.Interior.IsInside);
             Assert.IsFalse(rig.Door.IsCueing, "no cue was spent — a hole in a wall costs nothing");
             Assert.IsTrue(rig.Door.IsOpen, "…and the door she walked through is still open");
 
-            // OUT, through the same doorway, on the same terms.
-            Assert.IsFalse(rig.Door.TryWalkThrough(WellClear));
-            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "she walks out");
+            // OUT, through the same doorway, on the same terms, once it has settled behind her.
+            Settle(rig);
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, Out, Tick), "she walks out");
             Assert.IsFalse(rig.Interior.IsInside);
         }
 
@@ -231,19 +269,18 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Rig rig = NewRig();
 
-            // OUTSIDE, shut: standing in the doorway does nothing at all.
-            rig.Door.TryWalkThrough(WellClear);
-            Assert.IsTrue(rig.Door.PassageIsArmed, "she is clear of it, so the approach is a live one");
-            Assert.IsFalse(rig.Door.TryWalkThrough(Doorway), "a shut door is a wall");
+            // OUTSIDE, shut: on its line with the key held in does nothing at all.
+            Assert.IsTrue(rig.Door.PassageIsSettled, "nothing has crossed, so the doorway is a live one");
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, In, Tick), "a shut door is a wall");
             Assert.IsFalse(rig.Interior.IsInside);
 
             // INSIDE, shut behind her: the same wall, from the other side.
             Open(rig);
             WalkIn(rig);
             Close(rig);
+            Settle(rig);
 
-            rig.Door.TryWalkThrough(WellClear);
-            Assert.IsFalse(rig.Door.TryWalkThrough(Doorway), "…and it is a wall from the sole too");
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Out, Tick), "…and it is a wall from the sole too");
             Assert.IsTrue(rig.Interior.IsInside, "she is still below, which is where she shut it");
         }
 
@@ -255,117 +292,240 @@ namespace HiddenHarbours.Tests.EditMode
             // gate and nothing else can be what refused her.
             Rig rig = NewRig();
             Open(rig);
-            rig.Door.TryWalkThrough(WellClear);          // arm her approach
 
             Assert.IsTrue(rig.Door.TryUse(), "press it shut");
             rig.Door.Tick(rig.Door.CueSeconds * 0.5f);
             Assert.IsTrue(rig.Door.IsCueing);
             Assert.IsTrue(rig.Door.IsOpen, "the state has not flipped yet — the leaf is still swinging");
 
-            Assert.IsFalse(rig.Door.TryWalkThrough(Doorway),
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, In, Tick),
                            "a door that is still moving is not a doorway you walk through");
             Assert.IsFalse(rig.Interior.IsInside);
         }
 
         // =====================================================================================
-        //  4 · THE LATCH — one approach is one crossing, and the sill does not strobe
+        //  4 · THE SETTLE — one crossing is one, and the sill does not strobe
         // =====================================================================================
 
         [Test]
         public void OneApproachIsOneCrossing_SoStandingOnTheSillDoesNotFlickerTheLevel()
         {
-            // The failure this guards is a frame-rate one: she lands a centimetre from the threshold she
-            // just crossed, and an unlatched doorway would put her straight back out, and back in, at
-            // sixty crossings a second.
+            // The failure this guards is a frame-rate one: she lands on the line she just crossed, and a
+            // doorway that took her whatever she held would put her straight back out, and back in, at
+            // sixty crossings a second. It takes her for a key held THROUGH it from her side, and no other.
             Rig rig = NewRig();
             Open(rig);
-            rig.Door.TryWalkThrough(WellClear);
 
-            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "the crossing she asked for");
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, In, Tick), "the crossing she asked for");
             Assert.IsTrue(rig.Interior.IsInside);
 
             for (int tick = 0; tick < 60; tick++)
-                Assert.IsFalse(rig.Door.TryWalkThrough(Doorway),
-                               $"tick {tick}: she is standing where she came in, not crossing again");
+                Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, In, Tick),
+                               $"tick {tick}: she is still walking in, not crossing again");
 
-            Assert.IsTrue(rig.Interior.IsInside, "a whole second on the sill, and she is still below");
+            // The owner's S6: idle 5 s gives no crossing.
+            for (int tick = 0; tick < 5 * 60; tick++)
+                Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Vector2.zero, Tick),
+                               $"tick {tick}: standing on the sill with no key is not walking through it");
+
+            Assert.IsTrue(rig.Interior.IsInside, "six seconds on the sill, and she is still below");
         }
 
         [Test]
-        public void SheMustGetClearOfTheDoorwayBeforeItWillTakeHerAgain()
+        public void TheDoorwayTakesHerBackOnlyOnceItHasSettled_AndThenOnTheTickItHas()
+        {
+            // The owner's S6 (2026-09-30): no two crossings within 0.15 s, and crossing back needs the key
+            // reversed. The settle is the door's own (BoatInteriorDoor.CrossingSettle), counted on her
+            // walker's ticks, and it replaces the old "get a clear width away first".
+            Rig rig = NewRig();
+            float settle = rig.Def.Door.CrossingSettle;
+            Assert.GreaterOrEqual(settle, NoTwoCrossingsWithinSeconds, "the door's settle honours S6");
+            Open(rig);
+            WalkIn(rig);
+            Assert.IsFalse(rig.Door.PassageIsSettled, "she has just crossed");
+
+            float since = 0f;
+            while (!rig.Door.TryWalkThrough(OnTheLine, Out, Tick))
+            {
+                since += Tick;
+                Assert.IsTrue(rig.Interior.IsInside);
+                Assert.Less(since, settle + Tick, "once it has settled, the reversed key takes her back");
+            }
+            since += Tick;
+
+            Assert.GreaterOrEqual(since, settle - 1e-5f, "never before the door's own settle");
+            Assert.IsFalse(rig.Interior.IsInside, "she has turned back out");
+            Assert.IsFalse(rig.Door.PassageIsSettled, "and that crossing starts the settle afresh");
+        }
+
+        [Test]
+        public void TheSettleIsTheDoorsOwnData_AndADoorThatStatesNoneHasTheDefault()
         {
             Rig rig = NewRig();
+            rig.Def.Door.CrossingSettleSeconds = 0.4f;
             Open(rig);
-            rig.Door.TryWalkThrough(WellClear);
-            rig.Door.TryWalkThrough(Doorway);
+            WalkIn(rig);
+
+            float since = 0f;
+            while (!rig.Door.PassageIsSettled)
+            {
+                rig.Door.TryWalkThrough(WellClear, Vector2.zero, Tick);
+                since += Tick;
+                Assert.Less(since, 1f, "the settle ends");
+            }
+            Assert.AreEqual(0.4f, since, Tick, "the door's own settle, to a tick");
+
+            rig.Def.Door.CrossingSettleSeconds = 0f;
+            Assert.AreEqual(BoatInteriorDoor.DefaultCrossingSettleSeconds, rig.Def.Door.CrossingSettle,
+                            "a door that states none settles in the default");
+        }
+
+        [Test]
+        public void TheArrivalOpensHerInADoorway_AndSheStaysUntilSheHoldsAKeyThroughIt()
+        {
+            // The game's first frame stands the passenger in Armand's doorway, on the sole, his door
+            // standing open. No key, no crossing: she stays where she is. The key held out walks her out on
+            // the tick she holds it (the owner's S5): nothing has crossed since the wiring.
+            Rig rig = NewRig();
+            rig.Door.SetOpen(true);
+            Assert.IsTrue(rig.Interior.TryEnter(0));
+            Assert.IsTrue(rig.Door.PassageIsSettled, "a wiring settles the doorway: nothing has crossed");
+
+            for (int tick = 0; tick < 5 * 60; tick++)
+                Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Vector2.zero, Tick),
+                               $"tick {tick}: she is standing in an open doorway and she stays where she is");
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, In, Tick),
+                           "nor does a key held back into the room take her out of it");
             Assert.IsTrue(rig.Interior.IsInside);
 
-            // Inside the hysteresis ring: nearer than a whole clear width, so the approach is still spent.
-            Vector2 halfAStepBack = Doorway + new Vector2(0.5f, 0f);
-            Assert.IsFalse(rig.Door.TryWalkThrough(halfAStepBack));
-            Assert.IsFalse(rig.Door.PassageIsArmed, "0.5 m is not clear of a 0.72 m release");
-            Assert.IsFalse(rig.Door.TryWalkThrough(Doorway));
-            Assert.IsTrue(rig.Interior.IsInside);
-
-            // A whole width of daylight, and the doorway is a fresh one.
-            Assert.IsFalse(rig.Door.TryWalkThrough(WellClear));
-            Assert.IsTrue(rig.Door.PassageIsArmed);
-            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "now she may come back out");
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, Out, Tick), "the key held out walks her out at once");
             Assert.IsFalse(rig.Interior.IsInside);
         }
 
         [Test]
-        public void ThePassageStartsDisarmed_BecauseTheArrivalOpensHerInADoorway()
+        public void ARebuiltDoor_TakesHerAtOnce_WhereverHerFirstStepIs()
         {
-            // A threshold is on the sole's edge by construction, and the game's first frame stands the
-            // passenger in Armand's. An armed latch would walk her out of his cabin before she moved.
+            // ⭐ Cause 1 of the 2026-09-18 fleet report: a swap re-wires the door and leaves her at the helm,
+            // on sixteen hulls nearer the threshold than one clear width, where the old latch never re-armed.
+            // A wiring settles the doorway, and there is no ring left to start in: her key and the wall line
+            // are all it asks.
             Rig rig = NewRig();
-            Assert.IsFalse(rig.Door.PassageIsArmed);
+            Vector2 besideTheDoor = Doorway + new Vector2(0.5f, 0f);
+            Assert.IsFalse(BoatCabinThreshold.IsInBand(rig.Door.Door, besideTheDoor));
 
-            rig.Door.SetOpen(true);
-            Assert.IsTrue(rig.Interior.TryEnter(0));
+            Open(rig);
+            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor, In, Tick), "beside the doorway is not through it");
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, In, Tick), "…and her next step, onto its line, takes her in");
+            Assert.IsTrue(rig.Interior.IsInside);
 
-            Assert.IsFalse(rig.Door.TryWalkThrough(Doorway),
-                           "she is standing in an open doorway and she stays where she is");
+            // A rebuild mid-settle (the swap's teardown lets her out, and the door is wired again) settles it.
+            Assert.IsFalse(rig.Door.PassageIsSettled);
+            Assert.IsTrue(rig.Interior.TryExit());
+            rig.Door.Configure(rig.Interior, "fixture.boat.walkthrough_test.cabin_door", -1, 1.2f,
+                               "Open the door", "Close the door");
+            Assert.IsTrue(rig.Door.PassageIsSettled, "a wiring settles the doorway — the arrival relies on it");
+            Open(rig);
+            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor, In, Tick));
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, In, Tick), "and she walks in through the rebuilt door");
+            Assert.IsTrue(rig.Interior.IsInside);
+        }
+
+        // =====================================================================================
+        //  4b · THE LINE — where she crosses, and the key that crosses her
+        // =====================================================================================
+
+        [Test]
+        public void AKeyHeldThroughIsOneWithinTheDoorsCrossingCone_AndNoKeyIsNone()
+        {
+            Rig rig = NewRig();
+            Open(rig);
+            float cone = rig.Def.Door.CrossingCone;
+
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Vector2.zero, Tick), "no key, no crossing");
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Rotate(In, cone + 5f), Tick), "outside the cone");
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, Out, Tick), "nor out onto the deck she stands on");
+            Assert.IsFalse(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, Rotate(In, cone - 5f), Tick), "within it, she goes");
             Assert.IsTrue(rig.Interior.IsInside);
         }
 
         [Test]
-        public void ARebuiltDoor_ArmsHerPassage_WhenHerFirstStepIsOutsideTheBand()
+        public void SheIsTakenFromAsNearTheLineAsHerFloorLetsHerStand_AndNotWhileSheIsStillWalkingToIt()
         {
-            // ⭐ Cause 1 of the 2026-09-18 fleet report, and the owner's ruling R1 on it ("the latch arms
-            // on her first step outside the band"). A swap re-wires the door and leaves her at the helm,
-            // and on sixteen hulls the helm stands nearer the threshold than one clear width: her first
-            // step is in the RING, neither in the doorway nor clear of it, and the disarmed seed never
-            // re-armed — she walked to an open door and nothing happened. The arrival's case, her first
-            // step IN the band, is the test above and still holds.
+            // On five of the fleet's hulls the deck ends at the sill's outer lip, 0.07 m short of the room:
+            // she can stand in the doorway with the key held in and never reach the line. A tick that took
+            // her no nearer it is her floor stopping her, and that is as near as she can get
+            // (BoatCabinThreshold.IsPressedShort).
             Rig rig = NewRig();
+            Open(rig);
+            Vector2 onTheLip = Doorway;   // 0.1 m short of the line, in the band
+
+            Assert.IsFalse(rig.Door.TryWalkThrough(onTheLip + Out * 0.05f, In, Tick), "on her way");
+            Assert.IsFalse(rig.Door.TryWalkThrough(onTheLip, In, Tick), "still on her way: 5 cm nearer this tick");
+            Assert.IsFalse(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.TryWalkThrough(onTheLip, In, Tick), "stopped by her floor short of it, she goes in");
+            Assert.IsTrue(rig.Interior.IsInside);
+        }
+
+        [Test]
+        public void ATickThatSlidesHerOffTheBandsEdgeOntoTheLine_StillTakesHer_AndOnlyThatOneTick()
+        {
+            // Her floor's clamp slides her along the wall in the tick she meets it, and at 30 or 60 Hz that
+            // tick can end just past the band's edge: whether the doorway took her would hang on the frame
+            // rate. One tick's grace, and no more.
+            Rig rig = NewRig();
+            Open(rig);
             BoatInteriorDoor door = rig.Door.Door;
-            Vector2 besideTheDoor = Doorway + new Vector2(0.5f, 0f);   // 0.36 < 0.5 < 0.72
-            Assert.IsFalse(BoatCabinThreshold.IsInBand(door, besideTheDoor));
-            Assert.IsFalse(BoatCabinThreshold.IsClearOfBand(door, besideTheDoor),
-                           "the premise: she starts in the ring the old latch could never re-arm from");
+            float band = BoatCabinThreshold.BandRadiusMetres(door);
+            Vector2 inTheBand = Doorway + new Vector2(band - 0.06f, 0.05f);   // on the deck, 5 cm short
+            Vector2 offItsEdge = OnTheLine + new Vector2(band + 0.01f, 0f);   // on the line, just outside
+            Assert.IsTrue(BoatCabinThreshold.IsInBand(door, inTheBand));
+            Assert.IsFalse(BoatCabinThreshold.IsInBand(door, offItsEdge));
 
-            Open(rig);
-            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor), "beside the doorway is not through it");
-            Assert.IsTrue(rig.Door.PassageIsArmed, "her first step outside the band arms the approach");
-            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "…and her next, into the doorway, takes her in");
+            Assert.IsFalse(rig.Door.TryWalkThrough(inTheBand, In, Tick));
+            Assert.IsTrue(rig.Door.TryWalkThrough(offItsEdge, In, Tick),
+                          "the tick that slid her off the band's edge onto the line takes her");
             Assert.IsTrue(rig.Interior.IsInside);
 
-            // The seed is ONE step. After a crossing the ring is the hysteresis again, exactly as before.
-            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor));
-            Assert.IsFalse(rig.Door.PassageIsArmed, "a spent approach is not re-armed from the ring");
+            // …and never two: a tick out of the band after a tick out of it is not in the doorway.
+            Rig again = NewRig();
+            Open(again);
+            Vector2 alsoOff = Doorway + new Vector2(band + 0.01f, 0.07f);     // off the band, 3 cm short
+            Assert.IsFalse(BoatCabinThreshold.IsInBand(door, alsoOff));
+            Assert.IsFalse(again.Door.TryWalkThrough(inTheBand, In, Tick));
+            Assert.IsFalse(again.Door.TryWalkThrough(alsoOff, In, Tick), "short of the line, off the band");
+            Assert.IsFalse(again.Door.TryWalkThrough(offItsEdge, In, Tick), "and a second tick off it");
+            Assert.IsFalse(again.Interior.IsInside);
+        }
 
-            // A rebuild (the swap's teardown lets her out, and the door is wired again) seeds it afresh.
-            Assert.IsTrue(rig.Interior.TryExit());
-            rig.Door.Configure(rig.Interior, "fixture.boat.walkthrough_test.cabin_door", -1, 1.2f,
-                               "Open the door", "Close the door");
-            Assert.IsFalse(rig.Door.PassageIsArmed, "a wiring still disarms — the arrival relies on it");
+        // =====================================================================================
+        //  4c · THE PULL — D1 (a): the key within 30° of the way through is carried through
+        // =====================================================================================
+
+        [Test]
+        public void D1a_AKeyWithinTheConeAndTheReach_IsSteeredAtTheOpening_AndNoOtherKeyIsBent()
+        {
+            Rig rig = NewRig();
             Open(rig);
-            Assert.IsFalse(rig.Door.TryWalkThrough(besideTheDoor));
-            Assert.IsTrue(rig.Door.PassageIsArmed, "the rebuilt door's first step seeds it again");
-            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway), "and she walks in through the rebuilt door");
-            Assert.IsTrue(rig.Interior.IsInside);
+            WalkIn(rig);   // she is on the sole: the way through is out
+            BoatInteriorDoor door = rig.Door.Door;
+            Vector2 inside = OnTheLine + new Vector2(0.3f, 0.2f);   // 0.42 m from the threshold
+            Vector2 farther = OnTheLine + new Vector2(0f, BoatCabinThreshold.PullReachMetres(door) + 0.1f);
+            Vector2 within = Rotate(Out, door.PullCone - 5f);
+            Vector2 wider = Rotate(Out, door.PullCone + 5f);
+
+            Vector2 steered = rig.Door.SteerHeld(inside, within);
+            Assert.AreEqual(0f, Vector2.Angle(steered, OnTheLine - inside), 1e-3f,
+                            "carried at the opening's centre on its wall line");
+            Assert.AreEqual(within.magnitude, steered.magnitude, 1e-5f, "at her key's own length");
+            Assert.IsTrue(rig.Door.CarriesHeld(inside, within));
+
+            Assert.AreEqual(wider, rig.Door.SteerHeld(inside, wider), "outside the cone, nothing is bent");
+            Assert.AreEqual(within, rig.Door.SteerHeld(farther, within), "farther off, nothing is bent");
+            Assert.IsFalse(rig.Door.CarriesHeld(farther, within));
+
+            Close(rig);
+            Assert.AreEqual(within, rig.Door.SteerHeld(inside, within), "and a shut door pulls nobody");
         }
 
         // =====================================================================================
@@ -382,9 +542,11 @@ namespace HiddenHarbours.Tests.EditMode
             rig.Def.Door.ClearWidthMeters = 0f;
 
             Assert.IsFalse(rig.Door.ThresholdIsWalkable);
-            rig.Door.TryWalkThrough(WellClear);
-            Assert.IsFalse(rig.Door.TryWalkThrough(Doorway), "the walk-in must red with the band zeroed");
+            rig.Door.SetOpen(true);
+            Assert.IsFalse(rig.Door.TryWalkThrough(OnTheLine, In, Tick),
+                           "the walk-in must red with the band zeroed, even through the open door");
             Assert.IsFalse(rig.Interior.IsInside);
+            rig.Door.SetOpen(false);
 
             LogAssert.Expect(LogType.Warning, new Regex("states no ClearWidthMeters"));
             Assert.IsTrue(rig.Door.TryUse());
@@ -467,17 +629,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void EveryMeasuredSoleIsDeepEnoughToLetHerOutOfItAgain()
+        public void EveryMeasuredDoorwaysWallLineStandsInItsBand_SoHerRoomCanLetHerOutAgain()
         {
             // ⭐⭐ THE OTHER HALF, and the one that would TRAP the player rather than merely shut her out.
-            // One approach is one crossing, so after walking in she must get a whole clear width from the
-            // threshold before the doorway will take her again. If a cabin's sole were shallower than that
-            // release radius there would be nowhere on it far enough to stand, the latch could never
-            // re-arm, and she would be below decks for good — with the door standing open in front of her.
+            // The doorway crosses her on its wall line, and only while she stands in its band (owner ruling
+            // D1, 2026-09-30). From the room's side that line is the sole's own edge, the nearest she can
+            // walk to the deck. Were it farther from the threshold than the band reaches, she could stand
+            // on it only outside the doorway, the doorway could never take her out, and she would be below
+            // decks for good — with the door standing open in front of her. (The release radius this guard
+            // checked before went with the latch it released.)
             //
-            // The test is the sole's own outline: a necessary condition, honestly named. Whether an
-            // obstruction stands in the way of the far corner is a pathfinding question this does not ask;
-            // what it catches is the room that is simply too small, which is the failure that ships.
+            // ⚠ Reads the SHIPPED assets and mutates none of them.
             var report = new StringBuilder();
             int measured = 0;
             float tightest = float.PositiveInfinity;
@@ -492,56 +654,30 @@ namespace HiddenHarbours.Tests.EditMode
                 BoatInteriorDoor door = visual.Interior.Door;
                 if (door == null || !BoatCabinThreshold.HasBand(door)) continue;
 
-                // The sole she walks in ONTO, picked by sill height. ⚠ This is the DEF's arithmetic and
-                // not BoatInterior.LevelIndexAtHeight, which additionally skips levels a hull's sheets
-                // never baked (or asks her mesh, on a converted hull) — state a def does not carry. For
-                // this guard the nearest sole is the right question anyway: it is the shallowest candidate
-                // she could be put on, so passing here passes for whichever one the runtime picks.
-                BoatInteriorLevel sole = NearestSole(visual.Interior, door.ThresholdPoint.z);
-                if (sole == null) continue;
-
                 measured++;
-                Vector2 doorway = BoatCabinThreshold.PointOf(door);
-                float release = BoatCabinThreshold.ReleaseRadiusMetres(door);
+                Assert.IsTrue(BoatCabinThreshold.TryWallLine(visual.Interior, door, out int level,
+                                                             out Vector2 onLine, out _),
+                    $"{visual.name}: her doorway is measured but stands in no wall at its sill's height, so " +
+                    "the walk can never cross it and the door is back on the press.");
 
-                float deepest = 0f;
-                foreach (Vector2 v in sole.Outline)
-                    deepest = Mathf.Max(deepest, Vector2.Distance(v, doorway));
-
-                float margin = deepest - release;
+                float band = BoatCabinThreshold.BandRadiusMetres(door);
+                float fromTheSill = Vector2.Distance(onLine, BoatCabinThreshold.PointOf(door));
+                float margin = band - fromTheSill;
                 if (margin < tightest) { tightest = margin; tightestHull = visual.name; }
                 report.AppendLine(
-                    $"  {visual.name,-36} release {release:F3} m   sole reaches {deepest:F3} m   " +
-                    $"margin {margin:F3} m   ('{sole.Id}')");
+                    $"  {visual.name,-36} band {band:F3} m   wall line {fromTheSill:F3} m from the sill   " +
+                    $"margin {margin:F3} m   ('{visual.Interior.Levels[level].Id}')");
 
-                Assert.Greater(deepest, release,
-                    $"{visual.name}: her '{sole.Id}' reaches only {deepest:F3} m from her own doorway, " +
-                    $"against a release radius of {release:F3} m. There is nowhere on that sole she can " +
-                    "stand that counts as clear of the threshold, so once she walks in the doorway can " +
-                    "never re-arm and she is below decks for good.");
+                Assert.Less(fromTheSill, band,
+                    $"{visual.name}: her '{visual.Interior.Levels[level].Id}' wall line stands " +
+                    $"{fromTheSill:F3} m from her own doorway, against a band of {band:F3} m. She can reach " +
+                    "that line only outside the doorway, so once she walks in it can never take her out.");
             }
 
             Assert.Greater(measured, 0, "no measured hull reached this guard — it is asleep");
 
-            Debug.Log($"[cabin-soles] {measured} measured hulls, tightest margin {tightest:F3} m " +
+            Debug.Log($"[cabin-wall-lines] {measured} measured hulls, tightest margin {tightest:F3} m " +
                       $"({tightestHull}):\n{report}");
-        }
-
-        /// <summary>The usable level whose sole sits nearest <paramref name="zMeters"/>, or null when the
-        /// def declares none — the def-only half of the runtime's own level pick.</summary>
-        private static BoatInteriorLevel NearestSole(BoatInteriorDef interior, float zMeters)
-        {
-            BoatInteriorLevel best = null;
-            float bestGap = float.PositiveInfinity;
-
-            if (interior.Levels == null) return null;
-            foreach (BoatInteriorLevel level in interior.Levels)
-            {
-                if (level == null || !level.IsUsable()) continue;
-                float gap = Mathf.Abs(level.SoleZMeters - zMeters);
-                if (gap < bestGap) { bestGap = gap; best = level; }
-            }
-            return best;
         }
 
         /// <summary>How far <paramref name="point"/> is from the nearest place a walker may stand, in the
@@ -589,12 +725,29 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(rig.Door.IsOpen);
         }
 
-        /// <summary>Walk her across the open threshold: one tick clear of it to arm the approach, one in
-        /// it to spend it. Exactly what a walker does, two frames apart.</summary>
+        /// <summary>Walk her in across the open threshold: onto its wall line with the key held in — what a
+        /// walker does on the tick she reaches it.</summary>
         private static void WalkIn(Rig rig)
         {
-            rig.Door.TryWalkThrough(WellClear);
-            Assert.IsTrue(rig.Door.TryWalkThrough(Doorway));
+            Assert.IsTrue(rig.Door.TryWalkThrough(OnTheLine, In, Tick));
+        }
+
+        /// <summary>Let the doorway settle behind her: her walker's ticks, well clear of it and holding no
+        /// key, for as long as the door's own settle and no longer.</summary>
+        private static void Settle(Rig rig)
+        {
+            for (float waited = 0f; !rig.Door.PassageIsSettled; waited += Tick)
+            {
+                Assert.Less(waited, rig.Def.Door.CrossingSettle + Tick, "the settle is the door's own");
+                rig.Door.TryWalkThrough(WellClear, Vector2.zero, Tick);
+            }
+        }
+
+        /// <summary><paramref name="v"/> turned <paramref name="degrees"/> anticlockwise.</summary>
+        private static Vector2 Rotate(Vector2 v, float degrees)
+        {
+            float r = degrees * Mathf.Deg2Rad, cos = Mathf.Cos(r), sin = Mathf.Sin(r);
+            return new Vector2(v.x * cos - v.y * sin, v.x * sin + v.y * cos);
         }
 
         private Sprite[] DummyCells(int n)
