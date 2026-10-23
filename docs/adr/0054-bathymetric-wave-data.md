@@ -1,4 +1,4 @@
-# ADR 0054 — Bathymetric wave data
+# ADR 0054 â€” Bathymetric wave data
 
 - Status: **Proposed**. Stage D part a supplies the bake; part b supplies its consumers.
 - Date: 2026-10-22.
@@ -284,3 +284,54 @@ Phase A uses no Unity process and makes no player-visible change. Phase B must c
 all four recipes, run `WaveBathymetryTests`, `WaveBathymetryImporterTests`,
 `TerrainArrayImporterTests`, `TerrainArrayReferenceTests`, and verify that the play-mode
 build loads no bathymetry. Full import lifecycle, GPU allocation and CI parity remain pending.
+
+## Shores that lose an incident sea, and the W4-6b decision
+
+The bake carries a sea entering the region rectangle. Today's wind-fetch field can grow a
+sea inside that rectangle. Those are different sources of energy. At mean tide, every
+contour-length face-on regression in the four-bearing probe is listed below; shadow means
+height factor below 0.25, including no arrival. Normals name the shoreward direction.
+
+| Region | Travel bearing | Shoreward normal | Today | Bake | Shadow |
+|---|---:|---|---:|---:|---:|
+| StPeters | 325 deg | north | 89.3% | 88.4% | 2.6% |
+| NineMileCreek | 50 deg | north | 38.9% | 38.4% | 61.6% |
+| NineMileCreek | 50 deg | east | 83.3% | 1.4% | 91.0% |
+| NineMileCreek | 325 deg | north | 82.9% | 63.8% | 45.3% |
+| NineMileCreek | 140 deg | east | 16.7% | 0.0% | 74.5% |
+| NineMileCreek | 140 deg | south | 56.7% | 47.7% | 81.3% |
+| NineMileCreek | 55 deg | east | 88.6% | 1.4% | 91.0% |
+| RicePoint | 50 deg | east | 77.7% | 42.7% | 0.0% |
+| RicePoint | 140 deg | south | 91.4% | 0.0% | 100.0% |
+| RicePoint | 55 deg | east | 77.7% | 42.7% | 2.0% |
+| Cumberland | 50 deg | east | 87.6% | 63.0% | 71.9% |
+| Cumberland | 325 deg | west | 75.9% | 74.3% | 5.3% |
+| Cumberland | 140 deg | east | 12.4% | 0.0% | 100.0% |
+| Cumberland | 140 deg | south | 79.7% | 0.0% | 100.0% |
+| Cumberland | 55 deg | east | 87.6% | 63.0% | 71.9% |
+
+The source geometry explains the principal losses. Nine Mile Creek at 50 degrees has zero
+wet incident west-edge cells and 83 south-edge cells; the sea enters behind the spit and
+spreads into the creek/basin. Its eastward-normal shore falls from 83.3% to 1.4%, with 91.0%
+shadow. At 325 degrees both the east and south edges have water, but the spit and enclosed
+basin still limit the arriving front; the northward-normal share falls from 82.9% to 63.8%.
+Rice Point has 30 wet west-edge cells and 190 south-edge cells at 50 degrees. The point and
+inlet rotate the arriving front: its eastward-normal share falls from 77.7% to 42.7% despite
+0% shadow there, so this loss is directional, rather than missing energy. At 140 degrees
+its north edge is dry and only 30 west-edge cells seed the front; its southward-normal
+shore is fully shadowed. Cumberland at 50 degrees has zero wet west-edge cells and 82
+wet south-edge cells; its eastern indentation/spit weakens the eastward-normal shore. At 140
+degrees its incident west and north edges both have zero wet cells: there is no seed, no
+arrival, and 100% shadow on every shore normal. St Peters' smaller losses occur where the
+bar/island obstructs or diverts an incident front, rather than a sea growing on that shore.
+The edge counts use the recipe's 50 mm dry threshold on the 4 m grid, excluding elevated
+still water. The bake is unchanged by this diagnosis.
+
+W4-6b must decide how the wind sea grown inside a region uses refraction when the incoming
+field has no arrival. Lean: retain the existing fetch-grown wind sea where no arrival
+exists, preserving its straight phase and energy; use a consistent refracted phase only
+where an incoming characteristic supports it. Keep swell tied to incoming transport.
+Any transition must preserve continuous phase/height and avoid applying shelter twice.
+This fallback needs an explicit sampling contract and tests; first-arrival shadow alone
+must not erase wind energy generated inside the region. A later design can add distributed
+sources or a larger sea domain; neither is added in W4-6a.
