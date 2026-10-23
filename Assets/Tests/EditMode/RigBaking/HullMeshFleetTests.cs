@@ -378,6 +378,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// are pinned instead of their boarding line — see the premise note on the test below. The
         /// heights are read off the rig sources, which the classifier never opens, so this stays an
         /// independent cross-check.</summary>
+        // Walk rooms enter the mask at code 0 after classification, so this scan never sees their soles.
         static readonly (string Key, float LowestInterior, string Whence)[] CabinSoleHulls =
         {
             ("sloop30", 0.35f, "cabin sole (sloopIsoRig.js CAB_SOLE = 0.35; DWL 0.55, cockpit SOLE 1.15)"),
@@ -448,8 +449,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 // (codes 2/3) are policed by their own test.
                 int interior = 0;
                 float lowest = float.MaxValue;
+                // The authored drive part is metadata beside the mesh, not a height cut.
+                var driveVertices = new HashSet<int>(def.DriveFaceVertexRanges
+                    .SelectMany(range => Enumerable.Range(range.x, range.y)));
                 for (int i = 0; i < attrs.Count && i < verts.Length; i++)
                 {
+                    if (driveVertices.Contains(i)) continue;
                     if (attrs[i].w <= 0.5f || attrs[i].w >= 1.5f) continue;
                     interior++;
                     if (verts[i].z < lowest) lowest = verts[i].z;
