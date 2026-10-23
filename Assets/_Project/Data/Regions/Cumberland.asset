@@ -27,3 +27,8 @@ MonoBehaviour:
   TidePhaseHours: 1
   SpawnFishIds: []
   WindProfile: {fileID: 11400000, guid: 9f6d18d9ea69457f8d135b01a4111b04, type: 2}
+  SwellClimate: {fileID: 11400000, guid: 623b44edae2d4b39b64165776e2ab76d, type: 2}
+  SwellShelter:
+    Harbour: {x: 227, y: -148.5, z: 41, w: 21.5}
+    Cove: {x: 0, y: 0, z: 0, w: 0}
+    FeatherMeters: 8

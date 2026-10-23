@@ -406,7 +406,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void GlassIsStillSacred_AtFullBlend()
+        public void WindSeaOnly_AtFullBlend_GlassIsSilent()
         {
             // The ruling the spectrum is most likely to break: a normalized spectral weighting is one
             // careless divide away from putting a FLOOR under the amplitudes, and a floor at sea

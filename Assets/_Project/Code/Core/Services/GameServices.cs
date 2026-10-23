@@ -11,6 +11,29 @@ namespace HiddenHarbours.Core
     {
         public static IGameClock Clock { get; set; }
         public static IEnvironmentService Environment { get; set; }
+        private static readonly System.Collections.Generic.Dictionary<string,
+            (SwellClimateDef Climate, SwellShelterSettings Shelter)> SwellClimates = new();
+
+        /// <summary>World registers bay climate assets at boot; all wave readers resolve through Core.</summary>
+        public static void RegisterSwellClimate(string regionId, SwellClimateDef climate, SwellShelterSettings shelter = default)
+        {
+            if (!string.IsNullOrEmpty(regionId)) SwellClimates[regionId] = (climate, shelter);
+        }
+
+        public static SwellClimateDef SwellClimate => CurrentRegionId != null
+            && SwellClimates.TryGetValue(CurrentRegionId, out var entry) ? entry.Climate : null;
+
+        public static SwellShelterSettings SwellShelter => CurrentRegionId != null
+            && SwellClimates.TryGetValue(CurrentRegionId, out var entry) ? entry.Shelter : default;
+
+        /// <summary>Add ocean swell after wind memory. No local weather input reaches its derivation.</summary>
+        public static WaveTrains WithSwell(in WaveTrains wind, double time, float gravity)
+        {
+            var climate = SwellClimate;
+            if (climate == null) return wind;
+            return SwellMath.Compose(in wind, climate.Climate, Environment != null ? Environment.WorldSeed : 0,
+                time, SecondsPerDay, gravity);
+        }
         public static IWallet Wallet { get; set; }
 
         /// <summary>
@@ -757,19 +780,16 @@ namespace HiddenHarbours.Core
                                                      : GameConfig.DefaultStairClimbSeconds);
 
         /// <summary>
-        /// The wind-fetch amplitude envelope at a world position — the model resolved against the LIVE
-        /// services (<see cref="TidalTerrain"/>, <see cref="Environment"/>, <see cref="WaveFetch"/>).
-        /// Returns 1 (the exact passthrough) when the model is off, when there is no sim, or when no
-        /// height map is wired.
+        /// The dominant train's amplitude factor resolved through live services: wind growth or
+        /// independent swell shelter according to the dominant slot. With no sim it returns one.
         ///
         /// <para><b>Resolve this ONCE per consumer per tick</b> — at a hull's centre, not per probe.
-        /// The march is <see cref="WaveFetch.MarchSteps"/> terrain samples and the envelope does not
-        /// is shared by the probes. Stage B records the approximation and its limits in ADR 0018.</para>
+        /// Each active march costs up to <see cref="WaveFetch.MarchSteps"/> terrain samples; the
+        /// resolved factors are shared by the probes. ADR 0018 records this approximation.</para>
         /// </summary>
         public static float FetchEnvelopeAt(UnityEngine.Vector2 worldPos)
         {
             WaveFetchSample fetch = FetchAt(worldPos);
-            if (fetch.Fraction >= 1f) return 1f;
             WaveTrains trains;
             if (!SharedWaveField.TryGet(out trains))
             {
@@ -780,8 +800,9 @@ namespace HiddenHarbours.Core
                 trains = environment is IWaveWindSource history
                     ? WaveMemory.TrainsAt(history, Clock.TotalSeconds, in field)
                     : WaveMath.TrainsFrom(sample.WindVector, sample.SeaState01, in field);
+                trains = WithSwell(in trains, Clock.TotalSeconds, field.Gravity);
             }
-            return fetch.ForWavelength(trains.Dominant.Wavelength);
+            return fetch.ForTrain(trains.DominantIndex, trains.Dominant.Wavelength);
         }
 
         /// <summary>Shared march bearing: short-window wind, matching the drawn chop.</summary>
@@ -794,13 +815,17 @@ namespace HiddenHarbours.Core
         public static WaveFetchSample FetchAt(UnityEngine.Vector2 worldPos)
         {
             WaveFetchSettings settings = WaveFetch;
-            if (settings.Strength <= 0f) return WaveFetchSample.Open;
             IEnvironmentService environment = Environment;
             IGameClock clock = Clock;
             if (environment == null || clock == null) return WaveFetchSample.Open;
             WaveFieldSettings field = WaveField;
-            return HiddenHarbours.Core.WaveFetch.At(worldPos, FetchWindAt(environment, clock.TotalSeconds, in field),
+            var wind = HiddenHarbours.Core.WaveFetch.At(worldPos, FetchWindAt(environment, clock.TotalSeconds, in field),
                 environment.WaterLevelAt(clock.TotalSeconds), TidalTerrain, in settings);
+            var climate = SwellClimate;
+            if (climate == null) return wind;
+            var direction = SwellMath.Direction(climate.Climate, environment.WorldSeed, clock.TotalSeconds, SecondsPerDay);
+            return wind.WithSwell(SwellMath.ShelterAt(worldPos, direction,
+                environment.WaterLevelAt(clock.TotalSeconds), TidalTerrain, climate.Climate, SwellShelter));
         }
 
         /// <summary>
@@ -1132,6 +1157,7 @@ namespace HiddenHarbours.Core
             CatchHands = null;
             PlayerHold = null;
             CurrentRegionId = null;
+            SwellClimates.Clear();
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
             OpeningCinematicRunning = false;   // a torn-down opening never leaves the intro grade on

@@ -65,6 +65,11 @@ namespace HiddenHarbours.World
                  "here: only how hard a system blows HERE is a regional fact.")]
         public HiddenHarbours.Core.WindProfileDef WindProfile;
 
+        [Tooltip("Ocean swell shared by every region of this bay. Empty retains the wind-only field.")]
+        public HiddenHarbours.Core.SwellClimateDef SwellClimate;
+        [Tooltip("Harbour and cove glass basins in world metres, with an outer feather. Empty bounds disable a basin.")]
+        public HiddenHarbours.Core.SwellShelterSettings SwellShelter;
+
         [Header("Content (by id)")]
         [Tooltip("Spawn-table fish ids (data-model: by id, never direct refs). Nine Mile Creek is a services " +
                  "region, not a fishing ground, so this is usually empty/marginal.")]

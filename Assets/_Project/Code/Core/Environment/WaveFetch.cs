@@ -391,19 +391,32 @@ namespace HiddenHarbours.Core
         private readonly WaveFetchSettings _settings;
         private readonly float _uniform;
         private readonly bool _spectral;
+        private readonly bool _hasSwell;
+        private readonly float _swell;
         public static WaveFetchSample Open => new WaveFetchSample(1f);
         private WaveFetchSample(float uniform)
         {
             Fraction = 1f; _settings = default; _uniform = Mathf.Clamp01(uniform); _spectral = false;
+            _hasSwell = false; _swell = 1f;
         }
         public WaveFetchSample(float fraction, in WaveFetchSettings settings)
         {
             Fraction = fraction; _settings = settings; _uniform = 1f; _spectral = true;
+            _hasSwell = false; _swell = 1f;
         }
+        private WaveFetchSample(in WaveFetchSample wind, float swell)
+        {
+            Fraction = wind.Fraction; _settings = wind._settings; _uniform = wind._uniform;
+            _spectral = wind._spectral; _hasSwell = true; _swell = Mathf.Clamp01(swell);
+        }
+        public WaveFetchSample WithSwell(float shelter) => new WaveFetchSample(in this, shelter);
+        public float ForTrain(int slot, float wavelength)
+            => _hasSwell && slot >= SwellMath.FirstSlot ? _swell : ForWavelength(wavelength);
         public float ForWavelength(float wavelength)
             => _spectral ? WaveFetch.TrainEnvelope01(Fraction, wavelength, in _settings) : _uniform;
-        public float Uniform => _spectral ? 1f : _uniform;
-        public bool Spectral => _spectral;
+        public float Uniform => _spectral || _hasSwell ? 1f : _uniform;
+        public bool Spectral => _spectral || _hasSwell;
+        public bool HasSwell => _hasSwell;
         public static implicit operator WaveFetchSample(float uniform) => new WaveFetchSample(uniform);
     }
 

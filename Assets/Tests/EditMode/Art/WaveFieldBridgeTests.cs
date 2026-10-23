@@ -208,7 +208,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void GlassCalm_PacksASilentField_AndTheTwinReadsFlat()
+        public void WindSeaOnly_GlassCalm_PacksASilentField_AndTheTwinReadsFlat()
         {
             // Glass is sacred (ADR 0018 §(1)): sea state 0 → zero amplitudes → the twin reads a dead
             // flat surface with crest factor 0 — no swell brightness, no foam, the full mirror.
