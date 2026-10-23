@@ -53,15 +53,16 @@ namespace HiddenHarbours.Core
 
         private WaveTrains Bake(in WaveTrains targets, double time, float gravity)
         {
+            var combined = GameServices.WithSwell(in targets, time, gravity);
             Span<WaveTrain> trains = stackalloc WaveTrain[WaveTrains.MaxTrains];
-            for (int i = 0; i < targets.Count; i++)
+            for (int i = 0; i < combined.Count; i++)
             {
-                var train = targets[i];
+                var train = combined[i];
                 double travel = Wrap(TwoPi / train.Wavelength * train.PhaseSpeed * time);
                 trains[i] = new WaveTrain(train.Direction, train.Wavelength, train.Amplitude,
                     (float)Wrap(train.PhaseOffset - travel), gravity);
             }
-            _current = WaveTrains.From(trains, targets.Count, targets.CrestSharpening, targets.DominantIndex);
+            _current = WaveTrains.From(trains, combined.Count, combined.CrestSharpening, combined.DominantIndex);
             return _current;
         }
 

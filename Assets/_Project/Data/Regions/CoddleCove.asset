@@ -24,3 +24,4 @@ MonoBehaviour:
   TidePhaseHours: 0
   SpawnFishIds: []
   WindProfile: {fileID: 11400000, guid: 4f24d7d543b44167b94c1cbd86e72263, type: 2}
+  SwellClimate: {fileID: 11400000, guid: 623b44edae2d4b39b64165776e2ab76d, type: 2}

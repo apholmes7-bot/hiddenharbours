@@ -418,7 +418,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "the bore advances because the bridge advances the published phases — a _Time term here " +
                 "would be a second clock, and one MakeStatic() cannot freeze");
             StringAssert.Contains("float SurfBorePhaseDeg(float2 breakLinePoint, float travelS, float freqScale)", bore);
-            StringAssert.Contains("float WaveFieldSampleAt(float2 worldXY, float freqScale, float fetchEnv, float timeBack)", bore);
+            StringAssert.Contains("float WaveFieldSampleAt(float2 worldXY, float freqScale, float fetchEnv, float timeBack, FetchFactors fetch)", bore);
         }
 
         [Test]
