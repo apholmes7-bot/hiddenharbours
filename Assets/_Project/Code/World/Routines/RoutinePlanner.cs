@@ -104,10 +104,23 @@ namespace HiddenHarbours.World
             var exitAt = new float[n];
             var enterAt = new float[n];
             var interiors = new BuildingInterior[n];
+            var hidden = new bool[n];
 
             for (int i = 0; i < n; i++)
             {
                 int from = (i - 1 + n) % n;
+                hidden[i] = station[i].OutOfSight;
+                if (station[from].OutOfSight && station[i].OutOfSight)
+                {
+                    routeStart[i] = waypoints.Count;
+                    waypoints.Add(station[i].Position);
+                    routeCount[i] = 1;
+                    activities[i] = routine.Entries[i].Activity;
+                    interruptible[i] = routine.Entries[i].Interruptible;
+                    standHeading[i] = station[i].StandHeadingDegrees;
+                    interiors[i] = station[i].Interior;
+                    continue;
+                }
 
                 int pathCount = RoutineLaneTree.WriteNodePath(lanes.NodeParents, node[from], node[i],
                                                               nodePathBuffer);
@@ -134,7 +147,12 @@ namespace HiddenHarbours.World
 
                 // OUT of wherever they were: an indoor station is left through its own drawn door.
                 float exitDistance = 0f;
-                if (station[from].Indoors)
+                if (station[from].OutOfSight)
+                {
+                    Append(waypoints, slice, station[from].Position);
+                    exitDistance = Vector2.Distance(station[from].Position, lanes.NodePositions[node[from]]);
+                }
+                else if (station[from].Indoors)
                 {
                     Append(waypoints, slice, station[from].Position);
                     Vector2 door = station[from].Interior.DoorWorld;
@@ -150,7 +168,7 @@ namespace HiddenHarbours.World
                 for (int k = 0; k < polyCount; k++) Append(waypoints, slice, polylineBuffer[k]);
 
                 // IN to wherever they are going — through the real drawn door, never the wall centre.
-                if (station[i].Indoors)
+                if (station[i].Indoors && !station[i].OutOfSight)
                 {
                     Append(waypoints, slice, station[i].Interior.DoorWorld);
                     Append(waypoints, slice, station[i].Position);
@@ -175,7 +193,12 @@ namespace HiddenHarbours.World
             {
                 routeLength[i] = RoutineLaneTree.PolylineLength(flat, routeStart[i], routeCount[i]);
 
-                if (station[i].Indoors)
+                if (station[i].OutOfSight)
+                {
+                    float nodeToStation = Vector2.Distance(lanes.NodePositions[node[i]], station[i].Position);
+                    enterAt[i] = Mathf.Clamp(routeLength[i] - nodeToStation, 0f, routeLength[i]);
+                }
+                else if (station[i].Indoors)
                 {
                     // The threshold is the door, which is the last-but-one point of the route: they are
                     // inside from there to the end. Measured from the STATION geometry rather than by
@@ -198,7 +221,7 @@ namespace HiddenHarbours.World
             blockInteriors = interiors;
             return new RoutinePlan(departures, flat, routeStart, routeCount, routeLength, activities,
                                    standHeading, exitAt, enterAt, routine.WalkSpeedMetresPerSecond,
-                                   interruptible, routine.CatchUpSpeedMetresPerSecond);
+                                   interruptible, routine.CatchUpSpeedMetresPerSecond, hidden);
         }
 
         /// <summary>

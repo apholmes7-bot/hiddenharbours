@@ -20,6 +20,8 @@ namespace HiddenHarbours.World
         InsideOrigin = 1,
         /// <summary>Inside the building this block was headed FOR — has crossed in.</summary>
         InsideDestination = 2,
+        /// <summary>Away from the visible region. Never drawn or talkable.</summary>
+        OutOfSight = 3,
     }
 
     /// <summary>
@@ -133,6 +135,15 @@ namespace HiddenHarbours.World
         /// </summary>
         public readonly bool[] Interruptible;
 
+        /// <summary>Each destination's optional hidden mark. Empty keeps the existing day.</summary>
+        public readonly bool[] OutOfSight;
+
+        public static bool IsVisible(RoutineShelter shelter, bool sharesInterior) =>
+            shelter != RoutineShelter.OutOfSight &&
+            (shelter == RoutineShelter.Outdoors || sharesInterior);
+
+        bool HiddenAt(int block) => block >= 0 && block < OutOfSight.Length && OutOfSight[block];
+
         public int BlockCount => DepartureHours.Length;
 
         /// <summary>Can a conversation stop them during block <paramref name="block"/>? Out-of-range
@@ -145,7 +156,7 @@ namespace HiddenHarbours.World
                            float[] routeLengthMetres, RoutineActivity[] activities,
                            float[] standHeadingDegrees, float[] exitAtMetres, float[] enterAtMetres,
                            float walkSpeedMetresPerSecond, bool[] interruptible = null,
-                           float catchUpSpeedMetresPerSecond = 0f)
+                           float catchUpSpeedMetresPerSecond = 0f, bool[] outOfSight = null)
         {
             DepartureHours = departureHours ?? System.Array.Empty<float>();
             Waypoints = waypoints ?? System.Array.Empty<Vector2>();
@@ -158,6 +169,7 @@ namespace HiddenHarbours.World
             EnterAtMetres = enterAtMetres ?? System.Array.Empty<float>();
             WalkSpeedMetresPerSecond = Mathf.Max(0f, walkSpeedMetresPerSecond);
             Interruptible = interruptible ?? System.Array.Empty<bool>();
+            OutOfSight = outOfSight ?? System.Array.Empty<bool>();
             // A caller that names no hurry gets the walk itself, which converges on a stationary target
             // and simply cannot on a moving one — safe, and visibly wrong enough to be noticed.
             CatchUpSpeedMetresPerSecond = catchUpSpeedMetresPerSecond > 0f
@@ -215,8 +227,11 @@ namespace HiddenHarbours.World
             // ruling forbids, in reverse.
             float exitAt = ExitAtMetres.Length > block ? ExitAtMetres[block] : 0f;
             float enterAt = EnterAtMetres.Length > block ? EnterAtMetres[block] : float.PositiveInfinity;
-            RoutineShelter shelter = distance >= enterAt ? RoutineShelter.InsideDestination
-                                   : distance < exitAt ? RoutineShelter.InsideOrigin
+            RoutineShelter shelter = distance >= enterAt
+                                   ? (HiddenAt(block) ? RoutineShelter.OutOfSight : RoutineShelter.InsideDestination)
+                                   : distance < exitAt
+                                   ? (HiddenAt((block - 1 + BlockCount) % BlockCount)
+                                      ? RoutineShelter.OutOfSight : RoutineShelter.InsideOrigin)
                                    : RoutineShelter.Outdoors;
 
             return new RoutinePose(position, block,

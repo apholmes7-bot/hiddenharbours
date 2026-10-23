@@ -35,6 +35,10 @@ namespace HiddenHarbours.World
                  "rule — and the walk to it goes through the building's real drawn door.")]
         public BuildingInterior Interior;
 
+        [Tooltip("Hide this station's occupant and disable talk. Walks remain visible up to and from " +
+                 "its lane node. Two hidden stations have no walk between them. Default off.")]
+        public bool OutOfSight;
+
         [Tooltip("Which lane junction this station hangs off, BY NAME (a name from RoutineLanes). Named " +
                  "rather than indexed so the two tables cannot silently disagree when one is reordered, " +
                  "and stated rather than guessed: 'the nearest node' would happily pick one on the far " +
