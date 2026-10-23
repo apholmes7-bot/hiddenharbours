@@ -192,17 +192,18 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>The catalog: the lifted tables and, for each of the contract's presets in its
-        /// order, the build that names it. Refuses a preset with no build, or two builds for one.</summary>
+        /// order, its core build. Refuses a missing or duplicate core build.</summary>
         public static void Fill(CharacterBuilderDef def, CharacterRigContractDef contract, CharacterRampsDef ramps,
             CharacterClothingFitDef fit, IReadOnlyList<CharacterBuildDef> builds)
         {
             var chosen = new List<CharacterBuildDef>();
             foreach (CharacterPresetValues p in contract.Presets)
             {
-                CharacterBuildDef[] named = builds.Where(b => b != null && b.Preset == p.Key).ToArray();
+                string coreId = "char_build." + p.Key;
+                CharacterBuildDef[] named = builds.Where(b => b != null && b.Id == coreId && b.Preset == p.Key).ToArray();
                 if (named.Length != 1)
                     throw new InvalidOperationException(
-                        $"Preset '{p.Key}' has {named.Length} builds in {BuildsFolder}; the catalog needs exactly one.");
+                        $"Preset '{p.Key}' needs exactly one core build '{coreId}'; found {named.Length}.");
                 chosen.Add(named[0]);
             }
             if (chosen.All(b => b.Id != PlayerDefaultBuildId))

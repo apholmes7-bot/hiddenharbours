@@ -47,12 +47,15 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryBakedPreset_HasABuildAsset()
         {
-            var byPreset = new HashSet<string>(Builds().Select(b => b.Preset), System.StringComparer.Ordinal);
+            var builds = Builds();
             foreach (var (preset, _) in CharacterBuildsBuilder.Presets)
-                Assert.IsTrue(byPreset.Contains(preset),
-                    $"No CharacterBuildDef for baked preset '{preset}' under {BuildsFolder}. Run " +
-                    "Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Character Builds + " +
-                    "Cast Mapping and commit the assets.");
+            {
+                string coreId = "char_build." + preset;
+                var samePreset = builds.Where(b => b.Preset == preset).ToArray();
+                Assert.That(samePreset.Count(b => b.Id == coreId), Is.EqualTo(1),
+                    $"Preset '{preset}' needs exactly one core build '{coreId}'; " +
+                    $"ids found: {string.Join(", ", samePreset.Select(b => b.Id))}.");
+            }
         }
 
         [Test]
