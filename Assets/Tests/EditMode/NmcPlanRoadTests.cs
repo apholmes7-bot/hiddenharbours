@@ -339,6 +339,21 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>The owner's ruling on drive 8 (10-24): shore lane's flare at drive 8's mouth grows by the measured
+        /// 0.35 m, its outer edge to about 3.5 m past the lane's carriage edge (its width and ends kept). The lane draws
+        /// no centre marks, so the line may stand over a metre out there.</summary>
+        [Test]
+        public void TheShoreLaneFlareAtDriveEight_ReachesAboutThreeAndAHalfMetres()
+        {
+            var f = Net.Flares.Single(x => x.Id == "flare.nmc_shore_lane_l_60");
+            var on = Net.Routes.Single(r => r.Id == f.On && r.Part == f.OnPart);
+            Assert.AreEqual("road.nmc_shore_lane", on.Id, "the flare widens shore lane");
+            CollectionAssert.DoesNotContain(MarkedClasses, f.Class, "shore lane draws no centre marks, which a line over a metre out would cross");
+            Assert.That(f.For.Any(x => x.StartsWith("junction drive.nmc_shore_lane_8 out onto road.nmc_shore_lane")), "it takes drive 8's mouth");
+            float reach = f.Points.Max(p => ToLine(p, on.Points) - on.HalfWidth) + f.HalfWidth;
+            Assert.That(reach, Is.InRange(3.3f, 3.7f), "10-24: its outer edge about 3.5 m past shore lane's carriage edge");
+        }
+
         /// <summary>The owner's Q12 (10-24): the plaza's parking is one row of the plan's 2.75 x 5.5 stalls a bay, off
         /// an aisle from the row's fronts: twenty in the north bay, sixteen in the south, whose stalls 10 to 13 give way
         /// to the link.</summary>
