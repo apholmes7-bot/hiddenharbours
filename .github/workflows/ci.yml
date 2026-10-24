@@ -82,7 +82,11 @@ jobs:
     # cf6a819b's push run 36282573170 was cancelled at it (2026-09-27 01:43Z) with PlayMode at
     # 42.9 of its usual 44.7 min. 100 holds a slow run with room to spare and still stops a hang
     # hours short of the default.
-    timeout-minutes: 100
+    # 2026-10-24: the suites outgrew 100. Main c37749fd's push run 40049204834 took 95.6 min with
+    # "Set up Unity" at 1.5 (EditMode 29.9, PlayMode 61.9), and main 21a9d2ce's push run 40040147781
+    # was cancelled at 100 with every step green ("Set up Unity" 13.8 of it). 150 holds a slow run
+    # with room to spare and still stops a hang 3.5 hours short of the default.
+    timeout-minutes: 150
     env:
       # The Unity Hub's editor folder. "Set up Unity" installs into it and lists from it
       # (`install-path`), and the editor cache restores and saves exactly this folder. Runner logs
