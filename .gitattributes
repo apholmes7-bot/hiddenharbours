@@ -42,6 +42,10 @@
 Assets/_Project/Data/Terrain/StPetersPlan.sources.json   text eol=lf linguist-language=json
 Assets/_Project/Data/Terrain/StPetersPlan.manifest.json  text eol=lf linguist-language=json linguist-generated
 
+# Nine Mile Creek's road network (NMC H4). The road floor's bake records the network file's sha256 and the streamer's
+# test compares it, so a CRLF checkout would red it for line endings alone.
+Assets/_Project/Data/Terrain/NineMileCreekRoads/*.json   text eol=lf linguist-language=json
+
 # Unity UI Toolkit files
 *.tss                   text diff=css linguist-language=css
 *.uss                   text diff=css linguist-language=css

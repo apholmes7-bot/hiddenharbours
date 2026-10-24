@@ -1636,6 +1636,14 @@ namespace HiddenHarbours.App.Editor
                                  ") — the coast draws from the height bands alone. Run 'Hidden Harbours ▸ " +
                                  "Art ▸ Regenerate Nine Mile Creek Starter Splat'.");
 
+            // Kit v4's road floor (NMC H4): the network's roads are baked chunks the streamer feeds the splat as
+            // the camera reaches them; N1 step 12 writes the same component on the committed scene.
+            splatGo.AddComponent<HiddenHarbours.Art.RoadFloorStreamer>().Configure(splat,
+                HiddenHarbours.Art.RoadFloorStreamer.DefaultFolder, HiddenHarbours.Art.RoadFloorStreamer.DefaultCapacity,
+                HiddenHarbours.Art.RoadFloorStreamer.DefaultUploadsPerFrame,
+                HiddenHarbours.Art.RoadFloorStreamer.DefaultDecodesInFlight,
+                HiddenHarbours.Art.RoadFloorStreamer.DefaultRingChunks, null);
+
             // Everything is on the component; NOW let OnEnable build the quad — at the region's real
             // extent, with every uniform already in place. See the SetActive(false) note above.
             splatGo.SetActive(true);

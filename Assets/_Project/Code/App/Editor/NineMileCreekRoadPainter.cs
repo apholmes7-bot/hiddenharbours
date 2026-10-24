@@ -70,7 +70,9 @@ namespace HiddenHarbours.App.Editor
             NineMileCreekRoads.Paving paving;
             try
             {
-                paving = NineMileCreekGroundPlan.Pave(terrain);
+                // What kit v3 still paints (NMC H4): the wharf's stub of Wharf Road and the pads. Every other road
+                // is kit v4's, drawn by the splat's road floor, so no rebuild lays the old network again.
+                paving = NineMileCreekGroundPlan.PaveKeptV3(terrain);
             }
             catch (System.Exception e)
             {
@@ -136,16 +138,32 @@ namespace HiddenHarbours.App.Editor
             Write(topMap, tops);
             Write(skirtMap, skirts);
 
-            // Route 91 crosses the town river on a supported deck (NMC H4): the on-foot sim stands on it
-            // rather than in the river, and the paving's dry rule exempted exactly this footprint.
-            var bridge = new GameObject(NineMileCreekGroundPlan.BridgeName);
-            bridge.transform.SetParent(root.transform, worldPositionStays: false);
-            bridge.transform.localPosition = NineMileCreekGroundPlan.BridgeDeck.center;
-            bridge.AddComponent<HiddenHarbours.World.StandablePlatform>().Configure(NineMileCreekGroundPlan.BridgeId,
-                NineMileCreekGroundPlan.BridgeDeck, NineMileCreekGroundPlan.BridgeDeckElevation);
+            PlaceBridges();
 
             Report(result);
             return result;
+        }
+
+        /// <summary>
+        /// The network's three plain standable decks (NMC H4, Q7): Route 91 over the town river, the camp road over
+        /// the brook and over the pond's culvert, each an instance of its prefab under its own root, so the on-foot sim
+        /// stands on the deck rather than in the water. N1 step 12 writes the same instances on the committed scene.
+        /// </summary>
+        static void PlaceBridges()
+        {
+            var root = new GameObject(NineMileCreekGroundPlan.BridgesRootName);
+            foreach (NineMileCreekRoadNetwork.Bridge b in NineMileCreekRoadNetwork.Load().Bridges)
+            {
+                string path = NineMileCreekGroundPlan.BridgePrefabPath(b.Prefab);
+                var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab == null)
+                {
+                    Debug.LogError($"[NineMileCreekRoadPainter] no bridge prefab at {path}; {b.Id} is not laid.");
+                    continue;
+                }
+                var deck = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(prefab, root.transform);
+                deck.transform.localPosition = b.Footprint.center;
+            }
         }
 
         /// <summary>Only the surfaces this region actually paves — see <see cref="RoadTileLibrary.Build"/>
