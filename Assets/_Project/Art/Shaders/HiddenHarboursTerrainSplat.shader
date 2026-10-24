@@ -62,6 +62,14 @@
 // GameConfig.TerrainUnderwaterClip): the test is the sea's drawn coverage in this camera, published by
 // IsoFacetHullFeature, never a waterline of the ground's own.
 //
+// THE ROAD FLOOR (NMC H4, road / path kit v4). Where RoadFloorStreamer has bound a region's road chunks
+// (_RoadLoaded, pushed by TerrainSplatSurface.ConfigureRoadFloor) the kit's bytes, relit under the same sky by
+// Include/RoadFloor4.hlsl, replace the ground's colour wherever a route or one of its faces covers the pixel:
+// over the macro drift (the ground kit's half of its bargain; the road kit's bytes are its own look) and under
+// the wet band (the live tide line darkens a road as it does the ground). A chunk not resident shows the
+// ground. A ground given no road floor (every region but Nine Mile Creek) keeps _RoadLoaded 0 and never reads
+// a road map.
+//
 // Sorts through a SortingGroup (the ADR 0023 pattern) BELOW the Sea plane, so the ADR 0012 tide
 // reveal keeps working unchanged. The wet band above the live waterline reads _WaterLevel — the
 // same number the sea clips by. With no detail arrays bound (_DetailLoaded = 0) the shader falls
@@ -111,6 +119,16 @@ Shader "HiddenHarbours/TerrainSplat"
         _TLSeaDir       ("Swell direction. Zero is unset and reads as one", Float) = 0.0
         _TLFrameRate    ("Loop frames per second", Float) = 8.0
         _TLOrigin       ("Pixel grid origin xy in world metres", Vector) = (0, 0, 0, 0)
+
+        [Header(Road floor. Road path kit v4 chunks streamed by RoadFloorStreamer)]
+        [NoScaleOffset] _RoadNormal ("Road floor normal and pond", 2DArray) = "" {}
+        [NoScaleOffset] _RoadLight  ("Road floor sky visibility role height and palette", 2DArray) = "" {}
+        [NoScaleOffset] _RoadDetail ("Road floor marks and tips", 2DArray) = "" {}
+        [NoScaleOffset] _RoadRamp   ("Road floor palettes and chunk parameters", 2D) = "black" {}
+        [NoScaleOffset] _RoadIndex  ("Road floor chunk slots", 2D) = "black" {}
+        _RoadLoaded ("Road floor loaded", Float) = 0.0
+        _RoadOrigin ("Road floor grid origin xy in world metres and z px per metre", Vector) = (0, 0, 32, 0)
+        _RoadGrid   ("Road floor grid in chunks", Vector) = (0, 0, 0, 0)
 
         [Header(Painted splat maps. Twenty one channels across six textures)]
         [NoScaleOffset] _SplatA ("Splat A. Grass Marram Sand Shingle", 2D) = "black" {}
@@ -222,6 +240,9 @@ Shader "HiddenHarbours/TerrainSplat"
                 float  _TLSeaDir, _TLFrameRate;
                 float4 _TLOrigin;
 
+                float  _RoadLoaded;
+                float4 _RoadOrigin, _RoadGrid;
+
                 float _FloorPaint, _FloorRipple, _FloorSand, _FloorMarram, _FloorGrass, _FloorShingle;
                 float _BandBlendMetres, _EdgeFadeMetres;
                 float _BandWiggleMetres, _BandWiggleScale, _BandDetailMetres, _BandDetailScale;
@@ -260,6 +281,7 @@ Shader "HiddenHarbours/TerrainSplat"
             float _HHTerrainUnderwaterClip;
 
             #include "Assets/_Project/Art/Shaders/Include/TerrainLight6.hlsl"
+            #include "Assets/_Project/Art/Shaders/Include/RoadFloor4.hlsl"
 
             // =========================================================================================
             //  THE MATERIAL TABLE — canonical order 0..19. Mirrored by TerrainTexArrayBuilder (C#) and
@@ -503,6 +525,11 @@ Shader "HiddenHarbours/TerrainSplat"
                 // The kit flattens each tile's low-frequency mean on purpose (README §4) — this
                 // layer is the shader's half of that bargain.
                 col = TSA_Macro(col, wp);
+
+                // NMC H4: the road floor over the ground, where its chunks are resident (see the header).
+                [branch]
+                if (_RoadLoaded > 0.5)
+                    col = RF4Over(col, wp, TerrainSky());
 
                 // The wet band: ground just above the live waterline darkens — the tide line
                 // breathes with the SAME _WaterLevel the sea clips by. (Live water/wet effects are
