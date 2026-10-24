@@ -62,6 +62,8 @@ namespace HiddenHarbours.Tests.RigBaking
         /// fails loudly, and the flag can only be wrong if the file system is.</para>
         /// </summary>
         static string RigFileFor(string meshId) =>
+            meshId == "hullmesh.expedition_yacht120_iso" ? "expeditionYacht120IsoRig.js" :
+            meshId == "hullmesh.yacht_tender_iso" ? "yachtTenderIsoRig.js" :
             meshId == "hullmesh.go_fast_iso" ? "goFastIsoRig.js" :
             meshId == "hullmesh.bowrider_iso" ? "bowriderIsoRig.js" :
             meshId == "hullmesh.express_cruiser_iso" ? "cruiserIsoRig.js" :
@@ -87,6 +89,8 @@ namespace HiddenHarbours.Tests.RigBaking
             {
                 // Walk DWL and cockpitZ, with the existing 1.126 beam margin rounded to centimetres.
                 // Bowrider's waterline meets her sole by Art desk R1; the floor guard is unchanged.
+                ["hullmesh.expedition_yacht120_iso"] = new Flotation("expedition_yacht_120", 2.74f, 4.30f, 4.79113f, 4.255f),
+                ["hullmesh.yacht_tender_iso"] = new Flotation("yacht_tender", 0.30f, 0.42f, 1.2386f, 1.10f),
                 ["hullmesh.go_fast_iso"] = new Flotation("go_fast", 0.52f, 0.62f, 1.24f, 1.100f),
                 ["hullmesh.bowrider_iso"] = new Flotation("bowrider", 0.34f, 0.34f, 1.29f, 1.145f),
                 ["hullmesh.express_cruiser_iso"] = new Flotation("express_cruiser", 0.58f, 0.95f, 1.72f, 1.525f),
@@ -139,8 +143,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 // than a cross-check; draft is the band floor, rounded up to the centimetre so the
                 // rounded value stays in band. Deck is the rig's own DECK (the cockpit sole); half-beam
                 // is her true max sheer half-width carried out by the lobster family's margin (1.126).
-                ["hullmesh.sport_fisher_convertible_iso"] = new Flotation("53' convertible", 0.67f, 1.25f, 2.91f, 2.580f),
-                ["hullmesh.sport_fisher_skybridge_iso"] = new Flotation("90' skybridge", 1.13f, 2.05f, 4.12f, 3.660f),
+                ["hullmesh.sport_fisher_convertible_iso"] = new Flotation("53' convertible", 0.67f, 1.30f, 2.937171f, 2.6085f),
+                ["hullmesh.sport_fisher_skybridge_iso"] = new Flotation("90' skybridge", 1.13f, 1.45f, 3.962957f, 3.5195f),
             };
 
         /// <summary>The variants rig's own depth scalars, for the size-ladder claim.</summary>

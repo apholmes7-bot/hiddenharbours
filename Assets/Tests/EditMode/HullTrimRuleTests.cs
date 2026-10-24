@@ -32,6 +32,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["boat.sport_skiff"] = Form.Planing,
             ["boat.sport_skiff_mk2"] = Form.Planing,
             ["boat.sport_skiff_twin"] = Form.Planing,
+            ["boat.yacht_tender"] = Form.Planing,
             ["boat.zodiac_frc"] = Form.Planing,
             ["boat.zodiac_hurricane"] = Form.Planing,
             ["boat.bowrider"] = Form.Planing, // Def authors a 3.5-degree planing drop.
@@ -70,6 +71,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["boat.sloop_30"] = Form.Sail,
             ["boat.sloop_88"] = Form.Sail,
             // Ships: level.
+            ["boat.expedition_yacht_120"] = Form.Ship,
             ["boat.side_dragger"] = Form.Ship,
             ["boat.stern_trawler"] = Form.Ship,
             ["boat.stern_trawler_mk2"] = Form.Ship,

@@ -131,6 +131,8 @@ namespace HiddenHarbours.App.Editor
             "DoryOutboard",
             "Punt",
             "PuntUpgraded",
+            // Proposed 3.45 m/s; the carried tender has no picker rung.
+            "ExpeditionYacht120",
             "ConsoleSkiff",
             // Recreation tunable proposal: 4.60 m/s, between console and sport skiff.
             "ExpressCruiser",

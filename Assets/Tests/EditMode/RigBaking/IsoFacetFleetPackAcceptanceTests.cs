@@ -126,7 +126,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static IEnumerable<Subject> Photographed()
         {
-            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser" })
+            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser", "expeditionYacht120", "yachtTender" })
             {
                 var h = HullMeshFleet.Get(key);
                 string asset = Path.GetFileName(h.MeshAssetPath).Replace("HullMesh.asset", "");

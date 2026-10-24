@@ -538,6 +538,20 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the picker cycle, read off the builder's own list ---------------------------------
 
         [Test]
+        public void TheYachtTakesOneSpeedRung_AndHerTenderTakesNone()
+        {
+            var roster = StPetersBuilder.DevPickerRosterFiles;
+            Assert.That(roster.Count(n => n == "ExpeditionYacht120"), Is.EqualTo(1));
+            Assert.That(roster, Does.Not.Contain("YachtTender"));
+            int index = System.Array.IndexOf(roster, "ExpeditionYacht120");
+            Assert.That(roster[index - 1], Is.EqualTo("PuntUpgraded"));
+            Assert.That(roster[index + 1], Is.EqualTo("ConsoleSkiff"));
+            float speed = TerminalSpeed(Hull("ExpeditionYacht120"));
+            Assert.That(speed, Is.GreaterThan(TerminalSpeed(Hull("PuntUpgraded"))));
+            Assert.That(speed, Is.LessThan(TerminalSpeed(Hull("ConsoleSkiff"))));
+        }
+
+        [Test]
         public void ThePickerRoster_NamesOnlyHullsThatActuallyLoad()
         {
             // The roster is a list of FILE NAMES, so a typo in one is a silently missing rung — the builder

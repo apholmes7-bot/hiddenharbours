@@ -43,6 +43,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// boats' sterns.</summary>
         static readonly (string Def, string Rig, string Pattern)[] Fleet =
         {
+            ("ExpeditionYacht120IsoHullMesh", "expeditionYacht120IsoRig.js", @"\bconst L\s*=\s*([0-9.]+),\s*yT\s*=\s*-L\s*/\s*2"),
+            // This tender's station ends are +/-2.55; L and LOA also include different overhangs.
+            ("YachtTenderIsoHullMesh", "yachtTenderIsoRig.js", @"\byT\s*=\s*(-[0-9.]+)"),
             ("BowriderIsoHullMesh",      "bowriderIsoRig.js",      @"\bconst L\s*=\s*([0-9.]+)"),
             ("ExpressCruiserIsoHullMesh", "cruiserIsoRig.js",      @"\bconst L\s*=\s*([0-9.]+)"),
             ("GoFastIsoHullMesh",        "goFastIsoRig.js",        @"\bconst L\s*=\s*([0-9.]+)"),
@@ -107,6 +110,12 @@ namespace HiddenHarbours.Tests.EditMode
                 // y : -L/2 + u*L   ·   y : (-0.5 + u) * B.L   ·   yOf = (u) => -L/2 + u*L
                 bool amidships = Regex.IsMatch(
                     src, @"y\s*(?::|Of\s*=\s*\(u\)\s*=>)\s*\(?\s*-\s*(?:0\.5|[A-Za-z0-9_.]+\s*/\s*2)");
+                if (hull.Def == "YachtTenderIsoHullMesh")
+                {
+                    var ends = Regex.Match(src, @"yT\s*=\s*(-[0-9.]+),\s*yBow\s*=\s*([0-9.]+)");
+                    amidships = ends.Success && Mathf.Abs(float.Parse(ends.Groups[1].Value, CultureInfo.InvariantCulture) +
+                        float.Parse(ends.Groups[2].Value, CultureInfo.InvariantCulture)) < 0.001f;
+                }
                 if (!amidships)
                     failures.AppendLine(
                         $"  {hull.Rig}: no station law of the form y = -L/2 + u*L. If this rig has " +
@@ -142,6 +151,7 @@ namespace HiddenHarbours.Tests.EditMode
                     continue;
                 }
                 float loft = float.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
+                if (hull.Def == "YachtTenderIsoHullMesh") loft *= -2f; // measured station span, not overall fittings
                 float want = loft * 0.5f;
                 checkedHulls++;
                 report.AppendLine($"  {hull.Def,-46} rig {loft,7:0.00} m  transom {want,6:0.00} m  " +
@@ -155,7 +165,7 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             TestContext.WriteLine(report.ToString());
-            Assert.AreEqual(39, checkedHulls, "The fleet is 39 hulls including the three recreation hulls; this table has drifted from it.");
+            Assert.AreEqual(41, checkedHulls, "39 fleet hulls plus the expedition yacht and her tender; this table must cover every mesh.");
             Assert.IsEmpty(failures.ToString(), "\n" + failures);
         }
 

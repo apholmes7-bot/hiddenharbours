@@ -77,6 +77,40 @@ namespace HiddenHarbours.Tests.RigBaking
             finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
         }
 
+        [TestCase("sportFisherConvertible", 13)]
+        [TestCase("sportFisherSkybridge", 14)]
+        [TestCase("expeditionYacht120", 66)]
+        [TestCase("yachtTender", 3)]
+        public void SwitchedHull_EqualsDeliveredWalk(string key, int walkAreas)
+        {
+            var hull = HullMeshFleet.Get(key);
+            using var host = RigScriptHostFactory.Create();
+            var rig = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName, hull: hull.Extraction);
+            Assert.That(rig.Walk.Areas.Count, Is.EqualTo(walkAreas));
+            string stem = Path.GetFileName(hull.MeshAssetPath).Replace("HullMesh.asset", "");
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var room = ScriptableObject.CreateInstance<BoatInteriorDef>();
+            try
+            {
+                var result = HullWalkSidecarImporter.Populate(rig.Walk, rig, stem, deck, room);
+                Assert.That(result.Ok, Is.True, string.Join(";", result.Refusals));
+                var savedDeck = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(DeckSidecarImporter.DeckAssetPath(stem));
+                Assert.That(savedDeck, Is.Not.Null, key);
+                Assert.That(JsonUtility.ToJson(savedDeck), Is.EqualTo(JsonUtility.ToJson(deck)), key + ": complete imported deck, helm and cleats");
+                var savedRoom = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>("Assets/_Project/Data/Boats/Interiors/" + stem + ".asset");
+                if (rig.Walk.House == null) Assert.That(savedRoom, Is.Null, key + ": an open tender has no room");
+                else
+                {
+                    Assert.That(savedRoom, Is.Not.Null, key);
+                    Assert.That(JsonUtility.ToJson(savedRoom), Is.EqualTo(JsonUtility.ToJson(room)), key + ": complete imported room, doors and routes");
+                }
+                var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+                Assert.That(mesh, Is.Not.Null, key);
+                Assert.That(mesh.LayoutSchema, Is.EqualTo(HullWalkSidecarReader.Schema));
+            }
+            finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
+        }
+
         [Test]
         public void BoxWalk_EqualsHandBuiltDeckRoomHelmAndStair()
         {

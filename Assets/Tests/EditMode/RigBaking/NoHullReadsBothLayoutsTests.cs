@@ -43,6 +43,22 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
+        [TestCase("sportFisherConvertible")]
+        [TestCase("sportFisherSkybridge")]
+        [TestCase("expeditionYacht120")]
+        [TestCase("yachtTender")]
+        public void IntakeHull_IsSwitchedAndUsesItsOwnWalk(string key)
+        {
+            var hull = HullMeshFleet.Get(key);
+            var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+            Assert.That(mesh, Is.Not.Null, key);
+            Assert.That(mesh.LayoutSchema, Is.EqualTo(HullWalkSidecarReader.Schema));
+            using var host = RigScriptHostFactory.Create();
+            var rig = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName, hull: hull.Extraction);
+            Assert.That(rig.Walk.Schema, Is.EqualTo(mesh.LayoutSchema));
+            Assert.That(rig.Walk.Rig, Is.EqualTo(Path.GetFileName(hull.ScriptPath)));
+        }
+
         [TestCase(true, false, false, "both deck and walk")]
         [TestCase(false, true, false, "MeshInteriorHulls")]
         [TestCase(false, false, true, "BoatInteriors.json")]

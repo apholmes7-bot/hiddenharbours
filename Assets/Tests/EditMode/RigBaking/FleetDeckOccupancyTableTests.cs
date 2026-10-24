@@ -105,6 +105,8 @@ namespace HiddenHarbours.Tests.RigBaking
             var t = new Dictionary<string, Occupancy>();
             // One active pilot; passenger stands are published enter_ride points waiting on sit.
             // Furniture is already in the full mesh and consumes no deck-occupant slot.
+            t["hullmesh.expedition_yacht120_iso"] = new Occupancy("expedition_yacht_120", 1, 0, 0, 0, 0, "expeditionYacht120IsoRig.js");
+            t["hullmesh.yacht_tender_iso"] = new Occupancy("yacht_tender", 1, 0, 0, 0, 1, "yachtTenderIsoRig.js");
             t["hullmesh.go_fast_iso"] = new Occupancy("go_fast", 1, 0, 0, 0, 4, "goFastIsoRig.js");
             t["hullmesh.bowrider_iso"] = new Occupancy("bowrider", 1, 0, 0, 0, 7, "bowriderIsoRig.js");
             t["hullmesh.express_cruiser_iso"] = new Occupancy("express_cruiser", 1, 0, 0, 0, 6, "cruiserIsoRig.js");
