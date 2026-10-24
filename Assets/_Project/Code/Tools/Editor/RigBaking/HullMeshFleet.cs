@@ -414,6 +414,20 @@ namespace HiddenHarbours.Tools.RigBaking
 
             MeshOnly("sloop88", "sail-rig-kit/sloop-88/sloop88IsoRig.js", "Sloop88Iso", "Sloop88Iso",
                      "sloop88_iso", "sloop 88 (~27 m — the sail workbench hull)"),
+
+            // Recreation intake: one hull and one full mesh per rig; the published scope owns its cell.
+            new FleetHull("goFast", "docs/art/rigs/goFastIsoRig.js", "GoFastIso",
+                "Assets/_Project/Data/Boats/HullMeshes/GoFastIsoHullMesh.asset", "hullmesh.go_fast_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/GoFastIso.asset" }, new[] { "visual.go_fast_iso" },
+                false, "Offshore 39 go-fast", extraction: new RigHullExtraction { HullScope = "byId('go_fast')" }),
+            new FleetHull("bowrider", "docs/art/rigs/bowriderIsoRig.js", "BowriderIso",
+                "Assets/_Project/Data/Boats/HullMeshes/BowriderIsoHullMesh.asset", "hullmesh.bowrider_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/BowriderIso.asset" }, new[] { "visual.bowrider_iso" },
+                false, "Bowrider 18", extraction: new RigHullExtraction { HullScope = "byId('bowrider')" }),
+            new FleetHull("expressCruiser", "docs/art/rigs/cruiserIsoRig.js", "CruiserIso",
+                "Assets/_Project/Data/Boats/HullMeshes/ExpressCruiserIsoHullMesh.asset", "hullmesh.express_cruiser_iso",
+                new[] { "Assets/_Project/Data/Boats/Visuals/ExpressCruiserIso.asset" }, new[] { "visual.express_cruiser_iso" },
+                false, "Express cruiser 31", extraction: new RigHullExtraction { HullScope = "byId('express_cruiser')" }),
         };
 
         /// <summary>

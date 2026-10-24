@@ -1123,6 +1123,30 @@ namespace HiddenHarbours.Tools.RigBaking
             UnityEngine.Object.DestroyImmediate(old, allowDestroyingAssets: true);
         }
 
+        /// <summary>The drive's declared face set, beside the mesh rather than inside a channel.
+        /// Call after leaf separation and room append. RigMeshBuilder emits each face's corners
+        /// consecutively in this order without welding; this metadata never enters that builder.</summary>
+        public static Vector2Int[] DriveFaceRanges(RigMeshData data)
+        {
+            if (data.WalkGeometry == null || !data.WalkGeometry.TryGetValue("parts", out object raw))
+                return Array.Empty<Vector2Int>();
+            var drive = HullLayoutJson.List(raw, "geometry.parts")
+                .Select(p => HullLayoutJson.Object(p, "geometry.parts"))
+                .SingleOrDefault(p => HullLayoutJson.Text(p, "id", "geometry.parts") == "drive");
+            if (drive == null) return Array.Empty<Vector2Int>();
+            if (HullLayoutJson.Text(drive, "group", "geometry.parts.drive") != "tag")
+                throw new FormatException(data.Walk.Hull + ": geometry.parts.drive.group: expected tag");
+            int tag = HullLayoutJson.Integer(drive, "tag", "geometry.parts.drive");
+            var ranges = new List<Vector2Int>();
+            int first = 0;
+            foreach (var face in data.Faces)
+            {
+                if (face.PartTag == tag) ranges.Add(new Vector2Int(first, face.V.Length));
+                first += face.V.Length;
+            }
+            return ranges.ToArray();
+        }
+
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
                                        RigHullExtraction extraction = null)
         {
@@ -1203,14 +1227,19 @@ namespace HiddenHarbours.Tools.RigBaking
             // --- the measured azimuth convention (quarter turn: broadside, least ambiguous) --------
             AzimuthConvention convention = MeasureAzimuth(host, globalName, data, extraction);
 
-            // --- the rock amplitudes, off the exported ROCK block (optional; 0 = no rock) ----------
-            // Read from the HULL's scope for a registry rig: a 16.2 m boat and a 27.4 m boat do not
-            // share a sea state, and SportFisherIso2.ROCK does not exist. Identical to the global for
-            // every other rig, so no committed amplitude moves.
+            // Hull ROCK owns its amplitudes. Only the rig's default hull may use global ROCK.
             string rockScope = extraction != null ? extraction.ScopeOr(globalName) : globalName;
+            string rockHullId = host.EvaluateString($"String({rockScope}.id || '')");
             float rollA = 0f, pitchA = 0f, heaveA = 0f;
             bool hasRock = host.EvaluateBool(
                 $"typeof {rockScope}.ROCK === 'object' && {rockScope}.ROCK !== null");
+            if (!hasRock && rockScope != globalName && host.EvaluateBool(
+                    $"typeof {rockScope}.id === 'string' && {rockScope}.id === {globalName}.defaultHull"))
+            {
+                rockScope = globalName;
+                hasRock = host.EvaluateBool(
+                    $"typeof {rockScope}.ROCK === 'object' && {rockScope}.ROCK !== null");
+            }
             if (hasRock)
             {
                 rollA = (float)host.EvaluateNumber($"{rockScope}.ROCK.rollA || 0");
@@ -1219,8 +1248,9 @@ namespace HiddenHarbours.Tools.RigBaking
             }
             else
             {
-                Debug.LogWarning($"[rig-mesh] {globalName} exports no ROCK block — the mesh hull will " +
-                                 "not rock. If the rig has one, ask the art director to export it.");
+                Debug.LogWarning($"[rig-mesh] {rockHullId} has no ROCK of its own and is not its rig's default hull " +
+                                 $"with an exported ROCK block — {globalName} will not rock. " +
+                                 "If the rig has one, ask the art director to export it.");
             }
 
             // --- write the asset (create or refresh in place — the guid must survive) --------------
@@ -1304,6 +1334,7 @@ namespace HiddenHarbours.Tools.RigBaking
             def.LevelTags = LevelTableFor(data);
             def.LayoutSchema = data.Walk?.Schema ?? "";
             def.LiftSets = data.Walk == null ? Array.Empty<HullMeshDef.LiftSet>() : data.LiftSets;
+            def.DriveFaceVertexRanges = DriveFaceRanges(data);
 
             if (data.Walk == null && !created && beforeBake == EditorJsonUtility.ToJson(def) &&
                 MeshBytesEqual(def.Mesh, build.Mesh) && MeshBytesEqual(def.DoorLeafClosed, leafClosedBuild?.Mesh) &&

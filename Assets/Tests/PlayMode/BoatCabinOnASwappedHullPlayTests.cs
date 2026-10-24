@@ -135,6 +135,29 @@ namespace HiddenHarbours.Tests.PlayMode
         // =====================================================================================
 
         [UnityTest]
+        public IEnumerator RecreationSwap_InstallsTheAuthoredMeshAndOnlyTheAvailableCabin(
+            [Values("GoFast", "Bowrider", "ExpressCruiser")] string subjectName)
+        {
+            Rig rig = NewDoryRig();
+            BoatHullDef subject = LoadHull(subjectName);
+            if (rig.Boat == null || subject == null) yield break;
+            yield return null;
+            yield return Board(rig);
+            rig.Picker.Show(subject);
+            yield return null;
+            Assert.AreSame(subject, rig.BoatController.Hull);
+            Assert.IsNotNull(subject.Visual);
+            Assert.IsNotNull(subject.Visual.HullMesh);
+            Assert.AreEqual("hidden-harbours/hull-walk@1", subject.Visual.HullMesh.LayoutSchema);
+            Assert.AreEqual(subjectName != "Bowrider", subject.Visual.HullMesh.HasMeshInterior());
+            Assert.AreEqual(subjectName != "Bowrider", subject.Visual.HullMesh.HasDoorLeaf());
+            // Go-fast's authored cuddy is excluded from the walk. This records that limitation;
+            // it does not manufacture a room, pose, route or door installer for her.
+            Assert.AreEqual(subjectName == "ExpressCruiser", rig.Installer.Door != null,
+                "only the cruiser currently imports a walkable interior level");
+        }
+
+        [UnityTest]
         public IEnumerator SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow(
             [Values("CapeIslander", "LobsterBoat")] string subjectName)
         {

@@ -132,13 +132,19 @@ namespace HiddenHarbours.App.Editor
             "Punt",
             "PuntUpgraded",
             "ConsoleSkiff",
+            // Recreation tunable proposal: 4.60 m/s, between console and sport skiff.
+            "ExpressCruiser",
             "SportSkiff",
+            // 5.08 m/s from the proposed Def, before the 5.19 m/s Mk2.
+            "Bowrider",
             // The reshaped sport skiff, immediately after her v1 sister — which is BOTH things at once:
             // she is the v1 hull re-lofted (7.0 m still, but a chined deep-V — beam 2.30 → 2.54, sole
             // 0.28 → 0.46), so back-to-back with SportSkiff is the only way to feel the reshape; and at
             // 5.19 m/s she keeps the ramp monotonic on the way up to the twin's 5.63.
             "SportSkiffMk2",
             "SportSkiffTwin",
+            // 5.65 m/s: the go-fast closes the recreational ramp before the 5.70 m/s FRC.
+            "GoFast",
             // The two coast-guard RIBs close the ramp as the fastest things afloat (5.70 / 5.89 m/s —
             // deliberately under BowSprayGrading's 6 m/s ceiling, or they would outrun their own spray
             // art). They are SHORTER than the skiffs they follow: this is the clearest case of the ramp

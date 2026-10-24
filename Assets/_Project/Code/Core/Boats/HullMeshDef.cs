@@ -135,6 +135,11 @@ namespace HiddenHarbours.Core
                  "per-face normals, UV0 = (materialId, faceBias b, depthBias db, 0).")]
         public Mesh Mesh;
 
+        /// <summary>One (first vertex, vertex count) range per face tagged as the rig's declared
+        /// drive part, in Mesh's vertex space. Editor validation metadata only; no runtime reader.
+        /// Empty on hulls without a drive part. No vertex stream or mesh channel is added.</summary>
+        public Vector2Int[] DriveFaceVertexRanges = Array.Empty<Vector2Int>();
+
         /// <summary>
         /// <b>Her cabin door's LEAF, shut</b> (the rig's <c>doorFaces({doorOpen:0})</c>), a sub-asset
         /// beside <see cref="Mesh"/> in the same vertex layout. Null on every hull whose rig draws no

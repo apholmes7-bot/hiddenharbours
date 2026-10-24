@@ -97,7 +97,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     if (!ids.Contains(HullLayoutJson.Text(s, "area", "walk.spawn")))
                         throw new FormatException("walk.spawn.area: unknown area");
                 }
-                object house = HullLayoutJson.Required(root, "house");
+                object house = result.Kind == "open" && !root.ContainsKey("house")
+                    ? null : HullLayoutJson.Required(root, "house");
                 if (result.Kind == "open" && house != null) throw new FormatException("house: expected null on open hull");
                 if (result.Kind != "open")
                 {

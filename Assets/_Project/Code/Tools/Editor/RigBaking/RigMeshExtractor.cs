@@ -85,6 +85,9 @@ namespace HiddenHarbours.Tools.RigBaking
         public bool Interior;
         public int Role = -1;
 
+        /// <summary>The rig's optional hull-part tag. Kept as metadata; never a mesh attribute.</summary>
+        public int? PartTag;
+
         /// <summary>The rig's procedural surface generator for this face, as
         /// <see cref="BoatInteriorGeometryExtractor.TexKind"/>. 0 on every hull face and on any
         /// interior face the rig left untextured.</summary>

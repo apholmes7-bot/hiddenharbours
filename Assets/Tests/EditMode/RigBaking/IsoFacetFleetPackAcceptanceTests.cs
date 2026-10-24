@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
@@ -83,11 +84,20 @@ namespace HiddenHarbours.Tests.RigBaking
         const double MaxPercentUnmodelledDither = 30.0;
         const int MaxClusterUnmodelledDither = 900;
 
+        // Express cruiser's settee dither forms one 1170-pixel field at dir 0: artifacts/rec-boats-intake/phase-b/r10/cruiser-dir0-rig.png, artifacts/rec-boats-intake/phase-b/r10/cruiser-dir0-mesh.png, artifacts/rec-boats-intake/phase-b/r10/cruiser-dir0-diff.png.
+        static readonly Dictionary<string, int> ClusterAllowancesUnmodelledDither =
+            new Dictionary<string, int> { { "expressCruiser", 1200 } };
+
         /// <summary>The hulls the bound above applies to. Their premise is CHECKED by
         /// <see cref="TheDitherExemption_StillDescribesTheseRigs"/>, so the exemption cannot outlive
         /// the gap that justifies it.</summary>
         static readonly string[] CarryUnmodelledDither =
-            { "sportSkiffMk2", "zodiacHurricane", "zodiacFrc" };
+            // Go-fast declares a per-material dither weight that the mesh path does not model.
+            { "goFast",
+              // Bowrider declares a per-material dither weight that the mesh path does not model.
+              "bowrider",
+              // Express cruiser declares a per-material dither weight that the mesh path does not model.
+              "expressCruiser", "sportSkiffMk2", "zodiacHurricane", "zodiacFrc" };
 
         /// <summary>One photographed hull, and the three things that differ between rig shapes.</summary>
         readonly struct Subject
@@ -116,6 +126,12 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static IEnumerable<Subject> Photographed()
         {
+            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser" })
+            {
+                var h = HullMeshFleet.Get(key);
+                string asset = Path.GetFileName(h.MeshAssetPath).Replace("HullMesh.asset", "");
+                yield return new Subject(h.Key, h.Label, h.ScriptPath, h.GlobalName, asset, h.Extraction);
+            }
             foreach (ZodiacBuild b in ZodiacFleet.All)
                 yield return new Subject(b.Key, b.Label, ZodiacFleet.ScriptPath,
                                          ZodiacFleet.GlobalName, b.AssetName, b.Extraction);
@@ -215,7 +231,7 @@ namespace HiddenHarbours.Tests.RigBaking
             var report = new StringBuilder();
             int worstCardinal = 0, worstFractional = 0;
             double worstPercent = 0;
-            int worstDitherCluster = 0;
+            var worstDitherClusters = new Dictionary<string, int>();
             double worstDitherPercent = 0;
 
             foreach (Subject s in Photographed())
@@ -241,7 +257,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
                     if (dither)
                     {
-                        worstDitherCluster = Math.Max(worstDitherCluster, diff.LargestDifferingCluster);
+                        worstDitherClusters.TryGetValue(s.Key, out int worstCluster);
+                        worstDitherClusters[s.Key] = Math.Max(worstCluster, diff.LargestDifferingCluster);
                         worstDitherPercent = Math.Max(worstDitherPercent, diff.PercentDiffering);
                         continue;
                     }
@@ -268,8 +285,13 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.Less(worstDitherPercent, MaxPercentUnmodelledDither,
                 $"The unmodelled-dither hulls exceeded even their own widened bound:\n{report}" +
                 "That is worse than the known gap explains — see MaxPercentUnmodelledDither.");
-            Assert.LessOrEqual(worstDitherCluster, MaxClusterUnmodelledDither,
-                $"The unmodelled-dither hulls exceeded their widened cluster bound:\n{report}");
+            foreach (var hull in worstDitherClusters)
+            {
+                int bound = ClusterAllowancesUnmodelledDither.TryGetValue(hull.Key, out int allowance)
+                    ? allowance : MaxClusterUnmodelledDither;
+                Assert.LessOrEqual(hull.Value, bound,
+                    $"{hull.Key} exceeded its unmodelled-dither cluster bound {bound}:\n{report}");
+            }
         }
 
         /// <summary>

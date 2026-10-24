@@ -834,3 +834,87 @@ These need Unity, so this PR did not answer them:
   lists, hinged doors, and an area for every standing surface (§8).
 - **For a few weeks the fleet is mixed.** One guard proves no hull reads both paths (§5), and each
   batch leaves the tests as green as it found them.
+
+## 13. Recreation intake amendment (draft, 2026-10-21)
+
+This amendment records the delivered hull-layout-1 contract and the owner's batch order. It is
+drafted for lead-architect review and acceptance with the recreation intake; it does not claim a
+native bake or visual approval. Where earlier field sketches or batch lists disagree, this section
+is the proposed replacement. The delivered spec, writer, checker, rigs and walks retain their bytes.
+
+### The delivered forms (#945)
+
+| Earlier sketch | Delivered form and intake treatment |
+|---|---|
+| Area/height shorthand | `poly` is the player-centre polygon; `z` or a clamped `ramp` gives height. Holes remain holes; no second inset is applied. |
+| Level-only cuts | An area's `cut` names a cut key. `cutaway.shows` explicitly names the hard level shown, or null. Gate and ghost keep their published lists. |
+| Room heights inferred from levels | `house.decks` carries `soleZ`/`ceilZ`; geometry's level records remain independently checked. |
+| Pixel scale on the global only | The walk carries `cell.pxPerM`; the global still supplies `PX`, cell and pivot. |
+| Door tags treated like face tags | Door `lv`/`ro` are names resolved against the tag tables; face `lv`/`ro` are numeric ids. Sliding and hinged leaves retain their mechanisms. |
+| A lifted level means every role | Role subsets on other levels are retained and compiled as published, never expanded silently. These three boats publish whole-level lists. |
+
+Batch 0 merged as #945. Its reader needs one narrow correction: on an `open` hull an absent `house`
+means no house, as explicit null already does. An object on an open hull still refuses; a missing
+house on `cabin` or `ship` still refuses. The importer and washboards reader are unchanged by this
+correction. Three additive synthetic cases pin those branches.
+
+The house geometry spelling is `m`; walks and sidecars use `metres`. The extractor accepts exactly
+these two geometry spellings as metres, without changing either stored field. Rig, export symbol,
+hull and frame still compare literally. Every other geometry unit refuses by hull and field. The
+walk reader still requires `metres`. Spec §4.7 says `metres`, its checker does not test that geometry
+field, and house rigs use `m`; the next spec issue must reconcile that disagreement. The intake
+does not edit the spec or repair a pinned walk by rewriting the rig.
+
+### Scheme-stable exterior palettes
+
+Two exterior paint names share an index only when their ramp and offset match in **every** published
+scheme. A single-scheme rig keeps the old extraction exactly. Groups use their first used name in
+the rig's key order; palette order follows first face use. The paint baker selects those same
+representatives for every scheme through one member-chain filter, following the sloop precedent.
+`ReadMaterialTable` and its 16-slot check do not change. Room names never enter the exterior table.
+
+The go-fast has 14 exterior names, 11 default groups and 14 stable groups; `hull/bottom/g3` and
+`deck/g1` split across her other schemes. Bowrider and cruiser each have 14 names and 12 stable
+groups. Default room groups are 8/0/11. Rooms keep default paints, as main's presentation service
+reads `InteriorRamps` independently of the exterior scheme. The existing interior table is separate;
+this intake budgets no more than 16 entries in either table and widens no shader or Def limit.
+All 284 existing generated scheme tables were compared by names, offsets and RGBA bytes without a
+change; the three added rows produce 21 tables. The three grouping cases vary synthetic schemes in
+memory, leaving every existing contract, reader and paint case unchanged.
+
+### Batch 1 is two ordered intakes
+
+1. **Recreation first:** `go_fast`, `bowrider`, `express_cruiser`, their three full meshes and walks,
+   the delivered spec/writer/checker, Defs, paints and builder-authored F rungs. No old hull moves;
+   no legacy sidecar, kit room, sheet, implementation or test retires in this intake.
+2. **Sport fishers and expedition yacht 120 next:** one intake based on the recreation merge.
+   The sport-fisher retirements and moved tests listed in §9 belong there. Its washboards reader
+   correction goes on top of this intake. Other hull families keep their own later charters.
+
+The first intake carries separate commits for the absent-house correction, geometry-unit correction
+and scheme-stable paint path, followed by intake data/tests/docs and native outputs. Lead-architect
+reviews the engine corrections and this amendment; art-pipeline reviews the paint path.
+
+The walks retain character rig 10.3's stamps and fit counts. Zero fits and `_excluded` entries keep
+their published waits for 10.4; no stand-in clip, pose, fixture or navigation workaround is added.
+The go-fast has a cuddy mesh and leaf but no imported walkable room level. R1 moves bowrider's
+WATERLINE from .40 to her .34 m cockpit sole and regenerates her walk; the floor guard passes. F remains a speed
+ramp followed by the size ladder. These are reported findings, not reasons to change art or guards.
+The unchanged sea-side classifier also predicts a deck-line agreement failure on all three; the
+intake note names the case and measurements. A green native run is not yet promised.
+
+The rollout record remains pending native evidence. For recreation, record per-hull exterior/room
+faces and ramps, triangles, leaf poses and reveal, and the authored flotation columns `Draft`,
+`Deck` (watertight cockpit sole), `HalfBeam`, `TrueHalfBeam` from `FleetFlotationTableTests`.
+That table already carries the deck number; §9's old summary record did not have a separate deck
+column. See [the intake note](../art/recreation-boats-intake.md) for every proposed asset/id,
+tunable and source, zero-fit/exclusion record, costs and plate plan.
+
+Phase B uses the supplied base containing held props M1 (#972) and the St Peters crossing door (#969).
+R4 keeps the builder roster as data and patches only three references into the existing scene.
+The scene must have exactly three insertions and its roster must match the builder in order.
+No scene rebuild or retired exporter runs.
+This slot addresses §10 questions 1 (gate instruction counts) and 5 (near-lining cull). Questions
+2 and 6 stay with the sport fishers; 3 and 4 need a ghost in play. The owner decides the looks.
+
+R2 (a), Art desk 2026-10-22: the drive’s declared part tag is retained through extraction. The bake saves one vertex range per drive face beside its unchanged mesh on HullMeshDef, empty on hulls without a drive. No shader/mesh channel or runtime reader is added. The native unmodified guard is the first record; its accepted red then permits the tag cut and GF.sole/CR.sole rows, followed by a green guard and regression. Lead-architect reviews the Core field. The drive’s trim, tilt and steer in play: logged, not built. The go-fast cuddy is held shut for kit 10.4’s crawl-in and its game intake.

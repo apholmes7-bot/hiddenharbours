@@ -40,12 +40,23 @@ namespace HiddenHarbours.Tools.RigBaking
                 HullWalkImportResult result = Populate(rig.Walk, rig, hullStem, deck, room);
                 if (!result.Ok) return result;
                 var savedDeck = Save(deck, deckPath);
-                if (rig.Walk.House != null) Save(room, roomPath);
+                var savedRoom = rig.Walk.House != null ? Save(room, roomPath) : null;
                 mesh.LayoutSchema = rig.Walk.Schema;
                 mesh.LiftSets = rig.LiftSets;
                 EditorUtility.SetDirty(mesh);
                 foreach (BoatVisualDef visual in visuals)
                 {
+                    // Preserve measured room metadata even when a held room has no enterable level.
+                    if (savedRoom != null)
+                    {
+                        if (visual.Interior != null && visual.Interior != savedRoom)
+                        {
+                            result.Refusals.Add(hullStem + ": visual '" + visual.name +
+                                "': Interior references a different interior asset ('" + visual.Interior.Id + "')");
+                            continue;
+                        }
+                        visual.Interior = savedRoom;
+                    }
                     visual.Deck = savedDeck;
                     EditorUtility.SetDirty(visual);
                 }
@@ -225,7 +236,12 @@ namespace HiddenHarbours.Tools.RigBaking
         static Vector3 RampEnd(HullWalkArea area, bool last)
         {
             HullWalkRamp r = area.Ramp;
-            float at = last ? r.A1 : r.A0, z = last ? r.Z1 : r.Z0;
+            // The walk clamps z beyond a0/a1: a flat landing can extend to the climb's boundary.
+            // Join floors at that authored boundary, not at the interior interpolation endpoint.
+            float[] extent = area.Polygon.Select(p => r.Axis == "x" ? p.x : p.y).ToArray();
+            bool increasing = r.A1 >= r.A0;
+            float at = last == increasing ? extent.Max() : extent.Min();
+            float z = last ? r.Z1 : r.Z0;
             var crossings = new List<float>();
             for (int i = 0; i < area.Polygon.Length; i++)
             {

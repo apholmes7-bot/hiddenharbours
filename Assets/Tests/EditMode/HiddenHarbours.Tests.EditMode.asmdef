@@ -18,6 +18,7 @@
         "HiddenHarbours.Player",
         "HiddenHarbours.World",
         "HiddenHarbours.Tests.Support",
+        "HiddenHarbours.Tools.RigBaking.Editor",
         "Unity.InputSystem"
     ],
     "includePlatforms": [

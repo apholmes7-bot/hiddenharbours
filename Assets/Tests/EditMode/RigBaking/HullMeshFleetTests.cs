@@ -265,18 +265,22 @@ namespace HiddenHarbours.Tests.RigBaking
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 host.Execute(File.ReadAllText(Path.Combine(RepoRoot, hull.ScriptPath)));
 
-                // ⚠️ ROCK is not always on the GLOBAL, and assuming it was is how this went red on a
-                // CORRECT bake. sportFisherIsoRig2.js is a registry — her two hulls carry their own
-                // sea state and her global carries none. They genuinely differ, and the right way
-                // round: rollA 2.1 on the 16.2 m boat against 1.35 on the 27.4 m one. So this reads
-                // from the same scope the baker read from. For every other hull that scope IS the
-                // global, so nothing about the other thirty-two moves.
-                string g = hull.Extraction != null
+                // Resolve independently of the baker: a hull's own block wins. A module's
+                // default-hull aliases are available only to that declared default hull.
+                string scope = hull.Extraction != null
                     ? hull.Extraction.ScopeOr(hull.GlobalName)
                     : hull.GlobalName;
-
-                Assert.IsTrue(host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null"),
-                    $"{hull.Key} exports no ROCK block — a hull that cannot rock is not a hull.");
+                string id = host.EvaluateString($"String({scope}.id || '')");
+                string g = scope;
+                bool hasRock = host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null");
+                if (!hasRock && scope != hull.GlobalName && host.EvaluateBool(
+                        $"typeof {scope}.id === 'string' && {scope}.id === {hull.GlobalName}.defaultHull"))
+                {
+                    g = hull.GlobalName;
+                    hasRock = host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null");
+                }
+                Assert.IsTrue(hasRock,
+                    $"{(string.IsNullOrEmpty(id) ? hull.Key : id)} has no ROCK of its own and is not its rig's default hull");
 
                 Assert.AreEqual((float)host.EvaluateNumber($"{g}.ROCK.rollA || 0"),
                                 def.RockRollDegrees, 1e-4f, $"{hull.Key} roll");
@@ -284,6 +288,24 @@ namespace HiddenHarbours.Tests.RigBaking
                                 def.RockPitchDegrees, 1e-4f, $"{hull.Key} pitch");
                 Assert.AreEqual((float)host.EvaluateNumber($"{g}.ROCK.heaveA || 0"),
                                 def.RockHeavePixels, 1e-4f, $"{hull.Key} heave");
+
+                // The walk is a second source (ADR 0048 row 28), read from disk, not extraction.
+                string walkPath = Path.Combine(RepoRoot, HullWalkSidecarImporter.SidecarFolder,
+                    Path.GetFileNameWithoutExtension(hull.ScriptPath) + "." + id + ".walk.json");
+                if (File.Exists(walkPath))
+                {
+                    var walk = HullLayoutJson.Object(DeckSidecarJson.Parse(File.ReadAllText(walkPath)), "walk");
+                    if (walk.ContainsKey("rock"))
+                    {
+                        var rock = HullLayoutJson.Child(walk, "rock");
+                        Assert.AreEqual(HullLayoutJson.Number(rock, "rollA", "rock"),
+                            def.RockRollDegrees, 1e-4f, $"{hull.Key} walk.rock.rollA");
+                        Assert.AreEqual(HullLayoutJson.Number(rock, "pitchA", "rock"),
+                            def.RockPitchDegrees, 1e-4f, $"{hull.Key} walk.rock.pitchA");
+                        Assert.AreEqual(HullLayoutJson.Number(rock, "heaveA", "rock"),
+                            def.RockHeavePixels, 1e-4f, $"{hull.Key} walk.rock.heaveA");
+                    }
+                }
             }
         }
 
@@ -356,6 +378,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// are pinned instead of their boarding line — see the premise note on the test below. The
         /// heights are read off the rig sources, which the classifier never opens, so this stays an
         /// independent cross-check.</summary>
+        // Walk rooms enter the mask at code 0 after classification, so this scan never sees their soles.
         static readonly (string Key, float LowestInterior, string Whence)[] CabinSoleHulls =
         {
             ("sloop30", 0.35f, "cabin sole (sloopIsoRig.js CAB_SOLE = 0.35; DWL 0.55, cockpit SOLE 1.15)"),
@@ -426,8 +449,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 // (codes 2/3) are policed by their own test.
                 int interior = 0;
                 float lowest = float.MaxValue;
+                // The authored drive part is metadata beside the mesh, not a height cut.
+                var driveVertices = new HashSet<int>(def.DriveFaceVertexRanges
+                    .SelectMany(range => Enumerable.Range(range.x, range.y)));
                 for (int i = 0; i < attrs.Count && i < verts.Length; i++)
                 {
+                    if (driveVertices.Contains(i)) continue;
                     if (attrs[i].w <= 0.5f || attrs[i].w >= 1.5f) continue;
                     interior++;
                     if (verts[i].z < lowest) lowest = verts[i].z;

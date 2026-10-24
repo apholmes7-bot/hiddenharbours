@@ -44,9 +44,12 @@ namespace HiddenHarbours.Tools.RigBaking
             var geometry = Json(host, scope + ".geometry()");
             var data = new RigMeshData { RigKey = global, GlobalName = global, Walk = walk, WalkGeometry = geometry };
             ReadGeometry(data, geometry);
-            foreach (string field in new[] { "rig", "exportSymbol", "hull", "units", "frame" })
+            foreach (string field in new[] { "rig", "exportSymbol", "hull", "frame" })
                 if (HullLayoutJson.Text(geometry, field, "geometry") != HullLayoutJson.Text(walk.Fields, field))
                     throw new FormatException(walk.Hull + ": geometry." + field + ": differs from walk");
+            string units = HullLayoutJson.Text(geometry, "units", "geometry");
+            if (units != "metres" && units != "m")
+                throw new FormatException(walk.Hull + ": geometry.units: unsupported unit \"" + units + "\"");
             if (HullLayoutJson.Number(geometry, "dwlZ", "geometry") != walk.Dwl)
                 throw new FormatException(walk.Hull + ": geometry.dwlZ: differs from walk.DWL");
             var tags = HullLayoutJson.Child(walk.Fields, "tags");
@@ -75,7 +78,8 @@ namespace HiddenHarbours.Tools.RigBaking
             var leaf = FacesJson(host, scope + ".doorFaces(0)");
             var room = FacesJson(host, scope + ".interiorFaces()");
             exterior.AddRange(leaf);
-            ReadFaces(exterior, mats, data, false, data.Faces, data.Materials);
+            ReadFaces(exterior, mats, data, false, data.Faces, data.Materials,
+                SchemeStableGroups(host, scope, mats, exterior));
             data.WalkInteriorFaces = new List<RigFace>();
             ReadFaces(room, mats, data, true, data.WalkInteriorFaces, data.InteriorMaterials);
             if (data.Materials.Count > HullMeshDef.HullRampSlots || data.InteriorMaterials.Count > HullMeshDef.InteriorRampSlots)
@@ -114,8 +118,31 @@ namespace HiddenHarbours.Tools.RigBaking
             return leaf;
         }
 
+        static Dictionary<string, string> SchemeStableGroups(IRigScriptHost host, string scope,
+                            Dictionary<string, object> mats, List<object> exterior)
+        {
+            // A single-scheme rig keeps its original palette construction exactly.
+            if (!host.EvaluateBool($"Array.isArray({scope}.schemeIds) && {scope}.schemeIds.length > 1"))
+                return null;
+            var tables = HullLayoutJson.List(DeckSidecarJson.Parse(host.EvaluateString(
+                $"JSON.stringify({scope}.schemeIds.map(function(id){{return {scope}.matsFor(id).MATS;}}))")), "schemes")
+                .Select(t => HullLayoutJson.Object(t, "scheme.MATS")).ToArray();
+            var used = new HashSet<string>(exterior.Select(f => HullLayoutJson.Text(HullLayoutJson.Object(f, "face"), "mat")));
+            var groups = new Dictionary<string, string>(StringComparer.Ordinal);
+            // Keep the rig's key order so each group's representative is its first used name.
+            foreach (string name in mats.Keys.Where(used.Contains))
+                groups.Add(name, string.Join(";", tables.Select(table =>
+                {
+                    var paint = HullLayoutJson.Child(table, name, "scheme.MATS");
+                    return HullLayoutJson.Integer(paint, "off", name).ToString(CultureInfo.InvariantCulture) + "|" +
+                        string.Join(",", HullLayoutJson.Array(paint, "ramp", name).Select(c => c as string));
+                })));
+            return groups;
+        }
+
         static void ReadFaces(List<object> faces, Dictionary<string, object> mats, RigMeshData data,
-                              bool interior, List<RigFace> output, List<RigMaterial> palette)
+                              bool interior, List<RigFace> output, List<RigMaterial> palette,
+                              Dictionary<string, string> paintGroups = null)
         {
             var roles = HullLayoutJson.TagIds(HullLayoutJson.Child(data.WalkGeometry, "roles"), "geometry.roles");
             foreach (object raw in faces)
@@ -126,11 +153,15 @@ namespace HiddenHarbours.Tools.RigBaking
                 string[] hex = HullLayoutJson.Array(paint, "ramp", "MATS." + name).Select(c => c as string).ToArray();
                 if (hex.Length == 0) throw new FormatException("MATS." + name + ".ramp: empty ramp");
                 int offset = HullLayoutJson.Integer(paint, "off", "MATS." + name);
-                int mat = palette.FindIndex(m => m.Off == offset && m.RampHex.SequenceEqual(hex));
+                int mat = palette.FindIndex(m => paintGroups == null
+                    ? m.Off == offset && m.RampHex.SequenceEqual(hex)
+                    : paintGroups[m.Name] == paintGroups[name]);
                 if (mat < 0)
                 {
                     mat = palette.Count;
-                    palette.Add(new RigMaterial { Name = name, Off = offset, RampHex = hex, Ramp = hex.Select(Color).ToArray() });
+                    string representative = paintGroups == null ? name : mats.Keys.First(n =>
+                        paintGroups.TryGetValue(n, out string group) && group == paintGroups[name]);
+                    palette.Add(new RigMaterial { Name = representative, Off = offset, RampHex = hex, Ramp = hex.Select(Color).ToArray() });
                 }
                 int lv = HullLayoutJson.Integer(f, "lv", "face"), ro = HullLayoutJson.Integer(f, "ro", "face");
                 HullLayoutJson.Number(f, "b", "face"); HullLayoutJson.Number(f, "db", "face");
@@ -145,7 +176,8 @@ namespace HiddenHarbours.Tools.RigBaking
                         return new Vector3d((double)a[0], (double)a[1], (double)a[2]);
                     }).ToArray(), Mat = mat, Level = lv, Role = ro, Interior = it,
                     LevelName = data.LevelIds.First(kv => kv.Value == lv).Key,
-                    B = (double)HullLayoutJson.Required(f, "b", "face"), Db = (double)HullLayoutJson.Required(f, "db", "face") };
+                    B = (double)HullLayoutJson.Required(f, "b", "face"), Db = (double)HullLayoutJson.Required(f, "db", "face"),
+                    PartTag = f.ContainsKey("tag") ? HullLayoutJson.Integer(f, "tag", "face") : (int?)null };
                 if (f.TryGetValue("sg", out object sg))
                 {
                     face.TexKind = sg as string == "plank" ? 1 : sg as string == "board" ? 2 : sg as string == "quilt" ? 3 :

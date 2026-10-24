@@ -103,6 +103,11 @@ namespace HiddenHarbours.Tests.RigBaking
         static Dictionary<string, Occupancy> BuildTable()
         {
             var t = new Dictionary<string, Occupancy>();
+            // One active pilot; passenger stands are published enter_ride points waiting on sit.
+            // Furniture is already in the full mesh and consumes no deck-occupant slot.
+            t["hullmesh.go_fast_iso"] = new Occupancy("go_fast", 1, 0, 0, 0, 4, "goFastIsoRig.js");
+            t["hullmesh.bowrider_iso"] = new Occupancy("bowrider", 1, 0, 0, 0, 7, "bowriderIsoRig.js");
+            t["hullmesh.express_cruiser_iso"] = new Occupancy("express_cruiser", 1, 0, 0, 0, 6, "cruiserIsoRig.js");
 
             // ---- 18 lobster variants: the stern-deck loop, on a hull that has both stack surfaces.
             // crew 2 (deck-loop-kit README:108-109) + furniture 4 (the kit's four stations, as both
@@ -311,8 +316,8 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void EveryAuthoredId_FollowsTheProjectConvention()
         {
-            Assert.AreEqual(23, Authored.Count,
-                "The pack is 23 hulls (18 lobster + 2 zodiac + sport skiff v2 + 2 sport fisher) — " +
+            Assert.AreEqual(26, Authored.Count,
+                "The table is 26 hulls (18 lobster + 2 zodiac + sport skiff v2 + 2 sport fisher + 3 recreation) — " +
                 "the same set docs/design/fleet-flotation.md floats.");
 
             foreach (string id in Authored.Keys)

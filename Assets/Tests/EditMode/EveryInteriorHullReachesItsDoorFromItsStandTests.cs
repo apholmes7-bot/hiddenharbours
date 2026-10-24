@@ -126,6 +126,15 @@ namespace HiddenHarbours.Tests.EditMode
 
         private void Guard(string hullName, Stand stand)
         {
+            BoatHullDef hull = LoadInteriorHull(hullName);
+            string stem = hullName + "Iso";
+            if (hull != null && BoatInteriorPlacementTests.IsWalkBuiltRoom(stem)
+                && !hull.Visual.Interior.HasInterior())
+            {
+                // Keep both discovered stands for held room metadata; neither may install an entry.
+                BoatInteriorPlacementTests.AssertHeldRoomHasNoEntry(stem, hull.Visual.Interior, _spawned);
+                return;
+            }
             Subject s = Build(hullName, _spawned);
             CabinWalkGraph graph = s.Graph;
 

@@ -7,6 +7,8 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
+using HiddenHarbours.Tests.Support;
+using HiddenHarbours.Tools.RigBaking;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -120,6 +122,65 @@ namespace HiddenHarbours.Tests.EditMode
         {
             BoatVisualDef visual = Visual(stem);
             return visual != null && visual.HullMesh != null && visual.HullMesh.HasMeshInterior();
+        }
+
+        internal static bool IsWalkBuiltRoom(string stem)
+            => RoomIsGeometry(stem) && Visual(stem).HullMesh.LayoutSchema == HullWalkSidecarReader.Schema;
+
+        internal static void AssertHeldRoomHasNoEntry(string stem, BoatInteriorDef def,
+                                                      List<UnityEngine.Object> spawned)
+        {
+            Assert.IsFalse(def.HasInterior(), stem + ": held metadata has no usable room");
+            var hull = AssetDatabase.FindAssets("t:BoatHullDef", new[] { "Assets/_Project/Data/Boats" })
+                .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<BoatHullDef>)
+                .Single(h => h != null && h.Visual == Visual(stem));
+            var root = new GameObject(stem + "HeldRoom");
+            spawned.Add(root);
+            var boat = root.AddComponent<BoatController>();
+            boat.SetHull(hull);
+            boat.enabled = false;
+            var installer = root.AddComponent<BoatInteriorInstaller>();
+            installer.Build();
+            Assert.IsFalse(installer.Built, stem + ": held room installs nothing");
+            Assert.IsNull(installer.Interior);
+            Assert.IsNull(installer.Door, stem + ": no entry is offered");
+            Assert.IsNull(installer.Cutaway);
+        }
+
+        private void AssertWalkDoorHasItsAuthoredLanding(string stem, BoatInteriorDef def)
+        {
+            HullWalkRead walk = CommittedHullWalk.Read(def.SourceSidecar,
+                Directory.GetParent(Application.dataPath).FullName);
+            Assert.IsNotNull(walk.House, stem + ": a measured room has its own walk house");
+            if (!def.HasInterior())
+            {
+                AssertHeldRoomHasNoEntry(stem, def, _spawned);
+                return;
+            }
+
+            var door = HullLayoutJson.Child(walk.House, "door", "house");
+            var point = new Vector2((HullLayoutJson.Number(door, "x0") + HullLayoutJson.Number(door, "x1")) / 2,
+                HullLayoutJson.Number(door, "y"));
+            float sill = HullLayoutJson.Number(door, "sillZ");
+            Assert.AreEqual(HullLayoutJson.Text(door, "id"), def.Door.Id, stem + ": her declared door");
+            Assert.AreEqual(point, new Vector2(def.Door.ThresholdPoint.x, def.Door.ThresholdPoint.y),
+                stem + ": plan point comes from her walk door");
+            Assert.Less(Mathf.Abs(def.Door.ThresholdPoint.z - sill), 0.51f, stem + ": her declared sill z");
+
+            bool supported = walk.Areas.Any(a =>
+            {
+                if (a.Ramp != null)
+                {
+                    if (!a.IsClimb) return false;
+                    float axis = a.Ramp.Axis == "x" ? point.x : point.y;
+                    float t = (axis - a.Ramp.A0) / (a.Ramp.A1 - a.Ramp.A0);
+                    if (a.Ramp.Z0 >= a.Ramp.Z1 ? t > 0 : t < 1) return false; // upper plateau only
+                }
+                return Mathf.Abs(a.HeightAt(point) - sill) < 0.51f
+                    && DeckAreaMath.Contains(a.Polygon, point)
+                    && !a.Holes.Any(h => DeckAreaMath.Contains(h, point));
+            });
+            Assert.IsTrue(supported, stem + ": sill is inside its walk level or climb upper plateau at the declared z");
         }
 
         // =====================================================================================
@@ -458,6 +519,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach ((string stem, BoatInteriorDef def) in Interiors())
             {
+                if (IsWalkBuiltRoom(stem)) { AssertWalkDoorHasItsAuthoredLanding(stem, def); continue; }
                 if (def.Door == null) { wrong.Add($"{stem}: no threshold at all"); continue; }
 
                 float z = def.Door.ThresholdPoint.z;
@@ -482,6 +544,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach ((string stem, BoatInteriorDef def) in Interiors())
             {
+                if (IsWalkBuiltRoom(stem)) { AssertWalkDoorHasItsAuthoredLanding(stem, def); continue; }
                 if (def.Door == null || def.FootprintOutline == null || def.FootprintOutline.Length < 3)
                     continue;
 

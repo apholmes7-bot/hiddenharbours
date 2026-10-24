@@ -34,8 +34,11 @@ namespace HiddenHarbours.Tests.EditMode
             ["boat.sport_skiff_twin"] = Form.Planing,
             ["boat.zodiac_frc"] = Form.Planing,
             ["boat.zodiac_hurricane"] = Form.Planing,
+            ["boat.bowrider"] = Form.Planing, // Def authors a 3.5-degree planing drop.
             // Semi-displacement: she rises and holds it.
             ["boat.console_skiff"] = Form.SemiDisplacement,
+            ["boat.go_fast"] = Form.SemiDisplacement, // Current Def rises 3 degrees and authors no drop.
+            ["boat.express_cruiser"] = Form.SemiDisplacement, // Current Def rises 3 degrees and authors no drop.
             ["boat.cape_islander"] = Form.SemiDisplacement,
             ["boat.lobster_boat"] = Form.SemiDisplacement,
             ["boat.lobster_inshore_hardtop_fundy"] = Form.SemiDisplacement,

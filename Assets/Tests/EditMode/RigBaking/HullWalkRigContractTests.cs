@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
@@ -8,6 +9,104 @@ namespace HiddenHarbours.Tests.RigBaking
 {
     public sealed class HullWalkRigContractTests
     {
+        static RigMeshData WithGeometryUnits(string units)
+        {
+            using var host = RigScriptHostFactory.Create();
+            host.Execute(File.ReadAllText(Path.Combine(RigCatalog.RepoRoot, HullWalkFixture.Rig)));
+            // Vary only the synthetic fixture's returned geometry, in memory.
+            if (units != null)
+                host.Execute("const originalGeometry = BoxWalk.geometry; " +
+                    "BoxWalk.geometry = () => Object.assign({}, originalGeometry(), {units:'" + units + "'});");
+            return HullWalkRigExtractor.Extract(host, HullWalkFixture.Rig, "BoxWalk", "BoxWalk",
+                Path.Combine(RigCatalog.RepoRoot, HullWalkFixture.Walk));
+        }
+
+        static object[] GeometrySnapshot(RigMeshData data)
+        {
+            object[] Faces(IEnumerable<RigFace> faces) => faces.Select(f => (object)new object[] {
+                f.V.Select(v => new[] { v.X, v.Y, v.Z }).ToArray(), f.Mat, f.B, f.Db,
+                f.Level, f.Role, f.LevelName, f.Interior, f.TexKind, f.TexPeriod, f.Uv }).ToArray();
+            object[] Paints(IEnumerable<RigMaterial> paints) => paints.Select(m => (object)new object[] {
+                m.Name, m.Ramp, m.RampHex, m.Off, m.Gain, m.Bias, m.OrderedDither, m.FixedIndex }).ToArray();
+            return new object[] { data.RigKey, data.GlobalName, data.SourceFaceExpression,
+                data.W, data.H, data.PxPerMetre, data.PivotX, data.PivotY, data.DefaultElev,
+                data.Gain, data.Bias, data.LightN, data.Keyline, data.Bayer, data.BayerWasExported,
+                Faces(data.Faces), Faces(data.WalkInteriorFaces), Paints(data.Materials), Paints(data.InteriorMaterials),
+                data.LevelIds, data.Levels.Select(l => new object[] {
+                    l.Id, l.Tag, l.DeckId, l.SoleZ, l.Enclosed, l.CeilingKind, l.CeilingZ }).ToArray(),
+                data.LiftSets.Select(c => new object[] {
+                    c.Key, c.DeckId, c.Level, c.LiftLevels, c.ShownRoles, c.RoleMasks }).ToArray(), data.Walk.Fields };
+        }
+
+        [Test]
+        public void GeometryMetres_KeepsTheFixtureExtraction()
+        {
+            var original = WithGeometryUnits(null);
+            var explicitMetres = WithGeometryUnits("metres");
+            Assert.That(GeometrySnapshot(explicitMetres), Is.EqualTo(GeometrySnapshot(original)));
+            Assert.That(explicitMetres.WalkGeometry["units"], Is.EqualTo("metres"));
+        }
+
+        [Test]
+        public void GeometryM_EqualsMetresWithoutRewritingFields()
+        {
+            var metres = WithGeometryUnits("metres");
+            var shorthand = WithGeometryUnits("m");
+            Assert.That(GeometrySnapshot(shorthand), Is.EqualTo(GeometrySnapshot(metres)));
+            Assert.That(shorthand.WalkGeometry["units"], Is.EqualTo("m"));
+            Assert.That(shorthand.Walk.Fields["units"], Is.EqualTo("metres"));
+        }
+
+        [Test]
+        public void GeometryFeet_RefusesWithHullAndField()
+        {
+            var error = Assert.Throws<FormatException>(() => WithGeometryUnits("feet"));
+            Assert.That(error.Message, Is.EqualTo("box_walk: geometry.units: unsupported unit \"feet\""));
+        }
+
+        static RigMeshData WithPaintSchemes(bool split, bool singleScheme = false, bool declareSchemes = true)
+        {
+            using var host = RigScriptHostFactory.Create();
+            host.Execute(File.ReadAllText(Path.Combine(RigCatalog.RepoRoot, HullWalkFixture.Rig)));
+            // Give the synthetic fixture two exterior paint names, then vary only their
+            // in-memory scheme tables. Its file and its walk stamp remain untouched.
+            host.Execute("const paintFaces = BoxWalk.faceList, paintMats = BoxWalk.matsFor; " +
+                "BoxWalk.faceList = () => {const f=paintFaces();f[0].mat='stripe';return f;}; " +
+                "BoxWalk.matsFor = s => {const M=paintMats().MATS;" +
+                "M.stripe=Object.assign({},M.paint,{ramp:" +
+                (split ? "s==='two'?['#abcdef','#fedcba']:M.paint.ramp" : "M.paint.ramp") + "});return {MATS:M};};");
+            if (declareSchemes)
+                host.Execute("BoxWalk.schemeIds=" + (singleScheme ? "['one']" : "['one','two']") + ";");
+            return HullWalkRigExtractor.Extract(host, HullWalkFixture.Rig, "BoxWalk", "BoxWalk",
+                Path.Combine(RigCatalog.RepoRoot, HullWalkFixture.Walk));
+        }
+
+        [Test]
+        public void PaintNamesIdenticalInEveryScheme_ShareOneIndex()
+        {
+            var data = WithPaintSchemes(false);
+            Assert.That(data.Materials.Count, Is.EqualTo(1));
+            Assert.That(data.Faces[0].Mat, Is.EqualTo(data.Faces[1].Mat));
+            Assert.That(data.Materials[0].Name, Is.EqualTo("paint"), "representative follows the rig's key order");
+        }
+
+        [Test]
+        public void PaintNamesThatPartInAnotherScheme_GetSeparateIndices()
+        {
+            var data = WithPaintSchemes(true);
+            Assert.That(data.Materials.Count, Is.EqualTo(2));
+            Assert.That(data.Faces[0].Mat, Is.Not.EqualTo(data.Faces[1].Mat));
+            CollectionAssert.AreEqual(data.Materials[0].RampHex, data.Materials[1].RampHex,
+                "the default colours agree, but the second scheme must still be expressible");
+        }
+
+        [Test]
+        public void OneScheme_KeepsLegacyExtraction()
+        {
+            Assert.That(GeometrySnapshot(WithPaintSchemes(false, singleScheme: true)),
+                Is.EqualTo(GeometrySnapshot(WithPaintSchemes(false, declareSchemes: false))));
+        }
+
         [Test]
         public void LiftSets_KeepWholeLevelsAndExactRoleSubsets()
         {

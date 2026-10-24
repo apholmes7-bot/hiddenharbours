@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e72940bfdac646969b26b2e0ba3cb020, type: 3}
+  m_Name: GoFastIso
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatInteriorDef
+  Id: interior.go_fast_iso
+  FitsHulls:
+  - GoFastIso
+  SourceSidecar: docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json
+  SourceInteriorRig: docs/art/rigs/goFastIsoRig.js
+  SourceHullRig: docs/art/rigs/goFastIsoRig.js
+  InteriorRigSha256: 77394353fc048ee56e4dd722d94fb73ad7be9be2443608d059699151f7704cef
+  HullRigSha256: 77394353fc048ee56e4dd722d94fb73ad7be9be2443608d059699151f7704cef
+  PixelsPerMetre: 32
+  CellPixels: {x: 464, y: 384}
+  PivotPixels: {x: 232, y: 200}
+  FootprintOutline: []
+  Levels: []
+  Door:
+    Id: cuddy_door
+    Side: aft
+    ClearWidthMeters: 0.4
+    ClearHeightMeters: 0.51
+    ThresholdPoint: {x: 0, y: -1.56, z: 0.66}
+    Mechanism: 0
+    KeepClear:
+    - {x: -0.2, y: -2.02}
+    - {x: 0.2, y: -2.02}
+    - {x: 0.2, y: -1.0999999}
+    - {x: -0.2, y: -1.0999999}
+    CueFrames: 0
+    CueMillisecondsPerFrame: 0
+    CueReversedOnExit: 1
+  AdditionalDoors: []
+  Anchors:
+  - Id: helm
+    Action: enter_helm
+    ReachPoint: {x: 0.42, y: -1.86, z: 0.62}
+    VisibleFacings: []
+  - Id: seat_codriver
+    Action: enter_ride
+    ReachPoint: {x: -0.42, y: -1.86, z: 0.62}
+    VisibleFacings: []
+  - Id: seat_rear_port
+    Action: enter_ride
+    ReachPoint: {x: -0.49, y: -2.7, z: 0.62}
+    VisibleFacings: []
+  - Id: seat_rear_centre
+    Action: enter_ride
+    ReachPoint: {x: 0, y: -2.7, z: 0.62}
+    VisibleFacings: []
+  - Id: seat_rear_stbd
+    Action: enter_ride
+    ReachPoint: {x: 0.49, y: -2.7, z: 0.62}
+    VisibleFacings: []
+  - Id: engine
+    Action: open_close_engine
+    ReachPoint: {x: 0, y: -2.66, z: 0.62}
+    VisibleFacings: []
+  - Id: cuddy_door
+    Action: open_close
+    ReachPoint: {x: 0, y: -1.79, z: 0.62}
+    VisibleFacings: []
+  - Id: bunk
+    Action: sleep
+    ReachPoint: {x: 0, y: -0.78, z: 0.26}
+    VisibleFacings: []
+  - Id: cooler
+    Action: storage
+    ReachPoint: {x: 0, y: -0.925, z: 0.26}
+    VisibleFacings: []
+  - Id: head
+    Action: toilet
+    ReachPoint: {x: 0, y: -0.925, z: 0.26}
+    VisibleFacings: []
+  - Id: locker
+    Action: storage
+    ReachPoint: {x: 0, y: -0.78, z: 0.26}
+    VisibleFacings: []
+  Routes: []
+  FloorToleranceMetres: 0.1
+  RouteEndReachMetres: 0.3
+  RidesHullRock: 1

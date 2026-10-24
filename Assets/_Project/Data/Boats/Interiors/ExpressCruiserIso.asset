@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e72940bfdac646969b26b2e0ba3cb020, type: 3}
+  m_Name: ExpressCruiserIso
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatInteriorDef
+  Id: interior.express_cruiser_iso
+  FitsHulls:
+  - ExpressCruiserIso
+  SourceSidecar: docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json
+  SourceInteriorRig: docs/art/rigs/cruiserIsoRig.js
+  SourceHullRig: docs/art/rigs/cruiserIsoRig.js
+  InteriorRigSha256: e431aafbd98293864a7a16ab1d88e3d591623c2da7841dcbc8cf31c00aed72e5
+  HullRigSha256: e431aafbd98293864a7a16ab1d88e3d591623c2da7841dcbc8cf31c00aed72e5
+  PixelsPerMetre: 32
+  CellPixels: {x: 400, y: 360}
+  PivotPixels: {x: 200, y: 196}
+  FootprintOutline:
+  - {x: 0.19, y: 0.59}
+  - {x: 0.19, y: 0.98}
+  - {x: -0.19, y: 0.98}
+  - {x: -0.19, y: 0.59}
+  Levels:
+  - Id: cabin
+    SoleZMeters: 0.22
+    Outline:
+    - {x: 0.19, y: 0.59}
+    - {x: 0.19, y: 0.98}
+    - {x: -0.19, y: 0.98}
+    - {x: -0.19, y: 0.59}
+    Obstructions: []
+  Door:
+    Id: companionway
+    Side: aft
+    ClearWidthMeters: 0.64
+    ClearHeightMeters: 0.76
+    ThresholdPoint: {x: -0.3, y: -0.51, z: 1.17}
+    Mechanism: 1
+    KeepClear:
+    - {x: -0.62, y: -0.565}
+    - {x: 0.01, y: -0.565}
+    - {x: -0.003, y: -0.695}
+    - {x: -0.043, y: -0.819}
+    - {x: -0.108, y: -0.932}
+    - {x: -0.194, y: -1.03}
+    - {x: -0.299, y: -1.108}
+    - {x: -0.417, y: -1.162}
+    - {x: -0.545, y: -1.191}
+    - {x: -0.675, y: -1.193}
+    CueFrames: 0
+    CueMillisecondsPerFrame: 0
+    CueReversedOnExit: 1
+  AdditionalDoors: []
+  Anchors:
+  - Id: helm
+    Action: enter_helm
+    ReachPoint: {x: 0, y: -1.56, z: 1.17}
+    VisibleFacings: []
+  - Id: seat_helm_outboard
+    Action: enter_ride
+    ReachPoint: {x: 0, y: -1.56, z: 1.17}
+    VisibleFacings: []
+  - Id: seat_companion
+    Action: enter_ride
+    ReachPoint: {x: 0, y: -1.56, z: 1.17}
+    VisibleFacings: []
+  - Id: seat_companion_outboard
+    Action: enter_ride
+    ReachPoint: {x: 0, y: -1.56, z: 1.17}
+    VisibleFacings: []
+  - Id: seat_bench_port
+    Action: enter_ride
+    ReachPoint: {x: -0.82, y: -3.84, z: 0.95}
+    VisibleFacings: []
+  - Id: seat_bench_centre
+    Action: enter_ride
+    ReachPoint: {x: -0.22, y: -3.84, z: 0.95}
+    VisibleFacings: []
+  - Id: seat_bench_stbd
+    Action: enter_ride
+    ReachPoint: {x: 0.34, y: -3.84, z: 0.95}
+    VisibleFacings: []
+  - Id: engine
+    Action: open_close_engine
+    ReachPoint: {x: 0, y: -2.2, z: 1.17}
+    VisibleFacings: []
+  - Id: transom_door
+    Action: open_close
+    ReachPoint: {x: 0.92, y: -3.95, z: 0.95}
+    VisibleFacings: []
+  - Id: sunroof
+    Action: open_close
+    ReachPoint: {x: 0, y: -1.1, z: 1.17}
+    VisibleFacings: []
+  - Id: companionway
+    Action: open_close
+    ReachPoint: {x: -0.3, y: -0.79, z: 1.17}
+    VisibleFacings: []
+  - Id: windlass
+    Action: anchor
+    ReachPoint: {x: 0, y: 3.78, z: 2.218}
+    VisibleFacings: []
+  - Id: swim
+    Action: enter_water
+    ReachPoint: {x: 0.5, y: -5.1, z: 0.9}
+    VisibleFacings: []
+  - Id: bunk
+    Action: sleep
+    ReachPoint: {x: 0, y: 0.95, z: 0.22}
+    VisibleFacings: []
+  - Id: bunk_aft
+    Action: sleep
+    ReachPoint: {x: 0, y: -0.71, z: 0.22}
+    VisibleFacings: []
+  - Id: stove
+    Action: cook
+    ReachPoint: {x: -0.17, y: 0.89, z: 0.22}
+    VisibleFacings: []
+  - Id: sink
+    Action: wash_dishes
+    ReachPoint: {x: -0.17, y: 0.95, z: 0.22}
+    VisibleFacings: []
+  - Id: head
+    Action: toilet
+    ReachPoint: {x: 0.17, y: 0.95, z: 0.22}
+    VisibleFacings: []
+  - Id: locker
+    Action: storage
+    ReachPoint: {x: 0.17, y: 0.64, z: 0.22}
+    VisibleFacings: []
+  Routes:
+  - Id: companionway
+    FromLevel: helm_fwd
+    ToLevel: cabin
+    Mechanism: InteriorStair
+    Exterior: 0
+    TotalRiseMeters: -0.9499999
+    Placed: 1
+    FromPoint: {x: -0.3, y: -0.76, z: 1.17}
+    ToPoint: {x: -0.060000002, y: 0.7, z: 0.22}
+    NotPlacedBecause: 
+  FloorToleranceMetres: 0.1
+  RouteEndReachMetres: 0.3
+  RidesHullRock: 1

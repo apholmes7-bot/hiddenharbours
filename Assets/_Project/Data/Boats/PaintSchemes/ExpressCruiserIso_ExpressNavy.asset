@@ -1,0 +1,188 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: ExpressCruiserIso_ExpressNavy
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.express_cruiser_express_navy
+  Label: Express Navy
+  Note: "the reference boat \u2014 navy topsides sweeping down into a white wedge
+    aft, silver pin, teak sole"
+  HullMeshId: hullmesh.express_cruiser_iso
+  SourceRigPath: docs/art/rigs/cruiserIsoRig.js
+  RigPaintId: express-navy
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282326789
+    - serializedVersion: 2
+      rgba: 4282787083
+    - serializedVersion: 2
+      rgba: 4283116305
+    - serializedVersion: 2
+      rgba: 4283445270
+    - serializedVersion: 2
+      rgba: 4283774236
+    - serializedVersion: 2
+      rgba: 4285024558
+    - serializedVersion: 2
+      rgba: 4288577634
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284570966
+    - serializedVersion: 2
+      rgba: 4286808184
+    - serializedVersion: 2
+      rgba: 4288847511
+    - serializedVersion: 2
+      rgba: 4290755764
+    - serializedVersion: 2
+      rgba: 4292400846
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284708210
+    - serializedVersion: 2
+      rgba: 4287471519
+    - serializedVersion: 2
+      rgba: 4289906120
+    - serializedVersion: 2
+      rgba: 4292142828
+    - serializedVersion: 2
+      rgba: 4292931572
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282326789
+    - serializedVersion: 2
+      rgba: 4282984719
+    - serializedVersion: 2
+      rgba: 4283511064
+    - serializedVersion: 2
+      rgba: 4284432166
+    - serializedVersion: 2
+      rgba: 4288446818
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280037723
+    - serializedVersion: 2
+      rgba: 4281486966
+    - serializedVersion: 2
+      rgba: 4282804107
+    - serializedVersion: 2
+      rgba: 4284449698
+    - serializedVersion: 2
+      rgba: 4287277766
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 1

@@ -5,7 +5,8 @@
         "HiddenHarbours.Core",
         "HiddenHarbours.Boats",
         "HiddenHarbours.Player",
-        "HiddenHarbours.Art.Editor"
+        "HiddenHarbours.Art.Editor",
+        "HiddenHarbours.Tools.RigBaking.Editor"
     ],
     "includePlatforms": [
         "Editor"

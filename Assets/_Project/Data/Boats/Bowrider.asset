@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb8575fc41a22d24c8433d9cb61748dc, type: 3}
+  m_Name: Bowrider
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
+  Id: boat.bowrider
+  DisplayName: Bowrider 18
+  Visual: {fileID: 11400000, guid: b2a8b14fb45d65a4d9d89d1e02db9176, type: 2}
+  Sprite: {fileID: 0}
+  LengthMeters: 5.98
+  DraughtMeters: 0.95
+  MassKg: 800
+  HoldUnits: 8
+  CrewSlots: 2
+  Propulsion: 1
+  EnginePower: 1600
+  RudderAuthority: 850
+  OarPower: 0
+  OarLateralOffset: 0
+  OarBraceDrag: 0
+  ForwardDrag: 155
+  LateralDrag: 400
+  WindExposure: 0.5
+  MaxSafeSeaState: 5
+  HasAnchor: 1
+  AnchorMassKg: 8
+  RodeMeters: 11
+  SeakeepingMassFactor: 1.8
+  SeakeepingLiveliness: 0.75
+  SeakeepingDamping: 0.3
+  TrimHumpDegrees: 6.9
+  TrimPlaningDropDegrees: 4.05
+  TrimAccelDegreesPerMps2: 1.75
+  TrimDecelDegreesPerMps2: 1.75
+  TrimMaxBowUpDegrees: 0
+  TrimMaxBowDownDegrees: 0
+  TrimResponseSeconds: 0.5
+  CameraWorldHeightMeters: 19
+  DeckContainer: {fileID: 0}
+  DeckContainerOffset: {x: 0.35, y: -0.9}
+  Helm: {fileID: 11400000, guid: 7c2d94e1a3b84f66b09d5c11e8f72a22, type: 2}
+  HelmAheadNotches: 0
+  HelmAsternNotches: 0
+  FuelCapacityLitres: 60
+  FuelGrade: gas
+  FullThrottleLitresPerHour: 105
+  CanRowHome: 0
+  SailPolar: {fileID: 0}
+  NoGoTrueWindDeg: 45
+  SpriteIronsApparentDeg: 25
+  IronsPayOffTorque: 0
+  RudderFullAuthorityWayMs: 2
+  SailYawReferenceWindKn: 10
+  UnmannedRoundUpTorque: 0
+  RoundUpReferenceDriveKn: 6

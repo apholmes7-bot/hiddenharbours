@@ -43,6 +43,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// boats' sterns.</summary>
         static readonly (string Def, string Rig, string Pattern)[] Fleet =
         {
+            ("BowriderIsoHullMesh",      "bowriderIsoRig.js",      @"\bconst L\s*=\s*([0-9.]+)"),
+            ("ExpressCruiserIsoHullMesh", "cruiserIsoRig.js",      @"\bconst L\s*=\s*([0-9.]+)"),
+            ("GoFastIsoHullMesh",        "goFastIsoRig.js",        @"\bconst L\s*=\s*([0-9.]+)"),
             ("CapeIslanderIsoHullMesh",  "capeIslanderIsoRig.js",  @"\bconst L\s*=\s*([0-9.]+)"),
             ("CoastalPacketIsoHullMesh", "coastalPacketIsoRig.js", @"\bconst L\s*=\s*([0-9.]+)"),
             ("ConsoleIsoHullMesh",       "consoleIsoRig.js",       @"\bconst L\s*=\s*([0-9.]+)"),
@@ -152,7 +155,7 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             TestContext.WriteLine(report.ToString());
-            Assert.AreEqual(36, checkedHulls, "The fleet is 36 hulls; this table has drifted from it.");
+            Assert.AreEqual(39, checkedHulls, "The fleet is 39 hulls including the three recreation hulls; this table has drifted from it.");
             Assert.IsEmpty(failures.ToString(), "\n" + failures);
         }
 

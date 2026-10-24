@@ -1,0 +1,228 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: GoFastIso_Corsa
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.go_fast_corsa
+  Label: Corsa
+  Note: red over silver on a raked split, black pin, twin white stripes transom to
+    stem
+  HullMeshId: hullmesh.go_fast_iso
+  SourceRigPath: docs/art/rigs/goFastIsoRig.js
+  RigPaintId: corsa
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280557595
+    - serializedVersion: 2
+      rgba: 4280820767
+    - serializedVersion: 2
+      rgba: 4281018146
+    - serializedVersion: 2
+      rgba: 4281215525
+    - serializedVersion: 2
+      rgba: 4281412904
+    - serializedVersion: 2
+      rgba: 4282597434
+    - serializedVersion: 2
+      rgba: 4286281586
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284769119
+    - serializedVersion: 2
+      rgba: 4286413943
+    - serializedVersion: 2
+      rgba: 4287795597
+    - serializedVersion: 2
+      rgba: 4289111713
+    - serializedVersion: 2
+      rgba: 4290427573
+    - serializedVersion: 2
+      rgba: 4291677640
+    - serializedVersion: 2
+      rgba: 4292730328
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285166193
+    - serializedVersion: 2
+      rgba: 4287929757
+    - serializedVersion: 2
+      rgba: 4290429892
+    - serializedVersion: 2
+      rgba: 4292601063
+    - serializedVersion: 2
+      rgba: 4293324528
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280820767
+    - serializedVersion: 2
+      rgba: 4281939248
+    - serializedVersion: 2
+      rgba: 4282926143
+    - serializedVersion: 2
+      rgba: 4284373589
+    - serializedVersion: 2
+      rgba: 4287795081
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280418401
+    - serializedVersion: 2
+      rgba: 4280880006
+    - serializedVersion: 2
+      rgba: 4281347228
+    - serializedVersion: 2
+      rgba: 4282141108
+    - serializedVersion: 2
+      rgba: 4285498082
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280418401
+    - serializedVersion: 2
+      rgba: 4281011063
+    - serializedVersion: 2
+      rgba: 4281078923
+    - serializedVersion: 2
+      rgba: 4281345945
+    - serializedVersion: 2
+      rgba: 4281612198
+    - serializedVersion: 2
+      rgba: 4282667452
+    - serializedVersion: 2
+      rgba: 4285432036
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280492061
+    - serializedVersion: 2
+      rgba: 4280886562
+    - serializedVersion: 2
+      rgba: 4280557854
+    - serializedVersion: 2
+      rgba: 4280952611
+    - serializedVersion: 2
+      rgba: 4280623647
+    - serializedVersion: 2
+      rgba: 4281742128
+    - serializedVersion: 2
+      rgba: 4285623914
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280418401
+    - serializedVersion: 2
+      rgba: 4281011063
+    - serializedVersion: 2
+      rgba: 4281078923
+    - serializedVersion: 2
+      rgba: 4281345945
+    - serializedVersion: 2
+      rgba: 4281612198
+    - serializedVersion: 2
+      rgba: 4282667452
+    - serializedVersion: 2
+      rgba: 4285432036
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
