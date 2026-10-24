@@ -5,7 +5,10 @@
 // class, width, surface and band is the plan's, resolved against the kit's CLASSES (a G3 band string names the kit
 // band of that role and overrides its width and surface; a route without bands keeps its class's). The bridges are
 // fitted to G3 (their seats on dry ground SEAT metres past the water each side, the deck at the higher seat), and the
-// no-ford check refuses a route that stands in water outside a deck.
+// no-ford check refuses a route that stands in water outside a deck. The owner's rulings of 10-24 stand in it too: the
+// measured corner flares of flares.json on their roads (Q4), the truck park spur's widened gate (Q5), the planting in
+// the ruled routes' swept bodies (Q6), the river lane off the vehicle routes (Q8), the camp brook deck's measured seat
+// pads (Q10), one row of stalls a bay (Q12) and the held walks' owners (Q15).
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), vm = require('vm');
 const planLib = require('./plan.cjs'), groundLib = require('./ground.cjs');
@@ -39,6 +42,28 @@ const PLAYGROUND_SITE = { id: 'structure.nmc_camp_playground', at: [-30, 18], si
 const OUTSIDE = [
   { at: [40, 118], what: 'the wharf\'s stub of Wharf Road and its turning pad (step 06, kit v3)' },
   { at: [58, -146], what: 'the bar (path.nmc_bar_walk, bare)' },
+];
+
+// ---- the owner's rulings of 10-24 on H4's Phase A report ---------------------------------------------------------------
+// Q4 "Lay the measured corner flares": fitted from the swept measure's wheels into FLARES, each on the road it widens.
+// A flare takes that road's class, surface and bands, so its kerb, walk, shoulder and edge line follow the flare; a
+// lane's is a street's (a lane draws a crown and ruts along its line). Its line stands at most FLARE_LINE_PAST past
+// the road's carriage edge, so the kit's junction rule (a second line of the group within 1.2 m) keeps the class's
+// centre marks off it, and its carriage reaches FLARE_OVERLAP into the road's at least
+const FLARES = 'tools/nmc-roads/flares.json';
+const FLARE_SCHEMA = 'hidden-harbours/nmc-road-flares@1';
+const FLARE_LINE_PAST_METRES = 1.0, FLARE_OVERLAP_METRES = 0.1;
+// Q5: the truck park spur's gate clearance in Wharf Road's south hedge, for the 53-foot pairs; the gate stays undressed
+const SPUR_GATE = { id: 'drive.nmc_truck_park_spur', x: [-135.1, -124.9] };
+// Q8: the river lane stays as drawn, off the vehicle routes
+const OFF_VEHICLES = { 'road.nmc_stream_lane': 'until a vehicle grade limit exists: it climbs 41.7% and its bodies cross into the boat shed lot (the owner, 10-24, Q8)' };
+// Q6: the planting pieces a ruled route's swept body hits, each its root, name and place in the scene; step 12
+// deletes them (the laydown's follow Q2 and the gas bar lane's Q3, so they stay)
+const SWEPT = [
+  { root: 'CreekHedgerows', name: 'SweetGale_3', at: [7.44104, 86.50429], by: 'junction road.nmc_bar_road out onto road.nmc_wharf_road reversed' },
+  { root: 'CreekHedgerows', name: 'Meadowsweet_1', at: [10.941039, 87.76597], by: 'junction road.nmc_bar_road out onto road.nmc_wharf_road reversed' },
+  { root: 'CreekTrees', name: 'RedSpruce_2', at: [-194.03105, 162.35143], by: 'junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_mill_road' },
+  { root: 'CreekHedgerows', name: 'SweetGale_2', at: [-180.3476, 276.19177], by: 'junction road.nmc_route_91_town (the town section, north of the river bridge) forward into road.nmc_north_creek_lane' },
 ];
 
 const r3 = (v) => Math.round(v * 1000) / 1000;
@@ -169,7 +194,9 @@ function routeOf(RK, o, from, extra = {}) {
   if (bands) r.bands = bands;
   const ends = extra.ends !== undefined ? extra.ends : (typeof o.ends === 'string' ? o.ends : undefined);
   if (ends) r.ends = ends;
+  if (OFF_VEHICLES[r.id]) { r.vehicles = false; r.vehiclesWhy = OFF_VEHICLES[r.id]; }
   if (extra.clip) r.clip = extra.clip;
+  if (extra.stalls) r.stalls = extra.stalls;
   r.pts = (extra.pts || o.pts).map((p) => [r3(p[0]), r3(p[1])]);
   return r;
 }
@@ -238,6 +265,20 @@ function fitDeck(G, high, b, line, hw, opts = {}) {
     };
     seatPad = [reach(ys0[0], -1), reach(ys0[1], +1)];
     corners.push([b.centre[0] - half, ys0[0] - seatPad[0]], [b.centre[0] + half, ys0[1] + seatPad[1]]);
+  } else if (opts.deck != null) {
+    // a deck the base fixes the height of, seated where its banks reach it on the centre line: each end runs on along
+    // its line by the same rule, until G3 under the carriage (both edges and the centre) stands within SEAT_TOLERANCE
+    // of the deck, and SEAT_BEAR beyond (the owner's Q10, 10-24: the camp brook deck's measured 1.0 m east, 0.5 m west)
+    const reach = (s, dir) => {
+      for (let d = 0; d <= T.seatReachMetres + 1e-9; d += 0.05) {
+        const [x, y, ux, uy] = pointAt(line, s + dir * d);
+        if ([-hw, 0, hw].every((o) => G.at(x - uy * o, y + ux * o) >= opts.deck - T.seatToleranceMetres)) return d ? r3(Math.ceil((d + T.seatBearMetres) * 10 - 1e-6) / 10) : 0;
+      }
+      throw new Error(`${b.id}: no bank within ${T.seatReachMetres} m of the seat at s ${r3(s)}`);
+    };
+    seatPad = [reach(sA, -1), reach(sB, +1)];
+    const s0 = sA - seatPad[0], s1 = sB + seatPad[1];
+    for (let s = s0; ; s = Math.min(s + T.sampleMetres, s1)) { const [x, y, ux, uy] = pointAt(line, s); corners.push([x - uy * half, y + ux * half], [x + uy * half, y - ux * half]); if (s >= s1) break; }
   } else {
     for (let s = sA; s <= sB + 1e-9; s += T.sampleMetres) { const [x, y, ux, uy] = pointAt(line, Math.min(s, sB)); corners.push([x - uy * half, y + ux * half], [x + uy * half, y - ux * half]); }
   }
@@ -258,9 +299,76 @@ function fitDeck(G, high, b, line, hw, opts = {}) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+//  The measured corner flares (the owner's Q4, 10-24)
+// ---------------------------------------------------------------------------------------------------------------
+// G3's building lots (the 43 of NineMileCreekGroundMasks.BuildingLots: a lot facing east or west stands its size
+// turned) and the camp's buildings and pitches, as boxes [x0, x1, y0, y1]; own: the plan path its own drives come from
+function groundBoxes(plan) {
+  const box = (o) => { const [w, h] = o.faces === 'E' || o.faces === 'W' ? [o.size[1], o.size[0]] : o.size; return [o.at[0] - w / 2, o.at[0] + w / 2, o.at[1] - h / 2, o.at[1] + h / 2]; };
+  const out = [];
+  for (const k of ['town', 'working', 'south_shore_houses', 'waterfront'])
+    plan.lots[k].forEach((l, i) => { if (/^lot\./.test(l.id) && l.at && l.size) out.push({ id: l.id, own: `lots.${k}[${i}]`, box: box(l) }); });
+  for (const k of ['buildings', 'pitches']) for (const o of plan.lots.campground[k]) out.push({ id: o.id, own: null, box: box(o) });
+  return out;
+}
+
+// Each flare of FLARES on the route it names (its id and part), in that route's class, surface and bands (a lane's in
+// a street's, without bands). Refused: one whose carriage does not reach into its road's, whose line stands where its
+// class would draw centre marks, that paves into a lot, building or pitch other than its own road's lot, or stands in
+// water off the decks. A refused flare throws, unless opts.collect (the fitter's), which returns it instead
+function layFlares(RK, G, high, plan, routes, bridges, opts) {
+  const file = path.join(ROOT, FLARES);
+  const src = opts.flares || (fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : { schema: FLARE_SCHEMA, flares: [] });
+  if (src.schema !== FLARE_SCHEMA) throw new Error(`${FLARES}: not ${FLARE_SCHEMA}`);
+  const boxes = groundBoxes(plan), laid = [], refused = [], ids = new Set();
+  const toBox = (B, x, y) => Math.hypot(Math.max(B[0] - x, 0, x - B[1]), Math.max(B[2] - y, 0, y - B[3]));
+  const onDeck = (x, y) => bridges.some((b) => { const f = b.footprint; return x >= f.x && x <= f.x + f.w && y >= f.y && y <= f.y + f.h; });
+  src.flares.forEach((f, i) => {
+    const on = routes.find((r) => r.id === f.on && (r.part || null) === (f.part || null));
+    if (!on) throw new Error(`${FLARES} flares[${i}]: no route ${f.on}${f.part ? ' (' + f.part + ')' : ''}`);
+    if (!/^flare\.nmc_[a-z0-9_]+$/.test(f.id) || ids.has(f.id)) throw new Error(`${FLARES} flares[${i}]: ${f.id} is not a flare.nmc_ id of its own`);
+    ids.add(f.id);
+    if (!RK.CLASSES[on.cls].veh) throw new Error(`${f.id}: ${on.id} is a ${on.cls}, which carries no vehicle`);
+    if (!(f.pts && f.pts.length >= 2) || !(f.w > 0)) throw new Error(`${f.id}: no line or no width`);
+    const cls = on.cls === 'lane' ? 'street' : on.cls, surf = on.surf || RK.CLASSES[on.cls].surf;
+    const r = { id: f.id, from: `flares[${i}]`, on: on.id };
+    if (on.part) r.onPart = on.part;
+    r.cls = cls;
+    r.w = r3(f.w);
+    if (surf !== RK.CLASSES[cls].surf) r.surf = surf;
+    if (on.cls === 'lane') r.bands = []; else if (on.bands) r.bands = on.bands;
+    r.for = f.for;
+    r.pts = f.pts.map((p) => [r3(p[0]), r3(p[1])]);
+    const why = [], past = r.pts.map((p) => project(on.pts, p).d - on.w / 2);
+    if (Math.min(...past) > r.w / 2 - FLARE_OVERLAP_METRES) why.push(`its carriage reaches only ${r3(r.w / 2 - Math.min(...past))} m into ${on.id}'s`);
+    const marks = RK.CLASSES[cls].marks;
+    if (marks && marks.centre && Math.max(...past) > FLARE_LINE_PAST_METRES + 1e-6) why.push(`its line stands ${r3(Math.max(...past))} m past ${on.id}'s carriage edge, where its centre marks would show`);
+    const into = {};
+    let wet = null;
+    for (const s of stations(r.pts, TUNABLES.sampleMetres / 5)) {
+      const [x, y, ux, uy] = pointAt(r.pts, s);
+      for (const B of boxes) {
+        if (B.own && (on.from === B.own || on.from.startsWith(B.own + '.') || on.from.startsWith(B.own + ' '))) continue;
+        const d = r.w / 2 - toBox(B.box, x, y);
+        if (d > 0) into[B.id] = Math.max(into[B.id] || 0, d);
+      }
+      for (let o = -r.w / 2; o <= r.w / 2 + 1e-9 && !wet; o += TUNABLES.sampleMetres) {
+        const qx = x - uy * o, qy = y + ux * o;
+        if (G.wet(qx, qy, high) && !onDeck(qx, qy)) wet = [r3(qx), r3(qy)];
+      }
+    }
+    for (const [id, d] of Object.entries(into)) why.push(`it paves ${r3(d)} m into ${id}`);
+    if (wet) why.push(`it stands in water at ${JSON.stringify(wet)}`);
+    if (why.length) refused.push({ id: f.id, on: on.id, for: f.for, why }); else laid.push(r);
+  });
+  if (refused.length && !opts.collect) throw new Error(`${FLARES}: ${refused.length} flares refused\n` + refused.map((x) => `  ${x.id}: ${x.why.join('; ')}`).join('\n'));
+  return { laid, refused };
+}
+
+// ---------------------------------------------------------------------------------------------------------------
 //  The network
 // ---------------------------------------------------------------------------------------------------------------
-function build() {
+function build(opts = {}) {
   const RK = loadKit(), plan = planLib.read(path.join(ROOT, planLib.ASSET)), src = planLib.source(path.join(ROOT, planLib.ASSET));
   const G = groundLib.load(ROOT), high = springHighWater(), T = TUNABLES;
   const roads = Object.fromEntries(plan.roads.map((r, i) => [r.id, { o: r, from: `roads[${i}]` }]));
@@ -316,15 +424,15 @@ function build() {
   const fitF = fitDeck(G, high, fb, bp.o.pts, fb.width / 2, { deckWidth: fb.width });
   add(routeOf(RK, bp.o, bp.from, { part: 'north of the footbridge', pts: clip(bp.o.pts, 0, fitF.sA), clip: 'ends at the footbridge\'s north bank' }));
   add(routeOf(RK, bp.o, bp.from, { part: 'south of the footbridge', pts: clip(bp.o.pts, fitF.sB, lengthOf(bp.o.pts)), clip: 'starts at the footbridge\'s south bank' }));
-  hold(fb.id, 'bridges', 'the owner (H4 builds three plain decks; the camp is H12\'s)', `the walk-in sites' footbridge; G3 measures it ${fitF.span} m bank to bank`);
+  hold(fb.id, 'bridges', 'H12 (the owner, 10-24, Q15)', `the walk-in sites' footbridge; G3 measures it ${fitF.span} m bank to bank`);
   held[held.length - 1].measured = fitF;
   for (const id of ['boardwalk.nmc_dune_walk_east', 'boardwalk.nmc_dune_walk_west']) add(routeOf(RK, boards[id].o, boards[id].from));
   hold('boardwalk.nmc_town_north', boards['boardwalk.nmc_town_north'].from, 'H7', 'the town boardwalks pass under the bridge\'s end spans: H7\'s, on H4\'s span');
   hold('boardwalk.nmc_town_south', boards['boardwalk.nmc_town_south'].from, 'H7', 'as the north boardwalk');
   hold('boardwalk.nmc_falls_deck', boards['boardwalk.nmc_falls_deck'].from, 'H7', 'the falls deck, H7\'s');
-  hold('boardwalk.nmc_marsh_walk', boards['boardwalk.nmc_marsh_walk'].from, 'the owner', 'the marsh walk\'s wave is not named');
-  hold('path.nmc_north_shore_walk', paths['path.nmc_north_shore_walk'].from, 'the owner', 'optional in the plan, with the optional notch plank that would carry it over the river\'s mouth');
-  hold('bridge.nmc_notch_plank', 'bridges', 'the owner', 'optional in the plan');
+  hold('boardwalk.nmc_marsh_walk', boards['boardwalk.nmc_marsh_walk'].from, 'H7 (the owner, 10-24, Q15)', 'the marsh walk goes with H7\'s boardwalks');
+  hold('path.nmc_north_shore_walk', paths['path.nmc_north_shore_walk'].from, 'out of H4 (the owner, 10-24, Q15)', 'optional in the plan, with the optional notch plank that would carry it over the river\'s mouth');
+  hold('bridge.nmc_notch_plank', 'bridges', 'out of H4 (the owner, 10-24, Q15)', 'optional in the plan');
   bare.push({ id: 'path.nmc_bar_walk', from: paths['path.nmc_bar_walk'].from, kind: 'tidal_crossing', why: 'the bar is the ground: no surface' });
   bare.push({ id: 'path.nmc_south_strand', from: paths['path.nmc_south_strand'].from, kind: 'beach', why: 'the beach is the ground: no surface' });
 
@@ -338,9 +446,14 @@ function build() {
   const x0 = pk.box[0], x1 = pk.box[1], s0 = pk.stall.x0, s1 = r3(pk.stall.x0 + pk.stall.w * pk.stall.n);
   const bayS = [Math.min(pk.rowsS[1][0], pk.aisles[1][0]), Math.max(pk.rowsN[1][1], pk.aisles[1][1])];
   const bayN = [Math.min(pk.rowsS[0][0], pk.aisles[0][0]), Math.max(pk.rowsN[0][1], pk.aisles[0][1])];
-  for (const [part, b] of [['the south bay', bayS], ['the north bay', bayN]]) {
+  // the owner's Q12 (10-24): one row of stalls a bay, the plan's south row (the row the swept measure parks the 2500,
+  // the 350 and the van from); the north row's ground is aisle. The plan's cut takes four stalls of the south bay's row
+  for (const [part, b, row, cut] of [['the south bay', bayS, pk.rowsS[1], pk.cut], ['the north bay', bayN, pk.rowsS[0], null]]) {
+    const [c0, c1] = cut ? cut.match(/\((\d+) to (\d+)\)/).slice(1).map(Number) : [1, 0];
+    const n = pk.stall.n - (c1 - c0 + 1);
     add(routeOf(RK, { id: 'lot.nmc_plaza_parking', cls: 'town', surface: 'asphalt', pts: [[x0, (b[0] + b[1]) / 2], [x1, (b[0] + b[1]) / 2]] }, 'lots.town[0] parking', {
-      part, w: r3(b[1] - b[0]), bands: [], ends: 'flat', clip: `rows and aisle y ${b[0]}..${b[1]} across the lot box's x ${x0}..${x1}; the stalls x ${s0}..${s1}, and kit v4 draws no stall lines`,
+      part, w: r3(b[1] - b[0]), bands: [], ends: 'flat', clip: `one row of stalls (the owner, 10-24, Q12) y ${row[0]}..${row[1]} and the aisle y ${row[1]}..${b[1]}, across the lot box's x ${x0}..${x1}; the stalls x ${s0}..${s1}, and kit v4 draws no stall lines`,
+      stalls: Object.assign({ row, x: [s0, s1], each: [pk.stall.w, pk.stall.d], n, aisle: [row[1], b[1]] }, cut ? { cut } : {}),
     }));
   }
 
@@ -378,9 +491,12 @@ function build() {
   const key = new Set();
   for (const r of routes) { const k = r.id + '|' + (r.part || ''); if (key.has(k)) throw new Error('two routes ' + k); key.add(k); }
 
-  // --- no ford: no route stands in water outside a deck ----------------------------------------------------------
+  // --- the measured corner flares, each on its road (the owner's Q4, 10-24) --------------------------------------
+  const { laid: flares, refused: flaresRefused } = layFlares(RK, G, high, plan, routes, bridges, opts);
+
+  // --- no ford: no route or flare stands in water outside a deck -------------------------------------------------
   const fords = [];
-  for (const r of routes) {
+  for (const r of routes.concat(flares)) {
     const wet = runs(r.pts, 0, (x, y) => G.wet(x, y, high), T.sampleMetres);
     for (const w of wet) { const [x, y] = pointAt(r.pts, (w[0] + w[1]) / 2); fords.push({ id: r.id, part: r.part, at: [r3(x), r3(y)], length: r3(w[1] - w[0]) }); }
   }
@@ -441,6 +557,11 @@ function build() {
       }
       if (lo <= hi) opens.push({ id: r.id, x: [r3(lo), r3(hi)] });
     }
+    if (side < 0) {
+      const g = opens.find((o) => o.id === SPUR_GATE.id);
+      if (!g || g.x[0] < SPUR_GATE.x[0] || g.x[1] > SPUR_GATE.x[1]) throw new Error(`the ruled spur gate x ${SPUR_GATE.x.join('..')} no longer holds the spur's swath ${g ? g.x.join('..') : '(none)'}`);
+      Object.assign(g, { swath: g.x, x: SPUR_GATE.x, why: 'widened for the 53-foot pairs\' swept bodies (the owner, 10-24, Q5): the clearance only; the gate stays undressed' });
+    }
     clearances.push(side > 0
       ? { id: 'hedge.nmc_wharf_road', side: 'north', clear: [-130, -110], opens, also: 'the gas bar\'s semi lane, x -131.6..-122.4 (its pads, G3 call 30; painted with the station)', why: 'G3 call 30: the hedge\'s west 20 m runs along the gas bar\'s frontage; keep the north side clear there' }
       : { id: 'hedge.nmc_wharf_road', side: 'south', gates: opens, why: 'the base\'s "south gates at working drives": each is a gate\'s clearance in the south hedge; the gates are held, so no gate is dressed' });
@@ -485,6 +606,7 @@ function build() {
     return { at, size, box: B, roads: roadsTo, pitch, building, ground: [r3(lo), r3(hi)], wetSamples: wet, inCamp: corners };
   };
   clearances.push({ id: PLAYGROUND_SITE.id, plan: measureSite(pgPlan.at, pgPlan.size), site: measureSite(PLAYGROUND_SITE.at, PLAYGROUND_SITE.size), why: 'the base\'s "Playground clears Loop A/C"; H12 dresses it at this site' });
+  clearances.push({ id: 'planting.nmc_swept_bodies', pieces: SWEPT, why: 'the owner\'s Q6 (10-24): step 12 deletes the pieces a ruled route\'s swept body hits, each found by its place' });
 
   const r91s = routes[0], last = r91s.pts.slice(-2);
   const westEdge = {
@@ -503,11 +625,12 @@ function build() {
       springHighWater: high,
     },
     tunables: TUNABLES,
-    routes, bridges, held, bare, clearances,
+    routes, flares, bridges, held, bare, clearances,
     junctions: ends,
     westEdge,
     fords,
   };
+  if (opts.collect) Object.defineProperty(doc, 'flaresRefused', { value: flaresRefused });
   return doc;
 }
 
@@ -518,6 +641,7 @@ function summary(doc) {
   const by = {}; for (const r of doc.routes) (by[r.cls] = by[r.cls] || []).push(r);
   const lines = [`${doc.routes.length} routes on ${new Set(doc.routes.map((r) => r.id)).size} ids:`];
   for (const [c, rs] of Object.entries(by)) lines.push(`  ${c.padEnd(9)} ${rs.length}`);
+  lines.push(`${doc.flares.length} corner flares on ${new Set(doc.flares.map((f) => f.on + '|' + (f.onPart || ''))).size} roads`);
   for (const b of doc.bridges) lines.push(`bridge ${b.id}: ${b.how}; seats ${JSON.stringify(b.a)} ${JSON.stringify(b.b)}, span ${b.span}, deck ${b.deck} (plan ${b.deckPlan}), seat steps ${b.measures.stepAtSeats.join(' / ')}, water ${b.measures.waterTop}, clearance ${b.measures.clearance}`);
   for (const h of doc.held) lines.push(`held ${h.id}: ${h.owner}`);
   for (const b of doc.bare) lines.push(`bare ${b.id}: ${b.kind}`);
@@ -543,4 +667,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, text, summary, OUT, SCHEMA, TUNABLES, lengthOf, pointAt, project, clip, runs, stations };
+module.exports = { build, text, summary, groundBoxes, OUT, SCHEMA, FLARES, FLARE_SCHEMA, FLARE_LINE_PAST_METRES, FLARE_OVERLAP_METRES, TUNABLES, lengthOf, pointAt, project, clip, runs, stations };

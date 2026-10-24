@@ -22,7 +22,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// read through <see cref="KeySceneImport.ReadAsset"/>), to road kit v4's classes, to G3's ground, and to the
     /// owner's rulings: Water Street a kerbed town street (Q3), the campground's roads gravel lanes 3.6 m wide (Q4), the
     /// eight classes with the alley unused and the bar and the strand bare (Q5), the river lane laid as drawn (Q6),
-    /// and three plain standable deck prefabs on measured abutments (Q7).</para>
+    /// and three plain standable deck prefabs on measured abutments (Q7). The owner's second rulings (10-24) are held
+    /// too: the measured corner flares on their roads (Q4), the truck park spur's gate widened for the 53-foot pairs
+    /// (Q5), the planting in the ruled routes' swept bodies cleared (Q6), the river lane off the vehicle routes (Q8),
+    /// the camp brook deck lengthened by its measured seat pads (Q10), one row of stalls a bay (Q12) and the held
+    /// walks' owners (Q15).</para>
     ///
     /// <para>The swept paths are driven as the game drives a vehicle: its origin runs along its nose and turns at
     /// <see cref="VehicleSteeringMath.YawRateDegreesPerSecond"/>'s rate, so a full lock is R1's turning number; a
@@ -127,6 +131,11 @@ namespace HiddenHarbours.Tests.EditMode
             Ruled("road.nmc_stream_lane", "lane", 5f, "gravel", "Q6: the river lane as drawn");
             Ruled("road.nmc_wharf_road", "paved", 5.8f, "asphalt", "09-29: Wharf Road is paved");
             Ruled("road.nmc_route_91", "route", 5.8f, "asphalt", "Route 91 south of the river bridge");
+
+            var off = Net.Routes.Where(r => !r.Vehicles).ToList();
+            CollectionAssert.AreEqual(new[] { "road.nmc_stream_lane" }, off.Select(r => r.Id).ToArray(),
+                "10-24 Q8: the river lane, and only it, is off the vehicle routes until a grade limit exists");
+            StringAssert.Contains("Q8", off[0].VehiclesWhy, "the river lane's reason names its ruling");
         }
 
         [Test]
@@ -168,8 +177,8 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 return null;
             }
-            var wet = Net.Routes.Where(r => RoadClasses.Contains(r.Class)).Select(FirstWet).Where(w => w != null).ToList();
-            CollectionAssert.IsEmpty(wet, "a carriageway stands in water outside a deck's footprint (a ford)");
+            var wet = Net.Routes.Concat(Net.Flares).Where(r => RoadClasses.Contains(r.Class)).Select(FirstWet).Where(w => w != null).ToList();
+            CollectionAssert.IsEmpty(wet, "a carriageway or a corner flare stands in water outside a deck's footprint (a ford)");
         }
 
         static string PrefabField(string yaml, string key)
@@ -216,8 +225,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// The river deck's ends run on over their banks until G3 under the carriageway it carries stands within 5 cm of
         /// it, so a wheel leaving the deck neither drops nor climbs: the plan's south abutment stands 0.3 m past the
-        /// bench G3 cut for it, and the deck was measured 0.4 m longer there. The campground's two decks are flat on
-        /// cross-sloping banks and step 0.1 to 0.34 m at their seats; that is the owner's to rule, so it is not claimed.
+        /// bench G3 cut for it, and the deck was measured 0.4 m longer there (the owner accepted that seat pad, 10-24
+        /// Q10). The campground's two decks are flat on cross-sloping banks; the brook deck was lengthened by its
+        /// measured seat pads (<see cref="TheCampBrookDeck_RunsOnByItsMeasuredSeatPads"/>), and its end steps are
+        /// re-measured in Phase B's plate, so neither camp deck's ends are claimed here.
         /// </summary>
         [Test]
         public void TheRiverDeck_MeetsItsBanks_AtBothEnds()
@@ -234,6 +245,23 @@ namespace HiddenHarbours.Tests.EditMode
                         if (d < 0.06f)
                             Assert.That(z, Is.LessThanOrEqualTo(b.Deck + SeatTolerance), $"a step up off the deck's end at y {y0} (x {x + o:0.##})");
                     }
+        }
+
+        /// <summary>The owner's Q10 (10-24): the camp brook deck runs on over its banks by the measured seat pads, 1.0 m
+        /// at its east seat and 0.5 m at its west, and its footprint holds its line over that length.</summary>
+        [Test]
+        public void TheCampBrookDeck_RunsOnByItsMeasuredSeatPads()
+        {
+            var json = MiniJson.Parse(File.ReadAllText(NineMileCreekRoadNetwork.FilePath));
+            object deck = MiniJson.List(json, "bridges").Single(o => MiniJson.String(o, "id") == "bridge.nmc_camp_brook_bridge");
+            float[] pad = MiniJson.List(MiniJson.Dict(deck, "measures"), "seatPad").Select(v => (float)(double)v).ToArray();
+            var b = Net.Bridges.Single(d => d.Id == "bridge.nmc_camp_brook_bridge");
+            bool aEast = b.A.x > b.B.x;
+            CollectionAssert.AreEqual(aEast ? new[] { 1f, 0.5f } : new[] { 0.5f, 1f }, pad, "10-24 Q10: 1.0 m east and 0.5 m west");
+            Vector2 u = (b.B - b.A).normalized;
+            foreach ((Vector2 end, string which) in new[] { (b.A - u * pad[0], "A"), (b.B + u * pad[1], "B") })
+                Assert.That(NineMileCreekRoadNetwork.PointToRect(end, b.Footprint), Is.LessThan(1e-2f),
+                    $"the footprint does not run its seat pad past seat {which}");
         }
 
         static float ToLine(Vector2 p, Vector2[] line)
@@ -265,6 +293,95 @@ namespace HiddenHarbours.Tests.EditMode
             CollectionAssert.IsEmpty(apart, "a junction's end does not reach the carriageway it joins");
         }
 
+        /// <summary>roadPathRig4.js's classes that draw centre marks: a flare's line stays within a metre of their
+        /// carriage edge, where the marks would show.</summary>
+        static readonly string[] MarkedClasses = { "route", "paved", "town" };
+
+        /// <summary>The owner's Q4 (10-24): each measured corner flare stands on the road it widens, in that road's
+        /// class and surface (a lane's in a street's, with no bands), reaching into its carriage, its line no more than
+        /// a metre past the road's carriage edge where the class draws centre marks, paving into no G3 building lot the
+        /// road itself does not enter, and naming the fails it takes.</summary>
+        [Test]
+        public void EveryCornerFlare_StandsOnTheRoadItWidens_InItsClass()
+        {
+            var kit = KitClassTable();
+            var lots = NineMileCreekGroundMasks.Lots;
+            float IntoLot(NineMileCreekGroundMasks.Lot l, Vector2 p, float half) =>
+                half - Mathf.Sqrt(Mathf.Pow(Mathf.Max(Mathf.Abs(p.x - (float)l.X) - (float)l.SizeX / 2f, 0f), 2f) +
+                                  Mathf.Pow(Mathf.Max(Mathf.Abs(p.y - (float)l.Y) - (float)l.SizeY / 2f, 0f), 2f));
+            IEnumerable<Vector2> Along(Vector2[] line)
+            {
+                for (int i = 1; i < line.Length; i++)
+                    for (float s = 0f, len = (line[i] - line[i - 1]).magnitude; s <= len; s += 0.1f)
+                        yield return Vector2.Lerp(line[i - 1], line[i], len > 0f ? s / len : 0f);
+            }
+            Assert.That(Net.Flares.Select(f => f.Id), Is.Unique, "two flares share an id");
+            foreach (var f in Net.Flares)
+            {
+                StringAssert.IsMatch(@"^flare\.nmc_[a-z0-9_]+$", f.Id, "a flare's id");
+                var on = Net.Routes.SingleOrDefault(r => r.Id == f.On && r.Part == f.OnPart);
+                Assert.IsNotNull(on, $"{f.Id}: no road {f.On} ({f.OnPart}) to widen");
+                Assert.IsTrue(on.Vehicles && RoadClasses.Contains(on.Class), $"{f.Id}: {on} carries no vehicle");
+                Assert.AreEqual(on.Class == "lane" ? "street" : on.Class, f.Class, $"{f.Id}: not in {on}'s class");
+                Assert.AreEqual(SurfaceOf(on, kit), SurfaceOf(f, kit), $"{f.Id}: not in {on}'s surface");
+                Assert.That(f.For, Is.Not.Null.And.Not.Empty, $"{f.Id}: names no fail it takes");
+                float[] past = f.Points.Select(p => ToLine(p, on.Points) - on.HalfWidth).ToArray();
+                Assert.That(past.Min(), Is.LessThanOrEqualTo(f.HalfWidth - 0.1f + 1e-3f), $"{f.Id}: does not reach into {on}'s carriage");
+                if (MarkedClasses.Contains(f.Class))
+                    Assert.That(past.Max(), Is.LessThanOrEqualTo(1f + 1e-3f), $"{f.Id}: its line stands where {on}'s centre marks would show");
+                foreach (var l in lots)
+                {
+                    float into = Along(f.Points).Max(p => IntoLot(l, p, f.HalfWidth));
+                    if (into > 1e-3f)
+                        Assert.That(Along(on.Points).Max(p => IntoLot(l, p, on.HalfWidth)), Is.GreaterThan(0f),
+                            $"{f.Id}: paves {into:0.###} m into {l.Id}, which {on} does not enter");
+                }
+            }
+        }
+
+        /// <summary>The owner's Q12 (10-24): the plaza's parking is one row of the plan's 2.75 x 5.5 stalls a bay, off
+        /// an aisle from the row's fronts: twenty in the north bay, sixteen in the south, whose stalls 10 to 13 give way
+        /// to the link.</summary>
+        [Test]
+        public void ThePlazaParking_IsOneRowOfStallsABay()
+        {
+            var json = MiniJson.Parse(File.ReadAllText(NineMileCreekRoadNetwork.FilePath));
+            var bays = MiniJson.List(json, "routes").Where(o => MiniJson.String(o, "id") == "lot.nmc_plaza_parking").ToList();
+            var want = new Dictionary<string, int> { ["the south bay"] = 16, ["the north bay"] = 20 };
+            CollectionAssert.AreEquivalent(want.Keys, bays.Select(o => MiniJson.String(o, "part")), "the plaza's two bays");
+            foreach (object bay in bays)
+            {
+                string part = MiniJson.String(bay, "part");
+                object st = MiniJson.Dict(bay, "stalls");
+                float[] Of(string key) => MiniJson.List(st, key).Select(v => (float)(double)v).ToArray();
+                float[] row = Of("row"), each = Of("each"), aisle = Of("aisle"), x = Of("x");
+                CollectionAssert.AreEqual(new[] { 2.75f, 5.5f }, each, $"{part}: not the plan's stall");
+                Assert.AreEqual(each[1], row[1] - row[0], 1e-4f, $"{part}: more than one row of stalls");
+                Assert.AreEqual(row[1], aisle[0], 1e-4f, $"{part}: the aisle does not start at the stalls' fronts");
+                Assert.AreEqual(want[part], (int)MiniJson.Float(st, "n"), $"{part}: the stall count");
+                Assert.That(20 * each[0], Is.LessThanOrEqualTo(x[1] - x[0] + 1e-3f), $"{part}: the row's twenty places do not fit its span");
+                StringAssert.Contains("Q12", MiniJson.String(bay, "clip"), $"{part}: the clip names no ruling");
+            }
+        }
+
+        /// <summary>The owner's Q15 (10-24): the marsh walk goes with H7's boardwalks, the camp footbridge to H12, and
+        /// the north shore walk and the notch plank stay out of H4; none is laid.</summary>
+        [Test]
+        public void TheHeldWalks_GoToTheirRuledOwners_AndNoneIsLaid()
+        {
+            var json = MiniJson.Parse(File.ReadAllText(NineMileCreekRoadNetwork.FilePath));
+            var owner = MiniJson.List(json, "held").ToDictionary(o => MiniJson.String(o, "id"), o => MiniJson.String(o, "owner"));
+            foreach ((string id, string to) in new[] { ("boardwalk.nmc_marsh_walk", "H7"), ("bridge.nmc_camp_footbridge", "H12"),
+                                                      ("path.nmc_north_shore_walk", "out of H4"), ("bridge.nmc_notch_plank", "out of H4") })
+            {
+                Assert.IsTrue(owner.ContainsKey(id), $"{id} is not held");
+                StringAssert.StartsWith(to, owner[id], $"{id}: not {to}'s");
+                StringAssert.Contains("Q15", owner[id], $"{id}: the owner names no ruling");
+                CollectionAssert.IsEmpty(Net.All(id), $"{id} is held, yet laid");
+                Assert.IsFalse(Net.Bridges.Any(b => b.Id == id), $"{id} is held, yet decked");
+            }
+        }
+
         [Test]
         public void WharfRoad_HandsOverToTheWharfsStub_WhereTheStubBegins()
         {
@@ -292,8 +409,33 @@ namespace HiddenHarbours.Tests.EditMode
 
             var south = clear.Single(c => c.Id == "hedge.nmc_wharf_road" && c.Side == "south");
             var spur = Net.All("drive.nmc_truck_park_spur").Single();
-            Assert.IsTrue(south.Gates.Any(g => spur.Points[0].x - spur.HalfWidth >= g.x - 1e-4f && spur.Points[0].x + spur.HalfWidth <= g.y + 1e-4f),
-                "no gate's clearance in the south hedge holds the truck park spur's carriageway");
+            var gate = south.Gates.Where(g => spur.Points[0].x - spur.HalfWidth >= g.x - 1e-4f && spur.Points[0].x + spur.HalfWidth <= g.y + 1e-4f).ToList();
+            Assert.That(gate, Is.Not.Empty, "no gate's clearance in the south hedge holds the truck park spur's carriageway");
+            Assert.AreEqual(new Vector2(-135.1f, -124.9f), gate.Single(),
+                "10-24 Q5: the spur's gate is widened to x -135.1..-124.9 for the 53-foot pairs' swept bodies (the clearance only)");
+        }
+
+        /// <summary>The owner's Q6 (10-24): step 12 takes the four pieces of planting that stand in the ruled routes'
+        /// swept bodies, each by its place, and only those; the laydown's and the gas bar's wait on their accesses.</summary>
+        [Test]
+        public void ThePlantingInTheRuledRoutesSweptBodies_IsClearedByItsPlace()
+        {
+            var net = Net;
+            CollectionAssert.AreEquivalent(
+                new[] { "CreekHedgerows/SweetGale_2", "CreekHedgerows/SweetGale_3", "CreekHedgerows/Meadowsweet_1", "CreekTrees/RedSpruce_2" },
+                net.Swept.Select(s => s.Root + "/" + s.Name), "10-24 Q6: the pieces on ruled routes");
+            foreach (var s in net.Swept)
+            {
+                StringAssert.StartsWith("junction ", s.By, $"{s.Name}: not named for the movement whose body it stands in");
+                string why = NineMileCreekRoadClearings.Why(net, s.At, hedged: false);
+                Assert.IsNotNull(why, $"{s.Name} at {s.At}: step 12 would keep it");
+                // a piece on a carriageway is cleared as that; the rest by their place
+                if (!why.StartsWith(NineMileCreekRoadClearings.OnACarriageway, StringComparison.Ordinal))
+                    StringAssert.StartsWith(NineMileCreekRoadClearings.InASweptBody, why, $"{s.Name}");
+                string near = NineMileCreekRoadClearings.Why(net, s.At + new Vector2(0.01f, 0f), hedged: false);
+                Assert.That(near == null || !near.StartsWith(NineMileCreekRoadClearings.InASweptBody, StringComparison.Ordinal),
+                    $"{s.Name}: a plant a centimetre off its place is taken as it");
+            }
         }
 
         [Test]
@@ -405,14 +547,15 @@ namespace HiddenHarbours.Tests.EditMode
 
         sealed class Surface { public Vector2[] P; public float Band; public bool Flat; public Rect Near; }
 
-        /// <summary>Every carriageway a wheel may stand on: the network's road classes out to their kit bands (a
-        /// town street's gutter, a road's shoulder; a route's own bands replace its class's), and the decks.</summary>
+        /// <summary>Every carriageway a wheel may stand on: the network's road classes and its corner flares out to
+        /// their kit bands (a town street's gutter, a road's shoulder; a route's own bands replace its class's), and the
+        /// decks.</summary>
         static List<Surface> Surfaces()
         {
             var kit = KitClassTable();
             var json = MiniJson.Parse(File.ReadAllText(NineMileCreekRoadNetwork.FilePath));
             var all = new List<Surface>();
-            foreach (object o in MiniJson.List(json, "routes"))
+            foreach (object o in MiniJson.List(json, "routes").Concat(MiniJson.List(json, "flares") ?? new List<object>()))
             {
                 string cls = MiniJson.String(o, "cls");
                 if (!RoadClasses.Contains(cls)) continue;

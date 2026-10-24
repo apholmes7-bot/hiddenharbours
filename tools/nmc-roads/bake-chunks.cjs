@@ -102,11 +102,12 @@ const sha = (a) => crypto.createHash('sha256').update(Buffer.from(a.buffer, a.by
 const hex = (c) => '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
 
 // ---- the routes, in world metres ----------------------------------------------------------------------------
-// the network's own fields the kit reads; part, from and clip are the network's notes
+// the network's own fields the kit reads; part, from and clip are the network's notes. The corner flares (the owner's
+// Q4, 10-24) follow the routes, so a route's index in the kit, and with it its seed, is the same with or without them
 const KIT_FIELDS = ['id', 'cls', 'w', 'surf', 'bands', 'ends'];
 function readRoutes(RK) {
   const doc = JSON.parse(fs.readFileSync(NETWORK, 'utf8'));
-  const routes = doc.routes.map((r) => {
+  const routes = doc.routes.concat(doc.flares || []).map((r) => {
     const o = {}; for (const k of KIT_FIELDS) if (r[k] !== undefined) o[k] = r[k];
     o.pts = r.pts;
     const C = RK.CLASSES[r.cls]; if (!C) throw new Error(`${r.id}: the kit has no class ${r.cls}`);

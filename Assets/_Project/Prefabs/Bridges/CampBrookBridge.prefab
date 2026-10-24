@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 6408719668570222480}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -63.000504, y: -66.798996, z: 0}
+  m_LocalPosition: {x: -62.746998, y: -66.84, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -47,8 +47,8 @@ MonoBehaviour:
   _id: bridge.nmc_camp_brook_bridge
   _footprint:
     serializedVersion: 2
-    x: -72.106
-    y: -69.698
-    width: 18.211
-    height: 5.798
+    x: -72.599
+    y: -69.78
+    width: 19.704
+    height: 5.88
   _deckElevation: 5.2

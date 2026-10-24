@@ -221,6 +221,8 @@
    "cls": "lane",
    "w": 5,
    "surf": "gravel",
+   "vehicles": false,
+   "vehiclesWhy": "until a vehicle grade limit exists: it climbs 41.7% and its bodies cross into the boat shed lot (the owner, 10-24, Q8)",
    "pts": [
     [-116.5, 94],
     [-116.5, 145.5],
@@ -716,7 +718,15 @@
    "w": 18,
    "bands": [],
    "ends": "flat",
-   "clip": "rows and aisle y 58.5..76.5 across the lot box's x -256..-197; the stalls x -254..-199, and kit v4 draws no stall lines",
+   "clip": "one row of stalls (the owner, 10-24, Q12) y 58.5..64 and the aisle y 64..76.5, across the lot box's x -256..-197; the stalls x -254..-199, and kit v4 draws no stall lines",
+   "stalls": {
+    "row": [58.5, 64],
+    "x": [-254, -199],
+    "each": [2.75, 5.5],
+    "n": 16,
+    "aisle": [64, 76.5],
+    "cut": "four stalls of the second south row (10 to 13) give way to the link"
+   },
    "pts": [
     [-256, 67.5],
     [-197, 67.5]
@@ -730,7 +740,14 @@
    "w": 18,
    "bands": [],
    "ends": "flat",
-   "clip": "rows and aisle y 78..96 across the lot box's x -256..-197; the stalls x -254..-199, and kit v4 draws no stall lines",
+   "clip": "one row of stalls (the owner, 10-24, Q12) y 78..83.5 and the aisle y 83.5..96, across the lot box's x -256..-197; the stalls x -254..-199, and kit v4 draws no stall lines",
+   "stalls": {
+    "row": [78, 83.5],
+    "x": [-254, -199],
+    "each": [2.75, 5.5],
+    "n": 20,
+    "aisle": [83.5, 96]
+   },
    "pts": [
     [-256, 87],
     [-197, 87]
@@ -1569,6 +1586,2420 @@
    ]
   }
  ],
+ "flares": [
+  {
+   "id": "flare.nmc_south_shore_6_r_1",
+   "from": "flares[0]",
+   "on": "court.nmc_south_shore_6",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction court.nmc_south_shore_6 reversed into drive.nmc_south_shore_6 (HightopVan)"
+   ],
+   "pts": [
+    [-285.895, -89.9],
+    [-285.395, -90.05],
+    [-284.895, -90.048],
+    [-284.395, -89.9],
+    [-284.261, -89.9]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_court_l_0",
+   "from": "flares[1]",
+   "on": "drive.nmc_plaza_court",
+   "cls": "town",
+   "w": 1,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53)"
+   ],
+   "pts": [
+    [-197.658, 104],
+    [-197.5, 104.638]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_east_r_28",
+   "from": "flares[2]",
+   "on": "drive.nmc_plaza_east",
+   "cls": "town",
+   "w": 1,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-190.5, 86.025],
+    [-190.35, 86.525],
+    [-190.302, 87.025],
+    [-190.5, 87.685]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_east_r_39",
+   "from": "flares[3]",
+   "on": "drive.nmc_plaza_east",
+   "cls": "town",
+   "w": 2.543,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-191.271, 89.56],
+    [-191.253, 91.56],
+    [-189.153, 98.56],
+    [-189.054, 99.06],
+    [-190.836, 105]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_east_l_39",
+   "from": "flares[4]",
+   "on": "drive.nmc_plaza_east",
+   "cls": "town",
+   "w": 2.432,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53, ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-195.784, 89.975],
+    [-195.784, 90.975],
+    [-195.847, 91.475],
+    [-197.647, 97.475],
+    [-197.782, 97.975],
+    [-197.891, 98.975],
+    [-197.872, 100.475],
+    [-197.749, 101.475],
+    [-197.529, 102.475],
+    [-196.775, 105]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_entrance_r_5",
+   "from": "flares[5]",
+   "on": "drive.nmc_plaza_entrance",
+   "cls": "town",
+   "w": 1.089,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-190.938, 88.045],
+    [-188.938, 88.045],
+    [-187.938, 87.826],
+    [-186.938, 87.708],
+    [-184.938, 87.756],
+    [-183.438, 87.306],
+    [-182.938, 87.355],
+    [-180.938, 87.955],
+    [-180.438, 88.045],
+    [-179.22, 88.045]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_entrance_l_4",
+   "from": "flares[6]",
+   "on": "drive.nmc_plaza_entrance",
+   "cls": "town",
+   "w": 2.56,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-193.5, 95.696],
+    [-187.5, 97.464],
+    [-180, 95.22],
+    [-178.91, 95.22]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_entrance_l_12",
+   "from": "flares[7]",
+   "on": "drive.nmc_plaza_entrance",
+   "cls": "town",
+   "w": 1,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53)"
+   ],
+   "pts": [
+    [-182.929, 96],
+    [-182.429, 96.027],
+    [-181.429, 96.327],
+    [-180.929, 96.321],
+    [-179.86, 96]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_mill_1_l_7",
+   "from": "flares[8]",
+   "on": "drive.nmc_plaza_mill_1",
+   "cls": "town",
+   "w": 1,
+   "for": [
+    "access the plaza's apron out, by mill drive 1 and Mill Road to Route 91 northbound (ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-227.5, 155.397],
+    [-227.8, 156.397],
+    [-227.73, 156.897],
+    [-227.58, 157.397],
+    [-227.5, 158.189]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_yard_out_r_23",
+   "from": "flares[9]",
+   "on": "drive.nmc_plaza_yard_out",
+   "cls": "town",
+   "w": 1.076,
+   "surf": "gravel",
+   "for": [
+    "junction drive.nmc_plaza_yard_out out onto road.nmc_mill_road reversed (ConvBox, Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_mill_road forward into drive.nmc_plaza_yard_out (ConvBox, Modern2500)"
+   ],
+   "pts": [
+    [-276.538, 161.634],
+    [-276.538, 162.134],
+    [-276.447, 162.634],
+    [-275.847, 164.634],
+    [-275.827, 165.134],
+    [-276.507, 167.4]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_yard_out_l_7",
+   "from": "flares[10]",
+   "on": "drive.nmc_plaza_yard_out",
+   "cls": "town",
+   "w": 1.095,
+   "surf": "gravel",
+   "for": [
+    "junction road.nmc_mill_road forward into drive.nmc_plaza_yard_out (Dually3500, HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-281.452, 145.471],
+    [-281.452, 147.471],
+    [-281.646, 148.471],
+    [-282.031, 151.471],
+    [-282.218, 153.971],
+    [-282.244, 155.471],
+    [-282.185, 156.971],
+    [-282.021, 158.471],
+    [-281.842, 159.471],
+    [-281.452, 160.971],
+    [-281.452, 163.071]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_7_r_1",
+   "from": "flares[11]",
+   "on": "drive.nmc_shore_lane_7",
+   "cls": "street",
+   "w": 1.528,
+   "surf": "shell",
+   "for": [
+    "junction drive.nmc_shore_lane_7 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction drive.nmc_shore_lane_8 out onto road.nmc_shore_lane reversed (Dually3500, Modern2500, Modern350)",
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_7 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-166.809, -149.84],
+    [-167.259, -151.34],
+    [-166.069, -155.34],
+    [-166.036, -157.344]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_7_r_5",
+   "from": "flares[12]",
+   "on": "drive.nmc_shore_lane_7",
+   "cls": "street",
+   "w": 1.406,
+   "surf": "shell",
+   "for": [
+    "junction road.nmc_shore_lane reversed into drive.nmc_shore_lane_7 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-166.097, -151.587],
+    [-166.097, -154.087],
+    [-166.162, -154.587],
+    [-166.906, -157.087],
+    [-167.15, -158.087],
+    [-167.183, -158.4]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_7_l_2",
+   "from": "flares[13]",
+   "on": "drive.nmc_shore_lane_7",
+   "cls": "street",
+   "w": 2.272,
+   "surf": "shell",
+   "for": [
+    "junction drive.nmc_shore_lane_7 out onto road.nmc_shore_lane forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_7 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_shore_lane reversed into drive.nmc_shore_lane_7 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-163.837, -149.84],
+    [-163.087, -152.34],
+    [-162.988, -152.84],
+    [-163.888, -155.84],
+    [-163.918, -156.34],
+    [-163.735, -157.84],
+    [-163.74, -158.4]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_8_r_1",
+   "from": "flares[14]",
+   "on": "drive.nmc_shore_lane_8",
+   "cls": "street",
+   "w": 1.816,
+   "surf": "shell",
+   "for": [
+    "junction drive.nmc_shore_lane_8 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_8 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-145.118, -151.19],
+    [-145.698, -153.19],
+    [-145.473, -154.19],
+    [-145.387, -155.2]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_8_l_3",
+   "from": "flares[15]",
+   "on": "drive.nmc_shore_lane_8",
+   "cls": "street",
+   "w": 1,
+   "surf": "shell",
+   "for": [
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_8 (Modern2500, Modern3500)"
+   ],
+   "pts": [
+    [-142.6, -152.642],
+    [-142.563, -153.642],
+    [-142.263, -154.642],
+    [-142.182, -155.2]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_5_r_0",
+   "from": "flares[16]",
+   "on": "drive.nmc_south_shore_5",
+   "cls": "street",
+   "w": 1.423,
+   "for": [
+    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) forward (Modern3500)",
+    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) reversed (HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_5 (Dually3500, HightopVan, Modern2500, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_5 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "route drive.nmc_south_shore_5 (reversed) (Modern3500)"
+   ],
+   "pts": [
+    [-300.733, -116.7],
+    [-300.433, -115.7],
+    [-300.84, -114.2],
+    [-300.865, -113.7],
+    [-300.684, -110.7],
+    [-300.274, -108.2],
+    [-300.131, -106.7],
+    [-300.115, -104.7],
+    [-300.193, -103.7],
+    [-300.772, -99.7],
+    [-301.211, -97.7],
+    [-301.211, -96.2],
+    [-301.944, -95.268],
+    [-302.685, -94.733]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_5_r_22",
+   "from": "flares[17]",
+   "on": "drive.nmc_south_shore_5",
+   "cls": "street",
+   "w": 1.527,
+   "for": [
+    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) reversed (Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_5 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-301.263, -98.8],
+    [-301.263, -96.3],
+    [-301.853, -95.313],
+    [-304.079, -92.418],
+    [-304.465, -92.029]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_5_l_1",
+   "from": "flares[18]",
+   "on": "drive.nmc_south_shore_5",
+   "cls": "street",
+   "w": 1.558,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_5 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_5 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-303.16, -116.7],
+    [-303.31, -116.2],
+    [-303.371, -115.7],
+    [-303.071, -114.7],
+    [-303.058, -114.2],
+    [-303.493, -112.7],
+    [-303.692, -111.7],
+    [-303.948, -109.2],
+    [-303.953, -107.7],
+    [-303.662, -105.7],
+    [-303.313, -104.2],
+    [-302.759, -102.2],
+    [-302.721, -101.7],
+    [-302.721, -98.397]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_6_r_0",
+   "from": "flares[19]",
+   "on": "drive.nmc_south_shore_6",
+   "cls": "street",
+   "w": 1.28,
+   "for": [
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) reversed (HightopVan, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_6 (HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_6 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-287.739, -116.56],
+    [-287.589, -116.06],
+    [-287.551, -115.56],
+    [-287.851, -114.56],
+    [-287.897, -114.06],
+    [-287.47, -112.56],
+    [-287.277, -111.56],
+    [-287.077, -109.06],
+    [-287.072, -108.06],
+    [-287.221, -106.56],
+    [-287.399, -105.56],
+    [-288.009, -103.06],
+    [-288.04, -100.237]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_6_r_22",
+   "from": "flares[20]",
+   "on": "drive.nmc_south_shore_6",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_6 (Dually3500, Modern2500)"
+   ],
+   "pts": [
+    [-287.9, -96.796],
+    [-287.864, -95.296],
+    [-287.264, -93.296],
+    [-287.332, -92.796],
+    [-287.482, -92.296],
+    [-287.696, -92.778],
+    [-287.322, -91.925]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_6_r_25",
+   "from": "flares[21]",
+   "on": "drive.nmc_south_shore_6",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction court.nmc_south_shore_6 reversed into drive.nmc_south_shore_6 (HightopVan)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_6 (Dually3500, Modern2500)"
+   ],
+   "pts": [
+    [-287.9, -93.486],
+    [-287.607, -92.486],
+    [-287.685, -93.036],
+    [-287.247, -92.752],
+    [-286.896, -92.394],
+    [-286.225, -90.996],
+    [-285.642, -90.18],
+    [-285.432, -89.702],
+    [-284.762, -88.912]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_6_l_0",
+   "from": "flares[22]",
+   "on": "drive.nmc_south_shore_6",
+   "cls": "street",
+   "w": 1.492,
+   "for": [
+    "junction court.nmc_south_shore_6 reversed into drive.nmc_south_shore_6 (Modern3500)",
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern3500)",
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) reversed (Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_6 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_6 (Dually3500, HightopVan, Modern2500, Modern3500)"
+   ],
+   "pts": [
+    [-290.357, -116.56],
+    [-290.649, -115.56],
+    [-290.058, -113.56],
+    [-290.432, -112.06],
+    [-290.557, -111.06],
+    [-290.613, -110.06],
+    [-290.9, -108.06],
+    [-291.012, -106.56],
+    [-291.037, -105.06],
+    [-290.969, -102.06],
+    [-290.703, -99.56],
+    [-290.409, -98.06],
+    [-290.233, -96.06],
+    [-289.854, -94.06],
+    [-289.854, -92.56],
+    [-289.56, -91.54],
+    [-288.783, -90.626]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_6_l_25",
+   "from": "flares[23]",
+   "on": "drive.nmc_south_shore_6",
+   "cls": "street",
+   "w": 1.378,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_6 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-289.911, -94.913],
+    [-289.911, -92.413],
+    [-289.508, -91.392],
+    [-288.647, -89.499],
+    [-287.916, -88.152],
+    [-287.386, -87.29],
+    [-287.082, -86.94]
+   ]
+  },
+  {
+   "id": "flare.nmc_truck_park_spur_r_3",
+   "from": "flares[24]",
+   "on": "drive.nmc_truck_park_spur",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "access truck park in, from Wharf Road eastbound (AeroSemi, ClassicSemi+TrailerFlatbed28)",
+    "junction drive.nmc_truck_park_spur out onto road.nmc_wharf_road reversed (Modern3500)",
+    "junction road.nmc_wharf_road forward into drive.nmc_truck_park_spur (HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-133, 89.731],
+    [-133.245, 88.731],
+    [-133.317, 88.231],
+    [-133.017, 87.231],
+    [-133, 86.927]
+   ]
+  },
+  {
+   "id": "flare.nmc_truck_park_spur_r_7",
+   "from": "flares[25]",
+   "on": "drive.nmc_truck_park_spur",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "junction road.nmc_wharf_road reversed into drive.nmc_truck_park_spur (Modern350)"
+   ],
+   "pts": [
+    [-133, 85.612],
+    [-133.122, 85.112],
+    [-133.116, 84.612],
+    [-133, 84.226]
+   ]
+  },
+  {
+   "id": "flare.nmc_truck_park_spur_l_3",
+   "from": "flares[26]",
+   "on": "drive.nmc_truck_park_spur",
+   "cls": "street",
+   "w": 1.984,
+   "bands": [],
+   "for": [
+    "access truck park in, from Wharf Road eastbound (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)",
+    "junction drive.nmc_truck_park_spur out onto road.nmc_wharf_road forward (Modern3500)",
+    "junction road.nmc_wharf_road reversed into drive.nmc_truck_park_spur (HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-129.492, 92],
+    [-127.868, 86.5],
+    [-127.898, 86],
+    [-129.398, 81],
+    [-129.492, 80.5],
+    [-129.492, 79.221]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_parking_p1_l_57",
+   "from": "flares[27]",
+   "on": "lot.nmc_plaza_parking",
+   "onPart": "the north bay",
+   "cls": "town",
+   "w": 2.219,
+   "bands": [],
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53, ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-205.47, 94.891],
+    [-199.47, 96.691],
+    [-198.97, 96.779],
+    [-197, 96.188]
+   ]
+  },
+  {
+   "id": "flare.nmc_truck_park_l_7",
+   "from": "flares[28]",
+   "on": "lot.nmc_truck_park",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "junction road.nmc_wharf_road reversed into drive.nmc_truck_park_spur (Modern350)"
+   ],
+   "pts": [
+    [-134.237, 84.2],
+    [-133.737, 84.35],
+    [-133.237, 84.302],
+    [-132.897, 84.2]
+   ]
+  },
+  {
+   "id": "flare.nmc_truck_park_l_13",
+   "from": "flares[29]",
+   "on": "lot.nmc_truck_park",
+   "cls": "street",
+   "w": 1.951,
+   "bands": [],
+   "for": [
+    "access truck park in, from Wharf Road eastbound (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-133.842, 83.725],
+    [-132.342, 83.749],
+    [-127.342, 85.249],
+    [-126.842, 85.352],
+    [-121.842, 83.852],
+    [-121.342, 83.725],
+    [-120.95, 83.725]
+   ]
+  },
+  {
+   "id": "flare.nmc_bar_road_r_155",
+   "from": "flares[30]",
+   "on": "road.nmc_bar_road",
+   "cls": "street",
+   "w": 1.446,
+   "for": [
+    "junction road.nmc_camp_road out onto road.nmc_bar_road reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [16.139, -3.286],
+    [15.826, -0.136],
+    [15.957, 0.356],
+    [16.22, 2.843],
+    [16.565, 5.324],
+    [17.753, 12.253],
+    [18.059, 14.737],
+    [18.191, 16.733],
+    [18.199, 18.236],
+    [18.116, 19.747],
+    [17.921, 21.267],
+    [17.607, 22.795],
+    [17.574, 23.299],
+    [17.8, 26.235]
+   ]
+  },
+  {
+   "id": "flare.nmc_bar_road_r_193",
+   "from": "flares[31]",
+   "on": "road.nmc_bar_road",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction road.nmc_camp_road out onto road.nmc_bar_road forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [18.732, 35.443],
+    [18.847, 36.939],
+    [19.162, 37.918],
+    [19.516, 39.395],
+    [19.764, 40.88],
+    [19.919, 42.373],
+    [20.038, 45.373],
+    [19.968, 48.888],
+    [19.844, 49.901],
+    [19.965, 51.469]
+   ]
+  },
+  {
+   "id": "flare.nmc_bar_road_l_182",
+   "from": "flares[32]",
+   "on": "road.nmc_bar_road",
+   "cls": "street",
+   "w": 1.125,
+   "for": [
+    "junction road.nmc_bar_road forward into road.nmc_camp_road (Dually3500, HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_bar_road reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_camp_loop_a forward (Modern350, Modern3500)"
+   ],
+   "pts": [
+    [13.943, 24.523],
+    [13.88, 25.03],
+    [13.436, 27.07],
+    [13.377, 27.576],
+    [14.317, 30.011],
+    [14.429, 30.833]
+   ]
+  },
+  {
+   "id": "flare.nmc_bar_road_l_187",
+   "from": "flares[33]",
+   "on": "road.nmc_bar_road",
+   "cls": "street",
+   "w": 1.73,
+   "for": [
+    "junction road.nmc_bar_road reversed into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_bar_road forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [14.44, 27.039],
+    [14.517, 28.036],
+    [14.44, 28.543],
+    [13.55, 32.624],
+    [13.51, 33.128],
+    [15.201, 37.511],
+    [15.362, 39.028]
+   ]
+  },
+  {
+   "id": "flare.nmc_bar_road_l_192",
+   "from": "flares[34]",
+   "on": "road.nmc_bar_road",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction road.nmc_bar_road reversed into road.nmc_camp_road (Dually3500, Modern2500)"
+   ],
+   "pts": [
+    [14.709, 35.289],
+    [14.375, 36.819],
+    [14.397, 37.319],
+    [16.891, 69.723],
+    [16.959, 70.219],
+    [17.511, 71.721]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_247",
+   "from": "flares[35]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1.584,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-22.975, -64.048],
+    [-23.205, -60.627],
+    [-22.666, -58.082],
+    [-22.538, -56.569],
+    [-22.543, -55.567],
+    [-22.742, -53.075],
+    [-22.694, -50.565],
+    [-22.909, -47.573],
+    [-23.215, -45.088],
+    [-24.129, -38.637],
+    [-24.403, -36.15],
+    [-24.689, -32.849],
+    [-24.728, -32.345],
+    [-24.477, -28.829]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_24",
+   "from": "flares[36]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1.351,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_road out onto road.nmc_camp_loop_a forward (Modern2500, Modern350)"
+   ],
+   "pts": [
+    [-2.977, 8.504],
+    [-2.309, 5.488],
+    [-2.057, 5.03],
+    [-1.292, 3.149],
+    [-0.188, -0.194],
+    [0.562, -3.102],
+    [1.125, -5.538],
+    [2.015, -9.949],
+    [2.05, -10.453],
+    [1.799, -13.575],
+    [1.825, -13.816]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_144",
+   "from": "flares[37]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_a (reversed) (Modern3500)"
+   ],
+   "pts": [
+    [19.716, -112.047],
+    [19.668, -113.058],
+    [19.339, -115.031],
+    [19.04, -116.501],
+    [18.79, -117.471],
+    [18.457, -118.342]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_159",
+   "from": "flares[38]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_a (Dually3500, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [15.369, -125.532],
+    [14.407, -125.807],
+    [13.952, -126.033],
+    [12.621, -126.836],
+    [11.222, -127.4],
+    [9.762, -127.747],
+    [8.25, -127.918],
+    [7.733, -127.926],
+    [6.76, -128.16],
+    [6.245, -128.178],
+    [4.475, -128.645]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_203",
+   "from": "flares[39]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a reversed (Modern2500)"
+   ],
+   "pts": [
+    [-17.571, -104.316],
+    [-18.101, -103.433],
+    [-19.294, -99.615],
+    [-20.265, -96.252],
+    [-20.508, -95.28],
+    [-20.551, -94.77],
+    [-20.675, -94.227]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_220",
+   "from": "flares[40]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_a forward into road.nmc_camp_loop_b_stem (east of the brook bridge) (Modern2500)"
+   ],
+   "pts": [
+    [-22, -87.194],
+    [-22.18, -86.714],
+    [-22.288, -86.225],
+    [-22.954, -81.774],
+    [-23.771, -75.83],
+    [-23.809, -75.33],
+    [-23.769, -74.811]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_238",
+   "from": "flares[41]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 2.307,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_a forward into road.nmc_camp_loop_b_stem (east of the brook bridge) (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-22.956, -75.876],
+    [-23.169, -74.391],
+    [-23.307, -73.906],
+    [-26.134, -67.744],
+    [-25.595, -64.018],
+    [-24.911, -60.961],
+    [-24.901, -60.46],
+    [-25.005, -59.008]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_245",
+   "from": "flares[42]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1.793,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_loop_b_stem (east of the brook bridge) (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-24.492, -66.944],
+    [-24.633, -65.954],
+    [-25.267, -64.53],
+    [-26.598, -61.023],
+    [-26.522, -60.516],
+    [-25.496, -55.931],
+    [-25.689, -53.039]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_251",
+   "from": "flares[43]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_loop_b_stem (east of the brook bridge) (Dually3500, Modern350)"
+   ],
+   "pts": [
+    [-25.823, -56.723],
+    [-26.041, -55.736],
+    [-26.775, -46.264],
+    [-27.075, -41.273],
+    [-27, -40.246]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_274",
+   "from": "flares[44]",
+   "on": "road.nmc_camp_loop_a",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a forward (Dually3500, Modern350)"
+   ],
+   "pts": [
+    [-27.154, -33.905],
+    [-27.139, -33.405],
+    [-27.227, -32.897],
+    [-27.147, -30.397],
+    [-27.003, -27.901],
+    [-26.683, -23.913],
+    [-26.379, -23.056]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_stem_p0_r_1",
+   "from": "flares[45]",
+   "on": "road.nmc_camp_loop_b_stem",
+   "onPart": "east of the brook bridge",
+   "cls": "street",
+   "w": 1.767,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_a forward into road.nmc_camp_loop_b_stem (east of the brook bridge) (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_loop_b_stem (east of the brook bridge) (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-25.183, -62.257],
+    [-27.235, -61.87],
+    [-27.723, -62.009],
+    [-29.168, -62.614],
+    [-29.67, -62.62],
+    [-30.689, -62.492],
+    [-31.697, -62.473],
+    [-33.194, -62.576],
+    [-36.157, -63.082],
+    [-38.66, -63.192],
+    [-41.147, -63.447],
+    [-48.395, -64.42],
+    [-52.395, -64.903],
+    [-53.395, -65.083],
+    [-53.895, -65.083]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_stem_p0_l_1",
+   "from": "flares[46]",
+   "on": "road.nmc_camp_loop_b_stem",
+   "onPart": "east of the brook bridge",
+   "cls": "street",
+   "w": 2.325,
+   "bands": [],
+   "for": [
+    "junction road.nmc_camp_loop_a forward into road.nmc_camp_loop_b_stem (east of the brook bridge) (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_loop_b_stem (east of the brook bridge) (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-24.802, -65.878],
+    [-27.21, -66.885],
+    [-27.718, -66.837],
+    [-30.795, -66.261],
+    [-32.276, -66.524],
+    [-34.272, -66.667],
+    [-37.233, -67.196],
+    [-39.223, -67.392],
+    [-41.226, -67.471],
+    [-43.742, -67.45],
+    [-45.895, -67.358],
+    [-53.395, -66.847],
+    [-53.895, -66.763]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_r_100",
+   "from": "flares[47]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (Modern3500)",
+    "route road.nmc_camp_loop_b (reversed) (Dually3500, Modern3500)"
+   ],
+   "pts": [
+    [-95.775, -139.067],
+    [-95.275, -139.04],
+    [-94.267, -139.166],
+    [-92.767, -139.125],
+    [-91.273, -138.971],
+    [-90.78, -138.835],
+    [-90.283, -138.762],
+    [-89.776, -138.879],
+    [-88.771, -138.935],
+    [-87.269, -138.933],
+    [-85.778, -138.737],
+    [-84.792, -138.457],
+    [-84.222, -138.425]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_r_116",
+   "from": "flares[48]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (Dually3500)"
+   ],
+   "pts": [
+    [-79.48, -134.698],
+    [-78.895, -133.868],
+    [-78.424, -132.984],
+    [-77.839, -131.602],
+    [-77.54, -130.576]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_l_70",
+   "from": "flares[49]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_b (reversed) (HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-112.339, -117.94],
+    [-112.348, -118.445],
+    [-112.282, -118.963],
+    [-112.34, -119.46],
+    [-112.57, -119.929],
+    [-112.857, -119.352]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_l_72",
+   "from": "flares[50]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_b (reversed) (HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-112.673, -119.948],
+    [-112.737, -119.309],
+    [-112.311, -119.612],
+    [-112.026, -120.024],
+    [-111.838, -120.51],
+    [-111.482, -121.12]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_l_93",
+   "from": "flares[51]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_b (reversed) (Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-100.673, -135.017],
+    [-100.335, -135.388],
+    [-99.485, -135.993],
+    [-99.225, -136.425],
+    [-99.036, -136.911],
+    [-99.84, -136.689],
+    [-99.753, -136.684]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_l_95",
+   "from": "flares[52]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_b (reversed) (Modern3500)"
+   ],
+   "pts": [
+    [-99.071, -137.077],
+    [-99.738, -136.549],
+    [-99.247, -136.371],
+    [-98.747, -136.35],
+    [-97.733, -136.572],
+    [-97.327, -136.549]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_l_111",
+   "from": "flares[53]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_b (reversed) (HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-85.114, -135.871],
+    [-84.616, -135.828],
+    [-83.634, -135.473],
+    [-83.137, -135.412],
+    [-82.122, -135.656],
+    [-83.103, -136.29]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_b_l_113",
+   "from": "flares[54]",
+   "on": "road.nmc_camp_loop_b",
+   "cls": "street",
+   "w": 1,
+   "bands": [],
+   "for": [
+    "route road.nmc_camp_loop_b (HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_b (reversed) (HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-82.28, -135.714],
+    [-83.153, -136.135],
+    [-82.999, -135.102],
+    [-81.987, -133.92],
+    [-81.89, -133.713]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_c_stem_r_0",
+   "from": "flares[55]",
+   "on": "road.nmc_camp_loop_c_stem",
+   "cls": "street",
+   "w": 1.639,
+   "bands": [],
+   "for": [
+    "junction road.nmc_bar_road forward into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_bar_road reversed (Modern3500)"
+   ],
+   "pts": [
+    [-9.679, 30.143],
+    [-10.151, 30.365],
+    [-14.799, 29.711],
+    [-15.049, 29.749]
+   ]
+  },
+  {
+   "id": "flare.nmc_main_street_lane_r_2",
+   "from": "flares[56]",
+   "on": "road.nmc_main_street_lane",
+   "cls": "town",
+   "w": 1,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 1.5,
+     "z": 0.125,
+     "surf": "slab"
+    }
+   ],
+   "for": [
+    "junction road.nmc_main_street_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) forward (ConvBox, Modern3500)"
+   ],
+   "pts": [
+    [-186.214, 268.2],
+    [-186.714, 268.279],
+    [-187.714, 268.579],
+    [-188.214, 268.675],
+    [-189.714, 268.225],
+    [-190.21, 268.2]
+   ]
+  },
+  {
+   "id": "flare.nmc_main_street_lane_l_1",
+   "from": "flares[57]",
+   "on": "road.nmc_main_street_lane",
+   "cls": "town",
+   "w": 1,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 1.5,
+     "z": 0.125,
+     "surf": "slab"
+    }
+   ],
+   "for": [
+    "junction road.nmc_north_creek_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) reversed (ConvBox, Modern3500)"
+   ],
+   "pts": [
+    [-186.063, 262.7],
+    [-186.563, 262.554],
+    [-187.063, 262.488],
+    [-187.771, 262.7]
+   ]
+  },
+  {
+   "id": "flare.nmc_mill_road_r_27",
+   "from": "flares[58]",
+   "on": "road.nmc_mill_road",
+   "cls": "street",
+   "w": 2.38,
+   "for": [
+    "access the plaza's apron out, by mill drive 1 and Mill Road to Route 91 northbound (AeroSemi+TrailerReefer53, ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-196.854, 160.725],
+    [-203.335, 161.222],
+    [-203.824, 161.391],
+    [-205.267, 161.684],
+    [-206.738, 162.057],
+    [-213.087, 163.929],
+    [-214.561, 164.266],
+    [-216.049, 164.462],
+    [-217.05, 164.498],
+    [-218.569, 164.375],
+    [-224.2, 163.286],
+    [-224.709, 163.223],
+    [-229.291, 163.667]
+   ]
+  },
+  {
+   "id": "flare.nmc_mill_road_r_82",
+   "from": "flares[59]",
+   "on": "road.nmc_mill_road",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction drive.nmc_plaza_yard_out out onto road.nmc_mill_road reversed (ConvBox, Dually3500, HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-256.874, 167.422],
+    [-258.364, 167.594],
+    [-258.844, 167.799],
+    [-259.819, 168.073],
+    [-262.542, 168.748],
+    [-264.507, 169.124],
+    [-265.999, 169.313],
+    [-267.457, 169.673],
+    [-268.952, 169.844],
+    [-270.495, 169.777],
+    [-272.1, 170.06]
+   ]
+  },
+  {
+   "id": "flare.nmc_mill_road_l_20",
+   "from": "flares[60]",
+   "on": "road.nmc_mill_road",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "access the plaza's apron in, from Route 91 southbound by Mill Road and mill drive 1 (ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-196.644, 157.391],
+    [-197.659, 157.228],
+    [-198.614, 157.534]
+   ]
+  },
+  {
+   "id": "flare.nmc_mill_road_l_31",
+   "from": "flares[61]",
+   "on": "road.nmc_mill_road",
+   "cls": "street",
+   "w": 1.165,
+   "for": [
+    "access the plaza's apron out, by mill drive 1 and Mill Road to Route 91 northbound (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-205.204, 158.093],
+    [-207.195, 158.286],
+    [-207.702, 158.237],
+    [-209.75, 157.833],
+    [-210.241, 157.959],
+    [-210.724, 158.156],
+    [-211.229, 158.125],
+    [-212.253, 157.923],
+    [-215.095, 159.05]
+   ]
+  },
+  {
+   "id": "flare.nmc_mill_road_l_97",
+   "from": "flares[62]",
+   "on": "road.nmc_mill_road",
+   "cls": "street",
+   "w": 1.062,
+   "for": [
+    "junction drive.nmc_plaza_yard_out out onto road.nmc_mill_road reversed (ConvBox, Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_mill_road forward into drive.nmc_plaza_yard_out (ConvBox, Dually3500, Modern2500)"
+   ],
+   "pts": [
+    [-271.766, 165.945],
+    [-272.259, 166.029],
+    [-274.857, 165.789],
+    [-277.161, 167.015],
+    [-277.942, 167.18]
+   ]
+  },
+  {
+   "id": "flare.nmc_north_creek_lane_r_3",
+   "from": "flares[63]",
+   "on": "road.nmc_north_creek_lane",
+   "cls": "street",
+   "w": 1.113,
+   "surf": "asphalt",
+   "for": [
+    "junction road.nmc_north_creek_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) reversed (Dually3500, HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_route_91_town (the town section, north of the river bridge) forward into road.nmc_north_creek_lane (ConvBox, Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-184.115, 272.069],
+    [-183.615, 272.083],
+    [-181.096, 271.433],
+    [-180.595, 271.408],
+    [-178.117, 272.227],
+    [-177.577, 272.248]
+   ]
+  },
+  {
+   "id": "flare.nmc_north_creek_lane_r_8",
+   "from": "flares[64]",
+   "on": "road.nmc_north_creek_lane",
+   "cls": "street",
+   "w": 1,
+   "surf": "asphalt",
+   "for": [
+    "junction road.nmc_route_91_town (the town section, north of the river bridge) reversed into road.nmc_north_creek_lane (ConvBox, HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-177.677, 272.189],
+    [-176.678, 272.216],
+    [-176.174, 272.091],
+    [-175.17, 271.967],
+    [-173.668, 271.882],
+    [-171.667, 271.902],
+    [-169.195, 272.093],
+    [-167.698, 272.28],
+    [-167.2, 272.419],
+    [-166.124, 272.458]
+   ]
+  },
+  {
+   "id": "flare.nmc_north_creek_lane_l_3",
+   "from": "flares[65]",
+   "on": "road.nmc_north_creek_lane",
+   "cls": "street",
+   "w": 1,
+   "surf": "asphalt",
+   "for": [
+    "junction road.nmc_route_91_town (the town section, north of the river bridge) reversed into road.nmc_north_creek_lane (ConvBox, Modern3500)"
+   ],
+   "pts": [
+    [-183.953, 275.218],
+    [-183.455, 275.315],
+    [-181.968, 275.806],
+    [-181.468, 275.825],
+    [-179.957, 275.417],
+    [-179.303, 275.346]
+   ]
+  },
+  {
+   "id": "flare.nmc_north_creek_lane_l_7",
+   "from": "flares[66]",
+   "on": "road.nmc_north_creek_lane",
+   "cls": "street",
+   "w": 1.033,
+   "surf": "asphalt",
+   "for": [
+    "junction road.nmc_route_91_town (the town section, north of the river bridge) forward into road.nmc_north_creek_lane (CaboverBox, ConvBox, Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-180.238, 275.304],
+    [-178.24, 275.375],
+    [-177.743, 275.521],
+    [-176.746, 275.647],
+    [-175.747, 275.675],
+    [-173.258, 276.111],
+    [-170.762, 276.286],
+    [-167.732, 276.263],
+    [-163.227, 275.935],
+    [-162.225, 275.82],
+    [-161.723, 275.708],
+    [-159.884, 275.735]
+   ]
+  },
+  {
+   "id": "flare.nmc_north_creek_lane_l_40",
+   "from": "flares[67]",
+   "on": "road.nmc_north_creek_lane",
+   "cls": "street",
+   "w": 1,
+   "surf": "asphalt",
+   "for": [
+    "junction road.nmc_route_91_town (the town section, north of the river bridge) reversed into road.nmc_north_creek_lane (Modern3500)"
+   ],
+   "pts": [
+    [-145.509, 275.922],
+    [-145.01, 276.062],
+    [-144.51, 276.05],
+    [-144.1, 275.93]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_town_r_47",
+   "from": "flares[68]",
+   "on": "road.nmc_route_91_town",
+   "onPart": "the town section, north of the river bridge",
+   "cls": "town",
+   "w": 1.082,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 2.6,
+     "z": 0.125,
+     "surf": "brick"
+    },
+    {
+     "role": "verge",
+     "w": 0.5,
+     "z": 0.125,
+     "z1": 0
+    }
+   ],
+   "for": [
+    "junction road.nmc_north_creek_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) reversed (Dually3500, HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_route_91_town (the town section, north of the river bridge) forward into road.nmc_north_creek_lane (ConvBox, Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-181.818, 266.931],
+    [-181.882, 267.427],
+    [-181.88, 267.931],
+    [-181.539, 269.991],
+    [-181.52, 270.497],
+    [-182.581, 272.882],
+    [-182.661, 273.51]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_town_r_54",
+   "from": "flares[69]",
+   "on": "road.nmc_route_91_town",
+   "onPart": "the town section, north of the river bridge",
+   "cls": "town",
+   "w": 1,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 2.6,
+     "z": 0.125,
+     "surf": "brick"
+    },
+    {
+     "role": "verge",
+     "w": 0.5,
+     "z": 0.125,
+     "z1": 0
+    }
+   ],
+   "for": [
+    "junction road.nmc_main_street_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) forward (HightopVan)",
+    "junction road.nmc_route_91_town (the town section, north of the river bridge) reversed into road.nmc_north_creek_lane (ConvBox, Modern3500)"
+   ],
+   "pts": [
+    [-182.728, 274.355],
+    [-182.719, 274.861],
+    [-182.463, 276.406],
+    [-182.517, 276.903],
+    [-182.886, 277.864],
+    [-183.057, 279.858],
+    [-183.287, 281.348]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_town_l_9",
+   "from": "flares[70]",
+   "on": "road.nmc_route_91_town",
+   "onPart": "the town section, north of the river bridge",
+   "cls": "town",
+   "w": 1.033,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 2.6,
+     "z": 0.125,
+     "surf": "brick"
+    },
+    {
+     "role": "verge",
+     "w": 0.5,
+     "z": 0.125,
+     "z1": 0
+    }
+   ],
+   "for": [
+    "junction road.nmc_main_street_east_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) reversed (ConvBox, Dually3500, HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-181.163, 229.121],
+    [-181.424, 230.598],
+    [-181.892, 231.531],
+    [-182.466, 233.461],
+    [-182.963, 235.405],
+    [-183.347, 237.368],
+    [-183.543, 238.856],
+    [-183.617, 239.859],
+    [-183.637, 241.378],
+    [-183.532, 242.525],
+    [-183.535, 243.029],
+    [-183.743, 244.655]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_town_l_32",
+   "from": "flares[71]",
+   "on": "road.nmc_route_91_town",
+   "onPart": "the town section, north of the river bridge",
+   "cls": "town",
+   "w": 1,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 2.6,
+     "z": 0.125,
+     "surf": "brick"
+    },
+    {
+     "role": "verge",
+     "w": 0.5,
+     "z": 0.125,
+     "z1": 0
+    }
+   ],
+   "for": [
+    "junction road.nmc_north_creek_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) reversed (ConvBox, HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-184.813, 252.871],
+    [-184.949, 253.861],
+    [-185.154, 254.339],
+    [-185.581, 256.301],
+    [-185.861, 257.777],
+    [-186.137, 259.758],
+    [-186.271, 261.757],
+    [-186.109, 262.786],
+    [-186.156, 263.341]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_town_l_47",
+   "from": "flares[72]",
+   "on": "road.nmc_route_91_town",
+   "onPart": "the town section, north of the river bridge",
+   "cls": "town",
+   "w": 1,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 2.6,
+     "z": 0.125,
+     "surf": "brick"
+    },
+    {
+     "role": "verge",
+     "w": 0.5,
+     "z": 0.125,
+     "z1": 0
+    }
+   ],
+   "for": [
+    "junction road.nmc_main_street_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) forward (ConvBox, Modern3500)"
+   ],
+   "pts": [
+    [-186.696, 267.552],
+    [-186.834, 268.038],
+    [-187.47, 269.469],
+    [-187.214, 271.014],
+    [-187.206, 271.537]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_90",
+   "from": "flares[73]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53)"
+   ],
+   "pts": [
+    [-179.808, 98.653],
+    [-180.235, 97.155],
+    [-179.826, 95.739]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_101",
+   "from": "flares[74]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1.951,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-179.375, 91.797],
+    [-179.378, 91.297],
+    [-179.453, 90.797],
+    [-180.974, 85.803],
+    [-181.031, 85.304],
+    [-180.99, 84.804],
+    [-179.428, 79.416]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_314",
+   "from": "flares[75]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "junction road.nmc_shore_lane out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-233.604, -108.507],
+    [-234.501, -108.951],
+    [-235.499, -109.202],
+    [-236.897, -109.768],
+    [-238.64, -110.75],
+    [-240.319, -111.854],
+    [-241.12, -112.477],
+    [-241.066, -112.393],
+    [-241.237, -112.435]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_341",
+   "from": "flares[76]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 2.24,
+   "for": [
+    "junction drive.nmc_south_shore_3 out onto road.nmc_route_91 (south of the river bridge) forward (Dually3500, HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-253.891, -116],
+    [-257.871, -116.398],
+    [-258.377, -116.368],
+    [-263.501, -115.373],
+    [-264.516, -115.274],
+    [-266.023, -115.279],
+    [-267.273, -115.415],
+    [-268.762, -115.764],
+    [-273.71, -117.421],
+    [-274.207, -117.493],
+    [-279.104, -117.656]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_367",
+   "from": "flares[77]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) reversed (HightopVan, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_6 (HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-284.469, -117.205],
+    [-284.97, -117.146],
+    [-286.475, -116.724],
+    [-287.97, -117.191],
+    [-288.519, -117.25]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_372",
+   "from": "flares[78]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1.107,
+   "for": [
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_6 (HightopVan, Modern2500, Modern3500)"
+   ],
+   "pts": [
+    [-288.54, -117.304],
+    [-289.04, -117.307],
+    [-291.548, -116.584],
+    [-292.048, -116.631],
+    [-294.54, -117.37],
+    [-295.414, -117.38]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_379",
+   "from": "flares[79]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1.14,
+   "for": [
+    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) reversed (HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_5 (Dually3500, HightopVan, Modern2500, Modern3500)"
+   ],
+   "pts": [
+    [-295.544, -117.398],
+    [-296.543, -117.408],
+    [-299.052, -116.686],
+    [-299.552, -116.664],
+    [-302.118, -117.444],
+    [-302.841, -117.504]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_r_385",
+   "from": "flares[80]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1.022,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_5 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-301.826, -117.409],
+    [-302.406, -117.327],
+    [-304.43, -116.813],
+    [-304.925, -116.939],
+    [-306.897, -117.619],
+    [-307.384, -117.64]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_l_75",
+   "from": "flares[81]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "access the grocery court in, from Route 91 southbound by the entrance and the east drive (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-174.914, 113.395],
+    [-174.92, 112.395],
+    [-174.539, 109.893],
+    [-174.426, 108.392],
+    [-174.415, 107.392],
+    [-174.487, 105.892],
+    [-174.645, 104.393],
+    [-174.709, 101.894],
+    [-174.809, 100.894],
+    [-175, 99.895],
+    [-175.007, 98.774]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_l_305",
+   "from": "flares[82]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) forward into road.nmc_shore_lane (HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-223.76, -106.157],
+    [-224.088, -106.535],
+    [-224.955, -108.429],
+    [-225.292, -108.799],
+    [-226.976, -109.867]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_l_309",
+   "from": "flares[83]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1.125,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_shore_lane (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-225.832, -108.453],
+    [-226.141, -108.847],
+    [-226.997, -110.751],
+    [-228.167, -111.869],
+    [-228.633, -112.058],
+    [-231.182, -112.585],
+    [-231.655, -112.835]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_l_360",
+   "from": "flares[84]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) reversed (Modern350)"
+   ],
+   "pts": [
+    [-278.007, -121.802],
+    [-279.499, -122.054],
+    [-281, -122.074],
+    [-281.945, -121.933]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_l_367",
+   "from": "flares[85]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1.35,
+   "for": [
+    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) reversed (Dually3500, HightopVan, Modern3500)",
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-282.688, -121.782],
+    [-285.736, -121.858],
+    [-287.231, -122.315],
+    [-288.727, -122.69],
+    [-289.726, -122.855],
+    [-290.725, -122.935],
+    [-291.725, -122.934],
+    [-293.227, -122.768],
+    [-295.734, -122.157],
+    [-298.23, -122.497],
+    [-299.729, -122.587],
+    [-301.23, -122.476],
+    [-302.152, -122.341],
+    [-303.162, -122.125],
+    [-303.663, -122.098],
+    [-306.252, -122.209]
+   ]
+  },
+  {
+   "id": "flare.nmc_route_91_l_391",
+   "from": "flares[86]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) forward (Modern3500)"
+   ],
+   "pts": [
+    [-308.565, -122.484],
+    [-309.062, -122.554],
+    [-309.556, -122.704],
+    [-311.052, -122.845],
+    [-312.554, -122.826],
+    [-313.693, -122.703]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_r_1",
+   "from": "flares[87]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 1.133,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) forward into road.nmc_shore_lane (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_shore_lane (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-227.282, -111.264],
+    [-227.028, -112.276],
+    [-226.685, -112.654],
+    [-225.915, -113.36],
+    [-225.627, -113.77],
+    [-224.917, -115.093],
+    [-223.847, -116.784],
+    [-222.491, -119.468],
+    [-220.952, -122.043],
+    [-218.19, -126.217],
+    [-217.009, -127.842],
+    [-216.353, -128.615],
+    [-215.327, -130.337]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_r_32",
+   "from": "flares[88]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction drive.nmc_shore_lane_7 out onto road.nmc_shore_lane reversed (HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_shore_lane (Dually3500, HightopVan, Modern2500, Modern350)"
+   ],
+   "pts": [
+    [-209.014, -136.825],
+    [-208.575, -137.064],
+    [-207.778, -137.693],
+    [-206.07, -138.737],
+    [-202.557, -140.651],
+    [-199.517, -142.386],
+    [-196.41, -144],
+    [-195.039, -144.619],
+    [-194.539, -144.746],
+    [-193.932, -145.052]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_r_59",
+   "from": "flares[89]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 2.039,
+   "for": [
+    "junction drive.nmc_shore_lane_7 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction drive.nmc_shore_lane_8 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_7 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction yard.nmc_shore_lane_6 out onto road.nmc_shore_lane forward (Dually3500, Modern2500, Modern350)"
+   ],
+   "pts": [
+    [-189.738, -146.56],
+    [-188.246, -146.714],
+    [-187.757, -146.848],
+    [-182.455, -149.053],
+    [-181.957, -149.105],
+    [-177.972, -149.453],
+    [-172.975, -149.741],
+    [-171.471, -149.775],
+    [-168.953, -149.726],
+    [-167.969, -149.938],
+    [-164.38, -149.251],
+    [-163.874, -149.223],
+    [-161.442, -149.473]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_r_80",
+   "from": "flares[90]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 2.24,
+   "for": [
+    "junction drive.nmc_shore_lane_7 out onto road.nmc_shore_lane forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_shore_lane reversed into drive.nmc_shore_lane_7 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-168.719, -148.623],
+    [-167.725, -148.725],
+    [-167.237, -148.87],
+    [-161.453, -151.275],
+    [-160.95, -151.268],
+    [-155.766, -150.273],
+    [-154.758, -150.005],
+    [-153.413, -150.011]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_r_88",
+   "from": "flares[91]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 1,
+   "for": [
+    "junction yard.nmc_shore_lane_6 out onto road.nmc_shore_lane forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-156.495, -150.505],
+    [-154.922, -150.584],
+    [-154.426, -150.718],
+    [-152.933, -150.959],
+    [-149.445, -151.383],
+    [-147.167, -150.827]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_r_95",
+   "from": "flares[92]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 1.745,
+   "for": [
+    "junction drive.nmc_shore_lane_8 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_8 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-152.194, -150.297],
+    [-151.695, -150.312],
+    [-147.238, -151.784],
+    [-146.741, -151.876],
+    [-142.201, -150.667],
+    [-141.7, -150.625],
+    [-140.856, -150.651]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_l_4",
+   "from": "flares[93]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 1.229,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_shore_lane (HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-224.929, -110.47],
+    [-223.644, -112.614],
+    [-222.138, -114.045],
+    [-221.485, -114.82],
+    [-220.909, -115.641],
+    [-220.411, -116.508],
+    [-219.734, -117.851],
+    [-218.871, -119.083],
+    [-217.559, -121.211],
+    [-216.12, -123.846],
+    [-214.748, -126.521],
+    [-213.503, -128.689],
+    [-212.398, -130.359],
+    [-210.834, -132.337],
+    [-210.687, -132.831],
+    [-211.097, -132.697],
+    [-209.529, -134.282]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_l_28",
+   "from": "flares[94]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 1.22,
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_shore_lane (Modern3500)"
+   ],
+   "pts": [
+    [-212.34, -131.592],
+    [-210.801, -133.003],
+    [-210.965, -132.64],
+    [-210.454, -132.747],
+    [-210.068, -133.083],
+    [-208.232, -134.939],
+    [-207.813, -135.213],
+    [-206.045, -136.177]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_l_60",
+   "from": "flares[95]",
+   "on": "road.nmc_shore_lane",
+   "cls": "street",
+   "w": 4.296,
+   "for": [
+    "junction drive.nmc_shore_lane_7 out onto road.nmc_shore_lane forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction drive.nmc_shore_lane_7 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction drive.nmc_shore_lane_8 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_8 (Modern3500)",
+    "junction yard.nmc_shore_lane_6 out onto road.nmc_shore_lane forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-192.162, -144.14],
+    [-189.967, -145.337],
+    [-189.728, -145.427],
+    [-179.781, -146.451],
+    [-177.758, -146.333],
+    [-175.758, -146.429],
+    [-173.777, -146.719],
+    [-170.828, -147.372],
+    [-164.86, -147.987],
+    [-164.358, -147.998],
+    [-158.205, -146.822],
+    [-157.701, -146.804],
+    [-156.707, -146.918],
+    [-155.892, -147.071],
+    [-155.39, -147.017],
+    [-154.392, -147.091],
+    [-152.392, -147.116],
+    [-151.895, -147.225],
+    [-150.892, -147.139],
+    [-150.393, -147.186],
+    [-149.892, -147.173],
+    [-143.456, -149.294],
+    [-139.981, -149.402]
+   ]
+  },
+  {
+   "id": "flare.nmc_water_street_l_88",
+   "from": "flares[96]",
+   "on": "road.nmc_water_street",
+   "cls": "town",
+   "w": 1,
+   "bands": [
+    {
+     "role": "gutter",
+     "w": 0.3,
+     "z": -0.015
+    },
+    {
+     "role": "kerb",
+     "w": 0.16,
+     "z": 0.14
+    },
+    {
+     "role": "walk",
+     "w": 1.5,
+     "z": 0.125,
+     "surf": "slab"
+    }
+   ],
+   "for": [
+    "junction road.nmc_main_street_east_lane out onto road.nmc_route_91_town (the town section, north of the river bridge) reversed (ConvBox, Modern3500)"
+   ],
+   "pts": [
+    [-183.551, 230.538],
+    [-182.537, 230.759],
+    [-181.514, 230.427]
+   ]
+  },
+  {
+   "id": "flare.nmc_wharf_road_r_40",
+   "from": "flares[97]",
+   "on": "road.nmc_wharf_road",
+   "cls": "paved",
+   "w": 1.825,
+   "for": [
+    "access truck park in, from Wharf Road eastbound (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-142.326, 90.013],
+    [-140.826, 89.969],
+    [-136.326, 88.619],
+    [-135.826, 88.506],
+    [-130.826, 90.006],
+    [-130.567, 90.013]
+   ]
+  },
+  {
+   "id": "flare.nmc_wharf_road_r_44",
+   "from": "flares[98]",
+   "on": "road.nmc_wharf_road",
+   "cls": "paved",
+   "w": 1,
+   "for": [
+    "access truck park in, from Wharf Road eastbound (AeroSemi, ClassicSemi+TrailerFlatbed28)",
+    "junction drive.nmc_truck_park_spur out onto road.nmc_wharf_road reversed (Modern3500)",
+    "junction road.nmc_wharf_road forward into drive.nmc_truck_park_spur (HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-134.97, 89.6],
+    [-133.97, 89.334],
+    [-133.47, 89.33],
+    [-132.522, 89.6]
+   ]
+  },
+  {
+   "id": "flare.nmc_wharf_road_r_49",
+   "from": "flares[99]",
+   "on": "road.nmc_wharf_road",
+   "cls": "paved",
+   "w": 1.269,
+   "for": [
+    "access truck park in, from Wharf Road eastbound (ClassicSemi+TrailerFlatbed53)",
+    "junction drive.nmc_truck_park_spur out onto road.nmc_wharf_road forward (Modern3500)",
+    "junction road.nmc_wharf_road reversed into drive.nmc_truck_park_spur (HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-131.564, 89.735],
+    [-131.064, 89.735],
+    [-130.564, 89.634],
+    [-128.064, 88.884],
+    [-127.564, 88.797],
+    [-124.44, 89.735]
+   ]
+  },
+  {
+   "id": "flare.nmc_wharf_road_l_28",
+   "from": "flares[100]",
+   "on": "road.nmc_wharf_road",
+   "cls": "paved",
+   "w": 1,
+   "for": [
+    "access truck park in, from Wharf Road eastbound (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed53)",
+    "junction drive.nmc_truck_park_spur out onto road.nmc_wharf_road reversed (HightopVan)"
+   ],
+   "pts": [
+    [-151.586, 94.4],
+    [-150.586, 94.4],
+    [-149.586, 94.601],
+    [-148.086, 94.799],
+    [-146.586, 94.902],
+    [-145.086, 94.84],
+    [-143.086, 94.566],
+    [-142.086, 94.669],
+    [-141.086, 94.682],
+    [-140.086, 94.601],
+    [-139.086, 94.4],
+    [-138.074, 94.4]
+   ]
+  },
+  {
+   "id": "flare.nmc_wharf_road_l_55",
+   "from": "flares[101]",
+   "on": "road.nmc_wharf_road",
+   "cls": "paved",
+   "w": 1,
+   "for": [
+    "junction drive.nmc_truck_park_spur out onto road.nmc_wharf_road forward (HightopVan)"
+   ],
+   "pts": [
+    [-123.213, 94.4],
+    [-122.713, 94.412],
+    [-122.213, 94.55],
+    [-121.713, 94.621],
+    [-120.213, 94.687],
+    [-119.213, 94.616],
+    [-118.713, 94.486],
+    [-118.128, 94.4]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_r_1_2",
+   "from": "flares[102]",
+   "on": "turn.nmc_shore_lane",
+   "cls": "street",
+   "w": 1.935,
+   "for": [
+    "junction road.nmc_shore_lane forward into drive.nmc_shore_lane_8 (HightopVan, Modern2500)"
+   ],
+   "pts": [
+    [-142.121, -153.758],
+    [-141.626, -153.924],
+    [-141.124, -153.864],
+    [-135.874, -152.481]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_apron_l_29",
+   "from": "flares[103]",
+   "on": "yard.nmc_plaza_apron",
+   "cls": "town",
+   "w": 1,
+   "for": [
+    "access the plaza's apron out, by mill drive 1 and Mill Road to Route 91 northbound (ClassicSemi, ClassicSemi+TrailerFlatbed28, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-229.414, 155.5],
+    [-228.914, 155.65],
+    [-228.414, 155.722],
+    [-227.674, 155.5]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_apron_l_43",
+   "from": "flares[104]",
+   "on": "yard.nmc_plaza_apron",
+   "cls": "town",
+   "w": 1.163,
+   "for": [
+    "access the plaza's apron out, by mill drive 1 and Mill Road to Route 91 northbound (AeroSemi+TrailerReefer53, ClassicSemi+TrailerFlatbed53)"
+   ],
+   "pts": [
+    [-217.95, 155.419],
+    [-215.95, 155.419],
+    [-215.45, 155.492],
+    [-213.95, 155.933],
+    [-212.45, 156.272],
+    [-211.45, 155.972],
+    [-210.95, 155.933],
+    [-210.45, 156.07],
+    [-209.95, 156.145],
+    [-207.95, 155.545],
+    [-207.45, 155.419],
+    [-207.173, 155.419]
+   ]
+  },
+  {
+   "id": "flare.nmc_plaza_apron_l_57",
+   "from": "flares[105]",
+   "on": "yard.nmc_plaza_apron",
+   "cls": "town",
+   "w": 1,
+   "for": [
+    "access the plaza's apron in, from Route 91 southbound by Mill Road and mill drive 1 (ClassicSemi+TrailerFlatbed53)",
+    "access the plaza's apron out, by mill drive 1 and Mill Road to Route 91 northbound (AeroSemi+TrailerReefer53)"
+   ],
+   "pts": [
+    [-202.243, 155.5],
+    [-201.743, 155.526],
+    [-201.243, 155.656],
+    [-199.743, 155.77],
+    [-198.243, 155.67],
+    [-197.243, 155.669],
+    [-196.743, 155.519],
+    [-196.446, 155.5]
+   ]
+  },
+  {
+   "id": "flare.nmc_shore_lane_6_l_1",
+   "from": "flares[106]",
+   "on": "yard.nmc_shore_lane_6",
+   "cls": "street",
+   "w": 2.014,
+   "for": [
+    "junction drive.nmc_shore_lane_8 out onto road.nmc_shore_lane reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction yard.nmc_shore_lane_6 out onto road.nmc_shore_lane forward (Dually3500, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-184.886, -147.38],
+    [-184, -150.38],
+    [-185.386, -155]
+   ]
+  }
+ ],
  "bridges": [
   {
    "id": "bridge.nmc_route91_river",
@@ -1623,10 +4054,10 @@
    "deck": 5.2,
    "deckPlan": 5.2,
    "footprint": {
-    "x": -72.106,
-    "y": -69.698,
-    "w": 18.211,
-    "h": 5.798
+    "x": -72.599,
+    "y": -69.78,
+    "w": 19.704,
+    "h": 5.88
    },
    "measures": {
     "water": [
@@ -1636,7 +4067,7 @@
     "planShortOfWater": [0.551, 0],
     "seatGround": [5.361, 5.346],
     "stepAtSeats": [-0.161, -0.146],
-    "seatPad": [0, 0],
+    "seatPad": [1, 0.5],
     "bed": 3.471,
     "waterTop": 3.931,
     "clearance": 1.269,
@@ -1698,7 +4129,7 @@
   {
    "id": "bridge.nmc_camp_footbridge",
    "from": "bridges",
-   "owner": "the owner (H4 builds three plain decks; the camp is H12's)",
+   "owner": "H12 (the owner, 10-24, Q15)",
    "why": "the walk-in sites' footbridge; G3 measures it 7 m bank to bank",
    "measured": {
     "sA": 107.25,
@@ -1752,19 +4183,19 @@
   {
    "id": "boardwalk.nmc_marsh_walk",
    "from": "boardwalks[5]",
-   "owner": "the owner",
-   "why": "the marsh walk's wave is not named"
+   "owner": "H7 (the owner, 10-24, Q15)",
+   "why": "the marsh walk goes with H7's boardwalks"
   },
   {
    "id": "path.nmc_north_shore_walk",
    "from": "paths[7]",
-   "owner": "the owner",
+   "owner": "out of H4 (the owner, 10-24, Q15)",
    "why": "optional in the plan, with the optional notch plank that would carry it over the river's mouth"
   },
   {
    "id": "bridge.nmc_notch_plank",
    "from": "bridges",
-   "owner": "the owner",
+   "owner": "out of H4 (the owner, 10-24, Q15)",
    "why": "optional in the plan"
   }
  ],
@@ -1802,7 +4233,9 @@
    "gates": [
     {
      "id": "drive.nmc_truck_park_spur",
-     "x": [-133.5, -128.5]
+     "x": [-135.1, -124.9],
+     "swath": [-133.5, -128.5],
+     "why": "widened for the 53-foot pairs' swept bodies (the owner, 10-24, Q5): the clearance only; the gate stays undressed"
     }
    ],
    "why": "the base's \"south gates at working drives\": each is a gate's clearance in the south hedge; the gates are held, so no gate is dressed"
@@ -1928,6 +4361,36 @@
     "inCamp": true
    },
    "why": "the base's \"Playground clears Loop A/C\"; H12 dresses it at this site"
+  },
+  {
+   "id": "planting.nmc_swept_bodies",
+   "pieces": [
+    {
+     "root": "CreekHedgerows",
+     "name": "SweetGale_3",
+     "at": [7.44104, 86.50429],
+     "by": "junction road.nmc_bar_road out onto road.nmc_wharf_road reversed"
+    },
+    {
+     "root": "CreekHedgerows",
+     "name": "Meadowsweet_1",
+     "at": [10.941039, 87.76597],
+     "by": "junction road.nmc_bar_road out onto road.nmc_wharf_road reversed"
+    },
+    {
+     "root": "CreekTrees",
+     "name": "RedSpruce_2",
+     "at": [-194.03105, 162.35143],
+     "by": "junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_mill_road"
+    },
+    {
+     "root": "CreekHedgerows",
+     "name": "SweetGale_2",
+     "at": [-180.3476, 276.19177],
+     "by": "junction road.nmc_route_91_town (the town section, north of the river bridge) forward into road.nmc_north_creek_lane"
+    }
+   ],
+   "why": "the owner's Q6 (10-24): step 12 deletes the pieces a ruled route's swept body hits, each found by its place"
   }
  ],
  "junctions": [

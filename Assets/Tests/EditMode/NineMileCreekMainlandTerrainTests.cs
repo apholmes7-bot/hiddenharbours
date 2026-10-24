@@ -516,7 +516,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <c>lot.nmc_boat_shed</c>, is on the river at (−94, 158). The parish hall's has not moved. The
         /// harbourmaster's, the general store's, the tavern's and the two north houses' lots are the plan's gone lots
         /// (<c>lots.gone</c>: the river valley takes the north two). The lots on the scene's ground, footprint by
-        /// footprint, are <see cref="EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourAndTwoOpenCalls"/>.</para>
+        /// footprint, are <see cref="EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourTheShedAndTheLaydown"/>.</para>
         /// </summary>
         [Test]
         public void EveryTownLotIsOnDryFieldsClearOfItsNeighboursAndOffTheRoad()
@@ -560,12 +560,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// one clears, this asks for it to come off.</para>
         /// <list type="bullet">
         /// <item>The plan's own exception: Creek Lane (north)'s four waterfront lots, inside 3 m at their boxes'
-        /// nearest corners (2.23, 2.89, 1.55 and 1.20 m). Lots 1, 3 and 4 were ruled 10-02 to stay as drawn; lot 2 is
-        /// open (call 57).</item>
+        /// nearest corners (2.23, 2.89, 1.55 and 1.20 m). Lots 1, 3 and 4 were ruled 10-02 to stay as drawn, and lot 2
+        /// on 10-24 (Q16, call 57).</item>
         /// <item><c>lot.nmc_boat_shed</c>: the river lane's drawn end stands 3 m inside the shed's west face. The lane
-        /// is laid as drawn (ruled 10-23); where the shed stands is its own wave's, and open.</item>
-        /// <item><c>lot.nmc_laydown</c>: Loop C's north arc passes 0.25 m off the apron's south edge, its lane strip.
-        /// Open.</item>
+        /// is laid as drawn (ruled 10-23) and off the vehicle routes (10-24, Q8); where the shed stands is its own
+        /// wave's, and open.</item>
+        /// <item><c>lot.nmc_laydown</c>: Loop C's north arc passes 0.25 m off the apron's south edge, its lane strip,
+        /// accepted as drawn (the owner, 10-24, Q17).</item>
         /// </list>
         ///
         /// <para>Replaces <c>EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes</c>
@@ -574,7 +575,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// Its two named lots, the north houses in the river valley, are among the plan's gone lots.</para>
         /// </summary>
         [Test]
-        public void EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourAndTwoOpenCalls()
+        public void EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourTheShedAndTheLaydown()
         {
             var lots = NineMileCreekGroundMasks.Lots;
             var network = NineMileCreekRoadNetwork.Load();
@@ -661,7 +662,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>⚠ The plan's authoring since NMC H2, on the premise: in the analytic plan a mainland is a
         /// SIDE. G3 is not one: its south shore reaches up to y −180 and the river runs north of the town, so the
-        /// scene's claim is the town's own ground (<see cref="EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourAndTwoOpenCalls"/>).</summary>
+        /// scene's claim is the town's own ground (<see cref="EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourTheShedAndTheLaydown"/>).</summary>
         [Test]
         public void TheFieldsInlandAreDryEverywhereTheTownStands()
         {

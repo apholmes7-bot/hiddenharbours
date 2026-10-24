@@ -37,6 +37,16 @@ namespace HiddenHarbours.App.Editor
             public float Width;
             public Vector2[] Points;
 
+            /// <summary>False where the owner has taken the route off the vehicle routes (<see cref="VehiclesWhy"/>
+            /// says why); it is laid as drawn all the same.</summary>
+            public bool Vehicles = true;
+            public string VehiclesWhy;
+
+            /// <summary>A corner flare's road (<see cref="Network.Flares"/>): the route it widens, and the movements
+            /// whose wheels it was measured for. Null on a route.</summary>
+            public string On, OnPart;
+            public List<string> For;
+
             public float HalfWidth => Width * 0.5f;
 
             /// <summary>One of the plan's nineteen roads (or a piece of one), not a lot's own drive.</summary>
@@ -82,10 +92,23 @@ namespace HiddenHarbours.App.Editor
             public Vector2[] Line;
         }
 
+        /// <summary>A planting piece a ruled route's swept body hits, which N1 step 12 deletes (the owner's Q6, 10-24):
+        /// its root, its name and its place in the scene, and the movement it stood in.</summary>
+        public sealed class SweptPiece
+        {
+            public string Root, Name, By;
+            public Vector2 At;
+        }
+
         public sealed class Network
         {
             public string Schema;
             public List<Route> Routes = new List<Route>();
+
+            /// <summary>The measured corner flares (the owner's Q4, 10-24): each a carriageway in its road's class
+            /// beside the route it widens (<see cref="Route.On"/>), laid after the routes.</summary>
+            public List<Route> Flares = new List<Route>();
+            public List<SweptPiece> Swept = new List<SweptPiece>();
             public List<Bridge> Bridges = new List<Bridge>();
             public List<string> Held = new List<string>();
             public List<Clearance> Clearances = new List<Clearance>();
@@ -111,19 +134,8 @@ namespace HiddenHarbours.App.Editor
             var json = MiniJson.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
             var net = new Network { Schema = MiniJson.String(json, "schema") };
 
-            foreach (object o in MiniJson.List(json, "routes"))
-                net.Routes.Add(new Route
-                {
-                    Id = MiniJson.String(o, "id"),
-                    Part = MiniJson.String(o, "part"),
-                    From = MiniJson.String(o, "from"),
-                    Class = MiniJson.String(o, "cls"),
-                    Surface = MiniJson.String(o, "surf"),
-                    Ends = MiniJson.String(o, "ends"),
-                    Clip = MiniJson.String(o, "clip"),
-                    Width = MiniJson.Float(o, "w"),
-                    Points = Points(MiniJson.List(o, "pts")),
-                });
+            foreach (object o in MiniJson.List(json, "routes")) net.Routes.Add(RouteOf(o));
+            foreach (object o in MiniJson.List(json, "flares") ?? new List<object>()) net.Flares.Add(RouteOf(o));
 
             foreach (object o in MiniJson.List(json, "bridges"))
                 net.Bridges.Add(new Bridge
@@ -146,6 +158,13 @@ namespace HiddenHarbours.App.Editor
             foreach (object o in MiniJson.List(json, "clearances"))
             {
                 string id = MiniJson.String(o, "id");
+                if (id == SweptBodiesId)
+                    foreach (object p in MiniJson.List(o, "pieces"))
+                        net.Swept.Add(new SweptPiece
+                        {
+                            Root = MiniJson.String(p, "root"), Name = MiniJson.String(p, "name"),
+                            At = Point(MiniJson.List(p, "at")), By = MiniJson.String(p, "by"),
+                        });
                 if (!id.StartsWith("hedge.", System.StringComparison.Ordinal)) continue;
                 var c = new Clearance { Id = id, Side = MiniJson.String(o, "side") };
                 if (MiniJson.Has(o, "clear")) c.Clear = Point(MiniJson.List(o, "clear"));
@@ -163,6 +182,27 @@ namespace HiddenHarbours.App.Editor
             if (root == null) _cached = net;
             return net;
         }
+
+        /// <summary>The clearance that lists the swept planting pieces (<see cref="Network.Swept"/>).</summary>
+        public const string SweptBodiesId = "planting.nmc_swept_bodies";
+
+        static Route RouteOf(object o) => new Route
+        {
+            Id = MiniJson.String(o, "id"),
+            Part = MiniJson.String(o, "part"),
+            From = MiniJson.String(o, "from"),
+            Class = MiniJson.String(o, "cls"),
+            Surface = MiniJson.String(o, "surf"),
+            Ends = MiniJson.String(o, "ends"),
+            Clip = MiniJson.String(o, "clip"),
+            Width = MiniJson.Float(o, "w"),
+            Points = Points(MiniJson.List(o, "pts")),
+            Vehicles = MiniJson.Bool(o, "vehicles", true),
+            VehiclesWhy = MiniJson.String(o, "vehiclesWhy"),
+            On = MiniJson.String(o, "on"),
+            OnPart = MiniJson.String(o, "onPart"),
+            For = MiniJson.List(o, "for")?.ConvertAll(x => (string)x),
+        };
 
         static Vector2 Point(List<object> xy) => new Vector2((float)(double)xy[0], (float)(double)xy[1]);
 

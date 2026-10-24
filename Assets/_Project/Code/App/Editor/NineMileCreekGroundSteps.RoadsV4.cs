@@ -332,7 +332,8 @@ namespace HiddenHarbours.App.Editor
 
     /// <summary>
     /// <b>Where planting may not stand once kit v4 lays Nine Mile Creek's roads (NMC H4).</b> A pure function of the
-    /// network file: a plant's point inside any route's carriageway (its line, at half its width), whatever the class;
+    /// network file: a plant's point inside any route's or corner flare's carriageway (its line, at half its width),
+    /// whatever the class; a piece the owner ruled out of a swept body (Q6, 10-24), by its place;
     /// and, for the hedges and the trees that stand in them, the clearances the network names: Wharf Road's north side
     /// cleared over its span, the south side's gate spans (the gates are held, so only their clearance is laid), and a
     /// field boundary's hedge cut back to the end of its line.
@@ -347,6 +348,11 @@ namespace HiddenHarbours.App.Editor
     {
         public const string OnACarriageway = "on a v4 carriageway";
         public const string InAHedgeClearance = "in a hedge clearance";
+        public const string InASweptBody = "in a ruled route's swept body";
+
+        /// <summary>A swept piece is found by its place: the network writes it as the scene holds it, to float
+        /// precision, and no two plants stand within this of each other.</summary>
+        const float SweptTolerance = 1e-3f;
 
         /// <summary>The station grid's tolerance: a boundary station's x is the west edge plus a whole number of
         /// spacings, written to float precision.</summary>
@@ -358,6 +364,10 @@ namespace HiddenHarbours.App.Editor
         {
             foreach (NineMileCreekRoadNetwork.Route r in net.Routes)
                 if (Inside(r, p)) return $"{OnACarriageway}: {r}";
+            foreach (NineMileCreekRoadNetwork.Route r in net.Flares)
+                if (Inside(r, p)) return $"{OnACarriageway}: {r}, a corner flare on {r.On}";
+            foreach (NineMileCreekRoadNetwork.SweptPiece s in net.Swept)
+                if ((p - s.At).sqrMagnitude <= SweptTolerance * SweptTolerance) return $"{InASweptBody}: {s.Root}/{s.Name} in {s.By}";
             if (!hedged) return null;
             foreach (NineMileCreekRoadNetwork.Clearance c in net.Clearances)
             {
