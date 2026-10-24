@@ -1463,26 +1463,19 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// ⭐ <b>THE TRUCK PARK — where a road vehicle is left, and THE ONE NUMBER THAT SITES IT.</b>
         ///
-        /// <para><b>This is a PROPOSAL awaiting the owner's walk.</b> Everything about the park and its
-        /// spur derives from this single point — <see cref="NineMileCreekRoads.TruckParkArea"/> centres the
-        /// gravel on it and <see cref="NineMileCreekRoads.ParkSpurRoute"/> runs the spur from the nearest
-        /// carriageway to its edge — so moving the park is editing this Vector3 and rebuilding. No second
-        /// copy of the site exists anywhere.</para>
+        /// <para><b>G3's <c>lot.nmc_truck_park</c> (NMC H4), by its <c>lots.working</c> point.</b> Everything
+        /// about the park and its spur derives from this single point — <see cref="NineMileCreekRoads.TruckParkArea"/>
+        /// centres the gravel on it and <see cref="NineMileCreekRoads.ParkSpurRoute"/> runs the spur from the
+        /// nearest carriageway to its centre — so moving the park is editing this Vector3. No second copy of the
+        /// site exists anywhere: the road network's pad for it is the plan's lot box, and
+        /// <c>NmcPlanRoadTests</c> holds the two together.</para>
         ///
-        /// <para><b>Why here, on the north verge at x = −120.</b> Four things had to be true at once and
-        /// this is where they all are:</para>
-        /// <list type="bullet">
-        /// <item>ON Wharf Road, at the east edge of the village — the first level ground you meet driving
-        /// out of town toward the wharf, and walkable from the town lots.</item>
-        /// <item>CLEAR of both carves. The barachois reaches x = −64 and feathers to −72
-        /// (<see cref="BarachoisCarve"/>); the marsh pool reaches x = −56 and feathers to −62
-        /// (<see cref="MarshPoolCarve"/>). The park's east edge stops at −110, leaving 38 m.</item>
-        /// <item>CLEAR of all nine <see cref="TownLots"/> at their reserved <see cref="TownLotRadius"/> —
-        /// the nearest is the harbourmaster's at (−150, 118), 20.7 m off the park's nearest corner.</item>
-        /// <item>NOT IN THE YARD. The spit is full — the fish market already misses its site by 0.38 m —
-        /// and the yard's gravel is the BUYERS' (<see cref="ParkingPos"/>), which is theirs and 210 m
-        /// further east. A truck the player leaves somewhere wants its own ground.</item>
-        /// </list>
+        /// <para><b>Why here, south of Wharf Road at (−131, 78).</b> The plan's own reason: the old site,
+        /// (−120, 106) on the north verge, is the gas bar's east lane in the third issue. The new lot is the
+        /// plan's 20.1 × 13.4 m, the same three bays two lengths deep, on the hall field beside the parish
+        /// hall. Its spur leaves Wharf Road's south side at x −131, where the south hedge takes a gate's
+        /// clearance (the network's <c>clearances</c>); the north side's clear x −130..−110 is the gas bar's
+        /// frontage, not the park's.</para>
         ///
         /// <para>⚠ Land here is <see cref="LandElevation"/> (6 m) against a spring high of
         /// <see cref="SpringHighWater"/> (2.2 m), so the park is dry at every tide — but that is ASSERTED,
@@ -1490,7 +1483,7 @@ namespace HiddenHarbours.App.Editor
         /// <c>NineMileCreekTruckParkTests</c> fails on a single trimmed cell rather than shipping a
         /// half-drawn one.</para>
         /// </summary>
-        public static readonly Vector3 TruckParkPos = new Vector3(-120f, 106f, 0f);
+        public static readonly Vector3 TruckParkPos = new Vector3(-131f, 78f, 0f);
 
         /// <summary>
         /// ⭐ <b>THE MODERN 3500'S BAY — the owner's ruling D2 (2026-09-18): "Park her at Nine Mile
@@ -1528,7 +1521,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// ⭐ <b>THE LAYDOWN — where the road fleet is stood, and THE ONE NUMBER THAT SITES IT.</b>
         ///
-        /// <para><b>This is a PROPOSAL awaiting the owner's walk</b>, exactly as
+        /// <para><b>G3's <c>lot.nmc_laydown</c> (NMC H4)</b>, by its <c>lots.working</c> point, as
         /// <see cref="TruckParkPos"/> is. Everything about the yard derives from this single point —
         /// <see cref="NineMileCreekLaydown.ApronArea"/> centres the gravel on it, every bay, every
         /// heading and the spur off the park all fall out of it — so moving the yard is editing this
@@ -1540,22 +1533,11 @@ namespace HiddenHarbours.App.Editor
         /// and the coupled pair 21.8 m; the park could not hold two of them. The owner's ask said so
         /// first: <i>"one of each parked at NMC — the truck park cannot hold them."</i></para>
         ///
-        /// <para><b>Why here, north of the park at (−100, 136).</b> Four things had to be true at once,
-        /// and this band is where they all are:</para>
-        /// <list type="bullet">
-        /// <item>OFF THE SPUR, which is what was asked. The park spur already runs from Wharf Road to
-        /// <see cref="TruckParkPos"/>; <see cref="NineMileCreekLaydown.LaydownSpurRoute"/> continues
-        /// from the park to this point, so the yard is the next thing along the same gravel rather than
-        /// a second approach off the highway.</item>
-        /// <item>NOT IN THE WHARF YARD. The spit is full — the fish market misses its own site by
-        /// 0.38 m — and a 44.8 × 35.9 m apron is five times the ground the market could not find.</item>
-        /// <item>CLEAR of both carves and of every <see cref="TownLots"/> lot at
-        /// <see cref="TownLotRadius"/>. The barachois feathers to x = −72 and the apron's east edge
-        /// stops at −77.6; the nearest lot is the harbourmaster's, whose reserve ends at x = −144,
-        /// 21.6 m west of the apron. The marsh pool is 40 m south of Wharf Road and never in question.</item>
-        /// <item>CLEAR of the park itself, by 5.3 m — the two grounds read as neighbours and never
-        /// contend for a cell.</item>
-        /// </list>
+        /// <para><b>Why here, south of Wharf Road at (−95, 62).</b> The plan's own reason: the old site,
+        /// (−100, 136), is the river valley's south bank in the third issue; south of Wharf Road the yard sits by
+        /// the truck park (3.55 m east of it), clear of the marsh pool by 11 m. The plan's lot is the apron's own
+        /// 44.8 × 35.9 m, so the bays fit it as they fitted the old site; the spur still runs on from the park
+        /// (<see cref="NineMileCreekLaydown.LaydownSpurRoute"/>).</para>
         ///
         /// <para>⚠ Land here is <see cref="LandElevation"/> (6 m) against a spring high of
         /// <see cref="SpringHighWater"/> (2.2 m), so the yard is dry at every tide — ASSERTED, not
@@ -1564,7 +1546,7 @@ namespace HiddenHarbours.App.Editor
         /// The nine never float (<c>Floats == false</c> is pinned as INTENDED on all of them), which is
         /// the second reason this yard stays well above the water rather than merely beside it.</para>
         /// </summary>
-        public static readonly Vector3 LaydownPos = new Vector3(-100f, 136f, 0f);
+        public static readonly Vector3 LaydownPos = new Vector3(-95f, 62f, 0f);
 
         /// <summary>Half-width (m) of a road's cleared corridor — nothing may be sited inside it.</summary>
         public const float RoadHalfWidth = 3f;
@@ -1582,6 +1564,11 @@ namespace HiddenHarbours.App.Editor
         // the economy data hangs off it. A lot is reserved for it here under a neutral name so nothing
         // breaks; WHERE the shipwright's yard really lives is the coordinator's open question, not
         // world-content's to close.
+        //
+        // ⚠ THESE NINE ARE WHERE THE BUILDINGS STAND, NOT WHERE THE TOWN'S LOTS ARE (NMC H4). The builder
+        // places each building on its point, and each moves in its own wave: the harbourmaster's office to
+        // the wharf (H6), the chandlery and its rod onto Water Street (H7), the general store to the gas
+        // bar (H9), the farmhouse south of the hedge at y 0 (H10). The lots are TownLots below, by G3's ids.
         public static readonly Vector3 HarbourmasterPos = new Vector3(-150f, 118f, 0f);  // the cod licence
         public static readonly Vector3 ChandleryPos     = new Vector3(-206f, 116f, 0f);  // the rod
         public static readonly Vector3 GeneralStorePos  = new Vector3(-150f, 152f, 0f);
@@ -1592,11 +1579,39 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 HouseSouthPos    = new Vector3(-208f,  60f, 0f);
         public static readonly Vector3 BoatShedPos      = new Vector3(-108f,  64f, 0f);  // ⚠ see the note above
 
-        /// <summary>Every town lot, for anything that has to ask "is one of these in the way?".</summary>
+        /// <summary>Every town lot, for anything that has to ask "is one of these in the way?": the five of
+        /// G3's <c>lots.town</c> that carry one of the building points above, at the plan's own points
+        /// (NMC H4), id for id with <see cref="TownLotIds"/>.
+        ///
+        /// <para>What moved, and why, in the plan's words: the chandlery onto Water Street, over the river it
+        /// sells gear for (call 80); the farmhouse south of the hedge at y 0, facing Route 91 as before (call 85);
+        /// the tavern's lot is the plaza's parking now, so a house takes a lot on Mill Road (2.5 m west, 10-02);
+        /// the boat shed on the river at last, on its landing, reached by the gas bar's lane. The parish hall
+        /// is kept. The harbourmaster's, the general store's and the two north houses' lots are
+        /// <c>lots.gone</c>: the office goes to the wharf, the store to the gas bar, and the river valley
+        /// takes the north houses' ground.</para></summary>
         public static readonly Vector3[] TownLots =
+        {
+            new Vector3(-160f, 237.26f, 0f),
+            ParishHallPos,
+            new Vector3(-200f, -8f, 0f),
+            new Vector3(-264.5f, 152f, 0f),
+            new Vector3(-94f, 158f, 0f),
+        };
+
+        /// <summary>The nine points the town's buildings stand on today, whose ground the planting keeps clear until
+        /// each building's wave moves it (NMC H4: every building's exclusion is kept).</summary>
+        public static readonly Vector3[] TownBuildings =
         {
             HarbourmasterPos, ChandleryPos, GeneralStorePos, TavernPos, ParishHallPos,
             HouseNorthPos, HouseNorthWestPos, HouseSouthPos, BoatShedPos,
+        };
+
+        /// <summary>G3's id for each of <see cref="TownLots"/>, in its order.</summary>
+        public static readonly string[] TownLotIds =
+        {
+            "lot.nmc_chandlery", "lot.nmc_parish_hall", "lot.nmc_house_south", "lot.nmc_house_mill",
+            "lot.nmc_boat_shed",
         };
 
         /// <summary>The ground a town lot reserves, as a RADIUS. The village kit's biggest house measures

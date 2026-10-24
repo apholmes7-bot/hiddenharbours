@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
@@ -506,8 +507,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>⚠ The plan's authoring since NMC H2, on the premise: the legacy zone math, kept as the town
-        /// wave's own premise (its final lot ids migrate with it). The lots on the scene's ground are
-        /// <see cref="EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes"/>.</summary>
+        /// wave's own premise, on the town's five lots by id (<see cref="NineMileCreekMainland.TownLotIds"/>).
+        ///
+        /// <para>What moved in NMC H4, and why: the lots are G3's now, not the buildings'. The chandlery's is
+        /// <c>lot.nmc_chandlery</c> on Water Street's north side; the farmhouse's, <c>lot.nmc_house_south</c>, is at
+        /// (−200, −8), south of the hedge at y 0 (call 85); the Mill Road house's, <c>lot.nmc_house_mill</c>, is at
+        /// (−264.5, 152), 2.5 m west, on the ground the tavern gave up for the plaza's parking; the boat shed's,
+        /// <c>lot.nmc_boat_shed</c>, is on the river at (−94, 158). The parish hall's has not moved. The
+        /// harbourmaster's, the general store's, the tavern's and the two north houses' lots are the plan's gone lots
+        /// (<c>lots.gone</c>: the river valley takes the north two). The lots on the scene's ground, footprint by
+        /// footprint, are <see cref="EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourAndTwoOpenCalls"/>.</para>
+        /// </summary>
         [Test]
         public void EveryTownLotIsOnDryFieldsClearOfItsNeighboursAndOffTheRoad()
         {
@@ -539,55 +549,90 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// ⭐ THE TOWN ON THE SCENE'S GROUND (NMC H2). Each lot's whole reserved footprint (the
-        /// <see cref="NineMileCreekMainland.TownLotRadius"/> disc round its centre, sampled every half metre)
-        /// stands on G3 ground above spring high water, and its centre is clear of every road the scene carries
-        /// (Route 91 and Wharf Road on their final lines, the bar road and the gully path) by the corridor and
-        /// the lot.
+        /// ⭐ THE TOWN'S LOTS ON THE SCENE'S GROUND, FOOTPRINT BY FOOTPRINT (NMC H4). Every one of G3's 43 building
+        /// lots (<see cref="NineMileCreekGroundMasks.Lots"/>: the plan's 25 town lots, 7 waterfront lots, 9 south-shore
+        /// houses, the truck park and the laydown), its whole box sampled every half metre, stands on G3 above spring
+        /// high water; no two boxes overlap; no box reaches into a town street's carriageway; and every box stands
+        /// <see cref="NineMileCreekRoadNetwork.LotCorridorClearanceMetres"/> clear of every road corridor in road kit
+        /// v4's network (the plan's roads of class route, paved, street or lane: the plan's lot rule), save the named.
         ///
-        /// <para>⚠ Two lots are named, not hidden: the north house (<see cref="NineMileCreekMainland.HouseNorthPos"/>)
-        /// and the north-west house (<see cref="NineMileCreekMainland.HouseNorthWestPos"/>) stand in the river
-        /// valley G3 cuts north of the town. The town wave's final plan has no lots there (its "gone north" lots,
-        /// migrating with the final lot ids), and their yards are the A2 inventory's deferred conflicts. The list
-        /// is held exact: the day either stands dry, this test asks for it to come off.</para>
+        /// <para>⚠ The named, held exact: each must still be inside the clearance, by the road it names, and the day
+        /// one clears, this asks for it to come off.</para>
+        /// <list type="bullet">
+        /// <item>The plan's own exception: Creek Lane (north)'s four waterfront lots, inside 3 m at their boxes'
+        /// nearest corners (2.23, 2.89, 1.55 and 1.20 m). Lots 1, 3 and 4 were ruled 10-02 to stay as drawn; lot 2 is
+        /// open (call 57).</item>
+        /// <item><c>lot.nmc_boat_shed</c>: the river lane's drawn end stands 3 m inside the shed's west face. The lane
+        /// is laid as drawn (ruled 10-23); where the shed stands is its own wave's, and open.</item>
+        /// <item><c>lot.nmc_laydown</c>: Loop C's north arc passes 0.25 m off the apron's south edge, its lane strip.
+        /// Open.</item>
+        /// </list>
+        ///
+        /// <para>Replaces <c>EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes</c>
+        /// (NMC H2): the same premise, the town's lots dry on G3 and clear of the roads the scene carries, now on the
+        /// lots' own boxes instead of a 6 m disc round nine building centres, and on v4's roads instead of four lines.
+        /// Its two named lots, the north houses in the river valley, are among the plan's gone lots.</para>
         /// </summary>
         [Test]
-        public void EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes()
+        public void EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourAndTwoOpenCalls()
         {
-            var riverValley = new[] { NineMileCreekMainland.HouseNorthPos, NineMileCreekMainland.HouseNorthWestPos };
-            float r = NineMileCreekMainland.TownLotRadius;
-
-            foreach (var lot in NineMileCreekMainland.TownLots)
+            var lots = NineMileCreekGroundMasks.Lots;
+            var network = NineMileCreekRoadNetwork.Load();
+            float clearance = NineMileCreekRoadNetwork.LotCorridorClearanceMetres;
+            var named = new Dictionary<string, string>
             {
-                Vector2 centre = new Vector2(lot.x, lot.y);
+                { "lot.nmc_waterfront_1", "road.nmc_north_creek_lane" },
+                { "lot.nmc_waterfront_2", "road.nmc_north_creek_lane" },
+                { "lot.nmc_waterfront_3", "road.nmc_north_creek_lane" },
+                { "lot.nmc_waterfront_4", "road.nmc_north_creek_lane" },
+                { "lot.nmc_boat_shed", "road.nmc_stream_lane" },
+                { "lot.nmc_laydown", "road.nmc_camp_loop_c" },
+            };
+            Assert.That(lots.Count, Is.EqualTo(43), "G3's plan has 43 building lots");
 
-                // The lowest ground under the lot's footprint, on a half-metre grid.
+            for (int i = 0; i < lots.Count; i++)
+            {
+                var lot = lots[i];
+                Rect box = LotBox(lot);
+
+                // The lowest ground under the whole box, on a half-metre grid.
                 float lowest = float.MaxValue;
-                Vector2 lowestAt = centre;
-                for (float dx = -r; dx <= r + 1e-3f; dx += 0.5f)
-                    for (float dy = -r; dy <= r + 1e-3f; dy += 0.5f)
+                Vector2 lowestAt = box.center;
+                for (float x = box.xMin; x <= box.xMax + 1e-3f; x += 0.5f)
+                    for (float y = box.yMin; y <= box.yMax + 1e-3f; y += 0.5f)
                     {
-                        if (dx * dx + dy * dy > r * r) continue;
-                        Vector2 p = centre + new Vector2(dx, dy);
-                        float e = Elev(p);
-                        if (e < lowest) { lowest = e; lowestAt = p; }
+                        float e = Elev(new Vector2(x, y));
+                        if (e < lowest) { lowest = e; lowestAt = new Vector2(x, y); }
                     }
+                Assert.That(lowest, Is.GreaterThan(SpringHigh),
+                    $"{lot.Id} has ground of {lowest:0.00} m at {lowestAt}, under spring high water " +
+                    $"({SpringHigh:0.0} m). A house does not stand in the tide.");
 
-                if (System.Array.IndexOf(riverValley, lot) >= 0)
-                    Assert.That(lowest, Is.LessThanOrEqualTo(SpringHigh),
-                        $"the lot at {lot} stands dry on G3 now: take it off the river valley's list");
-                else
-                    Assert.That(lowest, Is.GreaterThan(SpringHigh),
-                        $"the lot at {lot} has ground of {lowest:0.00} m at {lowestAt}, under spring high water " +
-                        $"({SpringHigh:0.0} m). A house does not stand in the tide.");
+                for (int j = i + 1; j < lots.Count; j++)
+                    Assert.That(box.Overlaps(LotBox(lots[j])), Is.False,
+                        $"{lot.Id} and {lots[j].Id} stand on each other");
 
-                foreach (var route in SceneRoutes())
+                float nearest = float.MaxValue;
+                NineMileCreekRoadNetwork.Route by = null;
+                foreach (var road in network.Routes)
                 {
-                    float d = NineMileCreekMainland.DistanceToRoute(route, centre);
-                    Assert.That(d, Is.GreaterThan(NineMileCreekMainland.RoadHalfWidth + r),
-                        $"the lot at {lot} is {d:0.0} m from a road the scene paves; its footprint would " +
-                        "stand in the carriageway");
+                    if (!road.IsPlanRoad) continue;
+                    float d = road.EdgeDistanceTo(box);
+                    if (road.Class == "town")
+                        Assert.That(d, Is.GreaterThanOrEqualTo(0f),
+                            $"{lot.Id} reaches {-d:0.00} m into {road}'s carriageway");
+                    else if (road.IsCorridor && d < nearest) { nearest = d; by = road; }
                 }
+
+                if (named.TryGetValue(lot.Id, out string namedRoad))
+                {
+                    Assert.That(nearest, Is.LessThan(clearance),
+                        $"{lot.Id} stands {nearest:0.00} m clear of every road corridor now: take it off the named list");
+                    Assert.That(by.Id, Is.EqualTo(namedRoad), $"{lot.Id} is inside {clearance} m of {by}, not the road it was named for");
+                }
+                else
+                    Assert.That(nearest, Is.GreaterThanOrEqualTo(clearance),
+                        $"{lot.Id} stands {nearest:0.00} m from {by}'s carriageway edge, inside the plan's {clearance} m");
             }
         }
 
@@ -616,7 +661,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>⚠ The plan's authoring since NMC H2, on the premise: in the analytic plan a mainland is a
         /// SIDE. G3 is not one: its south shore reaches up to y −180 and the river runs north of the town, so the
-        /// scene's claim is the town's own ground (<see cref="EveryTownLotStandsOnDryGroundClearOfTheScenesRoads_SaveTheTwoNorthLotsTheRiverTakes"/>).</summary>
+        /// scene's claim is the town's own ground (<see cref="EveryG3LotStandsDryAloneAndOffTheRoads_SaveTheCreekLaneFourAndTwoOpenCalls"/>).</summary>
         [Test]
         public void TheFieldsInlandAreDryEverywhereTheTownStands()
         {
@@ -727,6 +772,10 @@ namespace HiddenHarbours.Tests.EditMode
             NineMileCreekMainland.ThroughRoad,
             NineMileCreekMainland.GullyPath,
         };
+
+        /// <summary>A G3 lot's box, as the masks cut round it.</summary>
+        private static Rect LotBox(NineMileCreekGroundMasks.Lot lot) =>
+            new Rect((float)(lot.X - lot.SizeX / 2), (float)(lot.Y - lot.SizeY / 2), (float)lot.SizeX, (float)lot.SizeY);
 
         private static bool InZone(Vector2 p, MainlandZone z) =>
             MainlandTidalTerrain.DistanceOutsideRect(p, z.Center, z.HalfSize) <= z.Falloff;

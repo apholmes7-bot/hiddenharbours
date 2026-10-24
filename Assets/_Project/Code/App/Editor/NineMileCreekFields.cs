@@ -295,12 +295,15 @@ namespace HiddenHarbours.App.Editor
             _pads = null;
         }
 
-        /// <summary>Is <paramref name="p"/> inside a town lot's reserved ground?</summary>
+        /// <summary>Is <paramref name="p"/> inside a town lot's reserved ground, or a standing town building's? The
+        /// buildings keep theirs until their own waves move them onto the lots (NMC H4).</summary>
         public static bool OnATownLot(Vector2 p, float margin)
         {
             float reach = NineMileCreekMainland.TownLotRadius + margin;
             foreach (var lot in NineMileCreekMainland.TownLots)
                 if (Vector2.Distance(p, new Vector2(lot.x, lot.y)) < reach) return true;
+            foreach (var building in NineMileCreekMainland.TownBuildings)
+                if (Vector2.Distance(p, new Vector2(building.x, building.y)) < reach) return true;
             return false;
         }
 
