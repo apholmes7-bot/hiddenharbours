@@ -109,7 +109,8 @@ namespace HiddenHarbours.Tools.RigBaking
             var deckAreas = new List<DeckArea>();
             foreach (HullWalkArea area in walk.Areas)
                 if (!area.IsClimb && cuts[area.Cut].Level == 0) deckAreas.AddRange(DeckAreas(area));
-            foreach (object raw in HullLayoutJson.Array(walk.Fields, "washboards"))
+            foreach (object raw in walk.Fields.ContainsKey("washboards")
+                ? HullLayoutJson.Array(walk.Fields, "washboards") : new List<object>())
             {
                 var w = HullLayoutJson.Object(raw, "washboards");
                 string side = HullLayoutJson.Text(w, "side");
