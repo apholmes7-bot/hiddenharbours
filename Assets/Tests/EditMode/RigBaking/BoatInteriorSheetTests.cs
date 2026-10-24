@@ -251,7 +251,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 "uncleared hull is art cut from a boat whose shape was never verified; a sheet for a " +
                 "converted hull draws her cabin twice.");
 
-            // 27 = ALL of the drop. The last refusal is discharged.
+            // The two sport fishers now use walks: 27 cleared kit hulls minus those two = 25.
+            // Historical clearance steps: The last refusal is discharged.
             // Moved 24 → 26 → 27, each step WITH the ledger change it tracks:
             //   24 → 26  the cutaway kit's sport-fisher stamp (ebc77bac…) cleared both sport fishers,
             //            flipped on the coordinator-ruled unanimity rule (PR #660).
@@ -262,12 +263,12 @@ namespace HiddenHarbours.Tests.RigBaking
             // Then the SHEETS started retiring per hull as rooms became geometry (ADR 0041, fleet
             // rollout PR 0, 2026-09-01): the cleared count stays 27 and the shipped count is 27 minus
             // however many hulls are on RigMeshAssetBaker.MeshInteriorHulls — read, not typed.
-            Assert.AreEqual(27, _cleanHullStems.Length,
-                $"the intake cleared {_cleanHullStems.Length} hulls where the drop has 27. If the ledger " +
+            Assert.AreEqual(25, _cleanHullStems.Length,
+                $"the intake cleared {_cleanHullStems.Length} hulls where the remaining kit has 25. If the ledger " +
                 "has genuinely changed — a hull regressed, or a new drop arrived — this number moves " +
                 "WITH a ledger change and an ADR note, never on its own.");
-            Assert.AreEqual(27 - _convertedHullStems.Length, shipped.Length,
-                $"the kit ships {shipped.Length} interior sheet sets for 27 cleared hulls of which " +
+            Assert.AreEqual(25 - _convertedHullStems.Length, shipped.Length,
+                $"the kit ships {shipped.Length} interior sheet sets for 25 remaining cleared hulls of which " +
                 $"{_convertedHullStems.Length} are converted to mesh rooms.");
         }
 

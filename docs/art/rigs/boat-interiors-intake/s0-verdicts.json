@@ -19,39 +19,13 @@
   "interior_rig": {
     "path": "docs/art/rigs/boat-interiors-kit/boatInteriorRig.js",
     "lf_sha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
-    "_note": "The re-export's renderer. All 27 interior sidecars pin it \u2014 verified computationally, 27/27 with zero strays. The drop-1 phantom (560aa92e\u2026) is gone."
+    "_note": "The re-export's renderer. All 27 interior sidecars pin it — verified computationally, 27/27 with zero strays. The drop-1 phantom (560aa92e…) is gone."
   },
   "phantom_interior_rig_sha": {
     "value": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae",
-    "status": "RESOLVED by the re-export \u2014 no sidecar pins it any more. Kept for the record."
+    "status": "RESOLVED by the re-export — no sidecar pins it any more. Kept for the record."
   },
   "hulls": [
-    {
-      "hull_stem": "sportFisherIsoRig2.convertible",
-      "verdict": "CLEAN",
-      "axis_a_interior_pin": "PASS (renderer 34bb7813, verified)",
-      "axis_b_hull_baseline": "PASS (bundled rig byte-identical to drop 1)",
-      "baseline_source": "_supersedes",
-      "baseline_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
-      "main_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
-      "drift": "none - the stamped baseline IS main's current rig",
-      "evidence": "Both axes pass, and the THIRD ground is now DISCHARGED. The cutaway kit's re-stamped sidecar landed 2026-08-26: the generator template is substituted with 'ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb'. Flipped against the BYTES, not against the claim \u2014 that value is independently the LF sha256 of docs/art/rigs/boat-interiors-kit/hull-rigs/sportFisherIsoRig2.js, and it equals the correctly-stamped rig-stem entry that was already in the file, so both entries of hullRigSha256 now name the same shipped rig. The landing diff is ONE line per sidecar; no geometry, no rooms and no renderer pin were touched, which is why drop 1's CLEAN is restored rather than re-earned.",
-      "_superseded_verdict": "CLEAN in drop 1 \u2014 REGRESSED to REFUSED-PIN by the re-export's unstamped pin \u2014 RE-CLEARED 2026-08-26 when the cutaway kit's re-stamped sidecar landed.",
-      "upstream_ask": "Nothing \u2014 the one-line generator fix was made upstream and has landed here. All three grounds now clear: axis A (renderer 34bb7813), axis B (no drift) and the hull-rig stamp."
-    },
-    {
-      "hull_stem": "sportFisherIsoRig2.skybridge",
-      "verdict": "CLEAN",
-      "axis_a_interior_pin": "PASS (renderer 34bb7813, verified)",
-      "axis_b_hull_baseline": "PASS (bundled rig byte-identical to drop 1)",
-      "baseline_source": "_supersedes",
-      "baseline_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
-      "main_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
-      "drift": "none - the stamped baseline IS main's current rig",
-      "evidence": "Both axes pass, and the THIRD ground is now DISCHARGED. The cutaway kit's re-stamped sidecar landed 2026-08-26: the generator template is substituted with 'ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb'. Flipped against the BYTES, not against the claim \u2014 that value is independently the LF sha256 of docs/art/rigs/boat-interiors-kit/hull-rigs/sportFisherIsoRig2.js, and it equals the correctly-stamped rig-stem entry that was already in the file, so both entries of hullRigSha256 now name the same shipped rig. The landing diff is ONE line per sidecar; no geometry, no rooms and no renderer pin were touched, which is why drop 1's CLEAN is restored rather than re-earned.",
-      "_superseded_verdict": "CLEAN in drop 1 \u2014 REGRESSED to REFUSED-PIN by the re-export's unstamped pin \u2014 RE-CLEARED 2026-08-26 when the cutaway kit's re-stamped sidecar landed.",
-      "upstream_ask": "Nothing \u2014 the one-line generator fix was made upstream and has landed here. All three grounds now clear: axis A (renderer 34bb7813), axis B (no drift) and the hull-rig stamp."
-    },
     {
       "hull_stem": "capeIslanderIsoRig",
       "verdict": "CLEAN",
@@ -66,7 +40,7 @@
       "_superseded_verdict": "STALE-FATAL (2026-08-19, corrected the same day -- see _corrections)",
       "_do_not_adopt_discharged": "Was: docs/art/rigs/boat-interiors-kit/hull-rigs/capeIslanderIsoRig.js. Lifted by the rig merge -- that file and docs/art/rigs/capeIslanderIsoRig.js are now the same bytes (60d127c3), so there is no longer a wrong one to adopt.",
       "_open_owner_item": "Her RESTING LOOK. Not a regression, a look. It cannot be settled by choosing a doorOpen: at 0 the leaf covers the opening (she rests closed, unlike today); at 1 the opening is clear as today but the leaf parks visible at x +0.40..+1.26, and the jambs/header/sill/track/rail are drawn at every doorOpen. The aft face changes either way -- the owner is choosing how.",
-      "_reexport_note": "Unchanged by the re-export \u2014 her bundled rig is byte-identical to drop 1, so the fork stands and so does FORKED-RIG."
+      "_reexport_note": "Unchanged by the re-export — her bundled rig is byte-identical to drop 1, so the fork stands and so does FORKED-RIG."
     },
     {
       "hull_stem": "lobsterBoatIsoRig",
@@ -79,7 +53,7 @@
       "drift": "ONE commit, paint only",
       "evidence": "Baseline is the blob at 4f048395, as claimed. Only 4be92de9 (#497, the 12-scheme paint kit) has touched the rig since: +97/-8, entirely PAINTS/paintRamps/matsFor plus one extra parameter on _paint and a longer export list. Geometry, cell, pivot, camera, rock and every deck anchor are untouched, and the default 'gelcoat' scheme reuses the original literal ramps. Axis B is clean. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export."
     },
     {
       "hull_stem": "lobsterBoatVariantsIsoRig",
@@ -93,8 +67,8 @@
       "evidence": "Hashing every blob of this rig across all 588 commits and every ref yields exactly ONE distinct version, which is main's current. Main cannot have drifted out from under the measurement. The bundled revision keeps the paint kit intact and adds doorFaces(V,t) - purely additive. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "inherits_to": "all 18 lobsterBoatVariants sidecars",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
-      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went ff8414f8\u2026 -> ce7d45ff\u2026 (pass 5), and the kit copy the interior sidecars actually pinned went f5fa0429\u2026 -> the SAME ce7d45ff\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went ff8414f8… -> ce7d45ff… (pass 5), and the kit copy the interior sidecars actually pinned went f5fa0429… -> the SAME ce7d45ff…, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     },
     {
       "hull_stem": "sideDraggerIsoRig",
@@ -107,8 +81,8 @@
       "drift": "none possible - one version across the entire history",
       "evidence": "The gameplay sidecar's _supersedes points at the kit's OWN new rig, so the stamp says nothing. Discovery settles it anyway: one distinct blob across all refs. The bundled revision removes the deckhouse front wall face and its painted-on 'deck door' frontPanel and replaces them with published DOOR geometry - the additive revision the manifest claims. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
-      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went 3e82a11e\u2026 -> c4ad1816\u2026 (pass 3), and the kit copy the interior sidecars actually pinned went b5223748\u2026 -> the SAME c4ad1816\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went 3e82a11e… -> c4ad1816… (pass 3), and the kit copy the interior sidecars actually pinned went b5223748… -> the SAME c4ad1816…, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     },
     {
       "hull_stem": "sternTrawlerIsoRig",
@@ -121,7 +95,7 @@
       "drift": "none possible - one version across the entire history",
       "evidence": "One distinct blob across all refs. Bundled revision swaps the aft wall face + painted backPanel door for real DOOR geometry. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export."
     },
     {
       "hull_stem": "sternTrawlerMk2IsoRig",
@@ -134,8 +108,8 @@
       "drift": "none possible - one version across the entire history",
       "evidence": "One distinct blob across all refs. Same additive door revision as the mk1. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
-      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went 4656fd3d\u2026 -> 7bf879c4\u2026 (pass 3), and the kit copy the interior sidecars actually pinned went e7fa9ea6\u2026 -> the SAME 7bf879c4\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went 4656fd3d… -> 7bf879c4… (pass 3), and the kit copy the interior sidecars actually pinned went e7fa9ea6… -> the SAME 7bf879c4…, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     },
     {
       "hull_stem": "coastalPacketIsoRig",
@@ -148,7 +122,7 @@
       "drift": "none possible - one version across the entire history",
       "evidence": "The sidecar carries no provenance stamp at all, so discovery is the only route: one distinct blob across all refs, which is main's current. The bundled revision removes the HOUSE level-1 front face and its painted 'deck door at the house front' and publishes real DOOR geometry. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export."
     },
     {
       "hull_stem": "tankerIsoRig",
@@ -162,8 +136,8 @@
       "evidence": "No provenance stamp; discovery gives one distinct blob across all refs. The bundled revision replaces the poop aft wall face, its painted aft door and four painted port lights with published DOOR geometry. AXIS A NOW PASSES: the re-export re-stamped every sidecar to the renderer that shipped (34bb7813), verified computationally. The bundled hull rig is byte-identical to drop 1, so the Axis B finding above is unchanged.",
       "pixels_per_metre": 16,
       "upstream_ask": "Nothing. Axis A and Axis B both pass against the re-export.",
-      "_superseded_verdict": "REFUSED-PIN in drop 1 \u2014 cleared by the re-export.",
-      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went deec4594\u2026 -> abd17acb\u2026 (pass 3), and the kit copy the interior sidecars actually pinned went c2faaa38\u2026 -> the SAME abd17acb\u2026, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
+      "_superseded_verdict": "REFUSED-PIN in drop 1 — cleared by the re-export.",
+      "_batch2_note": "2026-08-27, CUTAWAY BATCH 2: this hull's exterior rig MOVED, and the fields above are the drop-1 adjudication, kept as written. Read them as historical. Root canon went deec4594… -> abd17acb… (pass 3), and the kit copy the interior sidecars actually pinned went c2faaa38… -> the SAME abd17acb…, so docs/art/rigs/ and boat-interiors-kit/hull-rigs/ hold identical bytes for this hull for the first time. 'drift: none possible - one version across the entire history' was true when written and is now false; there are two. The verdict is unchanged and was not re-earned - see _corrections, 2026-08-27."
     }
   ],
   "_corrections": [
@@ -184,8 +158,8 @@
     "  deleted -- provenance is the point.",
     "",
     "2026-08-26, sportFisherIsoRig2.convertible + .skybridge: REFUSED-PIN -> CLEAN. The refusal named one",
-    "  thing and one thing only \u2014 an unsubstituted generator template sitting in a provenance",
-    "  field \u2014 and the cutaway kit (batch 1) shipped the substitution. Landed here as a one-line",
+    "  thing and one thing only — an unsubstituted generator template sitting in a provenance",
+    "  field — and the cutaway kit (batch 1) shipped the substitution. Landed here as a one-line",
     "  diff per sidecar; the stamp is",
     "  'ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb', which is the LF sha256 of",
     "  the bundled hull-rigs/sportFisherIsoRig2.js and equals the rig-stem entry that was already",
@@ -266,14 +240,14 @@
     "  harness was controlled first: it reproduces #660's already-adjudicated batch-1 trawler as",
     "  additive, and it catches a 1 cm move of DECK in loft, HOUSE and every pixel probe.",
     "",
-    "  \u26a0 NOT re-stamped, deliberately: the _supersedes history lines (history stays history) and",
+    "  ⚠ NOT re-stamped, deliberately: the _supersedes history lines (history stays history) and",
     "  interiorDerivedFromRigSha256 (boatInteriorRig's own layer, untouched by this batch)."
   ],
   "_reexport": [
     "The re-export (commit 74be6b70) was verified against the bytes, not accepted on its gate report.",
-    "CONFIRMED: renderer 34bb7813 \u00b7 27/27 interior sidecars pin it \u00b7 0 stair ids left in any INTERACT \u00b7",
-    "  all 9 bundled hull rigs BYTE-IDENTICAL to drop 1 (so every Axis B finding below still stands) \u00b7",
-    "  27/27 gameplay sidecars pin their bundled hull rig \u00b7 committed kit == delivered zip.",
+    "CONFIRMED: renderer 34bb7813 · 27/27 interior sidecars pin it · 0 stair ids left in any INTERACT ·",
+    "  all 9 bundled hull rigs BYTE-IDENTICAL to drop 1 (so every Axis B finding below still stands) ·",
+    "  27/27 gameplay sidecars pin their bundled hull rig · committed kit == delivered zip.",
     "FOUND, and the gate missed it: the two sport-fisher INTERIOR sidecars gained a SECOND",
     "  hullRigSha256 entry whose value is the literal generator template",
     "  'STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js'. The gate's '27/27' is true of the GAMEPLAY",

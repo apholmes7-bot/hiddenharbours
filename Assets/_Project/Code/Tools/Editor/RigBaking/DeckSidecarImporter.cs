@@ -88,8 +88,6 @@ namespace HiddenHarbours.Tools.RigBaking
             // separate wirings rather than one hull renamed.
             foreach (ZodiacBuild b in ZodiacFleet.All)
                 wiring[b.SidecarStem] = new[] { b.AssetName };
-            foreach (SportFisherHull h in SportFisherFleet.All)
-                wiring[h.SidecarStem] = new[] { h.AssetName };
 
             return wiring;
         }

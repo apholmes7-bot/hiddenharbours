@@ -222,7 +222,9 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (var h in Five())
             {
                 string sidecar = Path.Combine(RepoRoot, "docs/art/rigs/gameplay",
-                                              h.SidecarStem + ".gameplay.json");
+                    h.Key.StartsWith("sportFisher", System.StringComparison.Ordinal)
+                        ? "sportFisherIsoRig2." + SportFisherFleet.Get(h.Key).Hull + ".walk.json"
+                        : h.SidecarStem + ".gameplay.json");
                 Assert.IsTrue(File.Exists(sidecar), $"{h.Key}: no sidecar at {sidecar}");
 
                 var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(
@@ -310,31 +312,6 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
-        // ---- 6. the two shims this PR added are still aimed at something --------------------------
-
-        /// <summary>
-        /// <b>The sport fisher's INNER widening must match its anchor exactly once.</b>
-        ///
-        /// <para>Unlike the exported-literal shim, this one fails QUIETLY when it goes stale: a
-        /// mis-aimed insert leaves a rig that still runs and still draws, it simply has no faces to
-        /// extract, and the error surfaces much later from an expression that looks unrelated. So the
-        /// anchor is asserted directly against the committed rig text.</para>
-        /// </summary>
-        [Test]
-        public void TheSportFishersInnerWidening_IsStillAimedAtHerReturnLiteral()
-        {
-            string path = Path.Combine(RepoRoot, SportFisherFleet.ScriptPath);
-            string source = File.ReadAllText(path);
-
-            var widenings = RigMeshSymbols.InnerWideningsFor(SportFisherFleet.ScriptPath);
-            Assert.AreEqual(1, widenings.Count, "she is the only rig that needs one");
-
-            // ApplyInnerWidenings throws unless the anchor matches exactly once.
-            string widened = RigMeshExtractor.ApplyInnerWidenings(source, SportFisherFleet.ScriptPath);
-            Assert.AreNotEqual(source, widened, "the widening inserted nothing");
-            StringAssert.Contains("faceList", widened);
-        }
-
         /// <summary>
         /// The shim names must be ABSENT from the unmodified rigs — the same guard
         /// <c>RigMeshExtractionTests</c> keeps for the lobster generator. A rig that started
@@ -356,11 +333,10 @@ namespace HiddenHarbours.Tests.RigBaking
             }
 
             using IRigScriptHost fisher = Host(SportFisherFleet.ScriptPath);
-            Assert.IsFalse(
+            Assert.IsTrue(
                 fisher.EvaluateBool(
                     $"typeof {SportFisherFleet.GlobalName}.byId('convertible').faceList === 'function'"),
-                "the rig now returns faceList from makeRig — delete the InnerWidenings entry, it is " +
-                "no longer buying anything.");
+                "kit 4 publishes faceList on the selected hull; extraction needs no widening.");
         }
 
         /// <summary>

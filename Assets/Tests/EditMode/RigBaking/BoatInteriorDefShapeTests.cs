@@ -295,46 +295,12 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (BoatInteriorRoute r in def.Routes) Assert.IsNotEmpty(r.Id);
         }
 
-        /// <summary>
-        /// <b>The skybridge keeps BOTH of her walkables, and her bridge ladder lands on the upper
-        /// one.</b> The 2026-08-27 HOLD, rewritten on 2026-08-28 when the rig's own id split landed —
-        /// and rewritten to say what it always meant.
-        ///
-        /// <para><b>The collision it protects against.</b> <c>sportFisherIsoRig2.js</c> uses the id
-        /// <c>bridge_sole</c> for TWO walkables: the ENCLOSED skylounge sole at z 7.30
-        /// (<c>interior.bridge.deckId</c>) and the OPEN control coaming at z 9.74
-        /// (<c>interior.bridgeSole</c>, and <c>helms[0].deck</c>). Our mirror used to resolve it by
-        /// carrying the coaming as <c>bridge_sole</c> at 9.74 and inventing <c>sky_sole</c> for the
-        /// skylounge — which disagreed with her INTERIOR sidecar, where <c>bridge_sole</c> has always
-        /// meant the 7.30 skylounge, and left this file's own <c>STAIRS.house_to_bridge</c> going
-        /// <c>to: sky_sole</c> through an <c>opening.in: bridge_sole</c> 2.44 m above it. The
-        /// 2026-08-28 changeset splits the id upstream instead: <c>bridge_sole</c> IS the skylounge,
-        /// the coaming becomes <c>helm_coaming</c>. Adopted.</para>
-        ///
-        /// <para><b>Why this fixture no longer names either id.</b> Its first form asserted
-        /// <c>bridge_sole</c> at 9.74 and the presence of <c>sky_sole</c> — a name test standing in
-        /// for a geometry claim, and it would have gone red on a split that fixed the very thing it
-        /// guarded. What it was written to refuse is a hull losing a WALKABLE, so that is what it
-        /// says now: two decks up there, one at each height, each with its own polygon, and no id
-        /// naming two of them. That still refuses the 2026-08-27 export verbatim (it carried ONE deck
-        /// above the aft deck) and it now also refuses a re-collapse under any pair of names.</para>
-        ///
-        /// <para>⚠️ A string-grep is NOT this check. The staging pass that first cleared the refused
-        /// file counted <c>bridge_sole</c> occurrences — eight — and called the deck "fully present".
-        /// A name's presence is not a deck's presence.</para>
-        ///
-        /// <para>⚠️⚠️ <b>This fixture reads the kit's PRE-MERGED mirror, which is a DERIVED file.</b>
-        /// That is why it stayed green while the collision lived on in the two sources it is merged
-        /// from — #685 first landed the id split here only, where a re-merge would have reverted it.
-        /// <see cref="MergingHerTwoSources_AppendsBothWalkables_AndReplacesNothing"/> is the one that
-        /// asks the sources, and it is the load-bearing half of the pair.</para>
-        /// </summary>
+        /// <summary>The retired kit collision is retained in a small fixture: two floors, a ladder and an opening.</summary>
         [Test]
         public void TheSkybridgeKeepsBothOfHerWalkables_AndHerLadderLandsOnTheUpperOne()
         {
-            string path = Path.Combine(RepoRoot, KitFolder, "gameplay",
-                                       "sportFisherIsoRig2.skybridge.gameplay.json");
-            object root = DeckSidecarJson.Parse(File.ReadAllText(path));
+            var fixture = LegacySkybridgeFixture();
+            object root = BoatInteriorGameplayMerge.Merge(fixture.Gameplay, fixture.Interior).Merged;
 
             var byId = new Dictionary<string, (double Z, int Verts)>(System.StringComparer.Ordinal);
             var seen = new List<string>();
@@ -520,38 +486,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 "this hull.");
         }
 
-        /// <summary>
-        /// <b>Merging her two committed SOURCES keeps both walkables.</b> This is the fixture the
-        /// 2026-08-27 refusal actually needed, and its absence is why the id split first landed in the
-        /// wrong file.
-        ///
-        /// <para><b>The mechanism, measured.</b> The kit's pre-merged gameplay mirror is
-        /// <c>BoatInteriorGameplayMerge.Merge(docs/art/rigs/gameplay/&lt;hull&gt;.gameplay.json,
-        /// &lt;stem&gt;.interior.json)</c>, and the merge contract is <b>"DECK entries replace by
-        /// <c>id</c>"</b>. Her base named the OPEN coaming (sole 9.74) <c>bridge_sole</c> and her
-        /// interior names the ENCLOSED skylounge (sole 7.30) <c>bridge_sole</c> — so the merge
-        /// REPLACED one with the other and returned seven decks instead of eight, silently deleting
-        /// the deck that carries <c>helms[0]</c> and the head of the bridge ladder.</para>
-        ///
-        /// <para>That is precisely the artefact upstream shipped on 2026-08-27 and #678 refused. It
-        /// was never carelessness: it is the merge contract meeting a colliding id, and our committed
-        /// mirror escaped it only by a HAND-RENAME to <c>sky_sole</c> that no merge would reproduce
-        /// and the next regeneration would have reverted. #685 splits the id in the two SOURCES
-        /// instead — the base names the coaming <c>helm_coaming</c> — so the merge appends where it
-        /// used to replace.</para>
-        ///
-        /// <para><b>Why it is stated as an id-collision rule and not as two names.</b> Asserting
-        /// "helm_coaming exists" would pin this fix; asserting that no id arrives twice pins the
-        /// LAW, and it covers every hull whose interior contributes a deck — see
-        /// <see cref="BoatInteriorGameplayMerge"/>'s own contract sentence.</para>
-        /// </summary>
+        /// <summary>The legacy merge law remains covered by a code-built fixture after its sport sources retire.</summary>
         [Test]
         public void MergingHerTwoSources_AppendsBothWalkables_AndReplacesNothing()
         {
-            string baseJson = File.ReadAllText(Path.Combine(
-                RepoRoot, "docs/art/rigs/gameplay/sportFisherSkybridgeIso.gameplay.json"));
-            string interiorJson = File.ReadAllText(Path.Combine(
-                RepoRoot, KitFolder, "sportFisherIsoRig2.skybridge.interior.json"));
+            var fixture = LegacySkybridgeFixture();
+            string baseJson = fixture.Gameplay;
+            string interiorJson = fixture.Interior;
 
             InteriorMergeResult merged = BoatInteriorGameplayMerge.Merge(baseJson, interiorJson);
             CollectionAssert.IsEmpty(merged.Errors, string.Join("\n  ", merged.Errors));
@@ -606,38 +547,17 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
-        /// <summary>
-        /// <b>The coaming's polygon is made of the RIG'S OWN points.</b> The 2026-08-28 changeset
-        /// arrived with this ring recomputed and 38 of its 42 vertices wrong — by up to 0.050 m in x,
-        /// under a note claiming it was "computed by the rig's own volume xAt law". It was not: the
-        /// deviation is zero at the four knots of the volume's <c>hw</c> half-breadth table
-        /// (y −1.1, −2.5, −4.5, −8.75) and peaks mid-segment, which is the signature of interpolating
-        /// that table LINEARLY where the rig runs it through <c>mono()</c>, a Fritsch–Carlson
-        /// monotone cubic. Reproducing it linearly matched all 42 vertices to zero error.
-        ///
-        /// <para>So the sidecar's ring is checked against the rig rather than against a prose claim.
-        /// The rig emits this sole as flat quads at exactly z 9.74 (<c>volume()</c>'s <c>o.open</c>
-        /// branch: <c>face([[-ax,A.y,sole],[ax,A.y,sole],[bx,B.y,sole],[-bx,B.y,sole]])</c>), so every
-        /// polygon vertex must be a point the rig actually put there. It is a SUBSET test on purpose —
-        /// the pod and the two seats also have bottoms on that plane, and their vertices are no
-        /// business of the deck's outline.</para>
-        ///
-        /// <para>Extracted from <c>hull-rigs/</c>, the copy this sidecar's
-        /// <c>derivedFromRigSha256</c> actually pins, rather than from the fleet's
-        /// <c>docs/art/rigs/</c> copy — the two are different files here (205a93c9… and 152eb5f3…),
-        /// they agree on this volume, and asserting against the pinned one is what makes the pin mean
-        /// something.</para>
-        /// </summary>
+        /// <summary>The published kit 4 deck plan uses vertices emitted on the open top station plane.</summary>
         [Test]
         public void TheCoamingsOutlineIsBuiltFromVerticesTheRigActuallyEmits()
         {
             FleetHull sky = HullMeshFleet.Hulls.Single(h => h.Key == "sportFisherSkybridge");
             using IRigScriptHost host = RigScriptHostFactory.Create();
             RigMeshData data = RigMeshExtractor.ExtractFrom(
-                host, KitFolder + "/hull-rigs/sportFisherIsoRig2.js", sky.GlobalName,
+                host, sky.ScriptPath, sky.GlobalName,
                 hull: sky.Extraction);
 
-            const double Sole = 9.74, Eps = 5e-4;
+            const double Sole = 7.97, Eps = 5e-4;
             var onThePlane = new HashSet<(long X, long Y)>();
             foreach (RigFace f in data.Faces)
             {
@@ -650,17 +570,17 @@ namespace HiddenHarbours.Tests.RigBaking
                                     (long)System.Math.Round(v.Y * 1000.0)));
             }
             Assert.Greater(onThePlane.Count, 40,
-                "the rig emitted almost nothing on the 9.74 plane — the extraction found the wrong " +
+                "the rig emitted almost nothing on the 7.97 plane — the extraction found the wrong " +
                 "hull, or the coaming has moved.");
 
-            object root = DeckSidecarJson.Parse(File.ReadAllText(Path.Combine(
-                RepoRoot, KitFolder, "gameplay", "sportFisherIsoRig2.skybridge.gameplay.json")));
-            List<object> atSole = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "DECK"))
+            object root = DeckSidecarJson.Parse(host.EvaluateString(
+                "JSON.stringify(SportFisherIso2.byId('skybridge').deckPlan())"));
+            List<object> atSole = DeckSidecarJson.AsArray(DeckSidecarJson.Member(root, "decks"))
                 .Where(d => System.Math.Abs(
                     DeckSidecarJson.Float(DeckSidecarJson.Member(d, "z"), float.NaN) - Sole) < 1e-6)
                 .ToList();
             Assert.AreEqual(1, atSole.Count,
-                "the sidecar carries no single deck at z 9.74, so there is no outline to check. That " +
+                "the sidecar carries no single deck at z 7.97, so there is no outline to check. That " +
                 "is the deleted-coaming failure, and the fixture above is the one that says so.");
             object coaming = atSole[0];
 
@@ -676,10 +596,29 @@ namespace HiddenHarbours.Tests.RigBaking
             }
 
             CollectionAssert.IsEmpty(strangers,
-                "these polygon vertices are at no point the rig puts on the 9.74 plane, so the " +
+                "these polygon vertices are at no point the rig puts on the 7.97 plane, so the " +
                 "outline was recomputed rather than read. That is the 2026-08-28 defect verbatim — a " +
                 "ring derived with a linear hw interpolant instead of the rig's monotone cubic:\n  " +
                 string.Join("\n  ", strangers));
+        }
+
+        // The original art files retire. This fixture pins the merge semantics, not their bytes.
+        static (string Gameplay, string Interior) LegacySkybridgeFixture()
+        {
+            var ring = new StringBuilder("[");
+            for (int i = 0; i < 42; i++)
+            {
+                if (i > 0) ring.Append(',');
+                ring.Append('[').Append(i < 21 ? -1 : 1).Append(',')
+                    .Append(i < 21 ? i : 41 - i).Append(']');
+            }
+            ring.Append(']');
+            string gameplay = "{\"DECK\":[{\"id\":\"helm_coaming\",\"z\":9.74,\"polygon\":" + ring + "}]}";
+            const string interior = "{\"WALKABLE\":{\"bridge_sole\":{\"z\":7.30,\"polygon\":[[0,0],[2,0],[2,2],[0,2]]}," +
+                "\"house_sole\":{\"z\":4.5,\"polygon\":[[0,0],[2,0],[2,2],[0,2]]}}," +
+                "\"LADDER\":[{\"id\":\"bridge_ladder\",\"connects\":[\"house_sole\",\"helm_coaming\"],\"z1\":9.74}]," +
+                "\"STAIRS\":{\"companionways\":[{\"id\":\"house_to_bridge\",\"from\":\"house_sole\",\"to\":\"bridge_sole\",\"opening\":{\"in\":\"bridge_sole\"}}]}}";
+            return (gameplay, interior);
         }
 
         [Test]
@@ -692,7 +631,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 NormaliseLf(File.ReadAllBytes(Path.Combine(kit, "boatInteriorRig.js"))));
 
             string[] sidecars = Directory.GetFiles(kit, "*.interior.json", SearchOption.AllDirectories);
-            Assert.AreEqual(27, sidecars.Length, "the kit ships 27 interior sidecars");
+            Assert.AreEqual(25, sidecars.Length, "27 kit sidecars minus the two retired sport fishers");
             foreach (string path in sidecars)
             {
                 object root = DeckSidecarJson.Parse(File.ReadAllText(path));
@@ -772,10 +711,8 @@ namespace HiddenHarbours.Tests.RigBaking
                     stamped++;
                 }
             }
-            Assert.AreEqual(29, stamped,
-                            "27 sidecars, one correctly-stamped rig-stem pin each, plus the two sport " +
-                            "fishers' variant-keyed pins that the cutaway kit stamped on 2026-08-26");
-            Assert.AreEqual(2, variantKeyed, "only the two sport fishers pin by variant stem as well");
+            Assert.AreEqual(25, stamped, "25 remaining sidecars, each with its own rig-stem pin");
+            Assert.AreEqual(0, variantKeyed, "the two retired sport fishers carried the variant pins");
         }
 
         [Test]
@@ -834,8 +771,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsTrue(r.Ok, $"{hullStem}: {r.Error}");
                 ids.Add(BoatInteriorHullResolver.DefId(r.HullFileStem));
             }
-            Assert.AreEqual(27, ids.Count);
-            Assert.AreEqual(27, new HashSet<string>(ids).Count, "two hulls resolved to one def id");
+            Assert.AreEqual(25, ids.Count);
+            Assert.AreEqual(25, new HashSet<string>(ids).Count, "two hulls resolved to one def id");
         }
 
         static byte[] NormaliseLf(byte[] bytes)
