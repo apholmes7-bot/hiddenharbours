@@ -1,0 +1,531 @@
+{
+ "schema": "hidden-harbours/hull-walk@1",
+ "rig": "yachtTenderIsoRig.js",
+ "exportSymbol": "YachtTenderIso",
+ "hull": "yacht_tender",
+ "label": "YACHT TENDER",
+ "kind": "open",
+ "derivedFromRigSha256": "3f0ab12f1ed8f077e7b2614d6acd16e99cbb56b21fae5088d15693327236e0f2",
+ "authoring": "Written by the rig: YachtTenderIso.byId('yacht_tender').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
+ "units": "metres",
+ "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
+ "loa_m": 5.817,
+ "loh_m": 5.1,
+ "beam_m": 2.2,
+ "DWL": 0.3,
+ "cockpitZ": 0.42,
+ "cell": {
+  "W": 256,
+  "H": 244,
+  "pivot": {
+   "x": 128,
+   "y": 152
+  },
+  "pxPerM": 32,
+  "defaultElev": 40,
+  "order": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ]
+ },
+ "tags": {
+  "lv": {
+   "hull": 0,
+   "main_deck": 1,
+   "house": 2,
+   "bridge": 3,
+   "below": 4,
+   "rigging": 5,
+   "foredeck": 6,
+   "top": 7
+  },
+  "ro": {
+   "shell": 0,
+   "wall": 1,
+   "roof": 2,
+   "lining": 3,
+   "part": 4,
+   "floor": 5,
+   "fit": 6,
+   "tall": 7,
+   "trim": 8,
+   "rig": 9
+  },
+  "ghostRoles": [
+   "shell",
+   "wall",
+   "roof",
+   "lining",
+   "part",
+   "tall",
+   "trim"
+  ]
+ },
+ "walk": {
+  "radius": 0.23,
+  "stepTol": 0.34,
+  "rule": "A step is legal when the target point is inside an area polygon and outside its holes, and |area z - player z| < stepTol. Ramps interpolate z along their axis (x or y) between a0 and a1, and hold z0 / z1 beyond them. cut = the cutaway key while standing there; cutHi / cutLo replace it above / below zMid (stairs and ladders). Polygons are player-centre: already inset by radius, so the reader never insets them again.",
+  "spawn": {
+   "x": 0,
+   "y": -1.64,
+   "area": "cockpit"
+  },
+  "areas": [
+   {
+    "id": "cockpit",
+    "cut": "deck",
+    "z": 0.42,
+    "poly": [
+     [
+      -0.33,
+      -2.19
+     ],
+     [
+      0.33,
+      -2.19
+     ],
+     [
+      0.33,
+      -1.09
+     ],
+     [
+      -0.33,
+      -1.09
+     ]
+    ],
+    "holes": [],
+    "note": "aft of the leaning post to the transom cap; the post’s stern light (-0.86) is its forward edge"
+   },
+   {
+    "id": "helm",
+    "cut": "deck",
+    "z": 0.42,
+    "poly": [
+     [
+      -0.33,
+      -0.19
+     ],
+     [
+      0.33,
+      -0.19
+     ],
+     [
+      0.33,
+      -0.175
+     ],
+     [
+      -0.33,
+      -0.175
+     ]
+    ],
+    "holes": [],
+    "note": "the standing room at the console: 0.476 m between the leaning post and the wheel’s rim, a 0.016 m strip at the walker’s radius. It does not join the cockpit (beside_post): the helm is taken from the cockpit (interact helm)"
+   },
+   {
+    "id": "bow",
+    "cut": "deck",
+    "z": 0.42,
+    "poly": [
+     [
+      -0.217,
+      1.05
+     ],
+     [
+      0.217,
+      1.05
+     ],
+     [
+      0.217,
+      1.07
+     ],
+     [
+      -0.217,
+      1.07
+     ]
+    ],
+    "holes": [],
+    "note": "the sole between the console and the bow seat: 0.48 m, a 0.02 m strip at the walker’s radius. It does not join the helm or the cockpit (beside_console)"
+   }
+  ]
+ },
+ "house": null,
+ "anchors": {
+  "helm": {
+   "x": 0,
+   "y": -0.54,
+   "z": 1.05
+  },
+  "wheel": {
+   "x": 0,
+   "y": 0.07,
+   "z": 1.1
+  },
+  "pilot": {
+   "x": 0,
+   "y": -0.22,
+   "z": 0.42
+  },
+  "seats": [
+   {
+    "id": "leaning_post",
+    "x": 0,
+    "y": -0.54,
+    "z": 1.05
+   },
+   {
+    "id": "bow_seat",
+    "x": 0,
+    "y": 1.5,
+    "z": 0.86
+   }
+  ],
+  "painter": {
+   "x": 0,
+   "y": 2.5,
+   "z": 0.74
+  },
+  "sternEyes": [
+   {
+    "x": -0.62,
+    "y": -2.5,
+    "z": 0.7
+   },
+   {
+    "x": 0.62,
+    "y": -2.5,
+    "z": 0.7
+   }
+  ],
+  "driveMounts": [
+   {
+    "x": 0,
+    "y": -2.62,
+    "z": 0.8
+   }
+  ]
+ },
+ "interact": [
+  {
+   "id": "helm",
+   "action": "enter_helm",
+   "label": "Helm",
+   "prompt": "Take the wheel",
+   "at": {
+    "x": 0,
+    "y": 0.07,
+    "z": 1.1
+   },
+   "reach": {
+    "x": 0,
+    "y": -1.09,
+    "z": 0.42
+   },
+   "area": "cockpit",
+   "seat": {
+    "x": 0,
+    "y": -0.54,
+    "z": 1.05
+   },
+   "stand": {
+    "x": 0,
+    "y": -0.22,
+    "z": 0.42
+   },
+   "note": "a standing console: the pilot stands between it and the leaning post, whose cushion is the perch (seat). Taken from the cockpit, behind the post."
+  },
+  {
+   "id": "seat_bow",
+   "action": "enter_ride",
+   "label": "Bow seat",
+   "prompt": "Ride",
+   "at": {
+    "x": 0,
+    "y": 1.5,
+    "z": 0.86
+   },
+   "reach": {
+    "x": 0,
+    "y": 1.07,
+    "z": 0.42
+   },
+   "area": "bow",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "outboard",
+   "action": "open_close",
+   "label": "Outboard",
+   "prompt": "Tilt up · down",
+   "state": "tilt",
+   "at": {
+    "x": 0,
+    "y": -2.62,
+    "z": 0.8
+   },
+   "reach": {
+    "x": 0,
+    "y": -2.19,
+    "z": 0.42
+   },
+   "area": "cockpit",
+   "note": "tilt 0 down … 1 up 66° about the transom bracket, worked over the transom cap"
+  }
+ ],
+ "cleats": [
+  {
+   "id": "bow_eye",
+   "type": "eye",
+   "pos": [
+    0,
+    2.5,
+    0.74
+   ],
+   "note": "the bow lifting eye: the painter"
+  },
+  {
+   "id": "stern_port",
+   "type": "eye",
+   "pos": [
+    -0.62,
+    -2.5,
+    0.7
+   ],
+   "note": "a stern lifting eye, also the stern line’s"
+  },
+  {
+   "id": "stern_star",
+   "type": "eye",
+   "pos": [
+    0.62,
+    -2.5,
+    0.7
+   ],
+   "note": "a stern lifting eye, also the stern line’s"
+  }
+ ],
+ "washboards": [],
+ "_excluded": [
+  {
+   "id": "beside_post",
+   "of": "area",
+   "z": 0.42,
+   "reason": "the sole beside the leaning post: 0.16 m between the post (0.8 m wide) and the sole’s edge, narrower than the walker’s 0.46 m. The cockpit and the helm do not join at the walker’s radius."
+  },
+  {
+   "id": "beside_console",
+   "of": "area",
+   "z": 0.42,
+   "reason": "the sole beside the console: 0.2 m between the console (0.72 m wide) and the sole’s edge, 0.149 m beside its grab rails, narrower than the walker’s 0.46 m. The bow does not join the helm or the cockpit at the walker’s radius."
+  },
+  {
+   "id": "bow_well",
+   "of": "area",
+   "z": 0.42,
+   "reason": "the sole forward of the bow seat’s box: 0.07 m deep fore and aft, 0.15-0.1 m wide: no centre point fits the walker."
+  },
+  {
+   "id": "tubes",
+   "of": "area",
+   "z": 0.82,
+   "reason": "the tubes: 0.52 m round, their tops 0.4 m over the sole and 0.52 m over the water. Sat on and stepped over to board (board / boardDown), not walked. She has no ladder: a swimmer comes aboard over them (ladderOn).",
+   "waitsOn": [
+    "ladderOn",
+    "sit"
+   ]
+  },
+  {
+   "id": "transom_cap",
+   "of": "area",
+   "z": 0.66,
+   "reason": "the transom cap: 0.13 m deep fore and aft and 0.24 m over the sole, a ledge, not a floor. The outboard is worked from the cockpit (interact outboard)."
+  },
+  {
+   "id": "leaning_post",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": -0.54,
+    "z": 1.05
+   },
+   "reason": "the leaning post: its cushion, 0.63 m over the sole, is the helm’s perch (anchors.helm), not a standing surface. Perching waits on sit.",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "bow_seat",
+   "of": "seat",
+   "at": {
+    "x": 0,
+    "y": 1.5,
+    "z": 0.86
+   },
+   "reason": "the bow seat and its forward box, the cushion 0.44 m over the sole: a seat. Sitting waits on sit.",
+   "waitsOn": [
+    "sit"
+   ]
+  },
+  {
+   "id": "washboards",
+   "of": "washboards",
+   "reason": "an open boat: no side deck. The tubes are sat on and stepped over, not walked (tubes); her lines are made fast to the lifting eyes (cleats)."
+  }
+ ],
+ "rock": {
+  "frames": 8,
+  "rollA": 3.2,
+  "pitchA": 1.6,
+  "heaveA": 1.2,
+  "period": 2.4
+ },
+ "qa": {
+  "fitCheck": {
+   "tol": 0.01,
+   "faces": 0,
+   "outside": 0,
+   "worst": 0,
+   "note": "an open boat: no room faces to check"
+  },
+  "character": {
+   "rig": "characterIsoRig10.js",
+   "exportSymbol": "CharacterIso10",
+   "revision": "10.3",
+   "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+   "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+   "builds": 30,
+   "crown_m": [
+    1.257,
+    1.8641
+   ],
+   "collision_radius_m": [
+    0.142,
+    0.23
+   ],
+   "board_range_m": [
+    0.06,
+    1
+   ],
+   "boardDown_range_m": [
+    0.06,
+    1.3
+   ],
+   "method": "every frame of each clip for all thirty builds (evalClip + pinsOf), world opts from the walk; hands vs the wheel rim, the lying body vs the berth outline and deckhead, crowns vs headroom, shoulders (2 x collision radius) vs clear widths",
+   "fixtures": [
+    {
+     "id": "helm_seated",
+     "what": "seated at the wheel",
+     "clip": "drive",
+     "world_opts": {
+      "seatZ": 0.63,
+      "wheelZ": 0.68,
+      "wheelY": 0.59
+     },
+     "range": {
+      "seatZ": [
+       0.25,
+       0.7
+      ],
+      "wheelZ": [
+       0.45,
+       0.95
+      ],
+      "wheelY": [
+       0.2,
+       0.45
+      ]
+     },
+     "clamped": true,
+     "wheel": {
+      "hub": [
+       0,
+       0.07,
+       1.1
+      ],
+      "rim_m": 0.16,
+      "rake_deg": 0,
+      "clip_tilt_deg": 28
+     },
+     "worst_grip_miss_m": 0.282,
+     "worst_hub_offset_m": 0.14,
+     "worst_ikShort_m": 0.152,
+     "note": "the opts clamp: the clip poses its wheel up to 0.14 m from the hub",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "helm_standing",
+     "what": "standing at the wheel",
+     "clip": "helm_idle",
+     "pivot": [
+      0,
+      -0.22,
+      0.42
+     ],
+     "worst_grip_miss_m": 0.456,
+     "worst_hands_to_hub_m": 0.583,
+     "hub_over_floor_m": 0.68,
+     "hub_ahead_of_pilot_m": 0.29,
+     "grip_by_build": {
+      "over_floor_m": [
+       0.784,
+       1.231
+      ],
+      "ahead_m": [
+       0.312,
+       0.482
+      ]
+     },
+     "waitsOn": [
+      "helm_idle.wheelOpts"
+     ],
+     "note": "Why not: helm_idle takes no wheel opts, so each build holds its hands where its own arms put them: 0.784 to 1.231 m over the floor and 0.312 to 0.482 m ahead of its feet. One wheel is within 0.02 m of a few of those grips at most. This wheel is set for drive (seated, 30 of 30), which takes it no higher than 0.95 m over the floor (this hub: 0.68 m), and its seat is 0.61 m behind the hub, so a figure standing at the reach helm_idle holds would stand in the seat. At the rig’s pilot spot (0.29 m behind the hub) the hands’ midpoint misses the hub by up to 0.583 m. Standing waits on helm_idle taking wheelZ / wheelY (as drive does) and a helm with standing room in front of its seat.",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "walk_areas",
+     "what": "walk every area (3 of them) at the walker’s radius 0.23 m",
+     "clip": "walk",
+     "note": "each outline is inset by the walker’s radius, the widest 10.3 build’s collision radius or more: every build’s shoulders fit wherever the walker goes. Headroom is the stand fixtures’; steps are the step fixtures’.",
+     "builds_ok": 30,
+     "of": 30
+    },
+    {
+     "id": "aboard_from_the_water",
+     "what": "come aboard from the water (onto tubes, 0.52 m above the waterline; no ladder)",
+     "clip": null,
+     "waitsOn": [
+      "ladderOn"
+     ],
+     "note": "no ladder on this hull: a swimmer cannot climb back aboard (see _excluded tubes)",
+     "builds_ok": 0,
+     "of": 30
+    },
+    {
+     "id": "seats",
+     "what": "sit as a passenger (leaning_post, bow_seat)",
+     "clip": null,
+     "waitsOn": [
+      "sit"
+     ],
+     "note": "10.3 has no sit clip: drive is its only seated clip, and its hands hold a wheel",
+     "builds_ok": 0,
+     "of": 30
+    }
+   ],
+   "waitsOn": [
+    "helm_idle.wheelOpts",
+    "ladderOn",
+    "sit"
+   ]
+  }
+ }
+}
