@@ -202,7 +202,7 @@ namespace HiddenHarbours.Tests.RigBaking
             // to take "cleared" on trust. A verdict flips against bytes or it does not flip.
             foreach (string stem in new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" })
             {
-                var fixture = BoatInteriorS0Ledger.Parse("{\"hulls\":[{\"hull_stem\":\"" + stem +
+                var fixture = BoatInteriorS0Ledger.Parse("{\"schema\":\"hidden-harbours/boat-interior-s0@1\",\"hulls\":[{\"hull_stem\":\"" + stem +
                     "\",\"verdict\":\"CLEAN\",\"evidence\":\"sportFisherIsoRig2.js ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb\",\"upstream_ask\":\"\"}]}");
                 BoatInteriorS0Entry e = BoatInteriorS0Ledger.For(fixture, stem);
                 Assert.AreEqual(BoatInteriorS0Verdict.Clean, e.Verdict);

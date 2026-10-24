@@ -614,7 +614,8 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             ring.Append(']');
             string gameplay = "{\"DECK\":[{\"id\":\"helm_coaming\",\"z\":9.74,\"polygon\":" + ring + "}]}";
-            const string interior = "{\"WALKABLE\":{\"bridge_sole\":{\"z\":7.30,\"polygon\":[[0,0],[2,0],[2,2],[0,2]]}," +
+            const string interior = "{\"hullRigSha256\":{\"sportFisherIsoRig2.skybridge\":\"205a93c9e0e39a1df72cadeacac335d9bbf7f87390a204ad98bcd4cc629c4691\"}," +
+                "\"WALKABLE\":{\"bridge_sole\":{\"z\":7.30,\"polygon\":[[0,0],[2,0],[2,2],[0,2]]}," +
                 "\"house_sole\":{\"z\":4.5,\"polygon\":[[0,0],[2,0],[2,2],[0,2]]}}," +
                 "\"LADDER\":[{\"id\":\"bridge_ladder\",\"connects\":[\"house_sole\",\"helm_coaming\"],\"z1\":9.74}]," +
                 "\"STAIRS\":{\"companionways\":[{\"id\":\"house_to_bridge\",\"from\":\"house_sole\",\"to\":\"bridge_sole\",\"opening\":{\"in\":\"bridge_sole\"}}]}}";
