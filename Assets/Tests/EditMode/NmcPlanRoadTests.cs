@@ -63,16 +63,18 @@ namespace HiddenHarbours.Tests.EditMode
         //  the plan's nineteen roads
         // =============================================================================================================
 
-        static List<KeySceneImport.Json> PlanRoads()
+        static KeySceneImport.Json PlanOption(string key)
         {
             var top = KeySceneImport.ReadAsset(File.ReadAllText(PlanAsset), PlanAsset);
             foreach (var row in top.Single(f => f.Key == "Pieces").Value.Items)
                 foreach (var o in row.Get("Options")?.Items ?? new List<KeySceneImport.YamlNode>())
-                    if (o.Get("Key")?.Scalar == "nmc.plan.roads")
-                        return KeySceneImport.Json.Parse(o.Get("Value").Scalar, "nmc.plan.roads").Items;
-            Assert.Fail($"{PlanAsset} holds no nmc.plan.roads option");
+                    if (o.Get("Key")?.Scalar == key)
+                        return KeySceneImport.Json.Parse(o.Get("Value").Scalar, key);
+            Assert.Fail($"{PlanAsset} holds no {key} option");
             return null;
         }
+
+        static List<KeySceneImport.Json> PlanRoads() => PlanOption("nmc.plan.roads").Items;
 
         static Dictionary<string, object> KitClassTable() =>
             MiniJson.Dict(MiniJson.Parse(File.ReadAllText(KitClasses)), "classes");
@@ -463,6 +465,81 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var r in Net.Routes.Where(r => r.Id.StartsWith("road.nmc_camp_", StringComparison.Ordinal)))
                 Assert.That(r.EdgeDistanceTo(rect), Is.GreaterThanOrEqualTo(NineMileCreekRoadNetwork.LotCorridorClearanceMetres),
                     $"the playground's site stands within the lot rule's 3 m of {r}");
+        }
+
+        /// <summary>The planner's amendment 2 (10-24): the camp's twelve pieces moved clear of the measured flares stay
+        /// clear. Each stands at least 0.5 m off the paved edge of every camp road (the plan's <c>roads.stand</c>) and of
+        /// every laid flare, and overlaps no G3 building lot, camp building or pitch, or bridge footprint, but a21 on a20
+        /// and a22 by no more than the leaning row's 0.62 and 1.09 m; the playground stands at least 3 m off every pitch.
+        /// The bars are the amendment's.</summary>
+        [Test]
+        public void TheCampsTwelveMovedPieces_StandClearOfTheRoadsFlaresAndBoxes()
+        {
+            const float OffPavedEdge = 0.5f, PlaygroundOffPitch = 3f, Slack = 0.005f;
+            string[] twelve =
+            {
+                "pitch.nmc_camp_a1", "pitch.nmc_camp_a2", "pitch.nmc_camp_a3", "pitch.nmc_camp_a29", "pitch.nmc_camp_a28",
+                "pitch.nmc_camp_a27", "pitch.nmc_camp_a14", "pitch.nmc_camp_a15", "pitch.nmc_camp_a17", "pitch.nmc_camp_a21",
+                "structure.nmc_camp_playground", "structure.nmc_camp_office",
+            };
+            var overlapAllowed = new Dictionary<(string, string), float>
+            {
+                [("pitch.nmc_camp_a21", "pitch.nmc_camp_a20")] = 0.62f,
+                [("pitch.nmc_camp_a21", "pitch.nmc_camp_a22")] = 1.09f,
+            };
+            var camp = PlanOption("nmc.plan.lots").Get("campground");
+            // a piece's box about its at: its size along x, turned when it faces east or west (the network's groundBoxes)
+            Rect BoxOf(KeySceneImport.Json o)
+            {
+                string id = o.Get("id").Str("id");
+                var at = o.Get("at").Items;
+                var size = o.Get("size").Items;
+                bool turned = o.Get("faces") is { Kind: KeySceneImport.Json.Of.String } f && (f.Text == "E" || f.Text == "W");
+                float w = size[turned ? 1 : 0].Float(id + ".size"), h = size[turned ? 0 : 1].Float(id + ".size");
+                float x = at[0].Float(id + ".at"), y = at[1].Float(id + ".at");
+                return Rect.MinMaxRect(x - w / 2f, y - h / 2f, x + w / 2f, y + h / 2f);
+            }
+            var pieces = camp.Get("pitches").Items.Concat(camp.Get("buildings").Items).ToDictionary(o => o.Get("id").Str("id"), BoxOf);
+            var stand = camp.Get("roads").Get("stand").Items.Select(s => s.Str("campground.roads.stand")).ToList();
+            var roads = Net.Routes.Where(r => stand.Contains(r.Id)).ToList();
+            CollectionAssert.AreEquivalent(stand, roads.Select(r => r.Id).Distinct(), "a camp road is not laid");
+
+            var json = MiniJson.Parse(File.ReadAllText(NineMileCreekRoadNetwork.FilePath));
+            var boxes = NineMileCreekGroundMasks.Lots
+                .Select(l => (id: l.Id, box: Rect.MinMaxRect((float)(l.X - l.SizeX / 2), (float)(l.Y - l.SizeY / 2), (float)(l.X + l.SizeX / 2), (float)(l.Y + l.SizeY / 2))))
+                .Concat(pieces.Select(p => (id: p.Key, box: p.Value)))
+                .Concat(Net.Bridges.Select(b => (id: b.Id, box: b.Footprint)))
+                .Concat(MiniJson.List(json, "held").Where(h => MiniJson.Has(h, "measured")).Select(h =>
+                {
+                    var fp = MiniJson.Dict(MiniJson.Dict(h, "measured"), "footprint");
+                    return (id: MiniJson.String(h, "id"), box: new Rect(MiniJson.Float(fp, "x"), MiniJson.Float(fp, "y"), MiniJson.Float(fp, "w"), MiniJson.Float(fp, "h")));
+                }))
+                .ToList();
+            float Overlap(Rect a, Rect b) =>
+                Mathf.Min(Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin), Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin));
+            float Gap(Rect a, Rect b)
+            {
+                float dx = Mathf.Max(b.xMin - a.xMax, 0f, a.xMin - b.xMax), dy = Mathf.Max(b.yMin - a.yMax, 0f, a.yMin - b.yMax);
+                return Mathf.Sqrt(dx * dx + dy * dy);
+            }
+
+            foreach (string id in twelve)
+            {
+                Assert.IsTrue(pieces.ContainsKey(id), $"the plan's campground holds no {id}");
+                Rect box = pieces[id];
+                foreach (var r in roads.Concat(Net.Flares))
+                    Assert.That(r.EdgeDistanceTo(box), Is.GreaterThanOrEqualTo(OffPavedEdge), $"{id} stands within 0.5 m of {r}'s paved edge");
+                foreach (var (other, b) in boxes.Where(q => q.id != id))
+                {
+                    float by = Overlap(box, b);
+                    if (by <= 0f) continue;
+                    Assert.IsTrue(overlapAllowed.TryGetValue((id, other), out float most), $"{id} overlaps {other} by {by:0.###} m");
+                    Assert.That(by, Is.LessThanOrEqualTo(most + Slack), $"{id} overlaps {other} by {by:0.###} m, past the row's {most} m");
+                }
+            }
+            Rect playground = pieces["structure.nmc_camp_playground"];
+            foreach (var p in camp.Get("pitches").Items.Select(o => o.Get("id").Str("id")))
+                Assert.That(Gap(playground, pieces[p]), Is.GreaterThanOrEqualTo(PlaygroundOffPitch - Slack), $"the playground stands within 3 m of {p}");
         }
 
         // =============================================================================================================
