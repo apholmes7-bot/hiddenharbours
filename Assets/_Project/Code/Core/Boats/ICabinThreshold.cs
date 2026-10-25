@@ -8,13 +8,23 @@ namespace HiddenHarbours.Core
     /// freely when opened"</i>) reaches the player's own deck walk without the Player lane naming a
     /// single Boats type.
     ///
-    /// <para><b>The division it draws.</b> The walker knows exactly one thing the door cannot know —
-    /// <b>where she is standing</b> — and the door knows everything else: whether its leaf is open,
-    /// whether that point is inside the measured opening, whether this approach has already been spent,
-    /// which way the crossing goes, and whether the room behind it will accept her. So the whole seam is
-    /// one call that both ASKS and ACTS. A split seam (<c>MayCross</c> then <c>Cross</c>) would put the
-    /// door's own latch in the caller's hands, and two walkers sharing one doorway would then spend it
-    /// twice — see <c>BoatCabinDoor</c>'s latch remarks for why there is exactly one.</para>
+    /// <para><b>The division it draws.</b> The walker knows two things the door cannot know — <b>where
+    /// she is standing</b> and <b>which way her key is pointing</b> — and the door knows everything
+    /// else: whether its leaf is open, whether that point is inside the measured opening and on its
+    /// wall line, which way the crossing goes, whether it has only just taken her, and whether the room
+    /// behind it will accept her. So the whole seam is one call that both ASKS and ACTS. A split seam
+    /// (<c>MayCross</c> then <c>Cross</c>) would put the door's own settle in the caller's hands, and
+    /// two walkers sharing one doorway would then keep two of them — see <c>BoatCabinDoor</c>'s passage
+    /// remarks for why there is exactly one.</para>
+    ///
+    /// <para><b>⭐ The key, not the latch (owner ruling D1, 2026-09-30).</b> A crossing used to be taken
+    /// on the first tick she stood in the band after getting a whole clear width away from it, so a
+    /// player who pressed one key and held it met a doorway that sometimes would not have her. The door
+    /// now asks what she is TRYING to do: in the doorway, with the key pointing through, she goes. The
+    /// member changed shape for it rather than a second interface being added beside it — the rule this
+    /// seam states below exists to spare test doubles a member they would never call, and here there is
+    /// no keyless question left to ask: a doorway cannot tell a player walking through it from one
+    /// standing in it without her key.</para>
     ///
     /// <para><b>Rule 4, in the direction it actually matters.</b> <c>DeckWalkController</c> lives in
     /// Player and the door lives in Boats; a feature module talks through a named seam rather than
@@ -41,16 +51,19 @@ namespace HiddenHarbours.Core
         /// where the walker is standing in the HULL's own frame (+x starboard, +y bow) — the frame every
         /// authored deck polygon, cabin sole and door threshold already speaks, which is what lets the
         /// deck and the sole ask one doorway one question with no projection on either side.
+        /// <paramref name="heldHullLocal"/> is the key she is holding, turned into that same frame the way
+        /// her own step turned it (its length is how far the key is pressed; zero is no key), and
+        /// <paramref name="deltaSeconds"/> is the tick her step took.
         ///
         /// <para>Returns true only on the tick a crossing actually happened, so a caller never has to
         /// hold a second copy of "is she inside". False is the ordinary answer, on almost every tick:
-        /// the leaf is shut, or she is nowhere near it, or she is still standing in the doorway she came
-        /// through.</para>
+        /// the leaf is shut, or she is nowhere near it, or her key is not pointing through it, or the
+        /// doorway took her a moment ago.</para>
         ///
         /// <para><b>Nothing here moves her.</b> An interior is a layer swap and not a place you travel
         /// to (ADR 0038): the frame she is placed in changes underneath her and her world point does
         /// not. That is why this returns a bool rather than a position.</para>
         /// </summary>
-        bool TryWalkThrough(Vector2 hullLocalMetres);
+        bool TryWalkThrough(Vector2 hullLocalMetres, Vector2 heldHullLocal, float deltaSeconds);
     }
 }

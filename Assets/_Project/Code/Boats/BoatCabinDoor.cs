@@ -118,34 +118,50 @@ namespace HiddenHarbours.Boats
         private int _cueLevel;
 
         /// <summary>
-        /// <b>The latch that makes one approach one crossing.</b> Cleared by a crossing, and set again
-        /// only once the walker is measurably CLEAR of the doorway
-        /// (<see cref="BoatCabinThreshold.IsClearOfBand"/>).
+        /// <b>Seconds since this doorway last took her</b> — the settle (owner ruling D1, 2026-09-30,
+        /// which retired the latch this replaces). A crossing sets it to zero and her walker's own ticks
+        /// run it up; the doorway will not take her again until it reaches the door's
+        /// <see cref="BoatInteriorDoor.CrossingSettleSeconds"/>.
         ///
         /// <para><b>⚠ It lives HERE, on the door, and not on either walker — that is the point.</b> The
         /// sole and the deck are two frames either side of ONE hole in ONE wall: a walker who crosses in
-        /// lands, by construction, a centimetre from the threshold she just crossed, and a latch owned by
-        /// the frame she landed in would arrive armed and put her straight back out. One doorway, one
-        /// latch.</para>
+        /// lands, by construction, on the wall line she just crossed, and a settle owned by the frame she
+        /// landed in would arrive settled. One doorway, one clock.</para>
         ///
-        /// <para>It starts DISARMED, which is the safe seed for the case that actually happens: the
-        /// arrival opens with the player already standing in Armand's doorway (a threshold is on the
-        /// sole's edge by construction), and an armed latch would walk her out of his cabin on the first
-        /// frame of a new game.</para>
+        /// <para><b>Why a clock and no longer a latch.</b> The latch made one approach one crossing by
+        /// refusing her until she had got a whole clear width away from the door, so a player who pressed
+        /// one key and held it met a doorway that would not have her. The key now says which way she means
+        /// to go (<see cref="BoatCabinThreshold.IsHeldThrough"/>), so standing in the doorway crosses
+        /// nobody, and the only strobe left to stop is a key rocked back and forth on the sill — which a
+        /// sixth of a second stops, and a player walking back through on purpose never meets.</para>
         ///
-        /// <para><b>⚠ …and her FIRST step after a (re)wiring seeds it</b> (<see cref="_passageSeeded"/>;
-        /// owner ruling R1, 2026-09-18: <i>"the latch arms on her first step outside the band"</i>). A
-        /// door is re-wired every time a hull is swapped on under her, and the swap leaves her at the
-        /// helm — on sixteen hulls nearer the threshold than the release radius, so the disarmed seed
-        /// never re-armed and walking in did nothing. Standing OUTSIDE the band on that first step is not
-        /// the arrival's case (the arrival stands her IN it), so the seed is armed; standing inside it
-        /// keeps the old rule and waits for her to be clear.</para>
+        /// <para>Starts SETTLED (infinite): nothing about a freshly wired door says it has just taken
+        /// anybody. The arrival opens with her standing in Armand's doorway, and it is her key, not a
+        /// disarmed seed, that keeps her in his cabin until she means to leave.</para>
         /// </summary>
-        private bool _passageArmed;
+        private float _sinceCrossingSeconds = float.PositiveInfinity;
 
-        /// <summary>True once <see cref="_passageArmed"/> has been seeded from her first walk step since
-        /// <see cref="Configure"/>. Cleared by every wiring, so a rebuilt door seeds again.</summary>
-        private bool _passageSeeded;
+        /// <summary>True once <see cref="_wallLevelIndex"/>, <see cref="_wallPoint"/> and
+        /// <see cref="_outward"/> have been measured off the def (<see cref="MeasureTheWall"/>). Cleared by
+        /// every wiring, so a rebuilt door measures its own wall.</summary>
+        private bool _wallMeasured;
+
+        /// <summary>The room this doorway opens, as a level index, or −1 when no level stands at the
+        /// sill's height (<see cref="BoatCabinThreshold.TryWallLine"/>).</summary>
+        private int _wallLevelIndex = -1;
+
+        /// <summary>The wall line's nearest point to the threshold, hull-local metres.</summary>
+        private Vector2 _wallPoint;
+
+        /// <summary>The wall line's unit normal out of the room: the doorway's axis.</summary>
+        private Vector2 _outward;
+
+        /// <summary>Where she stood along the axis on her last tick in the doorway
+        /// (<see cref="BoatCabinThreshold.PastTheWallLine"/>), or NaN when that tick was not one — what
+        /// tells a walker pressed against her floor's edge from one still on her way to the line
+        /// (<see cref="BoatCabinThreshold.IsPressedShort"/>), and a step that left the band this tick from
+        /// one that was never in it.</summary>
+        private float _pastTheLineBefore = float.NaN;
 
         /// <summary>True once the no-band fallback has been named on the console — said once per door and
         /// not once per press, because a warning on a press path is a warning in a loop.</summary>
@@ -262,13 +278,42 @@ namespace HiddenHarbours.Boats
         /// that moving the leaf and crossing the threshold are two different acts.</summary>
         public bool WouldEnter => _interior == null || !_interior.IsInside;
 
-        /// <summary>True when this doorway has a measured opening and can therefore be walked through at
-        /// all. False puts the door on the press-through fallback — see the class remarks.</summary>
-        public bool ThresholdIsWalkable => BoatCabinThreshold.HasBand(Door);
+        /// <summary>True when this doorway has a measured opening in a wall it can find, and can therefore
+        /// be walked through at all. False puts the door on the press-through fallback — see the class
+        /// remarks.</summary>
+        public bool ThresholdIsWalkable => BoatCabinThreshold.HasBand(Door) && MeasureTheWall();
 
-        /// <summary>Whether the next crossing of the band would be taken. False while she is still
-        /// standing in the doorway she last came through. Read by tests; nothing else needs it.</summary>
-        public bool PassageIsArmed => _passageArmed;
+        /// <summary>Whether this doorway has settled since it last took her
+        /// (<see cref="BoatInteriorDoor.CrossingSettleSeconds"/>), so that the next key held through it
+        /// would be taken. Read by tests; nothing else needs it.</summary>
+        public bool PassageIsSettled
+        {
+            get
+            {
+                BoatInteriorDoor door = Door;
+                return door != null && _sinceCrossingSeconds >= door.CrossingSettle;
+            }
+        }
+
+        /// <summary>The room this doorway opens, as a level index of its def — the level whose outline
+        /// its wall line is on (<see cref="BoatCabinThreshold.TryWallLine"/>) — or −1 when it has none.
+        /// Read by whoever walks that room's sole, so the room they walk is the room the doorway is cut
+        /// into.</summary>
+        public int RoomLevelIndex => MeasureTheWall() ? _wallLevelIndex : -1;
+
+        /// <summary>That room's level, or null.</summary>
+        public BoatInteriorLevel RoomLevel
+        {
+            get
+            {
+                int index = RoomLevelIndex;
+                return index >= 0 ? _interior.Def.Levels[index] : null;
+            }
+        }
+
+        /// <summary>The doorway's axis: the unit normal of its wall line, out of the room, hull-local.
+        /// Zero when it has no wall line.</summary>
+        public Vector2 OutwardAxis => MeasureTheWall() ? _outward : Vector2.zero;
 
         // ---- the interact seam ----------------------------------------------------------------
 
@@ -370,8 +415,9 @@ namespace HiddenHarbours.Boats
             _closeLabel = closeLabel ?? "";
             _cueElapsed = -1f;
             IsOpen = false;             // the ruling's first sentence, restated at every wiring
-            _passageArmed = false;      // see the field: the arrival starts her IN this doorway
-            _passageSeeded = false;     // …and her first step decides whether she is (R1)
+            _sinceCrossingSeconds = float.PositiveInfinity;   // see the field: nothing has crossed yet
+            _pastTheLineBefore = float.NaN;
+            _wallMeasured = false;      // a re-wired door may open a different room
             _leaf = null;               // a re-wired door may stand on a different hull
             ShowLeafNow();
         }
@@ -387,7 +433,7 @@ namespace HiddenHarbours.Boats
         /// this offers is the setter it will use.</para>
         ///
         /// <para>Cancels any running cue — a leaf that has been placed is not a leaf that is moving — and
-        /// touches the latch not at all, because the latch is about where the WALKER is standing.</para>
+        /// touches the settle not at all, because the settle is about when the WALKER last crossed.</para>
         /// </summary>
         public void SetOpen(bool open)
         {
@@ -548,17 +594,18 @@ namespace HiddenHarbours.Boats
 
         /// <summary>
         /// ⭐⭐ <b>WALK THROUGH IT.</b> Called once a tick by whoever is walking — the arrival's two
-        /// walkers, and the player's own <c>DeckWalkController</c> — with where she is standing in the
-        /// HULL's own metres. Crosses the level exactly as the press used to
-        /// (<see cref="BoatInterior.TryEnter"/> / <see cref="BoatInterior.TryExit"/>) and returns whether
-        /// it did, so no caller has to hold a second copy of "is she inside".
+        /// walkers, and the player's own <c>DeckWalkController</c> — with where she is standing and the
+        /// key she is holding, both in the HULL's own metres, and the tick her step took. Crosses the
+        /// level exactly as the press used to (<see cref="BoatInterior.TryEnter"/> /
+        /// <see cref="BoatInterior.TryExit"/>) and returns whether it did, so no caller has to hold a
+        /// second copy of "is she inside".
         ///
         /// <para><b>⛔ THIS IS <see cref="ICabinThreshold"/>'s ONE MEMBER, and that is how the PLAYER lane
         /// reaches it</b> — <c>DeckWalkController</c> resolves the Core interface off the boat root and
-        /// never names this class (rule 4). The walker knows where she is standing; every other part of
-        /// the decision is on this side of the seam, which is why the call both asks and acts. The App
-        /// lane's arrival walkers hold the concrete door instead, and may: App is the composition
-        /// root.</para>
+        /// never names this class (rule 4). The walker knows where she is standing and which way her key
+        /// points; every other part of the decision is on this side of the seam, which is why the call
+        /// both asks and acts. The App lane's arrival walkers hold the concrete door instead, and may:
+        /// App is the composition root.</para>
         ///
         /// <para><b>Nothing here moves her.</b> The room is drawn into the same cell at the same pivot as
         /// the hull, so a walker standing in the doorway is already standing in the doorway of the picture
@@ -566,70 +613,138 @@ namespace HiddenHarbours.Boats
         /// not. That is the whole trick of an interior (ADR 0038) and the reason this returns a bool
         /// rather than a position.</para>
         ///
-        /// <para><b>The five gates, in the order they are asked.</b> She must have been clear of the
-        /// doorway at some point since the last crossing (the latch — one approach, one crossing); the
-        /// leaf must be standing open and still; she must be IN the band; she must be standing on the
-        /// sill's own floor, when the walker says which floor that is
-        /// (<see cref="TryWalkThroughAt"/>); and going IN she must be allowed in at all. <b>Coming OUT
-        /// is never gated on the entry policy</b> — a cabin that stopped being enterable while somebody
-        /// was inside must not thereby become a room she cannot leave.</para>
+        /// <para><b>The gates, in the order they are asked</b> (owner ruling D1, 2026-09-30: <i>"in the
+        /// band with the key pointing through, she goes"</i>). The leaf must be standing open and still;
+        /// she must be IN the band, or have stepped out of it this tick; the doorway must have settled since
+        /// it last took her; she must be
+        /// standing on the sill's own floor, when the walker says which floor that is
+        /// (<see cref="TryWalkThroughAt"/>); her key must point through it — out of the room, or into it
+        /// from the deck (<see cref="BoatCabinThreshold.IsHeldThrough"/>); she must have reached the wall
+        /// line from her side (<see cref="BoatCabinThreshold.HasReachedTheWallLine"/>), or stand pressed
+        /// against her floor's edge short of it (<see cref="BoatCabinThreshold.IsPressedShort"/>); and going IN she
+        /// must be allowed in at all. <b>Coming OUT is never gated on the entry policy</b> — a cabin that
+        /// stopped being enterable while somebody was inside must not thereby become a room she cannot
+        /// leave.</para>
         ///
         /// <para><b>⚠ Hull-local metres, not world.</b> See <see cref="BoatCabinThreshold"/>: the sole
         /// walk and the deck walk project through different handedness conventions, and a threshold asked
         /// in world offsets would have to pick one of them and would mirror the doorway end for end on
-        /// the hulls that disagree.</para>
+        /// the hulls that disagree. Each walker turns her key into this frame with its own projection.</para>
         /// </summary>
-        public bool TryWalkThrough(Vector2 hullLocalMetres) => Pass(hullLocalMetres, false, 0f);
+        public bool TryWalkThrough(Vector2 hullLocalMetres, Vector2 heldHullLocal, float deltaSeconds)
+            => Pass(hullLocalMetres, heldHullLocal, deltaSeconds, false, 0f);
 
         /// <summary>
         /// ⭐ <b>WALK THROUGH IT, from a floor she names</b> — <see cref="ICabinThresholdAtHeight"/>:
         /// <see cref="TryWalkThrough"/> with the height of the floor she stands on, so that a walker on
         /// a deck stacked over (or under) this doorway's sill is never walked through it. The height is
-        /// the only thing added: the latch still seeds and re-arms in PLAN, so a walker who stood over
-        /// the doorway on another floor has to get clear of it before it will take her, exactly as one
-        /// who stood in it.
+        /// the only thing added: every other gate, her key included, is asked in PLAN exactly as there.
         /// </summary>
-        public bool TryWalkThroughAt(Vector3 hullLocalMetres)
-            => Pass(new Vector2(hullLocalMetres.x, hullLocalMetres.y), true, hullLocalMetres.z);
+        public bool TryWalkThroughAt(Vector3 hullLocalMetres, Vector2 heldHullLocal, float deltaSeconds)
+            => Pass(new Vector2(hullLocalMetres.x, hullLocalMetres.y), heldHullLocal, deltaSeconds, true,
+                    hullLocalMetres.z);
+
+        /// <summary>
+        /// <b>D1 (a)'s pull, for a walker on either side</b>: the direction she should step in for the key
+        /// she holds here — <see cref="BoatCabinThreshold.Steer"/> toward the way through that a crossing
+        /// from her side would take (out of the room while she is inside, into it from the deck). The key
+        /// untouched when this doorway is shut, cueing, has no wall line, or she is not within its pull.
+        /// </summary>
+        public Vector2 SteerHeld(Vector2 hullLocalMetres, Vector2 heldHullLocal)
+        {
+            BoatInteriorDoor door = Door;
+            if (door == null || !IsOpen || IsCueing || !MeasureTheWall()) return heldHullLocal;
+            return BoatCabinThreshold.Steer(door, _wallPoint, _outward, WouldEnter, hullLocalMetres, heldHullLocal);
+        }
+
+        /// <summary>
+        /// Is this key, here, one the doorway carries, whichever way along its axis it points? The room
+        /// walker asks it before stepping her round the furniture just inside
+        /// (<see cref="BoatCabinWalkMath.StepRound"/>): the seat behind the doorway is on the way through
+        /// in either direction. Within the pull's reach; and beyond it while she stands against furniture
+        /// the reach touches (<see cref="BoatCabinThreshold.IsAgainstFurnitureJustInside"/>), so the seat is
+        /// carried round to its far corner rather than to wherever one clear width happens to end.
+        /// </summary>
+        public bool CarriesHeld(Vector2 hullLocalMetres, Vector2 heldHullLocal)
+        {
+            BoatInteriorDoor door = Door;
+            if (door == null || !IsOpen || IsCueing || !MeasureTheWall()) return false;
+            if (BoatCabinThreshold.IsInThePull(door, _outward, false, hullLocalMetres, heldHullLocal)
+                || BoatCabinThreshold.IsInThePull(door, _outward, true, hullLocalMetres, heldHullLocal))
+                return true;
+            return BoatCabinThreshold.IsLeaningThrough(door, _outward, heldHullLocal)
+                   && BoatCabinThreshold.IsAgainstFurnitureJustInside(door, _interior.Def.Levels[_wallLevelIndex],
+                                                                      hullLocalMetres);
+        }
 
         /// <summary>The passage itself, for both entry points — <paramref name="floorKnown"/> false is the
         /// plan question the seam always asked.</summary>
-        private bool Pass(Vector2 hullLocalMetres, bool floorKnown, float floorZMetres)
+        private bool Pass(Vector2 hullLocalMetres, Vector2 heldHullLocal, float deltaSeconds, bool floorKnown,
+                          float floorZMetres)
         {
             BoatInteriorDoor door = Door;
             if (_interior == null || door == null) return false;
 
-            // Her first step since the wiring seeds the latch (R1, see the field): outside the band is
-            // not the arrival's doorway, so the approach she is making is already a fresh one.
-            if (!_passageSeeded)
-            {
-                _passageSeeded = true;
-                _passageArmed = BoatCabinThreshold.HasBand(door)
-                                && !BoatCabinThreshold.IsInBand(door, hullLocalMetres);
-            }
+            // The settle runs on her walker's own ticks, whatever else this tick decides.
+            _sinceCrossingSeconds += Mathf.Max(0f, deltaSeconds);
 
-            // Re-arm the moment she is measurably clear of the doorway — asked whatever the leaf is
-            // doing, so that the approach she makes AFTER opening a door is a fresh one rather than one
-            // the last crossing already spent.
-            if (BoatCabinThreshold.IsClearOfBand(door, hullLocalMetres)) _passageArmed = true;
+            float pastBefore = _pastTheLineBefore;
+            _pastTheLineBefore = float.NaN;
+            if (!IsOpen || IsCueing) return false;
 
-            if (!_passageArmed || !IsOpen || IsCueing) return false;
-            if (!BoatCabinThreshold.IsInBand(door, hullLocalMetres)) return false;
+            // In the band, or out of it by this one tick's step: her floor's clamp slides her along the
+            // wall in the same tick she meets it, so a key whose straight line meets the wall line inside
+            // the band can end that tick just past its edge — and whether the doorway took her would hang on
+            // the frame rate (the fleet's lobster boats, a key 42° off: through at 144 Hz, never at 60).
+            // One tick and no more: the record below is kept only while she stands in the band.
+            bool inBand = BoatCabinThreshold.IsInBand(door, hullLocalMetres);
+            if (!inBand && float.IsNaN(pastBefore)) return false;
+            if (!MeasureTheWall()) return false;
+
+            // Where she stands along the axis, kept on every tick she is in the doorway — the settle
+            // included — so the tick it lets her go already knows whether her floor has stopped her.
+            float pastNow = BoatCabinThreshold.PastTheWallLine(_wallPoint, _outward, hullLocalMetres);
+            if (inBand) _pastTheLineBefore = pastNow;
+            if (_sinceCrossingSeconds < door.CrossingSettle) return false;
 
             // Standing over the doorway on another floor is not standing in it (the Phase A finding —
-            // see ICabinThresholdAtHeight). Refused without spending the latch: she never crossed.
+            // see ICabinThresholdAtHeight).
             if (floorKnown && !BoatCabinThreshold.IsOnTheSill(door, floorZMetres, _interior.Def.FloorTolerance))
                 return false;
 
             bool goingIn = WouldEnter;
+            if (!BoatCabinThreshold.IsHeldThrough(door, _outward, goingIn, heldHullLocal)) return false;
+            if (!BoatCabinThreshold.HasReachedTheWallLine(_wallPoint, _outward, goingIn, hullLocalMetres)
+                && !BoatCabinThreshold.IsPressedShort(pastBefore, pastNow, goingIn))
+                return false;
             if (goingIn && !BoatInteriorEntryPolicy.MayOffer(_interior)) return false;
 
-            _passageArmed = false;
+            _sinceCrossingSeconds = 0f;
+            _pastTheLineBefore = float.NaN;
 
             if (!goingIn) return _interior.TryExit();
 
             _interior.EnsureCells();
             return _interior.TryEnter(Mathf.Max(0, _interior.LevelIndexAtHeight(door.ThresholdPoint.z)));
+        }
+
+        /// <summary>
+        /// Measure this doorway's wall off its def, once per wiring (<see cref="BoatCabinThreshold.TryWallLine"/>)
+        /// — a scan of the outlines at the sill's height, cached so the passage costs a few dot products a
+        /// tick (rule 7). True when it has one.
+        /// </summary>
+        private bool MeasureTheWall()
+        {
+            if (!_wallMeasured)
+            {
+                BoatInteriorDoor door = Door;
+                if (door == null) return false;   // not cached: a def may arrive later
+                _wallMeasured = true;
+                if (!BoatCabinThreshold.TryWallLine(_interior.Def, door, out _wallLevelIndex, out _wallPoint,
+                                                    out _outward))
+                    _wallLevelIndex = -1;
+            }
+            return _wallLevelIndex >= 0;
         }
     }
 }
