@@ -167,6 +167,8 @@ namespace HiddenHarbours.Tests.EditMode
             "visual.sport_skiff_mk2_iso",
             "visual.sport_fisher_convertible_iso",
             "visual.sport_fisher_skybridge_iso",
+            "visual.expedition_yacht120_iso",
+            "visual.yacht_tender_iso",
 
             // ---- S1 — the sail rig kit's two sloops (feat/sloops-on-the-dev-key), mesh-only ------------
             // The first hulls on this list whose mesh is deliberately NOT the whole boat: her static body,

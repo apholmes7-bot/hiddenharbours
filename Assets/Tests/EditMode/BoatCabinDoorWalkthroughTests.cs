@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
+using HiddenHarbours.Art;
+using System.Linq;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -64,6 +66,106 @@ namespace HiddenHarbours.Tests.EditMode
         private const float NoTwoCrossingsWithinSeconds = 0.15f;
 
         private readonly List<Object> _spawned = new();
+
+        [Test]
+        public void AlwaysOpenPassage_StartsOpenAndCannotBeClosedOrCued()
+        {
+            Rig rig = NewAlwaysOpenRig();
+            Assert.IsTrue(rig.Door.IsOpen);
+            Assert.IsFalse(rig.Door.IsAvailable, "an opening has no E offer");
+            Assert.IsFalse(rig.Door.TryUse());
+            rig.Door.SetOpen(false);
+            rig.Door.Tick(10f);
+            Assert.IsTrue(rig.Door.IsOpen);
+            Assert.IsFalse(rig.Door.IsCueing);
+            Assert.AreEqual(-1, rig.Door.CueFrame);
+            Assert.IsFalse(rig.Interior.IsInside, "an open leaf does not enter the room");
+        }
+
+        [Test]
+        public void AlwaysOpenPassage_HeldKeyCrossesAtItsOwnSillAndUsesTheSettle()
+        {
+            Rig rig = NewAlwaysOpenRig();
+            var point = new Vector3(OnTheLine.x, OnTheLine.y, 1.78f);
+            Assert.IsFalse(rig.Door.TryWalkThroughAt(point, Vector2.zero, Tick));
+            Assert.IsTrue(rig.Door.TryWalkThroughAt(point, In, Tick));
+            Assert.IsTrue(rig.Interior.IsInside);
+            Assert.IsFalse(rig.Door.TryWalkThroughAt(point, Out, Tick), "shared settle prevents a second crossing");
+            Settle(rig);
+            Assert.IsTrue(rig.Door.TryWalkThroughAt(point, Out, Tick));
+            Assert.IsFalse(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.IsOpen);
+        }
+
+        [Test]
+        public void AlwaysOpenPassage_RejectsAnotherFloorAndAKeyAwayFromItsAxis()
+        {
+            Rig rig = NewAlwaysOpenRig();
+            Assert.IsFalse(rig.Door.TryWalkThroughAt(new Vector3(0, -2, 3.78f), In, Tick));
+            Assert.IsFalse(rig.Door.TryWalkThroughAt(new Vector3(0, -2, 1.78f), Vector2.right, Tick));
+            Assert.IsFalse(rig.Interior.IsInside);
+            Assert.IsTrue(rig.Door.TryWalkThroughAt(new Vector3(0, -2, 1.78f), In, Tick));
+        }
+
+        [Test]
+        public void InternalOpenPassage_KeepsThePlayerInsideTheCabinOnItsOwnLevel()
+        {
+            Rig rig = NewRig();
+            rig.Def.InternalPassages = new[] { new BoatInteriorPassage { Id = "between_rooms", LevelId = "house_sole",
+                RigLevelId = "house", SoleZMeters = 1.78f, WallAxis = "x", WallAtMeters = 0,
+                ApertureMeters = new Vector2(-.5f, .5f), ClearWidthMeters = 1, ClearHeightMeters = 2,
+                Reason = "an open doorway, no leaf: walked through, never shut" } };
+            Assert.IsTrue(rig.Interior.TryEnter(0));
+            var from = new Vector2(-.2f, 0);
+            var to = BoatCabinWalkMath.StepHeld(rig.Def.Levels[0], from, Vector2.right, 1, .4f);
+            Assert.That(to.x, Is.EqualTo(.2f).Within(.00001));
+            Assert.That(to.y, Is.Zero);
+            Assert.IsTrue(rig.Interior.IsInside);
+            Assert.AreEqual(0, rig.Interior.Level);
+            Assert.AreEqual(1, rig.Interior.GetComponentsInChildren<BoatCabinDoor>(true).Length,
+                "the external door is the only interactable doorway; internal passages build none");
+        }
+
+        [Test]
+        public void SkybridgeUpperDoor_UsesItsOwnLeafAndSill_LeavingSalonUntouched()
+        {
+            var source = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>("Assets/_Project/Data/Boats/Interiors/SportFisherSkybridgeIso.asset");
+            var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>("Assets/_Project/Data/Boats/HullMeshes/SportFisherSkybridgeIsoHullMesh.asset");
+            Assert.IsNotNull(source);
+            Assert.IsNotNull(mesh);
+            CollectionAssert.AreEquivalent(new[] { "salon", "skylounge" }, mesh.DoorLeaves.Select(p => p.Id));
+            Rig rig = NewRig(source);
+            var renderer = rig.Interior.gameObject.AddComponent<IsoFacetHullRenderer>();
+            renderer.Configure(IsoFacetHullPresentationService.ToSetup(mesh));
+            rig.Door.SetOpen(false);
+            int index = System.Array.FindIndex(rig.Def.AdditionalDoors, d => d.Id == "skylounge");
+            Assert.That(index, Is.GreaterThanOrEqualTo(0));
+            var upper = new GameObject("UpperDoor").AddComponent<BoatCabinDoor>();
+            upper.transform.SetParent(rig.Interior.transform, false);
+            upper.Configure(rig.Interior, "fixture.boat.skybridge.skylounge", index, 1.2f, "Open the door", "Close the door");
+            Assert.That(upper.Door.ThresholdPoint.z, Is.EqualTo(5.56f).Within(.00001));
+            Assert.That(rig.Door.Door.ThresholdPoint.z, Is.EqualTo(2.88f).Within(.00001));
+            upper.SetOpen(true);
+            Assert.IsTrue(renderer.DoorLeafShownOpenFor("skylounge"));
+            Assert.IsFalse(renderer.DoorLeafShownOpenFor("salon"));
+            var salon = mesh.DoorLeaves.Single(p => p.Id == "salon");
+            var sky = mesh.DoorLeaves.Single(p => p.Id == "skylounge");
+            Assert.AreSame(salon.Closed, renderer.transform.Find("FacetMesh/DoorLeaf").GetComponent<MeshFilter>().sharedMesh);
+            Assert.AreSame(sky.Open, renderer.transform.Find("FacetMesh/DoorLeaf.skylounge").GetComponent<MeshFilter>().sharedMesh);
+            Assert.IsTrue(BoatCabinThreshold.TryWallLine(rig.Def, upper.Door, out int level, out Vector2 point, out Vector2 axis));
+            Assert.IsFalse(upper.TryWalkThroughAt(new Vector3(point.x, point.y, 2.88f), -axis, Tick));
+            Assert.IsTrue(upper.TryWalkThroughAt(new Vector3(point.x, point.y, 5.56f), -axis, Tick));
+            Assert.AreEqual(level, rig.Interior.Level);
+            Assert.IsFalse(renderer.DoorLeafShownOpenFor("salon"));
+        }
+
+        private Rig NewAlwaysOpenRig()
+        {
+            Rig rig = NewRig();
+            rig.Def.Door.OpeningMode = BoatInteriorDoorOpeningMode.AlwaysOpen;
+            rig.Door.Configure(rig.Interior, "fixture.boat.walkthrough_test.cabin_door", -1, 1.2f, "Open the door", "Close the door");
+            return rig;
+        }
 
         [TearDown]
         public void TearDown()
@@ -827,7 +929,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// A cabin and her door, wired the way the placement pass wires them, with a doorway whose
         /// measurement is the fleet's own: a 0.72 m opening on the aft face.
         /// </summary>
-        private Rig NewRig()
+        private Rig NewRig(BoatInteriorDef source = null)
         {
             var made = ScriptableObject.CreateInstance<BoatInteriorDef>();
             made.Id = "interior.walkthrough_test";
@@ -857,6 +959,7 @@ namespace HiddenHarbours.Tests.EditMode
                 CueMillisecondsPerFrame = 70f,
                 CueReversedOnExit = true,
             };
+            if (source != null) EditorUtility.CopySerialized(source, made);
             _spawned.Add(made);
 
             var root = new GameObject("WalkthroughTestHull");

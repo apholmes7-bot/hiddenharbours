@@ -158,7 +158,7 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void LeaflessDoorway_RefusesByHullAndDoorAndBuildsNoDoor()
+        public void LeaflessDoorway_ImportsAlwaysOpenPassageWithoutLeaf()
         {
             using var host = RigScriptHostFactory.Create();
             var rig = HullWalkFixture.Extract(host);
@@ -168,10 +168,60 @@ namespace HiddenHarbours.Tests.RigBaking
             try
             {
                 var result = HullWalkSidecarImporter.Populate(walk, rig, "boxWalkRig", deck, room);
-                Assert.That(result.Refusals.Single(), Is.EqualTo("box_walk: house.doors.open_arch: leafless doorway: not imported until batch 1 (needs #916's door runtime)"));
-                Assert.That(result.Ok, Is.False);
-                Assert.That(room.AdditionalDoors, Is.Empty);
+                Assert.That(result.Refusals, Is.Empty);
+                Assert.That(result.Ok, Is.True);
+                var arch = room.AdditionalDoors.Single();
+                Assert.That(arch.Id, Is.EqualTo("open_arch"));
+                Assert.That(arch.OpeningMode, Is.EqualTo(BoatInteriorDoorOpeningMode.AlwaysOpen));
+                Assert.That(arch.OpeningReason, Is.EqualTo("No leaf on this arch"));
+                Assert.That(arch.ThresholdPoint, Is.EqualTo(new Vector3(0, 2, 2)));
+                Assert.That(arch.ClearWidthMeters, Is.EqualTo(1));
+                Assert.That(arch.ClearHeightMeters, Is.EqualTo(1));
+                Assert.That(arch.CueFrames, Is.Zero);
+                Assert.That(HullWalkRigExtractor.DeclaredDoors(walk).Select(d => HullLayoutJson.Text(d, "id")),
+                    Does.Not.Contain("open_arch"), "an always-open arch contributes no leaf faces");
                 Assert.That(room.Door.Id, Is.EqualTo("entry"));
+            }
+            finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
+        }
+
+        [Test]
+        public void ShipLeaflessPassages_AllDeliveredIdsAndLevelsSurviveImport()
+        {
+            var hull = HullMeshFleet.Get("expeditionYacht120");
+            using var host = RigScriptHostFactory.Create();
+            var rig = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName, hull: hull.Extraction);
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var room = ScriptableObject.CreateInstance<BoatInteriorDef>();
+            try
+            {
+                Assert.That(HullWalkSidecarImporter.Populate(rig.Walk, rig, "ExpeditionYacht120Iso", deck, room).Ok, Is.True);
+                string[] below = { "lazarette", "guest_aft_port", "laundry", "guest_aft_stbd", "linen", "ensuite_aft_port",
+                    "ensuite_aft_stbd", "vip_port", "vip_stbd", "ensuite_vip_port", "ensuite_vip_stbd", "crew", "crew_passage",
+                    "crew_port", "crew_stbd", "crew_head" };
+                string[] house = { "galley", "day_head", "master", "ensuite_master" };
+                string[] bridge = { "captain", "captain_head" };
+                CollectionAssert.AreEquivalent(below.Concat(house).Concat(bridge), room.InternalPassages.Select(p => p.Id));
+                var authored = HullLayoutJson.Array(rig.Walk.House, "doorways").Select(v => HullLayoutJson.Object(v, "house.doorways"))
+                    .ToDictionary(d => HullLayoutJson.Text(d, "id"));
+                foreach (var passage in room.InternalPassages)
+                {
+                    string lv = below.Contains(passage.Id) ? "below" : house.Contains(passage.Id) ? "house" : "bridge";
+                    float z = lv == "below" ? 1.9f : lv == "house" ? 4.3f : 7f;
+                    Assert.That(passage.RigLevelId, Is.EqualTo(lv), passage.Id);
+                    Assert.That(passage.LevelId, Is.EqualTo(lv + "_sole"), passage.Id);
+                    Assert.That(passage.SoleZMeters, Is.EqualTo(z).Within(.00001f), passage.Id);
+                    var d = authored[passage.Id];
+                    Assert.That(passage.WallAxis, Is.EqualTo(HullLayoutJson.Text(d, "wall")), passage.Id);
+                    Assert.That(passage.WallAtMeters, Is.EqualTo(HullLayoutJson.Number(d, "at")), passage.Id);
+                    var u = HullLayoutJson.Array(d, "u");
+                    Assert.That(passage.ApertureMeters, Is.EqualTo(new Vector2((float)(double)u[0], (float)(double)u[1])), passage.Id);
+                    Assert.That(passage.ClearWidthMeters, Is.EqualTo(HullLayoutJson.Number(HullLayoutJson.Child(d, "clear"), "width")), passage.Id);
+                    Assert.That(passage.ClearHeightMeters, Is.EqualTo(HullLayoutJson.Number(HullLayoutJson.Child(d, "clear"), "height")), passage.Id);
+                    Assert.That(passage.Reason, Is.EqualTo("an open doorway, no leaf: walked through, never shut"));
+                    Assert.That(room.AdditionalDoors.Select(door => door.Id), Does.Not.Contain(passage.Id));
+                    Assert.That(HullWalkRigExtractor.DeclaredDoors(rig.Walk).Select(door => HullLayoutJson.Text(door, "id")), Does.Not.Contain(passage.Id));
+                }
             }
             finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
         }

@@ -220,8 +220,30 @@ namespace HiddenHarbours.Tests.RigBaking
                                 stale.Add($"{hull.Key}.{pose}.bounds: committed {committed.bounds}, rig says {rig.bounds}");
                         }
 
-                        SameLeaf(nameof(HullMeshDef.DoorLeafClosed), def.DoorLeafClosed, leafShut.Mesh);
-                        SameLeaf(nameof(HullMeshDef.DoorLeafOpen), def.DoorLeafOpen, leafOpen.Mesh);
+                        if (fresh.Walk == null || def.DoorLeaves == null || def.DoorLeaves.Length == 0)
+                        {
+                            SameLeaf(nameof(HullMeshDef.DoorLeafClosed), def.DoorLeafClosed, leafShut.Mesh);
+                            SameLeaf(nameof(HullMeshDef.DoorLeafOpen), def.DoorLeafOpen, leafOpen.Mesh);
+                        }
+                        else
+                        {
+                            string scope = hull.Extraction != null ? hull.Extraction.ScopeOr(hull.GlobalName) : hull.GlobalName;
+                            var ids = HullWalkRigExtractor.DeclaredDoors(fresh.Walk).Select(d => HullLayoutJson.Text(d, "id")).ToArray();
+                            CollectionAssert.AreEqual(ids, def.DoorLeaves.Select(p => p.Id), hull.Key);
+                            Same("primary closed alias", def.DoorLeafClosed, def.DoorLeaves[0].Closed);
+                            Same("primary open alias", def.DoorLeafOpen, def.DoorLeaves[0].Open);
+                            foreach (var pair in def.DoorLeaves)
+                            {
+                                var shut = RigMeshBuilder.Build(HullWalkRigExtractor.Door(host, scope, fresh, pair.Id, 0), pair.Id + "ClosedCheck");
+                                var open = RigMeshBuilder.Build(HullWalkRigExtractor.Door(host, scope, fresh, pair.Id, 1), pair.Id + "OpenCheck");
+                                try
+                                {
+                                    SameLeaf(pair.Id + ".Closed", pair.Closed, shut.Mesh);
+                                    SameLeaf(pair.Id + ".Open", pair.Open, open.Mesh);
+                                }
+                                finally { UnityEngine.Object.DestroyImmediate(shut.Mesh); UnityEngine.Object.DestroyImmediate(open.Mesh); }
+                            }
+                        }
                     }
                     Same("CellW", def.CellW, fresh.W);
                     Same("CellH", def.CellH, fresh.H);

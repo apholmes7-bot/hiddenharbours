@@ -702,6 +702,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var roster = new[]
             {
                 LoadHull("Dory"), LoadHull("DoryOutboard"), LoadHull("PuntUpgraded"),
+                LoadHull("ExpeditionYacht120"),
                 LoadHull("ConsoleSkiff"), LoadHull("SportSkiff"), LoadHull("SportSkiffTwin"),
                 LoadHull("SportSkiffMk2"), LoadHull("ZodiacHurricane"), LoadHull("SportFisherConvertible"),
             };

@@ -267,7 +267,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow(
-            [Values("CapeIslander", "LobsterBoat")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -333,7 +333,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn(
-            [Values("CapeIslander", "LobsterBoat")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -369,6 +369,24 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsFalse(door.IsOpen, "precondition: the cue ended on a door shut again");
             Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)), "…and her leaf is drawn shut again");
+
+            if (mesh.DoorLeaves != null && mesh.DoorLeaves.Length > 0)
+            {
+                var renderer = HullOf(rig);
+                foreach (var extra in rig.Installer.Interior.GetComponentsInChildren<BoatCabinDoor>())
+                {
+                    if (extra == door || !renderer.HasDoorLeaf(extra.Door.Id)) continue;
+                    Assert.IsTrue(extra.TryUse(), extra.Door.Id);
+                    yield return WaitForCue(extra);
+                    Assert.IsTrue(renderer.DoorLeafShownOpenFor(extra.Door.Id), extra.Door.Id);
+                    Assert.IsFalse(renderer.DoorLeafShownOpenFor(door.Door.Id), "opening another door leaves the primary shut");
+                    foreach (var pair in mesh.DoorLeaves)
+                        if (pair.Id != extra.Door.Id) Assert.IsFalse(renderer.DoorLeafShownOpenFor(pair.Id), pair.Id);
+                    Assert.IsTrue(extra.TryUse(), extra.Door.Id);
+                    yield return WaitForCue(extra);
+                    Assert.IsFalse(renderer.DoorLeafShownOpenFor(extra.Door.Id), extra.Door.Id);
+                }
+            }
         }
 
         // =====================================================================================
@@ -376,10 +394,11 @@ namespace HiddenHarbours.Tests.PlayMode
         // =====================================================================================
 
         [UnityTest]
-        public IEnumerator ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding()
+        public IEnumerator ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding(
+            [Values("CapeIslander", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120")] string firstHullName)
         {
             Rig rig = NewDoryRig();
-            BoatHullDef cape = LoadHull("CapeIslander");
+            BoatHullDef cape = LoadHull(firstHullName);
             BoatHullDef lobster = LoadHull("LobsterBoat");
             BoatHullDef dory = LoadHull(DoryName);
             if (rig.Boat == null || cape == null || lobster == null || dory == null) yield break;
@@ -450,7 +469,7 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -502,7 +521,7 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
