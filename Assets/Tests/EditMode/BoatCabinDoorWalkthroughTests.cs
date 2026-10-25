@@ -660,21 +660,34 @@ namespace HiddenHarbours.Tests.EditMode
             int measured = 0;
             float tightest = float.PositiveInfinity;
             string tightestHull = "none";
+            var failures = new List<string>();
+            var measuredNames = new List<string>();
+            var heldNames = new List<string>();
 
             foreach (string guid in AssetDatabase.FindAssets("t:BoatVisualDef"))
             {
                 var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(
                     AssetDatabase.GUIDToAssetPath(guid));
                 if (visual == null || visual.Interior == null) continue;
-
+                if (!visual.Interior.HasInterior())
+                {
+                    BoatInteriorPlacementTests.AssertHeldRoomHasNoEntry(visual.name, visual.Interior, _spawned);
+                    heldNames.Add(visual.name);
+                    continue;
+                }
                 BoatInteriorDoor door = visual.Interior.Door;
                 if (door == null || !BoatCabinThreshold.HasBand(door)) continue;
 
                 measured++;
-                Assert.IsTrue(BoatCabinThreshold.TryWallLine(visual.Interior, door, out int level,
-                                                             out Vector2 onLine, out _),
-                    $"{visual.name}: her doorway is measured but stands in no wall at its sill's height, so " +
-                    "the walk can never cross it and the door is back on the press.");
+                measuredNames.Add(visual.name);
+                if (!BoatCabinThreshold.TryWallLine(visual.Interior, door, out int level,
+                                                  out Vector2 onLine, out _))
+                {
+                    failures.Add(
+                        $"{visual.name}: her doorway is measured but stands in no wall at its sill's height, so " +
+                        "the walk can never cross it and the door is back on the press.");
+                    continue;
+                }
 
                 float band = BoatCabinThreshold.BandRadiusMetres(door);
                 float fromTheSill = Vector2.Distance(onLine, BoatCabinThreshold.PointOf(door));
@@ -684,16 +697,22 @@ namespace HiddenHarbours.Tests.EditMode
                     $"  {visual.name,-36} band {band:F3} m   wall line {fromTheSill:F3} m from the sill   " +
                     $"margin {margin:F3} m   ('{visual.Interior.Levels[level].Id}')");
 
-                Assert.Less(fromTheSill, band,
-                    $"{visual.name}: her '{visual.Interior.Levels[level].Id}' wall line stands " +
-                    $"{fromTheSill:F3} m from her own doorway, against a band of {band:F3} m. She can reach " +
-                    "that line only outside the doorway, so once she walks in it can never take her out.");
+                if (!(fromTheSill < band))
+                    failures.Add(
+                        $"{visual.name}: her '{visual.Interior.Levels[level].Id}' wall line stands " +
+                        $"{fromTheSill:F3} m from her own doorway, against a band of {band:F3} m. She can reach " +
+                        "that line only outside the doorway, so once she walks in it can never take her out.");
             }
 
             Assert.Greater(measured, 0, "no measured hull reached this guard — it is asleep");
 
+            measuredNames.Sort(System.StringComparer.Ordinal);
+            heldNames.Sort(System.StringComparer.Ordinal);
+            Debug.Log("[cabin-wall-lines-census] measured=" + string.Join(",", measuredNames)
+                + "; held=" + string.Join(",", heldNames));
             Debug.Log($"[cabin-wall-lines] {measured} measured hulls, tightest margin {tightest:F3} m " +
                       $"({tightestHull}):\n{report}");
+            Assert.IsEmpty(failures, string.Join("\n", failures));
         }
 
         /// <summary>How far <paramref name="point"/> is from the nearest place a walker may stand, in the
