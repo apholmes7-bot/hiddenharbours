@@ -766,14 +766,14 @@ MonoBehaviour:
         (its gate)","path.nmc_shore_path (along its east edge)","boardwalk.nmc_dune_walk_east
         / _west (to the beach)","the landing (60, -150), 40 m from Loop A\u2019s south
         end"],"buildings":[{"id":"structure.nmc_camp_office","name":"the office and
-        camp store","at":[4,38],"size":[10,7],"faces":"E","z":6,"what":"check-in,
+        camp store","at":[7,39.5],"size":[10,7],"faces":"E","z":6,"what":"check-in,
         firewood, ice, a few groceries"},{"id":"structure.nmc_camp_comfort_a","name":"the
         comfort station (Loop A)","at":[-6,-66],"size":[8,6],"z":6,"what":"washrooms,
         showers, laundry"},{"id":"structure.nmc_camp_comfort_b","name":"the comfort
         station (Loop B)","at":[-86,-116],"size":[7,5],"z":6,"what":"washrooms"},{"id":"structure.nmc_camp_shelter","name":"the
         picnic shelter","at":[-2,-138],"size":[10,6],"z":6,"what":"the rainy-day roof,
         by the east dune walk"},{"id":"structure.nmc_camp_playground","name":"the
-        playground","at":[-14,22],"size":[14,10],"z":6},{"id":"structure.nmc_camp_dump","name":"the
+        playground","at":[-30,18],"size":[14,10],"z":6},{"id":"structure.nmc_camp_dump","name":"the
         sani-dump","at":[10,18],"size":[4,8],"z":6},{"id":"structure.nmc_camp_tennis","name":"the
         tennis court","at":[-38,-45],"size":[16.5,32],"z":6,"what":"one court: the
         doubles court 10.97 x 23.77 m, run-offs 4.1 m at the ends and 2.8 m at the
@@ -787,9 +787,9 @@ MonoBehaviour:
         pool house: two change rooms, the guard\u2019s counter, the pump room; cedar
         shingle under a gable","box":[-42.5,-31.5,-75.3,-70.7],"size":[11,4.6]},"added":"10-02,
         the campground redrawn (call 53)","clear_m":{"deck":{"id":"road.nmc_camp_loop_a","d":3.16},"house":{"id":"road.nmc_camp_loop_b_stem","d":3.03}}}],"pitches":[{"id":"pitch.nmc_camp_a1","loop":"A","kind":"serviced
-        (water, power)","at":[-14.88,18.18],"size":[8,12]},{"id":"pitch.nmc_camp_a2","loop":"A","kind":"serviced
-        (water, power)","at":[-11.58,7.17],"size":[8,12]},{"id":"pitch.nmc_camp_a3","loop":"A","kind":"serviced
-        (water, power)","at":[-9.21,-3.47],"size":[8,12]},{"id":"pitch.nmc_camp_a4","loop":"A","kind":"serviced
+        (water, power)","at":[2.37,18.18],"size":[8,12]},{"id":"pitch.nmc_camp_a2","loop":"A","kind":"serviced
+        (water, power)","at":[5.17,5.67],"size":[8,12]},{"id":"pitch.nmc_camp_a3","loop":"A","kind":"serviced
+        (water, power)","at":[7.29,-8.97],"size":[8,12]},{"id":"pitch.nmc_camp_a4","loop":"A","kind":"serviced
         (water, power)","at":[-6.8,-14.71],"size":[8,12]},{"id":"pitch.nmc_camp_a5","loop":"A","kind":"serviced
         (water, power)","at":[-4.39,-25.96],"size":[8,12]},{"id":"pitch.nmc_camp_a6","loop":"A","kind":"serviced
         (water, power)","at":[-1.98,-37.2],"size":[8,12]},{"id":"pitch.nmc_camp_a7","loop":"A","kind":"serviced
@@ -800,22 +800,22 @@ MonoBehaviour:
         (water, power)","at":[10.06,-93.42],"size":[8,12]},{"id":"pitch.nmc_camp_a12","loop":"A","kind":"serviced
         (water, power)","at":[12.47,-104.67],"size":[8,12]},{"id":"pitch.nmc_camp_a13","loop":"A","kind":"serviced
         (water, power)","at":[10.57,-112.9],"size":[8,12]},{"id":"pitch.nmc_camp_a14","loop":"A","kind":"serviced
-        (water, power)","at":[12.32,-117.25],"size":[8,12]},{"id":"pitch.nmc_camp_a15","loop":"A","kind":"serviced
-        (water, power)","at":[1.27,-120.41],"size":[8,12]},{"id":"pitch.nmc_camp_a16","loop":"A","kind":"serviced
+        (water, power)","at":[24.57,-119.75],"size":[8,12]},{"id":"pitch.nmc_camp_a15","loop":"A","kind":"serviced
+        (water, power)","at":[7.77,-135.91],"size":[8,12]},{"id":"pitch.nmc_camp_a16","loop":"A","kind":"serviced
         (water, power)","at":[-1.88,-116.01],"size":[8,12]},{"id":"pitch.nmc_camp_a17","loop":"A","kind":"serviced
-        (water, power)","at":[-6.13,-111.57],"size":[8,12]},{"id":"pitch.nmc_camp_a18","loop":"A","kind":"serviced
+        (water, power)","at":[-20.88,-116.07],"size":[8,12]},{"id":"pitch.nmc_camp_a18","loop":"A","kind":"serviced
         (water, power)","at":[-9.51,-100.58],"size":[8,12]},{"id":"pitch.nmc_camp_a19","loop":"A","kind":"serviced
         (water, power)","at":[-12.61,-90.73],"size":[8,12]},{"id":"pitch.nmc_camp_a20","loop":"A","kind":"serviced
         (water, power)","at":[-14.23,-79.34],"size":[8,12]},{"id":"pitch.nmc_camp_a21","loop":"A","kind":"serviced
-        (water, power)","at":[-15.86,-67.96],"size":[8,12]},{"id":"pitch.nmc_camp_a22","loop":"A","kind":"serviced
+        (water, power)","at":[-14.97,-67.96],"size":[8,12]},{"id":"pitch.nmc_camp_a22","loop":"A","kind":"serviced
         (water, power)","at":[-16.98,-57.05],"size":[8,12]},{"id":"pitch.nmc_camp_a23","loop":"A","kind":"serviced
         (water, power)","at":[-17.8,-45.58],"size":[8,12]},{"id":"pitch.nmc_camp_a24","loop":"A","kind":"serviced
         (water, power)","at":[-18.42,-35.18],"size":[8,12]},{"id":"pitch.nmc_camp_a25","loop":"A","kind":"serviced
         (water, power)","at":[-17.6,-23.71],"size":[8,12]},{"id":"pitch.nmc_camp_a26","loop":"A","kind":"serviced
         (water, power)","at":[-16.78,-12.24],"size":[8,12]},{"id":"pitch.nmc_camp_a27","loop":"A","kind":"serviced
-        (water, power)","at":[-14.29,-3.25],"size":[8,12]},{"id":"pitch.nmc_camp_a28","loop":"A","kind":"serviced
-        (water, power)","at":[-10.36,7.56],"size":[8,12]},{"id":"pitch.nmc_camp_a29","loop":"A","kind":"serviced
-        (water, power)","at":[-6.2,17.83],"size":[8,12]},{"id":"pitch.nmc_camp_b1","loop":"B","kind":"tent","at":[-81.98,-64.19],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b1","at":[-81.98,-64.19],"size":[5,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        (water, power)","at":[-32.04,-21],"size":[8,12]},{"id":"pitch.nmc_camp_a28","loop":"A","kind":"serviced
+        (water, power)","at":[-31.36,-8.5],"size":[8,12]},{"id":"pitch.nmc_camp_a29","loop":"A","kind":"serviced
+        (water, power)","at":[-29.8,4],"size":[8,12]},{"id":"pitch.nmc_camp_b1","loop":"B","kind":"tent","at":[-81.98,-64.19],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b1","at":[-81.98,-64.19],"size":[5,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
         tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
         the ground from the top"}},{"id":"pitch.nmc_camp_b2","loop":"B","kind":"tent","at":[-92.2,-68.28],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b2","at":[-92.2,-68.28],"size":[4,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
         tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
