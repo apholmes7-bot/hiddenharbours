@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: a55132729271dc04b91b7ff915c53c4f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5256687389059844100
+    second: Interior_harbourGableUpper_0
+  - first:
+      213: 1036404340423196197
+    second: Interior_harbourGableUpper_1
+  - first:
+      213: -943406443982126811
+    second: Interior_harbourGableUpper_2
+  - first:
+      213: -1973240653402633931
+    second: Interior_harbourGableUpper_3
+  - first:
+      213: -4311321883898593951
+    second: Interior_harbourGableUpper_4
+  - first:
+      213: 5270111990173577487
+    second: Interior_harbourGableUpper_5
+  - first:
+      213: 946005155552346214
+    second: Interior_harbourGableUpper_6
+  - first:
+      213: -3730677363776595363
+    second: Interior_harbourGableUpper_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 301
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6aa799c7cfefd81459f4f2ac391727d7
+      internalID: -1767944480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d1
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 301
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b30d497371edcb4a99eeb910324cfbd
+      internalID: 1071994369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d2
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 301
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b394cfb3fbf6a404ab38e7331db14462
+      internalID: 1145162723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d3
+      rect:
+        serializedVersion: 2
+        x: 1032
+        y: 301
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f22f5792718ec5418c3a87371325fab
+      internalID: -755886601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d4
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 301
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2e48fac27602ae479cc73396ec7b5c4
+      internalID: -1148435829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed2f4f535cc543644a59d8fef56ae9ff
+      internalID: 1368734072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d6
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 0
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9342c508f87faed4ab175bd6bf7fc91e
+      internalID: -239741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_harbourGableUpper_d7
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 0
+        width: 344
+        height: 301
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36877078}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73d942be6f8e58249b22d8849e3ecd9e
+      internalID: -990439735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c79e4d6fb4a78074583b5f9d1cd43e67
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Interior_harbourGableUpper_d0: -1767944480
+      Interior_harbourGableUpper_d1: 1071994369
+      Interior_harbourGableUpper_d2: 1145162723
+      Interior_harbourGableUpper_d3: -755886601
+      Interior_harbourGableUpper_d4: -1148435829
+      Interior_harbourGableUpper_d5: 1368734072
+      Interior_harbourGableUpper_d6: -239741
+      Interior_harbourGableUpper_d7: -990439735
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

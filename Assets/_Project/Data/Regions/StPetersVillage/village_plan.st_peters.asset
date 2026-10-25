@@ -1452,7 +1452,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_red_saltbox"
     Kit: "houseIso"
     Piece: "entry.lantern"
-    Position: {x: 20.43, y: 7.337929}
+    Position: {x: 17.916, y: 17.43}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1462,7 +1462,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_white_farmhouse"
     Kit: "houseIso"
     Piece: "entry.lantern"
-    Position: {x: 18.051365, y: 23.168344}
+    Position: {x: 38.161, y: 16.18}
     Z: 6
     Dir: 4
     Pending: 0

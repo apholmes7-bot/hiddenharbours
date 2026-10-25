@@ -14,7 +14,8 @@ namespace HiddenHarbours.App.Editor
     {
         public sealed class VillageRoomProp
         {
-            public string Name;
+            public string Name, Label;
+            public Vector2 RoomMetres;
             public Vector2 LocalPosition;
             public SpriteRef Sprite;
             public Vector2[] Quad;
@@ -58,6 +59,7 @@ namespace HiddenHarbours.App.Editor
                     props.Add(new VillageRoomProp
                     {
                         Name = string.Format(CultureInfo.InvariantCulture, "{0} ({1:0.#},{2:0.#})", prop.Entry.label, furnishing.RoomMetres.x, furnishing.RoomMetres.y),
+                        Label = prop.Entry.label, RoomMetres = furnishing.RoomMetres,
                         LocalPosition = at, Sprite = Sprite(InteriorCatalog.LoadFacing(prop, cell), furnishing.PropKey),
                         Quad = BuildingInteriorStander.ToLocal(footprint.PropQuad(furnishing.RoomMetres,
                             prop.Entry.propFootprintWidth, prop.Entry.propFootprintDepth, furnishing.FacingOffset), at),
@@ -122,6 +124,11 @@ namespace HiddenHarbours.App.Editor
                     SpriteAndSort(go, move.Shell, move.Position.y);
                     SpriteAndSort(scene.ChildNamed(tr, BuildingInteriorStander.RoomChildName), move.Room, move.Position.y);
                     var interior = scene.ComponentsOf(go).Single(d => d.IsScript(typeof(BuildingInterior).FullName));
+                    float OldFloat(string field) => float.Parse(interior.Field(field), CultureInfo.InvariantCulture);
+                    int OldInt(string field) => int.Parse(interior.Field(field), CultureInfo.InvariantCulture);
+                    var oldFootprint = new InteriorFootprint(Vector2.zero, OldFloat("_widthMetres"), OldFloat("_lengthMetres"),
+                        OldInt("_facing"), OldInt("_facings"), OldFloat("_groundDepthScale"),
+                        OldInt("_doorOnPlusY") == 1 ? 1 : -1, OldFloat("_doorAcrossMetres"));
                     string updated = interior.Text;
                     foreach (var pair in new Dictionary<string, string>
                     {
@@ -138,11 +145,59 @@ namespace HiddenHarbours.App.Editor
                     if (move.Props.Length == 0) continue;
                     var furniture = scene.ChildNamed(tr, BuildingInteriorStander.PropsChildName);
                     var furnitureTr = scene.TransformOf(furniture);
-                    if (furnitureTr.FieldRefs("m_Children").Count != move.Props.Length) throw new Refusal("Moved room furniture count changed: " + move.Key);
-                    foreach (var prop in move.Props)
+                    var children = furnitureTr.FieldRefs("m_Children").Select(id => scene.Require(id, "room furnishing transform")).ToArray();
+                    var attempts = new List<string>();
+                    var matches = new List<(int Rotation, List<(VillageRoomProp Prop, Doc Tr)> Pairs, string Proof)>();
+                    foreach (int rotation in new[] { 0, 90, 180, 270 })
                     {
-                        var obj = scene.ChildNamed(furnitureTr, prop.Name);
-                        var propTr = scene.TransformOf(obj);
+                        var trialPairs = new List<(VillageRoomProp Prop, Doc Tr)>();
+                        var used = new HashSet<long>();
+                        var table = new List<string> { "Room furniture: " + move.Key + " | rotation " + rotation,
+                            "child | fileID | label | old local | furnishing model | distance | new local | move" };
+                        foreach (var prop in move.Props)
+                        {
+                            Vector2 model = prop.RoomMetres;
+                            Vector2 turned = rotation == 0 ? model : rotation == 90 ? new Vector2(-model.y, model.x) :
+                                rotation == 180 ? -model : new Vector2(model.y, -model.x);
+                            Vector2 oldAt = oldFootprint.ModelToWorld(turned);
+                            var hits = children.Where(child =>
+                            {
+                                var obj = scene.Require(child.FieldRef("m_GameObject"), "room furnishing");
+                                return !string.IsNullOrEmpty(prop.Label) && obj.Field("m_Name").StartsWith(prop.Label + " (", StringComparison.Ordinal) &&
+                                    Vector3.Distance(ParseVec3(child.Field("m_LocalPosition")), new Vector3(oldAt.x, oldAt.y, 0)) <= .01f;
+                            }).ToArray();
+                            if (hits.Length != 1)
+                            {
+                                table.Add(prop.Label + " | MATCHES " + hits.Length + " | expected " + Vec2Yaml(oldAt) +
+                                    " | furnishing " + Vec2Yaml(prop.RoomMetres) + " | new " + Vec2Yaml(prop.LocalPosition));
+                                continue;
+                            }
+                            var hit = hits[0];
+                            var childGo = scene.Require(hit.FieldRef("m_GameObject"), "room furnishing");
+                            var oldLocal = ParseVec3(hit.Field("m_LocalPosition"));
+                            table.Add(childGo.Field("m_Name") + " | " + childGo.FileId + " / " + hit.FileId + " | " + prop.Label +
+                                " | " + hit.Field("m_LocalPosition") + " | " + Vec2Yaml(prop.RoomMetres) + " | " +
+                                F(Vector3.Distance(oldLocal, new Vector3(oldAt.x, oldAt.y, 0))) + " | " + Vec2Yaml(prop.LocalPosition) +
+                                " | " + Vec2Yaml(prop.LocalPosition - new Vector2(oldLocal.x, oldLocal.y)));
+                            if (used.Add(hit.FileId)) trialPairs.Add((prop, hit));
+                        }
+                        foreach (var child in children.Where(child => !used.Contains(child.FileId)))
+                            table.Add("UNPAIRED | " + scene.Require(child.FieldRef("m_GameObject"), "room furnishing").Field("m_Name") +
+                                " | " + child.FileId + " | " + child.Field("m_LocalPosition"));
+                        string proof = string.Join("\n", table);
+                        attempts.Add(proof);
+                        if (trialPairs.Count == move.Props.Length && used.Count == children.Length)
+                            matches.Add((rotation, trialPairs, proof));
+                    }
+                    if (matches.Count != 1)
+                        throw new Refusal("Moved room furniture has " + matches.Count + " complete rotations.\n" + string.Join("\n\n", attempts));
+                    Debug.Log(matches[0].Proof);
+                    var pairs = matches[0].Pairs;
+                    foreach (var pair in pairs)
+                    {
+                        var prop = pair.Prop;
+                        var propTr = pair.Tr;
+                        var obj = scene.Require(propTr.FieldRef("m_GameObject"), "room furnishing");
                         patch.Edit(propTr, SetField(propTr.Text, "m_LocalPosition", Vec3Yaml(prop.LocalPosition.x, prop.LocalPosition.y, 0)), move.Key + "/" + prop.Name + " position");
                         SpriteAndSort(obj, prop.Sprite, move.Position.y + prop.LocalPosition.y);
                         var collider = scene.ComponentsOf(obj).Single(d => d.ClassId == PolygonCollider2DClass);

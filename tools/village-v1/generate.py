@@ -32,6 +32,7 @@ DOORSTEP_FITTINGS = {
     'post_office': [15.8728, 40.059247],
 }
 POST_FITTING_Y = 0.19926415900282722
+HELD_LIGHT_LOTS = {'red_saltbox', 'white_farmhouse'}
 HOME_BAKE_KEYS = {'harbour_gable': 'harbourGable', 'cream_saltbox': 'creamSaltbox',
                   'white_gable': 'whiteGable'}
 
@@ -59,6 +60,16 @@ def rectangle(value):
 
 def compact(value):
     return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+
+
+def held_light(name):
+    path = ROOT / DATA / ('light.st_peters.doorstep_lantern_' + name + '.asset')
+    text = path.read_text(encoding='utf-8')
+    position = re.search(r'^  Position: \{x: ([^,]+), y: ([^}]+)\}$', text, re.M)
+    preset = re.search(r'^  Preset: ("[^"\r\n]+")$', text, re.M)
+    if not position or not preset:
+        raise ValueError('Held light fields missing: ' + name)
+    return [float(position[1]), float(position[2])], json.loads(preset[1])
 
 
 def guid(path):
@@ -270,12 +281,15 @@ def build(plan, scene):
     light_changes = []
     for old, r in light_source.items():
         pos = list(r['at'])
-        if r['k'] == 'doorstepLantern' and r['of'] in ('red_saltbox','white_farmhouse'):
+        if r['k'] == 'doorstepLantern' and r['of'] not in HELD_LIGHT_LOTS:
             door = buildings[r['of']]['door']
             old_door = next(b['door'] for b in plan['buildings'] if b['id']==r['of'])
             pos = [round(door[i]+r['at'][i]-old_door[i],6) for i in range(2)]
         lamp = lamp_by_key[(r['k'],r['of'])]
-        if r['k'] == 'doorstepLantern' and r['of'] in DOORSTEP_FITTINGS:
+        preset = lamp['kind']
+        if r['k'] == 'doorstepLantern' and r['of'] in HELD_LIGHT_LOTS:
+            pos, preset = held_light(r['of'])
+        if r['k'] == 'doorstepLantern' and r['of'] not in HELD_LIGHT_LOTS and r['of'] in DOORSTEP_FITTINGS:
             pos = DOORSTEP_FITTINGS[r['of']][:]
         if r['k'] == 'lanternPost':
             pos[1] = round(pos[1] + POST_FITTING_Y, 6)
@@ -284,7 +298,7 @@ def build(plan, scene):
         add('LightPostDef', Id=renames[old], LotId=lot_id, CommonsId='' if lot_id else 'commons.st_peters.'+commons,
             RouteId='route.stpeters.'+r['of'] if any(x['id']=='route.stpeters.'+r['of'] for x in plan['lanes']) else '',
             KitPiece=piece_by_old[old]['Piece'], Position=point(pos),
-            Preset='HungLantern' if r['k'] in ('lanternPost', 'doorstepLantern') else lamp['kind'],
+            Preset='HungLantern' if r['k'] in ('lanternPost', 'doorstepLantern') and r['of'] not in HELD_LIGHT_LOTS else preset,
             LitBy=r['lit'], Reach=lamp['reach'], CastsShadow=True)
         light_changes.append(dict(id=renames[old], plan_position=r['at'], position=pos,
                                   package_position=list(piece_by_old[old]['Position'].values())))

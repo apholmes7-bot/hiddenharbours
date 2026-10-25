@@ -734,9 +734,25 @@ namespace HiddenHarbours.App.Editor
             for (int digits = 1; digits <= 9; digits++)
             {
                 string s = v.ToString("G" + digits.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
-                if (ParseFloat(s) == v) return s;
+                if (ParseFloat(s) == v) return DecimalFloat(s);
             }
-            return v.ToString("R", CultureInfo.InvariantCulture);
+            return DecimalFloat(v.ToString("R", CultureInfo.InvariantCulture));
+        }
+
+        static string DecimalFloat(string text)
+        {
+            int exponentAt = text.IndexOfAny(new[] { 'E', 'e' });
+            if (exponentAt < 0) return text;
+            int exponent = int.Parse(text.Substring(exponentAt + 1), CultureInfo.InvariantCulture);
+            string mantissa = text.Substring(0, exponentAt);
+            string sign = mantissa[0] == '-' ? "-" : "";
+            if (sign.Length != 0) mantissa = mantissa.Substring(1);
+            int dot = mantissa.IndexOf('.');
+            int decimalAt = (dot < 0 ? mantissa.Length : dot) + exponent;
+            string digits = mantissa.Replace(".", "");
+            if (decimalAt <= 0) return sign + "0." + new string('0', -decimalAt) + digits;
+            if (decimalAt >= digits.Length) return sign + digits + new string('0', decimalAt - digits.Length);
+            return sign + digits.Insert(decimalAt, ".");
         }
 
         static string Int(int v) => v.ToString(CultureInfo.InvariantCulture);
