@@ -478,6 +478,7 @@ namespace HiddenHarbours.Art
                 // A pair or nothing: a half-baked def must not draw one pose and never the other.
                 DoorLeafClosed = def.HasDoorLeaf() ? def.DoorLeafClosed : null,
                 DoorLeafOpen = def.HasDoorLeaf() ? def.DoorLeafOpen : null,
+                DoorLeaves = def.DoorLeaves,
                 Ramps = ramps,
                 RampOffsets = offsets,
                 RampDitherWeights = dither,
