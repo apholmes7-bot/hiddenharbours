@@ -33,10 +33,11 @@ const TUNABLES = {
 const EDGE = { west: -380, east: 380, south: -280, north: 280 };
 // the base charter's H4: "Supported bridge prefabs, no road ford: Route 91 36 m/deck +6, pond culvert, camp brook deck +5.2"
 const BASE_CAMP_BROOK_DECK = 5.2;
-// the base charter's H4 "Playground clears Loop A/C" and H12's "Playground at H4 clear site": the plan's (-14, 22) stands
+// the base charter's H4 "Playground clears Loop A/C" and H12's "Playground at H4 clear site": the plan's (-14, 22) stood
 // 1.8 m into Loop A's carriageway and on pitch A1. H4's site is the plan's 14 x 10 moved 16.5 m west, between Loop A's
 // west leg and Loop C's stem: chosen, not derived, for a metre over the lot rule's 3 m off the camp roads and 4 m off
-// pitch A1, on the level +6 plateau inside the outline. This file measures it; the test holds the measures
+// pitch A1, on the level +6 plateau inside the outline. The planner's amendment 2 (10-24) puts the plan's spot here and
+// re-sites the pitches round it: a29, the nearest, stands 3 m off. This file measures it; the test holds the measures
 const PLAYGROUND_SITE = { id: 'structure.nmc_camp_playground', at: [-30, 18], size: [14, 10] };
 // where a route meets ground this network does not lay
 const OUTSIDE = [

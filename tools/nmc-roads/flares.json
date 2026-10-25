@@ -632,6 +632,131 @@
    ]
   },
   {
+   "id": "flare.nmc_camp_loop_a_r_6",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "junction road.nmc_camp_road out onto road.nmc_camp_loop_a forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "w": 2.101,
+   "pts": [
+    [-10.718, 27.785],
+    [-9.712, 24.432],
+    [-9.668, 23.924],
+    [-9.668, 18.703],
+    [-9.267, 16.735],
+    [-8.972, 15.78],
+    [-8.618, 14.842],
+    [-8.236, 13.391],
+    [-7.467, 11.011],
+    [-4.311, 2.698],
+    [-3.11, -0.624],
+    [-2.717, -1.563],
+    [-1.6, -6.777]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_154",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "route road.nmc_camp_loop_a (Dually3500, HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_a (reversed) (Dually3500, Modern3500)"
+   ],
+   "w": 1,
+   "pts": [
+    [15.373, -120.506],
+    [15.274, -120.996],
+    [14.545, -122.38],
+    [14.643, -123.419],
+    [15.454, -122.804],
+    [15.27, -122.857]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_157",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "route road.nmc_camp_loop_a (Dually3500, HightopVan, Modern350, Modern3500)",
+    "route road.nmc_camp_loop_a (reversed) (Dually3500, Modern3500)"
+   ],
+   "w": 1,
+   "pts": [
+    [14.783, -123.455],
+    [15.416, -122.7],
+    [14.372, -122.686],
+    [13.908, -122.883],
+    [13.029, -123.446],
+    [12.441, -123.665]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_169",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "route road.nmc_camp_loop_a (reversed) (Dually3500, Modern3500)"
+   ],
+   "w": 1,
+   "pts": [
+    [3.452, -126.233],
+    [2.429, -126.292],
+    [1.772, -126.713]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_171",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "route road.nmc_camp_loop_a (reversed) (Dually3500, Modern3500)"
+   ],
+   "w": 1,
+   "pts": [
+    [2.608, -126.837],
+    [2.289, -126.424],
+    [1.892, -126.119],
+    [1.314, -125.913]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_187",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "route road.nmc_camp_loop_a (reversed) (Dually3500, Modern3500)"
+   ],
+   "w": 1,
+   "pts": [
+    [-10.009, -117.825],
+    [-10.73, -117.113],
+    [-11.22, -116.939],
+    [-10.74, -117.108],
+    [-11.207, -116.158]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_212",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "junction road.nmc_camp_loop_b_stem (east of the brook bridge) out onto road.nmc_camp_loop_a reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "w": 1.666,
+   "pts": [
+    [-16.892, -98.812],
+    [-18.069, -94.989],
+    [-18.079, -94.469],
+    [-18.444, -91.965],
+    [-18.524, -91.713],
+    [-18.907, -87.727],
+    [-19.48, -80.233],
+    [-19.805, -77.754],
+    [-20.243, -75.291],
+    [-20.345, -73.285],
+    [-20.46, -72.291],
+    [-20.75, -70.818],
+    [-21.033, -69.848],
+    [-22.73, -66.05],
+    [-23.013, -64.07],
+    [-23.109, -62.896]
+   ]
+  },
+  {
    "id": "flare.nmc_camp_loop_a_r_247",
    "on": "road.nmc_camp_loop_a",
    "for": [
@@ -653,6 +778,64 @@
     [-24.689, -32.849],
     [-24.728, -32.345],
     [-24.477, -28.829]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_r_310",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "junction road.nmc_camp_loop_c_stem reversed into road.nmc_camp_loop_a (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_camp_loop_a forward (Modern2500)"
+   ],
+   "w": 2.75,
+   "pts": [
+    [-22.768, -5.855],
+    [-20.175, 1.183],
+    [-19.874, 1.606],
+    [-15.183, 9.476],
+    [-13.994, 11.704],
+    [-13.558, 12.61],
+    [-13.464, 12.943],
+    [-12.847, 14.311],
+    [-12.244, 16.229],
+    [-12.022, 17.222],
+    [-11.804, 18.76],
+    [-11.655, 19.24],
+    [-11.064, 24.426],
+    [-9.609, 27.833]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_2",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_camp_loop_a forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "w": 2.296,
+   "pts": [
+    [-8.686, 28.394],
+    [-6.387, 24.908],
+    [-6.242, 24.429],
+    [-6.242, 18.165],
+    [-6.215, 17.651],
+    [-5.853, 16.447]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_7",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "junction road.nmc_camp_loop_c_stem out onto road.nmc_camp_loop_a forward (Modern3500)",
+    "junction road.nmc_camp_loop_c_stem reversed into road.nmc_camp_loop_a (Modern3500)"
+   ],
+   "w": 1,
+   "pts": [
+    [-6.825, 21.942],
+    [-6.379, 21.032],
+    [-5.743, 19.135],
+    [-5.083, 16.723],
+    [-4.907, 15.548]
    ]
   },
   {
@@ -814,6 +997,31 @@
     [-27.003, -27.901],
     [-26.683, -23.913],
     [-26.379, -23.056]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_a_l_298",
+   "on": "road.nmc_camp_loop_a",
+   "for": [
+    "junction road.nmc_camp_loop_a out onto road.nmc_camp_loop_c_stem forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_c_stem reversed into road.nmc_camp_loop_a (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "w": 2.329,
+   "pts": [
+    [-25.213, -16.055],
+    [-24.963, -12.564],
+    [-25.019, -12.059],
+    [-25.589, -9.512],
+    [-25.621, -9.008],
+    [-25.431, -7.077],
+    [-24.958, -5.121],
+    [-24.667, -4.162],
+    [-24.038, -2.263],
+    [-22.595, 1.469],
+    [-17.34, 14.454],
+    [-14.809, 20.528],
+    [-14.314, 24.668],
+    [-11.125, 28.482]
    ]
   },
   {
@@ -1024,6 +1232,115 @@
     [-10.151, 30.365],
     [-14.799, 29.711],
     [-15.049, 29.749]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_c_stem_r_6",
+   "on": "road.nmc_camp_loop_c_stem",
+   "for": [
+    "junction road.nmc_camp_loop_a out onto road.nmc_camp_loop_c_stem forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_loop_c_stem (Modern3500)"
+   ],
+   "w": 2.812,
+   "pts": [
+    [-9.942, 28.39],
+    [-13.403, 28.909],
+    [-13.887, 29.053],
+    [-19.553, 31.723],
+    [-20.507, 32.108],
+    [-21.472, 32.415],
+    [-22.448, 32.647],
+    [-24.421, 32.979],
+    [-26.423, 33.116],
+    [-29.464, 33.064],
+    [-33.699, 32.646],
+    [-38.735, 32.054],
+    [-39.744, 31.882],
+    [-47.152, 32.252]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_loop_c_stem_l_3",
+   "on": "road.nmc_camp_loop_c_stem",
+   "for": [
+    "junction road.nmc_camp_loop_a out onto road.nmc_camp_loop_c_stem forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_c_stem reversed into road.nmc_camp_loop_a (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "w": 2.301,
+   "pts": [
+    [-10.18, 26.799],
+    [-14.831, 26.132],
+    [-15.329, 26.182],
+    [-18.634, 27.74],
+    [-19.113, 27.918],
+    [-27.035, 29.032],
+    [-30.855, 29.442],
+    [-33.846, 29.692],
+    [-41.337, 30.072],
+    [-45.337, 30.161],
+    [-49.333, 30.354],
+    [-49.831, 30.405],
+    [-50.004, 30.495],
+    [-52.59, 30.807],
+    [-53.1, 30.825],
+    [-56.749, 30.217]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_road_r_4",
+   "on": "road.nmc_camp_road",
+   "for": [
+    "junction road.nmc_bar_road forward into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_bar_road reversed into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_bar_road forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_bar_road reversed (Modern3500)"
+   ],
+   "w": 2.3,
+   "pts": [
+    [17.8, 30.65],
+    [17.3, 30.65],
+    [16.8, 30.736],
+    [12.3, 32.086],
+    [11.8, 32.166],
+    [7.8, 32.555],
+    [5.3, 32.622],
+    [3.436, 32.531],
+    [2.441, 32.426],
+    [0.959, 32.196],
+    [-0.532, 32.028],
+    [-2.506, 31.703],
+    [-3.98, 31.416],
+    [-7.406, 30.643],
+    [-9.847, 30.054],
+    [-10.266, 29.86]
+   ]
+  },
+  {
+   "id": "flare.nmc_camp_road_l_5",
+   "on": "road.nmc_camp_road",
+   "for": [
+    "junction road.nmc_bar_road forward into road.nmc_camp_road (Dually3500, HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_bar_road reversed into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_loop_a reversed into road.nmc_camp_road (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_bar_road reversed (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)",
+    "junction road.nmc_camp_road out onto road.nmc_camp_loop_a forward (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "w": 2.281,
+   "pts": [
+    [17.8, 29.341],
+    [15.3, 29.341],
+    [12.3, 28.507],
+    [8.3, 28.497],
+    [6.3, 28.091],
+    [4.8, 27.921],
+    [2.594, 27.819],
+    [-0.443, 27.87],
+    [-1.438, 27.764],
+    [-1.919, 27.591],
+    [-5.235, 26.056],
+    [-5.737, 26.035],
+    [-9.807, 26.648]
    ]
   },
   {
