@@ -5,7 +5,7 @@
  "hull": "convertible",
  "label": "53′ CONVERTIBLE",
  "kind": "cabin",
- "derivedFromRigSha256": "6b83da1ced0234db740374776990800a27e84da5fb51046f97abb6bfba5a8e7b",
+ "derivedFromRigSha256": "163f071f798206d38d26d2add558d52fe6652ddeaef1b1cd0bf7ba418892eb30",
  "authoring": "Written by the rig: SportFisherIso2.byId('convertible').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",

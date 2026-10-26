@@ -61,6 +61,7 @@
   const DEG = Math.PI / 180;
   const DEFAULT_ELEV = 40;
   const RIG_FILE = 'sportFisherIsoRig2.js', EXPORT_SYMBOL = 'SportFisherIso2';
+  const FRAME = 'metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above'; // geometry() and the walk share it: the bake compares the two exactly
 
   // ---- ramps dark->light --------------------------------------------------------------------------
   const HULL  = ['#7f878c','#9ea6a9','#bcc3c2','#d5dbd7','#e9ede7','#f4f7f1','#fcfdf8'];
@@ -1248,7 +1249,7 @@
         : [];
       return {
         schema:'hidden-harbours/hull-geometry@1', rig:RIG_FILE, exportSymbol:EXPORT_SYMBOL, hull:spec.id, units:'m',
-        frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
+        frame:FRAME,
         ids:Object.assign({}, LEVEL_IDS), roles:Object.assign({}, RO), ghostRoles:GHOST_ROLES.slice(), dwlZ:DWL,
         riggingClass:'rigging — hardtop, radar, domes, whips, rocket launcher, outriggers'+(spec.tower?', tuna tower (opt-in)':'')+': tagged by CLASS; the section drops what stood on a lifted roof',
         levels:[
@@ -1588,7 +1589,7 @@
       // ---- the walk file ----
       const xo=(y)=>fSx(y)-spec.railW;
       const w={ schema:'hidden-harbours/hull-walk@1', rig:RIG_FILE, exportSymbol:EXPORT_SYMBOL, hull:spec.id, label:spec.label, kind:'cabin',
-        units:'metres', frame:'metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above',
+        units:'metres', frame:FRAME,
         loa_m:L, loh_m:r3(yB-yT), beam_m:dp.hull.beam, DWL, cockpitZ:CZ,
         cell:{ W:G.W, H:G.H, pivot:{ x:G.cx, y:G.cy }, pxPerM:PX, defaultElev:DEFAULT_ELEV, order:['N','NE','E','SE','S','SW','W','NW'] },
         tags:{ lv:Object.assign({}, LV), ro:Object.assign({}, RO), ghostRoles:GHOST_ROLES.slice() },
