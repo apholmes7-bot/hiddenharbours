@@ -54,7 +54,7 @@
                 tide: sp.fam === 'shore' ? tide : [], cells, pages, dormant: dormantCells });
             R.clearCache();
         }
-        return { schema: 1, ppu: R.PPU, rigSha256: 'a80c485993a1a05930849298d688572864deaa873d6aa62435135bfc3ff0059b',
+        return { schema: 1, ppu: R.PPU, rigSha256: '1c71a9b2eecc28b395da4ce2a932ab150c2f96ec82880774a9afc66824483833',
             stages: R.STAGE_KEYS, seasons: R.SEASONS, variants: R.VARIANTS, channels,
             rigSheet: { cols: 4, rows: 4, windFrames: R.LOOP }, bakedWindFrames: 1, species };
     }

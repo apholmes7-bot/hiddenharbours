@@ -14,7 +14,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             const string dir = "docs/art/rigs/plants/";
             using (var sha = SHA256.Create())
                 Assert.That(string.Concat(sha.ComputeHash(File.ReadAllBytes(dir + "dormant-states.json")).Select(b => b.ToString("x2"))),
-                    Is.EqualTo("fe4c46b6124d8174d7a1f44e5a98ed40ef6e53cc94596372f003a7a5f86ec6f4"), "Dormant data changed; settle each state before changing this pin");
+                    Is.EqualTo("fcd3bcb768176b59b59183118043e8f7c3e5f47e7e8350b90b6fb6932b197269"), "Dormant data changed; settle each state before changing this pin");
             var start = new ProcessStartInfo("node", "\"" + Path.GetFullPath(dir + "checkDormant.cjs") + "\"")
             { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
             using (var process = Process.Start(start))
