@@ -44,7 +44,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0.9f, c.EdgeSoftness, Eps);
             Assert.AreEqual(0.15f, c.FlickerAmount, Eps);
             Assert.AreEqual(Vector2.zero, c.OriginOffset);
-            Assert.AreEqual(3.4f, LightPresets.ReachMetres(LightPresets.Kind.HungLantern), Eps);
+            Assert.AreEqual(3.6f, LightPresets.ReachMetres(LightPresets.Kind.HungLantern), Eps,
+                "the 10-27 ruling A: a hung lantern's default is a post's reach");
         }
 
         // ---- purity ---------------------------------------------------------------------------------------

@@ -31,7 +31,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.That(light.ReachMetres, Is.EqualTo(3.6f));
                 Assert.That(light.Range, Is.EqualTo(LightPresets.BloomForFitting(.14f)));
                 preset.ReachOverrideMetres = 0f;
-                Assert.That(light.ReachMetres, Is.EqualTo(3.4f));
+                Assert.That(light.ReachMetres, Is.EqualTo(3.6f),
+                    "the 10-27 ruling A: a cleared override falls back to the hung lantern's 3.6 m default");
             }
             finally { Object.DestroyImmediate(go); }
         }
