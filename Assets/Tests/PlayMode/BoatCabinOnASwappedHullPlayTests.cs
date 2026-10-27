@@ -153,7 +153,20 @@ namespace HiddenHarbours.Tests.PlayMode
                           $"standing at {subject.Id}'s threshold ({Vector2.Distance(rig.Player.transform.position, door.transform.position):0.00} m " +
                           $"from a door with {door.ReachMeters:0.00} m of reach) must offer the way in");
             Assert.AreEqual("Open the door", InteractOffer.Current.Label);
-            Assert.IsTrue(rig.Switcher.BeginInteract(), "E works the shut leaf");
+            // ⚠ THE PRESS READ (owner, 2026-10-27): a read, not a pin. B2f found this leaf shut straight after
+            // a press the code says this door cannot refuse, so the press is read where it lands — the
+            // candidate it worked, where she stood when the offer was made and when E went down, and whether
+            // the registry's door is this one — on one line of the case's output, before any assertion below
+            // can end the case.
+            string offerRead = OfferRead(rig, door);
+            var performed = new List<string>();
+            Action<InteractPerformed> onPerformed = e => performed.Add(e.Id);
+            EventBus.Subscribe(onPerformed);
+            bool pressed;
+            try { pressed = rig.Switcher.BeginInteract(); }
+            finally { EventBus.Unsubscribe(onPerformed); }
+            Debug.Log($"[CruiserPressRead] {offerRead} | {PressRead(rig, door, pressed, performed)}");
+            Assert.IsTrue(pressed, "E works the shut leaf");
             Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode,
                             "…and never on her helm: at a cabin door E only opens the door (owner, 2026-09-17)");
             Assert.IsTrue(door.IsOpen,
@@ -630,6 +643,50 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             rig.Player.transform.position = door.transform.position;
             yield return null;
+        }
+
+        /// <summary>
+        /// The press read's first half (owner, 2026-10-27), taken with nothing between it and E: the offer as
+        /// the switcher's last Update left it, the actor that Update resolved it for
+        /// (<see cref="InteractActorProbe"/>, set from the same <c>ActorNow</c> just before the publish), and
+        /// where the press will find her — <c>ActorNow</c> reads her walk's transform when it is called.
+        /// </summary>
+        private static string OfferRead(Rig rig, BoatCabinDoor door)
+        {
+            var offer = InteractOffer.Current;
+            var atOffer = InteractActorProbe.Current;
+            Vector2 atPress = rig.Player.transform.position;
+            return $"offer {offer.Source} '{offer.Id}' \"{offer.Label}\" at {offer.WorldPosition:F3}, " +
+                   $"{Mathf.Sqrt(offer.DistanceSqr):F3} m from her | candidate '{InteractVerb.CurrentCandidateId}' | " +
+                   $"her at the offer {(InteractActorProbe.Has ? atOffer.Position.ToString("F3") : "unset")} ({atOffer.Context}) | " +
+                   $"her at the press {atPress:F3}, {Vector2.Distance(atPress, door.WorldPosition):F3} m from the door at " +
+                   $"{door.WorldPosition:F3} (reach {door.ReachMeters:F2} m) | mode {rig.Switcher.Mode}";
+        }
+
+        /// <summary>
+        /// The press read's second half: what the press published and left behind, and whether the door the
+        /// registry holds — the list the press resolves among — is the door this case holds, or one of
+        /// several by its id.
+        /// </summary>
+        private static string PressRead(Rig rig, BoatCabinDoor door, bool pressed, List<string> performed)
+        {
+            var active = Interactables.Active;
+            int sameId = 0, testDoorAt = -1;
+            for (int i = 0; i < active.Count; i++)
+            {
+                if (active[i] == null || active[i].Id != door.Id) continue;
+                sameId++;
+                if (ReferenceEquals(active[i], door)) testDoorAt = i;
+            }
+            int doorsById = 0;
+            foreach (BoatCabinDoor d in UnityEngine.Object.FindObjectsByType<BoatCabinDoor>(FindObjectsInactive.Include))
+                if (d.Id == door.Id) doorsById++;
+            return $"pressed {pressed} | performed [{string.Join(", ", performed)}] | after: mode {rig.Switcher.Mode}, " +
+                   $"boarding move {rig.Switcher.IsBoardingMove}, open {door.IsOpen}, cueing {door.IsCueing}, " +
+                   $"inside {door.Interior.IsInside} | registry: {sameId} of {active.Count} with id '{door.Id}', " +
+                   $"the test's door {(testDoorAt >= 0 ? "at " + testDoorAt : "absent")} | " +
+                   $"{doorsById} BoatCabinDoor with that id in the scene | " +
+                   $"the installer's door is the test's: {ReferenceEquals(rig.Installer.Door, door)}";
         }
 
         /// <summary>
