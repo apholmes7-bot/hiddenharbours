@@ -652,6 +652,31 @@ namespace HiddenHarbours.Tests.EditMode
             return sb.ToString();
         }
 
+        /// <summary>The step re-adds its root LAST: SceneRoots must be the committed list with only the key
+        /// root moved from index 56 to the end, every other root in its committed order, nothing else changed.</summary>
+        static void AssertOnlyTheKeyRootMovesToTheEnd(string committed, string rebuilt)
+        {
+            var c = new LayerRefreshSceneText(committed);
+            var r = new LayerRefreshSceneText(rebuilt);
+            long roots = c.Order.Single(id => c.ClassOf(id) == KeySceneTestData.SceneRootsClass);
+            List<long> before = c.Refs(roots, "m_Roots"), after = r.Refs(roots, "m_Roots");
+            long key = c.TransformOf(c.RootGameObject(StPetersLayerRefresh.KeyScenesRootName));
+
+            // E2 ruling 8 (case 11): the committed scene lists the key root at index 56.
+            Assert.AreEqual(56, before.IndexOf(key), "the key root's index in the committed SceneRoots");
+            // E2 ruling 8, D1/D5 and Amendment 1 point 5 (Village.cs :163, :257): the commons, then the lights.
+            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L }, before.Skip(57).ToArray(),
+                                      "the committed roots after the key root");
+            Assert.AreEqual(1757780506L, c.TransformOf(c.RootGameObject(StPetersVillageDressing.CommonsRoot)));
+            Assert.AreEqual(866884044L, c.TransformOf(c.RootGameObject(StPetersVillageLights.RootName)));
+            // E2 ruling 8 (case 11): re-added by the step, only the key root moves, to the end.
+            CollectionAssert.AreEqual(before.Where(id => id != key).Append(key).ToArray(), after,
+                                      "the step's SceneRoots against the committed list with its root moved last");
+            Assert.AreEqual(Regex.Replace(c.Text(roots), @"\n  - \{fileID: -?\d+\}", ""),
+                            Regex.Replace(r.Text(roots), @"\n  - \{fileID: -?\d+\}", ""),
+                            "SceneRoots changed beyond the order of its list");
+        }
+
         [Test]
         public void KeyScenesPatch_AddsItsRoot_JoinsSceneRoots_AndIsTheCommittedScene()
         {
@@ -670,13 +695,15 @@ namespace HiddenHarbours.Tests.EditMode
             LayerPatch again = Plan(once, scenes);
             Assert.IsTrue(again.IsEmpty, "planned again on its own output, the step still has work to do:\n" + again.Summary());
             // An incremental wave appends documents; a rebuild emits them in scene order. Unity binds them
-            // by fileID. Every document, including the ordered hierarchy lists, must still be byte-identical.
+            // by fileID. Every document outside SceneRoots must still be byte-identical.
             var expected = StPetersLayerRefresh.SceneYaml.Parse(committed);
             var rebuilt = StPetersLayerRefresh.SceneYaml.Parse(once);
             Assert.AreEqual(expected.Preamble, rebuilt.Preamble);
             CollectionAssert.AreEquivalent(expected.Docs.Select(d => d.FileId), rebuilt.Docs.Select(d => d.FileId));
-            foreach (var doc in expected.Docs)
+            // E2 ruling 8 (case 11): SceneRoots is held to its list order instead, below.
+            foreach (var doc in expected.Docs.Where(d => d.ClassId != KeySceneTestData.SceneRootsClass))
                 Assert.AreEqual(doc.Text, rebuilt.Get(doc.FileId).Text, $"document &{doc.FileId} differs from the step's output");
+            AssertOnlyTheKeyRootMovesToTheEnd(committed, once);
             Assert.IsTrue(Plan(committed, scenes).IsEmpty, "the committed scene still needs a key-scenes patch");
             CommittedSceneUnchanged();
         }
