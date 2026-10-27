@@ -304,7 +304,7 @@ MonoBehaviour:
         the junction to (14, 92), along the gas bar\u2019s frontage, where its semi
         lane\u2019s pads and the river lane meet the road\u2019s edge. Then north-east
         off the fields and down the regraded ramp into the wharf\u2019s turning pad."},{"id":"road.nmc_bar_road","builder":"BarRoad","name":"the
-        bar road","cls":"street","surface":"gravel","width":5,"pts":[[58,-146],[36,-112],[20,-56],[14,0],[20,78],[-16,92]],"old_surface":"dirt,
+        bar road","cls":"street","surface":"gravel","width":5,"pts":[[58,-146],[36,-112],[20,-56],[14,0],[20,78],[14,92]],"old_surface":"dirt,
         4 m","why":"Today\u2019s line. Gravel and 5 m now, because the campground\u2019s
         cars and trailers use it."},{"id":"road.nmc_water_street","name":"Water Street","cls":"town","surface":null,"width":5.4,"pts":[[-271,228.81],[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-166,227.17],[-150,226],[-139,224],[-128,222]],"z":6,"why":"Along
         the top of the river wall on the north bank: the restaurant, the chandlery
@@ -449,7 +449,7 @@ MonoBehaviour:
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":7,"pts":[[-193.5,58.5],[-193.5,105]],"ends":"flat"},{"id":"drive.nmc_plaza_court","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":11.5,"pts":[[-192.25,104],[-192.25,120.2]],"ends":"flat"},{"id":"drive.nmc_plaza_yard_in","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":6,"pts":[[-255.5,67.5],[-279,67.5],[-279,78.6]],"ends":"flat"},{"id":"yard.nmc_plaza_lumber_court","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":9,"pts":[[-262.5,96],[-262.5,120.1]],"ends":"flat"},{"id":"yard.nmc_plaza_apron","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":9,"pts":[[-255.5,87.25],[-262.5,87.25],[-262.5,120.1]],"ends":"flat"},{"id":"yard.nmc_plaza_apron","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":23.5,"pts":[[-258,144.25],[-186,144.25]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_1","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":12,"pts":[[-222,150],[-222,159.4]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_2","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":10,"pts":[[-247,150],[-247,162.1]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_3","builder":"the
@@ -595,7 +595,7 @@ MonoBehaviour:
         and her husband, who sails","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
         estateHouse","buildings":["structure.nmc_south_shore_house_1","structure.nmc_south_shore_bluff_deck_1"],"drive":"road.nmc_route_91","drives":[{"id":"court.nmc_south_shore_1","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":6,"pts":[[-355.2,-138.8],[-335.8,-138.8]],"ends":"flat"},{"id":"drive.nmc_south_shore_1","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":4,"pts":[[-345,-136.2],[-345,-129.78]],"ends":"flat"},{"id":"path.nmc_south_shore_1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":4,"pts":[[-337.8,-136.2],[-337.8,-131.6],[-337.81,-131.06],[-337.85,-130.51],[-337.91,-129.97],[-338,-129.43],[-338.11,-128.9],[-338.24,-128.37],[-338.4,-127.85],[-338.58,-127.34]],"ends":"flat"},{"id":"path.nmc_south_shore_1","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"stones","width":0.9,"pts":[[-345,-160],[-339,-161.6],[-334.6,-162.4]],"ends":"flat"}],"added":"10-04
         (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_2","name":"the
         roof-walk house","at":[-305,-143],"size":[29,10],"faces":"N","z":6.55,"row":"the
@@ -621,7 +621,7 @@ MonoBehaviour:
         the guests","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
         estateHouse","buildings":["structure.nmc_south_shore_house_4"],"drive":"road.nmc_route_91","drives":[{"id":"loop.nmc_south_shore_4","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-111.1],[-357.12,-111.22],[-358.2,-111.57],[-359.17,-112.13],[-360.01,-112.89],[-360.68,-113.8],[-361.14,-114.83],[-361.37,-115.94],[-361.37,-117.06],[-361.14,-118.17],[-360.68,-119.2],[-360.01,-120.11],[-359.17,-120.87],[-358.2,-121.43],[-357.12,-121.78],[-356,-121.9],[-354.88,-121.78],[-353.8,-121.43],[-352.83,-120.87],[-351.99,-120.11],[-351.32,-119.2],[-350.86,-118.17],[-350.63,-117.06],[-350.63,-115.94],[-350.86,-114.83],[-351.32,-113.8],[-351.99,-112.89],[-352.83,-112.13],[-353.8,-111.57],[-354.88,-111.22],[-356,-111.1]],"ends":"flat"},{"id":"drive.nmc_south_shore_4","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-121.7],[-356,-129.32]],"ends":"flat"},{"id":"walk.nmc_south_shore_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-121.7],[-356,-122.3],[-355.92,-123.66],[-355.69,-125],[-355.31,-126.31],[-354.78,-127.57],[-354.37,-128.42]],"ends":"flat"},{"id":"walk.nmc_south_shore_4","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.6,"pts":[[-356,-107.6],[-356,-111.2]],"ends":"flat"}],"added":"10-04
         (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_5","name":"the
         shingled Colonial","at":[-316,-101],"size":[19.6,10],"faces":"S","z":6.45,"row":"the
