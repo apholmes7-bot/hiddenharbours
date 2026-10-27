@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9eb0e200a5642b698a2d3df55341eb4, type: 3}
+  m_Name: NineMileCreekLowSouth
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CurlingBreakerSiteDef
+  Id: breaker_site.nine_mile_creek_low_south
+  RegionId: region.nine_mile_creek
+  Centre: {x: 254.1505, y: -205.87558}
+  LengthMeters: 6
+  Enabled: 1
