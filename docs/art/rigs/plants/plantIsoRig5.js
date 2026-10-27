@@ -28,6 +28,22 @@
 
    PPU 32 · ¾ from S at 40° · true heights · bottom-centre ROOT pivot · no AA · binary alpha · ringless.
    globalThis.PlantRig5 — same API as PlantRig4 (model · frame · relight · castShadow · view · sheet · cellOf).  */
+/* PLANT RIG 5.1 (2026-10-11).  Rig 5, its global, its API and its look; what 5.1 changes:
+     1. OstrichFern and MarshMarigold are in the table, its last two species, as CD's pass 6 afPieces.js (StpAfPieces
+        rev 1.0, 2026-09-27) adds them to rig 5 when it loads; afPieces.js loaded after this rig finds them and adds nothing.
+     2. A bare state (a stage and season a species' builders give nothing) gives the empty answer where rig 5 threw (its
+        bounds kept their ±1e9 start and the opacity grid's size went negative). model() returns a model with empty: true,
+        no primitives, hmax 0 and a cell of the padding alone (10 × 6, pivot 5, 3, for every bare state today); frame()
+        returns that cell with no pixel set, so relight(), view() and sheet() give it fully transparent; castShadow() a
+        0 × 0 shadow, as for weed under water; cellOf() that cell and metres 0, with empty: true.
+     3. An unknown key throws an Error naming it (PlantRig5: unknown plant key "<key>") from model(), and so from frame(),
+        sheet() and cellOf(), where rig 5 drew the first species (LowbushBlueberry) and said nothing.
+     4. Fireweed and Goldenrod, the two herbs whose leaves are all on the stem (no basal leaves), come up as leafy shoots
+        where rig 5 threw: in spring, summer and autumn a seedling is one shoot of the seedling's height; in spring a young
+        or mature plant's stems are shoots of 0.42 of their height. A shoot is the stem with its alternate leaves, set
+        closer, and two leaves at its tip, in the season's leaf colour, with no head. Their winter seedlings stay bare, as
+        do Lupin's, LadySlipper's, QueenAnne's and BlueFlag's: the six states that give the empty answer (item 2).
+   Every state rig 5 drew draws as before, pixel for pixel.  */
 (function (root) {
   'use strict';
   const PPU = 32, LOOP = 16, VARIANTS = 4, TAU = Math.PI * 2;
@@ -181,6 +197,13 @@
     { key: 'Timothy', name: 'Timothy', latin: 'Phleum pratense', fam: 'grass', hab: 'meadow', habit: 'grass', h: 44, w: 24, fol: '#5f7a3a', fall: '#b09a60', wind: WGRASS, p: { blades: 12, crown: 5, el: 1.2, fall: 0.9, bw: 1.4, head: 'timothy', culms: 4 } },
     { key: 'SoftRush', name: 'Soft Rush', latin: 'Juncus effusus', fam: 'grass', hab: 'wet', habit: 'grass', h: 40, w: 28, fol: '#4f6f38', fall: '#8a7d4a', wind: WGRASS, p: { blades: 26, crown: 5, el: 1.36, fall: 0.35, bw: 1, head: 'rush', culms: 5, stiff: true } },
     { key: 'TussockSedge', name: 'Tussock Sedge', latin: 'Carex stricta', fam: 'grass', hab: 'wet', habit: 'grass', h: 42, w: 34, fol: '#6a7a34', fall: '#a89458', wind: WGRASS, p: { blades: 26, crown: 6, el: 1.2, fall: 1.0, bw: 1.4, head: 'sedge', culms: 3, mound: true } },
+    // 5.1: the two plants CD's pass 6 afPieces.js adds to rig 5 when it loads, as it draws them (the swale's ostrich fern, a vase
+    //      of arching fronds; marsh marigold, glossy round leaves and yellow cups in spring). Last, so every other species keeps
+    //      its place; their winds are the ones afPieces.js takes from SweetFern and Buttercup.
+    { key: 'OstrichFern', name: 'Ostrich Fern', latin: 'Matteuccia struthiopteris', fam: 'shrub', hab: 'swale', zone: 4.65, habit: 'woody', h: 36, w: 50, fol: '#5f8f3c', fall: '#b98a3e', bark: '#5a7a38', wind: WSHRUB, trans: 0.9,
+      p: { form: 'clump', stems: 12, spread: 0.72, arch: 0.7, forks: 0, grain: 'fern', leafDen: 1.1, leafFrom: 0.1, mr: 2.0, cover: 1.2 } },
+    { key: 'MarshMarigold', name: 'Marsh Marigold', latin: 'Caltha palustris', fam: 'flower', hab: 'wet', zone: 4.65, habit: 'herb', h: 15, w: 30, fol: '#3e6d34', bloomC: '#f4c418', clover: '#f4c418', wind: WHERB,
+      p: { head: 'cup', basal: 'lobed', bloomS: ['spring'] } },
   ];
   const byKey = {}; SPECIES.forEach(s => { byKey[s.key] = s; s.trans = s.trans == null ? 0.8 : s.trans; });
   const FAMILIES = [['shrub', 'Shrubs'], ['shore', 'Shore'], ['flower', 'Flowers'], ['grass', 'Grasses']];
@@ -454,7 +477,15 @@
           if (!dead) for (let q = 0; q < 5; q++) { const p = [x0 + (B.rnd() - 0.5) * 13, y0 + (B.rnd() - 0.5) * 4, 1 + B.rnd()]; for (let l = 0; l < 3; l++) B.leaf([p[0] + (l - 1) * 1.4, p[1], p[2] + (l === 1 ? 0.8 : 0)], 'coin', B.ramp('fol', '#4a7a4a'), part, {}); if (bloom && q % 2 === 0) B.stamp([p[0], p[1] + 0.5, p[2] + 2], PT.cup, B.ramp('petal', q % 4 ? sp.clover : '#e8e6dc'), part, { mat: M.PETAL, zb: 0.8, tone: 0, n: UP }); }
           continue;
         }
-        if ((s === 'spring' && !bloom) || (stage === 'seedling' && !bloom)) continue;
+        if ((s === 'spring' && !bloom) || (stage === 'seedling' && !bloom)) {
+          if (!dead && !P.basal && P.leaves === 'alt') {     // 5.1: no basal leaves, so the stem's own leaves come up first, a leafy shoot
+            const hs = stage === 'seedling' ? h : h * 0.42, lean = (B.rnd() - 0.5) * 1.6, tip = [x0 + lean, y0, hs], nS = Math.max(3, Math.round(hs / 2)), cp = curve(base, [x0 + lean * 0.2, y0, hs * 0.5], tip, nS), p2 = part + 2;
+            B.chain(cp, 0.5, 0.45, rS, M.STEM, p2);
+            for (let q = 1; q < nS; q++) { const p = cp[q], sg = q % 2 ? 1 : -1, L = 3.4 - q / nS * 1.6; B.blade([p, [p[0] + sg * L * 0.7, p[1] + 0.6, p[2] + L * 0.6], [p[0] + sg * L, p[1] + 0.8, p[2] + L * 0.5]], 1.4, 0.8, q % 3 ? rL : rL2, p2); }
+            for (const sg of [-1, 1]) B.blade([tip, [tip[0] + sg * 0.8, tip[1] + 0.4, tip[2] + 1.6]], 1.4, 0.8, rL, p2);
+          }
+          continue;
+        }
         const lean = (B.rnd() - 0.5) * 3, top = [x0 + lean, y0, h], nS = Math.max(4, Math.round(h / 3)), cp = curve(base, [x0 + lean * 0.2, y0, h * 0.55], top, nS), p2 = part + 2, hp = P.head;
         B.chain(cp, hp === 'iris' ? 0.6 : 0.5, 0.45, rS, M.STEM, p2);
         if (!dead && P.leaves === 'alt') for (let q = 1; q < nS - 2; q++) { const p = cp[q], sg = q % 2 ? 1 : -1, L = 4.4 - q / nS * 2; B.blade([p, [p[0] + sg * L * 0.8, p[1] + 0.6, p[2] + L * 0.5], [p[0] + sg * L, p[1] + 0.8, p[2] + L * 0.3]], 1.4, 0.8, q % 3 ? rL : rL2, p2); }
@@ -590,7 +621,8 @@
   const MODELS = new Map();
   function model(key, o) {
     o = o || {};
-    const sp = byKey[key] || SPECIES[0], variant = (((o.variant | 0) % VARIANTS) + VARIANTS) % VARIANTS, season = SEASONS.includes(o.season) ? o.season : 'summer', stage = STAGES[o.stage] ? o.stage : 'mature';
+    if (!Object.prototype.hasOwnProperty.call(byKey, key)) throw new Error('PlantRig5: unknown plant key "' + String(key) + '"');   // 5.1: rig 5 drew SPECIES[0]
+    const sp = byKey[key], variant = (((o.variant | 0) % VARIANTS) + VARIANTS) % VARIANTS, season = SEASONS.includes(o.season) ? o.season : 'summer', stage = STAGES[o.stage] ? o.stage : 'mature';
     const water = sp.fam === 'shore' && o.water != null ? Math.round(o.water * 20) / 20 : null;
     const mk = [sp.key, variant, season, stage, water].join('|');
     if (MODELS.has(mk)) return MODELS.get(mk);
@@ -605,11 +637,14 @@
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, zmin = 1e9, zmax = -1e9, hmax = 1;
     const ext = (p, r) => { const s = S(p); x0 = Math.min(x0, s[0] - r); x1 = Math.max(x1, s[0] + r); y0 = Math.min(y0, s[1] - r); y1 = Math.max(y1, s[1] + r); zmin = Math.min(zmin, s[2]); zmax = Math.max(zmax, s[2]); hmax = Math.max(hmax, p[2]); };
     for (const q of prims) { if (q.k === 0) ext(q.p, q.st.r + 1); else if (q.k === 3) ext(q.p, 1); else if (q.k === 4) { ext(q.p, Math.max(q.rs[0], q.rs[1]) + 2); ext([q.p[0], q.p[1], q.p[2] + q.r[2]], 1); } else { ext(q.a, (q.r0 || q.w0 || 1) + 1); ext(q.b, (q.r1 || q.w1 || 1) + 1); } }
+    const empty = !prims.length;                                              // 5.1: a bare state bounds at its root (rig 5 kept ±1e9 and threw)
+    if (empty) x0 = x1 = y0 = y1 = zmin = zmax = hmax = 0;
     const Hs = Math.max(4, -y0), reach = Math.ceil(wv[0] * hmax * 1.9 + wv[1] * hmax / 60 * 2.6 + (limp ? 5 : 0)) + 3;
     const padX = reach + 2, padT = 3, padB = 3;
     const w = Math.ceil(x1 - x0) + padX * 2, h = Math.ceil(y1 - y0) + padT + padB, pivot = { x: Math.round(-x0 + padX), y: Math.round(-y0 + padT) };
     const mdl = { key: sp.key, sp, variant, season, stage, size, water, lay: B.lay, prims, ramps: B.ramps, cell: { w, h }, pivot, zmin, zmax, hmax, Hs, reach, wv, stampN: B.nS, parts: B.part, footR: Math.max(2, B.W * 0.12), R: (x1 - x0) / 2, cx: (x0 + x1) / 2 };
     mdl.tideWet = limp ? (water == null ? 0.25 : water <= 0 ? clamp(1 - (-water) / 0.85, 0.15, 1) : 1) : 0;
+    if (empty) mdl.empty = true;
     buildGrid(mdl);
     mdl.ms = Date.now() - t0;
     MODELS.set(mk, mdl); if (MODELS.size > 260) MODELS.delete(MODELS.keys().next().value);
@@ -830,7 +865,7 @@
   function castShadow(fr, sky) {
     sky = sky || REF_SKY;
     const mdl = fr.mdl, piv = mdl.pivot, G = mdl.grid, sunI = sky.sunI == null ? 1 : sky.sunI, Lw = sky.sunW || REF_SKY.sunW, Lv = sky.sunV || REF_SKY.sunV;
-    if (mdl.water != null && mdl.water > mdl.hmax / PPU) return { x0: 0, y0: 0, w: 0, h: 0, lv: new Uint8Array(0) };
+    if (mdl.empty || (mdl.water != null && mdl.water > mdl.hmax / PPU)) return { x0: 0, y0: 0, w: 0, h: 0, lv: new Uint8Array(0) };   // 5.1: a bare state casts nothing
     const sunOK = sunI > 0.04 && Lw[2] > 0.03, R = mdl.R + 3, Hh = mdl.hmax;
     let xa = piv.x - R, xb = piv.x + R, ya = piv.y - R * SE - 3, yb = piv.y + R * SE + 4;
     if (sunOK) { const k = 1 / Math.max(Lw[2], 0.14), ex = -Lw[0] * k * Hh, ey = -Lw[1] * k * Hh * SE; xa = Math.min(xa, piv.x + ex - R); xb = Math.max(xb, piv.x + ex + R); ya = Math.min(ya, piv.y + ey - R * SE - 3); yb = Math.max(yb, piv.y + ey + R * SE + 4); }
@@ -874,7 +909,7 @@
     for (let f = 0; f < LOOP; f++) { const px = view(frame(key, Object.assign({}, o, { frame: f })), ch || 'lit', sky), ox = (f % 4) * cw, oy = Math.floor(f / 4) * chh; for (let y = 0; y < chh; y++) out.set(px.subarray(y * cw * 4, (y + 1) * cw * 4), ((oy + y) * W + ox) * 4); }
     return { w: W, h: H, rgba: out, cell: [cw, chh], pivot: [f0.mdl.pivot.x, f0.mdl.pivot.y], frames: LOOP };
   }
-  function cellOf(key, o) { const m = model(key, o); return { w: m.cell.w, h: m.cell.h, pivot: m.pivot, stamps: m.stampN, prims: m.prims.length, parts: m.parts, ms: m.ms, metres: Math.round(m.hmax / PPU * 100) / 100 }; }
+  function cellOf(key, o) { const m = model(key, o), c = { w: m.cell.w, h: m.cell.h, pivot: m.pivot, stamps: m.stampN, prims: m.prims.length, parts: m.parts, ms: m.ms, metres: Math.round(m.hmax / PPU * 100) / 100 }; if (m.empty) c.empty = true; return c; }
   function clearCache() { MODELS.clear(); FRAMES.clear(); }
 
   root.PlantRig5 = { EDGE5, P5, ST5, PPU, LOOP, VARIANTS, SEASONS, STAGES, STAGE_KEYS, M, SPECIES, byKey, FAMILIES, HABITATS, REF_SKY, UNLIT_SKY, ELEV, CE, SE, UPV, toView,
