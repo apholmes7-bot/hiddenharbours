@@ -32,9 +32,10 @@ namespace HiddenHarbours.Tests.PlayMode
     // Every compare is two shots inside one rendered frame (no yield between them): the curl's master at 0
     // and at 1, or the dory there and gone. The silhouette sequences walk one period at 60 Hz at each tide:
     // no pixel may change outside the CPU pose's own bounds (so a frame with no live pose changes none), a
-    // readable pose must draw, and low water must clear the readable bar. The dory test puts a hull in front
-    // of the curl at its peak: in their overlap every pixel is the hull's or the curl's, and the hull wins
-    // somewhere. The zero dial renders exactly as no curl at all, and leaves no trace after a live frame.
+    // readable pose must draw, and low water must clear the readable bar. The dory test berths a hull on
+    // the band the curl draws at its peak: in their overlap every pixel is the hull's or the curl's, and the
+    // hull wins somewhere. The zero dial renders exactly as no curl at all, and leaves no trace after a
+    // live frame.
     // The worst view is the curl filling a 1080p frame at twice the bar's scale: its CPU frame, its GPU cost
     // and its allocations, against the budget. Plates and CSVs go to temporaryCachePath/curl-b2/.
     public class CurlingBreakerSilhouettePlayTests
@@ -49,7 +50,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const int Seed = 4242, PhaseSeed = 12345, Pixels = 768, Frames = 264;
         const int MaxSettleFrames = 60, MaxCompileFrames = 600;
         const int WorstWidth = 1920, WorstHeight = 1080, BudgetWarmUp = 30, BudgetSamples = 120, SamplesPerYield = 30;
-        const float GaleSpeed = 12.95f, GaleTowardDeg = 50f, BoatSeawardMeters = 1f, SlackPx = 2f;
+        const float GaleSpeed = 12.95f, GaleTowardDeg = 50f, SlackPx = 2f;
         // The closest framing the plates take: twice the bar's 96 px/m, the curl filling a 1080p view.
         const float WorstPixelsPerMetre = 192f;
         const double Start = 900, CpuTickBudgetMs = 0.25, GpuDeltaBudgetMs = 0.5;
@@ -229,7 +230,10 @@ namespace HiddenHarbours.Tests.PlayMode
             At(t);
             Assert.IsTrue(Curl(true), "premise: the peak frame is live");
             CurlingBreakerPose pose = _host.Pool[0].Pose;
-            Vector2 berth = pose.Front[pose.Columns / 2] - pose.Shoreward * BoatSeawardMeters;
+            // On the band the pose draws at this frame: the centre column's front, the band's foot (the band
+            // stands the pose's peak above it and reaches the pose's throw shoreward of it).
+            Vector2 berth = pose.Front[pose.Columns / 2];
+            string band = F($"the band there {pose.Peak * ppm:F1} px tall and thrown {pose.Throw * ppm:F2} px (phase {pose.Phase:R}, period {pose.Period:R} s, peak {pose.Peak:R} m, full throw {pose.FullThrow:R} m)");
             var boat = Host("Dory");
             boat.transform.position = new Vector3(berth.x, berth.y, 0);
             BoatHullSkinner.Apply(boat, AssetDatabase.LoadAssetAtPath<BoatVisualDef>(DoryPath), null,
@@ -272,7 +276,7 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             WriteMask(overlapMask, Pixels, Path.Combine(folder, "boat_overlap.png"));
             string counts = F($"overlap {overlap} px: the dory's {boatWins}, the curl's {curlWins}, neither {neither}; curl-only moved {curlOnlyMoved}, dory-only moved {boatOnlyMoved}, elsewhere moved {restMoved}");
-            File.WriteAllText(Path.Combine(folder, "boat.txt"), F($"Dory {BoatSeawardMeters:F1} m seaward of the curl's centre front at ({berth.x:F2}, {berth.y:F2}), low water, frame {peak} (t {t:R} s). {counts}."));
+            File.WriteAllText(Path.Combine(folder, "boat.txt"), F($"Dory berthed on the curl's centre front at ({berth.x:F2}, {berth.y:F2}), {band}, low water, frame {peak} (t {t:R} s). {counts}."));
             Assert.Greater(overlap, 0, "premise: the dory and the curl overlap on screen; " + counts);
             Assert.AreEqual(0, neither, "an overlap pixel is neither the dory's nor the curl's; " + counts);
             Assert.Greater(boatWins, 0, "the dory in front never hid the curl; " + counts);
