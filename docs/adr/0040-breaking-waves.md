@@ -853,3 +853,23 @@ The live cost is one half-scale R8 target, two draws (at most 17 x 25 sheet vert
 fragment inside the branch. None of it is measured yet. Phase C needs its own slot grant;
 the look, the readable bar, the occlusion and the cost remain unproved until those plates
 run.
+
+**One bore per event (E1, 2026-10-27).** A curl event reads one bore from `SteepenStart`
+to `Gone`: the bore that crests at the event's crest. The shipped birth read
+(`BoreBirthEnergy01` on `SecondsSinceTheCrest`) dates a birth from the last crest, so
+before its crest an event read the previous bore's birth and switched to its own at q = 0.
+That seam ended the Nine Mile Creek pose at the crest (31 of its 63 frames drawn, 8 of them
+readable, where the gate counted 23), and wherever both bores were eligible the full throw
+jumped at the crest from one bore's to the next (the throw pop). The sampler now reads the
+event's birth once a frame at the site centre through a new Core helper,
+`BreakerMath.NearestBoreBirthEnergy01`, the same read on the signed clock: the birth time
+`t - travel - q T` holds still while the event runs, so the floors at the centre and both
+ends, the full throw and `IsReadable` read one value through the crest, and the gate's
+`ReadableFrames` now counts the frames the pose draws. Each event draws whole or not at all:
+in the silhouette plate's low-water read of 11 events, 9 draw all 63 of their frames and the
+2 whose own bore is born under `MinBore` draw none. The helper is added beside the
+shipped read: every existing `BreakerMath` helper, `SurfAtCore`, the shader twin and every
+other reader of the shipped birth are unchanged, and no tunable was added; the site, the
+master (0) and the bar (8 / 4 / 12) are unchanged. `CurlingBreakerTests` adds five cases
+for it: `OneEventReadsOneBirthThroughItsCrest`, `TheEventsBirthIsTheBoreThatCrests`,
+`NoStepAtTheCrest`, `PoseLivesFromSteepenStartToGone` and `EventBirthIsAPureFunction`.
