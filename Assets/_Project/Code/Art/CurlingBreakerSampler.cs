@@ -125,24 +125,51 @@ namespace HiddenHarbours.Art
         public static int RowsFor(in CurlingBreakerSettings settings)
             => Mathf.Clamp(settings.CrossRows, MinRows, MaxRows);
 
-        /// <summary>The surf the water draws at <paramref name="worldPos"/> — the ONE read the curl
-        /// takes of the sea.</summary>
+        /// <summary>The surf the water draws at <paramref name="worldPos"/>. This is the ONE surf read
+        /// the curl takes of the sea; the event's bore is read beside it
+        /// (<see cref="EventBirthEnergy01"/>).</summary>
         public static SurfState SurfAt(in CurlingBreakerInputs inputs, WaveFetchSample fetch, Vector2 worldPos)
             => BreakerMath.SurfAt(worldPos, inputs.WaterLevelMeters, inputs.Terrain, in inputs.Contour, fetch,
                 in inputs.Trains, inputs.Gravity, in inputs.Breakers, inputs.FreqScale, inputs.TimeSeconds);
 
-        /// <summary>A stretch anchor may carry the curl only on working, plunging surf with a bore and
-        /// whitewater above the presentation floors.</summary>
-        public static bool Eligible(in SurfState surf, in CurlingBreakerSettings settings)
+        /// <summary>
+        /// <b>The event's one bore</b> (ADR 0040 B2): the birth of the bore that crests at the event's
+        /// crest. It is read at <paramref name="worldPos"/>'s break line on the signed clock
+        /// (<see cref="BreakerMath.NearestBoreBirthEnergy01"/>). <paramref name="surf"/> is the surf read
+        /// there. Its own <see cref="SurfState.BirthEnergy01"/> still reads the PREVIOUS bore until the
+        /// crest passes, and that switch is the seam this closes. The birth time, <c>t − travel − q·T</c>,
+        /// holds still while the event runs.
+        /// </summary>
+        public static float EventBirthEnergy01(in CurlingBreakerInputs inputs, WaveFetchSample fetch, Vector2 worldPos,
+                                               in SurfState surf)
+        {
+            WaveTrain dominant = inputs.Trains.Dominant;
+            float factor = fetch.ForTrain(inputs.Trains.DominantIndex, dominant.Wavelength);
+            // The march, break line and birth shelter that BreakerMath.SurfAt takes for the same point.
+            BreakerMath.MarchSinceBreakAlong(worldPos, surf.ShorewardDirection, inputs.WaterLevelMeters,
+                inputs.Terrain, in inputs.Contour, factor, inputs.Gravity, in inputs.Breakers,
+                out float metersSinceBreak, out float travel);
+            Vector2 breakLine = BreakerMath.BreakLinePoint(worldPos, surf.ShorewardDirection, metersSinceBreak);
+            WaveFetchSample birthFetch = fetch.HasSwell ? fetch : (WaveFetchSample)factor;
+            return BreakerMath.NearestBoreBirthEnergy01(in inputs.Trains, breakLine, travel, surf.BorePhaseDegrees,
+                BreakerMath.PeriodSeconds(in dominant), birthFetch, inputs.Breakers.BoreSetStrength, inputs.FreqScale,
+                inputs.TimeSeconds);
+        }
+
+        /// <summary>A stretch anchor may carry the curl only on working, plunging surf with whitewater
+        /// above the presentation floors. The bore floor reads the event's ONE bore
+        /// (<paramref name="birth01"/>, <see cref="EventBirthEnergy01"/>), so it cannot flip at the crest.</summary>
+        public static bool Eligible(in SurfState surf, float birth01, in CurlingBreakerSettings settings)
             => surf.IsWorking
                && surf.PlungingWeight01 >= settings.MinPlungingWeight
-               && surf.BirthEnergy01 >= settings.MinBore
+               && birth01 >= settings.MinBore
                && surf.Whitewater01 >= settings.MinWhitewater;
 
         /// <summary>
-        /// Samples one site into <paramref name="pose"/>. Live only when the look is up, the centre
-        /// and both ends of the stretch carry eligible surf, the bore clock is inside the event and
-        /// the event clears the readable bar; otherwise the pose is cleared and the site yields.
+        /// Samples one site into <paramref name="pose"/>. Live only when the look is up, the centre and
+        /// both ends of the stretch carry eligible surf under the event's one bore, the bore clock is
+        /// inside the event and the event clears the readable bar. Otherwise the pose is cleared and the
+        /// site yields.
         /// </summary>
         public static void Sample(in CurlingBreakerInputs inputs, WaveFetchSample fetch, Vector2 centre,
                                   float lengthMeters, in CurlingBreakerSettings settings,
@@ -156,14 +183,17 @@ namespace HiddenHarbours.Art
             if (dominant.Amplitude <= 0f) return;
 
             SurfState mid = SurfAt(in inputs, fetch, centre);
-            if (!Eligible(in mid, in settings)) return;
+            // One bore per event: the birth is read once, at the centre, on the event's own clock. The
+            // ends' floor, the full throw and the readable bar all read that one value.
+            float birth = mid.IsWorking ? EventBirthEnergy01(in inputs, fetch, centre, in mid) : 0f;
+            if (!Eligible(in mid, birth, in settings)) return;
             Vector2 shoreward = mid.ShorewardDirection;
             var alongShore = new Vector2(-shoreward.y, shoreward.x);
             float half = Mathf.Max(0f, lengthMeters) * 0.5f;
             SurfState first = SurfAt(in inputs, fetch, centre - alongShore * half);
-            if (!Eligible(in first, in settings)) return;
+            if (!Eligible(in first, birth, in settings)) return;
             SurfState last = SurfAt(in inputs, fetch, centre + alongShore * half);
-            if (!Eligible(in last, in settings)) return;
+            if (!Eligible(in last, birth, in settings)) return;
 
             float period = BreakerMath.PeriodSeconds(in dominant);
             if (period <= 0f) return;
@@ -173,7 +203,7 @@ namespace HiddenHarbours.Art
 
             float peak = settings.HeightFraction * mid.StandingHeightMeters;
             float fullThrow = CurlingBreakerMath.EventThrow(mid.StandingHeightMeters, mid.PlungingWeight01,
-                look.Plunge, mid.BirthEnergy01, look.LipThrow);
+                look.Plunge, birth, look.LipThrow);
             if (!CurlingBreakerMath.IsReadable(peak, fullThrow, period, in settings)) return;
 
             // The bore front runs shoreward at √(g·d): before the crest it is still seaward of the
