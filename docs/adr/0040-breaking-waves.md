@@ -765,3 +765,91 @@ PlayMode **1054/945/109/0** (total/passed/skipped/failed). These are forecasts, 
 At draft opening, stop without waiting; the owner relays CI completion. Phase C needs
 its own slot grant, and zero-dial pixel passthrough, sequence quality and cost remain
 unproved until those controls run.
+
+## B2 — the bounded curling sheet (2026-10-27)
+
+B2 serves P1 and P5: where the existing bore plunges, its lip can be seen to curl over
+and land instead of only brightening a flat band. A ruling on 2026-10-26 set one
+conditional pilot: one site at Nine Mile Creek low water, the master shipped at **0**, and
+a readable bar of 8 px tall and 4 px thrown for 12 frames at 60 Hz at 96 px/m. This
+section does not claim visual acceptance; no GPU ran in Phase B.
+
+### The site, the dial and the bar are data
+
+`CurlingBreakerSiteDef` (Core) is one asset per picked stretch: a stable
+`breaker_site.<snake_case>` id, a region id, a centre, and a length of at most 6 m that
+holds both end tapers. The only site is `breaker_site.nine_mile_creek_low_south` at
+(254.15050, -205.87558), 6 m long with 1 m tapers, in
+`Data/Regions/NineMileCreek/BreakerSites/`. Content validation fails a region with more
+enabled sites than the pool holds.
+
+`GameConfig.CurlingBreakers` (`CurlingBreakerSettings`, Core) carries every tunable: the
+master (0 shipped), the pool size (`PilotCapacity`, 1), the section's height fraction and
+end taper, the mesh's columns and rows, the five stage keys, the eligibility floors, the
+handoff mask's scale and the readable bar. `BreakerSettings` is unchanged.
+
+### The curl is a read of the bore, not a new state
+
+A site earns a curl only while the existing bore is working and plunging (its plunging
+weight at or above the floor, from the surf-similarity read `BreakerMath` already makes),
+with enough birth energy and whitewater at its centre and at both ends. Each column also
+needs its front and its landing point wet and breaking, so a dry spit shortens the sheet
+instead of being bridged. The phase is the published bore clock: the signed fraction of a
+period from the crest. The front stands ahead of the centre by the time to the crest times
+the shallow-water celerity sqrt(g d) at the centre's depth. The section throws the lip
+ahead by T s^2 (3 - 2 s) and lifts it by 4 P s (1 - s); the keys steepen, throw, crest,
+land and clear it. The sheet is a pure function of the seed, the game time and the
+position. Gameplay reads nothing from it: `BreakerMath.SurfAt` and every published train
+are unchanged, and `LeavesTheGameplaySurfUntouched` pins that bit for bit.
+
+### Drawing it
+
+One pooled slot (`CurlingBreakerPool`, capacity fixed at 1) holds the pose and two meshes.
+Their vertices and uvs are rewritten in place each frame, and their topology only when
+the column or row count changes, so a live frame allocates nothing (rule 7).
+`CurlingBreakerSceneWiring` adds the host when a region's scene is built or played; no
+scene file changes.
+
+While a curl is live, `IsoFacetHullFeature` records two passes. The first draws the
+handoff band into a half-scale R8 mask; the water reads it to fade its flat lip and barrel
+under the curl (13 lines in the water shader: four declarations and one guarded block
+before the surf is composited, outside both twins). The second draws the sheet into the
+water's own colour and depth, so a hull and the curl hide each other by depth, and never
+inside a hull (the interior guard). The sheet's alpha becomes coverage through a 4x4
+ordered dither, so a tapered end thins out in whole pixels. Its colours are the sea
+material's surf colours, copied each frame.
+
+At the shipped master 0 no pass is recorded, no target is created, the handoff flag stays
+0 and the water's new branch is not taken: its cost is one uniform compare per water
+fragment.
+
+### What this does NOT touch
+
+`BreakerMath`, `WaveMath`, `WaveFetch`, `SwellMath`, `WaveFieldBridge`, `GameServices`,
+the foam advect shader, `BreakerSettings`, boats, the save, bathymetry, the height map,
+the seabed, existing region assets and every scene file.
+
+### Tests, evidence and cost status
+
+`CurlingBreakerTests` adds 12 EditMode cases: `OnlyPlungingStateEmits`,
+`PhaseAndBoundsMatchBore`, `EndTapersStayInsidePickedStretch`,
+`UsesThePublishedBoreClock`, `IsAPureFunctionOfSeedTimeAndPosition`,
+`LeavesTheGameplaySurfUntouched`, `CalmReleasesPool`, `NoSiteDrawsNothing`,
+`ZeroDialRecordsNoPass`, `HandoffLeavesNoDoubleLip`, `SceneUnloadClearsPoolAndMask` and
+`PoolAndMeshUpdatesAllocateNothing`. `ContentValidationTests` adds
+`CurlingBreakerSites_HaveStableIdsAndResolvedRegions`.
+
+`CurlingBreakerSilhouettePlayTests` adds four GPU cases, each ignored on a Null graphics
+device. `SilhouetteSequences` walks one period at 60 Hz at low, mean and high water:
+nothing changes outside the CPU pose's bounds, a readable pose draws, and low water clears
+the bar. `BoatOcclusion` puts a dory in front of the curl at its peak: every overlap pixel
+is the dory's or the curl's, and the dory hides the curl somewhere. `ZeroDialPixelIdentity`
+renders master 0 bit for bit as no curl at all, with no trace after a live frame.
+`WorstViewBudget` fills a 1080p view with the curl at 192 px/m and holds its median CPU
+frame to 0.25 ms, its median render delta to 0.5 ms, and its frame to no allocation.
+
+The live cost is one half-scale R8 target, two draws (at most 17 x 25 sheet vertices and
+34 mask vertices), one guard read per sheet fragment and one texture tap per water
+fragment inside the branch. None of it is measured yet. Phase C needs its own slot grant;
+the look, the readable bar, the occlusion and the cost remain unproved until those plates
+run.
