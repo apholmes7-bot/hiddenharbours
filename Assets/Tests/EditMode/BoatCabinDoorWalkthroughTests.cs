@@ -663,6 +663,7 @@ namespace HiddenHarbours.Tests.EditMode
             var failures = new List<string>();
             var measuredNames = new List<string>();
             var heldNames = new List<string>();
+            int roomEdges = 0, landings = 0;
 
             foreach (string guid in AssetDatabase.FindAssets("t:BoatVisualDef"))
             {
@@ -680,13 +681,34 @@ namespace HiddenHarbours.Tests.EditMode
 
                 measured++;
                 measuredNames.Add(visual.name);
-                if (!BoatCabinThreshold.TryWallLine(visual.Interior, door, out int level,
-                                                  out Vector2 onLine, out _))
+                if (!BoatCabinThreshold.TryEntryLine(visual.Interior, door, out BoatCabinEntryKind kind,
+                        out int? roomIndex, out Vector2 onLine, out Vector2 outward))
                 {
                     failures.Add(
                         $"{visual.name}: her doorway is measured but stands in no wall at its sill's height, so " +
                         "the walk can never cross it and the door is back on the press.");
                     continue;
+                }
+
+                string surface;
+                if (kind == BoatCabinEntryKind.RoomEdge)
+                {
+                    Assert.IsTrue(roomIndex.HasValue, visual.name);
+                    BoatCabinEntryLandingTests.AssertLegacyLine(visual.name, roomIndex.Value, onLine, outward);
+                    surface = visual.Interior.Levels[roomIndex.Value].Id;
+                    roomEdges++;
+                }
+                else
+                {
+                    Assert.AreEqual(BoatCabinEntryKind.Landing, kind, visual.name);
+                    Assert.AreEqual("ExpressCruiserIso", visual.name);
+                    Assert.IsNull(roomIndex, "a landing never reports a room index");
+                    Assert.AreEqual(new Vector2(-0.30f, -0.51f), onLine);
+                    Assert.AreEqual(Vector2.down, outward, "the authored opening segment's normal");
+                    Assert.AreEqual(1.17f, door.EntryLanding.HeightMetres);
+                    Assert.IsFalse(BoatCabinThreshold.TryWallLine(visual.Interior, door, out _, out _, out _));
+                    surface = "entry landing";
+                    landings++;
                 }
 
                 float band = BoatCabinThreshold.BandRadiusMetres(door);
@@ -695,11 +717,11 @@ namespace HiddenHarbours.Tests.EditMode
                 if (margin < tightest) { tightest = margin; tightestHull = visual.name; }
                 report.AppendLine(
                     $"  {visual.name,-36} band {band:F3} m   wall line {fromTheSill:F3} m from the sill   " +
-                    $"margin {margin:F3} m   ('{visual.Interior.Levels[level].Id}')");
+                    $"margin {margin:F3} m   ('{surface}', {kind})");
 
                 if (!(fromTheSill < band))
                     failures.Add(
-                        $"{visual.name}: her '{visual.Interior.Levels[level].Id}' wall line stands " +
+                        $"{visual.name}: her '{surface}' wall line stands " +
                         $"{fromTheSill:F3} m from her own doorway, against a band of {band:F3} m. She can reach " +
                         "that line only outside the doorway, so once she walks in it can never take her out.");
             }
@@ -713,6 +735,8 @@ namespace HiddenHarbours.Tests.EditMode
             Debug.Log($"[cabin-wall-lines] {measured} measured hulls, tightest margin {tightest:F3} m " +
                       $"({tightestHull}):\n{report}");
             Assert.IsEmpty(failures, string.Join("\n", failures));
+            Assert.AreEqual(27, roomEdges, "the Phase A legacy fleet remains room edges");
+            Assert.AreEqual(1, landings, "only the cruiser's authored companionway is an entry landing");
         }
 
         /// <summary>How far <paramref name="point"/> is from the nearest place a walker may stand, in the

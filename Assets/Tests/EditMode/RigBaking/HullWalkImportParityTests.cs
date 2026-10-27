@@ -48,6 +48,27 @@ namespace HiddenHarbours.Tests.RigBaking
                     Assert.That(saved.Levels.Select(l => l.Id), Is.EqualTo(room.Levels.Select(l => l.Id)));
                     Assert.That(saved.Door.ThresholdPoint, Is.EqualTo(room.Door.ThresholdPoint));
                     Assert.That(saved.Door.KeepClear, Is.EqualTo(room.Door.KeepClear));
+                    if (key == "expressCruiser")
+                    {
+                        var landing = room.Door.EntryLanding;
+                        var committedLanding = saved.Door.EntryLanding;
+                        Assert.That(landing, Is.Not.Null);
+                        Assert.That(committedLanding, Is.Not.Null);
+                        Assert.That(landing.RouteId, Is.EqualTo("companionway"));
+                        Assert.That(landing.OpeningStart, Is.EqualTo(new Vector2(-0.62f, -0.51f)));
+                        Assert.That(landing.OpeningEnd, Is.EqualTo(new Vector2(0.02f, -0.51f)));
+                        Assert.That(landing.HeightMetres, Is.EqualTo(1.17f));
+                        CollectionAssert.AreEqual(new[] { new Vector2(-0.23f, -0.76f), new Vector2(-0.23f, -0.36f),
+                            new Vector2(-0.37f, -0.36f), new Vector2(-0.37f, -0.76f) }, landing.UpperPlateau);
+                        Assert.That(committedLanding.RouteId, Is.EqualTo(landing.RouteId));
+                        Assert.That(committedLanding.OpeningStart, Is.EqualTo(landing.OpeningStart));
+                        Assert.That(committedLanding.OpeningEnd, Is.EqualTo(landing.OpeningEnd));
+                        Assert.That(committedLanding.HeightMetres, Is.EqualTo(landing.HeightMetres));
+                        CollectionAssert.AreEqual(committedLanding.UpperPlateau, landing.UpperPlateau);
+                        Assert.That(room.Levels.Length, Is.EqualTo(1), "the landing is not another room");
+                        Assert.That(deck.Areas.Length, Is.EqualTo(25), "the landing is not another deck area");
+                    }
+                    else Assert.That(room.Door.EntryLanding == null || string.IsNullOrEmpty(room.Door.EntryLanding.RouteId), Is.True);
                 }
                 var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
                 Assert.That(mesh, Is.Not.Null, key);

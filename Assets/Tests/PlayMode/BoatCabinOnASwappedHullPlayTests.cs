@@ -130,6 +130,81 @@ namespace HiddenHarbours.Tests.PlayMode
             BoatInteriorCells.Reset();
         }
 
+        [UnityTest]
+        public IEnumerator RecreationSwap_CruiserWalksHerLandingAndStair_WithTheDoorAndCutsAtEachHeight()
+        {
+            Rig rig = NewDoryRig();
+            BoatHullDef subject = LoadHull("ExpressCruiser");
+            if (rig.Boat == null || subject == null) yield break;
+            yield return null;
+            yield return Board(rig);
+            rig.Picker.Show(subject);
+            yield return null;
+            BoatCabinDoor door = SwappedCabinDoor(rig, subject);
+            BoatInterior cabin = rig.Installer.Interior;
+            DeckWalkController walk = rig.Player.GetComponent<DeckWalkController>();
+            BoatCutaway cut = rig.Installer.Cutaway;
+            Assert.IsTrue(door.ThresholdIsWalkable);
+            Assert.IsFalse(door.IsOpen);
+            Assert.IsFalse(BoatCabinThreshold.TryWallLine(cabin.Def, door.Door, out _, out _, out _));
+            yield return WalkToTheDoor(rig, door);
+            Assert.IsTrue(rig.Switcher.BeginInteract(), "E works the shut leaf");
+            yield return WaitForCue(door);
+            Assert.IsTrue(door.IsOpen);
+            Assert.IsFalse(cabin.IsInside, "E alone never enters a measured landing");
+
+            yield return SheWalksThroughTheDoorway(rig, door);
+            Assert.IsTrue(cabin.IsInside);
+            Assert.AreSame(door.Door, cabin.EntryLandingDoor);
+            Assert.AreEqual(-1, cabin.Level);
+            Assert.AreEqual(1.17f, walk.DeckHeightMeters);
+            Assert.AreEqual(subject.Visual.HullMesh.CutawayForDeck("helm_deck").Level, cut.RequestedCut.Level);
+            Assert.IsTrue(HullOf(rig).CutawayShown.Opens);
+
+            yield return WalkTheEntryStair(rig, cabin, walk, true);
+            Assert.IsNull(cabin.EntryLandingDoor);
+            Assert.AreEqual(0.22f, walk.DeckHeightMeters);
+            Assert.AreEqual(subject.Visual.HullMesh.CutawayForDeck("cabin").Level, cut.RequestedCut.Level);
+            yield return WalkTheEntryStair(rig, cabin, walk, false);
+            Assert.AreSame(door.Door, cabin.EntryLandingDoor);
+            Assert.IsTrue(cabin.IsInside, "the stair goes to the landing, not out through its door");
+            Assert.AreEqual(1.17f, walk.DeckHeightMeters);
+            Assert.GreaterOrEqual(walk.DeckLocalPosition.y, door.Door.ThresholdPoint.y);
+            Assert.AreEqual(subject.Visual.HullMesh.CutawayForDeck("helm_deck").Level, cut.RequestedCut.Level);
+
+            Assert.IsTrue(rig.Switcher.BeginInteract(), "E closes the leaf from the landing");
+            yield return WaitForCue(door);
+            Assert.IsFalse(door.IsOpen);
+            yield return SheWalksThroughTheDoorway(rig, door);
+            Assert.IsTrue(cabin.IsInside, "walking against the shut leaf cannot escape it");
+            Assert.AreEqual(1.17f, walk.DeckHeightMeters);
+            Assert.IsTrue(rig.Switcher.BeginInteract(), "E opens the shut leaf from inside");
+            yield return WaitForCue(door);
+            yield return SheWalksThroughTheDoorway(rig, door);
+            Assert.IsFalse(cabin.IsInside);
+            Assert.IsFalse(cut.RequestedCut.Opens);
+            yield return null;
+            Assert.IsFalse(HullOf(rig).CutawayShown.Opens);
+        }
+
+        private static IEnumerator WalkTheEntryStair(Rig rig, BoatInterior cabin, DeckWalkController walk, bool down)
+        {
+            var held = new HeldDeckIntents();
+            float before = Time.captureDeltaTime;
+            Time.captureDeltaTime = FrameSeconds;
+            walk.ConfigureDeckInput(held);
+            try
+            {
+                Vector2 key = DeckAreaMath.DeckToWorld(down ? Vector2.up : Vector2.down, 0f,
+                    DeckWalkController.DrawnHeadingDegreesOf(rig.Boat.transform),
+                    DeckWalkController.BakeElevationDegreesOf(rig.Boat.transform)).normalized;
+                held.Walk(key);
+                for (int f = 0; f < CrossingFrames && (cabin.EntryLandingDoor != null) == down; f++) yield return null;
+            }
+            finally { held.Release(); walk.ConfigureDeckInput(null); Time.captureDeltaTime = before; }
+            Assert.AreEqual(!down, cabin.EntryLandingDoor != null, "the deliberately held stair was taken");
+        }
+
         // =====================================================================================
         //  THE PRESS, THE BAND AND THE CUT, on a hull that arrived after Start
         // =====================================================================================
@@ -564,7 +639,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var walk = rig.Player.GetComponent<DeckWalkController>();
             Assert.IsNotNull(walk, "the shipped deck walk is what carries her through a doorway");
-            Assert.IsTrue(BoatCabinThreshold.TryWallLine(door.Interior.Def, door.Door, out _, out Vector2 onLine,
+            Assert.IsTrue(BoatCabinThreshold.TryEntryLine(door.Interior.Def, door.Door, out _, out _, out Vector2 onLine,
                                                          out Vector2 outward),
                           "the premise: her doorway is cut in a wall");
 
