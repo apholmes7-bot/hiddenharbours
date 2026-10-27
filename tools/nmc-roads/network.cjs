@@ -61,8 +61,6 @@ const OFF_VEHICLES = { 'road.nmc_stream_lane': 'until a vehicle grade limit exis
 // Q6: the planting pieces a ruled route's swept body hits, each its root, name and place in the scene; step 12
 // deletes them (the laydown's follow Q2 and the gas bar lane's Q3, so they stay)
 const SWEPT = [
-  { root: 'CreekHedgerows', name: 'SweetGale_3', at: [7.44104, 86.50429], by: 'junction road.nmc_bar_road out onto road.nmc_wharf_road reversed' },
-  { root: 'CreekHedgerows', name: 'Meadowsweet_1', at: [10.941039, 87.76597], by: 'junction road.nmc_bar_road out onto road.nmc_wharf_road reversed' },
   { root: 'CreekTrees', name: 'RedSpruce_2', at: [-194.03105, 162.35143], by: 'junction road.nmc_route_91 (south of the river bridge) reversed into road.nmc_mill_road' },
   { root: 'CreekHedgerows', name: 'SweetGale_2', at: [-180.3476, 276.19177], by: 'junction road.nmc_route_91_town (the town section, north of the river bridge) forward into road.nmc_north_creek_lane' },
 ];
