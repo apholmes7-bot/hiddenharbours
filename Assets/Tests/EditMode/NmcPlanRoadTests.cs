@@ -432,14 +432,16 @@ namespace HiddenHarbours.Tests.EditMode
                 "10-24 Q5: the spur's gate is widened to x -135.1..-124.9 for the 53-foot pairs' swept bodies (the clearance only)");
         }
 
-        /// <summary>The owner's Q6 (10-24): step 12 takes the four pieces of planting that stand in the ruled routes'
-        /// swept bodies, each by its place, and only those; the laydown's and the gas bar's wait on their accesses.</summary>
+        /// <summary>The owner's Q6 (10-24): step 12 takes the pieces of planting that stand in the ruled routes' swept
+        /// bodies, each by its place, and only those; the laydown's and the gas bar's wait on their accesses. Two since
+        /// the planner's amendment 3 (10-27, item 7): no body of the bar road's new join reaches SweetGale_3 or
+        /// Meadowsweet_1, measured by place, so both stay planted.</summary>
         [Test]
         public void ThePlantingInTheRuledRoutesSweptBodies_IsClearedByItsPlace()
         {
             var net = Net;
             CollectionAssert.AreEquivalent(
-                new[] { "CreekHedgerows/SweetGale_2", "CreekHedgerows/SweetGale_3", "CreekHedgerows/Meadowsweet_1", "CreekTrees/RedSpruce_2" },
+                new[] { "CreekHedgerows/SweetGale_2", "CreekTrees/RedSpruce_2" },
                 net.Swept.Select(s => s.Root + "/" + s.Name), "10-24 Q6: the pieces on ruled routes");
             foreach (var s in net.Swept)
             {
@@ -540,6 +542,123 @@ namespace HiddenHarbours.Tests.EditMode
             Rect playground = pieces["structure.nmc_camp_playground"];
             foreach (var p in camp.Get("pitches").Items.Select(o => o.Get("id").Str("id")))
                 Assert.That(Gap(playground, pieces[p]), Is.GreaterThanOrEqualTo(PlaygroundOffPitch - Slack), $"the playground stands within 3 m of {p}");
+        }
+
+        /// <summary>The network and its junction records as the amendment 3 guards read them: the committed file.</summary>
+        static (NineMileCreekRoadNetwork.Network net, List<object> junctions) NetAndJunctions() =>
+            (Net, MiniJson.List(MiniJson.Parse(File.ReadAllText(NineMileCreekRoadNetwork.FilePath)), "junctions"));
+
+        /// <summary>The arc length of q's nearest point on the line, and the segment it falls on.</summary>
+        static (float s, int segment) Project(Vector2[] p, float[] c, Vector2 q)
+        {
+            float best = float.MaxValue, bs = 0f;
+            int seg = 1;
+            for (int i = 1; i < p.Length; i++)
+            {
+                Vector2 d = p[i] - p[i - 1];
+                float len2 = d.sqrMagnitude, t = len2 < 1e-9f ? 0f : Mathf.Clamp01(Vector2.Dot(q - p[i - 1], d) / len2);
+                float dist = (q - (p[i - 1] + d * t)).sqrMagnitude;
+                if (dist < best) { best = dist; bs = c[i - 1] + t * Mathf.Sqrt(len2); seg = i; }
+            }
+            return (bs, seg);
+        }
+
+        /// <summary>The planner's amendment 3 (10-27), Decision 1 item 3: the bar road ends on Wharf Road's bend at
+        /// (14, 92), and every movement through the join is a single sweep, none turning past the measure's 120° hairpin.
+        /// A movement turns by the angle between the heading it arrives on and the one it leaves on, Wharf Road's taken
+        /// just before or just after the join as the movement runs it. The bars are the amendment's.</summary>
+        [Test]
+        public void TheBarRoad_EndsOnWharfRoadsBend_AndNoMovementThereTurnsPast120Degrees()
+        {
+            const float MostTurnDegrees = 120f, EndSlack = 0.005f, Step = 0.01f;
+            var bend = new Vector2(14f, 92f);
+            var (net, junctions) = NetAndJunctions();
+            object j = junctions.Single(o => MiniJson.String(o, "id") == "road.nmc_bar_road" && MiniJson.String(o, "to") == "road.nmc_wharf_road");
+            Assert.AreEqual("joins", MiniJson.String(j, "kind"), "the bar road's record at Wharf Road");
+            var bar = net.Routes.Single(r => r.Id == "road.nmc_bar_road" && r.Part == MiniJson.String(j, "part"));
+            bool atEnd = MiniJson.String(j, "which") == "end";
+            Vector2 end = atEnd ? bar.Points[bar.Points.Length - 1] : bar.Points[0];
+            Vector2 arrive = end - (atEnd ? bar.Points[bar.Points.Length - 2] : bar.Points[1]);
+            // Wharf Road's heading just before and just after the join, on the part the end stands on
+            var wharf = net.All("road.nmc_wharf_road").OrderBy(r => ToLine(end, r.Points)).First().Points;
+            float[] c = Cum(wharf);
+            float s = Project(wharf, c, end).s;
+            Vector2 before = At(wharf, c, s) - At(wharf, c, s - Step), after = At(wharf, c, s + Step) - At(wharf, c, s);
+            var turns = new Dictionary<string, float>
+            {
+                ["the bar road out onto Wharf Road forward"] = Vector2.Angle(arrive, after),
+                ["the bar road out onto Wharf Road reversed"] = Vector2.Angle(arrive, -before),
+                ["Wharf Road forward into the bar road"] = Vector2.Angle(before, -arrive),
+                ["Wharf Road reversed into the bar road"] = Vector2.Angle(-after, -arrive),
+            };
+            CollectionAssert.IsEmpty(turns.Where(t => t.Value > MostTurnDegrees).Select(t => $"{t.Key} turns {t.Value:0.##}°"),
+                $"a movement at the bar road's join (its end at {end}) turns past {MostTurnDegrees}°: a hairpin");
+            Assert.That((end - bend).magnitude, Is.LessThanOrEqualTo(EndSlack), $"the bar road ends at {end}, not on Wharf Road's bend at {bend}");
+        }
+
+        /// <summary>The planner's amendment 3 (10-27), Decision 1 item 4: the lumber court runs in off the plaza's north
+        /// bay through the trucks gate and north to the docks, so the court's start joins the plaza parking, the north
+        /// bay's start joins the court, and the court's end still stops. The records are the amendment's.</summary>
+        [Test]
+        public void TheLumberCourt_RunsInOffTheNorthBay_AndStillStopsAtItsEnd()
+        {
+            var (_, junctions) = NetAndJunctions();
+            string RecordOf(string id, string part, string which)
+            {
+                var j = junctions.Where(o => MiniJson.String(o, "id") == id && MiniJson.String(o, "part") == part && MiniJson.String(o, "which") == which).ToList();
+                Assert.AreEqual(1, j.Count, $"{id} {part} {which}: not one junction record");
+                string to = MiniJson.String(j[0], "to");
+                return $"{id}{(part == null ? "" : " (" + part + ")")} {which} {MiniJson.String(j[0], "kind")}{(to == null ? "" : " " + to)}";
+            }
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    "yard.nmc_plaza_lumber_court start joins lot.nmc_plaza_parking",
+                    "lot.nmc_plaza_parking (the north bay) start joins yard.nmc_plaza_lumber_court",
+                    "yard.nmc_plaza_lumber_court end stops",
+                },
+                new[]
+                {
+                    RecordOf("yard.nmc_plaza_lumber_court", null, "start"),
+                    RecordOf("lot.nmc_plaza_parking", "the north bay", "start"),
+                    RecordOf("yard.nmc_plaza_lumber_court", null, "end"),
+                },
+                "the lumber court's records at the north bay and at its end");
+        }
+
+        /// <summary>The planner's amendments 3 and 4 (10-27): the south shore houses' drives meet Route 91 square, each
+        /// end 2.52 ± 0.05 m off its centreline and its last leg within 2° of square to the Route 91 segment it ends
+        /// beside. The bars are the amendments'.</summary>
+        [Test]
+        public void TheSouthShoreDrives_MeetRoute91Square_TheirEndsOffItsCentreline()
+        {
+            const float EndOff = 2.52f, EndSlack = 0.05f, MostOffSquareDegrees = 2f;
+            var (net, junctions) = NetAndJunctions();
+            var route91 = net.All("road.nmc_route_91").ToList();
+            Assert.That(route91, Is.Not.Empty, "Route 91 is not in the network");
+            var bad = new List<string>();
+            foreach (string id in new[] { "drive.nmc_south_shore_1", "drive.nmc_south_shore_4" })
+            {
+                var j = junctions.Where(o => MiniJson.String(o, "id") == id && MiniJson.String(o, "to") == "road.nmc_route_91").ToList();
+                Assert.AreEqual(1, j.Count, $"{id}: not one record joins Route 91");
+                var drive = net.Routes.Single(r => r.Id == id);
+                bool atEnd = MiniJson.String(j[0], "which") == "end";
+                Vector2 end = atEnd ? drive.Points[drive.Points.Length - 1] : drive.Points[0];
+                Vector2 leg = end - (atEnd ? drive.Points[drive.Points.Length - 2] : drive.Points[1]);
+                // the Route 91 segment the end stands nearest
+                float off = float.MaxValue;
+                Vector2 along = Vector2.zero;
+                foreach (var r in route91)
+                    for (int i = 1; i < r.Points.Length; i++)
+                    {
+                        float d = NineMileCreekRoadNetwork.PointToSegment(end, r.Points[i - 1], r.Points[i]);
+                        if (d < off) { off = d; along = r.Points[i] - r.Points[i - 1]; }
+                    }
+                float offSquare = Mathf.Abs(90f - Vector2.Angle(leg, along));
+                if (Mathf.Abs(off - EndOff) > EndSlack) bad.Add($"{id}: its end stands {off:0.###} m off Route 91's centreline");
+                if (offSquare > MostOffSquareDegrees) bad.Add($"{id}: its last leg meets Route 91 at {90f - offSquare:0.##}°, {offSquare:0.##}° off square");
+            }
+            CollectionAssert.IsEmpty(bad, $"a drive's end is not {EndOff} ± {EndSlack} m off Route 91, or not within {MostOffSquareDegrees}° of square");
         }
 
         // =============================================================================================================
