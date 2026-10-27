@@ -15,9 +15,24 @@ namespace HiddenHarbours.Tests
     {
         private readonly List<Object> _made = new List<Object>();
 
+        // Make()'s cutaway subscribes to these in Configure, and DestroyImmediate runs no OnDestroy here: without the
+        // clears a destroyed cutaway stays on the bus and throws on every later case's cabin signal, in any class.
+        [SetUp]
+        public void SetUp()
+        {
+            EventBus.Clear<CabinEntered>();
+            EventBus.Clear<CabinEntryLandingEntered>();
+            EventBus.Clear<CabinLeft>();
+            EventBus.Clear<ControlModeChanged>();
+        }
+
         [TearDown]
         public void TearDown()
         {
+            EventBus.Clear<CabinEntered>();
+            EventBus.Clear<CabinEntryLandingEntered>();
+            EventBus.Clear<CabinLeft>();
+            EventBus.Clear<ControlModeChanged>();
             for (int i = _made.Count - 1; i >= 0; i--) if (_made[i] != null) Object.DestroyImmediate(_made[i]);
             _made.Clear();
         }
