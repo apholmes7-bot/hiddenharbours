@@ -153,6 +153,10 @@ namespace HiddenHarbours.Tests.PlayMode
                           $"standing at {subject.Id}'s threshold ({Vector2.Distance(rig.Player.transform.position, door.transform.position):0.00} m " +
                           $"from a door with {door.ReachMeters:0.00} m of reach) must offer the way in");
             Assert.AreEqual("Open the door", InteractOffer.Current.Label);
+            float fromTheDoor = Vector2.Distance(rig.Player.transform.position, door.WorldPosition);
+            Assert.LessOrEqual(fromTheDoor, door.ReachMeters,
+                               $"premise: she stands within her door's reach when E goes down ({fromTheDoor:F3} m " +
+                               $"from the door at {door.WorldPosition:F3}, with {door.ReachMeters:F2} m of reach)");
             // ⚠ THE PRESS READ (owner, 2026-10-27): a read, not a pin. B2f found this leaf shut straight after
             // a press the code says this door cannot refuse, so the press is read where it lands — the
             // candidate it worked, where she stood when the offer was made and when E went down, and whether
@@ -639,10 +643,44 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
         }
 
+        /// <summary>
+        /// Stands her at her door on the shipped deck walk.
+        ///
+        /// <para>The walk seats her at the door's own spot, read back at its own sill's height — on the deck
+        /// floor nearest that height (<see cref="DeckWalkController.SnapToFloorAtHeight"/>) — and the case goes
+        /// on once her transform stands where the walk holds her. ⚠ Never by moving her transform: the walk
+        /// INTEGRATES its hull-frame point and writes it back every tick, so a moved transform lasts only until
+        /// the walk's next one. The press read (2026-10-27) caught exactly that on the cruiser: the offer made
+        /// with her on the door, E pressed from 1.43 m back, past the door's 1.20 m of reach.</para>
+        /// </summary>
         private static IEnumerator WalkToTheDoor(Rig rig, BoatCabinDoor door)
         {
-            rig.Player.transform.position = door.transform.position;
-            yield return null;
+            var walk = rig.Player.GetComponent<DeckWalkController>();
+            Assert.IsNotNull(walk, "the shipped deck walk is what stands her at her door");
+            Transform boat = walk.BoatRoot;
+            Assert.IsNotNull(boat, "premise: her walk is bound to the hull she stands on");
+            walk.SnapToFloorAtHeight(door.WorldPosition - (Vector2)boat.position, door.Door.ThresholdPoint.z);
+            yield return null;   // a tick of her walk, and of the offer made from where it holds her
+
+            const float agreeMetres = 0.001f;
+            float deadline = Time.time + 5f;
+            while (Vector2.Distance(rig.Player.transform.position, WhereHerWalkHasHer(walk)) > agreeMetres
+                   && Time.time < deadline)
+                yield return null;
+            Vector2 walked = WhereHerWalkHasHer(walk), stands = rig.Player.transform.position;
+            Assert.LessOrEqual(Vector2.Distance(stands, walked), agreeMetres,
+                               $"her walk holds her at {walked:F3} and her transform stands at {stands:F3}: the two " +
+                               "agree on where she stands before anything is asked of her");
+        }
+
+        /// <summary>Where her deck walk holds her: its hull-frame point at its deck height, projected onto her
+        /// drawn hull the way the walk writes her transform.</summary>
+        private static Vector2 WhereHerWalkHasHer(DeckWalkController walk)
+        {
+            Transform boat = walk.BoatRoot;
+            return (Vector2)boat.position + DeckAreaMath.DeckToWorld(walk.DeckLocalPosition, walk.DeckHeightMeters,
+                                                                    DeckWalkController.DrawnHeadingDegreesOf(boat),
+                                                                    DeckWalkController.BakeElevationDegreesOf(boat));
         }
 
         /// <summary>
