@@ -83,7 +83,7 @@ namespace HiddenHarbours.Boats
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-100)]   // the overlay-reader band: after BoatWaveMotion (−120) and the hull (−110)
-    public sealed class BoatInterior : MonoBehaviour, ICabinFloors
+    public sealed class BoatInterior : MonoBehaviour, ICabinFloors, ICabinEntryLanding
     {
         [Header("The room, as data (ADR 0003 rule 2 — nothing per-hull in C#)")]
         [Tooltip("This hull's imported interior. Null, or a def with no usable level, means she has no " +
@@ -155,9 +155,118 @@ namespace HiddenHarbours.Boats
         /// is not a door).</summary>
         public bool IsInside { get; private set; }
 
+        private BoatInteriorDoor _entryLandingDoor;
+        public BoatInteriorDoor EntryLandingDoor => IsInside ? _entryLandingDoor : null;
+
+        public Vector3 EntryLandingArrivalPoint
+        {
+            get
+            {
+                BoatInteriorEntryLanding landing = EntryLandingDoor?.EntryLanding;
+                if (landing == null || !BoatCabinThreshold.TryEntryLine(_def, EntryLandingDoor,
+                        out _, out _, out Vector2 line, out Vector2 outward)) return Vector3.zero;
+                float best = float.NegativeInfinity;
+                Vector2 seat = line;
+                foreach (Vector2 p in landing.UpperPlateau)
+                    best = Mathf.Max(best, Vector2.Dot(p - line, -outward));
+                // A midpoint of the actual inboard edge, not an invented floor or shifted threshold.
+                for (int i = 0; i < landing.UpperPlateau.Length; i++)
+                {
+                    Vector2 a = landing.UpperPlateau[i], b = landing.UpperPlateau[(i + 1) % landing.UpperPlateau.Length];
+                    if (Mathf.Abs(Vector2.Dot(a - line, -outward) - best) <= 1e-6f
+                        && Mathf.Abs(Vector2.Dot(b - line, -outward) - best) <= 1e-6f)
+                    { seat = (a + b) * 0.5f; break; }
+                    if (Vector2.Dot(a - line, -outward) == best) seat = a;
+                }
+                return new Vector3(seat.x, seat.y, landing.HeightMetres);
+            }
+        }
+
+        public bool TryEnterLanding(BoatInteriorDoor door)
+        {
+            if (IsInside || !HasInterior || !ValidLanding(door)) return false;
+            IsInside = true;
+            Level = -1;
+            _entryLandingDoor = door;
+            Apply();
+            PublishOccupancy();
+            return true;
+        }
+
+        public bool TryGoToLanding(BoatInteriorDoor door)
+        {
+            if (!IsInside || _entryLandingDoor != null || !IsUsableLevel(Level) || !ValidLanding(door)) return false;
+            BoatInteriorRoute route = LandingRoute(door);
+            string lowerId = route.FromPoint.z < route.ToPoint.z ? route.FromLevel : route.ToLevel;
+            if (_def.Levels[Level].Id != lowerId) return false;
+            Level = -1;
+            _entryLandingDoor = door;
+            Apply();
+            PublishOccupancy();
+            return true;
+        }
+
+        public bool TryTakeEntryStair(string routeId)
+        {
+            if (EntryLandingDoor == null || EntryLandingDoor.EntryLanding.RouteId != routeId) return false;
+            BoatInteriorRoute route = LandingRoute(EntryLandingDoor);
+            if (route == null || !route.Placed) return false;
+            string lowerId = route.FromPoint.z < route.ToPoint.z ? route.FromLevel : route.ToLevel;
+            int lower = -1;
+            for (int i = 0; i < _def.Levels.Length; i++)
+                if (_def.Levels[i]?.Id == lowerId && IsUsableLevel(i)) lower = i;
+            if (lower < 0) return false;
+            _entryLandingDoor = null;
+            Level = lower;
+            Apply();
+            PublishOccupancy();
+            return true;
+        }
+
+        public Vector2 ClampToEntryLanding(Vector2 wanted, Vector2 fallback)
+        {
+            BoatInteriorEntryLanding landing = EntryLandingDoor?.EntryLanding;
+            if (landing == null || !BoatCabinThreshold.TryEntryLine(_def, EntryLandingDoor,
+                    out _, out _, out Vector2 line, out Vector2 outward)) return fallback;
+            float outside = Vector2.Dot(wanted - line, outward);
+            if (outside > 0f) wanted -= outside * outward;
+            if (!DeckAreaMath.Contains(landing.UpperPlateau, wanted))
+                wanted = DeckAreaMath.ClosestPointOnOutline(landing.UpperPlateau, wanted, out _);
+            if (Vector2.Dot(wanted - line, outward) > 1e-6f) return fallback;
+            return wanted;
+        }
+
+        private BoatInteriorRoute LandingRoute(BoatInteriorDoor door)
+        {
+            if (_def?.Routes != null)
+                foreach (BoatInteriorRoute route in _def.Routes)
+                    if (route != null && route.Id == door?.EntryLanding?.RouteId) return route;
+            return null;
+        }
+
+        private bool ValidLanding(BoatInteriorDoor door)
+            => BoatCabinThreshold.TryEntryLine(_def, door, out BoatCabinEntryKind kind, out _, out _, out _)
+               && kind == BoatCabinEntryKind.Landing && LandingDeckId(door.EntryLanding) != null;
+
+        private string LandingDeckId(BoatInteriorEntryLanding landing)
+        {
+            HullMeshDef mesh = _meshRoom != null ? _meshRoom : _levelTable;
+            if (mesh?.LevelTags == null || landing == null) return null;
+            string id = null;
+            foreach (HullMeshDef.LevelTag row in mesh.LevelTags)
+                if (row.Enclosed && Mathf.Abs(row.SoleZMeters - landing.HeightMetres) <= _def.FloorTolerance
+                    && mesh.CutawayForDeck(row.DeckId).Opens)
+                {
+                    if (id != null) return null; // Ambiguous geometry cannot choose a landing's cut.
+                    id = row.DeckId;
+                }
+            return id;
+        }
+
         /// <summary>
         /// <b>Which level the occupant is on</b> — an index into <see cref="BoatInteriorDef.Levels"/>, and
-        /// always 0 outside.
+        /// always 0 outside. An entry landing has no room index and reports -1 through its separate
+        /// <see cref="ICabinEntryLanding"/> state.
         ///
         /// <para>An index rather than a bool for the reason <see cref="Core.BoatInteriorLevel"/> is a
         /// LAYER and not a place: a wheelhouse, a forepeak berth under it and a helm deck above it are
@@ -340,6 +449,7 @@ namespace HiddenHarbours.Boats
             if (!IsUsableLevel(level)) return false;
 
             IsInside = true;
+            _entryLandingDoor = null;
             Level = level;
             Apply();
             PublishOccupancy();
@@ -358,6 +468,7 @@ namespace HiddenHarbours.Boats
             if (!IsInside) return false;
 
             IsInside = false;
+            _entryLandingDoor = null;
             Level = 0;
             Apply();
             PublishOccupancy();
@@ -373,9 +484,11 @@ namespace HiddenHarbours.Boats
         public bool TryGoToLevel(int level)
         {
             if (!IsInside) return false;
+            if (_entryLandingDoor != null) return false;
             if (level == Level) return false;
             if (!IsUsableLevel(level)) return false;
 
+            _entryLandingDoor = null;
             Level = level;
             Apply();
             PublishOccupancy();
@@ -405,7 +518,9 @@ namespace HiddenHarbours.Boats
             Transform root = _boatRoot != null ? _boatRoot : transform;
             EntityId hullId = root != null ? root.gameObject.GetEntityId() : gameObject.GetEntityId();
 
-            if (IsInside) EventBus.Publish(new CabinEntered(hullId, Level));
+            if (IsInside && _entryLandingDoor != null)
+                EventBus.Publish(new CabinEntryLandingEntered(hullId, LandingDeckId(_entryLandingDoor.EntryLanding)));
+            else if (IsInside) EventBus.Publish(new CabinEntered(hullId, Level));
             else EventBus.Publish(new CabinLeft(hullId));
         }
 

@@ -149,6 +149,7 @@ namespace HiddenHarbours.Boats
         /// <summary>The room this doorway opens, as a level index, or −1 when no level stands at the
         /// sill's height (<see cref="BoatCabinThreshold.TryWallLine"/>).</summary>
         private int _wallLevelIndex = -1;
+        private BoatCabinEntryKind _entryKind;
 
         /// <summary>The wall line's nearest point to the threshold, hull-local metres.</summary>
         private Vector2 _wallPoint;
@@ -672,7 +673,8 @@ namespace HiddenHarbours.Boats
             if (BoatCabinThreshold.IsInThePull(door, _outward, false, hullLocalMetres, heldHullLocal)
                 || BoatCabinThreshold.IsInThePull(door, _outward, true, hullLocalMetres, heldHullLocal))
                 return true;
-            return BoatCabinThreshold.IsLeaningThrough(door, _outward, heldHullLocal)
+            return _entryKind == BoatCabinEntryKind.RoomEdge && _wallLevelIndex >= 0
+                   && BoatCabinThreshold.IsLeaningThrough(door, _outward, heldHullLocal)
                    && BoatCabinThreshold.IsAgainstFurnitureJustInside(door, _interior.Def.Levels[_wallLevelIndex],
                                                                       hullLocalMetres);
         }
@@ -713,6 +715,8 @@ namespace HiddenHarbours.Boats
                 return false;
 
             bool goingIn = WouldEnter;
+            if (!goingIn && _entryKind == BoatCabinEntryKind.Landing && _interior.EntryLandingDoor != door)
+                return false;
             if (!BoatCabinThreshold.IsHeldThrough(door, _outward, goingIn, heldHullLocal)) return false;
             if (!BoatCabinThreshold.HasReachedTheWallLine(_wallPoint, _outward, goingIn, hullLocalMetres)
                 && !BoatCabinThreshold.IsPressedShort(pastBefore, pastNow, goingIn))
@@ -725,6 +729,7 @@ namespace HiddenHarbours.Boats
             if (!goingIn) return _interior.TryExit();
 
             _interior.EnsureCells();
+            if (_entryKind == BoatCabinEntryKind.Landing) return _interior.TryEnterLanding(door);
             return _interior.TryEnter(Mathf.Max(0, _interior.LevelIndexAtHeight(door.ThresholdPoint.z)));
         }
 
@@ -740,11 +745,12 @@ namespace HiddenHarbours.Boats
                 BoatInteriorDoor door = Door;
                 if (door == null) return false;   // not cached: a def may arrive later
                 _wallMeasured = true;
-                if (!BoatCabinThreshold.TryWallLine(_interior.Def, door, out _wallLevelIndex, out _wallPoint,
-                                                    out _outward))
-                    _wallLevelIndex = -1;
+                bool measured = BoatCabinThreshold.TryEntryLine(_interior.Def, door, out _entryKind,
+                    out int? roomLevel, out _wallPoint, out _outward);
+                _wallLevelIndex = measured ? roomLevel ?? -1 : -1;
+                if (!measured) _entryKind = BoatCabinEntryKind.None;
             }
-            return _wallLevelIndex >= 0;
+            return _entryKind != BoatCabinEntryKind.None;
         }
     }
 }

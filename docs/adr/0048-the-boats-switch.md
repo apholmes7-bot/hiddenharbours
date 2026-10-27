@@ -918,3 +918,26 @@ This slot addresses §10 questions 1 (gate instruction counts) and 5 (near-linin
 2 and 6 stay with the sport fishers; 3 and 4 need a ghost in play. The owner decides the looks.
 
 R2 (a), Art desk 2026-10-22: the drive’s declared part tag is retained through extraction. The bake saves one vertex range per drive face beside its unchanged mesh on HullMeshDef, empty on hulls without a drive. No shader/mesh channel or runtime reader is added. The native unmodified guard is the first record; its accepted red then permits the tag cut and GF.sole/CR.sole rows, followed by a green guard and regression. Lead-architect reviews the Core field. The drive’s trim, tilt and steer in play: logged, not built. The go-fast cuddy is held shut for kit 10.4’s crawl-in and its game intake.
+
+## 14. A door's entry landing at the head of its stair
+
+The cruiser enters at the companionway's constant-height upper plateau, z 1.17; her cabin sole is at
+z 0.22. The optional door landing carries the authored opening segment, complete upper plateau polygon,
+its height and its route id. It is a door surface, not an indoor sole or an added deck area. Her deck
+count stays 25, her cabin count stays one, and the footprint stays the room-level union (§7 row 22).
+The owner clarified that intersection of the opening at its sill center qualifies: the full opening
+need not fit inside the narrower player-center polygon. Neither source shape is trimmed or moved.
+
+The legacy room-edge measure remains unchanged and is tried first. A separate measure reports the
+explicit entry kind; a landing has no room index. Its normal comes from the numeric opening segment,
+signed away from the named route's lower end, never the door's Side label or the nearest plateau edge.
+The plateau and height prove the sill, with the existing band and floor tolerance. Inconsistency is
+an importer refusal, not an invented surface. Empty landing data leaves legacy doors unchanged.
+
+Crossing the open door leaves the occupant inside on the upper landing and opens its existing house
+cut. Only the named stair transfers between that landing and the cabin, both ways. Its upper end
+cannot serve a walker on the deck: a shut door cannot be bypassed by taking the route. Returning up
+the stair leaves the door between the occupant and the deck. Deliberate direction/release rearms this
+short landing without changing a reach, clearance, tolerance, band, settle or legacy route latch.
+A new Core interface and landing occupancy signal carry this state; existing interfaces and room
+index signals retain their contracts. Rigs, walks and meshes are unchanged.
