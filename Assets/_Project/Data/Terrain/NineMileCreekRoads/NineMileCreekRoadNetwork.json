@@ -4,7 +4,7 @@
  "source": {
   "plan": {
    "asset": "Assets/_Project/Data/KeyScenes/KeyScene_nmc_wharf.asset",
-   "assetSha256Lf": "c210c4aa19565c15c36adcc6f1f5af155b7349558247968e2a6f3c71f2d91eeb",
+   "assetSha256Lf": "692bc37dd60da14f4d8788b45b5a51d0e3718b9c30984a4aabdd2936a8c41669",
    "file": "export/HH-nmc-ground-part-1-reissue-3-2026-10-07/ground/plan.json",
    "sha256": "06d0217c8c389c6b97582e2eb6b0cc44ff5bd042bde3af538ac47fd1fe89577a"
   },
@@ -1170,54 +1170,15 @@
    ]
   },
   {
-   "id": "loop.nmc_south_shore_2",
+   "id": "drive.nmc_south_shore_2",
    "from": "lots.south_shore_houses[1].drives[0]",
    "cls": "street",
    "w": 3.6,
    "surf": "setts",
    "ends": "flat",
    "pts": [
-    [-305, -126.2],
-    [-306.07, -126.32],
-    [-307.08, -126.67],
-    [-307.99, -127.25],
-    [-308.75, -128.01],
-    [-309.32, -128.92],
-    [-309.68, -129.93],
-    [-309.8, -131],
-    [-309.68, -132.07],
-    [-309.32, -133.08],
-    [-308.75, -133.99],
-    [-307.99, -134.75],
-    [-307.08, -135.32],
-    [-306.07, -135.68],
-    [-305, -135.8],
-    [-303.93, -135.68],
-    [-302.92, -135.32],
-    [-302.01, -134.75],
-    [-301.25, -133.99],
-    [-300.67, -133.08],
-    [-300.32, -132.07],
-    [-300.2, -131],
-    [-300.32, -129.93],
-    [-300.67, -128.92],
-    [-301.25, -128.01],
-    [-302.01, -127.25],
-    [-302.92, -126.67],
-    [-303.93, -126.32],
-    [-305, -126.2]
-   ]
-  },
-  {
-   "id": "drive.nmc_south_shore_2",
-   "from": "lots.south_shore_houses[1].drives[1]",
-   "cls": "street",
-   "w": 3.6,
-   "surf": "setts",
-   "ends": "flat",
-   "pts": [
-    [-305, -126.4],
-    [-305, -122.63]
+    [-304.86, -130.43],
+    [-305.2, -122.46]
    ]
   },
   {
@@ -1309,43 +1270,14 @@
    ]
   },
   {
-   "id": "loop.nmc_south_shore_4",
+   "id": "court.nmc_south_shore_4",
    "from": "lots.south_shore_houses[3].drives[0]",
    "cls": "street",
-   "w": 3.8,
+   "w": 12,
    "ends": "flat",
    "pts": [
-    [-356, -111.1],
-    [-357.12, -111.22],
-    [-358.2, -111.57],
-    [-359.17, -112.13],
-    [-360.01, -112.89],
-    [-360.68, -113.8],
-    [-361.14, -114.83],
-    [-361.37, -115.94],
-    [-361.37, -117.06],
-    [-361.14, -118.17],
-    [-360.68, -119.2],
-    [-360.01, -120.11],
-    [-359.17, -120.87],
-    [-358.2, -121.43],
-    [-357.12, -121.78],
-    [-356, -121.9],
-    [-354.88, -121.78],
-    [-353.8, -121.43],
-    [-352.83, -120.87],
-    [-351.99, -120.11],
-    [-351.32, -119.2],
-    [-350.86, -118.17],
-    [-350.63, -117.06],
-    [-350.63, -115.94],
-    [-350.86, -114.83],
-    [-351.32, -113.8],
-    [-351.99, -112.89],
-    [-352.83, -112.13],
-    [-353.8, -111.57],
-    [-354.88, -111.22],
-    [-356, -111.1]
+    [-364, -116],
+    [-348, -116]
    ]
   },
   {
@@ -1683,8 +1615,24 @@
    ]
   },
   {
-   "id": "flare.nmc_south_shore_6_r_1",
+   "id": "flare.nmc_south_shore_4_r_5",
    "from": "flares[4]",
+   "on": "court.nmc_south_shore_4",
+   "cls": "street",
+   "w": 1.505,
+   "for": [
+    "junction drive.nmc_south_shore_4 out onto road.nmc_route_91 (south of the river bridge) reversed (HightopVan, Modern3500)"
+   ],
+   "pts": [
+    [-363.489, -121.247],
+    [-359.489, -122.439],
+    [-355.489, -121.266],
+    [-355.231, -121.247]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_6_r_1",
+   "from": "flares[5]",
    "on": "court.nmc_south_shore_6",
    "cls": "street",
    "w": 1,
@@ -1701,7 +1649,7 @@
   },
   {
    "id": "flare.nmc_plaza_court_l_0",
-   "from": "flares[5]",
+   "from": "flares[6]",
    "on": "drive.nmc_plaza_court",
    "cls": "town",
    "w": 1,
@@ -1715,7 +1663,7 @@
   },
   {
    "id": "flare.nmc_plaza_east_r_28",
-   "from": "flares[6]",
+   "from": "flares[7]",
    "on": "drive.nmc_plaza_east",
    "cls": "town",
    "w": 1,
@@ -1731,7 +1679,7 @@
   },
   {
    "id": "flare.nmc_plaza_east_r_39",
-   "from": "flares[7]",
+   "from": "flares[8]",
    "on": "drive.nmc_plaza_east",
    "cls": "town",
    "w": 2.543,
@@ -1748,7 +1696,7 @@
   },
   {
    "id": "flare.nmc_plaza_east_l_39",
-   "from": "flares[8]",
+   "from": "flares[9]",
    "on": "drive.nmc_plaza_east",
    "cls": "town",
    "w": 2.432,
@@ -1770,7 +1718,7 @@
   },
   {
    "id": "flare.nmc_plaza_entrance_r_5",
-   "from": "flares[9]",
+   "from": "flares[10]",
    "on": "drive.nmc_plaza_entrance",
    "cls": "town",
    "w": 1.089,
@@ -1792,7 +1740,7 @@
   },
   {
    "id": "flare.nmc_plaza_entrance_l_4",
-   "from": "flares[10]",
+   "from": "flares[11]",
    "on": "drive.nmc_plaza_entrance",
    "cls": "town",
    "w": 2.56,
@@ -1808,7 +1756,7 @@
   },
   {
    "id": "flare.nmc_plaza_entrance_l_12",
-   "from": "flares[11]",
+   "from": "flares[12]",
    "on": "drive.nmc_plaza_entrance",
    "cls": "town",
    "w": 1,
@@ -1825,7 +1773,7 @@
   },
   {
    "id": "flare.nmc_plaza_mill_1_l_7",
-   "from": "flares[12]",
+   "from": "flares[13]",
    "on": "drive.nmc_plaza_mill_1",
    "cls": "town",
    "w": 1,
@@ -1842,7 +1790,7 @@
   },
   {
    "id": "flare.nmc_plaza_yard_out_r_23",
-   "from": "flares[13]",
+   "from": "flares[14]",
    "on": "drive.nmc_plaza_yard_out",
    "cls": "town",
    "w": 1.076,
@@ -1862,7 +1810,7 @@
   },
   {
    "id": "flare.nmc_plaza_yard_out_l_7",
-   "from": "flares[14]",
+   "from": "flares[15]",
    "on": "drive.nmc_plaza_yard_out",
    "cls": "town",
    "w": 1.095,
@@ -1886,7 +1834,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_7_r_1",
-   "from": "flares[15]",
+   "from": "flares[16]",
    "on": "drive.nmc_shore_lane_7",
    "cls": "street",
    "w": 1.528,
@@ -1905,7 +1853,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_7_r_5",
-   "from": "flares[16]",
+   "from": "flares[17]",
    "on": "drive.nmc_shore_lane_7",
    "cls": "street",
    "w": 1.406,
@@ -1924,7 +1872,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_7_l_2",
-   "from": "flares[17]",
+   "from": "flares[18]",
    "on": "drive.nmc_shore_lane_7",
    "cls": "street",
    "w": 2.272,
@@ -1946,7 +1894,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_8_r_1",
-   "from": "flares[18]",
+   "from": "flares[19]",
    "on": "drive.nmc_shore_lane_8",
    "cls": "street",
    "w": 1.816,
@@ -1964,7 +1912,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_8_l_3",
-   "from": "flares[19]",
+   "from": "flares[20]",
    "on": "drive.nmc_shore_lane_8",
    "cls": "street",
    "w": 1,
@@ -1981,7 +1929,7 @@
   },
   {
    "id": "flare.nmc_south_shore_1_r_0",
-   "from": "flares[20]",
+   "from": "flares[21]",
    "on": "drive.nmc_south_shore_1",
    "cls": "street",
    "w": 1.62,
@@ -1999,7 +1947,7 @@
   },
   {
    "id": "flare.nmc_south_shore_1_r_7",
-   "from": "flares[21]",
+   "from": "flares[22]",
    "on": "drive.nmc_south_shore_1",
    "cls": "street",
    "w": 1,
@@ -2018,7 +1966,7 @@
   },
   {
    "id": "flare.nmc_south_shore_1_l_1_2",
-   "from": "flares[22]",
+   "from": "flares[23]",
    "on": "drive.nmc_south_shore_1",
    "cls": "street",
    "w": 1.891,
@@ -2043,8 +1991,82 @@
    ]
   },
   {
+   "id": "flare.nmc_south_shore_2_r_0",
+   "from": "flares[24]",
+   "on": "drive.nmc_south_shore_2",
+   "cls": "street",
+   "w": 1.053,
+   "surf": "setts",
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_2 (Dually3500, HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-302.878, -130.345],
+    [-302.917, -129.847],
+    [-303.023, -129.351],
+    [-303.737, -126.879],
+    [-303.814, -125.078]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_2_r_6",
+   "from": "flares[25]",
+   "on": "drive.nmc_south_shore_2",
+   "cls": "street",
+   "w": 1,
+   "surf": "setts",
+   "for": [
+    "junction drive.nmc_south_shore_2 out onto road.nmc_route_91 (south of the river bridge) reversed (Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_2 (Dually3500, HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-303.77, -125.483],
+    [-303.724, -124.981],
+    [-303.467, -123.969],
+    [-303.459, -123.468],
+    [-303.829, -122.402]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_2_l_0",
+   "from": "flares[26]",
+   "on": "drive.nmc_south_shore_2",
+   "cls": "street",
+   "w": 1.08,
+   "surf": "setts",
+   "for": [
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_2 (Dually3500, HightopVan, Modern2500, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-306.873, -130.516],
+    [-306.846, -130.014],
+    [-306.692, -129.007],
+    [-306.268, -126.987],
+    [-306.346, -125.153]
+   ]
+  },
+  {
+   "id": "flare.nmc_south_shore_2_l_6",
+   "from": "flares[27]",
+   "on": "drive.nmc_south_shore_2",
+   "cls": "street",
+   "w": 1,
+   "surf": "setts",
+   "for": [
+    "junction drive.nmc_south_shore_2 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_2 (Dually3500, HightopVan, Modern350, Modern3500)"
+   ],
+   "pts": [
+    [-306.375, -125.413],
+    [-306.45, -124.916],
+    [-306.792, -123.93],
+    [-306.787, -123.429],
+    [-306.556, -122.518]
+   ]
+  },
+  {
    "id": "flare.nmc_south_shore_4_r_2",
-   "from": "flares[23]",
+   "from": "flares[28]",
    "on": "drive.nmc_south_shore_4",
    "cls": "street",
    "w": 1.59,
@@ -2054,10 +2076,10 @@
     "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_4 (Dually3500, Modern2500, Modern350)"
    ],
    "pts": [
-    [-357.648, -121.7],
-    [-358.042, -123.322],
+    [-357.875, -121.7],
+    [-358.268, -123.335],
+    [-358.243, -124.097],
     [-358.17, -124.592],
-    [-358.085, -125.084],
     [-357.789, -126.315],
     [-357.393, -127.527],
     [-357.094, -127.944],
@@ -2066,7 +2088,7 @@
   },
   {
    "id": "flare.nmc_south_shore_4_l_3",
-   "from": "flares[24]",
+   "from": "flares[29]",
    "on": "drive.nmc_south_shore_4",
    "cls": "street",
    "w": 1.377,
@@ -2087,7 +2109,7 @@
   },
   {
    "id": "flare.nmc_south_shore_5_r_0",
-   "from": "flares[25]",
+   "from": "flares[30]",
    "on": "drive.nmc_south_shore_5",
    "cls": "street",
    "w": 1.423,
@@ -2117,7 +2139,7 @@
   },
   {
    "id": "flare.nmc_south_shore_5_r_22",
-   "from": "flares[26]",
+   "from": "flares[31]",
    "on": "drive.nmc_south_shore_5",
    "cls": "street",
    "w": 1.527,
@@ -2135,7 +2157,7 @@
   },
   {
    "id": "flare.nmc_south_shore_5_l_1",
-   "from": "flares[27]",
+   "from": "flares[32]",
    "on": "drive.nmc_south_shore_5",
    "cls": "street",
    "w": 1.558,
@@ -2162,7 +2184,7 @@
   },
   {
    "id": "flare.nmc_south_shore_6_r_0",
-   "from": "flares[28]",
+   "from": "flares[33]",
    "on": "drive.nmc_south_shore_6",
    "cls": "street",
    "w": 1.28,
@@ -2189,7 +2211,7 @@
   },
   {
    "id": "flare.nmc_south_shore_6_r_22",
-   "from": "flares[29]",
+   "from": "flares[34]",
    "on": "drive.nmc_south_shore_6",
    "cls": "street",
    "w": 1,
@@ -2208,7 +2230,7 @@
   },
   {
    "id": "flare.nmc_south_shore_6_r_25",
-   "from": "flares[30]",
+   "from": "flares[35]",
    "on": "drive.nmc_south_shore_6",
    "cls": "street",
    "w": 1,
@@ -2230,7 +2252,7 @@
   },
   {
    "id": "flare.nmc_south_shore_6_l_0",
-   "from": "flares[31]",
+   "from": "flares[36]",
    "on": "drive.nmc_south_shore_6",
    "cls": "street",
    "w": 1.492,
@@ -2263,7 +2285,7 @@
   },
   {
    "id": "flare.nmc_south_shore_6_l_25",
-   "from": "flares[32]",
+   "from": "flares[37]",
    "on": "drive.nmc_south_shore_6",
    "cls": "street",
    "w": 1.378,
@@ -2282,7 +2304,7 @@
   },
   {
    "id": "flare.nmc_truck_park_spur_r_3",
-   "from": "flares[33]",
+   "from": "flares[38]",
    "on": "drive.nmc_truck_park_spur",
    "cls": "street",
    "w": 1,
@@ -2302,7 +2324,7 @@
   },
   {
    "id": "flare.nmc_truck_park_spur_r_7",
-   "from": "flares[34]",
+   "from": "flares[39]",
    "on": "drive.nmc_truck_park_spur",
    "cls": "street",
    "w": 1,
@@ -2319,7 +2341,7 @@
   },
   {
    "id": "flare.nmc_truck_park_spur_l_3",
-   "from": "flares[35]",
+   "from": "flares[40]",
    "on": "drive.nmc_truck_park_spur",
    "cls": "street",
    "w": 1.984,
@@ -2339,32 +2361,8 @@
    ]
   },
   {
-   "id": "flare.nmc_south_shore_4_r_15",
-   "from": "flares[36]",
-   "on": "loop.nmc_south_shore_4",
-   "cls": "street",
-   "w": 1.529,
-   "for": [
-    "junction drive.nmc_south_shore_4 out onto road.nmc_route_91 (south of the river bridge) reversed (HightopVan, Modern3500)",
-    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_4 (Dually3500, Modern2500, Modern350)"
-   ],
-   "pts": [
-    [-362.008, -119.012],
-    [-361.941, -119.529],
-    [-361.49, -120.773],
-    [-360.788, -121.949],
-    [-359.451, -123.404],
-    [-358.508, -123.689],
-    [-357.06, -123.741],
-    [-355.684, -123.519],
-    [-354.451, -123.053],
-    [-354.022, -122.756],
-    [-353.093, -122.333]
-   ]
-  },
-  {
    "id": "flare.nmc_plaza_parking_p1_l_57",
-   "from": "flares[37]",
+   "from": "flares[41]",
    "on": "lot.nmc_plaza_parking",
    "onPart": "the north bay",
    "cls": "town",
@@ -2382,7 +2380,7 @@
   },
   {
    "id": "flare.nmc_truck_park_l_7",
-   "from": "flares[38]",
+   "from": "flares[42]",
    "on": "lot.nmc_truck_park",
    "cls": "street",
    "w": 1,
@@ -2399,7 +2397,7 @@
   },
   {
    "id": "flare.nmc_truck_park_l_13",
-   "from": "flares[39]",
+   "from": "flares[43]",
    "on": "lot.nmc_truck_park",
    "cls": "street",
    "w": 1.951,
@@ -2419,7 +2417,7 @@
   },
   {
    "id": "flare.nmc_bar_road_r_155",
-   "from": "flares[40]",
+   "from": "flares[44]",
    "on": "road.nmc_bar_road",
    "cls": "street",
    "w": 1.446,
@@ -2445,7 +2443,7 @@
   },
   {
    "id": "flare.nmc_bar_road_r_193",
-   "from": "flares[41]",
+   "from": "flares[45]",
    "on": "road.nmc_bar_road",
    "cls": "street",
    "w": 1,
@@ -2467,7 +2465,7 @@
   },
   {
    "id": "flare.nmc_bar_road_l_182",
-   "from": "flares[42]",
+   "from": "flares[46]",
    "on": "road.nmc_bar_road",
    "cls": "street",
    "w": 1.125,
@@ -2487,7 +2485,7 @@
   },
   {
    "id": "flare.nmc_bar_road_l_187",
-   "from": "flares[43]",
+   "from": "flares[47]",
    "on": "road.nmc_bar_road",
    "cls": "street",
    "w": 1.73,
@@ -2508,7 +2506,7 @@
   },
   {
    "id": "flare.nmc_bar_road_l_192",
-   "from": "flares[44]",
+   "from": "flares[48]",
    "on": "road.nmc_bar_road",
    "cls": "street",
    "w": 1,
@@ -2526,7 +2524,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_6",
-   "from": "flares[45]",
+   "from": "flares[49]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 2.101,
@@ -2552,7 +2550,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_154",
-   "from": "flares[46]",
+   "from": "flares[50]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2572,7 +2570,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_157",
-   "from": "flares[47]",
+   "from": "flares[51]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2592,7 +2590,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_169",
-   "from": "flares[48]",
+   "from": "flares[52]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2608,7 +2606,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_171",
-   "from": "flares[49]",
+   "from": "flares[53]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2625,7 +2623,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_187",
-   "from": "flares[50]",
+   "from": "flares[54]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2643,7 +2641,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_212",
-   "from": "flares[51]",
+   "from": "flares[55]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1.666,
@@ -2672,7 +2670,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_247",
-   "from": "flares[52]",
+   "from": "flares[56]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1.584,
@@ -2699,7 +2697,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_r_310",
-   "from": "flares[53]",
+   "from": "flares[57]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 2.75,
@@ -2727,7 +2725,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_2",
-   "from": "flares[54]",
+   "from": "flares[58]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 2.296,
@@ -2747,7 +2745,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_7",
-   "from": "flares[55]",
+   "from": "flares[59]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2766,7 +2764,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_24",
-   "from": "flares[56]",
+   "from": "flares[60]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1.351,
@@ -2790,7 +2788,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_144",
-   "from": "flares[57]",
+   "from": "flares[61]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2809,7 +2807,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_159",
-   "from": "flares[58]",
+   "from": "flares[62]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2833,7 +2831,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_203",
-   "from": "flares[59]",
+   "from": "flares[63]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2853,7 +2851,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_220",
-   "from": "flares[60]",
+   "from": "flares[64]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2873,7 +2871,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_238",
-   "from": "flares[61]",
+   "from": "flares[65]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 2.307,
@@ -2895,7 +2893,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_245",
-   "from": "flares[62]",
+   "from": "flares[66]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1.793,
@@ -2916,7 +2914,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_251",
-   "from": "flares[63]",
+   "from": "flares[67]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2934,7 +2932,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_274",
-   "from": "flares[64]",
+   "from": "flares[68]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 1,
@@ -2954,7 +2952,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_a_l_298",
-   "from": "flares[65]",
+   "from": "flares[69]",
    "on": "road.nmc_camp_loop_a",
    "cls": "street",
    "w": 2.329,
@@ -2982,7 +2980,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_stem_p0_r_1",
-   "from": "flares[66]",
+   "from": "flares[70]",
    "on": "road.nmc_camp_loop_b_stem",
    "onPart": "east of the brook bridge",
    "cls": "street",
@@ -3013,7 +3011,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_stem_p0_l_1",
-   "from": "flares[67]",
+   "from": "flares[71]",
    "on": "road.nmc_camp_loop_b_stem",
    "onPart": "east of the brook bridge",
    "cls": "street",
@@ -3042,7 +3040,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_r_100",
-   "from": "flares[68]",
+   "from": "flares[72]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3069,7 +3067,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_r_116",
-   "from": "flares[69]",
+   "from": "flares[73]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3087,7 +3085,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_l_70",
-   "from": "flares[70]",
+   "from": "flares[74]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3107,7 +3105,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_l_72",
-   "from": "flares[71]",
+   "from": "flares[75]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3127,7 +3125,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_l_93",
-   "from": "flares[72]",
+   "from": "flares[76]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3148,7 +3146,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_l_95",
-   "from": "flares[73]",
+   "from": "flares[77]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3168,7 +3166,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_l_111",
-   "from": "flares[74]",
+   "from": "flares[78]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3188,7 +3186,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_b_l_113",
-   "from": "flares[75]",
+   "from": "flares[79]",
    "on": "road.nmc_camp_loop_b",
    "cls": "street",
    "w": 1,
@@ -3207,7 +3205,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_c_stem_r_0",
-   "from": "flares[76]",
+   "from": "flares[80]",
    "on": "road.nmc_camp_loop_c_stem",
    "cls": "street",
    "w": 1.639,
@@ -3225,7 +3223,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_c_stem_r_6",
-   "from": "flares[77]",
+   "from": "flares[81]",
    "on": "road.nmc_camp_loop_c_stem",
    "cls": "street",
    "w": 2.812,
@@ -3253,7 +3251,7 @@
   },
   {
    "id": "flare.nmc_camp_loop_c_stem_l_3",
-   "from": "flares[78]",
+   "from": "flares[82]",
    "on": "road.nmc_camp_loop_c_stem",
    "cls": "street",
    "w": 2.301,
@@ -3283,7 +3281,7 @@
   },
   {
    "id": "flare.nmc_camp_road_r_4",
-   "from": "flares[79]",
+   "from": "flares[83]",
    "on": "road.nmc_camp_road",
    "cls": "street",
    "w": 2.3,
@@ -3316,7 +3314,7 @@
   },
   {
    "id": "flare.nmc_camp_road_l_5",
-   "from": "flares[80]",
+   "from": "flares[84]",
    "on": "road.nmc_camp_road",
    "cls": "street",
    "w": 2.281,
@@ -3346,7 +3344,7 @@
   },
   {
    "id": "flare.nmc_main_street_lane_r_2",
-   "from": "flares[81]",
+   "from": "flares[85]",
    "on": "road.nmc_main_street_lane",
    "cls": "town",
    "w": 1,
@@ -3382,7 +3380,7 @@
   },
   {
    "id": "flare.nmc_main_street_lane_l_1",
-   "from": "flares[82]",
+   "from": "flares[86]",
    "on": "road.nmc_main_street_lane",
    "cls": "town",
    "w": 1,
@@ -3416,7 +3414,7 @@
   },
   {
    "id": "flare.nmc_mill_road_r_27",
-   "from": "flares[83]",
+   "from": "flares[87]",
    "on": "road.nmc_mill_road",
    "cls": "street",
    "w": 2.38,
@@ -3441,7 +3439,7 @@
   },
   {
    "id": "flare.nmc_mill_road_r_82",
-   "from": "flares[84]",
+   "from": "flares[88]",
    "on": "road.nmc_mill_road",
    "cls": "street",
    "w": 1,
@@ -3464,7 +3462,7 @@
   },
   {
    "id": "flare.nmc_mill_road_l_20",
-   "from": "flares[85]",
+   "from": "flares[89]",
    "on": "road.nmc_mill_road",
    "cls": "street",
    "w": 1,
@@ -3479,7 +3477,7 @@
   },
   {
    "id": "flare.nmc_mill_road_l_31",
-   "from": "flares[86]",
+   "from": "flares[90]",
    "on": "road.nmc_mill_road",
    "cls": "street",
    "w": 1.165,
@@ -3500,7 +3498,7 @@
   },
   {
    "id": "flare.nmc_mill_road_l_97",
-   "from": "flares[87]",
+   "from": "flares[91]",
    "on": "road.nmc_mill_road",
    "cls": "street",
    "w": 1.062,
@@ -3518,7 +3516,7 @@
   },
   {
    "id": "flare.nmc_north_creek_lane_r_3",
-   "from": "flares[88]",
+   "from": "flares[92]",
    "on": "road.nmc_north_creek_lane",
    "cls": "street",
    "w": 1.113,
@@ -3538,7 +3536,7 @@
   },
   {
    "id": "flare.nmc_north_creek_lane_r_8",
-   "from": "flares[89]",
+   "from": "flares[93]",
    "on": "road.nmc_north_creek_lane",
    "cls": "street",
    "w": 1,
@@ -3561,7 +3559,7 @@
   },
   {
    "id": "flare.nmc_north_creek_lane_l_3",
-   "from": "flares[90]",
+   "from": "flares[94]",
    "on": "road.nmc_north_creek_lane",
    "cls": "street",
    "w": 1,
@@ -3580,7 +3578,7 @@
   },
   {
    "id": "flare.nmc_north_creek_lane_l_7",
-   "from": "flares[91]",
+   "from": "flares[95]",
    "on": "road.nmc_north_creek_lane",
    "cls": "street",
    "w": 1.033,
@@ -3605,7 +3603,7 @@
   },
   {
    "id": "flare.nmc_north_creek_lane_l_40",
-   "from": "flares[92]",
+   "from": "flares[96]",
    "on": "road.nmc_north_creek_lane",
    "cls": "street",
    "w": 1,
@@ -3622,7 +3620,7 @@
   },
   {
    "id": "flare.nmc_route_91_town_r_47",
-   "from": "flares[93]",
+   "from": "flares[97]",
    "on": "road.nmc_route_91_town",
    "onPart": "the town section, north of the river bridge",
    "cls": "town",
@@ -3667,7 +3665,7 @@
   },
   {
    "id": "flare.nmc_route_91_town_r_54",
-   "from": "flares[94]",
+   "from": "flares[98]",
    "on": "road.nmc_route_91_town",
    "onPart": "the town section, north of the river bridge",
    "cls": "town",
@@ -3712,7 +3710,7 @@
   },
   {
    "id": "flare.nmc_route_91_town_l_9",
-   "from": "flares[95]",
+   "from": "flares[99]",
    "on": "road.nmc_route_91_town",
    "onPart": "the town section, north of the river bridge",
    "cls": "town",
@@ -3761,7 +3759,7 @@
   },
   {
    "id": "flare.nmc_route_91_town_l_32",
-   "from": "flares[96]",
+   "from": "flares[100]",
    "on": "road.nmc_route_91_town",
    "onPart": "the town section, north of the river bridge",
    "cls": "town",
@@ -3807,7 +3805,7 @@
   },
   {
    "id": "flare.nmc_route_91_town_l_47",
-   "from": "flares[97]",
+   "from": "flares[101]",
    "on": "road.nmc_route_91_town",
    "onPart": "the town section, north of the river bridge",
    "cls": "town",
@@ -3849,7 +3847,7 @@
   },
   {
    "id": "flare.nmc_route_91_r_90",
-   "from": "flares[98]",
+   "from": "flares[102]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -3865,7 +3863,7 @@
   },
   {
    "id": "flare.nmc_route_91_r_101",
-   "from": "flares[99]",
+   "from": "flares[103]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -3885,7 +3883,7 @@
   },
   {
    "id": "flare.nmc_route_91_r_314",
-   "from": "flares[100]",
+   "from": "flares[104]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -3907,7 +3905,7 @@
   },
   {
    "id": "flare.nmc_route_91_r_341",
-   "from": "flares[101]",
+   "from": "flares[105]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -3931,7 +3929,7 @@
   },
   {
    "id": "flare.nmc_route_91_r_367",
-   "from": "flares[102]",
+   "from": "flares[106]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -3950,12 +3948,13 @@
   },
   {
    "id": "flare.nmc_route_91_r_372",
-   "from": "flares[103]",
+   "from": "flares[107]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
    "w": 1.107,
    "for": [
+    "junction drive.nmc_south_shore_2 out onto road.nmc_route_91 (south of the river bridge) reversed (HightopVan)",
     "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern3500)",
     "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_6 (HightopVan, Modern2500, Modern3500)"
    ],
@@ -3964,13 +3963,16 @@
     [-289.04, -117.307],
     [-291.548, -116.584],
     [-292.048, -116.631],
-    [-294.54, -117.37],
-    [-295.414, -117.38]
+    [-293.543, -117.098],
+    [-294.543, -117.105],
+    [-295.541, -117.235],
+    [-296.04, -117.387],
+    [-298.212, -117.411]
    ]
   },
   {
    "id": "flare.nmc_route_91_r_379",
-   "from": "flares[104]",
+   "from": "flares[108]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -3990,7 +3992,7 @@
   },
   {
    "id": "flare.nmc_route_91_r_385",
-   "from": "flares[105]",
+   "from": "flares[109]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4008,8 +4010,30 @@
    ]
   },
   {
+   "id": "flare.nmc_route_91_r_395",
+   "from": "flares[110]",
+   "on": "road.nmc_route_91",
+   "onPart": "south of the river bridge",
+   "cls": "route",
+   "w": 1,
+   "for": [
+    "junction drive.nmc_south_shore_2 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern350)"
+   ],
+   "pts": [
+    [-313.649, -117.897],
+    [-315.157, -117.747],
+    [-316.89, -117.84],
+    [-318.361, -118.156],
+    [-320.354, -118.342],
+    [-321.344, -118.483],
+    [-322.822, -118.744],
+    [-323.299, -118.952],
+    [-323.624, -118.995]
+   ]
+  },
+  {
    "id": "flare.nmc_route_91_r_429",
-   "from": "flares[106]",
+   "from": "flares[111]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4032,7 +4056,7 @@
   },
   {
    "id": "flare.nmc_route_91_r_438",
-   "from": "flares[107]",
+   "from": "flares[112]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4052,7 +4076,7 @@
   },
   {
    "id": "flare.nmc_route_91_l_75",
-   "from": "flares[108]",
+   "from": "flares[113]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4076,7 +4100,7 @@
   },
   {
    "id": "flare.nmc_route_91_l_305",
-   "from": "flares[109]",
+   "from": "flares[114]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4094,7 +4118,7 @@
   },
   {
    "id": "flare.nmc_route_91_l_309",
-   "from": "flares[110]",
+   "from": "flares[115]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4114,7 +4138,7 @@
   },
   {
    "id": "flare.nmc_route_91_l_360",
-   "from": "flares[111]",
+   "from": "flares[116]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4131,14 +4155,16 @@
   },
   {
    "id": "flare.nmc_route_91_l_367",
-   "from": "flares[112]",
+   "from": "flares[117]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
    "w": 1.35,
    "for": [
+    "junction drive.nmc_south_shore_2 out onto road.nmc_route_91 (south of the river bridge) reversed (Modern3500)",
     "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) reversed (Dually3500, HightopVan, Modern3500)",
-    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern350, Modern3500)"
+    "junction drive.nmc_south_shore_6 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern350, Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) forward into drive.nmc_south_shore_2 (Dually3500, HightopVan, Modern350)"
    ],
    "pts": [
     [-282.688, -121.782],
@@ -4152,35 +4178,41 @@
     [-295.734, -122.157],
     [-298.23, -122.497],
     [-299.729, -122.587],
-    [-301.23, -122.476],
-    [-302.152, -122.341],
-    [-303.162, -122.125],
-    [-303.663, -122.098],
+    [-300.73, -122.542],
+    [-301.731, -122.406],
+    [-302.149, -122.412],
+    [-302.645, -122.515],
+    [-304.162, -122.129],
     [-306.252, -122.209]
    ]
   },
   {
-   "id": "flare.nmc_route_91_l_391",
-   "from": "flares[113]",
+   "id": "flare.nmc_route_91_l_389",
+   "from": "flares[118]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
    "w": 1,
    "for": [
-    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) forward (Modern3500)"
+    "junction drive.nmc_south_shore_2 out onto road.nmc_route_91 (south of the river bridge) forward (HightopVan, Modern3500)",
+    "junction drive.nmc_south_shore_5 out onto road.nmc_route_91 (south of the river bridge) forward (Modern3500)",
+    "junction road.nmc_route_91 (south of the river bridge) reversed into drive.nmc_south_shore_2 (Dually3500, HightopVan, Modern350, Modern3500)"
    ],
    "pts": [
-    [-308.565, -122.484],
-    [-309.062, -122.554],
-    [-309.556, -122.704],
-    [-311.052, -122.845],
-    [-312.554, -122.826],
-    [-313.693, -122.703]
+    [-306.149, -122.38],
+    [-306.645, -122.492],
+    [-307.631, -122.835],
+    [-309.143, -122.582],
+    [-309.638, -122.713],
+    [-311.133, -122.857],
+    [-312.636, -122.824],
+    [-313.642, -122.701],
+    [-314.216, -122.726]
    ]
   },
   {
    "id": "flare.nmc_route_91_l_416",
-   "from": "flares[114]",
+   "from": "flares[119]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4200,7 +4232,7 @@
   },
   {
    "id": "flare.nmc_route_91_l_424",
-   "from": "flares[115]",
+   "from": "flares[120]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4228,7 +4260,7 @@
   },
   {
    "id": "flare.nmc_route_91_l_436",
-   "from": "flares[116]",
+   "from": "flares[121]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4246,7 +4278,7 @@
   },
   {
    "id": "flare.nmc_route_91_l_439",
-   "from": "flares[117]",
+   "from": "flares[122]",
    "on": "road.nmc_route_91",
    "onPart": "south of the river bridge",
    "cls": "route",
@@ -4263,7 +4295,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_r_1",
-   "from": "flares[118]",
+   "from": "flares[123]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 1.133,
@@ -4289,7 +4321,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_r_32",
-   "from": "flares[119]",
+   "from": "flares[124]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 1,
@@ -4312,7 +4344,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_r_59",
-   "from": "flares[120]",
+   "from": "flares[125]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 2.039,
@@ -4340,7 +4372,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_r_80",
-   "from": "flares[121]",
+   "from": "flares[126]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 2.24,
@@ -4361,7 +4393,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_r_88",
-   "from": "flares[122]",
+   "from": "flares[127]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 1,
@@ -4379,7 +4411,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_r_95",
-   "from": "flares[123]",
+   "from": "flares[128]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 1.745,
@@ -4399,7 +4431,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_l_4",
-   "from": "flares[124]",
+   "from": "flares[129]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 1.229,
@@ -4428,7 +4460,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_l_28",
-   "from": "flares[125]",
+   "from": "flares[130]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 1.22,
@@ -4448,7 +4480,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_l_60",
-   "from": "flares[126]",
+   "from": "flares[131]",
    "on": "road.nmc_shore_lane",
    "cls": "street",
    "w": 4.296,
@@ -4486,7 +4518,7 @@
   },
   {
    "id": "flare.nmc_water_street_l_88",
-   "from": "flares[127]",
+   "from": "flares[132]",
    "on": "road.nmc_water_street",
    "cls": "town",
    "w": 1,
@@ -4519,7 +4551,7 @@
   },
   {
    "id": "flare.nmc_wharf_road_r_40",
-   "from": "flares[128]",
+   "from": "flares[133]",
    "on": "road.nmc_wharf_road",
    "cls": "paved",
    "w": 1.825,
@@ -4537,7 +4569,7 @@
   },
   {
    "id": "flare.nmc_wharf_road_r_44",
-   "from": "flares[129]",
+   "from": "flares[134]",
    "on": "road.nmc_wharf_road",
    "cls": "paved",
    "w": 1,
@@ -4555,7 +4587,7 @@
   },
   {
    "id": "flare.nmc_wharf_road_r_49",
-   "from": "flares[130]",
+   "from": "flares[135]",
    "on": "road.nmc_wharf_road",
    "cls": "paved",
    "w": 1.269,
@@ -4575,7 +4607,7 @@
   },
   {
    "id": "flare.nmc_wharf_road_l_28",
-   "from": "flares[131]",
+   "from": "flares[136]",
    "on": "road.nmc_wharf_road",
    "cls": "paved",
    "w": 1,
@@ -4600,7 +4632,7 @@
   },
   {
    "id": "flare.nmc_wharf_road_l_55",
-   "from": "flares[132]",
+   "from": "flares[137]",
    "on": "road.nmc_wharf_road",
    "cls": "paved",
    "w": 1,
@@ -4620,7 +4652,7 @@
   },
   {
    "id": "flare.nmc_wharf_road_l_199",
-   "from": "flares[133]",
+   "from": "flares[138]",
    "on": "road.nmc_wharf_road",
    "cls": "paved",
    "w": 1,
@@ -4636,7 +4668,7 @@
   },
   {
    "id": "flare.nmc_wharf_road_l_201",
-   "from": "flares[134]",
+   "from": "flares[139]",
    "on": "road.nmc_wharf_road",
    "cls": "paved",
    "w": 1,
@@ -4652,7 +4684,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_r_1_2",
-   "from": "flares[135]",
+   "from": "flares[140]",
    "on": "turn.nmc_shore_lane",
    "cls": "street",
    "w": 1.935,
@@ -4668,7 +4700,7 @@
   },
   {
    "id": "flare.nmc_plaza_apron_l_29",
-   "from": "flares[136]",
+   "from": "flares[141]",
    "on": "yard.nmc_plaza_apron",
    "cls": "town",
    "w": 1,
@@ -4684,7 +4716,7 @@
   },
   {
    "id": "flare.nmc_plaza_apron_l_43",
-   "from": "flares[137]",
+   "from": "flares[142]",
    "on": "yard.nmc_plaza_apron",
    "cls": "town",
    "w": 1.163,
@@ -4708,7 +4740,7 @@
   },
   {
    "id": "flare.nmc_plaza_apron_l_57",
-   "from": "flares[138]",
+   "from": "flares[143]",
    "on": "yard.nmc_plaza_apron",
    "cls": "town",
    "w": 1,
@@ -4729,7 +4761,7 @@
   },
   {
    "id": "flare.nmc_shore_lane_6_l_1",
-   "from": "flares[139]",
+   "from": "flares[144]",
    "on": "yard.nmc_shore_lane_6",
    "cls": "street",
    "w": 2.014,
@@ -6057,30 +6089,15 @@
    "kind": "stops"
   },
   {
-   "id": "loop.nmc_south_shore_2",
-   "which": "start",
-   "at": [-305, -126.2],
-   "kind": "joins",
-   "to": "drive.nmc_south_shore_2"
-  },
-  {
-   "id": "loop.nmc_south_shore_2",
-   "which": "end",
-   "at": [-305, -126.2],
-   "kind": "joins",
-   "to": "drive.nmc_south_shore_2"
-  },
-  {
    "id": "drive.nmc_south_shore_2",
    "which": "start",
-   "at": [-305, -126.4],
-   "kind": "joins",
-   "to": "loop.nmc_south_shore_2"
+   "at": [-304.86, -130.43],
+   "kind": "stops"
   },
   {
    "id": "drive.nmc_south_shore_2",
    "which": "end",
-   "at": [-305, -122.63],
+   "at": [-305.2, -122.46],
    "kind": "joins",
    "to": "road.nmc_route_91"
   },
@@ -6135,25 +6152,23 @@
    "kind": "stops"
   },
   {
-   "id": "loop.nmc_south_shore_4",
+   "id": "court.nmc_south_shore_4",
    "which": "start",
-   "at": [-356, -111.1],
-   "kind": "joins",
-   "to": "walk.nmc_south_shore_4"
+   "at": [-364, -116],
+   "kind": "stops"
   },
   {
-   "id": "loop.nmc_south_shore_4",
+   "id": "court.nmc_south_shore_4",
    "which": "end",
-   "at": [-356, -111.1],
-   "kind": "joins",
-   "to": "walk.nmc_south_shore_4"
+   "at": [-348, -116],
+   "kind": "stops"
   },
   {
    "id": "drive.nmc_south_shore_4",
    "which": "start",
    "at": [-356, -121.7],
    "kind": "joins",
-   "to": "loop.nmc_south_shore_4"
+   "to": "court.nmc_south_shore_4"
   },
   {
    "id": "drive.nmc_south_shore_4",
@@ -6173,7 +6188,7 @@
    "which": "end",
    "at": [-356, -111.2],
    "kind": "joins",
-   "to": "loop.nmc_south_shore_4"
+   "to": "court.nmc_south_shore_4"
   },
   {
    "id": "walk.nmc_south_shore_5",

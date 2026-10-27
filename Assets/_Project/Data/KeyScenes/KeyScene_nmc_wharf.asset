@@ -601,9 +601,8 @@ MonoBehaviour:
         roof-walk house","at":[-305,-143],"size":[29,10],"faces":"N","z":6.55,"row":"the
         bluff, south of Route 91","photo":2,"household":"a family from Montreal who
         summer here, three children and a Bernese; the grandparents come for July","kit":"NmcShoreEstates
-        (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js): estateHouse","buildings":["structure.nmc_south_shore_house_2","structure.nmc_south_shore_pool_2","structure.nmc_south_shore_bluff_deck_2"],"drive":"road.nmc_route_91","drives":[{"id":"loop.nmc_south_shore_2","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-305,-126.2],[-306.07,-126.32],[-307.08,-126.67],[-307.99,-127.25],[-308.75,-128.01],[-309.32,-128.92],[-309.68,-129.93],[-309.8,-131],[-309.68,-132.07],[-309.32,-133.08],[-308.75,-133.99],[-307.99,-134.75],[-307.08,-135.32],[-306.07,-135.68],[-305,-135.8],[-303.93,-135.68],[-302.92,-135.32],[-302.01,-134.75],[-301.25,-133.99],[-300.67,-133.08],[-300.32,-132.07],[-300.2,-131],[-300.32,-129.93],[-300.67,-128.92],[-301.25,-128.01],[-302.01,-127.25],[-302.92,-126.67],[-303.93,-126.32],[-305,-126.2]],"ends":"flat"},{"id":"drive.nmc_south_shore_2","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-305,-126.4],[-305,-122.63]],"ends":"flat"}],"added":"10-04
+        (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js): estateHouse","buildings":["structure.nmc_south_shore_house_2","structure.nmc_south_shore_pool_2","structure.nmc_south_shore_bluff_deck_2"],"drive":"road.nmc_route_91","drives":[{"id":"drive.nmc_south_shore_2","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-304.86,-130.43],[-305.2,-122.46]],"ends":"flat"}],"added":"10-04
         (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_3","name":"the
         point estate","at":[-262,-142],"size":[34,10.5],"faces":"N","z":6.6,"row":"the
         bluff, south of Route 91","photo":3,"household":"a Toronto family of four
@@ -619,8 +618,8 @@ MonoBehaviour:
         second row, north of Route 91","photo":1,"household":"two architects from
         Halifax who keep the house full of friends every weekend; the bikes are for
         the guests","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
-        estateHouse","buildings":["structure.nmc_south_shore_house_4"],"drive":"road.nmc_route_91","drives":[{"id":"loop.nmc_south_shore_4","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-111.1],[-357.12,-111.22],[-358.2,-111.57],[-359.17,-112.13],[-360.01,-112.89],[-360.68,-113.8],[-361.14,-114.83],[-361.37,-115.94],[-361.37,-117.06],[-361.14,-118.17],[-360.68,-119.2],[-360.01,-120.11],[-359.17,-120.87],[-358.2,-121.43],[-357.12,-121.78],[-356,-121.9],[-354.88,-121.78],[-353.8,-121.43],[-352.83,-120.87],[-351.99,-120.11],[-351.32,-119.2],[-350.86,-118.17],[-350.63,-117.06],[-350.63,-115.94],[-350.86,-114.83],[-351.32,-113.8],[-351.99,-112.89],[-352.83,-112.13],[-353.8,-111.57],[-354.88,-111.22],[-356,-111.1]],"ends":"flat"},{"id":"drive.nmc_south_shore_4","builder":"the
+        estateHouse","buildings":["structure.nmc_south_shore_house_4"],"drive":"road.nmc_route_91","drives":[{"id":"court.nmc_south_shore_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":12,"pts":[[-364,-116],[-348,-116]],"ends":"flat"},{"id":"drive.nmc_south_shore_4","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-121.7],[-356,-122.3],[-355.92,-123.66],[-355.69,-125],[-355.31,-126.31],[-354.78,-127.57],[-354.37,-128.42]],"ends":"flat"},{"id":"walk.nmc_south_shore_4","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.6,"pts":[[-356,-107.6],[-356,-111.2]],"ends":"flat"}],"added":"10-04
         (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_5","name":"the

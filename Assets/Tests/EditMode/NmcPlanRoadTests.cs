@@ -628,7 +628,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>The planner's amendments 3 and 4 (10-27): the south shore houses' drives meet Route 91 square, each
         /// end 2.52 ± 0.05 m off its centreline and its last leg within 2° of square to the Route 91 segment it ends
-        /// beside. The bars are the amendments'.</summary>
+        /// beside; drive 2 among them since Decision 2 (a) ran it on. The bars are the amendments'.</summary>
         [Test]
         public void TheSouthShoreDrives_MeetRoute91Square_TheirEndsOffItsCentreline()
         {
@@ -637,7 +637,7 @@ namespace HiddenHarbours.Tests.EditMode
             var route91 = net.All("road.nmc_route_91").ToList();
             Assert.That(route91, Is.Not.Empty, "Route 91 is not in the network");
             var bad = new List<string>();
-            foreach (string id in new[] { "drive.nmc_south_shore_1", "drive.nmc_south_shore_4" })
+            foreach (string id in new[] { "drive.nmc_south_shore_1", "drive.nmc_south_shore_2", "drive.nmc_south_shore_4" })
             {
                 var j = junctions.Where(o => MiniJson.String(o, "id") == id && MiniJson.String(o, "to") == "road.nmc_route_91").ToList();
                 Assert.AreEqual(1, j.Count, $"{id}: not one record joins Route 91");
@@ -659,6 +659,43 @@ namespace HiddenHarbours.Tests.EditMode
                 if (offSquare > MostOffSquareDegrees) bad.Add($"{id}: its last leg meets Route 91 at {90f - offSquare:0.##}°, {offSquare:0.##}° off square");
             }
             CollectionAssert.IsEmpty(bad, $"a drive's end is not {EndOff} ± {EndSlack} m off Route 91, or not within {MostOffSquareDegrees}° of square");
+        }
+
+        /// <summary>The planner's amendment 3, Decision 2 (a), the owner's ruling (10-27) laid by amendment 4: house 4's
+        /// court takes loop 4's place at 12 m, drive 4's start and walk 4's end join it, and both loops retire, their ids
+        /// standing nowhere in the plan or the network. The width and the ids are the amendment's.</summary>
+        [Test]
+        public void TheSouthShoreHouses_TurnAboutOnCourt4_AndBothLoopsRetire()
+        {
+            const float CourtWidth = 12f, WidthSlack = 0.001f;
+            const string Court = "court.nmc_south_shore_4";
+            string[] loops = { "loop.nmc_south_shore_2", "loop.nmc_south_shore_4" };
+            var (net, junctions) = NetAndJunctions();
+            var court = net.Routes.Where(r => r.Id == Court).ToList();
+            Assert.AreEqual(1, court.Count, $"{Court}: not one route in the network");
+            Assert.That(Mathf.Abs(court[0].Width - CourtWidth), Is.LessThanOrEqualTo(WidthSlack), $"{Court} is {court[0].Width} m wide, not {CourtWidth}");
+            string RecordOf(string id, string which)
+            {
+                var j = junctions.Where(o => MiniJson.String(o, "id") == id && MiniJson.String(o, "which") == which).ToList();
+                Assert.AreEqual(1, j.Count, $"{id} {which}: not one junction record");
+                string to = MiniJson.String(j[0], "to");
+                return $"{id} {which} {MiniJson.String(j[0], "kind")}{(to == null ? "" : " " + to)}";
+            }
+            CollectionAssert.AreEqual(
+                new[] { $"drive.nmc_south_shore_4 start joins {Court}", $"walk.nmc_south_shore_4 end joins {Court}" },
+                new[] { RecordOf("drive.nmc_south_shore_4", "start"), RecordOf("walk.nmc_south_shore_4", "end") },
+                "drive 4's start and walk 4's end at house 4's court");
+            string plan = File.ReadAllText(PlanAsset);
+            var standing = new List<string>();
+            foreach (string loop in loops)
+            {
+                if (plan.Contains(loop)) standing.Add($"{loop}: in {PlanAsset}");
+                if (net.Routes.Any(r => r.Id == loop)) standing.Add($"{loop}: a route in the network");
+                if (net.Flares.Any(f => f.On == loop || (f.For != null && f.For.Any(m => m.Contains(loop))))) standing.Add($"{loop}: a flare's road or movement");
+                if (junctions.Any(o => MiniJson.String(o, "id") == loop || MiniJson.String(o, "to") == loop)) standing.Add($"{loop}: a junction record");
+                if (net.Swept.Any(s => s.By != null && s.By.Contains(loop)) || net.Held.Any(h => h.Contains(loop))) standing.Add($"{loop}: a swept or held entry");
+            }
+            CollectionAssert.IsEmpty(standing, "a retired loop's id still stands");
         }
 
         // =============================================================================================================
