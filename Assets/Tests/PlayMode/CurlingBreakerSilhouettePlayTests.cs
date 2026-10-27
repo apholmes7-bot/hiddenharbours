@@ -49,11 +49,17 @@ namespace HiddenHarbours.Tests.PlayMode
         const string OutFolder = "curl-b2";
         const int Seed = 4242, PhaseSeed = 12345, Pixels = 768, Frames = 264;
         const int MaxSettleFrames = 60, MaxCompileFrames = 600;
+        // The events read covers this many windows of Frames either side of the plates' own.
+        const int EventWindows = 5;
         const int WorstWidth = 1920, WorstHeight = 1080, BudgetWarmUp = 30, BudgetSamples = 120, SamplesPerYield = 30;
         const float GaleSpeed = 12.95f, GaleTowardDeg = 50f, SlackPx = 2f;
         // The closest framing the plates take: twice the bar's 96 px/m, the curl filling a 1080p view.
         const float WorstPixelsPerMetre = 192f;
-        const double Start = 900, CpuTickBudgetMs = 0.25, GpuDeltaBudgetMs = 0.5;
+        // One bore per event: the event cresting 208 frames after 900 s is born at 0, under MinBore 0.1, and never
+        // draws. The window opens one event earlier (263 frames, the period's 263.007 to the whole frame), so its
+        // crest frame holds the bore born at 0.5012: 63 frames live, 23 readable, full throw 0.3718 m.
+        const double Start = 900 - 263 / 60.0;
+        const double CpuTickBudgetMs = 0.25, GpuDeltaBudgetMs = 0.5;
         static readonly string[] TideNames = { "low", "mean", "high" };
         static readonly float[] TideLevels = { -2.2f, 0f, 2.2f };
 
@@ -161,6 +167,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var csv = new StringBuilder("tide,level_m,frame,t_s,live,phase,peak_px,throw_px,cpu_readable,changed_px,outside_px,box_x,box_y,box_w,box_h\n");
             var failures = new List<string>();
             for (var e = Settle(TideLevels[0]); e.MoveNext();) yield return e.Current;
+            ReadEvents(folder, frameRate);
             for (var e = Compile(PeakFrame(frameRate), frameRate); e.MoveNext();) yield return e.Current;
             for (int k = 0; k < TideNames.Length; k++)
             {
@@ -505,6 +512,49 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             Assert.GreaterOrEqual(best, 0, "premise: low water earns a curl within one period");
             return best;
+        }
+
+        // Low water's events around the window on the CPU alone, before any premise: each frame's event clock,
+        // whether the curl drew, the event's one bore beside the births the centre and both ends read on their own,
+        // and the full throw and readable count that one bore gives. Written to events.csv; it asserts nothing.
+        void ReadEvents(string folder, int frameRate)
+        {
+            var csv = new StringBuilder("frame,t_s,q,live,event_birth,own_mid,own_first,own_last,working,plunging,"
+                + "whitewater,eligible_mid,eligible_first,eligible_last,full_throw_m,own_throw_m,peak_m,readable_frames\n");
+            for (int f = -EventWindows * Frames; f < (EventWindows + 1) * Frames; f++)
+            {
+                double t = Start + f / (double)frameRate;
+                At(t);
+                bool live = Curl(true);
+                CurlingBreakerSettings settings = CurlingBreakerPasses.Settings;
+                if (!_host.TryReadLive(GameServices.TidalTerrain, _wind.Level, out CurlingBreakerInputs inputs))
+                {
+                    csv.Append(F($"{f},{t:R},,{live}\n"));
+                    continue;
+                }
+                WaveFetchSample fetch = GameServices.FetchAt(_site.Centre);
+                CurlingBreakerLook look = _host.ReadLook();
+                SurfState mid = CurlingBreakerSampler.SurfAt(in inputs, fetch, _site.Centre);
+                Vector2 half = new Vector2(-mid.ShorewardDirection.y, mid.ShorewardDirection.x) * (_site.LengthMeters * 0.5f);
+                SurfState first = CurlingBreakerSampler.SurfAt(in inputs, fetch, _site.Centre - half);
+                SurfState last = CurlingBreakerSampler.SurfAt(in inputs, fetch, _site.Centre + half);
+                float birth = mid.IsWorking ? CurlingBreakerSampler.EventBirthEnergy01(in inputs, fetch, _site.Centre, in mid) : 0f;
+                float period = BreakerMath.PeriodSeconds(inputs.Trains.Dominant);
+                float q = CurlingBreakerMath.PhaseFraction(mid.BorePhaseDegrees, period);
+                float peak = settings.HeightFraction * mid.StandingHeightMeters;
+                float fullThrow = CurlingBreakerMath.EventThrow(mid.StandingHeightMeters, mid.PlungingWeight01,
+                    look.Plunge, birth, look.LipThrow);
+                float ownThrow = CurlingBreakerMath.EventThrow(mid.StandingHeightMeters, mid.PlungingWeight01,
+                    look.Plunge, mid.BirthEnergy01, look.LipThrow);
+                bool eligibleMid = CurlingBreakerSampler.Eligible(in mid, birth, in settings);
+                bool eligibleFirst = CurlingBreakerSampler.Eligible(in first, birth, in settings);
+                bool eligibleLast = CurlingBreakerSampler.Eligible(in last, birth, in settings);
+                int readable = CurlingBreakerMath.ReadableFrames(peak, fullThrow, period, in settings);
+                csv.Append(F($"{f},{t:R},{q:R},{live},{birth:R},{mid.BirthEnergy01:R},{first.BirthEnergy01:R},{last.BirthEnergy01:R},"))
+                    .Append(F($"{mid.IsWorking},{mid.PlungingWeight01:R},{mid.Whitewater01:R},{eligibleMid},{eligibleFirst},{eligibleLast},"))
+                    .Append(F($"{fullThrow:R},{ownThrow:R},{peak:R},{readable}\n"));
+            }
+            File.WriteAllText(Path.Combine(folder, "events.csv"), csv.ToString());
         }
 
         void Dial(bool on)

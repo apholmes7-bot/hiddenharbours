@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -16,12 +17,14 @@ namespace HiddenHarbours.Tests.EditMode
     /// <b>ADR 0040 B2 — the bounded curling sheet's contract.</b> The curl is a read of the bore the
     /// water already draws: it emits only on plunging surf the seabed and the tide have earned, keeps
     /// to the picked stretch, runs on the published bore clock and is a pure function of the sea and
-    /// that clock. It writes nothing a hull or the surf reads; its pool is fixed and empties on calm,
-    /// on the zero dial and on unload; and a steady frame allocates nothing.
+    /// that clock. Each event reads ONE bore, the one that crests at the event's crest, from
+    /// SteepenStart to Gone. It writes nothing a hull or the surf reads; its pool is fixed and empties
+    /// on calm, on the zero dial and on unload; and a steady frame allocates nothing.
     ///
     /// <para>The fixture is a straight beach rising toward +y under one swell from the south: steep
     /// enough to plunge at <see cref="PlungingSlope"/>, a spilling and a surging beach either side
-    /// of it, and the site centred where the still water is <see cref="SiteDepth"/> deep.</para>
+    /// of it, and the site centred where the still water is <see cref="SiteDepth"/> deep. The group
+    /// fixture adds a second, shorter swell, so consecutive bores are born unequal.</para>
     /// </summary>
     public class CurlingBreakerTests
     {
@@ -39,6 +42,16 @@ namespace HiddenHarbours.Tests.EditMode
         private const float LipWidthMeters = 0.15f;
         private const float FrameSeconds = 1f / 60f;
         private const float ShoreFadeBand = 0.5f;
+        // The group: a second, shorter swell on the same heading. The first swell's crests are born
+        // unequal, so the coming crest's bore and the last one's differ. That difference is the seam the
+        // event's clock closes.
+        private const float GroupWavelength = 21f;
+        private const float GroupAmplitude = 0.27f;
+        // A bore floor between the group's weak and strong births (the shipped floor sits below both).
+        private const float GroupMinBore = 0.75f;
+        private const int GroupPeriods = 12;
+        // About 0.06 of a period at 60 Hz: a frame well inside the event on each side of its crest.
+        private const int StraddleFrames = 16;
         private const string ShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursCurlingBreaker.shader";
         private const string WaterShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         private const string ConfigPath = "Assets/_Project/Data/Config/GameConfig.asset";
@@ -280,6 +293,178 @@ namespace HiddenHarbours.Tests.EditMode
             var fresh = new CurlingBreakerPose();
             Sample(beach, t, centre, fresh);
             AssertSamePose(first, fresh);
+        }
+
+        // =========================================================================================
+        //  One bore per event
+        // =========================================================================================
+
+        [Test]
+        public void OneEventReadsOneBirthThroughItsCrest()
+        {
+            Assert.AreEqual(4.3834f, BreakerMath.PeriodSeconds(Train(0f)), 1e-3f,
+                "premise: the fixture's swell runs at the site's period");
+            GroupFrame[] frames = GroupFrames(new Beach(PlungingSlope), SiteOn(PlungingSlope));
+            int events = 0, seams = 0;
+            foreach (int c in Crests(frames))
+            {
+                int before = c - StraddleFrames, after = c - 1 + StraddleFrames;
+                if (before < 0 || after >= frames.Length) continue;
+                Assert.IsTrue(frames[before].Q > -0.12f && frames[before].Q < 0f,
+                    $"premise: frame {before} (q {frames[before].Q}) is inside its event, before the crest");
+                Assert.IsTrue(frames[after].Q > 0f && frames[after].Q < 0.12f,
+                    $"premise: frame {after} (q {frames[after].Q}) is inside its event, past the crest");
+                events++;
+                Assert.AreEqual(frames[before].Event, frames[after].Event, 1e-5f,
+                    $"the event at frame {c} read two births across its crest");
+                if (Mathf.Abs(frames[after].Own - frames[before].Own) >= 0.05f) seams++;
+            }
+            Assert.GreaterOrEqual(events, 8, "premise: the fixture runs eight events");
+            Assert.GreaterOrEqual(seams, 3, "premise: the shipped read steps at three crests (the bores are unequal)");
+        }
+
+        [Test]
+        public void TheEventsBirthIsTheBoreThatCrests()
+        {
+            WaveTrains trains = GroupTrains();
+            WaveTrain swell = trains.Dominant;
+            float period = BreakerMath.PeriodSeconds(in swell);
+            float strength = BreakerSettings.Default.BoreSetStrength;
+            Assert.Greater(strength, 0f, "premise: the bore set reads the sea");
+            var breakLine = new Vector2(0f, -4f);
+            const float travel = 1.5f;
+            const float early = 0.06f;                 // a fraction of a period before the crest
+            float last = float.NaN;
+            int steps = 0;
+            double t = 100d;
+            for (int k = 0; k < 8; k++, t += period)
+            {
+                // The signed clock names the nearest crest's moment; q = 0 there.
+                float phase = BreakerMath.BorePhaseDegrees(in swell, breakLine, travel, 1f, t);
+                double crest = t - BreakerMath.SignedSecondsFromCrest(phase, period);
+                float atCrest = BreakerMath.BoreBirthEnergy01(in trains, breakLine, travel, 90f, period,
+                    WaveFetchSample.Open, strength, 1f, crest);
+                float nearest = BreakerMath.NearestBoreBirthEnergy01(in trains, breakLine, travel, 90f, period,
+                    WaveFetchSample.Open, strength, 1f, crest);
+                AssertBits(atCrest, nearest, $"crest {k}: the two reads at q = 0");
+
+                // Before the crest the event already reads this crest's bore; the shipped read, the last one's.
+                double before = crest - early * period;
+                float phaseBefore = 90f + early * 360f;
+                float eventBefore = BreakerMath.NearestBoreBirthEnergy01(in trains, breakLine, travel, phaseBefore,
+                    period, WaveFetchSample.Open, strength, 1f, before);
+                float shippedBefore = BreakerMath.BoreBirthEnergy01(in trains, breakLine, travel, phaseBefore,
+                    period, WaveFetchSample.Open, strength, 1f, before);
+                Assert.AreEqual(atCrest, eventBefore, 1e-5f, $"crest {k}: before its crest the event read another bore");
+                if (!float.IsNaN(last))
+                {
+                    Assert.AreEqual(last, shippedBefore, 1e-5f,
+                        $"crest {k}: premise: the shipped read before the crest is the last bore's");
+                    if (Mathf.Abs(atCrest - last) >= 0.05f) steps++;
+                }
+                last = atCrest;
+            }
+            Assert.GreaterOrEqual(steps, 3, "premise: the group's crests are born unequal");
+        }
+
+        [Test]
+        public void NoStepAtTheCrest()
+        {
+            var beach = new Beach(PlungingSlope);
+            Vector2 centre = SiteOn(PlungingSlope);
+            CurlingBreakerSettings settings = On();
+            GroupFrame[] frames = GroupFrames(beach, centre);
+            var before = new CurlingBreakerPose();
+            var after = new CurlingBreakerPose();
+            int crests = 0, pops = 0;
+            foreach (int c in Crests(frames))
+            {
+                Assert.AreEqual(frames[c - 1].Event, frames[c].Event, 1e-5f, $"the event's birth stepped at frame {c}'s crest");
+                GroupSample(beach, frames[c - 1].T, centre, in settings, before);
+                GroupSample(beach, frames[c].T, centre, in settings, after);
+                Assert.AreEqual(before.Live, after.Live, $"the curl popped in or out at frame {c}'s crest");
+                if (!before.Live) continue;
+                crests++;
+                Assert.AreEqual(before.FullThrow, after.FullThrow, 1e-5f, $"the full throw popped at frame {c}'s crest");
+
+                // What the shipped read would have thrown on each side of the same crest.
+                SurfState a = GroupSurf(beach, frames[c - 1].T, centre);
+                SurfState b = GroupSurf(beach, frames[c].T, centre);
+                float shippedA = CurlingBreakerMath.EventThrow(a.StandingHeightMeters, a.PlungingWeight01, Look.Plunge,
+                    a.BirthEnergy01, Look.LipThrow);
+                float shippedB = CurlingBreakerMath.EventThrow(b.StandingHeightMeters, b.PlungingWeight01, Look.Plunge,
+                    b.BirthEnergy01, Look.LipThrow);
+                if (Mathf.Abs(shippedB - shippedA) >= 0.01f) pops++;
+            }
+            Assert.GreaterOrEqual(crests, 5, "premise: five live crests");
+            Assert.GreaterOrEqual(pops, 3, "premise: the shipped read would pop the throw at three crests");
+        }
+
+        [Test]
+        public void PoseLivesFromSteepenStartToGone()
+        {
+            var beach = new Beach(PlungingSlope);
+            Vector2 centre = SiteOn(PlungingSlope);
+            CurlingBreakerSettings settings = On();
+            Assert.AreEqual(-0.12f, settings.SteepenStart, "premise: the event steepens from q -0.12");
+            Assert.AreEqual(0f, settings.Crest, "premise: the event crests at q 0");
+            Assert.AreEqual(0.08f, settings.Land, "premise: the lip lands at q 0.08");
+            Assert.AreEqual(0.12f, settings.Gone, "premise: the event is gone at q 0.12");
+            settings.MinBore = GroupMinBore;
+            GroupFrame[] frames = GroupFrames(beach, centre);
+            var pose = new CurlingBreakerPose();
+            int unhidden = 0, undropped = 0;
+            foreach (int c in Crests(frames))
+            {
+                if (!EventSpan(frames, c, out int first, out int last)) continue;
+                bool strong = frames[c].Event >= GroupMinBore;
+                // The shipped read names the LAST bore until the crest: it would have hidden a strong event's
+                // start behind a weak bore, or drawn a weak event's start and dropped it at the crest.
+                bool seam = frames[first].Own >= GroupMinBore != strong;
+                int landing = 0;
+                for (int f = first; f <= last; f++)
+                {
+                    GroupSample(beach, frames[f].T, centre, in settings, pose);
+                    Assert.AreEqual(strong, pose.Live,
+                        $"frame {f} (q {frames[f].Q}) of the event at frame {c}, its one bore {frames[c].Event}");
+                    if (pose.Live && frames[f].Q > 0f && frames[f].Q < 0.08f) landing++;
+                }
+                if (strong) Assert.Greater(landing, 0, $"the event at frame {c} did not live between its crest and Land");
+                if (seam && strong) unhidden++;
+                if (seam && !strong) undropped++;
+            }
+            Assert.Greater(unhidden, 0, "premise: an event the shipped read hid until its crest");
+            Assert.Greater(undropped, 0, "premise: an event the shipped read drew until its crest");
+        }
+
+        [Test]
+        public void EventBirthIsAPureFunction()
+        {
+            var beach = new Beach(PlungingSlope);
+            Vector2 centre = SiteOn(PlungingSlope);
+            const double t = 41.3;
+            CurlingBreakerInputs inputs = GroupInputs(beach, t);
+            SurfState mid = CurlingBreakerSampler.SurfAt(in inputs, WaveFetchSample.Open, centre);
+            Assert.IsTrue(mid.IsWorking, "premise: the site carries working surf");
+            float first = CurlingBreakerSampler.EventBirthEnergy01(in inputs, WaveFetchSample.Open, centre, in mid);
+
+            // Another time and place in between, then the same inputs again: one value, to the bit.
+            Vector2 aside = centre + new Vector2(2f, 0f);
+            CurlingBreakerInputs other = GroupInputs(beach, t + 1000d);
+            SurfState there = CurlingBreakerSampler.SurfAt(in other, WaveFetchSample.Open, aside);
+            CurlingBreakerSampler.EventBirthEnergy01(in other, WaveFetchSample.Open, aside, in there);
+            AssertBits(first, CurlingBreakerSampler.EventBirthEnergy01(in inputs, WaveFetchSample.Open, centre, in mid),
+                "the event's birth, read twice");
+
+            // And the Core read under it, called twice.
+            WaveTrains trains = GroupTrains();
+            float period = BreakerMath.PeriodSeconds(trains.Dominant);
+            float strength = BreakerSettings.Default.BoreSetStrength;
+            float once = BreakerMath.NearestBoreBirthEnergy01(in trains, centre, 1.5f, 120f, period,
+                WaveFetchSample.Open, strength, 1f, t);
+            float twice = BreakerMath.NearestBoreBirthEnergy01(in trains, centre, 1.5f, 120f, period,
+                WaveFetchSample.Open, strength, 1f, t);
+            AssertBits(once, twice, "the nearest crest's birth, read twice");
         }
 
         [Test]
@@ -642,6 +827,84 @@ namespace HiddenHarbours.Tests.EditMode
             double t = LiveTimeOr(terrain, centre, double.NaN);
             Assert.IsFalse(double.IsNaN(t), "premise: the plunging beach draws a curl within one period");
             return t;
+        }
+
+        /// <summary>One 60 Hz frame of the group fixture at a site: the event clock, the centre's own
+        /// birth (the shipped read) and the event's one bore.</summary>
+        private struct GroupFrame
+        {
+            public double T;
+            public float Q;
+            public float Own;
+            public float Event;
+        }
+
+        private static WaveTrains GroupTrains()
+        {
+            WaveTrain swell = Train(0f);
+            var group = new WaveTrain(swell.Direction, GroupWavelength, GroupAmplitude, 0f, G);
+            var silent = new WaveTrain(swell.Direction, swell.Wavelength, 0f, 0f, G);
+            return new WaveTrains(swell, group, silent, silent, 2, Sharpening);
+        }
+
+        private static CurlingBreakerInputs GroupInputs(ITidalTerrain terrain, double t)
+        {
+            BreakerSettings breakers = BreakerSettings.Default;
+            WaveTrains trains = GroupTrains();
+            WaveTrain swell = trains.Dominant;
+            BreakerContour contour = BreakerMath.ContourFor(in swell, 1f, in breakers);
+            return new CurlingBreakerInputs(terrain, 0f, in contour, in trains, WaveFieldBridge.Pack(in trains), G,
+                in breakers, 1f, t, in Sea);
+        }
+
+        private static void GroupSample(ITidalTerrain terrain, double t, Vector2 centre,
+                                        in CurlingBreakerSettings settings, CurlingBreakerPose pose)
+        {
+            CurlingBreakerInputs inputs = GroupInputs(terrain, t);
+            CurlingBreakerSampler.Sample(in inputs, WaveFetchSample.Open, centre, StretchMeters, in settings, in Look, pose);
+        }
+
+        private static SurfState GroupSurf(ITidalTerrain terrain, double t, Vector2 centre)
+        {
+            CurlingBreakerInputs inputs = GroupInputs(terrain, t);
+            return CurlingBreakerSampler.SurfAt(in inputs, WaveFetchSample.Open, centre);
+        }
+
+        /// <summary>The group fixture at <paramref name="centre"/>, every frame from 0 for
+        /// <see cref="GroupPeriods"/> periods.</summary>
+        private static GroupFrame[] GroupFrames(ITidalTerrain terrain, Vector2 centre)
+        {
+            float period = BreakerMath.PeriodSeconds(Train(0f));
+            var frames = new GroupFrame[Mathf.CeilToInt(GroupPeriods * period / FrameSeconds)];
+            for (int f = 0; f < frames.Length; f++)
+            {
+                double t = f * (double)FrameSeconds;
+                CurlingBreakerInputs inputs = GroupInputs(terrain, t);
+                SurfState mid = CurlingBreakerSampler.SurfAt(in inputs, WaveFetchSample.Open, centre);
+                frames[f].T = t;
+                frames[f].Q = CurlingBreakerMath.PhaseFraction(mid.BorePhaseDegrees, period);
+                frames[f].Own = mid.BirthEnergy01;
+                frames[f].Event = CurlingBreakerSampler.EventBirthEnergy01(in inputs, WaveFetchSample.Open, centre, in mid);
+            }
+            return frames;
+        }
+
+        /// <summary>The first frame past each crest: the event clock turns from before it to after it.</summary>
+        private static IEnumerable<int> Crests(GroupFrame[] frames)
+        {
+            for (int c = 1; c < frames.Length; c++)
+                if (frames[c - 1].Q < 0f && frames[c].Q >= 0f) yield return c;
+        }
+
+        /// <summary>The frames of the event that crests just before <paramref name="crest"/>: the clock
+        /// inside (-0.12, 0.12), SteepenStart to Gone. False unless a frame outside lies on each side.</summary>
+        private static bool EventSpan(GroupFrame[] frames, int crest, out int first, out int last)
+        {
+            first = crest - 1;
+            while (first > 0 && frames[first - 1].Q < 0f && frames[first - 1].Q > -0.12f) first--;
+            last = crest;
+            while (last < frames.Length - 1 && frames[last + 1].Q >= 0f && frames[last + 1].Q < 0.12f) last++;
+            return first > 0 && last < frames.Length - 1;
         }
 
         private CurlingBreakerSiteDef Site(string id, Vector2 centre, bool enabled)
