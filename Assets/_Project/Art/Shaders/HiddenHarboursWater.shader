@@ -1167,6 +1167,10 @@ Shader "HiddenHarbours/Water"
             // Its own sampler (the repo convention above), so the read inherits the target's POINT /
             // CLAMP state — a bilinear read would blend across cells and undo the crisp world grid.
             TEXTURE2D(_HHFoamBufferTex); SAMPLER(sampler_HHFoamBufferTex);
+            TEXTURE2D(_HHCurlHandoffTex);
+            SAMPLER(sampler_HHCurlHandoffTex);
+            float _HHCurlEnabled;
+            float4 _HHCurlHandoffScaleBias;
 
             // ADR 0046: STILL WATER above the tide (ponds, a brook's fresh reach) — the globals
             // _HHStillTex/_HHStillRect/_HHStillRange and StillLevelAt(), shared with the tidal faces so
@@ -5854,6 +5858,15 @@ Shader "HiddenHarbours/Water"
                     col.a = max(col.a, foamCoverage * _FoamColor.a);
                 }
 
+                if (_HHCurlEnabled > 0.5)
+                {
+                    // ADR 0040 B2: a live curl (CurlingBreakerPasses) carries the lip and barrel under its mask.
+                    float2 curlUV = IN.positionCS.xy * _HHCurlHandoffScaleBias.xy + _HHCurlHandoffScaleBias.zw;
+                    float curlCover = saturate(SAMPLE_TEXTURE2D(_HHCurlHandoffTex,
+                        sampler_HHCurlHandoffTex, curlUV).r);
+                    surfLip *= 1.0 - curlCover;
+                    surfBarrel *= 1.0 - curlCover;
+                }
                 // ---- BREAKING WAVES (ADR 0040): draw the surf the block above resolved -------------
                 // Owner, 2026-08-27: "our waves are missing something. i want them to be even more
                 // physics based." Nothing here decides WHERE the surf is — the painted seabed and the
