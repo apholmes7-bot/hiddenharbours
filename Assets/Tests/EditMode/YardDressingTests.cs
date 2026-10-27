@@ -156,15 +156,21 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheBuildTable_BakesNothingNoStyleAsksFor()
+        public void TheBuildTable_BakesOnlyBoundaryPiecesAndRuledVillageDressing()
         {
             var required = new HashSet<string>(YardDressing.RequiredPieceKeys());
+            var dressing = new[] { "buoyPost", "trapBench", "anchorSet", "doryPlanter", "oilTank",
+                "sawhorses", "clothesline", "vegRows", "potatoDrills", "barrelPlanter", "borderBed",
+                "swingSet", "firePit", "farmStand", "flagpole" };
+            CollectionAssert.AreEquivalent(dressing,
+                YardKit.Builds.Where(b => b.Part == YardKit.Role.Dressing).Select(b => b.Key));
+            required.UnionWith(dressing);
             var spare = YardKit.Builds.Where(b => !required.Contains(b.Key)).Select(b => b.Key).ToArray();
 
             Assert.IsEmpty(spare,
                 "these sheets bake and nothing places them: " + string.Join(", ", spare) + ". The kit " +
-                "has 52 more pieces of dressing that deliberately do NOT bake yet; a row here that no " +
-                "style names is texture memory nobody asked for (CLAUDE.md rule 7).");
+                "keeps unruled dressing out of the bake; every row must have a named use " +
+                "(CLAUDE.md rule 7).");
         }
 
         [Test]
@@ -330,9 +336,10 @@ namespace HiddenHarbours.Tests.EditMode
         public void ShortestSegment_HasRoomForItsOwnPanel()
         {
             var contract = SyntheticContract();
+            var tooShort = new List<string>();
             float shortest = float.MaxValue;
             string where = "";
-            float widest = 0f;
+            float sageShortest = float.MaxValue;
 
             foreach (var yard in BothRegions())
             {
@@ -341,23 +348,34 @@ namespace HiddenHarbours.Tests.EditMode
 
                 float width = contract.Find(YardDressing.StyleFor(yard.Fence).PanelKey)
                                       .footprintWidthMetres;
-                widest = Mathf.Max(widest, width);
+                bool sage = yard.Name == StPetersYards.SageCottageYard;
+                if (sage)
+                {
+                    // 2.3392 m is the decimal product of the authored yard numbers 1.70, 0.4 and 0.94; one float ulp covers evaluation order, never a looser bar
+                    Assert.That(width, Is.EqualTo(2.3392f).Within(1).Ulps);
+                }
 
                 foreach (var run in plan.Runs)
                     for (int s = 0; s + 1 < run.Length; s++)
                     {
                         float length = Vector2.Distance(run[s], run[s + 1]);
+                        // E2 ruling 7: each segment against its OWN style's panel, never the widest style's.
+                        if (length <= width)
+                            tooShort.Add($"{yard.Name} ({yard.Fence}): {length:0.00} m against its own " +
+                                         $"{width:0.00} m panel");
+                        if (sage) sageShortest = Mathf.Min(sageShortest, length);
                         if (length >= shortest) continue;
                         shortest = length;
                         where = $"{yard.Name} ({yard.Fence}, panel {width:0.00} m)";
                     }
             }
 
-            TestContext.WriteLine($"shortest segment {shortest:0.00} m at {where}; " +
-                                  $"longest panel {widest:0.00} m.");
-            Assert.Greater(shortest, widest,
-                $"the shortest segment in either region ({shortest:0.00} m at {where}) is under the " +
-                $"longest panel ({widest:0.00} m), so some boundary is now being left bare.");
+            TestContext.WriteLine($"shortest segment {shortest:0.00} m at {where}.");
+            Assert.IsEmpty(tooShort, "segments with no room for one panel of their own style: " +
+                                     string.Join("; ", tooShort));
+            // E2 ruling 7: the SageCottage yard's shortest segment, pinned as the literal 3.00 m.
+            Assert.That(sageShortest, Is.EqualTo(3.00f),
+                        "the SageCottage yard's shortest segment is no longer the 3.00 m its authored gate leaves");
         }
 
         // =============================================================================================

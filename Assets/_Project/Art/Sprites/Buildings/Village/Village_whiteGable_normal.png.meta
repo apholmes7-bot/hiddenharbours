@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 1bd8ac0283d33da4282adfc7512c0661
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6465651190569020134
+    second: Village_whiteGable_normal_0
+  - first:
+      213: 3210859278365843583
+    second: Village_whiteGable_normal_1
+  - first:
+      213: 7730655205822270168
+    second: Village_whiteGable_normal_2
+  - first:
+      213: -2689695690935899547
+    second: Village_whiteGable_normal_3
+  - first:
+      213: 7799807943740431487
+    second: Village_whiteGable_normal_4
+  - first:
+      213: -7206771071797842621
+    second: Village_whiteGable_normal_5
+  - first:
+      213: 8524097583924447519
+    second: Village_whiteGable_normal_6
+  - first:
+      213: -3691853183189669747
+    second: Village_whiteGable_normal_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 428
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8aa506ae7b707b49962ddffb30870fa
+      internalID: 1387698026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d1
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 428
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 122819deedaa5a545b865b87ec5d5ba5
+      internalID: -2108464332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d2
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 428
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3d1b74d8de35404db6d1e64e8bfbcdf
+      internalID: 33066240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d3
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 428
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56220f3fae161734d9094970cbdbc613
+      internalID: -1889561322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee4a02160f8996e4c88e3cd07d8dd405
+      internalID: -1956872851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d5
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 0
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4aa6a0b3f6eef7f409816e25328c2ac6
+      internalID: -1619185792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d6
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 0
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e318ca2160cb5d4dad007ef4230e407
+      internalID: -1816168210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_whiteGable_normal_d7
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 0
+        width: 440
+        height: 428
+      alignment: 9
+      pivot: {x: 0.5, y: 0.317757}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da7c465322aa83a45ae39cf719dd6f17
+      internalID: 802848595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a8a0681e0b451024d8fc3d4d81996249
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_whiteGable_normal_d0: 1387698026
+      Village_whiteGable_normal_d1: -2108464332
+      Village_whiteGable_normal_d2: 33066240
+      Village_whiteGable_normal_d3: -1889561322
+      Village_whiteGable_normal_d4: -1956872851
+      Village_whiteGable_normal_d5: -1619185792
+      Village_whiteGable_normal_d6: -1816168210
+      Village_whiteGable_normal_d7: 802848595
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

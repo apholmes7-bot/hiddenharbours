@@ -276,6 +276,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheFurnishingsDoNotAllPileUpOnOnePoint()
         {
+            // D3 keeps both storeys of each new home empty until V2 furnishes them.
+            var d3EmptyRooms = new HashSet<string>
+                { "harbourGable", "harbourGableUpper", "creamSaltbox", "creamSaltboxUpper", "whiteGable", "whiteGableUpper" };
             foreach (var room in InteriorKit.RoomSet)
             {
                 var seen = new List<Vector2>();
@@ -287,7 +290,10 @@ namespace HiddenHarbours.Tests.EditMode
                                        "read as one, and their colliders merge into a blob");
                     seen.Add(f.RoomMetres);
                 }
-                Assert.GreaterOrEqual(seen.Count, 4,
+                if (d3EmptyRooms.Contains(room.Key))
+                    Assert.That(seen.Count, Is.Zero, $"D3: '{room.Key}' stays empty until V2");
+                else
+                    Assert.GreaterOrEqual(seen.Count, 4,
                                       $"'{room.Key}' is baked but barely furnished — a room the player " +
                                       "can walk into should look lived in, not like a rehearsal space");
             }

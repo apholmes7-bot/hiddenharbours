@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
   Id: "lot.st_peters.cream_saltbox"
   BuildingId: "building.stp_cream_saltbox"
-  BakeKey: "cream_saltbox"
+  BakeKey: "creamSaltbox"
   StreetId: "route.stpeters.school_lane"
   Position: {x: 28.5, y: 35.704}
   DoorOffset: {x: 0.0, y: -2.722}

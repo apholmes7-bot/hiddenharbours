@@ -46,13 +46,10 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The general store is at the SAME coordinate it has had since #353. The owner ruled the shop
-        /// replaces the house stand-in <i>at its authored site</i>, and three other things derive from
-        /// that one number — the storekeeper's dooryard, the counter, and the store's whole economy.
-        /// A "tidy-up" that nudged it would move all three without touching them.
+        /// The store follows its active lot; the counter follows its door frame.
         /// </summary>
         [Test]
-        public void TheGeneralStoreDidNotMove_BecauseThreeOtherThingsAreDerivedFromWhereItIs()
+        public void TheGeneralStoreMovesWithItsLot_AndKeepsItsCounterClose()
         {
             var store = Sites.First(s => s.Key == "generalStore");
             Assert.AreEqual((Vector2)StPetersBuilder.GeneralStorePos, store.Position,
@@ -78,38 +75,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var site in Sites)
             {
-                var shell = Shell(site.Key);
-                float r = ShopCatalog.FootprintRadiusMetres(shell);
-
+                var hull = VillageTestGeometry.Shop(site);
                 foreach (var house in StPetersVillage.Sites)
-                {
-                    var hp = VillageBuildingCatalog.Find(house.Key);
-                    if (!hp.IsValid) continue;
-
-                    float need = r + StPetersVillage.FootprintRadiusMetres(hp) + StPetersVillage.LaneGap;
-                    float d = Vector2.Distance(site.Position, house.Position);
-                    Assert.Greater(d, need,
-                        $"{site.Key} stands {d:0.0} m from the {house.Key} and needs {need:0.0} m " +
-                        $"({r:0.0} + {StPetersVillage.FootprintRadiusMetres(hp):0.0} footprints + " +
-                        $"{StPetersVillage.LaneGap:0.0} m of lane)");
-                }
-
-                foreach (var other in Sites)
-                {
-                    if (other.Key == site.Key) continue;
-                    var op = ShopCatalog.FindShell(other.Key);
-                    if (!op.IsValid) continue;
-
-                    float need = r + ShopCatalog.FootprintRadiusMetres(op) + StPetersVillage.LaneGap;
-                    float d = Vector2.Distance(site.Position, other.Position);
-                    Assert.Greater(d, need,
-                        $"{site.Key} stands {d:0.0} m from the {other.Key} and needs {need:0.0} m");
-                }
-
-                float toHearth = Vector2.Distance(site.Position, StPetersBuilder.VillageHearthPos);
-                Assert.Greater(toHearth, r + StPetersVillage.HearthClearanceRadius,
-                    $"{site.Key} is inside the hearth's authored clearance — nothing may crowd the " +
-                    "ground the green is measured from");
+                    Assert.GreaterOrEqual(VillageGeometry.PolygonDistance(hull,VillageTestGeometry.House(house)),
+                        StPetersVillage.LaneGap,site.Key+" / "+house.Key);
+                foreach (var other in Sites.Where(s=>s.Key!=site.Key))
+                    Assert.GreaterOrEqual(VillageGeometry.PolygonDistance(hull,VillageTestGeometry.Shop(other)),
+                        StPetersVillage.LaneGap,site.Key+" / "+other.Key);
+                Assert.Greater(Vector2.Distance(site.Position,StPetersBuilder.VillageHearthPos),
+                    ShopCatalog.FootprintRadiusMetres(Shell(site.Key))+StPetersVillage.HearthClearanceRadius,site.Key);
             }
         }
 

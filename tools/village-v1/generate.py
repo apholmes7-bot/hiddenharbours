@@ -18,6 +18,24 @@ DATA = Path('Assets/_Project/Data/Regions/StPetersVillage')
 CODE = Path('Assets/_Project/Code/World/Village')
 MAP = Path('docs/design/st-peters-village-plan/village-id-map.json')
 
+# Ground positions of the drawn doorstep fittings, measured from the committed rigs.
+# West houses retain their main positions and facings; the other sites face south.
+DOORSTEP_FITTINGS = {
+    'sage_cottage': [-20.47, 38.907939],
+    'school': [-10.37, 32.822924],
+    'harbour_gable': [-5.22, 43.322446],
+    'cream_saltbox': [29.53, 32.833953],
+    'white_gable': [54.03, 32.333953],
+    'red_saltbox': [20.43, 7.337929],
+    'white_farmhouse': [18.051365, 23.168344],
+    'general_store': [1.64, 32.047365],
+    'post_office': [15.8728, 40.059247],
+}
+POST_FITTING_Y = 0.19926415900282722
+HELD_LIGHT_LOTS = {'red_saltbox', 'white_farmhouse'}
+HOME_BAKE_KEYS = {'harbour_gable': 'harbourGable', 'cream_saltbox': 'creamSaltbox',
+                  'white_gable': 'whiteGable'}
+
 
 def snake(value):
     return re.sub(r'(?<=[a-z0-9])([A-Z])', r'_\1', value).lower()
@@ -42,6 +60,16 @@ def rectangle(value):
 
 def compact(value):
     return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+
+
+def held_light(name):
+    path = ROOT / DATA / ('light.st_peters.doorstep_lantern_' + name + '.asset')
+    text = path.read_text(encoding='utf-8')
+    position = re.search(r'^  Position: \{x: ([^,]+), y: ([^}]+)\}$', text, re.M)
+    preset = re.search(r'^  Preset: ("[^"\r\n]+")$', text, re.M)
+    if not position or not preset:
+        raise ValueError('Held light fields missing: ' + name)
+    return [float(position[1]), float(position[2])], json.loads(preset[1])
 
 
 def guid(path):
@@ -203,6 +231,7 @@ def build(plan, scene):
         preset = b['preset']
         bake_key = preset[len('new: '):] if preset.startswith('new: ') else (
             preset.removeprefix('(bake: Buildings.json ').removesuffix(')') if preset.startswith('(bake:') else preset)
+        bake_key = HOME_BAKE_KEYS.get(name, bake_key)
         lot = add('LotDef', Id=src['id'], BuildingId='building.stp_' + name, BakeKey=bake_key,
                   StreetId=src['street'], Position=point(pos), DoorOffset=point([b['door'][i]-pos[i] for i in range(2)]),
                   FootprintId=foot_id, FacingCell=b['cell'], Entry=b['entry'], DoorFaces=b['doorFaces'],
@@ -252,16 +281,25 @@ def build(plan, scene):
     light_changes = []
     for old, r in light_source.items():
         pos = list(r['at'])
-        if r['k'] == 'doorstepLantern' and r['of'] in ('red_saltbox','white_farmhouse'):
+        if r['k'] == 'doorstepLantern' and r['of'] not in HELD_LIGHT_LOTS:
             door = buildings[r['of']]['door']
             old_door = next(b['door'] for b in plan['buildings'] if b['id']==r['of'])
             pos = [round(door[i]+r['at'][i]-old_door[i],6) for i in range(2)]
         lamp = lamp_by_key[(r['k'],r['of'])]
+        preset = lamp['kind']
+        if r['k'] == 'doorstepLantern' and r['of'] in HELD_LIGHT_LOTS:
+            pos, preset = held_light(r['of'])
+        if r['k'] == 'doorstepLantern' and r['of'] not in HELD_LIGHT_LOTS and r['of'] in DOORSTEP_FITTINGS:
+            pos = DOORSTEP_FITTINGS[r['of']][:]
+        if r['k'] == 'lanternPost':
+            pos[1] = round(pos[1] + POST_FITTING_Y, 6)
         lot_id = lots[r['of']]['Id'] if r['of'] in lots else ''
         commons = 'square' if r['of'] in ('square','green','green_walk') else 'west_garden' if r['of']=='bluff_walk' else 'flake_yard'
         add('LightPostDef', Id=renames[old], LotId=lot_id, CommonsId='' if lot_id else 'commons.st_peters.'+commons,
             RouteId='route.stpeters.'+r['of'] if any(x['id']=='route.stpeters.'+r['of'] for x in plan['lanes']) else '',
-            KitPiece=piece_by_old[old]['Piece'], Position=point(pos), Preset=lamp['kind'], LitBy=r['lit'], Reach=lamp['reach'], CastsShadow=True)
+            KitPiece=piece_by_old[old]['Piece'], Position=point(pos),
+            Preset='HungLantern' if r['k'] in ('lanternPost', 'doorstepLantern') and r['of'] not in HELD_LIGHT_LOTS else preset,
+            LitBy=r['lit'], Reach=lamp['reach'], CastsShadow=True)
         light_changes.append(dict(id=renames[old], plan_position=r['at'], position=pos,
                                   package_position=list(piece_by_old[old]['Position'].values())))
         piece_by_old[old]['Position'] = point(pos)

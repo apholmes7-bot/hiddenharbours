@@ -633,39 +633,17 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheVillageIsTheFiveBuildingsTheDocsAskFor_AndTheyAreAllBaked()
+        public void TheVillageHasEightBuildings_AndTheyAreAllBaked()
         {
-            // §5.1: "three clapboard houses, a one-room school, and a general store."
-            //
-            // ⭐ FIVE BUILDINGS, TWO KITS, since the owner's 2026-08-11 ruling. The store used to be the
-            // fifth HOUSE — houseIsoRig with a bay window standing in for a shop, because the shop kit
-            // did not exist. It does now, so the real shell replaces the stand-in AT THE SAME SITE and
-            // the store moved to StPetersShops. The docs' count is unchanged; which kit each building
-            // comes from is what moved, and that is what this asserts.
-            Assert.AreEqual(4, Sites.Count, "four houses: three clapboard houses and the school");
-            CollectionAssert.AreEquivalent(
-                new[] { "school", "whiteFarmhouse", "redSaltbox", "sageCottage" },
-                Sites.Select(s => s.Key).ToArray(),
-                "the village's houses drifted from the kit's M1 set");
-
-            CollectionAssert.DoesNotContain(Sites.Select(s => s.Key).ToArray(), "generalStore",
-                "the general store is a SHOP now (StPetersShops). A village carrying both would stand " +
-                "two general stores on one site — the stand-in and the real one.");
-
-            Assert.AreEqual(5, Sites.Count + StPetersShops.Sites.Count - 1,
-                "§5.1 asks for five buildings; the two kits together are the four houses plus the store " +
-                "and the post office, and the post office is the sixth the owner added on 2026-08-11.");
-
+            CollectionAssert.AreEquivalent(new[] { "school", "whiteFarmhouse", "redSaltbox", "sageCottage",
+                "creamSaltbox", "whiteGable", "harbourGable" }, Sites.Select(s=>s.Key).ToArray());
+            Assert.AreEqual(8,Sites.Count+StPetersShops.Sites.Count-1);
+            Assert.AreEqual(9,Sites.Count+StPetersShops.Sites.Count);
             foreach (var site in Sites)
             {
-                var p = VillageBuildingCatalog.Find(site.Key);
-                Assert.IsTrue(p.IsValid, $"{site.Key} is not baked");
-                Assert.IsFalse(string.IsNullOrWhiteSpace(site.Reason),
-                    $"{site.Key} has no authoring reason. These sites are hand-placed identity, not a " +
-                    "scatter — if there is no reason for one, it should have been hashed.");
+                Assert.IsTrue(VillageBuildingCatalog.Find(site.Key).IsValid,site.Key);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(site.Reason),site.Key);
             }
-            Debug.Log("[stpeters-village] " +
-                      VillageBuildingCatalog.Summary(VillageBuildingCatalog.Scan()));
         }
 
         [Test]
@@ -689,18 +667,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void NoTwoBuildingsOverlap_AndThereIsALaneBetweenThem()
         {
-            // Footprints as CIRCLES (the half-diagonal), because the facing is derived and a quarter-turned
-            // building presents its diagonal — see StPetersVillage's remarks.
-            for (int i = 0; i < Sites.Count; i++)
-            for (int j = i + 1; j < Sites.Count; j++)
-            {
-                float gap = Vector2.Distance(Sites[i].Position, Sites[j].Position)
-                            - Radius(Sites[i]) - Radius(Sites[j]);
-                Assert.GreaterOrEqual(gap, StPetersVillage.LaneGap,
-                    $"{Sites[i].Key} and {Sites[j].Key} are {gap:0.00} m apart at their footprint edges — " +
-                    $"under the {StPetersVillage.LaneGap} m lane. Two buildings closer than that read as " +
-                    "one building with a seam.");
-            }
+            for (int i=0;i<Sites.Count;i++) for (int j=i+1;j<Sites.Count;j++)
+                Assert.GreaterOrEqual(VillageGeometry.PolygonDistance(VillageTestGeometry.House(Sites[i]),
+                    VillageTestGeometry.House(Sites[j])),StPetersVillage.LaneGap,Sites[i].Key+" / "+Sites[j].Key);
         }
 
         [Test]
@@ -770,31 +739,16 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheClearingContainsEveryFootprint_SoNothingIsPlantedThroughAWall()
+        public void EveryFootprintKeepsThreeMetresFromEveryTrunk_WithoutWideningTheClearing()
         {
-            // 🔴 THE ONE THAT MADE THIS PR EDIT StPetersWoods. Trees, shrubs and flowers all skip the
-            // village clearing, so containment is what keeps vegetation out of the buildings — and at the
-            // 34 m the clearing was authored at (#345, when the village WAS the cottage and three props)
-            // the outermost house stood 7 m outside it. Derived from the contract, so a re-bake with bigger
-            // footprints fails here with the number to use.
-            float need = StPetersVillage.RequiredClearingRadius();
-            Assert.Greater(need, 0f, "nothing baked — this assert would be vacuous");
-            Assert.LessOrEqual(need, StPetersWoods.VillageClearingRadius,
-                $"the village's furthest footprint reaches {need:0.00} m from the cottage but the clearing " +
-                $"is {StPetersWoods.VillageClearingRadius:0.00} m. Widen " +
-                "StPetersWoods.VillageClearingRadius to at least that, or bring the site in — as it " +
-                "stands, trees and shrubs plant through that building's walls.");
-
-            // Per building, so the failure names the one that is out rather than just the worst.
+            Assert.AreEqual(44f,StPetersWoods.VillageClearingRadius);
+            var trunks = VillageTestGeometry.Trunks();
+            Assert.IsNotEmpty(trunks);
             foreach (var site in Sites)
-                Assert.LessOrEqual(
-                    Vector2.Distance(site.Position, StPetersBuilder.VillageHearthPos) + Radius(site),
-                    StPetersWoods.VillageClearingRadius,
-                    $"{site.Key}'s footprint reaches outside the village clearing");
-
-            Debug.Log($"[stpeters-village] furthest footprint reaches {need:0.00} m from the cottage; " +
-                      $"clearing is {StPetersWoods.VillageClearingRadius:0.0} m " +
-                      $"({StPetersWoods.VillageClearingRadius - need:0.00} m of headroom).");
+            {
+                var hull = VillageTestGeometry.House(site);
+                foreach (var trunk in trunks) Assert.GreaterOrEqual(VillageTestGeometry.ToHull(trunk,hull),3f,site.Key);
+            }
         }
 
         [Test]
@@ -853,7 +807,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void EveryDoorFacesTheGreen_AndTheDerivationSurvivesAReBakeWithFewerFacings()
+        public void EveryDoorFacesItsActiveWalkOrHeldGreen_AndTheDerivationSurvivesAReBakeWithFewerFacings()
         {
             // ⭐ The facing is DERIVED from the green, never a hard-coded cell index, because the kit ships
             // 8 facings today and the owner may halve that — a re-bake, not a code change. So the real
@@ -864,6 +818,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach (var site in Sites)
             {
+                Vector2 target = site.Key == "redSaltbox" || site.Key == "whiteFarmhouse" ? green : site.Position + Vector2.down;
                 var p = VillageBuildingCatalog.Find(site.Key);
                 int facing = StPetersVillage.FacingFor(p, site);
                 Assert.That(facing, Is.InRange(0, p.Entry.facings - 1),
@@ -871,9 +826,9 @@ namespace HiddenHarbours.Tests.EditMode
                 used.Add(facing);
 
                 // No other facing may point the door closer to the green than the chosen one.
-                float chosen = DoorErrorDegrees(p, site.Position, green, facing);
+                float chosen = DoorErrorDegrees(p, site.Position, target, facing);
                 for (int f = 0; f < p.Entry.facings; f++)
-                    Assert.LessOrEqual(chosen, DoorErrorDegrees(p, site.Position, green, f) + 1e-3f,
+                    Assert.LessOrEqual(chosen, DoorErrorDegrees(p, site.Position, target, f) + 1e-3f,
                         $"{site.Key} faces {facing} but {f} points its door closer to the green");
 
                 // Half a cell is the worst a nearest-cell rounding can be off by.

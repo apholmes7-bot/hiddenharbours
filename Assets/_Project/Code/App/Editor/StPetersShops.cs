@@ -115,7 +115,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The facing a site is placed at — its door turned toward
         /// <see cref="StPetersBuilder.VillageGreen"/>, measured from the bake's own door anchors.</summary>
         public static int FacingFor(ShopCatalog.Placement shell, Site site) =>
-            ShopCatalog.FacingToward(shell, site.Position, StPetersBuilder.VillageGreen);
+            ShopCatalog.FacingToward(shell, site.Position, site.Position + Vector2.down);
 
         /// <summary>
         /// How far the furthest shop footprint reaches from <see cref="StPetersBuilder.VillageHearthPos"/> —

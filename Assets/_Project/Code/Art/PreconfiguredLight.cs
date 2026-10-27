@@ -45,6 +45,24 @@ namespace HiddenHarbours.Art
                  "LampPosts.FittingWidthMetres is where the measured widths live.")]
         [Min(0f)] [SerializeField] private float _fittingWidthMetres;
 
+        [Tooltip("This placement's pool reach in metres. Zero keeps the preset's reach.")]
+        [Min(0f)] [SerializeField] private float _reachOverrideMetres;
+
+        public float ReachOverrideMetres
+        {
+            get => _reachOverrideMetres;
+            set
+            {
+                if (float.IsNaN(value) || float.IsInfinity(value) || value < 0f)
+                    throw new System.ArgumentOutOfRangeException(nameof(value));
+                _reachOverrideMetres = value;
+                ConfigureLight();
+            }
+        }
+
+        public static float ResolvedReach(LightPresets.Kind preset, float metres) =>
+            metres > 0f ? metres : LightPresets.ReachMetres(preset);
+
         // The carried glow (added on wake if absent, like BoatSpotlight adds its SceneLight). Exposed so the
         // editor menu / tests can read the configured light.
         private SceneLight _light;
@@ -98,6 +116,7 @@ namespace HiddenHarbours.Art
             // ApplyFitting is Apply plus this placement's own bloom radius; a zero width falls back to the
             // preset's archetype, so a light that never measured its fitting behaves exactly as before.
             LightPresets.ApplyFitting(_light, _preset, _fittingWidthMetres);
+            _light.ReachMetres = ResolvedReach(_preset, _reachOverrideMetres);
             // Layer this placement's own intensity scale over the preset's base intensity (the preset set it just
             // above; multiply so the owner can trim ONE placement without editing the shared preset).
             _light.Intensity = LightPresets.For(_preset).Intensity * Mathf.Max(0f, _intensityScale);

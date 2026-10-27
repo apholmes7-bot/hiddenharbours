@@ -69,7 +69,8 @@ namespace HiddenHarbours.Tests.EditMode
             string source = WithoutTrench();
             string harbour = HarbourBlock();
             StringAssert.Contains("{x: 100, y: 70}", harbour);
-            Assert.AreEqual("1E+02", F(100));
+            // E2 ruling 9, A34 ruling 2: the shared formatter writes the plain decimal, never an exponent.
+            Assert.AreEqual("100", F(100));
             NineMileCreekBerthRefresh.RequireChannels(harbour, new[] { NineMileCreekMainland.HarbourChannel });
             NineMileCreekBerthRefresh.RequireChannels(harbour.Replace("{x: 100, y: 70}", "{x: 1E+02, y: 70}"),
                 new[] { NineMileCreekMainland.HarbourChannel });

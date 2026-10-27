@@ -293,21 +293,12 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void NobodyStandsInsideAnyOfTheFiveBuildings()
+        public void NobodyStandsInsideAnyOfTheNineFullRigs()
         {
-            // Not just their own: Rose's dooryard must also clear the farmhouse next door.
+            var rigs = VillageTestGeometry.FullRigs();
+            Assert.That(rigs.Length,Is.EqualTo(9));
             foreach (var person in People)
-            foreach (var site in StPetersVillage.Sites)
-            {
-                var placement = VillageBuildingCatalog.Find(site.Key);
-                if (!placement.IsValid) continue;
-
-                float radius = StPetersVillage.FootprintRadiusMetres(placement);
-                float d = Vector2.Distance(person.Position, site.Position);
-                Assert.Greater(d, radius,
-                    $"{person.AssetName} at {person.Position} is inside the {site.Key} footprint " +
-                    $"({d:0.00} m from its centre, radius {radius:0.00} m)");
-            }
+                foreach (var rig in rigs) Assert.IsFalse(rig.Contains(person.Position),person.AssetName);
         }
 
         /// <summary>

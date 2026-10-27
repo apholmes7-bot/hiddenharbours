@@ -1,0 +1,401 @@
+fileFormatVersion: 2
+guid: 40e5fbe6f4b5ff84b9c29b8ff50d8f3c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6616153699784145152
+    second: Yard_firePit_0
+  - first:
+      213: 2682754526319266400
+    second: Yard_firePit_1
+  - first:
+      213: -403777010118475934
+    second: Yard_firePit_2
+  - first:
+      213: 77686708363344480
+    second: Yard_firePit_3
+  - first:
+      213: -4026733566810759218
+    second: Yard_firePit_4
+  - first:
+      213: -7121314244231522882
+    second: Yard_firePit_5
+  - first:
+      213: 2848960438494875475
+    second: Yard_firePit_6
+  - first:
+      213: 8668985218817270912
+    second: Yard_firePit_7
+  - first:
+      213: 4485639004633504827
+    second: Yard_firePit_8
+  - first:
+      213: -3743087062008235932
+    second: Yard_firePit_9
+  - first:
+      213: -1766783125180826202
+    second: Yard_firePit_10
+  - first:
+      213: 9041243399356909876
+    second: Yard_firePit_11
+  - first:
+      213: -8582639644094826332
+    second: Yard_firePit_12
+  - first:
+      213: 1905876554062146782
+    second: Yard_firePit_13
+  - first:
+      213: 4449980258397859858
+    second: Yard_firePit_14
+  - first:
+      213: -4506790365725387212
+    second: Yard_firePit_15
+  - first:
+      213: 2059448465162596451
+    second: Yard_firePit_16
+  - first:
+      213: 6178640378892586337
+    second: Yard_firePit_17
+  - first:
+      213: -2837045104235974030
+    second: Yard_firePit_18
+  - first:
+      213: 1503318732956001849
+    second: Yard_firePit_19
+  - first:
+      213: -700108378860528971
+    second: Yard_firePit_20
+  - first:
+      213: -107967897161855598
+    second: Yard_firePit_21
+  - first:
+      213: 5745129006765136624
+    second: Yard_firePit_22
+  - first:
+      213: 4509615067683055833
+    second: Yard_firePit_23
+  - first:
+      213: 5815649710001902032
+    second: Yard_firePit_24
+  - first:
+      213: 6647592849225304852
+    second: Yard_firePit_25
+  - first:
+      213: -3223047893562433097
+    second: Yard_firePit_26
+  - first:
+      213: 4729388592449736361
+    second: Yard_firePit_27
+  - first:
+      213: -8993766001286750994
+    second: Yard_firePit_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Yard_firePit_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c49e66e3be566c4997d35ccbe73185a
+      internalID: 1338651293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_firePit_d1
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a012af59f5ffb3f4480a2ca2342da581
+      internalID: -576551462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_firePit_d2
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 811368217b580ce47b311ecca7150ae7
+      internalID: 1145033630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_firePit_d3
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e44c30d237e10eb4dbfa5b40a1183308
+      internalID: 1538805974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_firePit_d4
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8a5b4da0434a834e8f0386a24be2eb0
+      internalID: 290615686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_firePit_d5
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a4eb3b27f0ff934cbc09e6ac008d2a2
+      internalID: -1468801433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_firePit_d6
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cbcc98760ae0574ba0a15249cbda008
+      internalID: -485744604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_firePit_d7
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 96
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.46969697}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 018a23ddb6be0ef4993c80bb06cfb612
+      internalID: -321468082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 48b0d5acb025ef245b8e5f84593a73ec
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Yard_firePit_d0: 1338651293
+      Yard_firePit_d1: -576551462
+      Yard_firePit_d2: 1145033630
+      Yard_firePit_d3: 1538805974
+      Yard_firePit_d4: 290615686
+      Yard_firePit_d5: -1468801433
+      Yard_firePit_d6: -485744604
+      Yard_firePit_d7: -321468082
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

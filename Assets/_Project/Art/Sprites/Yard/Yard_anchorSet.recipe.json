@@ -1,0 +1,85 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "Yard_anchorSet.png",
+  "kit": "yard",
+  "baker": "YardSheetBaker",
+  "rig": {
+    "key": "yardIso",
+    "global": "YardIso",
+    "source": "docs/art/rigs/village-return/yard-landscaping-kit/yardIsoRig.js",
+    "sha256": "caa24a4edf22b1327f72608f68cd0bd1b746c132a21a4d7a7daf193fd46fcf0d",
+    "convention": "CounterClockwise",
+    "prerequisites": [
+      {
+        "key": "interiorProp",
+        "global": "PropIso",
+        "source": "docs/art/rigs/interiorPropRig.js",
+        "sha256": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6"
+      },
+      {
+        "key": "coastalPass",
+        "global": "CoastalPass",
+        "source": "docs/art/rigs/village-return/houses-kit/Art/coastalPass.js",
+        "sha256": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "anchorSet",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "paint": null,
+      "variant": 0,
+      "len": 1,
+      "kept": 0.7,
+      "phase": "green",
+      "snow": 0,
+      "weather": 0.4,
+      "night": false,
+      "seed": 1,
+      "compose": false,
+      "elev": 40
+    }
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 470,
+    "nativeH": 540,
+    "nativePivotX": 235,
+    "nativePivotY": 442,
+    "cropX": 207,
+    "cropY": 394,
+    "cellW": 56,
+    "cellH": 66,
+    "pivotX": 28,
+    "pivotY": 48,
+    "sheetW": 448,
+    "sheetH": 66
+  },
+  "sheetSha256": "f6da0b526e4c2913c2fb3602498328c6deb612c4d99f0e234ffbdf31a3b19889"
+}

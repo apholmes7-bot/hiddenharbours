@@ -42,6 +42,7 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private List<TerrainPlanGuardCase> _cases;
         private string _derivation;
+        private TerrainPlanGuardInput _input;
 
         [OneTimeSetUp]
         public void DeriveOnceAndJudge()
@@ -51,7 +52,8 @@ namespace HiddenHarbours.Tests.EditMode
             var src = StPetersTerrainPlan.LoadFrozen();
             var r = TerrainPlanDerivation.Derive(plan, src);
             _derivation = r.Sha256();
-            _cases = TerrainPlanGuards.All(StPetersTerrainPlan.GuardInput(plan, src, r));
+            _input = StPetersTerrainPlan.GuardInput(plan, src, r);
+            _cases = TerrainPlanGuards.All(_input);
             TestContext.WriteLine($"derivation {_derivation}; {_cases.Count(k => k.Pass)}/{_cases.Count} guards hold " +
                                   $"({sw.Elapsed.TotalSeconds:0.0} s)");
         }
@@ -112,6 +114,44 @@ namespace HiddenHarbours.Tests.EditMode
             TestContext.WriteLine(k.ToString());
             foreach (var n in k.Numbers) TestContext.WriteLine($"  {n.Key} = {n.Value}");
             Assert.IsTrue(k.Pass, $"{k} (derivation {_derivation})");
+        }
+
+        [Test]
+        public void EveryNewlyHeldVillageCell_RejectsEvenOneChangedCode()
+        {
+            var result = _input.Result;
+            foreach (int index in _input.VillageHold.Cells)
+            {
+                int pixel = TerrainPlanMaps.Pixel(result.Grid, index);
+                ushort before = result.GroundCodes[pixel];
+                try
+                {
+                    result.GroundCodes[pixel] = (ushort)(before == 65535 ? before - 1 : before + 1);
+                    Assert.IsFalse(_input.VillageHold.Matches(result, index), $"cell {index} accepted a changed code");
+                }
+                finally { result.GroundCodes[pixel] = before; }
+            }
+        }
+
+        // One cell in the core and one in the feather that the former bare-disc premise missed.
+        [TestCase(657457)]
+        [TestCase(660544)]
+        public void BothMovedPremiseGuards_RejectChangedVillageGround(int index)
+        {
+            var result = _input.Result;
+            Assert.IsTrue(_input.VillageHold.Contains(index));
+            int pixel = TerrainPlanMaps.Pixel(result.Grid, index);
+            ushort before = result.GroundCodes[pixel];
+            double elevation = result.E[index];
+            try
+            {
+                result.GroundCodes[pixel] = (ushort)(before + 1);
+                result.E[index] = TerrainPlanMaps.Decode((ushort)(before + 1), _input.MapMin, _input.MapMax);
+                var cases = TerrainPlanGuards.All(_input).Where(k => k.Name == "FrozenMaskHoldsToday" || k.Name == "HeldGroundUnchanged").ToArray();
+                Assert.AreEqual(2, cases.Length);
+                foreach (var guard in cases) Assert.IsFalse(guard.Pass, guard.ToString());
+            }
+            finally { result.GroundCodes[pixel] = before; result.E[index] = elevation; }
         }
     }
 }

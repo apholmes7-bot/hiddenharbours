@@ -309,6 +309,7 @@ namespace HiddenHarbours.App.Editor
                 Plan = plan, Sources = src, Result = r,
                 Items = TerrainPlanSceneScan.Items(scene), SceneText = scene,
                 Ground = plan.Ground, Village = LoadVillage(),
+                VillageHold = VillageGroundHold.Read(File.ReadAllText("Assets/_Project/Data/Terrain/StPetersVillageGroundHold.json")),
                 WaterScriptGuid = ScriptGuid(typeof(WaterSurface)), SplatScriptGuid = ScriptGuid(typeof(TerrainSplatSurface)),
                 MapMin = map.MinElevation, MapMax = map.MaxElevation,
                 SpringLow = TerrainPlanMath.Num(StPetersBuilder.TideMean - StPetersBuilder.TideAmplitude),
@@ -362,6 +363,9 @@ namespace HiddenHarbours.App.Editor
                 case "StPetersBuilder.WhiteFarmhousePos": return P(StPetersBuilder.WhiteFarmhousePos);
                 case "StPetersBuilder.RedSaltboxPos": return P(StPetersBuilder.RedSaltboxPos);
                 case "StPetersBuilder.SageCottagePos": return P(StPetersBuilder.SageCottagePos);
+                case "StPetersBuilder.HarbourGablePos": return P(StPetersBuilder.HarbourGablePos);
+                case "StPetersBuilder.CreamSaltboxPos": return P(StPetersBuilder.CreamSaltboxPos);
+                case "StPetersBuilder.WhiteGablePos": return P(StPetersBuilder.WhiteGablePos);
                 case "StPetersBuilder.VillageHearthPos": return P(StPetersBuilder.VillageHearthPos);
                 case "StPetersBuilder.StartSpawnPos": return P(StPetersBuilder.StartSpawnPos);
                 case "StPetersBuilder.WetBucketPos": return P(StPetersBuilder.WetBucketPos);

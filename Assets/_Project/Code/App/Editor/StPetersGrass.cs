@@ -499,6 +499,9 @@ namespace HiddenHarbours.App.Editor
                 AtTheFloor(StPetersBuilder.RedSaltboxPos, "red saltbox"),
                 AtTheFloor(StPetersBuilder.SageCottagePos, "sage cottage"),
                 AtTheFloor(StPetersShops.PostOfficePos, "post office"),
+                AtTheFloor(StPetersBuilder.HarbourGablePos, "harbour gable"),
+                AtTheFloor(StPetersBuilder.CreamSaltboxPos, "cream saltbox"),
+                AtTheFloor(StPetersBuilder.WhiteGablePos, "white gable"),
 
                 // Aunt Ginny's, out on her own plot in the eastern woods.
                 AtTheFloor(StPetersGinnyPlot.CottagePos, "Ginny's cottage"),

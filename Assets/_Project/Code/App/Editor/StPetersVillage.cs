@@ -109,7 +109,13 @@ namespace HiddenHarbours.App.Editor
             new Site("redSaltbox", StPetersBuilder.RedSaltboxPos,
                      "the green's east side, facing back across it"),
             new Site("sageCottage", StPetersBuilder.SageCottagePos,
-                     "south of the green — the last house before the shore"),
+                     "the west end of the upper lane"),
+            new Site("harbourGable", StPetersBuilder.HarbourGablePos,
+                     "the home above the school lane"),
+            new Site("creamSaltbox", StPetersBuilder.CreamSaltboxPos,
+                     "the first new home on the east row"),
+            new Site("whiteGable", StPetersBuilder.WhiteGablePos,
+                     "the east end of the row"),
         };
 
         // =====================================================================================
@@ -167,7 +173,9 @@ namespace HiddenHarbours.App.Editor
         /// <see cref="StPetersBuilder.VillageGreen"/>.</summary>
         public static int FacingFor(VillageBuildingCatalog.Placement placement, Site site) =>
             placement.IsValid
-                ? FacingToward(placement.Entry, site.Position, StPetersBuilder.VillageGreen)
+                ? FacingToward(placement.Entry, site.Position,
+                    site.Key == "redSaltbox" || site.Key == "whiteFarmhouse"
+                        ? StPetersBuilder.VillageGreen : site.Position + Vector2.down)
                 : 0;
 
         /// <summary>
@@ -281,7 +289,8 @@ namespace HiddenHarbours.App.Editor
 
                 // THE INSIDE. Does nothing at all unless the interior kit has baked a room under this
                 // building's own key, so four of the five stay solid shells and the pilot cottage opens.
-                bool enterable = StPetersInteriors.Stand(go, shell, site.Key, facing, occupant);
+                bool enterable = StPetersInteriors.Stand(go, shell, site.Key, facing, occupant,
+                    StPetersInteriors.VillageUpperPlan(site.Key));
 
                 placed++;
                 report.Add($"{site.Key} d{facing} at ({site.Position.x:0.#},{site.Position.y:0.#}) " +

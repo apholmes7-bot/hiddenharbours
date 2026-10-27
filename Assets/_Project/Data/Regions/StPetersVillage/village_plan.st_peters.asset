@@ -1402,7 +1402,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_school"
     Kit: "houseIso"
     Piece: "entry.lantern"
-    Position: {x: -10.5, y: 33.27}
+    Position: {x: -10.37, y: 32.822924}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1412,7 +1412,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_general_store"
     Kit: "pending"
     Piece: "doorstep lantern on a bracket"
-    Position: {x: 3.4, y: 32.509}
+    Position: {x: 1.64, y: 32.047365}
     Z: 6
     Dir: 4
     Pending: 1
@@ -1422,7 +1422,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_post_office"
     Kit: "pending"
     Piece: "doorstep lantern on a bracket"
-    Position: {x: 19.08, y: 33.334}
+    Position: {x: 15.8728, y: 40.059247}
     Z: 6
     Dir: 4
     Pending: 1
@@ -1432,7 +1432,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_cream_saltbox"
     Kit: "houseIso"
     Piece: "entry.lantern"
-    Position: {x: 29.4, y: 33.282}
+    Position: {x: 29.53, y: 32.833953}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1442,7 +1442,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_white_gable"
     Kit: "houseIso"
     Piece: "entry.lantern"
-    Position: {x: 53.9, y: 32.782}
+    Position: {x: 54.03, y: 32.333953}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1472,7 +1472,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_sage_cottage"
     Kit: "houseIso"
     Piece: "entry.lantern"
-    Position: {x: -20.6, y: 39.355}
+    Position: {x: -20.47, y: 38.907939}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1482,7 +1482,7 @@ MonoBehaviour:
   - Id: "light.st_peters.doorstep_lantern_harbour_gable"
     Kit: "houseIso"
     Piece: "entry.lantern"
-    Position: {x: -5.35, y: 43.77}
+    Position: {x: -5.22, y: 43.322446}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1492,7 +1492,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_green_walk"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 3.92, y: 26.515}
+    Position: {x: 3.92, y: 26.714264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1502,7 +1502,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_green"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 3.92, y: 8.3}
+    Position: {x: 3.92, y: 8.499264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1512,7 +1512,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_farm_walk"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 32.58, y: 26.515}
+    Position: {x: 32.58, y: 26.714264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1522,7 +1522,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_barren_gap"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: 42.42, y: 30.085}
+    Position: {x: 42.42, y: 30.284264}
     Z: 6
     Dir: 4
     Pending: 0
@@ -1532,7 +1532,7 @@ MonoBehaviour:
   - Id: "light.st_peters.lantern_post_bluff_walk"
     Kit: "wharfDecor"
     Piece: "lanternPost"
-    Position: {x: -16.08, y: 26.515}
+    Position: {x: -16.08, y: 26.714264}
     Z: 6
     Dir: 4
     Pending: 0
