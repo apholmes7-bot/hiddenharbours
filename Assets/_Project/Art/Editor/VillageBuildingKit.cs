@@ -488,7 +488,6 @@ namespace HiddenHarbours.Art.Editor
 
             Build.FromDialled("whiteGable", "white gable", "house", new Dictionary<string, object>
                 {
-                    ["beds"] = 3,
                     ["era"] = "colonial",
                     ["shape"] = "gable",
                     ["siding"] = "clapboard",

@@ -115,7 +115,7 @@ namespace HiddenHarbours.Art.Editor
         {
             "size", "floor", "floorTone", "wall", "paper", "wainscot",
             "windows", "winDensity", "door", "dividers", "hearth", "stairs", "beams", "weather",
-            "shell", "storey", "beds",
+            "shell", "storey",
         };
 
         /// <summary>Every option key a PROP build is allowed to dial, grep-verified the same way against
@@ -365,7 +365,6 @@ namespace HiddenHarbours.Art.Editor
                         ["bay"] = false,
                         ["weather"] = 0.3,
                     },
-                    ["beds"] = 1,
                     ["storey"] = "ground",
                     ["floor"] = "plank",
                     ["wall"] = "plaster",
@@ -400,7 +399,6 @@ namespace HiddenHarbours.Art.Editor
                         ["bay"] = false,
                         ["weather"] = 0.3,
                     },
-                    ["beds"] = 1,
                     ["storey"] = "upper",
                     ["floor"] = "plank",
                     ["wall"] = "plaster",
@@ -435,7 +433,6 @@ namespace HiddenHarbours.Art.Editor
                         ["bay"] = false,
                         ["weather"] = 0.25,
                     },
-                    ["beds"] = 1,
                     ["storey"] = "ground",
                     ["floor"] = "plank",
                     ["wall"] = "plaster",
@@ -470,7 +467,6 @@ namespace HiddenHarbours.Art.Editor
                         ["bay"] = false,
                         ["weather"] = 0.25,
                     },
-                    ["beds"] = 1,
                     ["storey"] = "upper",
                     ["floor"] = "plank",
                     ["wall"] = "plaster",
@@ -490,7 +486,6 @@ namespace HiddenHarbours.Art.Editor
                     ["size"] = 0.35,
                     ["shell"] = new Dictionary<string, object>
                     {
-                        ["beds"] = 3,
                         ["era"] = "colonial",
                         ["shape"] = "gable",
                         ["siding"] = "clapboard",
@@ -508,7 +503,6 @@ namespace HiddenHarbours.Art.Editor
                         ["doorPaint"] = "red",
                         ["weather"] = 0.1,
                     },
-                    ["beds"] = 1,
                     ["storey"] = "ground",
                     ["floor"] = "plank",
                     ["wall"] = "plaster",
@@ -528,7 +522,6 @@ namespace HiddenHarbours.Art.Editor
                     ["size"] = 0.35,
                     ["shell"] = new Dictionary<string, object>
                     {
-                        ["beds"] = 3,
                         ["era"] = "colonial",
                         ["shape"] = "gable",
                         ["siding"] = "clapboard",
@@ -546,7 +539,6 @@ namespace HiddenHarbours.Art.Editor
                         ["doorPaint"] = "red",
                         ["weather"] = 0.1,
                     },
-                    ["beds"] = 1,
                     ["storey"] = "upper",
                     ["floor"] = "plank",
                     ["wall"] = "plaster",

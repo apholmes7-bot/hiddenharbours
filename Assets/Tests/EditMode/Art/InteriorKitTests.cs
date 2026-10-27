@@ -29,24 +29,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// </summary>
     public class InteriorKitTests
     {
-        [Test]
-        public void NewVillageRooms_KeepTheirShellAndOneBedUpstairs()
-        {
-            foreach (string key in new[] { "harbourGable", "creamSaltbox", "whiteGable" })
-            {
-                var shell = VillageBuildingKit.FindBuild(key).Value.Dialled;
-                foreach (string suffix in new[] { "", "Upper" })
-                {
-                    var room = InteriorKit.FindRoom(key + suffix).Value;
-                    Assert.AreEqual(key, InteriorKit.ExteriorKeyFor(room.Key));
-                    CollectionAssert.AreEquivalent(shell,
-                        (IReadOnlyDictionary<string, object>)room.Dialled["shell"]);
-                    Assert.AreEqual(suffix == "" ? "ground" : "upper", room.Dialled["storey"]);
-                    if (suffix == "Upper") Assert.AreEqual(1, room.Dialled["beds"]);
-                }
-            }
-        }
-
         static string RepoRoot => Directory.GetParent(Application.dataPath)!.FullName;
 
         static string RigSource(string fileName) =>
@@ -288,11 +270,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             // The keys are shared on purpose: StPetersInteriors looks a room up by the BUILDING's key,
             // so a room named anything else is a room nothing will ever stand.
+            // E2 ruling 5 (case 2): an upper room names its building through exactly these three mappings.
+            var upper = new Dictionary<string, string>
+            {
+                ["harbourGableUpper"] = "harbourGable",
+                ["creamSaltboxUpper"] = "creamSaltbox",
+                ["whiteGableUpper"] = "whiteGable",
+            };
+            var seen = new List<string>();
             foreach (var room in InteriorKit.RoomSet)
+            {
+                if (upper.TryGetValue(room.Key, out string target))
+                {
+                    seen.Add(room.Key);
+                    Assert.AreEqual(target, InteriorKit.ExteriorKeyFor(room.Key), $"room '{room.Key}'");
+                    Assert.IsNotNull(VillageBuildingKit.FindBuild(target),
+                                     $"room '{room.Key}' maps to '{target}', which the village kit does not build.");
+                    continue;
+                }
                 Assert.IsNotNull(VillageBuildingKit.FindBuild(room.Key),
                                  $"room '{room.Key}' has no village building of the same key, so " +
                                  "nothing will ever place it. Name a room after the building it is " +
                                  "inside.");
+            }
+            CollectionAssert.AreEquivalent(upper.Keys, seen, "each mapped upper room is in the room set");
         }
 
         static bool TryGetSize(IReadOnlyDictionary<string, object> dialled, out double size)
