@@ -147,8 +147,17 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(door.ThresholdIsWalkable);
             Assert.IsFalse(door.IsOpen);
             Assert.IsFalse(BoatCabinThreshold.TryWallLine(cabin.Def, door.Door, out _, out _, out _));
+            Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode, "premise: the swap left her standing on deck");
             yield return WalkToTheDoor(rig, door);
+            Assert.IsTrue(InteractOffer.Current.Has,
+                          $"standing at {subject.Id}'s threshold ({Vector2.Distance(rig.Player.transform.position, door.transform.position):0.00} m " +
+                          $"from a door with {door.ReachMeters:0.00} m of reach) must offer the way in");
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label);
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E works the shut leaf");
+            Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode,
+                            "…and never on her helm: at a cabin door E only opens the door (owner, 2026-09-17)");
+            Assert.IsTrue(door.IsOpen,
+                          "the cruiser's door states no cue, so the press ends on an open leaf before the frame ends");
             yield return WaitForCue(door);
             Assert.IsTrue(door.IsOpen);
             Assert.IsFalse(cabin.IsInside, "E alone never enters a measured landing");
