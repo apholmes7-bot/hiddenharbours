@@ -319,8 +319,8 @@ namespace HiddenHarbours.Art
                 // charter's "~3 m". It is deliberately SHORTER than a lamp post's 3.6 m: a lantern in the
                 // hand is not a lamp on a pole, and if it lit as far it would stop being worth carrying.
                 case Kind.Lantern:    return 3f;
-                // Fixed oil flame: a close pool beneath the fitting.
-                case Kind.HungLantern: return 3.4f;
+                // the hung lantern's default is a post's reach (3.6 m); only the wharf's two lantern posts take the default, every village hung lantern carries its Def's reach
+                case Kind.HungLantern: return 3.6f;
                 // The headlamp throws FURTHER than anything else she owns, because a cone concentrates what a
                 // radial spreads: the same lamp aimed is the same light over a fifth of the ground. The reach
                 // is down the beam, so this is a THROW and not a radius.
