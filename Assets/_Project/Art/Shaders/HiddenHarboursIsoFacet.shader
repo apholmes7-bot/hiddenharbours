@@ -147,7 +147,7 @@ Shader "HiddenHarbours/IsoFacet"
             float4 _LN;                 // rig LN, z pre-negated for the reflected frame
             float  _Gain, _Bias;
             float4 _Bayer[4];           // BAYER[x&3][y&3], values already (v+0.5)/16, row = x
-            float4 _RampMeta[16];       // per material: x = ramp length, y = index offset
+            float4 _RampMeta[16];       // per material: x = ramp length, y = index offset, z = dither weight
             float4 _KeyColor;           // pre-linearised keyline colour
             float4 _PivotPx;            // xy = cell pivot in px from the cell's top-left
             float  _PixelsPerMetre;
@@ -605,12 +605,16 @@ Shader "HiddenHarbours/IsoFacet"
                 bool hhInterior = i.lvl.y > 0.5;
                 int len  = (int)(hhInterior ? _RampMetaInterior[m].x : _RampMeta[m].x);
                 int off  = (int)(hhInterior ? _RampMetaInterior[m].y : _RampMeta[m].y);
+                float dith = hhInterior ? _RampMetaInterior[m].z : _RampMeta[m].z;
 #else
                 int len  = (int)_RampMeta[m].x;
                 int off  = (int)_RampMeta[m].y;
+                float dith = _RampMeta[m].z;
 #endif
+                // Keep full Bayer's threshold exactly, including setup callers predating weights.
+                float thr = dith == 1.0 ? bay : (dith <= 0.0 ? 0.5 : 0.5 + (bay - 0.5) * dith);
                 float fbase = floor(i.fidx);
-                int idx = (int)fbase + ((i.fidx - fbase) > bay ? 1 : 0) + off;
+                int idx = (int)fbase + ((i.fidx - fbase) > thr ? 1 : 0) + off;
 #ifdef HH_LEVEL_GATE
                 // Integer shift, so this is the rig's `fi += tex(u,v)` moved to the other side of
                 // the dither compare without changing it: floor(f + k) == floor(f) + k and the

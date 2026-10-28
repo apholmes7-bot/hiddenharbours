@@ -1304,22 +1304,14 @@ namespace HiddenHarbours.Tools.RigBaking
 
             def.Ramps = new HullMeshDef.Ramp[data.Materials.Count];
             for (int m = 0; m < data.Materials.Count; m++)
-                def.Ramps[m] = new HullMeshDef.Ramp
-                {
-                    Colors = data.Materials[m].Ramp,
-                    Offset = data.Materials[m].Off,
-                };
+                def.Ramps[m] = data.Materials[m].ToRamp();
 
             // The room's own table. Empty on every hull not yet converted, which is what keeps the
             // sheet system working for them: absence of an interior palette is how a hull says she
             // still draws her cabin as a sprite.
             def.InteriorRamps = new HullMeshDef.Ramp[data.InteriorMaterials.Count];
             for (int m = 0; m < data.InteriorMaterials.Count; m++)
-                def.InteriorRamps[m] = new HullMeshDef.Ramp
-                {
-                    Colors = data.InteriorMaterials[m].Ramp,
-                    Offset = data.InteriorMaterials[m].Off,
-                };
+                def.InteriorRamps[m] = data.InteriorMaterials[m].ToRamp();
 
             def.Bayer16 = new float[16];
             for (int x = 0; x < 4; x++)

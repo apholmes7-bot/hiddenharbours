@@ -16,6 +16,7 @@ namespace HiddenHarbours.Art
 
         public Color32[][] Ramps;
         public int[] RampOffsets;
+        public float[] RampDitherWeights;
         public Vector3 LightN;
         public float Gain, Bias;
         public float[] Bayer16;
@@ -165,7 +166,7 @@ namespace HiddenHarbours.Art
 
             var meta = new Vector4[16];
             for (int m = 0; m < setup.Ramps.Length; m++)
-                meta[m] = new Vector4(setup.Ramps[m].Length, setup.RampOffsets[m], 0, 0);
+                meta[m] = IsoFacetRampMeta.Pack(setup.Ramps[m].Length, setup.RampOffsets[m], setup.RampDitherWeights, m);
             _facetMaterial.SetVectorArray(IsoFacetShaderIds.RampMeta, meta);
 
             var rows = new Vector4[4];

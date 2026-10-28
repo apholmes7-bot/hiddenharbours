@@ -153,10 +153,12 @@ namespace HiddenHarbours.Art
         {
             var ramps = new Color32[def.Ramps.Length][];
             var offsets = new int[def.Ramps.Length];
+            var dither = new float[def.Ramps.Length];
             for (int m = 0; m < def.Ramps.Length; m++)
             {
                 ramps[m] = def.Ramps[m].Colors;
                 offsets[m] = def.Ramps[m].Offset;
+                dither[m] = def.Ramps[m].DitherWeight;
             }
 
             return new IsoFacetHullSetup
@@ -164,6 +166,7 @@ namespace HiddenHarbours.Art
                 Mesh = def.Mesh,
                 Ramps = ramps,
                 RampOffsets = offsets,
+                RampDitherWeights = dither,
                 LightN = def.LightN,
                 Gain = def.Gain,
                 Bias = def.Bias,

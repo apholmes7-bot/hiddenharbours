@@ -158,11 +158,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             def.Ramps = new HullMeshDef.Ramp[data.Materials.Count];
             for (int m = 0; m < data.Materials.Count; m++)
-                def.Ramps[m] = new HullMeshDef.Ramp
-                {
-                    Colors = data.Materials[m].Ramp,
-                    Offset = data.Materials[m].Off,
-                };
+                def.Ramps[m] = data.Materials[m].ToRamp();
 
             def.Bayer16 = new float[16];
             for (int x = 0; x < 4; x++)
@@ -403,11 +399,7 @@ namespace HiddenHarbours.Tools.RigBaking
             def.RampNames = new string[data.Materials.Count];
             for (int m = 0; m < data.Materials.Count; m++)
             {
-                def.Ramps[m] = new HullMeshDef.Ramp
-                {
-                    Colors = data.Materials[m].Ramp,
-                    Offset = data.Materials[m].Off,
-                };
+                def.Ramps[m] = data.Materials[m].ToRamp();
                 def.RampNames[m] = data.Materials[m].Name;
             }
 

@@ -227,7 +227,7 @@ namespace HiddenHarbours.Tools.RigBaking
                           "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
                           "F.forEach(function(f){u[f.mat]=1;});" +
                           "Object.keys(D).forEach(function(n){if(u[n]){" +
-                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp];}));" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
                           "g[n]=k;if(!r[k])r[k]=n;}});" +
                           "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
                 schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
@@ -241,7 +241,7 @@ namespace HiddenHarbours.Tools.RigBaking
                           "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
                           "F.forEach(function(f){u[f.mat]=1;});" +
                           "Object.keys(D).forEach(function(n){if(u[n]){" +
-                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp];}));" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
                           "g[n]=k;if(!r[k])r[k]=n;}});" +
                           "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
                 schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
@@ -255,7 +255,7 @@ namespace HiddenHarbours.Tools.RigBaking
                           "F=H.faceList({}).concat(H.doorFaces(0)),u={},g={},r={};" +
                           "F.forEach(function(f){u[f.mat]=1;});" +
                           "Object.keys(D).forEach(function(n){if(u[n]){" +
-                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp];}));" +
+                          "var k=JSON.stringify(A.map(function(m){return [m[n].off||0,m[n].ramp,m[n].dith==null?1:m[n].dith];}));" +
                           "g[n]=k;if(!r[k])r[k]=n;}});" +
                           "F.forEach(function(f){var n=r[g[f.mat]];if(!t[n])t[n]=M[n];});return t;},{})",
                 schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];return [id,s.name||'',s.note||''];})",
@@ -554,20 +554,22 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             string blob = host.EvaluateString(
                 $"(function(){{var M={g}.{Mats(hull, paintId, g)},o=[];for(var k in M)" +
-                "o.push(k+'|'+(M[k].off||0)+'|'+M[k].ramp.join(','));return o.join(';');})()");
+                "o.push(k+'|'+(M[k].off||0)+'|'+M[k].ramp.join(',')+'|'+" +
+                "(M[k].dith==null?1:M[k].dith));return o.join(';');})()");
 
             var ramps = new List<HullMeshDef.Ramp>();
             foreach (string part in blob.Split(';'))
             {
                 string[] f = part.Split('|');
-                if (f.Length != 3)
+                if (f.Length != 4)
                     throw new InvalidOperationException(
-                        $"{g}.{Mats(hull, paintId, g)} entry '{part}' is not name|off|ramp.");
+                        $"{g}.{Mats(hull, paintId, g)} entry '{part}' is not name|off|ramp|dith.");
                 string[] hex = f[2].Split(',');
                 ramps.Add(new HullMeshDef.Ramp
                 {
                     Colors = Array.ConvertAll(hex, ParseHex),
                     Offset = int.Parse(f[1], CultureInfo.InvariantCulture),
+                    DitherWeight = float.Parse(f[3], CultureInfo.InvariantCulture),
                 });
             }
 
