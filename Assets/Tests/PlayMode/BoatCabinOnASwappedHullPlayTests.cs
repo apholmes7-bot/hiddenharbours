@@ -188,7 +188,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreSame(door.Door, cabin.EntryLandingDoor);
             Assert.AreEqual(-1, cabin.Level);
             Assert.AreEqual(1.17f, walk.DeckHeightMeters);
-            Assert.AreEqual(subject.Visual.HullMesh.CutawayForDeck("helm_deck").Level, cut.RequestedCut.Level);
+            // ⚠ MOVED (2026-10-27): the cut she stands in is her interior's answer for the landing, not the mesh's
+            // cut for the level row's deck id. This hull-walk mesh keys that cut by the row's level (house), so it
+            // has no cut for helm_deck. Both are Level 0 here; the Opens line below is the guard.
+            Assert.AreEqual(cabin.EntryLandingCut.Level, cut.RequestedCut.Level);
             Assert.IsTrue(HullOf(rig).CutawayShown.Opens);
 
             yield return WalkTheEntryStair(rig, cabin, walk, true);
@@ -200,7 +203,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(cabin.IsInside, "the stair goes to the landing, not out through its door");
             Assert.AreEqual(1.17f, walk.DeckHeightMeters);
             Assert.GreaterOrEqual(walk.DeckLocalPosition.y, door.Door.ThresholdPoint.y);
-            Assert.AreEqual(subject.Visual.HullMesh.CutawayForDeck("helm_deck").Level, cut.RequestedCut.Level);
+            Assert.AreEqual(cabin.EntryLandingCut.Level, cut.RequestedCut.Level); // MOVED, as on the way in
 
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E closes the leaf from the landing");
             yield return WaitForCue(door);
