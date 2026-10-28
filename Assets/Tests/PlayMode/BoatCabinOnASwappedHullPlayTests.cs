@@ -130,6 +130,114 @@ namespace HiddenHarbours.Tests.PlayMode
             BoatInteriorCells.Reset();
         }
 
+        [UnityTest]
+        public IEnumerator RecreationSwap_CruiserWalksHerLandingAndStair_WithTheDoorAndCutsAtEachHeight()
+        {
+            Rig rig = NewDoryRig();
+            BoatHullDef subject = LoadHull("ExpressCruiser");
+            if (rig.Boat == null || subject == null) yield break;
+            yield return null;
+            yield return Board(rig);
+            rig.Picker.Show(subject);
+            yield return null;
+            BoatCabinDoor door = SwappedCabinDoor(rig, subject);
+            BoatInterior cabin = rig.Installer.Interior;
+            DeckWalkController walk = rig.Player.GetComponent<DeckWalkController>();
+            BoatCutaway cut = rig.Installer.Cutaway;
+            Assert.IsTrue(door.ThresholdIsWalkable);
+            Assert.IsFalse(door.IsOpen);
+            Assert.IsFalse(BoatCabinThreshold.TryWallLine(cabin.Def, door.Door, out _, out _, out _));
+            Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode, "premise: the swap left her standing on deck");
+            yield return WalkToTheDoor(rig, door);
+            Assert.IsTrue(InteractOffer.Current.Has,
+                          $"standing at {subject.Id}'s threshold ({Vector2.Distance(rig.Player.transform.position, door.transform.position):0.00} m " +
+                          $"from a door with {door.ReachMeters:0.00} m of reach) must offer the way in");
+            Assert.AreEqual("Open the door", InteractOffer.Current.Label);
+            float fromTheDoor = Vector2.Distance(rig.Player.transform.position, door.WorldPosition);
+            Assert.LessOrEqual(fromTheDoor, door.ReachMeters,
+                               $"premise: she stands within her door's reach when E goes down ({fromTheDoor:F3} m " +
+                               $"from the door at {door.WorldPosition:F3}, with {door.ReachMeters:F2} m of reach)");
+            // ⚠ THE PRESS READ (owner, 2026-10-27): a read, not a pin. B2f found this leaf shut straight after
+            // a press the code says this door cannot refuse, so the press is read where it lands — the
+            // candidate it worked, where she stood when the offer was made and when E went down, and whether
+            // the registry's door is this one — on one line of the case's output, before any assertion below
+            // can end the case.
+            string offerRead = OfferRead(rig, door);
+            var performed = new List<string>();
+            Action<InteractPerformed> onPerformed = e => performed.Add(e.Id);
+            EventBus.Subscribe(onPerformed);
+            bool pressed;
+            try { pressed = rig.Switcher.BeginInteract(); }
+            finally { EventBus.Unsubscribe(onPerformed); }
+            Debug.Log($"[CruiserPressRead] {offerRead} | {PressRead(rig, door, pressed, performed)}");
+            Assert.IsTrue(pressed, "E works the shut leaf");
+            Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode,
+                            "…and never on her helm: at a cabin door E only opens the door (owner, 2026-09-17)");
+            Assert.IsTrue(door.IsOpen,
+                          "the cruiser's door states no cue, so the press ends on an open leaf before the frame ends");
+            yield return WaitForCue(door);
+            Assert.IsTrue(door.IsOpen);
+            Assert.IsFalse(cabin.IsInside, "E alone never enters a measured landing");
+
+            // ⚠ THE WALK READ (owner, 2026-10-27): a read, not a pin. B2g found her still outside after every
+            // tick of this walk through her open doorway onto her entry landing, so the walk-through logs one
+            // line — her deck point and height, and her doorway's gates as its Pass asks them, on the tick after
+            // the snap and on the last — before the assertion below can end the case.
+            yield return SheWalksThroughTheDoorway(rig, door, subject.Visual.HullMesh);
+            Assert.IsTrue(cabin.IsInside);
+            Assert.AreSame(door.Door, cabin.EntryLandingDoor);
+            Assert.AreEqual(-1, cabin.Level);
+            Assert.AreEqual(1.17f, walk.DeckHeightMeters);
+            // ⚠ MOVED (2026-10-27): the cut she stands in is her interior's answer for the landing, not the mesh's
+            // cut for the level row's deck id. This hull-walk mesh keys that cut by the row's level (house), so it
+            // has no cut for helm_deck. Both are Level 0 here; the Opens line below is the guard.
+            Assert.AreEqual(cabin.EntryLandingCut.Level, cut.RequestedCut.Level);
+            Assert.IsTrue(HullOf(rig).CutawayShown.Opens);
+
+            yield return WalkTheEntryStair(rig, cabin, walk, true);
+            Assert.IsNull(cabin.EntryLandingDoor);
+            Assert.AreEqual(0.22f, walk.DeckHeightMeters);
+            Assert.AreEqual(subject.Visual.HullMesh.CutawayForDeck("cabin").Level, cut.RequestedCut.Level);
+            yield return WalkTheEntryStair(rig, cabin, walk, false);
+            Assert.AreSame(door.Door, cabin.EntryLandingDoor);
+            Assert.IsTrue(cabin.IsInside, "the stair goes to the landing, not out through its door");
+            Assert.AreEqual(1.17f, walk.DeckHeightMeters);
+            Assert.GreaterOrEqual(walk.DeckLocalPosition.y, door.Door.ThresholdPoint.y);
+            Assert.AreEqual(cabin.EntryLandingCut.Level, cut.RequestedCut.Level); // MOVED, as on the way in
+
+            Assert.IsTrue(rig.Switcher.BeginInteract(), "E closes the leaf from the landing");
+            yield return WaitForCue(door);
+            Assert.IsFalse(door.IsOpen);
+            yield return SheWalksThroughTheDoorway(rig, door);
+            Assert.IsTrue(cabin.IsInside, "walking against the shut leaf cannot escape it");
+            Assert.AreEqual(1.17f, walk.DeckHeightMeters);
+            Assert.IsTrue(rig.Switcher.BeginInteract(), "E opens the shut leaf from inside");
+            yield return WaitForCue(door);
+            yield return SheWalksThroughTheDoorway(rig, door);
+            Assert.IsFalse(cabin.IsInside);
+            Assert.IsFalse(cut.RequestedCut.Opens);
+            yield return null;
+            Assert.IsFalse(HullOf(rig).CutawayShown.Opens);
+        }
+
+        private static IEnumerator WalkTheEntryStair(Rig rig, BoatInterior cabin, DeckWalkController walk, bool down)
+        {
+            var held = new HeldDeckIntents();
+            float before = Time.captureDeltaTime;
+            Time.captureDeltaTime = FrameSeconds;
+            walk.ConfigureDeckInput(held);
+            try
+            {
+                Vector2 key = DeckAreaMath.DeckToWorld(down ? Vector2.up : Vector2.down, 0f,
+                    DeckWalkController.DrawnHeadingDegreesOf(rig.Boat.transform),
+                    DeckWalkController.BakeElevationDegreesOf(rig.Boat.transform)).normalized;
+                held.Walk(key);
+                for (int f = 0; f < CrossingFrames && (cabin.EntryLandingDoor != null) == down; f++) yield return null;
+            }
+            finally { held.Release(); walk.ConfigureDeckInput(null); Time.captureDeltaTime = before; }
+            Assert.AreEqual(!down, cabin.EntryLandingDoor != null, "the deliberately held stair was taken");
+        }
+
         // =====================================================================================
         //  THE PRESS, THE BAND AND THE CUT, on a hull that arrived after Start
         // =====================================================================================
@@ -542,10 +650,88 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
         }
 
+        /// <summary>
+        /// Stands her at her door on the shipped deck walk.
+        ///
+        /// <para>The walk seats her at the door's own spot, read back at its own sill's height — on the deck
+        /// floor nearest that height (<see cref="DeckWalkController.SnapToFloorAtHeight"/>) — and the case goes
+        /// on once her transform stands where the walk holds her. ⚠ Never by moving her transform: the walk
+        /// INTEGRATES its hull-frame point and writes it back every tick, so a moved transform lasts only until
+        /// the walk's next one. The press read (2026-10-27) caught exactly that on the cruiser: the offer made
+        /// with her on the door, E pressed from 1.43 m back, past the door's 1.20 m of reach.</para>
+        /// </summary>
         private static IEnumerator WalkToTheDoor(Rig rig, BoatCabinDoor door)
         {
-            rig.Player.transform.position = door.transform.position;
-            yield return null;
+            var walk = rig.Player.GetComponent<DeckWalkController>();
+            Assert.IsNotNull(walk, "the shipped deck walk is what stands her at her door");
+            Transform boat = walk.BoatRoot;
+            Assert.IsNotNull(boat, "premise: her walk is bound to the hull she stands on");
+            walk.SnapToFloorAtHeight(door.WorldPosition - (Vector2)boat.position, door.Door.ThresholdPoint.z);
+            yield return null;   // a tick of her walk, and of the offer made from where it holds her
+
+            const float agreeMetres = 0.001f;
+            float deadline = Time.time + 5f;
+            while (Vector2.Distance(rig.Player.transform.position, WhereHerWalkHasHer(walk)) > agreeMetres
+                   && Time.time < deadline)
+                yield return null;
+            Vector2 walked = WhereHerWalkHasHer(walk), stands = rig.Player.transform.position;
+            Assert.LessOrEqual(Vector2.Distance(stands, walked), agreeMetres,
+                               $"her walk holds her at {walked:F3} and her transform stands at {stands:F3}: the two " +
+                               "agree on where she stands before anything is asked of her");
+        }
+
+        /// <summary>Where her deck walk holds her: its hull-frame point at its deck height, projected onto her
+        /// drawn hull the way the walk writes her transform.</summary>
+        private static Vector2 WhereHerWalkHasHer(DeckWalkController walk)
+        {
+            Transform boat = walk.BoatRoot;
+            return (Vector2)boat.position + DeckAreaMath.DeckToWorld(walk.DeckLocalPosition, walk.DeckHeightMeters,
+                                                                    DeckWalkController.DrawnHeadingDegreesOf(boat),
+                                                                    DeckWalkController.BakeElevationDegreesOf(boat));
+        }
+
+        /// <summary>
+        /// The press read's first half (owner, 2026-10-27), taken with nothing between it and E: the offer as
+        /// the switcher's last Update left it, the actor that Update resolved it for
+        /// (<see cref="InteractActorProbe"/>, set from the same <c>ActorNow</c> just before the publish), and
+        /// where the press will find her — <c>ActorNow</c> reads her walk's transform when it is called.
+        /// </summary>
+        private static string OfferRead(Rig rig, BoatCabinDoor door)
+        {
+            var offer = InteractOffer.Current;
+            var atOffer = InteractActorProbe.Current;
+            Vector2 atPress = rig.Player.transform.position;
+            return $"offer {offer.Source} '{offer.Id}' \"{offer.Label}\" at {offer.WorldPosition:F3}, " +
+                   $"{Mathf.Sqrt(offer.DistanceSqr):F3} m from her | candidate '{InteractVerb.CurrentCandidateId}' | " +
+                   $"her at the offer {(InteractActorProbe.Has ? atOffer.Position.ToString("F3") : "unset")} ({atOffer.Context}) | " +
+                   $"her at the press {atPress:F3}, {Vector2.Distance(atPress, door.WorldPosition):F3} m from the door at " +
+                   $"{door.WorldPosition:F3} (reach {door.ReachMeters:F2} m) | mode {rig.Switcher.Mode}";
+        }
+
+        /// <summary>
+        /// The press read's second half: what the press published and left behind, and whether the door the
+        /// registry holds — the list the press resolves among — is the door this case holds, or one of
+        /// several by its id.
+        /// </summary>
+        private static string PressRead(Rig rig, BoatCabinDoor door, bool pressed, List<string> performed)
+        {
+            var active = Interactables.Active;
+            int sameId = 0, testDoorAt = -1;
+            for (int i = 0; i < active.Count; i++)
+            {
+                if (active[i] == null || active[i].Id != door.Id) continue;
+                sameId++;
+                if (ReferenceEquals(active[i], door)) testDoorAt = i;
+            }
+            int doorsById = 0;
+            foreach (BoatCabinDoor d in UnityEngine.Object.FindObjectsByType<BoatCabinDoor>(FindObjectsInactive.Include))
+                if (d.Id == door.Id) doorsById++;
+            return $"pressed {pressed} | performed [{string.Join(", ", performed)}] | after: mode {rig.Switcher.Mode}, " +
+                   $"boarding move {rig.Switcher.IsBoardingMove}, open {door.IsOpen}, cueing {door.IsCueing}, " +
+                   $"inside {door.Interior.IsInside} | registry: {sameId} of {active.Count} with id '{door.Id}', " +
+                   $"the test's door {(testDoorAt >= 0 ? "at " + testDoorAt : "absent")} | " +
+                   $"{doorsById} BoatCabinDoor with that id in the scene | " +
+                   $"the installer's door is the test's: {ReferenceEquals(rig.Installer.Door, door)}";
         }
 
         /// <summary>
@@ -559,12 +745,16 @@ namespace HiddenHarbours.Tests.PlayMode
         /// by her hull's drawn heading, which the walk turns back. ⚠ The snap is the only way in — the walk
         /// INTEGRATES its hull-frame point and never reads it back off the transform, so moving the
         /// player's transform would leave the frame it actually asks the doorway with untouched.</para>
+        ///
+        /// <para>Given <paramref name="readOnHull"/>, the walk-through also logs the walk read
+        /// (<see cref="DoorwayWalkRead"/>) as one <c>[CruiserWalkRead]</c> line; without it, nothing is read and
+        /// the walk is the same.</para>
         /// </summary>
-        private static IEnumerator SheWalksThroughTheDoorway(Rig rig, BoatCabinDoor door)
+        private static IEnumerator SheWalksThroughTheDoorway(Rig rig, BoatCabinDoor door, HullMeshDef readOnHull = null)
         {
             var walk = rig.Player.GetComponent<DeckWalkController>();
             Assert.IsNotNull(walk, "the shipped deck walk is what carries her through a doorway");
-            Assert.IsTrue(BoatCabinThreshold.TryWallLine(door.Interior.Def, door.Door, out _, out Vector2 onLine,
+            Assert.IsTrue(BoatCabinThreshold.TryEntryLine(door.Interior.Def, door.Door, out _, out _, out Vector2 onLine,
                                                          out Vector2 outward),
                           "the premise: her doorway is cut in a wall");
 
@@ -580,15 +770,132 @@ namespace HiddenHarbours.Tests.PlayMode
             walk.ConfigureDeckInput(held);
             try
             {
+                DoorwayWalkRead read = readOnHull != null
+                    ? new DoorwayWalkRead(walk, door, onLine, outward, key, boat, readOnHull) : null;
                 walk.SnapToDeckLocal(onLine);
                 held.Walk(key);
-                for (int f = 0; f < CrossingFrames && cabin.IsInside == wasInside; f++) yield return null;
+                read?.Snapped();
+                int ticks = 0;
+                for (int f = 0; f < CrossingFrames && cabin.IsInside == wasInside; f++)
+                {
+                    yield return null;
+                    read?.Tick(++ticks);
+                }
+                if (read != null) Debug.Log($"[CruiserWalkRead] {read.Line(ticks)}");
             }
             finally
             {
                 held.Release();
                 walk.ConfigureDeckInput(null);
                 Time.captureDeltaTime = captureBefore;
+            }
+        }
+
+        /// <summary>
+        /// ⚠ THE WALK READ (owner, 2026-10-27): her doorway's own gates, asked the way its <c>Pass</c> asks them —
+        /// through the public <see cref="BoatCabinThreshold"/> tests, at her walk's deck-local point and deck height,
+        /// with her key turned into the hull's frame as her walk turns it
+        /// (<see cref="DeckWalkController.HeldInHullFrame"/>) — on the tick after the snap and on the last tick.
+        ///
+        /// <para>The door's record of the tick before (its distance past the line, kept while she stands in the band
+        /// of an open door) is kept here the way the door keeps it, so the band and pressed-short tests see what
+        /// <c>Pass</c> sees. The landing's own check is read off the hull mesh by the rule the interior applies
+        /// (one enclosed deck at the landing's height whose cut opens). A read, not a pin: nothing here writes to
+        /// her, her walk or her door. ⚠ Two inputs stay private and unread: the settle's clock, and whether her
+        /// walk asks this door at all.</para>
+        /// </summary>
+        private sealed class DoorwayWalkRead
+        {
+            private readonly DeckWalkController _walk;
+            private readonly BoatCabinDoor _door;
+            private readonly Vector2 _onLine, _outward, _heldInHull;
+            private readonly BoatCabinEntryKind _kind;
+            private readonly int _landingDecks;
+            private readonly string _head;
+            private float _recordBefore;
+            private string _snapped, _first, _last;
+
+            public DoorwayWalkRead(DeckWalkController walk, BoatCabinDoor door, Vector2 onLine, Vector2 outward,
+                                   Vector2 key, Transform keyHull, HullMeshDef mesh)
+            {
+                _walk = walk;
+                _door = door;
+                _onLine = onLine;
+                _outward = outward;
+                Transform hull = walk.BoatRoot;
+                _heldInHull = DeckWalkController.HeldInHullFrame(key, DeckWalkController.DrawnHeadingDegreesOf(hull),
+                                                                 DeckWalkController.BakeElevationDegreesOf(hull));
+                BoatInteriorDef def = door.Interior.Def;
+                BoatCabinThreshold.TryEntryLine(def, door.Door, out _kind, out _, out _, out _);
+                string landing = LandingDecks(door, mesh, out _landingDecks);
+                Vector2 before = walk.DeckLocalPosition;
+                _recordBefore = Record(before);
+                _head = $"kind {_kind} | line {onLine:F3}, outward {outward:F3} | sill {door.Door.ThresholdPoint.z:F3} m, " +
+                        $"tolerance {def.FloorTolerance:F3} m | settle {door.Door.CrossingSettle:F3} s | key {key:F3}, in " +
+                        $"her hull's frame {_heldInHull:F3} (her walk's hull is the key's: {ReferenceEquals(hull, keyHull)}) | " +
+                        $"{landing} | before the snap at {before:F3}, {walk.DeckHeightMeters:F3} m";
+            }
+
+            public void Snapped() =>
+                _snapped = $"snapped to {_walk.DeckLocalPosition:F3}, {_walk.DeckHeightMeters:F3} m";
+
+            public void Tick(int tick)
+            {
+                BoatInterior cabin = _door.Interior;
+                Vector2 at = _walk.DeckLocalPosition;
+                float height = _walk.DeckHeightMeters;
+                bool open = _door.IsOpen, cueing = _door.IsCueing, goingIn = _door.WouldEnter;
+                bool inBand = BoatCabinThreshold.IsInBand(_door.Door, at);
+                bool onSill = BoatCabinThreshold.IsOnTheSill(_door.Door, height, cabin.Def.FloorTolerance);
+                bool heldThrough = BoatCabinThreshold.IsHeldThrough(_door.Door, _outward, goingIn, _heldInHull);
+                float past = BoatCabinThreshold.PastTheWallLine(_onLine, _outward, at);
+                bool reached = BoatCabinThreshold.HasReachedTheWallLine(_onLine, _outward, goingIn, at);
+                bool pressedShort = BoatCabinThreshold.IsPressedShort(_recordBefore, past, goingIn);
+                bool mayOffer = BoatInteriorEntryPolicy.MayOffer(cabin);
+                bool landingTakes = _kind != BoatCabinEntryKind.Landing || (cabin.HasInterior && _landingDecks == 1);
+                string refusal = !open || cueing ? "shut or cueing"
+                               : !inBand && float.IsNaN(_recordBefore) ? "out of the band"
+                               : !onSill ? "off the sill"
+                               : !heldThrough ? "the key"
+                               : !reached && !pressedShort ? "short of the line"
+                               : goingIn && !mayOffer ? "the entry policy"
+                               : goingIn && !landingTakes ? "the landing's own check"
+                               : "none it reads (the settle's clock, or her walk not asking this door)";
+                string read = $"tick {tick}: at {at:F3}, {height:F3} m | open {open}, cueing {cueing}, in band {inBand} " +
+                              $"(record {_recordBefore:F3}), on the sill {onSill}, going in {goingIn}, held through " +
+                              $"{heldThrough}, past the line {past:F3} m, reached {reached}, pressed short {pressedShort}, " +
+                              $"may offer {mayOffer} | Pass refuses at: {refusal} | inside {cabin.IsInside}";
+                if (tick == 1) _first = read;
+                _last = read;
+                _recordBefore = Record(at);
+            }
+
+            public string Line(int ticks) =>
+                $"{_head} | {_snapped} | {_first ?? "no tick"}{(ticks > 1 ? " | " + _last : "")} | " +
+                $"{ticks} tick(s), inside {_door.Interior.IsInside}";
+
+            // The door's record of a tick, as Pass keeps it: her distance past the line while she stands in the
+            // band of an open door that is not cueing; NaN otherwise.
+            private float Record(Vector2 at) =>
+                _door.IsOpen && !_door.IsCueing && BoatCabinThreshold.IsInBand(_door.Door, at)
+                    ? BoatCabinThreshold.PastTheWallLine(_onLine, _outward, at)
+                    : float.NaN;
+
+            // The landing's own check (the interior's LandingDeckId), read off the hull mesh: exactly one enclosed
+            // deck at the landing's height, within the floor tolerance, whose cut opens.
+            private static string LandingDecks(BoatCabinDoor door, HullMeshDef mesh, out int count)
+            {
+                count = 0;
+                BoatInteriorEntryLanding landing = door.Door.EntryLanding;
+                if (landing == null || mesh == null || mesh.LevelTags == null) return "no landing, or no mesh rows";
+                var decks = new List<string>();
+                foreach (HullMeshDef.LevelTag row in mesh.LevelTags)
+                    if (row.Enclosed && Mathf.Abs(row.SoleZMeters - landing.HeightMetres) <= door.Interior.Def.FloorTolerance
+                        && mesh.CutawayForDeck(row.DeckId).Opens)
+                        decks.Add(row.DeckId);
+                count = decks.Count;
+                return $"landing at {landing.HeightMetres:F3} m: {count} enclosed deck(s) there whose cut opens " +
+                       $"[{string.Join(", ", decks)}]";
             }
         }
 

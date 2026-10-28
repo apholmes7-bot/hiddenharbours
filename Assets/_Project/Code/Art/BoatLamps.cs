@@ -410,6 +410,7 @@ namespace HiddenHarbours.Art
         {
             if (_subscribed) return;
             EventBus.Subscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Subscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Subscribe<CabinLeft>(OnCabinLeft);
             _subscribed = true;
         }
@@ -418,6 +419,7 @@ namespace HiddenHarbours.Art
         {
             if (!_subscribed) return;
             EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Unsubscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
             _subscribed = false;
         }
@@ -427,6 +429,13 @@ namespace HiddenHarbours.Art
         // every CabinEntered as her own would light her wheelhouse because somebody went below on a
         // sister ship two berths down.
         private void OnCabinEntered(CabinEntered e)
+        {
+            if (e.HullId != HullId) return;
+            _cabinOccupied = true;
+            ApplyCabinBoost();
+        }
+
+        private void OnEntryLandingEntered(CabinEntryLandingEntered e)
         {
             if (e.HullId != HullId) return;
             _cabinOccupied = true;

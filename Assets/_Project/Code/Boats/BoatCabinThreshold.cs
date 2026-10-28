@@ -3,6 +3,8 @@ using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Boats
 {
+    public enum BoatCabinEntryKind { None, RoomEdge, Landing }
+
     /// <summary>
     /// <b>THE DOORWAY, AS A PLACE YOU WALK THROUGH</b> — the pure geometry of a cabin threshold, so that
     /// "she has stepped through the door" is one measurement asked in one frame rather than two walkers'
@@ -161,6 +163,70 @@ namespace HiddenHarbours.Boats
                 }
             }
             return levelIndex >= 0;
+        }
+
+        /// <summary>Measure a legacy room edge first, otherwise an explicitly authored stair entry.</summary>
+        public static bool TryEntryLine(BoatInteriorDef def, BoatInteriorDoor door,
+                                        out BoatCabinEntryKind kind, out int? roomLevelIndex,
+                                        out Vector2 onLine, out Vector2 outward)
+        {
+            kind = BoatCabinEntryKind.None;
+            roomLevelIndex = null;
+            if (TryWallLine(def, door, out int index, out onLine, out outward))
+            {
+                kind = BoatCabinEntryKind.RoomEdge;
+                roomLevelIndex = index;
+                return true;
+            }
+
+            BoatInteriorEntryLanding landing = door?.EntryLanding;
+            if (def == null || !HasBand(door) || landing == null || string.IsNullOrEmpty(landing.RouteId)
+                || landing.UpperPlateau == null || landing.UpperPlateau.Length < 3) return false;
+            float tolerance = def.FloorTolerance;
+            if (Mathf.Abs(landing.HeightMetres - door.ThresholdPoint.z) > tolerance) return false;
+            Vector2 threshold = PointOf(door);
+            if (!OnPolygon(landing.UpperPlateau, threshold)) return false;
+            Vector2 ab = landing.OpeningEnd - landing.OpeningStart;
+            if (ab.sqrMagnitude <= 1e-12f) return false;
+            Vector2 point = landing.OpeningStart + ab * Mathf.Clamp01(
+                Vector2.Dot(threshold - landing.OpeningStart, ab) / ab.sqrMagnitude);
+            if (!((threshold - point).magnitude < BandRadiusMetres(door))) return false;
+            BoatInteriorRoute route = null;
+            if (def.Routes != null)
+                foreach (BoatInteriorRoute candidate in def.Routes)
+                    if (candidate != null && candidate.Id == landing.RouteId)
+                    {
+                        if (route != null) return false;
+                        route = candidate;
+                    }
+            if (route == null || !route.Placed || route.Mechanism != "InteriorStair") return false;
+            Vector3 upper = route.FromPoint.z > route.ToPoint.z ? route.FromPoint : route.ToPoint;
+            Vector3 lower = route.FromPoint.z > route.ToPoint.z ? route.ToPoint : route.FromPoint;
+            string lowerId = route.FromPoint.z > route.ToPoint.z ? route.ToLevel : route.FromLevel;
+            if (upper.z <= lower.z || Mathf.Abs(upper.z - landing.HeightMetres) > tolerance
+                || !OnPolygon(landing.UpperPlateau, upper)) return false;
+            bool lowerOnRoom = false;
+            if (def.Levels != null)
+                foreach (BoatInteriorLevel level in def.Levels)
+                    if (level != null && level.Id == lowerId && level.IsUsable()
+                        && Mathf.Abs(level.SoleZMeters - lower.z) <= tolerance
+                        && BoatCabinWalkMath.IsStandable(level, lower)) lowerOnRoom = true;
+            if (!lowerOnRoom) return false;
+            Vector2 normal = new Vector2(ab.y, -ab.x).normalized;
+            float side = Vector2.Dot((Vector2)lower - point, normal);
+            if (Mathf.Abs(side) <= 1e-12f) return false;
+            if (side > 0f) normal = -normal;
+            onLine = point;
+            outward = normal;
+            kind = BoatCabinEntryKind.Landing;
+            return true;
+        }
+
+        private static bool OnPolygon(Vector2[] polygon, Vector2 point)
+        {
+            if (DeckAreaMath.Contains(polygon, point)) return true;
+            DeckAreaMath.ClosestPointOnOutline(polygon, point, out float sqr);
+            return sqr <= 1e-12f;
         }
 
         /// <summary>

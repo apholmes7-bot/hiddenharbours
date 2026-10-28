@@ -49,6 +49,7 @@ namespace HiddenHarbours.Boats
 
         private IHullCutaway _renderer;
         private int _belowLevel = NotBelow;
+        private string _landingDeckId;
         private bool _subscribed;
 
         /// <summary>The cut this component last asked her renderer for — None = whole exterior. Read
@@ -58,7 +59,7 @@ namespace HiddenHarbours.Boats
         /// <summary>True while the occupant is below on this hull, whatever the helm says. Separate
         /// from <see cref="RequestedLevelTag"/> on purpose: "she is below but at the wheel" is a real
         /// state with a closed house, and one field cannot say both.</summary>
-        public bool OccupantIsBelow => _belowLevel != NotBelow;
+        public bool OccupantIsBelow => _belowLevel != NotBelow || _landingDeckId != null;
 
         /// <summary>
         /// Wire this cutaway to its hull. <paramref name="hullToken"/> is the identity
@@ -93,6 +94,7 @@ namespace HiddenHarbours.Boats
         {
             if (_subscribed) return;
             EventBus.Subscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Subscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Subscribe<CabinLeft>(OnCabinLeft);
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             _subscribed = true;
@@ -102,6 +104,7 @@ namespace HiddenHarbours.Boats
         {
             if (!_subscribed) return;
             EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Unsubscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             _subscribed = false;
@@ -113,13 +116,27 @@ namespace HiddenHarbours.Boats
         private void OnCabinEntered(CabinEntered e)
         {
             if (e.HullId != HullId) return;
+            _landingDeckId = null;
             _belowLevel = e.Level;
+            Reassert();
+        }
+
+        /// <summary>She is on her entry landing. Its id is the one the hull mesh keys that landing's cut by
+        /// (<see cref="BoatInterior.LandingCut"/>): the level row's DeckId, or, on a hull-walk@1 mesh whose lift
+        /// sets name that deck by its level, the row's LevelId. So <see cref="WantedCut"/> asking for it opens the
+        /// cut she entered.</summary>
+        private void OnEntryLandingEntered(CabinEntryLandingEntered e)
+        {
+            if (e.HullId != HullId) return;
+            _belowLevel = NotBelow;
+            _landingDeckId = e.DeckId;
             Reassert();
         }
 
         private void OnCabinLeft(CabinLeft e)
         {
             if (e.HullId != HullId) return;
+            _landingDeckId = null;
             _belowLevel = NotBelow;
             Reassert();
         }
@@ -160,11 +177,11 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private HullMeshDef.Cut WantedCut()
         {
-            if (_belowLevel == NotBelow) return HullMeshDef.Cut.None;
+            if (!OccupantIsBelow) return HullMeshDef.Cut.None;
             if (PlayerIsAtThisHelm()) return HullMeshDef.Cut.None;
             if (_mesh == null) return HullMeshDef.Cut.None;
 
-            string deckId = DeckIdOf(_belowLevel);
+            string deckId = _landingDeckId ?? DeckIdOf(_belowLevel);
             return string.IsNullOrEmpty(deckId)
                 ? HullMeshDef.Cut.None
                 : _mesh.CutawayForDeck(deckId);

@@ -83,7 +83,7 @@ namespace HiddenHarbours.Boats
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-100)]   // the overlay-reader band: after BoatWaveMotion (−120) and the hull (−110)
-    public sealed class BoatInterior : MonoBehaviour, ICabinFloors
+    public sealed class BoatInterior : MonoBehaviour, ICabinFloors, ICabinEntryLanding
     {
         [Header("The room, as data (ADR 0003 rule 2 — nothing per-hull in C#)")]
         [Tooltip("This hull's imported interior. Null, or a def with no usable level, means she has no " +
@@ -155,9 +155,158 @@ namespace HiddenHarbours.Boats
         /// is not a door).</summary>
         public bool IsInside { get; private set; }
 
+        private BoatInteriorDoor _entryLandingDoor;
+        public BoatInteriorDoor EntryLandingDoor => IsInside ? _entryLandingDoor : null;
+
+        /// <summary>The cut her entry landing opens while she stands on it, found the way the hull mesh keys it
+        /// (<see cref="LandingCut"/>); <see cref="HullMeshDef.Cut.None"/> anywhere else.</summary>
+        public HullMeshDef.Cut EntryLandingCut
+        {
+            get
+            {
+                if (EntryLandingDoor == null) return HullMeshDef.Cut.None;
+                LandingDeckId(EntryLandingDoor.EntryLanding, out HullMeshDef.Cut cut);
+                return cut;
+            }
+        }
+
+        public Vector3 EntryLandingArrivalPoint
+        {
+            get
+            {
+                BoatInteriorEntryLanding landing = EntryLandingDoor?.EntryLanding;
+                if (landing == null || !BoatCabinThreshold.TryEntryLine(_def, EntryLandingDoor,
+                        out _, out _, out Vector2 line, out Vector2 outward)) return Vector3.zero;
+                float best = float.NegativeInfinity;
+                Vector2 seat = line;
+                foreach (Vector2 p in landing.UpperPlateau)
+                    best = Mathf.Max(best, Vector2.Dot(p - line, -outward));
+                // A midpoint of the actual inboard edge, not an invented floor or shifted threshold.
+                for (int i = 0; i < landing.UpperPlateau.Length; i++)
+                {
+                    Vector2 a = landing.UpperPlateau[i], b = landing.UpperPlateau[(i + 1) % landing.UpperPlateau.Length];
+                    if (Mathf.Abs(Vector2.Dot(a - line, -outward) - best) <= 1e-6f
+                        && Mathf.Abs(Vector2.Dot(b - line, -outward) - best) <= 1e-6f)
+                    { seat = (a + b) * 0.5f; break; }
+                    if (Vector2.Dot(a - line, -outward) == best) seat = a;
+                }
+                return new Vector3(seat.x, seat.y, landing.HeightMetres);
+            }
+        }
+
+        public bool TryEnterLanding(BoatInteriorDoor door)
+        {
+            if (IsInside || !HasInterior || !ValidLanding(door)) return false;
+            IsInside = true;
+            Level = -1;
+            _entryLandingDoor = door;
+            Apply();
+            PublishOccupancy();
+            return true;
+        }
+
+        public bool TryGoToLanding(BoatInteriorDoor door)
+        {
+            if (!IsInside || _entryLandingDoor != null || !IsUsableLevel(Level) || !ValidLanding(door)) return false;
+            BoatInteriorRoute route = LandingRoute(door);
+            string lowerId = route.FromPoint.z < route.ToPoint.z ? route.FromLevel : route.ToLevel;
+            if (_def.Levels[Level].Id != lowerId) return false;
+            Level = -1;
+            _entryLandingDoor = door;
+            Apply();
+            PublishOccupancy();
+            return true;
+        }
+
+        public bool TryTakeEntryStair(string routeId)
+        {
+            if (EntryLandingDoor == null || EntryLandingDoor.EntryLanding.RouteId != routeId) return false;
+            BoatInteriorRoute route = LandingRoute(EntryLandingDoor);
+            if (route == null || !route.Placed) return false;
+            string lowerId = route.FromPoint.z < route.ToPoint.z ? route.FromLevel : route.ToLevel;
+            int lower = -1;
+            for (int i = 0; i < _def.Levels.Length; i++)
+                if (_def.Levels[i]?.Id == lowerId && IsUsableLevel(i)) lower = i;
+            if (lower < 0) return false;
+            _entryLandingDoor = null;
+            Level = lower;
+            Apply();
+            PublishOccupancy();
+            return true;
+        }
+
+        public Vector2 ClampToEntryLanding(Vector2 wanted, Vector2 fallback)
+        {
+            BoatInteriorEntryLanding landing = EntryLandingDoor?.EntryLanding;
+            if (landing == null || !BoatCabinThreshold.TryEntryLine(_def, EntryLandingDoor,
+                    out _, out _, out Vector2 line, out Vector2 outward)) return fallback;
+            float outside = Vector2.Dot(wanted - line, outward);
+            if (outside > 0f) wanted -= outside * outward;
+            if (!DeckAreaMath.Contains(landing.UpperPlateau, wanted))
+                wanted = DeckAreaMath.ClosestPointOnOutline(landing.UpperPlateau, wanted, out _);
+            if (Vector2.Dot(wanted - line, outward) > 1e-6f) return fallback;
+            return wanted;
+        }
+
+        private BoatInteriorRoute LandingRoute(BoatInteriorDoor door)
+        {
+            if (_def?.Routes != null)
+                foreach (BoatInteriorRoute route in _def.Routes)
+                    if (route != null && route.Id == door?.EntryLanding?.RouteId) return route;
+            return null;
+        }
+
+        private bool ValidLanding(BoatInteriorDoor door)
+            => BoatCabinThreshold.TryEntryLine(_def, door, out BoatCabinEntryKind kind, out _, out _, out _)
+               && kind == BoatCabinEntryKind.Landing && LandingDeckId(door.EntryLanding) != null;
+
+        private string LandingDeckId(BoatInteriorEntryLanding landing) => LandingDeckId(landing, out _);
+
+        /// <summary>The id her landing's cut is keyed by, and that cut: the one enclosed level row within the
+        /// floor tolerance of the landing's height whose cut opens (<see cref="LandingCut"/>), or null and
+        /// <see cref="HullMeshDef.Cut.None"/> when there is none or more than one.</summary>
+        private string LandingDeckId(BoatInteriorEntryLanding landing, out HullMeshDef.Cut cut)
+        {
+            cut = HullMeshDef.Cut.None;
+            HullMeshDef mesh = _meshRoom != null ? _meshRoom : _levelTable;
+            if (mesh?.LevelTags == null || landing == null) return null;
+            string id = null;
+            foreach (HullMeshDef.LevelTag row in mesh.LevelTags)
+                if (row.Enclosed && Mathf.Abs(row.SoleZMeters - landing.HeightMetres) <= _def.FloorTolerance
+                    && LandingCut(mesh, row, out string key) is { Opens: true } rowCut)
+                {
+                    if (id != null) { cut = HullMeshDef.Cut.None; return null; } // Ambiguous geometry cannot choose a landing's cut.
+                    id = key;
+                    cut = rowCut;
+                }
+            return id;
+        }
+
+        /// <summary>
+        /// <b>The cut a level row opens, and the id the hull mesh keys it by</b>: the row's own DeckId first;
+        /// when that opens nothing and the mesh carries a layout schema, the row's LevelId. A hull-walk@1 mesh
+        /// keys its cuts by its lift sets' deck ids, and those may name a deck by its level: the express
+        /// cruiser's house row has DeckId helm_deck, and her lift set for it is house.
+        /// <see cref="HullMeshDef.Cut.None"/> and a null id when neither opens.
+        /// </summary>
+        internal static HullMeshDef.Cut LandingCut(HullMeshDef mesh, HullMeshDef.LevelTag row, out string keyId)
+        {
+            keyId = row.DeckId;
+            HullMeshDef.Cut cut = mesh.CutawayForDeck(keyId);
+            if (!cut.Opens && !string.IsNullOrEmpty(mesh.LayoutSchema))
+            {
+                keyId = row.LevelId;
+                cut = mesh.CutawayForDeck(keyId);
+            }
+            if (cut.Opens) return cut;
+            keyId = null;
+            return HullMeshDef.Cut.None;
+        }
+
         /// <summary>
         /// <b>Which level the occupant is on</b> — an index into <see cref="BoatInteriorDef.Levels"/>, and
-        /// always 0 outside.
+        /// always 0 outside. An entry landing has no room index and reports -1 through its separate
+        /// <see cref="ICabinEntryLanding"/> state.
         ///
         /// <para>An index rather than a bool for the reason <see cref="Core.BoatInteriorLevel"/> is a
         /// LAYER and not a place: a wheelhouse, a forepeak berth under it and a helm deck above it are
@@ -340,6 +489,7 @@ namespace HiddenHarbours.Boats
             if (!IsUsableLevel(level)) return false;
 
             IsInside = true;
+            _entryLandingDoor = null;
             Level = level;
             Apply();
             PublishOccupancy();
@@ -358,6 +508,7 @@ namespace HiddenHarbours.Boats
             if (!IsInside) return false;
 
             IsInside = false;
+            _entryLandingDoor = null;
             Level = 0;
             Apply();
             PublishOccupancy();
@@ -373,9 +524,11 @@ namespace HiddenHarbours.Boats
         public bool TryGoToLevel(int level)
         {
             if (!IsInside) return false;
+            if (_entryLandingDoor != null) return false;
             if (level == Level) return false;
             if (!IsUsableLevel(level)) return false;
 
+            _entryLandingDoor = null;
             Level = level;
             Apply();
             PublishOccupancy();
@@ -399,13 +552,20 @@ namespace HiddenHarbours.Boats
         /// geometry in front of ME change", which is about this hull and not about her class — sister
         /// ships share a def and do not share a doorway. ⚠ <c>GetEntityId</c>, not the deprecated
         /// <c>GetInstanceID</c>, which 6000.5 marks obsolete-as-ERROR.</para>
+        ///
+        /// <para>An entry landing's id is the one the hull mesh keys her cut by (<see cref="LandingCut"/>): the
+        /// level row's DeckId, or, on a hull-walk@1 mesh whose lift sets name that deck by its level, the row's
+        /// LevelId. <see cref="BoatCutaway"/> asks <see cref="HullMeshDef.CutawayForDeck"/> with it, so the cut it
+        /// shows is the one she entered.</para>
         /// </summary>
         private void PublishOccupancy()
         {
             Transform root = _boatRoot != null ? _boatRoot : transform;
             EntityId hullId = root != null ? root.gameObject.GetEntityId() : gameObject.GetEntityId();
 
-            if (IsInside) EventBus.Publish(new CabinEntered(hullId, Level));
+            if (IsInside && _entryLandingDoor != null)
+                EventBus.Publish(new CabinEntryLandingEntered(hullId, LandingDeckId(_entryLandingDoor.EntryLanding)));
+            else if (IsInside) EventBus.Publish(new CabinEntered(hullId, Level));
             else EventBus.Publish(new CabinLeft(hullId));
         }
 

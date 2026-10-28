@@ -87,6 +87,8 @@ namespace HiddenHarbours.Player
         // this walk take a companionway, a stair or a ladder her def places. Looked for under the same
         // root-and-skin key as the doorways, for the same reasons; null for most of the fleet.
         private ICabinFloors _floors;
+        private BoatInteriorDef _entryRoutesDef;
+        private float _entryRouteLastDirection;
         private Transform _floorsSearchedUnder;
         private IBoatHullPresenter _floorsSearchedSkin;
         private bool _floorsSearched;
@@ -1033,6 +1035,8 @@ namespace HiddenHarbours.Player
             // (WalkableLevel) — null on every tick of every hull whose cabin has no placed route.
             ICabinFloors floors = LiveCabinFloors();
             BoatInteriorLevel level = WalkableLevel(floors, deck);
+            ICabinEntryLanding landing = floors as ICabinEntryLanding;
+            BoatInteriorEntryLanding entrySurface = landing?.EntryLandingDoor?.EntryLanding;
 
             // ⭐ OUT ON THE RAIL, the walkable shape is her BOX, not her polygons (2026-09-02).
             //
@@ -1052,6 +1056,22 @@ namespace HiddenHarbours.Player
                 stanceCenter = railCentre;
                 stanceHalfExtents = railHalf;
                 _walkedInside = false;
+            }
+            else if (entrySurface != null)
+            {
+                float elevation = BakeElevationDegrees();
+                if (!_walkedInside)
+                    _deckLocal = landing.ClampToEntryLanding(_deckLocal, landing.EntryLandingArrivalPoint);
+                _deckLocal = landing.ClampToEntryLanding(
+                    StepInHullFrame(_deckLocal, input, _moveSpeed, Time.deltaTime, drawnHeading, elevation), _deckLocal);
+                held = HeldInHullFrame(input, drawnHeading, elevation);
+                _deckHeight = entrySurface.HeightMetres;
+                _deckArea = -1;
+                _walkedInside = true;
+                relative = DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight, drawnHeading, elevation);
+                floorKnown = true;
+                stanceCenter = deck != null ? deck.WalkCenter : _deckCenter;
+                stanceHalfExtents = deck != null ? deck.WalkHalfExtents : _deckHalfExtents;
             }
             else if (level != null)
             {
@@ -1135,7 +1155,8 @@ namespace HiddenHarbours.Player
             {
                 if (WalkThroughAnOpenCabinDoor(floorKnown, held))
                     _routesSeeded = false;   // a doorway is a transition: the stairs re-read where she is
-                else if (floorKnown && TakeACabinRoute(floors, deck, level != null))
+                else if (floorKnown && (TakeEntryLandingRoute(floors, deck, held)
+                                       || TakeACabinRoute(floors, deck, level != null)))
                     transform.position = boatPos + DeckAreaMath.DeckToWorld(_deckLocal, _deckHeight,
                                                                             drawnHeading, BakeElevationDegrees());
             }
@@ -1324,6 +1345,67 @@ namespace HiddenHarbours.Player
         /// without being carried straight back. One transition a tick.</para>
         /// </summary>
         /// <returns>True when she was moved; the caller re-projects her.</returns>
+        private static BoatInteriorDoor EntryDoorForRoute(BoatInteriorDef def, string routeId)
+        {
+            if (def == null) return null;
+            if (!string.IsNullOrEmpty(def.Door?.EntryLanding?.RouteId)
+                && def.Door.EntryLanding.RouteId == routeId) return def.Door;
+            if (def.AdditionalDoors != null)
+                foreach (BoatInteriorDoor door in def.AdditionalDoors)
+                    if (!string.IsNullOrEmpty(door?.EntryLanding?.RouteId)
+                        && door.EntryLanding.RouteId == routeId) return door;
+            return null;
+        }
+
+        private bool TakeEntryLandingRoute(ICabinFloors floors, BoatDeckDef deck, Vector2 held)
+        {
+            BoatInteriorDef def = floors?.Def;
+            if (!ReferenceEquals(_entryRoutesDef, def))
+            { _entryRoutesDef = def; _entryRouteLastDirection = 0f; }
+            if (held.sqrMagnitude <= 1e-8f) { _entryRouteLastDirection = 0f; return false; }
+            if (floors == null || !floors.IsInside || !(floors is ICabinEntryLanding landing)
+                || def?.Routes == null) return false;
+            foreach (BoatInteriorRoute route in def.Routes)
+            {
+                if (route == null || !route.Placed) continue;
+                BoatInteriorDoor door = EntryDoorForRoute(def, route.Id);
+                if (door == null) continue;
+                bool fromHigh = route.FromPoint.z > route.ToPoint.z;
+                Vector3 lower = fromHigh ? route.ToPoint : route.FromPoint;
+                Vector3 upper = fromHigh ? route.FromPoint : route.ToPoint;
+                string lowerId = fromHigh ? route.ToLevel : route.FromLevel;
+                if (ClassifyRouteEnd(floors, deck, lowerId, lower, out int room) != RouteEnd.Room) continue;
+                float direction = Vector2.Dot(held, (Vector2)(lower - upper));
+                if (Mathf.Abs(direction) <= 1e-8f) continue;
+                float sign = Mathf.Sign(direction);
+                if (_entryRouteLastDirection == sign) continue;
+                if (landing.EntryLandingDoor == door)
+                {
+                    if (sign < 0f || Mathf.Abs(_deckHeight - door.EntryLanding.HeightMetres) > def.FloorTolerance)
+                        continue;
+                    if (!landing.TryTakeEntryStair(route.Id)) continue;
+                    _deckLocal = SeatOnLevel(def.Levels[room], lower);
+                    _deckHeight = def.Levels[room].SoleZMeters;
+                }
+                else
+                {
+                    if (landing.EntryLandingDoor != null || sign > 0f || floors.Level != room
+                        || !IsOnRouteEnd(new Vector3(_deckLocal.x, _deckLocal.y, _deckHeight),
+                                         lower, def.RouteEndReach, def.FloorTolerance)) continue;
+                    if (!landing.TryGoToLanding(door)) continue;
+                    Vector3 arrival = landing.EntryLandingArrivalPoint;
+                    _deckLocal = arrival;
+                    _deckHeight = arrival.z;
+                }
+                _entryRouteLastDirection = sign;
+                _deckArea = -1;
+                _walkedInside = true;
+                _routesSeeded = false;
+                return true;
+            }
+            return false;
+        }
+
         private bool TakeACabinRoute(ICabinFloors floors, BoatDeckDef deck, bool walkingALevel)
         {
             BoatInteriorDef def = floors != null ? floors.Def : null;
@@ -1356,6 +1438,7 @@ namespace HiddenHarbours.Player
             {
                 BoatInteriorRoute r = routes[i];
                 if (r == null || !r.Placed) continue;
+                if (EntryDoorForRoute(def, r.Id) != null) continue; // Never a deck bypass of its door.
                 if (!_routeArmed[i])
                 {
                     _routeArmed[i] = IsClearOfRouteEnd(here, r.FromPoint, reach, tolerance)
@@ -1430,6 +1513,17 @@ namespace HiddenHarbours.Player
         /// </summary>
         private bool SeatOnTheLevelSheIsOn(Vector2 worldRelative, float heading, BoatDeckDef deck)
         {
+            if (LiveCabinFloors() is ICabinEntryLanding landing && landing.EntryLandingDoor != null)
+            {
+                float height = landing.EntryLandingDoor.EntryLanding.HeightMetres;
+                _deckLocal = landing.ClampToEntryLanding(
+                    DeckAreaMath.WorldToDeck(worldRelative, height, heading, BakeElevationDegrees()),
+                    landing.EntryLandingArrivalPoint);
+                _deckHeight = height;
+                _deckArea = -1;
+                _walkedInside = true;
+                return true;
+            }
             BoatInteriorLevel level = WalkableLevel(LiveCabinFloors(), deck);
             if (level == null) return false;
             _deckLocal = SeatOnLevel(level, DeckAreaMath.WorldToDeck(worldRelative, level.SoleZMeters, heading,
