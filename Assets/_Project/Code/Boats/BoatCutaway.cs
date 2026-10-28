@@ -121,6 +121,10 @@ namespace HiddenHarbours.Boats
             Reassert();
         }
 
+        /// <summary>She is on her entry landing. Its id is the one the hull mesh keys that landing's cut by
+        /// (<see cref="BoatInterior.LandingCut"/>): the level row's DeckId, or, on a hull-walk@1 mesh whose lift
+        /// sets name that deck by its level, the row's LevelId. So <see cref="WantedCut"/> asking for it opens the
+        /// cut she entered.</summary>
         private void OnEntryLandingEntered(CabinEntryLandingEntered e)
         {
             if (e.HullId != HullId) return;

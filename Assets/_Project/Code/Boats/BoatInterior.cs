@@ -158,6 +158,18 @@ namespace HiddenHarbours.Boats
         private BoatInteriorDoor _entryLandingDoor;
         public BoatInteriorDoor EntryLandingDoor => IsInside ? _entryLandingDoor : null;
 
+        /// <summary>The cut her entry landing opens while she stands on it, found the way the hull mesh keys it
+        /// (<see cref="LandingCut"/>); <see cref="HullMeshDef.Cut.None"/> anywhere else.</summary>
+        public HullMeshDef.Cut EntryLandingCut
+        {
+            get
+            {
+                if (EntryLandingDoor == null) return HullMeshDef.Cut.None;
+                LandingDeckId(EntryLandingDoor.EntryLanding, out HullMeshDef.Cut cut);
+                return cut;
+            }
+        }
+
         public Vector3 EntryLandingArrivalPoint
         {
             get
@@ -248,19 +260,47 @@ namespace HiddenHarbours.Boats
             => BoatCabinThreshold.TryEntryLine(_def, door, out BoatCabinEntryKind kind, out _, out _, out _)
                && kind == BoatCabinEntryKind.Landing && LandingDeckId(door.EntryLanding) != null;
 
-        private string LandingDeckId(BoatInteriorEntryLanding landing)
+        private string LandingDeckId(BoatInteriorEntryLanding landing) => LandingDeckId(landing, out _);
+
+        /// <summary>The id her landing's cut is keyed by, and that cut: the one enclosed level row within the
+        /// floor tolerance of the landing's height whose cut opens (<see cref="LandingCut"/>), or null and
+        /// <see cref="HullMeshDef.Cut.None"/> when there is none or more than one.</summary>
+        private string LandingDeckId(BoatInteriorEntryLanding landing, out HullMeshDef.Cut cut)
         {
+            cut = HullMeshDef.Cut.None;
             HullMeshDef mesh = _meshRoom != null ? _meshRoom : _levelTable;
             if (mesh?.LevelTags == null || landing == null) return null;
             string id = null;
             foreach (HullMeshDef.LevelTag row in mesh.LevelTags)
                 if (row.Enclosed && Mathf.Abs(row.SoleZMeters - landing.HeightMetres) <= _def.FloorTolerance
-                    && mesh.CutawayForDeck(row.DeckId).Opens)
+                    && LandingCut(mesh, row, out string key) is { Opens: true } rowCut)
                 {
-                    if (id != null) return null; // Ambiguous geometry cannot choose a landing's cut.
-                    id = row.DeckId;
+                    if (id != null) { cut = HullMeshDef.Cut.None; return null; } // Ambiguous geometry cannot choose a landing's cut.
+                    id = key;
+                    cut = rowCut;
                 }
             return id;
+        }
+
+        /// <summary>
+        /// <b>The cut a level row opens, and the id the hull mesh keys it by</b>: the row's own DeckId first;
+        /// when that opens nothing and the mesh carries a layout schema, the row's LevelId. A hull-walk@1 mesh
+        /// keys its cuts by its lift sets' deck ids, and those may name a deck by its level: the express
+        /// cruiser's house row has DeckId helm_deck, and her lift set for it is house.
+        /// <see cref="HullMeshDef.Cut.None"/> and a null id when neither opens.
+        /// </summary>
+        internal static HullMeshDef.Cut LandingCut(HullMeshDef mesh, HullMeshDef.LevelTag row, out string keyId)
+        {
+            keyId = row.DeckId;
+            HullMeshDef.Cut cut = mesh.CutawayForDeck(keyId);
+            if (!cut.Opens && !string.IsNullOrEmpty(mesh.LayoutSchema))
+            {
+                keyId = row.LevelId;
+                cut = mesh.CutawayForDeck(keyId);
+            }
+            if (cut.Opens) return cut;
+            keyId = null;
+            return HullMeshDef.Cut.None;
         }
 
         /// <summary>
@@ -512,6 +552,11 @@ namespace HiddenHarbours.Boats
         /// geometry in front of ME change", which is about this hull and not about her class — sister
         /// ships share a def and do not share a doorway. ⚠ <c>GetEntityId</c>, not the deprecated
         /// <c>GetInstanceID</c>, which 6000.5 marks obsolete-as-ERROR.</para>
+        ///
+        /// <para>An entry landing's id is the one the hull mesh keys her cut by (<see cref="LandingCut"/>): the
+        /// level row's DeckId, or, on a hull-walk@1 mesh whose lift sets name that deck by its level, the row's
+        /// LevelId. <see cref="BoatCutaway"/> asks <see cref="HullMeshDef.CutawayForDeck"/> with it, so the cut it
+        /// shows is the one she entered.</para>
         /// </summary>
         private void PublishOccupancy()
         {
