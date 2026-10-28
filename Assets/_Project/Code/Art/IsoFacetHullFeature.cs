@@ -178,6 +178,8 @@ namespace HiddenHarbours.Art
             // W4-4c: so is the sea's read of the props under it, raised only by this camera's own
             // under-water pass (below), for the same reason.
             Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
+            // ADR 0040 B2: so is the sea's curl handoff, raised only by this camera's own curl mask.
+            CurlingBreakerPasses.Lower();
             // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
             // this camera's recording publishes its own. A no-op once zero.
             IsoFacetFigureTarget.Unpublish();
@@ -336,6 +338,8 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
             // W4-4c: nor the sea reading props nobody draws any more.
             Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
+            // ADR 0040 B2: nor fading its lip under a curl nobody draws any more.
+            CurlingBreakerPasses.Lower();
             _pass?.Dispose();
             _pass = null;
             CoreUtils.Destroy(_resolveMaterial);
@@ -1151,6 +1155,9 @@ namespace HiddenHarbours.Art
                         discardOnLastUse = false,
                     };
                     TextureHandle waterTex = renderGraph.ImportTexture(waterTarget, waterImport);
+                    // ADR 0040 B2: the live curls' handoff mask, before the sea that reads it. Not
+                    // recorded (an invalid handle) with the master at 0 or no live curl.
+                    TextureHandle curlMask = CurlingBreakerPasses.RecordMask(renderGraph, w, h, profilingSampler);
 
                     using (var builder = renderGraph.AddRasterRenderPass<WaterPassData>(
                                "HH Displaced Water", out WaterPassData passData, profilingSampler))
@@ -1180,6 +1187,8 @@ namespace HiddenHarbours.Art
                         if (foamTex.IsValid()) builder.UseTexture(foamTex, AccessFlags.Read);
                         // W4-4c: the sea reads the props under it; declaring the read puts their pass first.
                         if (underTex.IsValid()) builder.UseTexture(underTex, AccessFlags.Read);
+                        // ADR 0040 B2: and fades its flat lip under the curl's mask.
+                        if (curlMask.IsValid()) builder.UseTexture(curlMask, AccessFlags.Read);
                         builder.UseRendererList(passData.Renderers);
                         // The water fragment SAMPLES the guard. Declaring the read makes
                         // guard-before-water a real dependency edge in the graph rather than an
@@ -1203,6 +1212,11 @@ namespace HiddenHarbours.Art
                                 ctx.cmd.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 1f);
                         });
                     }
+
+                    // ADR 0040 B2: the curl sheet, into the sea's colour and depth, before the hulls
+                    // and figures test against that depth.
+                    CurlingBreakerPasses.RecordSheet(renderGraph, curlMask, waterTex, depthBuf, guardTex,
+                                                     profilingSampler);
                 }
 
                 // ---- the figure pixel look (route 1; GameConfig.FigurePixelTarget, ship ON) ----------

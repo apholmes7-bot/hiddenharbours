@@ -482,6 +482,44 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- curling breaker sites (ADR 0040 B2) ---------------------------------------------
+
+        [Test]
+        public void CurlingBreakerSites_HaveStableIdsAndResolvedRegions()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>(DataRoot + "/Config/GameConfig.asset");
+            Assert.IsNotNull(config, "no GameConfig under Data/Config");
+            CurlingBreakerSettings settings = config.CurlingBreakers;
+            Assert.IsTrue(settings.IsValid, "GameConfig.CurlingBreakers is out of range");
+
+            var regions = new Dictionary<string, RegionDef>();
+            foreach (var r in LoadAll<RegionDef>())
+                if (!string.IsNullOrWhiteSpace(r.Id)) regions[r.Id] = r;
+
+            var seen = new Dictionary<string, string>();
+            var enabledPerRegion = new Dictionary<string, int>();
+            foreach (var site in LoadAll<CurlingBreakerSiteDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(site);
+                RegisterUniqueId(seen, site.Id, path, nameof(CurlingBreakerSiteDef));
+                Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(site.Id, @"^breaker_site\.[a-z][a-z0-9_]*$"),
+                    $"{path}: id '{site.Id}' is not breaker_site.snake_case");
+                Assert.IsTrue(regions.TryGetValue(site.RegionId ?? string.Empty, out RegionDef region),
+                    $"{path}: region id '{site.RegionId}' resolves to no RegionDef");
+                // The scene wiring finds a region's sites by its scene's folder; one anywhere else never draws.
+                StringAssert.StartsWith($"{DataRoot}/Regions/{region.SceneName}/BreakerSites/", path,
+                    $"{path}: not in its region's BreakerSites folder");
+                Assert.IsTrue(site.IsValid(in settings), $"{path}: out of range (id, centre or length)");
+                if (!site.Enabled) continue;
+                enabledPerRegion.TryGetValue(site.RegionId, out int count);
+                enabledPerRegion[site.RegionId] = count + 1;
+            }
+            // The pool is fixed: a region may enable no more sites than it holds slots.
+            foreach (var pair in enabledPerRegion)
+                Assert.LessOrEqual(pair.Value, CurlingBreakerSettings.PilotCapacity,
+                    $"{pair.Key}: {pair.Value} enabled curling breaker sites, the pool holds {CurlingBreakerSettings.PilotCapacity}");
+        }
+
         // ---- cross-type ---------------------------------------------------------------------
 
         [Test]
