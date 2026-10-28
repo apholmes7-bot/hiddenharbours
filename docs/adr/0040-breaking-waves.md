@@ -850,9 +850,13 @@ frame to 0.25 ms, its median render delta to 0.5 ms, and its frame to no allocat
 
 The live cost is one half-scale R8 target, two draws (at most 17 x 25 sheet vertices and
 34 mask vertices), one guard read per sheet fragment and one texture tap per water
-fragment inside the branch. None of it is measured yet. Phase C needs its own slot grant;
-the look, the readable bar, the occlusion and the cost remain unproved until those plates
-run.
+fragment inside the branch. Measured (E1, 2026-10-27) at the worst view, `WorstViewBudget`
+at f198 (1920x1080 at 192 px/m, a desktop GPU), the CPU tick's median is 0.0887 ms (p95
+0.092 ms) against the 0.25 ms budget; the render delta, curl on minus off, is 0.1233 ms
+(medians 6.0429 ms on, 5.9196 ms off) against 0.5 ms; and a live frame allocates nothing.
+The readable bar reads 23 of the low-water event's 63 live frames, against the 12 it asks.
+The dory's occlusion at f198 is 2570 px, all of them the dory's. Master 0 renders bit for
+bit as no curl.
 
 **One bore per event (E1, 2026-10-27).** A curl event reads one bore from `SteepenStart`
 to `Gone`: the bore that crests at the event's crest. The shipped birth read
