@@ -8,6 +8,7 @@ namespace HiddenHarbours.Art
 {
     public sealed class PlantField : MonoBehaviour
     {
+        public PlantFieldDefinition Definition;
         public MonoBehaviour GroundSource;
         public Vector2 Origin;
         public int Width, Height, Seed = 9109;
@@ -25,10 +26,19 @@ namespace HiddenHarbours.Art
         public int ChunkCount => _chunks.Count;
         public int MissingCells { get; private set; }
         public int DormantCells { get; private set; }
+        public int AuthoredPlantCount => Definition != null ? Definition.Authored.Length : 0;
+        public int CurrentSeason => _season;
+        public void CopyGrassRootsTo(List<Vector2> destination)
+        {
+            foreach (var site in _sites)
+                if (site.Def.Family == "grass") destination.Add(new Vector2(site.X, site.Y));
+        }
         public string EncodeCurrentField() => PlantFieldCodec.Encode(_plane);
         readonly List<Site> _sites = new List<Site>();
         readonly Dictionary<(int, int, int, int), (GameObject go, Mesh mesh)> _chunks = new Dictionary<(int, int, int, int), (GameObject, Mesh)>();
         readonly PlantSpeciesDef[] _codes = new PlantSpeciesDef[64];
+        readonly HashSet<(int, int, int, int)> _dirty = new HashSet<(int, int, int, int)>();
+        readonly Dictionary<(int, int, int, int, int), PlantCell> _cells = new Dictionary<(int, int, int, int, int), PlantCell>();
         IPlantFieldGround _ground;
         byte[] _plane = Array.Empty<byte>();
         float _nextTick;
@@ -46,17 +56,30 @@ namespace HiddenHarbours.Art
         void OnDisable() { ClearChunks(); }
 
         // Called once after a region has made its terrain available, or after an explicit edit.
-        public void Rebuild()
+        public void Rebuild() => Rebuild(true);
+        public void Rebuild(bool createMeshes)
         {
+            if (Definition != null)
+            {
+                Origin = Definition.Origin; Width = Definition.Width; Height = Definition.Height; Seed = Definition.Seed;
+                CellSize = Definition.CellSize; GroundMetresPerY = Definition.GroundMetresPerY;
+                ChunkWidth = Definition.ChunkWidth; SlowTickSeconds = Definition.SlowTickSeconds;
+                HeightProjection = Definition.HeightProjection; WindMargin = Definition.WindMargin;
+                SubmergedOrder = Definition.SubmergedOrder; Recipes = Definition.Recipes;
+                Species = Definition.Species; Material = Definition.Material;
+            }
             _ground = GroundSource as IPlantFieldGround;
             if (_ground == null) throw new InvalidOperationException("Plant field needs IPlantFieldGround");
             if (Width < 1 || Height < 1 || (long)Width * Height > PlantFieldCodec.MaxCells || CellSize <= 0 || GroundMetresPerY <= 0 || ChunkWidth < 1)
                 throw new InvalidOperationException("Invalid plant field grid");
             Array.Clear(_codes, 0, _codes.Length);
+            _cells.Clear();
             foreach (var sp in Species)
             {
                 if (sp == null || sp.Code < 1 || sp.Code > 63 || _codes[sp.Code] != null) throw new InvalidOperationException("Invalid plant code table");
                 _codes[sp.Code] = sp;
+                foreach (var cell in sp.Cells)
+                    _cells.Add((sp.Code, cell.Stage, cell.Season, cell.Variant, cell.Tide), cell);
             }
             _sites.Clear(); _plane = new byte[Width * Height];
             _season = _ground.PlantSeason; MissingCells = 0; DormantCells = 0;
@@ -77,27 +100,48 @@ namespace HiddenHarbours.Art
                     Stage = PlantFieldScatter.Stage(code), Variant = PlantFieldScatter.Variant(x, y, Seed) };
                 RefreshSite(s); _sites.Add(s);
             }
-            BuildChunks(); _nextTick = Time.unscaledTime + SlowTickSeconds;
+            if (Definition != null)
+            {
+                var ids = new HashSet<string>();
+                foreach (var row in Definition.Authored)
+                {
+                    if (row == null || string.IsNullOrEmpty(row.Id) || !ids.Add(row.Id) ||
+                        row.Species < 1 || row.Species >= _codes.Length || _codes[row.Species] == null ||
+                        row.Stage < 0 || row.Stage > 2 || row.Variant < 0 || row.Variant > 3)
+                        throw new InvalidOperationException("Invalid authored plant site");
+                    var g = _ground.Sample(row.At.x, row.At.y);
+                    var site = new Site { X = row.At.x, Y = row.At.y, Z = g.Elevation,
+                        Def = _codes[row.Species], Stage = row.Stage, Variant = row.Variant };
+                    RefreshSite(site); _sites.Add(site);
+                }
+            }
+            if (createMeshes) BuildChunks(); else ClearChunks();
+            _nextTick = Time.unscaledTime + SlowTickSeconds;
         }
         void Update()
         {
             if (_ground == null || Time.unscaledTime < _nextTick) return;
             _nextTick = Time.unscaledTime + SlowTickSeconds;
+            RefreshAppearance();
+        }
+        public void RefreshAppearance()
+        {
+            if (_ground == null) return;
             _season = _ground.PlantSeason;
-            var dirty = new HashSet<(int, int, int, int)>();
+            _dirty.Clear();
             foreach (var s in _sites)
             {
                 var old = Key(s);
                 if (!RefreshSite(s)) continue;
-                dirty.Add(old); dirty.Add(Key(s));
+                _dirty.Add(old); _dirty.Add(Key(s));
             }
-            if (dirty.Count > 0) BuildChunks(dirty);
+            if (_dirty.Count > 0) BuildChunks(_dirty);
         }
         bool RefreshSite(Site s)
         {
             float over = ShorePlantTideMath.OverGround(_ground.WaterLevelAt(s.X, s.Y), s.Z);
             int tide = s.Def.TideLadder.Length == 0 ? 0 : ShorePlantTideMath.StateFor(over, s.Def.TideLadder);
-            var cell = s.Def.Find(s.Stage, _season, s.Variant, tide);
+            _cells.TryGetValue((s.Def.Code, s.Stage, _season, s.Variant, tide), out var cell);
             bool under = s.Def.TideLadder.Length != 0 && ShorePlantTideMath.IsSubmerged(over, cell != null ? cell.HeightM : s.Def.StandingHeightM);
             int order = under ? SubmergedOrder : YSortSprite.OrderFor(s.Y, SortingBands.DecorBase,
                 SortingBands.OrdersPerMetre, SortingBands.DecorFloor, SortingBands.DecorCeiling);
