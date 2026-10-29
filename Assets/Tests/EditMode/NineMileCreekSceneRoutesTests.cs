@@ -144,6 +144,13 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(floor.Manifest.Problems(), Is.Empty, "the streamer refuses the scene's road floor");
             const int LightMap = 1;   // RoadFloorMaps.MapSuffixes: "_light", the role in G
             byte[] rgba = new byte[RoadFloorMaps.MapBytes], scratch = new byte[RoadFloorPng.ScratchBytes];
+            // Ruled 10-29: the baked PNGs stay out of the repo, so a checkout without them ignores, as
+            // RoadFloorManifestTests does. Only the first chunk is asked: a partial bake still throws below.
+            if (floor.Manifest.chunks.Length > 0 &&
+                !File.Exists(Path.Combine(root, RoadFloorMaps.MapFile(floor.Manifest.chunks[0].name, LightMap))))
+                Assert.Ignore("the road floor's baked PNGs are not committed (ruled 10-29): " +
+                              "node tools/nmc-roads/bake-chunks.cjs writes them; " +
+                              "the four floor cases ran green in L05 with the bake");
             foreach (RoadFloorManifest.Chunk c in floor.Manifest.chunks)
             {
                 string file = RoadFloorMaps.MapFile(c.name, LightMap);

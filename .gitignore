@@ -127,6 +127,16 @@ InitTestScene*.unity*
 /[Aa]ssets/_Project/Art/Terrain/Cliffs/
 /[Aa]ssets/_Project/Art/Terrain/Cliffs.meta
 
+# The NMC ROAD FLOOR's baked chunks (`node tools/nmc-roads/bake-chunks.cjs` over the committed
+# network file). DELIBERATELY NOT COMMITTED, like the cliff face kit above: 3,744 PNGs (1,248 each
+# of normal, light and detail) = 160 MB, every byte regenerable by the builder and stale the moment
+# the network or the kit moves. The manifest RoadFloor.json and the folder metas ARE committed;
+# RoadFloorManifestTests reads the manifest and ignores when it is absent; RoadFloorStreamer reads
+# the PNGs at runtime. NineMileCreekSceneRoutesTests' four floor cases ignore when the PNGs are absent.
+# A fresh clone renders the road floor untextured until the bake is run once.
+/[Aa]ssets/StreamingAssets/RoadFloor/NineMileCreek/*.png
+/[Aa]ssets/StreamingAssets/RoadFloor/NineMileCreek/*.png.meta
+
 # ADR 0047: terrain arrays are recipe import artifacts in Library.
 /[Aa]ssets/_Project/Art/Terrain/Derived/
 /[Aa]ssets/_Project/Art/Terrain/Derived.meta
