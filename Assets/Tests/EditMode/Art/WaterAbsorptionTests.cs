@@ -249,5 +249,35 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(water.y, deep.y, 1e-5f);
             Assert.AreEqual(water.z, deep.z, 1e-5f);
         }
+
+        [Test]
+        public void Sigma_WithAType_AddsItsOwnSigma_PerChannel_NeverSubtracts()
+        {
+            // Gains 2: a region's water type adds its own extinction to the mood's, channel by channel (the
+            // shader's AbsorptionSigma with its hhWaterTypeSigma term). No type is the mood's sigma bit for
+            // bit; a type never takes light back out of the mood; a type alone opens the block in clear calm
+            // weather, as the shader's sum gate does.
+            var type = new Vector3(0.04f, 0.11f, 0.39f);
+            foreach (float turbidity in new[] { 0f, 0.35f, 0.6f, 1.2f, 3f })
+            {
+                Vector3 mood = WaterAbsorption.Sigma(turbidity, Ratio);
+                Vector3 none = WaterAbsorption.Sigma(turbidity, Ratio, Vector3.zero);
+                Vector3 negative = WaterAbsorption.Sigma(turbidity, Ratio, new Vector3(-0.5f, -1f, -2f));
+                Vector3 typed = WaterAbsorption.Sigma(turbidity, Ratio, type);
+                for (int c = 0; c < 3; c++)
+                {
+                    Assert.AreEqual(System.BitConverter.SingleToInt32Bits(mood[c]),
+                        System.BitConverter.SingleToInt32Bits(none[c]), $"turbidity {turbidity}, channel {c}: no type");
+                    Assert.AreEqual(System.BitConverter.SingleToInt32Bits(mood[c]),
+                        System.BitConverter.SingleToInt32Bits(negative[c]),
+                        $"turbidity {turbidity}, channel {c}: a negative type");
+                    Assert.AreEqual(mood[c] + type[c], typed[c], 1e-6f, $"turbidity {turbidity}, channel {c}: a type adds");
+                }
+            }
+            Assert.IsFalse(WaterAbsorption.IsActive(WaterAbsorption.Sigma(0f, Ratio, Vector3.zero)),
+                "no turbidity and no type: the block stays off");
+            Assert.IsTrue(WaterAbsorption.IsActive(WaterAbsorption.Sigma(0f, Ratio, type)),
+                "a type alone opens the block");
+        }
     }
 }
