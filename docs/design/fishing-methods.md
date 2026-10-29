@@ -3,7 +3,7 @@
 | # | Method | What you do | Carried by | Phase, row | On main | Next |
 |---|---|---|---|---|---|---|
 | 1 | Clam dig | Dig the squirting holes at low water | On foot | M1, M2-32 | Built | Nothing owed |
-| 2 | Rod, handline and jig | Cast or drop, read the bite, fight her in | Ashore or any boat | M1 | Built | Two open owner items; consumables deferred |
+| 2 | Rod, handline and jig | Cast or drop, read the bite, fight her in | Ashore or any boat | M1 | Built | Both owner items ruled; consumables deferred |
 | 3 | Traps and pots | Set, soak, haul on the swell, re-bait | A hauler station | M2-33 | Built; winch owed | The winch row |
 | 4 | Longline | Lay a line of hooks, soak it, haul hook by hook | A hauler station | M2-16 | The flag only | FIRST |
 | 5 | Ice fishing for smelt | Cut a hole in the Lock, jig at night | On foot | M2-47 | Nothing | SECOND |
@@ -84,7 +84,7 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
 - **Teeth:** an ordinary failure loses the catch, the bait and the time; a bad enough sea may cost
   terminal tackle. The old absolute never-lose-gear bullet at
   `docs/design/rod-fishing-v2-brainstorm.md:279` is superseded by the owner's amendment of 2026-07-25,
-  `docs/design/rod-fishing-v2-brainstorm.md:281-296`: gear loss is permitted in a blow. **Bait and
+  `docs/design/rod-fishing-v2-brainstorm.md:282-297`: gear loss is permitted in a blow. **Bait and
   tackle consumption and restocking are NOT BUILT today (the rod consumes neither) and stay deferred
   to the brainstorm's section 8.** These are the planned costs; current ordinary failure loses the
   fish and time without consuming bait or tackle.
@@ -96,10 +96,10 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
 - **Automated later:** the rod itself stays hands-on and skill-expressive: what you do yourself
   while the fleet works (`docs/design/rod-fishing-v2-brainstorm.md:36`).
 - **Phase and row:** M1. Built.
-- **Next:** two owner questions remain open: choosing bait and lures in the world, with ui-ux
-  (`docs/design/rod-fishing-v2-brainstorm.md:404`), and what "portion" meant
-  (`docs/design/rod-fishing-v2-brainstorm.md:336`, `docs/design/rod-fishing-v2-brainstorm.md:407`).
-  Their leans are recorded below; consumables remain deferred as above.
+- **Next:** both owner items are ruled: world interactions with ui-ux, no menu, for bait and lure
+  choosing (the owner, 2026-10-29; `docs/design/rod-fishing-v2-brainstorm.md:404`); "portion" is the
+  bait portion (the owner, 2026-10-27 14:15:47Z; `docs/design/rod-fishing-v2-brainstorm.md:407`),
+  planned by the angler's kit, not this plan. Consumables remain deferred as above.
 
 **On main:** the rod fishes as Handline (`Code/Fishing/FishingController.cs:41`). The bite
 (`Code/Fishing/BiteSequenceSim.cs:57`), fight (`Code/Fishing/RodFightSim.cs:25`), jig
@@ -352,18 +352,18 @@ The owner approved these positions for F0:
    those entries are not a FishSpeciesDef asset. F0 creates no fish asset, and the
    previously unused backlog id adds a row without renumbering anything.
 9. The rod Teeth field follows the existing owner amendment at
-   `docs/design/rod-fishing-v2-brainstorm.md:281-296`, including the rough-weather terminal-tackle
+   `docs/design/rod-fishing-v2-brainstorm.md:282-297`, including the rough-weather terminal-tackle
    exception and deferred consumption/restocking, rather than the old bullet at line 279.
 
 ## Open owner items and leans
 
-These remain open; each lean is the plan's position pending the owner's word. They do not amend
-the linked method docs.
+The rod items are ruled on the dates below; the four mussel leans remain pending the owner's word.
+The linked method docs are unchanged; the angler's kit plans the bait portion.
 
-| Item | Open question | Lean, pending the owner's word |
+| Item | Question | Ruled (date) |
 |---|---|---|
-| Rod: bait and lure choosing | How does choosing bait and tackle work in the world? (`docs/design/rod-fishing-v2-brainstorm.md:404`) | World interactions, with ui-ux; no menu. |
-| Rod: "portion" | What did the owner mean by "portion"? (`docs/design/rod-fishing-v2-brainstorm.md:407`) | Wait for the owner's meaning before any build interprets it. |
+| Rod: bait and lure choosing | How does choosing bait and tackle work in the world? (`docs/design/rod-fishing-v2-brainstorm.md:404`) | 2026-10-29: world interactions with ui-ux; no menu. |
+| Rod: "portion" | What did the owner mean by "portion"? (`docs/design/rod-fishing-v2-brainstorm.md:407`) | 2026-10-27: the bait portion, planned by the angler's kit, not this plan. |
 | Mussels 1: starter ruin | Is the lapsed lease the starter ruin? (`docs/design/mussel-lease-and-longline.md:314`) | Retain M3-16 until the owner rephases it. |
 | Mussels 2: water and window | What tide window and spots make water leaseable? (`docs/design/mussel-lease-and-longline.md:316`) | Leave leaseable water undecided until the owner names the tide window and spots. |
 | Mussels 3: storm damage | Foul and lose yield, or part and lose the line? (`docs/design/mussel-lease-and-longline.md:319`) | Foul and lose yield; no permanent gear loss. |
