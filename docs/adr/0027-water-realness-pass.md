@@ -542,8 +542,13 @@ type** adds its own per-channel character beside it.
   the face shade darkens the back (value), the sun side cools it (hue), and the glow lights only its thin top, in
   the sun's colour through the water's σ over `_CrestGlowThickness` metres, posterized by `_CrestGlowBands` and
   added under the palette grade. `_CrestGlowStrength` ships at 0 on every water material: an exact passthrough,
-  visual only. It is a mood float whose fog anchor reads 0, so fog takes it away. Its strength is picked by eye. Twin:
-  `CrestGlow` (`TheShader_CarriesTheCrestGlowTwin`).
+  visual only. It is a mood float whose fog anchor reads 0, so fog takes it away. Its strength is picked by eye.
+  Measured since (gains B5, St Peters' open coast at 19:30 and 17:30, sea states 0.342 and 0.444): at the shipped
+  onset `_CrestGlowTop` 0.55 and 3 bands the glow lights no pixel at any strength. `glowTop` never opens in the
+  frame; where it opens on the open sea (about 0.1% of a 2 km square) the amount before the posterize peaks at
+  0.104 (19:30) and 0.043 (17:30), under the first band's floor of 1/6, and the strength multiplies after the
+  posterize. The numbers pass is a later phase; the glow ships at strength 0. Twin: `CrestGlow`
+  (`TheShader_CarriesTheCrestGlowTwin`).
 - **What did not change.** The ratio, the bands, every mood's turbidity, the bake and W4-4's floor; `depth`,
   `clip()`, `_WaterLevel` and the height read the sim uses (visual only, rule 5). Live spec:
   [water rendering §17.7](../design/water-rendering.md#177-seabed-absorption--the-bottom-seen-through-the-column-adr-0027-7).
