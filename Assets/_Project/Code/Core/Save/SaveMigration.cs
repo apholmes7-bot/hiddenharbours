@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 15;
+        public const int CurrentVersion = 16;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -319,6 +319,14 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 15;
             }
 
+            // v15 -> v16: fishing longline placements and owned tubs. Existing pots are untouched.
+            if (data.SchemaVersion < 16)
+            {
+                data.PlacedLonglines ??= new System.Collections.Generic.List<PlacedLonglineDto>();
+                data.TubStock ??= new System.Collections.Generic.List<TubStock>();
+                data.SchemaVersion = 16;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -330,6 +338,8 @@ namespace HiddenHarbours.Core
             data.PlacedTraps ??= new System.Collections.Generic.List<PlacedTrapDto>();
             data.BaitStock ??= new System.Collections.Generic.List<BaitStock>();
             data.PotStock ??= new System.Collections.Generic.List<PotStock>();
+            data.PlacedLonglines ??= new System.Collections.Generic.List<PlacedLonglineDto>();
+            data.TubStock ??= new System.Collections.Generic.List<TubStock>();
             data.BoatHoldCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
             data.BucketCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
             data.FreezerCatch ??= new System.Collections.Generic.List<HeldCatchDto>();

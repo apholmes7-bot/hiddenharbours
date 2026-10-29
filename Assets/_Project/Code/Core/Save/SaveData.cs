@@ -86,6 +86,12 @@ namespace HiddenHarbours.Core
         /// (rule 5). One record per trap kind. Added in v4. (ADR 0020 addendum.)</summary>
         public List<PotStock> PotStock = new();
 
+        /// <summary>Fishing longline placements and haul progress, never their recomputable catch. Added in v16.</summary>
+        public List<PlacedLonglineDto> PlacedLonglines = new();
+
+        /// <summary>Owned fishing tubs by longline Def id; available stock is owned less set. Added in v16.</summary>
+        public List<TubStock> TubStock = new();
+
         /// <summary>The BOAT hold's catch (M1 §7.3 — freshness must survive a save). One record per run
         /// of identical units: species id, quantity, and the three <c>FreshnessState</c> fields — the
         /// save carries the species REFERENCE and the clock, never the Def's stats (rule 2); the item
@@ -711,6 +717,38 @@ namespace HiddenHarbours.Core
         public PotStock(string trapDefId, int count)
         {
             TrapDefId = trapDefId;
+            Count = count;
+        }
+    }
+
+    /// <summary>Flat placement facts and progress from either end of a fishing longline.</summary>
+    [Serializable]
+    public struct PlacedLonglineDto
+    {
+        public string InstanceId;
+        public string LonglineDefId;
+        public string Region;
+        public float EndAX;
+        public float EndAY;
+        public float EndBX;
+        public float EndBY;
+        public double SetGameTimeSeconds;
+        public string BaitId;
+        public int Tubs;
+        public int HooksHauledFromA;
+        public int HooksHauledFromB;
+    }
+
+    /// <summary>One longline tub kind's owned total; deployed tubs remain owned.</summary>
+    [Serializable]
+    public struct TubStock
+    {
+        public string LonglineDefId;
+        public int Count;
+
+        public TubStock(string longlineDefId, int count)
+        {
+            LonglineDefId = longlineDefId;
             Count = count;
         }
     }
