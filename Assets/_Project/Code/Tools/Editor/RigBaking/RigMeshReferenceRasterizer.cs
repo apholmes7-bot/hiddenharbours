@@ -479,7 +479,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
                     if (trace != null && (trace.ProbeAll || trace.Probe.Contains(i)))
                     {
-                        double thr = data.Bayer[x & 3, y & 3];
+                        double thr = DitherThreshold(data.Bayer[x & 3, y & 3], mat.DitherWeight);
                         int si = ShadeIndex(fidx, thr, mat.Off, ramp.Length);
                         trace.Samples.Add(new RigPaintTrace.Sample(
                             i, triIndex, tri.Face, tri.Mat, si, Pack(ramp[si]),
@@ -491,7 +491,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
                     zbuf[i] = deff;
                     dep[i] = d;
-                    int idx = ShadeIndex(fidx, data.Bayer[x & 3, y & 3], mat.Off, ramp.Length);
+                    int idx = ShadeIndex(fidx, DitherThreshold(data.Bayer[x & 3, y & 3], mat.DitherWeight), mat.Off, ramp.Length);
                     col[i] = Pack(ramp[idx]);
                     if (trace != null) trace.Winner[i] = triIndex;
                 }
@@ -563,6 +563,9 @@ namespace HiddenHarbours.Tools.RigBaking
         /// Factored out so a trace sample can be computed for a LOSING face too, which is the whole
         /// point of the trace.
         /// </summary>
+        public static double DitherThreshold(double bayer, double weight)
+            => weight == 1.0 ? bayer : weight <= 0.0 ? 0.5 : 0.5 + (bayer - 0.5) * weight;
+
         static int ShadeIndex(double fidx, double bayerThreshold, int matOffset, int rampLength)
         {
             double base_ = Math.Floor(fidx);

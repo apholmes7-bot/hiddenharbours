@@ -16,6 +16,7 @@ namespace HiddenHarbours.Art
 
         public Color32[][] Ramps;
         public int[] RampOffsets;
+        public float[] RampDitherWeights;
         public Vector3 LightN;
         public float Gain, Bias;
         public float[] Bayer16;
@@ -165,7 +166,7 @@ namespace HiddenHarbours.Art
 
             var meta = new Vector4[16];
             for (int m = 0; m < setup.Ramps.Length; m++)
-                meta[m] = new Vector4(setup.Ramps[m].Length, setup.RampOffsets[m], 0, 0);
+                meta[m] = IsoFacetRampMeta.Pack(setup.Ramps[m].Length, setup.RampOffsets[m], setup.RampDitherWeights, m);
             _facetMaterial.SetVectorArray(IsoFacetShaderIds.RampMeta, meta);
 
             var rows = new Vector4[4];
@@ -224,7 +225,8 @@ namespace HiddenHarbours.Art
         /// by the final screen pixel only when the origin excludes it. Same reasoning, same value, as
         /// the hull's own write; taking it from the hull is what keeps them on ONE grid.</para>
         /// </summary>
-        private void WriteHullProperties()
+        // The synchronous dither capture fixture is the second caller, alongside LateUpdate.
+        internal void WriteHullProperties()
         {
             if (_meshRenderer == null || _hull == null) return;
             _props ??= new MaterialPropertyBlock();

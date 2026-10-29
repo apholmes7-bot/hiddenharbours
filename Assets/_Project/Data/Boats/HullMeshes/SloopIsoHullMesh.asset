@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-6997326984743289748
+--- !u!43 &-5074960482054228448
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,8 +192,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.sloop_iso
   SourceRigPath: docs/art/rigs/sail-rig-kit/sloop-30/sloopIsoRig.js
+  LayoutSchema: 
+  LiftSets: []
   SourceFaceBuilder: 
-  Mesh: {fileID: -6997326984743289748}
+  Mesh: {fileID: -5074960482054228448}
+  DriveFaceVertexRanges: []
   DoorLeafClosed: {fileID: 0}
   DoorLeafOpen: {fileID: 0}
   Ramps:
@@ -213,6 +216,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294179063
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279369798
@@ -225,6 +230,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4284773820
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4280557595
@@ -237,6 +244,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4286281586
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4284179806
@@ -249,6 +258,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4292075227
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.28
   - Colors:
     - serializedVersion: 2
       rgba: 4285557341
@@ -265,6 +276,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294179063
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279511103
@@ -279,6 +292,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4283663794
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.12
   - Colors:
     - serializedVersion: 2
       rgba: 4281952100
@@ -291,6 +306,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4290174187
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.18
   - Colors:
     - serializedVersion: 2
       rgba: 4287860358
@@ -307,6 +324,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294376699
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4282925370
@@ -321,6 +340,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4293848550
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4282925370
@@ -335,6 +356,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4293848550
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4282925370
@@ -349,6 +372,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4293848550
     Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4281090900
@@ -361,6 +386,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4290894819
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4280753168
@@ -373,6 +400,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288582264
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279702288
@@ -389,6 +418,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288255114
     Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
   Gain: 3
   Bias: 2.7

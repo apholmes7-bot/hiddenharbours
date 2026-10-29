@@ -1,6 +1,340 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!43 &-1732013209598191854
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8b2db8b2f7729f4a8bbfaaea8a23715, type: 3}
+  m_Name: Sloop88IsoHullMesh
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
+  Id: hullmesh.sloop88_iso
+  SourceRigPath: docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js
+  LayoutSchema: 
+  LiftSets: []
+  SourceFaceBuilder: 
+  Mesh: {fileID: 7379836363059143892}
+  DriveFaceVertexRanges: []
+  DoorLeafClosed: {fileID: 0}
+  DoorLeafOpen: {fileID: 0}
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281671693
+    - serializedVersion: 2
+      rgba: 4282198037
+    - serializedVersion: 2
+      rgba: 4282658588
+    - serializedVersion: 2
+      rgba: 4283053346
+    - serializedVersion: 2
+      rgba: 4287659367
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280557595
+    - serializedVersion: 2
+      rgba: 4280952353
+    - serializedVersion: 2
+      rgba: 4281215525
+    - serializedVersion: 2
+      rgba: 4281544490
+    - serializedVersion: 2
+      rgba: 4286281586
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280565357
+    - serializedVersion: 2
+      rgba: 4282080136
+    - serializedVersion: 2
+      rgba: 4283397534
+    - serializedVersion: 2
+      rgba: 4284780210
+    - serializedVersion: 2
+      rgba: 4286424517
+    - serializedVersion: 2
+      rgba: 4288134104
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.22
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279511103
+    - serializedVersion: 2
+      rgba: 4280104276
+    - serializedVersion: 2
+      rgba: 4280698476
+    - serializedVersion: 2
+      rgba: 4281424517
+    - serializedVersion: 2
+      rgba: 4282412700
+    - serializedVersion: 2
+      rgba: 4283663794
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.12
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284436806
+    - serializedVersion: 2
+      rgba: 4286542438
+    - serializedVersion: 2
+      rgba: 4288450178
+    - serializedVersion: 2
+      rgba: 4290226845
+    - serializedVersion: 2
+      rgba: 4292069563
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.18
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287860358
+    - serializedVersion: 2
+      rgba: 4289637026
+    - serializedVersion: 2
+      rgba: 4291217087
+    - serializedVersion: 2
+      rgba: 4292336598
+    - serializedVersion: 2
+      rgba: 4293258216
+    - serializedVersion: 2
+      rgba: 4293850354
+    - serializedVersion: 2
+      rgba: 4294376699
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281090900
+    - serializedVersion: 2
+      rgba: 4282540666
+    - serializedVersion: 2
+      rgba: 4284911529
+    - serializedVersion: 2
+      rgba: 4288134861
+    - serializedVersion: 2
+      rgba: 4290894819
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280359696
+    - serializedVersion: 2
+      rgba: 4281148952
+    - serializedVersion: 2
+      rgba: 4282201380
+    - serializedVersion: 2
+      rgba: 4283648565
+    - serializedVersion: 2
+      rgba: 4285687890
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
+  Gain: 3
+  Bias: 2.7
+  Bayer16:
+  - 0.03125
+  - 0.53125
+  - 0.15625
+  - 0.65625
+  - 0.78125
+  - 0.28125
+  - 0.90625
+  - 0.40625
+  - 0.21875
+  - 0.71875
+  - 0.09375
+  - 0.59375
+  - 0.96875
+  - 0.46875
+  - 0.84375
+  - 0.34375
+  Keyline:
+    serializedVersion: 2
+    rgba: 4279835152
+  PivotPx: {x: 536, y: 1182}
+  PxPerMetre: 32
+  CellW: 1072
+  CellH: 1568
+  ElevationDeg: 40
+  LevelTags:
+  - LevelId: cockpit
+    DeckId: cockpit_sole
+    Tag: 1
+    LidLevelId: 
+    LidTag: 0
+    Enclosed: 0
+    SoleZMeters: 2.55
+    CeilingZMeters: 0
+  - LevelId: aft_deck
+    DeckId: aft_deck
+    Tag: 2
+    LidLevelId: 
+    LidTag: 0
+    Enclosed: 0
+    SoleZMeters: 3.293
+    CeilingZMeters: 0
+  - LevelId: coachroof
+    DeckId: coachroof
+    Tag: 3
+    LidLevelId: 
+    LidTag: 0
+    Enclosed: 0
+    SoleZMeters: 4.512
+    CeilingZMeters: 0
+  - LevelId: foredeck
+    DeckId: foredeck
+    Tag: 4
+    LidLevelId: 
+    LidTag: 0
+    Enclosed: 0
+    SoleZMeters: 3.497
+    CeilingZMeters: 0
+  - LevelId: saloon
+    DeckId: saloon_sole
+    Tag: 5
+    LidLevelId: coachroof
+    LidTag: 3
+    Enclosed: 1
+    SoleZMeters: 2.05
+    CeilingZMeters: 4.453
+  - LevelId: lower
+    DeckId: lower_sole
+    Tag: 6
+    LidLevelId: foredeck
+    LidTag: 4
+    Enclosed: 1
+    SoleZMeters: 1.2
+    CeilingZMeters: 3.618
+  InteriorRamps: []
+  AzimuthCounterClockwise: 1
+  RockRollDegrees: 1.1
+  RockPitchDegrees: 0.55
+  RockHeavePixels: 1
+  RestingDraftMeters: 1.35
+  WatertightDeckHeightMeters: 2.55
+  WatertightHalfBeamMeters: 3.4
+  WakeSternOffsetMeters: 13.5
+  Lamps: []
+  Panes: []
+--- !u!43 &7379836363059143892
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,306 +512,3 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8b2db8b2f7729f4a8bbfaaea8a23715, type: 3}
-  m_Name: Sloop88IsoHullMesh
-  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
-  Id: hullmesh.sloop88_iso
-  SourceRigPath: docs/art/rigs/sail-rig-kit/sloop-88/sloop88IsoRig.js
-  SourceFaceBuilder: 
-  Mesh: {fileID: -1732013209598191854}
-  DoorLeafClosed: {fileID: 0}
-  DoorLeafOpen: {fileID: 0}
-  Ramps:
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4285557341
-    - serializedVersion: 2
-      rgba: 4287663230
-    - serializedVersion: 2
-      rgba: 4289835171
-    - serializedVersion: 2
-      rgba: 4291481026
-    - serializedVersion: 2
-      rgba: 4292863453
-    - serializedVersion: 2
-      rgba: 4293587182
-    - serializedVersion: 2
-      rgba: 4294179063
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4281671693
-    - serializedVersion: 2
-      rgba: 4282198037
-    - serializedVersion: 2
-      rgba: 4282658588
-    - serializedVersion: 2
-      rgba: 4283053346
-    - serializedVersion: 2
-      rgba: 4287659367
-    Offset: -1
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4280557595
-    - serializedVersion: 2
-      rgba: 4280952353
-    - serializedVersion: 2
-      rgba: 4281215525
-    - serializedVersion: 2
-      rgba: 4281544490
-    - serializedVersion: 2
-      rgba: 4286281586
-    Offset: -1
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4280565357
-    - serializedVersion: 2
-      rgba: 4282080136
-    - serializedVersion: 2
-      rgba: 4283397534
-    - serializedVersion: 2
-      rgba: 4284780210
-    - serializedVersion: 2
-      rgba: 4286424517
-    - serializedVersion: 2
-      rgba: 4288134104
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4285557341
-    - serializedVersion: 2
-      rgba: 4287663230
-    - serializedVersion: 2
-      rgba: 4289835171
-    - serializedVersion: 2
-      rgba: 4291481026
-    - serializedVersion: 2
-      rgba: 4292863453
-    - serializedVersion: 2
-      rgba: 4293587182
-    - serializedVersion: 2
-      rgba: 4294179063
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279511103
-    - serializedVersion: 2
-      rgba: 4280104276
-    - serializedVersion: 2
-      rgba: 4280698476
-    - serializedVersion: 2
-      rgba: 4281424517
-    - serializedVersion: 2
-      rgba: 4282412700
-    - serializedVersion: 2
-      rgba: 4283663794
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4284436806
-    - serializedVersion: 2
-      rgba: 4286542438
-    - serializedVersion: 2
-      rgba: 4288450178
-    - serializedVersion: 2
-      rgba: 4290226845
-    - serializedVersion: 2
-      rgba: 4292069563
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4287860358
-    - serializedVersion: 2
-      rgba: 4289637026
-    - serializedVersion: 2
-      rgba: 4291217087
-    - serializedVersion: 2
-      rgba: 4292336598
-    - serializedVersion: 2
-      rgba: 4293258216
-    - serializedVersion: 2
-      rgba: 4293850354
-    - serializedVersion: 2
-      rgba: 4294376699
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4282925370
-    - serializedVersion: 2
-      rgba: 4284899158
-    - serializedVersion: 2
-      rgba: 4287399290
-    - serializedVersion: 2
-      rgba: 4289833887
-    - serializedVersion: 2
-      rgba: 4292005571
-    - serializedVersion: 2
-      rgba: 4293848550
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4285557341
-    - serializedVersion: 2
-      rgba: 4287663230
-    - serializedVersion: 2
-      rgba: 4289835171
-    - serializedVersion: 2
-      rgba: 4291481026
-    - serializedVersion: 2
-      rgba: 4292863453
-    - serializedVersion: 2
-      rgba: 4293587182
-    - serializedVersion: 2
-      rgba: 4294179063
-    Offset: -1
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4282925370
-    - serializedVersion: 2
-      rgba: 4284899158
-    - serializedVersion: 2
-      rgba: 4287399290
-    - serializedVersion: 2
-      rgba: 4289833887
-    - serializedVersion: 2
-      rgba: 4292005571
-    - serializedVersion: 2
-      rgba: 4293848550
-    Offset: -2
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4281090900
-    - serializedVersion: 2
-      rgba: 4282540666
-    - serializedVersion: 2
-      rgba: 4284911529
-    - serializedVersion: 2
-      rgba: 4288134861
-    - serializedVersion: 2
-      rgba: 4290894819
-    Offset: 0
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4280359696
-    - serializedVersion: 2
-      rgba: 4281148952
-    - serializedVersion: 2
-      rgba: 4282201380
-    - serializedVersion: 2
-      rgba: 4283648565
-    - serializedVersion: 2
-      rgba: 4285687890
-    Offset: -1
-  - Colors:
-    - serializedVersion: 2
-      rgba: 4279702288
-    - serializedVersion: 2
-      rgba: 4280754461
-    - serializedVersion: 2
-      rgba: 4282004011
-    - serializedVersion: 2
-      rgba: 4283319613
-    - serializedVersion: 2
-      rgba: 4284701778
-    - serializedVersion: 2
-      rgba: 4286281323
-    - serializedVersion: 2
-      rgba: 4288255114
-    Offset: -2
-  LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
-  Gain: 3
-  Bias: 2.7
-  Bayer16:
-  - 0.03125
-  - 0.53125
-  - 0.15625
-  - 0.65625
-  - 0.78125
-  - 0.28125
-  - 0.90625
-  - 0.40625
-  - 0.21875
-  - 0.71875
-  - 0.09375
-  - 0.59375
-  - 0.96875
-  - 0.46875
-  - 0.84375
-  - 0.34375
-  Keyline:
-    serializedVersion: 2
-    rgba: 4279835152
-  PivotPx: {x: 536, y: 1182}
-  PxPerMetre: 32
-  CellW: 1072
-  CellH: 1568
-  ElevationDeg: 40
-  LevelTags:
-  - LevelId: cockpit
-    DeckId: cockpit_sole
-    Tag: 1
-    LidLevelId: 
-    LidTag: 0
-    Enclosed: 0
-    SoleZMeters: 2.55
-    CeilingZMeters: 0
-  - LevelId: aft_deck
-    DeckId: aft_deck
-    Tag: 2
-    LidLevelId: 
-    LidTag: 0
-    Enclosed: 0
-    SoleZMeters: 3.293
-    CeilingZMeters: 0
-  - LevelId: coachroof
-    DeckId: coachroof
-    Tag: 3
-    LidLevelId: 
-    LidTag: 0
-    Enclosed: 0
-    SoleZMeters: 4.512
-    CeilingZMeters: 0
-  - LevelId: foredeck
-    DeckId: foredeck
-    Tag: 4
-    LidLevelId: 
-    LidTag: 0
-    Enclosed: 0
-    SoleZMeters: 3.497
-    CeilingZMeters: 0
-  - LevelId: saloon
-    DeckId: saloon_sole
-    Tag: 5
-    LidLevelId: coachroof
-    LidTag: 3
-    Enclosed: 1
-    SoleZMeters: 2.05
-    CeilingZMeters: 4.453
-  - LevelId: lower
-    DeckId: lower_sole
-    Tag: 6
-    LidLevelId: foredeck
-    LidTag: 4
-    Enclosed: 1
-    SoleZMeters: 1.2
-    CeilingZMeters: 3.618
-  InteriorRamps: []
-  AzimuthCounterClockwise: 1
-  RockRollDegrees: 1.1
-  RockPitchDegrees: 0.55
-  RockHeavePixels: 1
-  RestingDraftMeters: 1.35
-  WatertightDeckHeightMeters: 2.55
-  WatertightHalfBeamMeters: 3.4
-  WakeSternOffsetMeters: 13.5
-  Lamps: []
-  Panes: []

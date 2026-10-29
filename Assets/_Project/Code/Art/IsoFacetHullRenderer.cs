@@ -22,6 +22,7 @@ namespace HiddenHarbours.Art
         public Color32[][] Ramps;
         /// <summary>Per-material constant ramp-index offset (the rig's <c>off</c>).</summary>
         public int[] RampOffsets;
+        public float[] RampDitherWeights;
         /// <summary>The INTERIOR's own palette, in its own index space
         /// (<see cref="HiddenHarbours.Core.HullMeshDef.InteriorRamps"/>). Null or empty on every
         /// hull with no interior geometry — the shipped answer for most of the fleet.</summary>
@@ -29,6 +30,7 @@ namespace HiddenHarbours.Art
         /// <summary>Per-interior-material ramp-index offset, parallel to
         /// <see cref="InteriorRamps"/>.</summary>
         public int[] InteriorRampOffsets;
+        public float[] InteriorRampDitherWeights;
         /// <summary>The rig's LN, normalised, in the rig's own right-handed frame. The component
         /// applies the reflection sign for the shader — hand it over untouched.</summary>
         public Vector3 LightN;
@@ -682,7 +684,7 @@ namespace HiddenHarbours.Art
 
             var meta = new Vector4[HiddenHarbours.Core.HullMeshDef.HullRampSlots];
             for (int m = 0; m < setup.Ramps.Length; m++)
-                meta[m] = new Vector4(setup.Ramps[m].Length, setup.RampOffsets[m], 0, 0);
+                meta[m] = IsoFacetRampMeta.Pack(setup.Ramps[m].Length, setup.RampOffsets[m], setup.RampDitherWeights, m);
             _facetMaterial.SetVectorArray(IsoFacetShaderIds.RampMeta, meta);
 
             // THE INTERIOR TABLE. Written unconditionally when the hull has one, even though only
@@ -700,7 +702,7 @@ namespace HiddenHarbours.Art
                 {
                     int off = setup.InteriorRampOffsets != null && m < setup.InteriorRampOffsets.Length
                               ? setup.InteriorRampOffsets[m] : 0;
-                    interiorMeta[m] = new Vector4(table[m].Length, off, 0, 0);
+                    interiorMeta[m] = IsoFacetRampMeta.Pack(table[m].Length, off, setup.InteriorRampDitherWeights, m);
                 }
                 _facetMaterial.SetVectorArray(IsoFacetShaderIds.RampMetaInterior, interiorMeta);
             }
@@ -1222,5 +1224,12 @@ namespace HiddenHarbours.Art
             _overlayQuad = null;
             _setup = null;
         }
+    }
+
+    /// <summary>Shared metadata layout for the hull branch. Older setup callers keep full Bayer.</summary>
+    public static class IsoFacetRampMeta
+    {
+        public static Vector4 Pack(int length, int offset, float[] weights, int index)
+            => new Vector4(length, offset, weights != null && index < weights.Length ? weights[index] : 1f, 0f);
     }
 }

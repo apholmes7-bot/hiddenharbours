@@ -1492,11 +1492,7 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             var ramps = new HullMeshDef.Ramp[data.Materials.Count];
             for (int m = 0; m < data.Materials.Count; m++)
-                ramps[m] = new HullMeshDef.Ramp
-                {
-                    Colors = data.Materials[m].Ramp,
-                    Offset = data.Materials[m].Off,
-                };
+                ramps[m] = data.Materials[m].ToRamp();
             return ramps;
         }
 

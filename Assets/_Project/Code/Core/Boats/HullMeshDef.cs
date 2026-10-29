@@ -40,6 +40,22 @@ namespace HiddenHarbours.Core
             public Color32[] Colors;
             [Tooltip("The rig material's constant ramp-index offset ('off'; the blk/dark aliases are negative).")]
             public int Offset;
+
+            [SerializeField, HideInInspector] private bool _hasDitherWeight;
+            [SerializeField, HideInInspector] private float _ditherWeight;
+
+            /// <summary>The rig's numeric dith. Missing serialized data keeps full Bayer;
+            /// explicit zero rounds at a strict half-step. Canonical full weight uses the
+            /// absent representation, so re-extracting an unweighted table keeps its values.</summary>
+            public float DitherWeight
+            {
+                get => _hasDitherWeight ? _ditherWeight : 1f;
+                set
+                {
+                    _hasDitherWeight = value != 1f;
+                    _ditherWeight = _hasDitherWeight ? value : 0f;
+                }
+            }
         }
 
         /// <summary>

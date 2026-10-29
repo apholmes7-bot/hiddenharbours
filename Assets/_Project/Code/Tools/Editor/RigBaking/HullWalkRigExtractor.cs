@@ -135,6 +135,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 {
                     var paint = HullLayoutJson.Child(table, name, "scheme.MATS");
                     return HullLayoutJson.Integer(paint, "off", name).ToString(CultureInfo.InvariantCulture) + "|" +
+                        RigMaterial.ReadDitherWeight(paint).ToString("R", CultureInfo.InvariantCulture) + "|" +
                         string.Join(",", HullLayoutJson.Array(paint, "ramp", name).Select(c => c as string));
                 })));
             return groups;
@@ -153,15 +154,17 @@ namespace HiddenHarbours.Tools.RigBaking
                 string[] hex = HullLayoutJson.Array(paint, "ramp", "MATS." + name).Select(c => c as string).ToArray();
                 if (hex.Length == 0) throw new FormatException("MATS." + name + ".ramp: empty ramp");
                 int offset = HullLayoutJson.Integer(paint, "off", "MATS." + name);
+                double dither = RigMaterial.ReadDitherWeight(paint);
                 int mat = palette.FindIndex(m => paintGroups == null
-                    ? m.Off == offset && m.RampHex.SequenceEqual(hex)
+                    ? m.Off == offset && m.DitherWeight == dither && m.RampHex.SequenceEqual(hex)
                     : paintGroups[m.Name] == paintGroups[name]);
                 if (mat < 0)
                 {
                     mat = palette.Count;
                     string representative = paintGroups == null ? name : mats.Keys.First(n =>
                         paintGroups.TryGetValue(n, out string group) && group == paintGroups[name]);
-                    palette.Add(new RigMaterial { Name = representative, Off = offset, RampHex = hex, Ramp = hex.Select(Color).ToArray() });
+                    palette.Add(new RigMaterial { Name = representative, Off = offset, DitherWeight = dither,
+                        RampHex = hex, Ramp = hex.Select(Color).ToArray() });
                 }
                 int lv = HullLayoutJson.Integer(f, "lv", "face"), ro = HullLayoutJson.Integer(f, "ro", "face");
                 HullLayoutJson.Number(f, "b", "face"); HullLayoutJson.Number(f, "db", "face");

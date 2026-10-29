@@ -168,6 +168,20 @@ namespace HiddenHarbours.Tools.RigBaking
         public string[] RampHex;
         public int Off;
 
+        /// <summary>Numeric hull dither weight; distinct from the figure's boolean rule.</summary>
+        public double DitherWeight = 1.0;
+
+        public HiddenHarbours.Core.HullMeshDef.Ramp ToRamp() => new HiddenHarbours.Core.HullMeshDef.Ramp
+        {
+            Colors = Ramp,
+            Offset = Off,
+            DitherWeight = (float)DitherWeight,
+        };
+
+        public static double ReadDitherWeight(Dictionary<string, object> material)
+            => material.TryGetValue("dith", out object value) && value != null
+                ? HullLayoutJson.Number(material, "dith", "MATS") : 1.0;
+
         /// <summary>
         /// The material's OWN shade gain (<c>MATS[k].gain</c>), 1.0 when the rig declares none.
         ///
@@ -2200,10 +2214,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 data.Bayer[i / 4, i % 4] = double.Parse(parts[i], CultureInfo.InvariantCulture);
         }
 
-        static void ReadMaterials(IRigScriptHost host, string g, RigMeshData data,
+        public static void ReadMaterials(IRigScriptHost host, string g, RigMeshData data,
                                   string materialsCall = null)
         {
-            // name|off|#rrggbb,#rrggbb,… ; …  — key order is the JS object's own enumeration order,
+            // name|off|#rrggbb,#rrggbb,…|dith ; … — key order is the JS object's own enumeration order,
             // which is also the order the face packer resolves names against, below.
             //
             // A fitting may name its own table (RigPropExtraction.MaterialsCall). Everything else —
@@ -2211,20 +2225,22 @@ namespace HiddenHarbours.Tools.RigBaking
             string mats = string.IsNullOrEmpty(materialsCall) ? $"{g}.MATS" : $"{g}.{materialsCall}";
             string blob = host.EvaluateString(
                 $"(function(){{var M={mats},o=[];for(var k in M)" +
-                "o.push(k+'|'+(M[k].off||0)+'|'+M[k].ramp.join(','));return o.join(';');})()");
+                "o.push(k+'|'+(M[k].off||0)+'|'+M[k].ramp.join(',')+'|'+" +
+                "(M[k].dith==null?1:M[k].dith));return o.join(';');})()");
 
             foreach (string part in blob.Split(';'))
             {
                 string[] f = part.Split('|');
-                if (f.Length != 3)
+                if (f.Length != 4)
                     throw new InvalidOperationException(
-                        $"{mats} entry '{part}' is not name|off|ramp. MATS must be " +
+                        $"{mats} entry '{part}' is not name|off|ramp|dith. MATS must be " +
                         "{name:{ramp:[…],off:n}}.");
                 string[] hex = f[2].Split(',');
                 data.Materials.Add(new RigMaterial
                 {
                     Name = f[0],
                     Off = int.Parse(f[1], CultureInfo.InvariantCulture),
+                    DitherWeight = double.Parse(f[3], CultureInfo.InvariantCulture),
                     RampHex = hex,
                     Ramp = Array.ConvertAll(hex, ParseHex),
                 });

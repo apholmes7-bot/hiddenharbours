@@ -383,10 +383,12 @@ namespace HiddenHarbours.Art
         {
             var ramps = new Color32[def.Ramps.Length][];
             var offsets = new int[def.Ramps.Length];
+            var dither = new float[def.Ramps.Length];
             for (int m = 0; m < def.Ramps.Length; m++)
             {
                 ramps[m] = def.Ramps[m].Colors;
                 offsets[m] = def.Ramps[m].Offset;
+                dither[m] = def.Ramps[m].DitherWeight;
             }
 
             return new IsoFacetPropSetup
@@ -395,6 +397,7 @@ namespace HiddenHarbours.Art
                 FixedMesh = def.FixedMesh,
                 Ramps = ramps,
                 RampOffsets = offsets,
+                RampDitherWeights = dither,
                 LightN = def.LightN,
                 Gain = def.Gain,
                 Bias = def.Bias,
@@ -441,10 +444,12 @@ namespace HiddenHarbours.Art
 
             var ramps = new Color32[table.Length][];
             var offsets = new int[table.Length];
+            var dither = new float[table.Length];
             for (int m = 0; m < table.Length; m++)
             {
                 ramps[m] = table[m].Colors;
                 offsets[m] = table[m].Offset;
+                dither[m] = table[m].DitherWeight;
             }
 
             // THE INTERIOR PALETTE IS NOT REPAINTED BY AN EXTERIOR SCHEME. A paint scheme is a
@@ -454,10 +459,12 @@ namespace HiddenHarbours.Art
             var interiorTable = def.InteriorRamps ?? System.Array.Empty<HullMeshDef.Ramp>();
             var interiorRamps = new Color32[interiorTable.Length][];
             var interiorOffsets = new int[interiorTable.Length];
+            var interiorDither = new float[interiorTable.Length];
             for (int m = 0; m < interiorTable.Length; m++)
             {
                 interiorRamps[m] = interiorTable[m].Colors;
                 interiorOffsets[m] = interiorTable[m].Offset;
+                interiorDither[m] = interiorTable[m].DitherWeight;
             }
 
             return new IsoFacetHullSetup
@@ -468,8 +475,10 @@ namespace HiddenHarbours.Art
                 DoorLeafOpen = def.HasDoorLeaf() ? def.DoorLeafOpen : null,
                 Ramps = ramps,
                 RampOffsets = offsets,
+                RampDitherWeights = dither,
                 InteriorRamps = interiorRamps,
                 InteriorRampOffsets = interiorOffsets,
+                InteriorRampDitherWeights = interiorDither,
                 LightN = def.LightN,
                 Gain = def.Gain,
                 Bias = def.Bias,

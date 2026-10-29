@@ -14,7 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullMeshDef
   Id: hullmesh.console_iso
   SourceRigPath: docs/art/rigs/consoleIsoRig.js
-  Mesh: {fileID: 2008820709424131940}
+  LayoutSchema: 
+  LiftSets: []
+  SourceFaceBuilder: 
+  Mesh: {fileID: 193649995989255240}
+  DriveFaceVertexRanges: []
+  DoorLeafClosed: {fileID: 0}
+  DoorLeafOpen: {fileID: 0}
   Ramps:
   - Colors:
     - serializedVersion: 2
@@ -32,6 +38,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294179063
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4282138381
@@ -44,6 +52,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4289378377
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4280048250
@@ -52,6 +62,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4282036704
     Offset: -3
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4282138381
@@ -64,6 +76,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4289378377
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4285557341
@@ -80,6 +94,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294179063
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279969587
@@ -96,6 +112,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4283597737
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.5
   - Colors:
     - serializedVersion: 2
       rgba: 4285557341
@@ -112,6 +130,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294179063
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4283455274
@@ -124,6 +144,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4289447575
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279969587
@@ -140,6 +162,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4283597737
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.45
   - Colors:
     - serializedVersion: 2
       rgba: 4282135318
@@ -152,6 +176,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4291086735
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279179296
@@ -160,6 +186,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4280036410
     Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279702288
@@ -176,6 +204,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288255114
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279702288
@@ -192,6 +222,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288255114
     Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   LightN: {x: -0.42750445, y: 0.73286474, z: 0.5292912}
   Gain: 3
   Bias: 2.7
@@ -220,6 +252,8 @@ MonoBehaviour:
   CellW: 244
   CellH: 216
   ElevationDeg: 40
+  LevelTags: []
+  InteriorRamps: []
   AzimuthCounterClockwise: 1
   RockRollDegrees: 3.4
   RockPitchDegrees: 1.9
@@ -228,7 +262,9 @@ MonoBehaviour:
   WatertightDeckHeightMeters: 0.28
   WatertightHalfBeamMeters: 1.25
   WakeSternOffsetMeters: 3.5
---- !u!43 &2008820709424131940
+  Lamps: []
+  Panes: []
+--- !u!43 &193649995989255240
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
