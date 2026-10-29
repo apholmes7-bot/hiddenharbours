@@ -22,7 +22,7 @@ MonoBehaviour:
   - region.coddle_cove
   - region.st_peters
   - region.nine_mile_creek
-  AllowedGear: 3
+  AllowedGear: 1
   Seasons: 15
   MinTide: -10
   MaxTide: 10
