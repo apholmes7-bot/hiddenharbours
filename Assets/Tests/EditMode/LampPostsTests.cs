@@ -67,7 +67,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EachKitPiece_TakesThePresetItsHeightAsksFor()
         {
-            Assert.AreEqual(LightPresets.Kind.Lightpost, LampPosts.PresetFor(LampPosts.LanternPost));
+            Assert.AreEqual(LightPresets.Kind.HungLantern, LampPosts.PresetFor(LampPosts.LanternPost));
             Assert.AreEqual(LightPresets.Kind.Lightpost, LampPosts.PresetFor(LampPosts.StreetLamp));
             Assert.AreEqual(LightPresets.Kind.Floodlight, LampPosts.PresetFor(LampPosts.YardLight));
             Assert.AreEqual(LightPresets.Kind.Floodlight, LampPosts.PresetFor(LampPosts.FloodMast));

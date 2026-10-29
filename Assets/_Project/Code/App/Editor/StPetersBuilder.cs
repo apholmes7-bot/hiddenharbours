@@ -769,11 +769,14 @@ namespace HiddenHarbours.App.Editor
         // little apart), the STORE at its centre where the path from the spawn meets it, the FARMHOUSE —
         // the biggest of them — closing the east end. Then the two smaller houses come round the green:
         // the SALTBOX on the east side and the SAGE COTTAGE on the south, the last house before the shore.
-        public static readonly Vector3 SchoolPos         = new Vector3(-12f,  33f, 0f);
-        public static readonly Vector3 GeneralStorePos   = new Vector3(  4f,  31f, 0f);
+        public static readonly Vector3 SchoolPos         = new Vector3(-11.4f, 35.423f, 0f);
+        public static readonly Vector3 GeneralStorePos   = new Vector3(2.5f, 35.422f, 0f);
         public static readonly Vector3 WhiteFarmhousePos = new Vector3( 21f,  26f, 0f);
         public static readonly Vector3 RedSaltboxPos     = new Vector3( 25f,   8f, 0f);
-        public static readonly Vector3 SageCottagePos    = new Vector3( 10f, -20f, 0f);
+        public static readonly Vector3 SageCottagePos    = new Vector3(-21.5f, 41.643f, 0f);
+        public static readonly Vector3 HarbourGablePos   = new Vector3(-6.25f, 46.125f, 0f);
+        public static readonly Vector3 CreamSaltboxPos   = new Vector3(28.5f, 35.704f, 0f);
+        public static readonly Vector3 WhiteGablePos     = new Vector3(53f, 35.204f, 0f);
 
         // Where the village LOOKS. Every door is turned toward this point rather than given a hard-coded
         // facing index, so the village faces itself — and so a re-bake with four facings instead of eight
@@ -807,23 +810,9 @@ namespace HiddenHarbours.App.Editor
         public const string StoreSellerId = "seller.leblancs";
 
         /// <summary>
-        /// Where the general store's counter stands: DERIVED from the store's own site, out its door
-        /// toward <see cref="VillageGreen"/> and a stride past the dooryard its keeper stands in. Never
-        /// typed in — move the store and its counter, its keeper and its door all move together (#345's
-        /// standing lesson: a copied coordinate is a coordinate that will stop agreeing).
+        /// The counter keeps its offset in the store's drawn door frame.
         /// </summary>
-        public static Vector3 GeneralStoreCounterPos
-        {
-            get
-            {
-                Vector2 door = StPetersInhabitants.Dooryard(GeneralStorePos);
-                Vector2 outward = VillageGreen - door;
-                Vector2 spot = outward.sqrMagnitude < 1e-6f
-                    ? door
-                    : door + outward.normalized * StoreCounterStrideMetres;
-                return new Vector3(spot.x, spot.y, 0f);
-            }
-        }
+        public static Vector3 GeneralStoreCounterPos => StPetersVillageStations.Current["GeneralStoreCounter"].Position;
 
         /// <summary>
         /// Dresses the general store's counter in the REAL baked fixture, turned so its service face
@@ -1957,6 +1946,9 @@ namespace HiddenHarbours.App.Editor
             // to place anything at all if that measured table is missing.
             var dooryards = YardDressing.Place(StPetersYards.Yards, parent: null, regionLabel: "St Peters");
             Debug.Log($"[StPetersBuilder] the dooryards: {dooryards}");
+            StPetersVillageDressing.Place(dooryards.Root.transform);
+            var villagePlan = StPetersVillageYards.Read<VillagePlanDef>("village_plan.st_peters");
+            StPetersVillageLights.Place(villagePlan.LightIds.Select(StPetersVillageYards.Read<LightPostDef>).ToArray());
 
             // --- THE STORE'S COUNTER (§7.5's other half: the placement) -----------------------------------
             // #356 built the island general store's ECONOMY — the StPetersStore market channel that pays a

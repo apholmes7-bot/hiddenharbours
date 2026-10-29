@@ -283,7 +283,8 @@ namespace HiddenHarbours.App.Editor
         /// upstairs at Ginny's) could have gone unvalidated. Adding a plan here is what puts its rooms
         /// under every test in the suite.</para>
         /// </summary>
-        public static readonly string[] UpperLevelPlanKeys = { GinnyCottagePlanKey };
+        public static readonly string[] UpperLevelPlanKeys =
+            { GinnyCottagePlanKey, "harbourGable", "creamSaltbox", "whiteGable" };
 
         /// <summary>
         /// <b>The storey above, per site.</b> Returns an empty plan for everything not listed, which is
@@ -320,6 +321,9 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static UpperLevelPlan UpperLevelFor(string planKey) => planKey switch
         {
+            "harbourGable" => EmptyUpperRoom("harbourGableUpper"),
+            "creamSaltbox" => EmptyUpperRoom("creamSaltboxUpper"),
+            "whiteGable" => EmptyUpperRoom("whiteGableUpper"),
             GinnyCottagePlanKey => new UpperLevelPlan(
                 // Empty = draw the storey below's own room sheet. See the greybox note above.
                 roomKey: "",
@@ -392,6 +396,18 @@ namespace HiddenHarbours.App.Editor
                 }),
 
             _ => default,
+        };
+
+        static UpperLevelPlan EmptyUpperRoom(string key) => new UpperLevelPlan(key,
+            System.Array.Empty<Furnishing>(), System.Array.Empty<Furnishing>(),
+            System.Array.Empty<WallRect>());
+
+        public static string VillageUpperPlan(string shellKey) => shellKey switch
+        {
+            "harbourGable" => shellKey,
+            "creamSaltbox" => shellKey,
+            "whiteGable" => shellKey,
+            _ => null,
         };
 
         /// <summary>Whether a plan key names a storey above. <c>default(UpperLevelPlan)</c> — everything

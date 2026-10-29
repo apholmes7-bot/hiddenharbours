@@ -75,6 +75,9 @@ namespace HiddenHarbours.App.Editor
             new Spec("b_village", "StPetersBuilder.VillageHearthPos"),
             new Spec("b_start", "StPetersBuilder.StartSpawnPos"),
             new Spec("b_wet", "StPetersBuilder.WetBucketPos"),
+            new Spec("b_harbour_gable", "StPetersBuilder.HarbourGablePos"),
+            new Spec("b_cream_saltbox", "StPetersBuilder.CreamSaltboxPos"),
+            new Spec("b_white_gable", "StPetersBuilder.WhiteGablePos"),
         };
 
         public static readonly Spec[] DockPoints =

@@ -10,6 +10,9 @@ namespace HiddenHarbours.Core
     [CreateAssetMenu(menuName = "Hidden Harbours/Game Config", fileName = "GameConfig")]
     public class GameConfig : ScriptableObject
     {
+        [Header("Curling breakers")]
+        public CurlingBreakerSettings CurlingBreakers = CurlingBreakerSettings.Default;
+
         /// <summary>The day length the clock ships with — the single fallback consumers use when no
         /// config asset is wired (EditMode, a bare test rig). One constant, never a scattered literal.
         ///

@@ -136,7 +136,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator EveryHouseInStPeters_Lights_OnItsOwnSheets() =>
-            EveryHouseLights("StPeters", expectedHouses: 5, expectedOthers: 7); // O3 adds bait store, loft and shed; ice house waits.
+            EveryHouseLights("StPeters", expectedHouses: 8, expectedOthers: 7); // O3 adds bait store, loft and shed; ice house waits. The village pass adds creamSaltbox, harbourGable and whiteGable.
 
         [UnityTest]
         public IEnumerator EveryHouseInNineMileCreek_Lights_OnItsOwnSheets() =>
@@ -219,7 +219,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator EveryRoomInStPeters_IsDrawnWithItsDoorwayInTheGapItsWallsLeave()
         {
-            const int expectedRooms = 5;
+            const int expectedRooms = 8;   // the village pass adds the rooms of creamSaltbox, harbourGable and whiteGable
             const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
             FieldInfo shellField = typeof(BuildingInterior).GetField("_shell", Private);
             FieldInfo roomField = typeof(BuildingInterior).GetField("_room", Private);

@@ -488,3 +488,24 @@ MonoBehaviour:
     CastRingCount: 3
     CastRingSeconds: 0.6
     MomentTickHz: 30
+  CurlingBreakers:
+    Master: 0
+    MaxCurls: 1
+    HeightFraction: 0.5
+    EndTaperMeters: 1
+    AlongColumns: 9
+    CrossRows: 13
+    SteepenStart: -0.12
+    ThrowStart: -0.04
+    Crest: 0
+    Land: 0.08
+    Gone: 0.12
+    MinBore: 0.1
+    MinWhitewater: 0.1
+    MinPlungingWeight: 0.5
+    MaskScale: 0.5
+    MinReadableHeight: 8
+    MinReadableThrow: 4
+    ReadableFrameBar: 12
+    DefaultPixelsPerMetre: 96
+    FrameRate: 60

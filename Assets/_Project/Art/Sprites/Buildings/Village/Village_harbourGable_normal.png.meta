@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: d9d6b2e4a43e7e44b8291cb2f7925b20
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 9177754933964482744
+    second: Village_harbourGable_normal_0
+  - first:
+      213: -4734742182667613019
+    second: Village_harbourGable_normal_1
+  - first:
+      213: -866928318002600507
+    second: Village_harbourGable_normal_2
+  - first:
+      213: -423633437039401059
+    second: Village_harbourGable_normal_3
+  - first:
+      213: -3136196970679705006
+    second: Village_harbourGable_normal_4
+  - first:
+      213: -6953704987250791701
+    second: Village_harbourGable_normal_5
+  - first:
+      213: -8090156640358842071
+    second: Village_harbourGable_normal_6
+  - first:
+      213: 1195772293326326868
+    second: Village_harbourGable_normal_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 422
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dbec817cca9bfd428e77f00df63466c
+      internalID: -1364889884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d1
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 422
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4736c0e86c27ce499f71d7258246f43
+      internalID: 1958568443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d2
+      rect:
+        serializedVersion: 2
+        x: 852
+        y: 422
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63bb52b3846fe1e42bcedf7dd9540014
+      internalID: -1751084863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d3
+      rect:
+        serializedVersion: 2
+        x: 1278
+        y: 422
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b75bd37b4af0d704ca7e21a2626b98b0
+      internalID: 1207598705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d70e7ef9633eb7a4b9f5be02496004eb
+      internalID: -1607808180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d5
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 0
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7ce310c81b2e7e4c9d3f347ae316dd4
+      internalID: -1496269833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d6
+      rect:
+        serializedVersion: 2
+        x: 852
+        y: 0
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 012b4d7c489a98346b458db8dfeeff72
+      internalID: 1900713655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_harbourGable_normal_d7
+      rect:
+        serializedVersion: 2
+        x: 1278
+        y: 0
+        width: 426
+        height: 422
+      alignment: 9
+      pivot: {x: 0.5, y: 0.31516588}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f84516098f88e7d4c84a19452164121c
+      internalID: 1152547525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4a902e6159288464e933aa167ac87ef4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_harbourGable_normal_d0: -1364889884
+      Village_harbourGable_normal_d1: 1958568443
+      Village_harbourGable_normal_d2: -1751084863
+      Village_harbourGable_normal_d3: 1207598705
+      Village_harbourGable_normal_d4: -1607808180
+      Village_harbourGable_normal_d5: -1496269833
+      Village_harbourGable_normal_d6: 1900713655
+      Village_harbourGable_normal_d7: 1152547525
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -30,7 +30,7 @@ namespace HiddenHarbours.Tests.RigBaking
         // ---- what M1 actually asked for ---------------------------------------------------------
 
         [Test]
-        public void TheKitIsExactlyTheFiveBuildingsM1Asked_For()
+        public void TheKitIsExactlyTheEightBuildingsM1Asked_For()
         {
             // docs/design/world-and-regions.md §6 (St Peters): "three clapboard houses, a one-room
             // school, and a general store". docs/art/asset-manifest.md lists the same five as the P1
@@ -38,10 +38,12 @@ namespace HiddenHarbours.Tests.RigBaking
             // — CLAUDE.md rule 8, stay in your phase.
             var keys = VillageBuildingKit.M1Set.Select(b => b.Key).ToArray();
 
+            // E2 ruling 5 (case 4): the five, plus the village pass's three new homes, and nothing else.
             CollectionAssert.AreEquivalent(
-                new[] { "school", "generalStore", "whiteFarmhouse", "redSaltbox", "sageCottage" },
+                new[] { "school", "generalStore", "whiteFarmhouse", "redSaltbox", "sageCottage",
+                        "harbourGable", "creamSaltbox", "whiteGable" },
                 keys,
-                "the M1 village is a school, a store and three houses — nothing else. The wharf rig's " +
+                "the M1 village is a school, a store and six houses — nothing else. The wharf rig's " +
                 "sheds and the cannery are M2 and are baked (uncommitted) by BuildingBakeMenu instead.");
         }
 

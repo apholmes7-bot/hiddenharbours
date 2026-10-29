@@ -27,6 +27,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The village's buildings and yards (VillagePlanDerivation over its Defs): what the village's ground checks judge.</summary>
         public VillagePlanDerivation.Result Village;
 
+        /// <summary>The village pass's newly held ground, pinned before its building sources moved.</summary>
+        public VillageGroundHold VillageHold;
+
         /// <summary>The WaterSurface and TerrainSplatSurface scripts' guids: the components whose range the sea's case reads.</summary>
         public string WaterScriptGuid, SplatScriptGuid;
 
@@ -263,7 +266,7 @@ namespace HiddenHarbours.App.Editor
         {
             var k = New("FrozenMaskHoldsToday");
             var imp = x.Imp;
-            var held = new HeldTally();
+            var held = new HeldTally(true);
             var placeOff = new int[NamedPlaces.Length];
             var placeMost = new double[NamedPlaces.Length];
             var t1 = new Tally();
@@ -301,7 +304,8 @@ namespace HiddenHarbours.App.Editor
                 parts.Add(pl.Name + " " + placeOff[p] + " (A2 " + pl.Cells + "), at most " + F(placeMost[p]) + " m (A2 " + F(Math.Abs(pl.Most)) + ")" + (ok ? "" : " BEYOND"));
                 Put(k, "place" + (p + 1) + ".off_cells", placeOff[p]); Put(k, "place" + (p + 1) + ".max_abs_m", placeMost[p]);
             }
-            k.Pass = held.Cells > 0 && held.Outside == 0 && places && t1.Cells > 0 && t1.Off == 0;
+            int villageChanged = x.In.VillageHold.ChangedCells(x.R);
+            k.Pass = held.Cells > 0 && held.Outside == 0 && places && t1.Cells > 0 && t1.Off == 0 && villageChanged == 0;
             k.Detail = held.Cells + " cells of the import's keep (the common keep, the cliffs outside the south sector, the far west strip): " +
                        held.Off + " more than one R16 step off today's ground, " + held.Outside + " of them outside the named places" +
                        x.At(held.OutsideAt) + " (elsewhere at most " + F(held.MaxAbs) + " m" + x.At(held.MaxAt) + "); in them " +
@@ -313,6 +317,8 @@ namespace HiddenHarbours.App.Editor
             Put(k, "held_max_abs_outside_places_m", held.MaxAbs);
             Put(k, "t1_cells", t1.Cells); Put(k, "t1_off_pass9", t1.Off); Put(k, "t1_max_abs_pass9_m", t1.MaxAbs); Put(k, "t1_pass9_off_today", t1Pass9Off);
             Put(k, "released_cells", released); Put(k, "released_south", releasedSouth); Put(k, "released_south_cliffs", releasedCliffs);
+            Put(k, "village_pinned_cells", x.In.VillageHold.Count); Put(k, "village_pinned_changed", villageChanged);
+            k.Detail += "; village moved premise: " + x.In.VillageHold.Count + " pinned cells, " + villageChanged + " changed";
             return k;
         }
 
@@ -375,7 +381,7 @@ namespace HiddenHarbours.App.Editor
             var parts = new List<string>();
             foreach (var g in groups)
             {
-                var t = new HeldTally();
+                var t = new HeldTally(true);
                 var rel = new Tally();
                 for (int i = 0; i < x.N; i++)
                 {
@@ -391,8 +397,11 @@ namespace HiddenHarbours.App.Editor
                 Put(k, g.Key + ".held_max_abs_m", t.MaxAbs); Put(k, g.Key + ".file_cells", rel.Cells); Put(k, g.Key + ".file_off", rel.Off);
                 Put(k, g.Key + ".file_max_abs_m", rel.MaxAbs);
             }
-            k.Pass = pass;
+            int villageChanged = x.In.VillageHold.ChangedCells(x.R);
+            k.Pass = pass && villageChanged == 0;
+            Put(k, "village_pinned_cells", x.In.VillageHold.Count); Put(k, "village_pinned_changed", villageChanged);
             k.Detail = "cells more than one R16 step off today's ground, of those the import holds (and of the file's): " + string.Join("; ", parts);
+            k.Detail += "; village moved premise: " + x.In.VillageHold.Count + " pinned cells, " + villageChanged + " changed";
             return k;
         }
 
@@ -2218,6 +2227,8 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         sealed class HeldTally
         {
+            readonly bool _villagePremise;
+            public HeldTally(bool villagePremise = false) { _villagePremise = villagePremise; }
             public int Cells, Off, Outside, OutsideAt = -1, MaxAt = -1;
             public double MaxAbs;
 
@@ -2225,6 +2236,16 @@ namespace HiddenHarbours.App.Editor
             public bool Add(Ctx x, int i)
             {
                 Cells++;
+                // Only the two moved-premise guards use this fixed reference. Other cells retain
+                // the original R16 step and named-place rules; pinned cells allow no code change.
+                if (_villagePremise && x.In.VillageHold.Contains(i))
+                {
+                    double delta = Math.Abs(x.R.E[i] - x.In.VillageHold.Elevation(i));
+                    if (delta > MaxAbs) { MaxAbs = delta; MaxAt = i; }
+                    if (x.In.VillageHold.Matches(x.R, i)) return false;
+                    Off++; Outside++; if (OutsideAt < 0) OutsideAt = i;
+                    return true;
+                }
                 if (IssueBox(x, i) != null) return false;
                 int p = x.PlaceOf(i);
                 double d = Math.Abs(x.R.E[i] - x.Base[i]);
@@ -2400,6 +2421,8 @@ namespace HiddenHarbours.App.Editor
                 Plan = input.Plan ?? throw new ArgumentException("[TerrainPlanGuards] no plan");
                 Src = input.Sources ?? throw new ArgumentException("[TerrainPlanGuards] no sources");
                 R = input.Result ?? throw new ArgumentException("[TerrainPlanGuards] no derivation");
+                if (input.VillageHold == null) throw new ArgumentException("[TerrainPlanGuards] no village ground hold");
+                input.VillageHold.Validate(R, Plan);
                 if (input.Items == null || input.SceneText == null) throw new ArgumentException("[TerrainPlanGuards] no scene");
                 if (double.IsNaN(input.SpringLow) || double.IsNaN(input.SpringHigh) || double.IsNaN(input.NavFloor) || double.IsNaN(input.WadeDepth) ||
                     double.IsNaN(input.TidalPeriodHours) || float.IsNaN(input.MapMin) || float.IsNaN(input.MapMax))

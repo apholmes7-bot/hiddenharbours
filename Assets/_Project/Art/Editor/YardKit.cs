@@ -120,6 +120,9 @@ namespace HiddenHarbours.Art.Editor
 
             /// <summary>A gate leaf, standing in the opening the boundary opens at.</summary>
             Gate,
+
+            /// <summary>A freestanding piece, placed from village data.</summary>
+            Dressing,
         }
 
         /// <summary>
@@ -244,6 +247,51 @@ namespace HiddenHarbours.Art.Editor
                       "shrub, and the kit draws those from another family"),
             new Build("hedgeCorner", Role.Post, null, variant: 0, len: FixedLen, kept: 0.85f, seed: 67,
                       "the hedge's own return, clipped to match"),
+            new Build("buoyPost", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("trapBench", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("anchorSet", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("doryPlanter", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("oilTank", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("sawhorses", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("clothesline", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("vegRows", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("potatoDrills", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("barrelPlanter", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("borderBed", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("swingSet", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("firePit", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("farmStand", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
+            new Build("flagpole", Role.Dressing, null, variant: 0, len: 1f, kept: 0.7f, seed: 1,
+                      "accepted village dressing, priced with native planting"),
+
         };
 
         public static Build? FindBuild(string key)

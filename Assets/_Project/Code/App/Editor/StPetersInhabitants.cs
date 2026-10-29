@@ -118,13 +118,11 @@ namespace HiddenHarbours.App.Editor
         // =====================================================================================
 
         /// <summary>
-        /// The spot in front of a building's door: <see cref="DoorstepMetres"/> out from its site,
-        /// toward <see cref="StPetersBuilder.VillageGreen"/>. #353 turns every door toward the green, so
-        /// "toward the green" IS "out of the door" without this file needing to know a facing index —
-        /// and it stays right if the owner re-bakes the kit with a different number of facings.
+        /// Active village stands use their checked door frames. Held sites keep their existing stands.
         /// </summary>
         public static Vector2 Dooryard(Vector3 buildingSite)
         {
+            if (StPetersVillageStations.TryDooryard(buildingSite, out Vector2 active)) return active;
             Vector2 site = new Vector2(buildingSite.x, buildingSite.y);
             Vector2 d = StPetersBuilder.VillageGreen - site;
             if (d.sqrMagnitude < 1e-6f) return site;

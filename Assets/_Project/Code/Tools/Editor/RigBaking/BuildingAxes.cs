@@ -146,6 +146,14 @@ namespace HiddenHarbours.Tools.RigBaking
             new BuildingAxis("bargeboard", "Bargeboard",  BuildingAxisKind.Flag,   false),
             new BuildingAxis("crossGable", "Cross gable", BuildingAxisKind.Count,  0, maxCount: 1),
             new BuildingAxis("garage",     "Garage",      BuildingAxisKind.Flag,   false),
+            new BuildingAxis("mirror",     "Mirrored (flipped across the ridge)", BuildingAxisKind.Flag, false),
+            // Both paint dials offer PAINTS plus 'none', which a named rig table cannot (the studio would offer
+            // the table alone), so the paints are transcribed and BuildingAxesTests greps them. For doorPaint,
+            // 'none' is the rig's null: the door in the body's own colour.
+            new BuildingAxis("shutters",   "Shutters",    BuildingAxisKind.Choice, "none",
+                             inline: new[] { "none", "join", "red", "blue", "green", "ivory", "iron", "oak" }),
+            new BuildingAxis("doorPaint",  "Door paint",  BuildingAxisKind.Choice, "none",
+                             inline: new[] { "none", "join", "red", "blue", "green", "ivory", "iron", "oak" }),
             new BuildingAxis("weather",    "Weathering",  BuildingAxisKind.Unit,   0.0),
             new BuildingAxis("night",      "Night (lit)", BuildingAxisKind.Flag,   false),
         };
@@ -230,6 +238,7 @@ namespace HiddenHarbours.Tools.RigBaking
             int i => i.ToString(CultureInfo.InvariantCulture),
             float f => f.ToString("0.####", CultureInfo.InvariantCulture),
             double d => d.ToString("0.####", CultureInfo.InvariantCulture),
+            IReadOnlyDictionary<string, object> options => ToOptionsLiteral(options),
             _ => throw new ArgumentException($"Cannot serialise {v.GetType().Name} into a rig option."),
         };
 

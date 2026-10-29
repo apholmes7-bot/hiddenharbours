@@ -83,10 +83,12 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"'{build.Key}' is in the M1 village set but declares a lifecycle state. The village " +
                     "is the buildings people live and trade in; put a derelict in LifecycleSet.");
 
+            // E2 ruling 5 (case 5): the eight in kit order, the canon's five first where they always stood.
             CollectionAssert.AreEqual(new[] { "school", "generalStore", "whiteFarmhouse",
-                                              "redSaltbox", "sageCottage" },
+                                              "redSaltbox", "sageCottage",
+                                              "harbourGable", "creamSaltbox", "whiteGable" },
                                       VillageBuildingKit.M1Set.Select(b => b.Key).ToArray(),
-                "the M1 village is still exactly the five buildings the canon asks for, in kit order");
+                "the M1 village is exactly the canon's five then the three new homes, in kit order");
         }
 
         [Test]

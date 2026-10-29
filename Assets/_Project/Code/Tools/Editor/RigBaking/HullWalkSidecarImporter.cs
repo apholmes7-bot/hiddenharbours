@@ -176,7 +176,60 @@ namespace HiddenHarbours.Tools.RigBaking
                     ReachPoint = HullLayoutJson.Point(i["reach"], "interact.reach") };
             }).ToArray();
             interior.Routes = walk.Areas.Where(a => a.IsClimb).Select(a => Route(a, walk, cuts, levelForArea, deck, interior)).ToArray();
+            EmitEntryLandings(walk, interior);
             return result;
+        }
+
+        static void EmitEntryLandings(HullWalkRead walk, BoatInteriorDef interior)
+        {
+            // Held metadata is not an entry. No legacy room/door output is rewritten here.
+            if (!interior.HasInterior() || walk.House == null) return;
+            var sourceDoors = new[] { HullLayoutJson.Child(walk.House, "door") }.ToList();
+            if (walk.House.TryGetValue("doors", out object rawDoors))
+                sourceDoors.AddRange(HullLayoutJson.List(rawDoors, "house.doors")
+                    .Select(d => HullLayoutJson.Object(d, "house.doors")));
+            var doors = new[] { interior.Door }.Concat(interior.AdditionalDoors ?? Array.Empty<BoatInteriorDoor>());
+            foreach (BoatInteriorDoor door in doors)
+            {
+                if (door == null || !BoatCabinThreshold.HasBand(door)) continue;
+                if (interior.Levels.Any(l => l != null && l.IsUsable()
+                    && Mathf.Abs(l.SoleZMeters - door.ThresholdPoint.z) <= interior.FloorTolerance)) continue;
+                var source = sourceDoors.First(d => HullLayoutJson.Text(d, "id") == door.Id);
+                float y = HullLayoutJson.Number(source, "y");
+                var candidates = new List<BoatInteriorEntryLanding>();
+                foreach (HullWalkArea area in walk.Areas.Where(a => a.Kind == "stair" && a.Ramp != null))
+                {
+                    HullWalkRamp ramp = area.Ramp;
+                    float high = Mathf.Max(ramp.Z0, ramp.Z1);
+                    if (ramp.Z0 == ramp.Z1 || Mathf.Abs(high - door.ThresholdPoint.z) > interior.FloorTolerance) continue;
+                    float at = ramp.Z0 > ramp.Z1 ? ramp.A0 : ramp.A1;
+                    foreach (Vector2[] region in Split(area.Polygon, ramp.Axis, at))
+                    {
+                        if (region.Any(p => Mathf.Abs(area.HeightAt(p) - high) > 1e-6f)) continue;
+                        Vector2 sill = BoatCabinThreshold.PointOf(door);
+                        DeckAreaMath.ClosestPointOnOutline(region, sill, out float sqr);
+                        if (!DeckAreaMath.Contains(region, sill) && sqr > 1e-12f) continue;
+                        var landing = new BoatInteriorEntryLanding
+                        {
+                            OpeningStart = new Vector2(HullLayoutJson.Number(source, "x0"), y),
+                            OpeningEnd = new Vector2(HullLayoutJson.Number(source, "x1"), y),
+                            UpperPlateau = region,
+                            HeightMetres = high,
+                            RouteId = area.Id,
+                        };
+                        door.EntryLanding = landing;
+                        if (!BoatCabinThreshold.TryEntryLine(interior, door, out BoatCabinEntryKind kind,
+                                out _, out _, out _) || kind != BoatCabinEntryKind.Landing)
+                            throw new FormatException(walk.Hull + ": house.doors." + door.Id +
+                                ".entryLanding: plateau has no valid route to a room");
+                        candidates.Add(landing);
+                    }
+                }
+                if (candidates.Count != 1)
+                    throw new FormatException(walk.Hull + ": house.doors." + door.Id +
+                        ".entryLanding: expected one authored upper plateau, found " + candidates.Count);
+                door.EntryLanding = candidates[0];
+            }
         }
 
         static BoatInteriorDoor Door(Dictionary<string, object> d, HullWalkRead walk, HullWalkImportResult result)

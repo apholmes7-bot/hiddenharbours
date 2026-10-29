@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LotDef
   Id: "lot.st_peters.harbour_gable"
   BuildingId: "building.stp_harbour_gable"
-  BakeKey: "harbour_gable"
+  BakeKey: "harbourGable"
   StreetId: "route.stpeters.bluff_path"
   Position: {x: -6.25, y: 46.125}
   DoorOffset: {x: 0.0, y: -2.655}

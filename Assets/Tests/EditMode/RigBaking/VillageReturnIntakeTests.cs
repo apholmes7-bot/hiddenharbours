@@ -230,6 +230,30 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
+        public void NewVillageRooms_KeepTheirShellAndOneBedUpstairs()
+        {
+            using IRigScriptHost host = ReturnedHost();
+            foreach (string key in new[] { "harbourGable", "creamSaltbox", "whiteGable" })
+            {
+                var shell = VillageBuildingKit.FindBuild(key).Value.Dialled;
+                foreach (string suffix in new[] { "", "Upper" })
+                {
+                    var room = InteriorKit.FindRoom(key + suffix).Value;
+                    Assert.AreEqual(key, InteriorKit.ExteriorKeyFor(room.Key));
+                    CollectionAssert.AreEquivalent(shell,
+                        (IReadOnlyDictionary<string, object>)room.Dialled["shell"]);
+                    Assert.AreEqual(suffix == "" ? "ground" : "upper", room.Dialled["storey"]);
+                    if (suffix != "Upper") continue;
+                    // E2 ruling 2, Amendment 1 point 4: count the beds the furnishing plan places upstairs.
+                    double beds = host.EvaluateNumber(
+                        "(function(p){return p?p.props.filter(function(x){return x.name==='bed';}).length:-1;})(" +
+                        $"{Interior}.furnishings({InteriorBakeMenu.OptionsLiteralFor(room)}))");
+                    Assert.AreEqual(1, beds, $"{room.Key}: the beds its furnishing plan places upstairs");
+                }
+            }
+        }
+
+        [Test]
         public void TodaysRigsRegisteredEveryRoomAtOffsetFour()
         {
             // The number the switch retires, measured on main's rigs against each room's own shell: the
@@ -335,6 +359,28 @@ namespace HiddenHarbours.Tests.RigBaking
                 "1b9238ca74333643eb13452445eda3cdf384738a568b053818db4abaa2a601e3", "b70a91f2f54c8b9f8a62a38e6b8bf1a209ae2e5a88cc507cceb8f59552ce08e2",
                 "891ab89b0c89748c9c042684d5cdd0a0e9aa69b763058bb5b9b9f00c77a52e61", "a45d90ce685bc1e8de12583c1ba710ba73d1e555083e3c3087a2ec8c0021ea08",
             },
+            // E2 ruling 6 and E2b ruling 2: the three new homes, equal on main's house and the returned house in classic.
+            ["harbourGable"] = new[]
+            {
+                "96c2e50ebfd2a8d4f898bb7996bb63848468e5c6aa794d2cd4c19a395813713c", "e8321d55592c9429edac2cf6fe94d6334fcdd4602bbb6833eab223d145f5f93a",
+                "1f9c58e005e8365a6c6427d96a65d2c49dbd1858b86776037188894e7cea5ccb", "473d18535ac8196f797c64f907887a830b69cfd0fc0744386338c6490f446932",
+                "fecf2b6a06b5fcbc7aef07be94f00eeaac4946e4ab2080160cadfb07ced9dd55", "50380aa9b420ed87e2eeb035a957e2dc81d924173249a3016f19b55b562def22",
+                "b1c8c75792cf2777f126534932fd360d4a8df3a173462950e2ca5b3298420fc1", "73c0783451c53c4d87fa4a47dd8de80d3f3391d9d57d71b86a2ba0cebe5b80c1",
+            },
+            ["creamSaltbox"] = new[]
+            {
+                "dbb9f9ee9cde2c1372b29d12967a7744829069a73f4bc48da1e9f764a06feeb9", "23e44d1c4c05c4ab58de234c0cc2ff99f46cc173491c35af6c35756f350baa47",
+                "63ee3a927708575ce65dc594df23a2b17ae5b15bca6ec010e5846a3fca4cc219", "88cc883c12cd5fb434ec543d77a9f9136a06872ab3cceb4c752387b869a73ff3",
+                "84de6915ae60e714c5af1b7f9f101546ac03e0c8a5205167c619a45851ee5aff", "3ba8c33198911df75d4f5c834f346ea98f289b4b3b2f4c4bd012c5464f301eea",
+                "c6b4685b8f617d4f6c071a1a5a6e9c6693d1e07eeff926fd40cf7dadc5458c86", "367b8da2e313edf9c84706cc9948b4dee8ef947a1edfb4f53f96cf3baa01be19",
+            },
+            ["whiteGable"] = new[]
+            {
+                "cbeb4717124d129457343b9524abbe8b56b4fb563273907aea6a6749d589d215", "08fdd2048924c87fa50a5f8f991d8c342666a6935b12542024b9fd528d314038",
+                "9d9126736dcfdcd510e01088977491707738b792a7e793d0bd15ad6e54b86435", "257df40e94c5337b47a4e77a993674836ced71de5ee025bc6f9a617e18a96bce",
+                "99ed44f9fedaffefec223c92983867629e1ab581d93214765bbb17979a748914", "3eb7be8315ed41206acac43e9144516e55cb8dd34ac277464b7e9d491179224f",
+                "6599769c316e8d8729f15bf53f0a641335164caae4f41cc7ae2ccd3b8d882c87", "9eded39ef53165095898994100c43773d6a0f6b9bf48aaaa0e7afb98e43dc489",
+            },
         };
 
         [Test]
@@ -410,6 +456,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
             var failures = new List<string>();
             int read = 0, eave = 0;
+            var readKeys = rigs.ToDictionary(r => r.Label, r => new List<string>());
             foreach ((string label, RigEntry entry, string rigKey) in rigs)
             {
                 using IRigScriptHost host = RigScriptHostFactory.Create();
@@ -431,6 +478,7 @@ namespace HiddenHarbours.Tests.RigBaking
                         continue;
                     }
                     read++;
+                    readKeys[label].Add(b.Key);
                     if ((side < 0) != (loop < 0))
                         failures.Add($"{label} {b.Key}: the side reads {side:+0.0;-0.0} px but the loop " +
                                      $"{loop:+0;-0} px²");
@@ -439,8 +487,18 @@ namespace HiddenHarbours.Tests.RigBaking
 
             AssertNone(failures, "the door's loop no longer agrees with its side — the loop reading's sign " +
                                  "is calibrated on these builds, so BuildingRigAzimuthProbe's eave path is unproven");
-            Assert.AreEqual(17, read, "the calibration is measured on 17 builds whose side the probe reads " +
-                                      "(5 on main's house, 4 on the returned, 8 wharf including O3's four)");
+            // E2 ruling 5 (case 7): the 23 builds whose side the probe reads, pinned by name per rig.
+            string[] houses = { "school", "generalStore", "whiteFarmhouse", "redSaltbox", "sageCottage",
+                                "harbourGable", "creamSaltbox", "whiteGable" };
+            CollectionAssert.AreEqual(houses, readKeys["main's house"],
+                                      "main's house: every village house's door side is read");
+            CollectionAssert.AreEqual(houses.Where(k => k != "generalStore").ToArray(), readKeys["the returned house"],
+                                      "the returned house: every door side but the general store's eave door is read");
+            CollectionAssert.AreEqual(new[] { "ginnyWoodshed", "ginnyNetStore", "ginnyLeanTo", "stPetersCannery",
+                                              "stPetersBaitStore", "stPetersNetLoft", "stPetersNetShed", "stPetersIceHouse" },
+                                      readKeys["the wharf"], "the wharf: all eight, O3's four included");
+            Assert.AreEqual(23, read, "the calibration is measured on 23 builds whose side the probe reads " +
+                                      "(8 on main's house, 7 on the returned, 8 wharf including O3's four)");
             Assert.AreEqual(1, eave, "and exactly one door the side cannot read: the general store's");
         }
 

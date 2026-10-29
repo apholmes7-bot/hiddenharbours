@@ -150,22 +150,12 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// Where the general store's counter is served FROM — the customer's side, one stride past the
-        /// counter, offset along the counter by <paramref name="slot"/> so several customers at once are
-        /// several people.
-        ///
-        /// <para>Derived from <see cref="StPetersBuilder.GeneralStoreCounterPos"/> and the outward direction
-        /// the counter itself is turned by, so the slots swing with the store rather than being three more
-        /// coordinates to keep in step.</para>
+        /// The three checked customer stands, ordered across the counter.
         /// </summary>
         public static Vector2 CustomerSlot(int slot)
         {
-            Vector2 counter = StPetersBuilder.GeneralStoreCounterPos;
-            Vector2 outward = StPetersBuilder.VillageGreen - counter;
-            if (outward.sqrMagnitude < 1e-8f) return counter;
-            outward.Normalize();
-            Vector2 along = new Vector2(-outward.y, outward.x);   // along the counter face
-            return counter + outward * CustomerStrideMetres + along * (slot * CustomerSlotStrideMetres);
+            if (slot < -1 || slot > 1) throw new System.ArgumentOutOfRangeException(nameof(slot));
+            return StPetersVillageStations.Current[CustomerSlotIds[slot + 1]].Position;
         }
 
         /// <summary>

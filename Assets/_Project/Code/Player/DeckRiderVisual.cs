@@ -606,6 +606,7 @@ namespace HiddenHarbours.Player
             // ADR 0038's third consequence arrives here. The cabin never writes this rider's properties
             // (Boats may not name Player, rule 4); it says what happened and this answers.
             EventBus.Subscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Subscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Subscribe<CabinLeft>(OnCabinLeft);
 
             StateContext();
@@ -622,6 +623,7 @@ namespace HiddenHarbours.Player
         private void OnDisable()
         {
             EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Unsubscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
             StandDown();
         }
@@ -630,6 +632,8 @@ namespace HiddenHarbours.Player
         /// live in <see cref="ApplyOcclusion"/>, so a cabin entered on a boat this rider is not bound to
         /// changes nothing and needs no filtering at the door.</summary>
         private void OnCabinEntered(CabinEntered e) => _belowHullId = e.HullId;
+
+        private void OnEntryLandingEntered(CabinEntryLandingEntered e) => _belowHullId = e.HullId;
 
         /// <summary>…and came back out. Guarded on the hull that was entered, so a second boat's door
         /// closing cannot put this fisher back on deck.</summary>

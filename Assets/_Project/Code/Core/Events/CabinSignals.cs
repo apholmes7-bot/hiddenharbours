@@ -2,6 +2,19 @@ using UnityEngine;
 
 namespace HiddenHarbours.Core
 {
+    /// <summary>Presentation occupancy on an entry surface without inventing a room-level index.</summary>
+    public readonly struct CabinEntryLandingEntered
+    {
+        public readonly EntityId HullId;
+        public readonly string DeckId;
+
+        public CabinEntryLandingEntered(EntityId hullId, string deckId)
+        {
+            HullId = hullId;
+            DeckId = deckId;
+        }
+    }
+
     /// <summary>
     /// <b>The occupant has gone below on this hull</b> — ADR 0038's third consequence, said out loud so
     /// the things that were drawing her <i>relative to the boat</i> can stop.

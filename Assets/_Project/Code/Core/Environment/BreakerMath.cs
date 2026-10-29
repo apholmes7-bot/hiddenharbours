@@ -1202,6 +1202,32 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// <b>The birth of the NEAREST crest's bore</b>, 0..1: <see cref="BoreBirthEnergy01"/> read on the
+        /// SIGNED clock (<see cref="SignedSecondsFromCrest"/>) instead of the seconds since the last crest.
+        /// Behind the front the two name the same crest. Ahead of it, where the coming crest is nearer than
+        /// the last one, this reads the coming crest's birth, while the shipped read still reads the bore
+        /// before it. An event that straddles its crest (the curl, ADR 0040 B2, from steepening to gone)
+        /// therefore reads ONE bore from start to end: its birth time, <c>t − travel − q·T</c>, holds still
+        /// while the event runs, so nothing steps at the crest. It is added beside the shipped read, which
+        /// every other consumer keeps. It has no shader twin: the curl's sheet is drawn from the CPU pose.
+        /// </summary>
+        public static float NearestBoreBirthEnergy01(in WaveTrains field, Vector2 breakLinePoint, float travelSeconds,
+                                                     float phaseDegrees, float periodSeconds,
+                                                     WaveFetchSample fetchEnvelope01, float setStrength,
+                                                     float freqScale = 1f, double timeSeconds = 0.0)
+        {
+            float strength = Mathf.Clamp01(setStrength);
+            if (strength <= 0f || field.Count <= 0) return 1f;
+            double birth = timeSeconds
+                         - ((double)Mathf.Max(0f, travelSeconds) + SignedSecondsFromCrest(phaseDegrees, periodSeconds));
+            float s = Mathf.Max(1e-3f, freqScale);     // the drawn scale, as the shipped read
+            WaveSample born = WaveMath.Sample(new Vector2(breakLinePoint.x * s, breakLinePoint.y * s), birth,
+                                              in field, fetchEnvelope01);
+            float dominantAmplitude = Mathf.Max(field.Dominant.Amplitude, 1e-6f);
+            return Mathf.Lerp(1f, Mathf.Clamp01(born.Height / dominantAmplitude), strength);
+        }
+
+        /// <summary>
         /// <b>The bore front's slope</b> (metres of rise per metre along the travel direction) — the
         /// derivative of the bore's own height profile <c>H·pulse(ψ)</c>, so the relief light and the sun's
         /// face shade can catch a breaking face the way they catch a swell face. Along the path the phase

@@ -28,67 +28,7 @@
     {
       "species": "Fireweed",
       "stage": "seedling",
-      "season": "spring",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Fireweed",
-      "stage": "seedling",
-      "season": "summer",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Fireweed",
-      "stage": "seedling",
-      "season": "autumn",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Fireweed",
-      "stage": "seedling",
       "season": "winter",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Fireweed",
-      "stage": "young",
-      "season": "spring",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Fireweed",
-      "stage": "mature",
-      "season": "spring",
       "variants": [
         0,
         1,
@@ -112,67 +52,7 @@
     {
       "species": "Goldenrod",
       "stage": "seedling",
-      "season": "spring",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Goldenrod",
-      "stage": "seedling",
-      "season": "summer",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Goldenrod",
-      "stage": "seedling",
-      "season": "autumn",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Goldenrod",
-      "stage": "seedling",
       "season": "winter",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Goldenrod",
-      "stage": "young",
-      "season": "spring",
-      "variants": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "state": "DORMANT"
-    },
-    {
-      "species": "Goldenrod",
-      "stage": "mature",
-      "season": "spring",
       "variants": [
         0,
         1,

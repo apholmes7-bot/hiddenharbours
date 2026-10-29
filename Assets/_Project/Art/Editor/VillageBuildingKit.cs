@@ -450,6 +450,62 @@ namespace HiddenHarbours.Art.Editor
                 ["bay"] = false,
                 ["weather"] = 0.55,
             }, "the third clapboard house the canon asks for; no rig preset is clapboard AND small"),
+            Build.FromDialled("harbourGable", "harbour gable", "house", new Dictionary<string, object>
+                {
+                    ["era"] = "plain",
+                    ["shape"] = "gable",
+                    ["siding"] = "clapboard",
+                    ["body"] = "blue",
+                    ["roof"] = "asphaltGrey",
+                    ["size"] = 0.3,
+                    ["windows"] = "twoOverTwo",
+                    ["winDensity"] = 0.55,
+                    ["attic"] = "gable",
+                    ["porch"] = "front",
+                    ["dormers"] = 0,
+                    ["chimneys"] = 1,
+                    ["bay"] = false,
+                    ["weather"] = 0.3,
+                }, "accepted village lot look"),
+
+            Build.FromDialled("creamSaltbox", "cream saltbox", "house", new Dictionary<string, object>
+                {
+                    ["era"] = "modern",
+                    ["shape"] = "saltbox",
+                    ["siding"] = "clapboard",
+                    ["body"] = "cream",
+                    ["roof"] = "asphaltBrown",
+                    ["size"] = 0.35,
+                    ["windows"] = "twoOverTwo",
+                    ["winDensity"] = 0.6,
+                    ["attic"] = "none",
+                    ["porch"] = "front",
+                    ["dormers"] = 0,
+                    ["chimneys"] = 1,
+                    ["bay"] = false,
+                    ["weather"] = 0.25,
+                }, "accepted village lot look"),
+
+            Build.FromDialled("whiteGable", "white gable", "house", new Dictionary<string, object>
+                {
+                    ["era"] = "colonial",
+                    ["shape"] = "gable",
+                    ["siding"] = "clapboard",
+                    ["body"] = "white",
+                    ["roof"] = "asphaltGrey",
+                    ["size"] = 0.35,
+                    ["windows"] = "twoOverOne",
+                    ["winDensity"] = 0.6,
+                    ["attic"] = "round",
+                    ["porch"] = "wrap",
+                    ["dormers"] = 2,
+                    ["chimneys"] = 2,
+                    ["mirror"] = true,
+                    ["shutters"] = "iron",
+                    ["doorPaint"] = "red",
+                    ["weather"] = 0.1,
+                }, "accepted village lot look"),
+
         };
 
         // =================================================================================

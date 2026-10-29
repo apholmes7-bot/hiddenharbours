@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 388fcc3806612da4ba397f81334dcc7f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3837696459894422955
+    second: Interior_whiteGableUpper_0
+  - first:
+      213: 2269186666106189843
+    second: Interior_whiteGableUpper_1
+  - first:
+      213: -3099665363030325890
+    second: Interior_whiteGableUpper_2
+  - first:
+      213: -5378672811806042839
+    second: Interior_whiteGableUpper_3
+  - first:
+      213: 2873777315683719695
+    second: Interior_whiteGableUpper_4
+  - first:
+      213: 2572396228841733356
+    second: Interior_whiteGableUpper_5
+  - first:
+      213: -4618671690849730045
+    second: Interior_whiteGableUpper_6
+  - first:
+      213: 7824225666266907989
+    second: Interior_whiteGableUpper_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 306
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f53534d50a61f3b4795d583c5ac5cdf4
+      internalID: 1652587749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d1
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 306
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d20a181fb7406b4584732914c602efe
+      internalID: -172862486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d2
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 306
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3bc4f086188f3547bc9d40c427f0256
+      internalID: -1338821627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d3
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 306
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 898ae6fb61eb3054aab933ef17f8ca6a
+      internalID: 1166427709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d4
+      rect:
+        serializedVersion: 2
+        x: 1400
+        y: 306
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2f836248dcb5f748b8952b8803cb1b1
+      internalID: 625416595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 214c0e6511306f844bb7fab972928866
+      internalID: -1583529816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d6
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 0
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb2a2f7c7a7c1894993bd3b04c13b4d2
+      internalID: 1131333161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteGableUpper_d7
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 0
+        width: 350
+        height: 306
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36928105}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcab0ce5c28cabb448364b4f48a531c5
+      internalID: 1936993443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: cb76f69531d4e5f4481cd0c96681b280
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Interior_whiteGableUpper_d0: 1652587749
+      Interior_whiteGableUpper_d1: -172862486
+      Interior_whiteGableUpper_d2: -1338821627
+      Interior_whiteGableUpper_d3: 1166427709
+      Interior_whiteGableUpper_d4: 625416595
+      Interior_whiteGableUpper_d5: -1583529816
+      Interior_whiteGableUpper_d6: 1131333161
+      Interior_whiteGableUpper_d7: 1936993443
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

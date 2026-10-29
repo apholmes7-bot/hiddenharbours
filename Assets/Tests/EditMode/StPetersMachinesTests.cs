@@ -58,6 +58,23 @@ namespace HiddenHarbours.Tests.EditMode
         /// <see cref="StPetersYards"/> already publishes for the lane edge of the shop's forecourt —
         /// rather than from a second statement of where the frontage is.</summary>
         [Test]
+        public void ForecourtOffset_UsesGroundMetres_AndKeepsThePublishedBeamGaps()
+        {
+            var gate = new Vector2(2.5f,29.585f);
+            var beams = new[] { 1.28f,1.2f,.86f };
+            Vector2 previous = Vector2.zero;
+            for (int i=0;i<beams.Length;i++)
+            {
+                Vector2 at = StPetersMachines.StandFromGate(gate,Vector2.down,i,beams);
+                Assert.That((at.y-gate.y)/HiddenHarbours.Core.IsoGround.GroundDepthScale,
+                    Is.EqualTo(StPetersMachines.StandOffMetres).Within(.00001f));
+                if (i>0) Assert.That(previous.x-at.x,
+                    Is.EqualTo((beams[i-1]+beams[i])*.5f+StPetersMachines.GapMetres).Within(.00001f));
+                previous = at;
+            }
+        }
+
+        [Test]
         public void TheRowIsMeasuredFromTheStoresOwnYardGate()
         {
             Vector2 gate = Vector2.positiveInfinity;
@@ -187,7 +204,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <c>MownStyle.Striped</c> and somebody cuts it. Still within its frontage, so they read as
         /// belonging to the shop rather than abandoned on the green.</summary>
         [Test]
-        public void TheRowStandsOffTheShopsGrassAndInsideItsFrontage()
+        public void TheRowStandsInTheForecourtAndInsideItsFrontage()
         {
             Yard store = default;
             foreach (Yard y in StPetersYards.Yards)
@@ -197,8 +214,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < beams.Count; i++)
             {
                 Vector2 p = Stand(i);
-                Assert.IsFalse(store.Contains(p),
-                    $"{StPetersMachines.Row[i].Name} is parked on the shop's mown forecourt.");
+                Assert.IsTrue(store.Contains(p),
+                    $"{StPetersMachines.Row[i].Name} is outside the shop's forecourt.");
 
                 float across = Mathf.Abs(Vector2.Dot(p - StPetersMachines.Gate, StPetersMachines.Across))
                                + beams[i] * 0.5f;

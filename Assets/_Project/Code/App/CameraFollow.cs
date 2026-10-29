@@ -315,6 +315,7 @@ namespace HiddenHarbours.App
             EventBus.Subscribe<CatchLanded>(OnCatchLanded);        // the feel layer (juice PR 2)
             EventBus.Subscribe<BoatGrounded>(OnBoatGrounded);
             EventBus.Subscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Subscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Subscribe<CabinLeft>(OnCabinLeft);
         }
 
@@ -328,6 +329,7 @@ namespace HiddenHarbours.App
             EventBus.Unsubscribe<CatchLanded>(OnCatchLanded);
             EventBus.Unsubscribe<BoatGrounded>(OnBoatGrounded);
             EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
+            EventBus.Unsubscribe<CabinEntryLandingEntered>(OnEntryLandingEntered);
             EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
         }
 
@@ -502,6 +504,8 @@ namespace HiddenHarbours.App
 
         /// <summary>Interior: the layer stands off until she comes back out. Public for EditMode tests.</summary>
         public void OnCabinEntered(CabinEntered e) => _inCabin = true;
+
+        private void OnEntryLandingEntered(CabinEntryLandingEntered e) => _inCabin = true;
 
         /// <inheritdoc cref="OnCabinEntered"/>
         public void OnCabinLeft(CabinLeft e) => _inCabin = false;

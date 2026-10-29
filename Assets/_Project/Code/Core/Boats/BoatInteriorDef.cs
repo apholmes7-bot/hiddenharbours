@@ -67,6 +67,17 @@ namespace HiddenHarbours.Core
         public bool IsUsable() => Outline != null && Outline.Length >= 3;
     }
 
+    /// <summary>A door surface at the head of an authored climb, not an indoor sole.</summary>
+    [Serializable]
+    public sealed class BoatInteriorEntryLanding
+    {
+        public Vector2 OpeningStart;
+        public Vector2 OpeningEnd;
+        public Vector2[] UpperPlateau = Array.Empty<Vector2>();
+        public float HeightMetres;
+        public string RouteId = "";
+    }
+
     /// <summary>
     /// The way in — the sidecars' <c>THRESHOLD</c>, one per interior.
     ///
@@ -77,6 +88,9 @@ namespace HiddenHarbours.Core
     [Serializable]
     public sealed class BoatInteriorDoor
     {
+        [Tooltip("Optional authored entry surface at the head of this door's stair. Empty means legacy.")]
+        public BoatInteriorEntryLanding EntryLanding;
+
         [Tooltip("The sidecar's threshold id — 'entry', 'sky_entry'.")]
         public string Id = "";
 

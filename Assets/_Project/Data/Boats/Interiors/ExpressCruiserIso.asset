@@ -38,10 +38,24 @@ MonoBehaviour:
     - {x: -0.19, y: 0.59}
     Obstructions: []
   Door:
+    EntryLanding:
+      OpeningStart: {x: -0.62, y: -0.51}
+      OpeningEnd: {x: 0.02, y: -0.51}
+      UpperPlateau:
+      - {x: -0.23, y: -0.76}
+      - {x: -0.23, y: -0.36}
+      - {x: -0.37, y: -0.36}
+      - {x: -0.37, y: -0.76}
+      HeightMetres: 1.17
+      RouteId: companionway
     Id: companionway
     Side: aft
     ClearWidthMeters: 0.64
     ClearHeightMeters: 0.76
+    PullConeDegrees: 30
+    PullReachClearWidths: 1
+    CrossingConeDegrees: 60
+    CrossingSettleSeconds: 0.16
     ThresholdPoint: {x: -0.3, y: -0.51, z: 1.17}
     Mechanism: 1
     KeepClear:
