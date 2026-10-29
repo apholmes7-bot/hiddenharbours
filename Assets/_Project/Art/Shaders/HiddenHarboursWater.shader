@@ -176,6 +176,20 @@ Shader "HiddenHarbours/Water"
         // the sim field (P1 integrity, CLAUDE.md rule 5). _SunSideStrength = 0 is an EXACT passthrough.
         _SunSideStrength ("Sun side warm/cool split (0 = off)", Range(0,2)) = 1.7
 
+        [Header(Crest GLOW (light through a thin crest at low sun))]
+        // Gains 3 (ADR 0027 #7 amendment). When the sun is low and BEHIND a swell, its light crosses the thin
+        // top of the crest to the eye: the back of the wave glows in the sun's colour seen through the water
+        // (jade through the open sea, warmer through a stain). On the sea's one facing and under the sun
+        // side's own elevation gate: the face shade darkens the back (value), the sun side cools it (hue),
+        // and this lights only its thin top. Light, not foam. A mood float, so the fog anchor (which carries
+        // none, so reads the 0 below) takes it away. col.rgb ONLY — never depth/clip()/_WaterLevel/the sim
+        // field (P1 integrity, CLAUDE.md rule 5). _CrestGlowStrength = 0 is an EXACT passthrough, and it
+        // ships at 0: the dial is picked by eye in Phase B.
+        _CrestGlowStrength ("Crest glow at low sun (0 = off)", Range(0,2)) = 0
+        _CrestGlowTop ("Crest glow onset (envelope-relative height; above it = the thin top)", Range(0,1)) = 0.55
+        _CrestGlowThickness ("Crest glow sheet (metres of water the light crosses)", Range(0,4)) = 1.5
+        _CrestGlowBands ("Crest glow posterize bands (0 = smooth)", Range(0,8)) = 3
+
         [Header(Modelled swell CALM gate (melts the read away toward glass))]
         // Owner playtest (2026-07-08): "i can definitely notice the swells now better. although i still do
         // see them at calm." The wave field's own amplitude gate (swellLive) fully engages at ~0.025 m, so a
@@ -1507,6 +1521,11 @@ Shader "HiddenHarbours/Water"
                 // Swell FACE shading (lit face / shaded back off the wave field's analytic slope).
                 float  _SwellFaceShade;
                 float  _SunSideStrength;
+                // Crest GLOW (gains 3): light through a thin crest at low sun, behind it.
+                float  _CrestGlowStrength;
+                float  _CrestGlowTop;
+                float  _CrestGlowThickness;
+                float  _CrestGlowBands;
                 // Modelled-swell CALM gate (shared by the read band + the face shade; keys _Chop).
                 float  _SwellReadSeaStateLo;
                 float  _SwellReadSeaStateHi;
@@ -1800,12 +1819,38 @@ Shader "HiddenHarbours/Water"
             #define ABSORPTION_EPS  1e-4  // below this TOTAL sigma the block is skipped: the exact
                                           // sigma = 0 passthrough (twin: WaterAbsorption.MinSigmaSum).
 
+            // ---- THE WATER TYPE (ADR 0027 #7, gains 2; C# twin: WaterType) ---------------------------------
+            // A region's water as data: what it carries when dry (stain, algae, silt) and the silt a wet spell
+            // adds, folded by WaterSurface on its slow tick. Plain GLOBALS, never Properties and outside
+            // UnityPerMaterial: only a surface with a type writes them into its own block, so the shared
+            // Water.mat carries nothing one region could leak to another, and unset each reads 0, today's sea
+            // bit for bit.
+            //   _WaterTypeSigma  rgb = the type's own extinction (1/m), added to the mood's; a = stain + silt
+            //   _WaterTypeBody   rgb = the body colour x its strength (linear, premultiplied); a = the strength
+            //   _WaterTypeRect   the surface's world rect (min x, min y, max x, max y)
+            //   _WaterTypeSeam   the band inside that rect over which the type fades to the default (m)
+            //   _WaterPlume*     up to four creek and river mouths: (x, y, reach, feather) and their type
+            float4 _WaterTypeSigma;
+            float4 _WaterTypeBody;
+            float4 _WaterTypeRect;
+            float  _WaterTypeSeam;
+            #define WATER_MAX_PLUMES        4      // twin: WaterType.MaxPlumes
+            #define WATER_PLUME_MIN_FEATHER 1e-3   // twin: WaterType.MinFeatherMeters (a span guard, not a dial)
+            float4 _WaterPlumeShape[WATER_MAX_PLUMES];
+            float4 _WaterPlumeSigma[WATER_MAX_PLUMES];
+            float4 _WaterPlumeBody[WATER_MAX_PLUMES];
+            float  _WaterPlumeCount;
+            // The type's sigma at THIS pixel, set once in frag() ahead of every AbsorptionSigma() reader (the
+            // seabed, the crest glow and the caustic), so they see one water. Static: per invocation, 0 until set.
+            static float3 hhWaterTypeSigma = float3(0.0, 0.0, 0.0);
+
             // sigma (1/m, per channel) = ONE mood-eased turbidity scalar x the fixed per-channel ratio.
             // Factoring it this way is what lets ADR 0017 ease turbidity per weather through a FLOAT in
             // WaterSurface.MoodFloatNames while the per-channel character stays authored art (rule 6).
+            // + the region's water type (gains 2; twin: WaterAbsorption.Sigma with a type), 0 without one.
             float3 AbsorptionSigma()
             {
-                return max(_Turbidity, 0.0) * max(_AbsorptionRatio.rgb, 0.0);
+                return max(_Turbidity, 0.0) * max(_AbsorptionRatio.rgb, 0.0) + hhWaterTypeSigma;
             }
 
             // T = exp(-sigma * 2d): monotone DECREASING in depth on every channel, 1 at the waterline
@@ -1826,6 +1871,55 @@ Shader "HiddenHarbours/Water"
             {
                 if (bands < 1.0) return t;
                 return floor(saturate(t) * bands + 0.5) / bands;
+            }
+
+            // The seam (twin: WaterType.SeamWeight): 1 inside the surface, easing to 0 over _WaterTypeSeam
+            // metres at its edges, so two regions' water meets without a step. 1 everywhere at a seam of 0.
+            float WaterTypeSeamWeight(float2 p)
+            {
+                if (!(_WaterTypeSeam > 0.0)) return 1.0;
+                float d = min(min(p.x - _WaterTypeRect.x, _WaterTypeRect.z - p.x),
+                              min(p.y - _WaterTypeRect.y, _WaterTypeRect.w - p.y));
+                return smoothstep(0.0, _WaterTypeSeam, d);
+            }
+
+            // A plume's weight (twin: WaterType.PlumeWeight): 1 from the mouth out to its reach less its
+            // feather, easing to 0 at the reach. shape = (mouth x, mouth y, reach, feather).
+            float WaterPlumeWeight(float2 p, float4 shape)
+            {
+                float reach = shape.z;
+                if (!(reach > 0.0)) return 0.0;
+                float inner = max(reach - max(shape.w, WATER_PLUME_MIN_FEATHER), 0.0);
+                return 1.0 - smoothstep(inner, reach, distance(p, shape.xy));
+            }
+
+            // The type at a pixel (twin: WaterType.At): the region's, each live plume lerped in by its weight,
+            // the whole faded by the seam. Unset globals read zeros: today's sea.
+            void WaterTypeAt(float2 p, out float4 sigma, out float4 body)
+            {
+                sigma = _WaterTypeSigma;
+                body  = _WaterTypeBody;
+                [unroll] for (int i = 0; i < WATER_MAX_PLUMES; i++)
+                {
+                    if ((float)i < _WaterPlumeCount)
+                    {
+                        float w = WaterPlumeWeight(p, _WaterPlumeShape[i]);
+                        sigma = lerp(sigma, _WaterPlumeSigma[i], w);
+                        body  = lerp(body,  _WaterPlumeBody[i],  w);
+                    }
+                }
+                float s = WaterTypeSeamWeight(p);
+                sigma *= s;
+                body  *= s;
+            }
+
+            // How far the body moves toward the type's colour (twin: WaterType.BodyWeight): the strength x the
+            // in-scatter over the down-and-back path, the scatter posterized by _AbsorptionBands like the
+            // transmission it shares a column with.
+            float WaterBodyWeight(float inscatterSigma, float strength, float depth)
+            {
+                float scatter = 1.0 - exp(-max(inscatterSigma, 0.0) * (ABSORPTION_PATH * max(depth, 0.0)));
+                return saturate(strength) * AbsorptionBand(scatter.xxx, _AbsorptionBands).x;
             }
 
             // ==== ADR 0027 #4 + #9 — band scaling with sea state + dispersion-derived speeds ==================
@@ -5166,6 +5260,23 @@ Shader "HiddenHarbours/Water"
                     col.rgb = lerp(col.rgb, _DeepBlueColor.rgb, deepT * saturate(_DeepBlueStrength));
                 }
 
+                // ---- THE WATER TYPE (ADR 0027 #7, gains 2; twin: WaterType) --------------------------------
+                // The region's water at this pixel. Its sigma joins the mood's inside AbsorptionSigma(), set
+                // here ahead of the seabed, the glow and the caustic so all see one water; its stain and silt tint the
+                // body itself, an in-scatter toward the type's colour that thickens with the column. Here,
+                // before every additive layer and the seabed composite (which then sees the bottom through
+                // this tinted column), and under the palette grade, which bounds it like every layer. Read on
+                // the world PPU grid (Pixelize), so a plume's rim is a pixel edge that stays put. A region with
+                // no type reads zeros: sigma + 0 and a skipped tint, today's sea bit for bit. col.rgb ONLY —
+                // never depth/clip()/_WaterLevel/the height read (P1 integrity, CLAUDE.md rule 5).
+                float4 typeSigma;
+                float4 typeBody;
+                WaterTypeAt(Pixelize(worldXY), typeSigma, typeBody);
+                hhWaterTypeSigma = max(typeSigma.rgb, 0.0);
+                if (typeBody.a > 0.0)
+                    col.rgb = lerp(col.rgb, typeBody.rgb / typeBody.a,
+                                   WaterBodyWeight(typeSigma.a, typeBody.a, depth));
+
                 // ---- THE SHARED WAVE FIELD's sample (W4-4b moved it up from the rolling swell below, which
                 // describes it): one per pixel, taken ahead of the seabed composite so the floor in the
                 // shallows bends its view by the same surface the swell draws. A pure function of the pixel
@@ -5201,8 +5312,8 @@ Shader "HiddenHarbours/Water"
                 // layer — so swell tint, fbm, spec, caustics and foam all ride ON TOP of the composited bottom,
                 // which is where they physically belong. depth/depthC are READ-ONLY (the sim waterline is
                 // untouched — never depth/clip/_WaterLevel/the height read; P1 integrity, CLAUDE.md rule 5).
-                // _Turbidity = 0 skips the whole block — the EXACT passthrough (and the toggle above compiles
-                // it out entirely on the shipped material).
+                // sigma = 0 (_Turbidity 0 and no water type) skips the whole block — the EXACT passthrough (and
+                // the toggle above compiles it out entirely on the shipped material).
                 float3 absSigma = AbsorptionSigma();
             #if defined(HH_SHALLOWS_FLOOR)
                 // The floor's screen gradients (W4-4b), the terrain's own dwx/dwy: taken HERE, outside every
@@ -5400,7 +5511,8 @@ Shader "HiddenHarbours/Water"
                 // the only place it is turned into a facing. With _SwellFaceShade up this is the identical
                 // expression, in the identical order, that shipped before — the shading is bit-unchanged.
                 float faceSigned = 0.0;
-                if ((_SwellFaceShade > 0.001 || _SunSideStrength > 0.001) && swellReadGate > 0.001)
+                if ((_SwellFaceShade > 0.001 || _SunSideStrength > 0.001 || _CrestGlowStrength > 0.001)
+                    && swellReadGate > 0.001)
                 {
                     float2 shadeSunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;
                     float2 shadeLd = normalize(shadeSunXY + float2(1e-4, 0));
@@ -5452,18 +5564,45 @@ Shader "HiddenHarbours/Water"
                 // calm keeps the §11 mirror untouched. col.rgb ONLY — never depth/clip()/the deep tint/
                 // _WaterLevel/the sim wave field (P1 integrity, CLAUDE.md rule 5).
                 // _SunSideStrength = 0 is an EXACT passthrough. ~25 scalar ops, no new texture read.
+                // The elevation gate is hoisted out of the block (gains 3): the crest glow below shares it, so
+                // the sea has one sun gate as it has one facing. Same expressions, same order: bit-unchanged.
+                float  e        = _SunElevation;
+                float  sinSq    = 1.0 - e * e;
+                float  elevGate = smoothstep(0.0, 0.12, e) * sinSq * sinSq;
                 if (_SunSideStrength > 0.001 && swellReadGate > 0.001)
                 {
                     float3 tintRGB   = _DayNightTint.rgb;
                     float  tintGrey  = (tintRGB.r + tintRGB.g + tintRGB.b) * (1.0 / 3.0);
                     float3 sunChroma = tintRGB - tintGrey;
 
-                    float  e        = _SunElevation;
-                    float  sinSq    = 1.0 - e * e;
-                    float  elevGate = smoothstep(0.0, 0.12, e) * sinSq * sinSq;
-
                     float  amt = faceSigned * max(_SunSideStrength, 0.0) * elevGate * swellReadGate;
                     col.rgb += sunChroma * amt;
+                }
+
+                // ---- CREST GLOW (gains 3; twin: CrestGlow) ------------------------------------------------
+                // When the sun is low and BEHIND a swell, its light crosses the thin top of the crest to the
+                // eye. On the same signed facing (the back is faceSigned < 0) and under the sun side's own
+                // elevation gate, this lights only the TOP of that back: the envelope-relative height above
+                // _CrestGlowTop, where the water is thin. The three compose on one facing: the face shade
+                // darkens the back (value), the sun side cools it (hue), and the glow lights its thin top in
+                // the sun's colour seen through the water's own sigma over _CrestGlowThickness metres (jade
+                // through the open sea, warmer through a stain). Light, not foam: a hue, on the back.
+                // Posterized by _CrestGlowBands; 0.15 is the add ceiling (the swell-read idiom). Dark at
+                // night and at noon (the gate), gone in fog (_CrestGlowStrength is a mood float the fog
+                // anchor carries at 0), trains only (no envelope without the field), the shared calm gate.
+                // col.rgb ONLY — never depth/clip()/_WaterLevel/the sim field (P1 integrity, rule 5).
+                // _CrestGlowStrength = 0 is an EXACT passthrough, and it ships at 0.
+                if (_CrestGlowStrength > 0.001 && swellReadGate > 0.001 && trainsLive)
+                {
+                    float glowBack = saturate(-faceSigned);
+                    float glowTop  = smoothstep(min(saturate(_CrestGlowTop), 0.99), 1.0,
+                                                saturate(waveHeight / max(_WaveFieldParams.z, 1e-5)));
+                    float glowAmt  = glowBack * glowTop * elevGate;
+                    if (_CrestGlowBands >= 1.0)
+                        glowAmt = floor(saturate(glowAmt) * _CrestGlowBands + 0.5) / _CrestGlowBands;
+                    glowAmt *= max(_CrestGlowStrength, 0.0) * swellReadGate;
+                    float3 glowRGB = _DayNightTint.rgb * exp(-AbsorptionSigma() * max(_CrestGlowThickness, 0.0));
+                    col.rgb += glowRGB * glowAmt * 0.15;
                 }
 
                 // ---- ENVELOPE VALUE BANDS (ADR 0023 §(4) — the big wave is marked by SHADE as well as foam)

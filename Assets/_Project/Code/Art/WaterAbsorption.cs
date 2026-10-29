@@ -41,6 +41,12 @@ namespace HiddenHarbours.Art
     /// on the world PPU grid in the shader (the crawl law, §3), which has no C# twin because it is
     /// the existing <c>Pixelize</c> helper.</para>
     ///
+    /// <para><b>Amended (ADR 0027 #7, gains 2).</b> A region's water type adds its own per-channel σ
+    /// (<see cref="Sigma(float, Vector3, Vector3)"/>), and its stain and silt now tint the water's own
+    /// colour as well: an in-scatter toward the type's colour, under the palette grade
+    /// (<see cref="WaterType.ApplyBody"/>). The ramp stays the authority for today's water; a type with no
+    /// stain or silt adds nothing, and this class still shapes only the bottom seen through the column.</para>
+    ///
     /// <para>Everything here drives <c>col.rgb</c> only — never <c>depth</c>/<c>clip()</c>/
     /// <c>_WaterLevel</c>/the height read/<c>_WaveFieldParams</c>/anything the hulls ride
     /// (P1 integrity, CLAUDE.md rule 5). Nothing is saved (rule 5 / ADR 0008).</para>
@@ -82,6 +88,21 @@ namespace HiddenHarbours.Art
             return new Vector3(k * Mathf.Max(ratio.x, 0f),
                                k * Mathf.Max(ratio.y, 0f),
                                k * Mathf.Max(ratio.z, 0f));
+        }
+
+        /// <summary>
+        /// σ with a water type's own extinction added (ADR 0027 #7, gains 2): the mood's
+        /// <see cref="Sigma(float, Vector3)"/> plus the type's per-channel σ
+        /// (<see cref="WaterType.TypeSigma"/>), negatives clamped away. The twin of the shader's
+        /// <c>AbsorptionSigma</c> with its <c>hhWaterTypeSigma</c> term. A zero type σ adds exactly +0, so
+        /// the default type is today's σ bit for bit.
+        /// </summary>
+        public static Vector3 Sigma(float turbidity, Vector3 ratio, Vector3 typeSigma)
+        {
+            Vector3 mood = Sigma(turbidity, ratio);
+            return new Vector3(mood.x + Mathf.Max(typeSigma.x, 0f),
+                               mood.y + Mathf.Max(typeSigma.y, 0f),
+                               mood.z + Mathf.Max(typeSigma.z, 0f));
         }
 
         /// <summary>

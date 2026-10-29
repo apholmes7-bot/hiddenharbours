@@ -165,6 +165,17 @@ namespace HiddenHarbours.Art
                  "one region's bottom across another region's coast.")]
         [SerializeField] private Texture2D _seabedTexture;
 
+        [Header("Water type (ADR 0027 num 7, gains 2; colour by place and by rain)")]
+        [Tooltip("This region's water: what it carries when dry and how a wet spell muddies it. Leave it " +
+                 "empty and the sea is today's, exactly. It lives HERE, per surface, and NOT on Water.mat, " +
+                 "which every region shares.")]
+        [SerializeField] private WaterTypeDef _waterType;
+        [Tooltip("Creek and river mouths whose own water reaches into this region's (the first 4 are drawn).")]
+        [SerializeField] private WaterPlumeDef[] _waterPlumes;
+        [Tooltip("The band inside this surface's edges over which its water fades to the default, so two " +
+                 "regions' water meets without a step. Default 32 m; 0 = no fade.")]
+        [Min(0f)] [SerializeField] private float _waterTypeSeamMeters = 32f;
+
         [Header("Edit-mode shoreline preview (ADR 0014; design without pressing Play)")]
         [Tooltip("In the Scene view (not playing) drive the shader's water level from the slider below so the " +
                  "coast is VISIBLE — land dry, the bar baring, the channel flooded — while you design. " +
@@ -310,6 +321,17 @@ namespace HiddenHarbours.Art
         // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
         private static readonly int IdShallowsFloor = Shader.PropertyToID("_ShallowsFloor");
         private static readonly int IdShallowsFloorRefraction = Shader.PropertyToID("_ShallowsFloorRefraction");
+        // (ADR 0027 #7, gains 2) The water type: the region's sigma and body, the surface's rect and seam, and
+        // up to four plumes. Shader globals, never Properties: a surface with no type never writes them, so
+        // the shader reads 0 and draws today's sea.
+        private static readonly int IdWaterTypeSigma = Shader.PropertyToID("_WaterTypeSigma");
+        private static readonly int IdWaterTypeBody = Shader.PropertyToID("_WaterTypeBody");
+        private static readonly int IdWaterTypeRect = Shader.PropertyToID("_WaterTypeRect");
+        private static readonly int IdWaterTypeSeam = Shader.PropertyToID("_WaterTypeSeam");
+        private static readonly int IdWaterPlumeShape = Shader.PropertyToID("_WaterPlumeShape");
+        private static readonly int IdWaterPlumeSigma = Shader.PropertyToID("_WaterPlumeSigma");
+        private static readonly int IdWaterPlumeBody = Shader.PropertyToID("_WaterPlumeBody");
+        private static readonly int IdWaterPlumeCount = Shader.PropertyToID("_WaterPlumeCount");
         // (ADR 0027 #10) The camera FRAMING the ripple band's density fade reads — a GLOBAL, not an MPB
         // property, because it belongs to the camera rather than to this renderer.
         private static readonly int IdSeaFramingHeight = Shader.PropertyToID("_SeaFramingHeight");
@@ -369,6 +391,11 @@ namespace HiddenHarbours.Art
             "_DeepBlueStrength", "_DeepBlueStart",
             "_FoamClumpStrength", "_FoamClumpScale", "_FoamClumpStretch",
             "_SwellFaceShade",
+            // the crest glow (gains 3): light through a thin crest at low sun. A mood float so the fog
+            // anchor takes it away, the way a fog preset kills the lit faces: FoggySmother carries none,
+            // so it reads the shader's 0 and the ease lands there as the fog thickens. Ships at 0 on
+            // every material, an exact passthrough.
+            "_CrestGlowStrength",
             // reflection (the §11 sea-state mirror)
             "_ReflectionStrength", "_ReflectionFadeChop", "_ReflectionWindFade", "_ReflectionChopScatter",
             "_ReflectionWindScatter", "_ReflectionSkyTint", "_ReflectionSmear", "_ReflectionSunStreak",
@@ -442,6 +469,18 @@ namespace HiddenHarbours.Art
         // not. Presentation only — nothing here feeds the sim or is saved (rule 5).
         private bool _targetsValid;              // a slow tick has sampled the sim at least once
         private EnvironmentSample _sample;       // the last sampled weather (the mood blend + rain read it)
+        // (ADR 0027 #7, gains 2) The water type's values, folded on the slow tick and pushed every frame.
+        // Sized once (rule 7): the push hands the same three arrays back each frame without allocating.
+        private readonly WaterRainSignal _waterRain = new WaterRainSignal();
+        private readonly Vector4[] _plumeShape = new Vector4[WaterType.MaxPlumes];
+        private readonly Vector4[] _plumeSigma = new Vector4[WaterType.MaxPlumes];
+        private readonly Vector4[] _plumeBody = new Vector4[WaterType.MaxPlumes];
+        private Vector4 _waterTypeSigma;
+        private Vector4 _waterTypeBody;
+        private Vector4 _waterTypeRect;
+        private int _plumeCount;
+        private bool _waterTypeLive;             // this surface has a type or a plume to draw
+        private bool _waterTypePushed;           // the block holds a type's values (zeros go out once after)
         private Vector2 _targetCurrent, _targetWind;
         private float _targetChop;
         private float _targetWaterLevel;
@@ -737,6 +776,9 @@ namespace HiddenHarbours.Art
                     // reads the same sea Play will (a no-op while no config is wired).
                     PushSalienceKnobs(_mpb);
                     PushShallowsFloor(_mpb);
+                    // The region's water type shows in the Scene view too, dry: no clock, no rain to remember.
+                    SampleWaterType(0.0, null);
+                    PushWaterType(_mpb);
                     // (W4-4) Re-bind the floor only when a ground enabled, disabled or re-pushed.
                     if (_groundFloorVersion != TerrainSplatSurface.LiveVersion) FeedGroundFloor(_mpb);
                     _renderer.SetPropertyBlock(_mpb);
@@ -829,6 +871,10 @@ namespace HiddenHarbours.Art
                 s.Visibility, s.SeaState01, _rainBaselineIntensity, _rainSeaStateWeight,
                 _rainVisOnset, _rainVisFull, _rainSeaOnset);
             _mpb.SetFloat(IdRainIntensity, rainIntensity);
+
+            // (ADR 0027 #7, gains 2) The water type, folded on the slow tick; a no-op for a surface that has
+            // never had one (today's sea, exactly).
+            PushWaterType(_mpb);
 
             // (ADR 0023 arc step 3) The owner's GameConfig salience knobs, re-read EVERY tick so an
             // in-Play config edit reaches the sea within one refresh. Pushed on the flat renderer's
@@ -996,6 +1042,7 @@ namespace HiddenHarbours.Art
             _targetCurrent = _sample.CurrentVector;
             _targetWind = _sample.WindVector;
             _targetChop = Choppiness(_sample.SeaState01);
+            SampleWaterType(now, env);
 
             // The mood blend's two slow halves: the target weights (a pure function of the sample) and the
             // snapshot of what each anchor material says for each key. Both only need the sample cadence; the
@@ -1109,6 +1156,108 @@ namespace HiddenHarbours.Art
             float bend = _config != null ? _config.ShallowsFloorRefraction : GameConfig.DefaultShallowsFloorRefraction;
             mpb.SetFloat(IdShallowsFloor, on ? 1f : 0f);
             mpb.SetFloat(IdShallowsFloorRefraction, bend);
+        }
+
+        /// <summary>
+        /// (ADR 0027 #7, gains 2) The slow tick's water type: the region's type and each plume's, each with its
+        /// silt averaged over its own window from the rain the Core seams report (<see cref="WaterType.SiltAt"/>),
+        /// folded into the values <see cref="PushWaterType"/> hands the shader. The rain is the rings' own law
+        /// with the rings' own dials, so the silt remembers the rain the rings drew. With no environment (edit
+        /// mode) every type reads dry. Pure in (worldSeed, gameTime): a jump reads what playing to it would,
+        /// and nothing is saved (rule 5). A surface with no type and no plume does no work.
+        /// </summary>
+        private void SampleWaterType(double now, IEnvironmentService env)
+        {
+            bool typed = _waterType != null;
+            if (!typed && (_waterPlumes == null || _waterPlumes.Length == 0))
+            {
+                if (_waterTypeLive) ClearWaterType();
+                return;
+            }
+
+            _waterRain.Bind(env as IVisibilitySource, env as IWaveWindSource, _rainBaselineIntensity,
+                _rainSeaStateWeight, _rainVisOnset, _rainVisFull, _rainSeaOnset);
+            IWorldTimeSignal rain = _waterRain.IsBound ? _waterRain : null;
+            double secondsPerDay = GameServices.SecondsPerDay;
+
+            if (typed)
+            {
+                WaterTypeValues region = _waterType.Water;
+                WaterType.Uniforms(region, WaterType.SiltAt(region, rain, now, secondsPerDay),
+                    out _waterTypeSigma, out _waterTypeBody);
+            }
+            else
+            {
+                _waterTypeSigma = Vector4.zero;
+                _waterTypeBody = Vector4.zero;
+            }
+
+            int n = 0;
+            if (_waterPlumes != null)
+            {
+                for (int i = 0; i < _waterPlumes.Length && n < WaterType.MaxPlumes; i++)
+                {
+                    WaterPlumeDef plume = _waterPlumes[i];
+                    if (plume == null || plume.Type == null) continue;
+                    WaterTypeValues mouth = plume.Type.Water;
+                    WaterType.Uniforms(mouth, WaterType.SiltAt(mouth, rain, now, secondsPerDay),
+                        out _plumeSigma[n], out _plumeBody[n]);
+                    _plumeShape[n] = plume.Shape;
+                    n++;
+                }
+            }
+            for (int i = n; i < WaterType.MaxPlumes; i++)
+            {
+                _plumeShape[i] = Vector4.zero;
+                _plumeSigma[i] = Vector4.zero;
+                _plumeBody[i] = Vector4.zero;
+            }
+            _plumeCount = n;
+
+            if (!typed && n == 0)
+            {
+                if (_waterTypeLive) ClearWaterType();
+                return;
+            }
+            Bounds bounds = _renderer.bounds;
+            _waterTypeRect = new Vector4(bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y);
+            _waterTypeLive = true;
+        }
+
+        /// <summary>Today's water: every type value back to 0, so the next push writes zeros once.</summary>
+        private void ClearWaterType()
+        {
+            _waterTypeSigma = Vector4.zero;
+            _waterTypeBody = Vector4.zero;
+            for (int i = 0; i < WaterType.MaxPlumes; i++)
+            {
+                _plumeShape[i] = Vector4.zero;
+                _plumeSigma[i] = Vector4.zero;
+                _plumeBody[i] = Vector4.zero;
+            }
+            _plumeCount = 0;
+            _waterTypeLive = false;
+        }
+
+        /// <summary>
+        /// (ADR 0027 #7, gains 2) Hand the water type to the shader: the region's sigma and body, the surface's
+        /// rect and seam, and the plumes. A surface that has never had a type never writes these globals, so
+        /// the shader reads 0 and draws today's sea exactly; one that loses its type writes zeros once. The
+        /// arrays are the same three every frame (no allocation, rule 7), and the displaced chunks copy this
+        /// block, so one push covers both passes. Visual only (rule 5).
+        /// </summary>
+        private void PushWaterType(MaterialPropertyBlock mpb)
+        {
+            if (!_waterTypeLive && !_waterTypePushed) return;
+            mpb.SetVector(IdWaterTypeSigma, _waterTypeSigma);
+            mpb.SetVector(IdWaterTypeBody, _waterTypeBody);
+            mpb.SetVector(IdWaterTypeRect, _waterTypeRect);
+            mpb.SetFloat(IdWaterTypeSeam, _waterTypeSeamMeters);
+            mpb.SetVectorArray(IdWaterPlumeShape, _plumeShape);
+            mpb.SetVectorArray(IdWaterPlumeSigma, _plumeSigma);
+            mpb.SetVectorArray(IdWaterPlumeBody, _plumeBody);
+            mpb.SetFloat(IdWaterPlumeCount, _plumeCount);
+            _waterTypePushed = _waterTypeLive;
         }
 
         // ==== Weather-driven palette (ADR 0017) ===========================================================
