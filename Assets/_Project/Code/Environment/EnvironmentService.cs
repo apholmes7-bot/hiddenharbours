@@ -8,7 +8,7 @@ namespace HiddenHarbours.Environment
     /// active region. Deterministic from (WorldSeed, clock time), so nothing here is saved.
     /// Implements <see cref="IEnvironmentService"/>; registered into <see cref="GameServices"/>.
     /// </summary>
-    public class EnvironmentService : MonoBehaviour, IEnvironmentService, IWaveWindSource
+    public class EnvironmentService : MonoBehaviour, IEnvironmentService, IWaveWindSource, IVisibilitySource
     {
         [SerializeField] private GameConfig _config;
         [SerializeField] private int _worldSeed = 12345;
@@ -133,6 +133,20 @@ namespace HiddenHarbours.Environment
             }
 #endif
             return new WaveWindSample(wind, WeatherModel.SeaState01(wind.magnitude));
+        }
+
+        /// <summary>Past visibility for a water type's silt (ADR 0027 #7). The same <see cref="WeatherModel"/>
+        /// fog law <see cref="Sample"/> reads, asked at any time; fog stays the pure sim (the dev storm
+        /// override never touches it), so at now this is the sample's own visibility, bit for bit. With no
+        /// config the air reads clear: no rain, and a type keeps its dry silt.</summary>
+        public float VisibilityAt(double gameTimeSeconds)
+        {
+            if (_config == null) return 1f;
+            // Reading the asset directly avoids fetching the component name at every tap.
+            WindProfile profile = _windProfileAsset != null
+                ? _windProfileAsset.Profile : _activeWindProfile;
+            WeatherModel.Sample(gameTimeSeconds, _worldSeed, _config, profile, out _, out _, out float visibility);
+            return visibility;
         }
 
         public float TideHeightAt(double totalSeconds) =>

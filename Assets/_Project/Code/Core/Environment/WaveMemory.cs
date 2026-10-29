@@ -52,6 +52,29 @@ namespace HiddenHarbours.Core
                 (float)(first.SeaState01 + sea / n));
         }
 
+        /// <summary><see cref="Average"/>'s grid and arithmetic, op for op, for one scalar (ADR 0027 #7: the
+        /// rain a water type's silt remembers). The same N completed cells ending at t, the value held over
+        /// each, the fractional end cells entering and leaving continuously; only taps at or before t are
+        /// queried, and a steady input comes back bit for bit. On the same source it is Average's sea
+        /// channel exactly.</summary>
+        public static float AverageSignal(IWorldTimeSignal source, double time, float window, int taps)
+        {
+            int n = Mathf.Clamp(taps, 4, 64);
+            double step = (double)window / n;
+            double cell = Math.Floor(time / step);
+            double fraction = time / step - cell;
+            float first = source.ValueAt(cell * step);
+            double sum = 0;
+            for (int i = 1; i <= n; i++)
+            {
+                float tap = source.ValueAt((cell - i) * step);
+                double weight = i == n ? 1.0 - fraction : 1.0;
+                sum += ((double)tap - first) * weight;
+            }
+            if (sum == 0.0) return first;
+            return (float)(first + sum / n);
+        }
+
         public static WaveWindSample ShortWind(IWaveWindSource source, double time,
                                                in WaveFieldSettings settings)
             => Average(source, time, ShortSeconds(settings), TapCount(settings));
