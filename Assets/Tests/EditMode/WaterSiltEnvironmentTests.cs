@@ -351,7 +351,8 @@ namespace HiddenHarbours.Tests.EditMode
                 GC.KeepAlive(known);
                 Assert.Greater(observed, 0, "a known allocation must show in the recorder used for the zero proof");
                 Begin();
-                Assert.AreEqual(0, End(), "the recorder's own empty scope must allocate nothing");
+                long empty = End();   // read before the assert, whose boxed 0 would land inside the scope
+                Assert.AreEqual(0, empty, "the recorder's own empty scope must allocate nothing");
             }
         }
     }
