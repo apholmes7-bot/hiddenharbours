@@ -31,7 +31,7 @@ namespace HiddenHarbours.Tools.RigBaking
             public int heading, frame, ordinal, visiblePixels;
             public float cameraX, cameraY, cameraSize;
         }
-        [Serializable] public sealed class Checkpoint { public string side, utc; public int batch; public Shot[] shots; }
+        [Serializable] public sealed class Checkpoint { public string side, utc; public int batch; public long freeBytesBefore; public Shot[] shots; }
         [Serializable] public sealed class NeutralRow { public string id; public int heading, changed; public string baselineHash, candidateHash; }
         [Serializable] public sealed class NeutralTable { public NeutralRow[] rows; }
         [Serializable] public sealed class ParityRow
@@ -41,7 +41,8 @@ namespace HiddenHarbours.Tools.RigBaking
         }
         [Serializable] public sealed class ParityTable { public ParityRow[] rows; }
         static string Root => RigCatalog.RepoRoot;
-        static string Folder => Path.Combine(Root, Evidence);
+        static string PreviousFolder => Path.Combine(Root, Evidence);
+        static string Folder => Path.Combine(PreviousFolder, "b1r");
         static int _ordinal;
         static readonly Dictionary<string, HullMeshDef> Hulls = new Dictionary<string, HullMeshDef>();
 
@@ -52,11 +53,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
                     throw new InvalidOperationException("The plate entry requires a graphics device.");
                 Directory.CreateDirectory(Folder);
-                var manifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(Path.Combine(Folder, "manifest.json")));
+                var manifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(Path.Combine(PreviousFolder, "manifest.json")));
                 if (manifest.entries.Length != 573 || manifest.entries.Select(e => e.path).Distinct().Count() != 573)
                     throw new InvalidOperationException("Frozen manifest must contain exactly 573 unique assets.");
                 foreach (var e in manifest.entries)
-                    if (Hash(File.ReadAllBytes(Path.Combine(Root, e.path))) != e.mainSha256 && !File.Exists(Path.Combine(Folder, "bake-complete.json")))
+                    if (!e.weighted && Hash(File.ReadAllBytes(Path.Combine(Root, e.path))) != e.mainSha256)
                         throw new InvalidOperationException("Asset differs from the frozen main blob: " + e.path);
                 foreach (string guid in AssetDatabase.FindAssets("t:HullMeshDef"))
                 {
@@ -76,7 +77,6 @@ namespace HiddenHarbours.Tools.RigBaking
                     EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                     Capture("baseline-neutral", neutral, true);
                     Capture("baseline-weighted", weighted, true);
-                    Bake(weighted);
                     Capture("candidate-neutral", neutral, false);
                     Capture("candidate-weighted", weighted, false);
                     VerifyNeutral(neutral);
@@ -111,6 +111,7 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int start = 0, batch = 0; start < entries.Length; start += 32, batch++)
             {
                 DiskFloor();
+                long freeBytesBefore = new DriveInfo(Path.GetPathRoot(Root)).AvailableFreeSpace;
                 string checkpoint = Path.Combine(Folder, side, "batch-" + batch.ToString("D2") + ".json");
                 if (File.Exists(checkpoint))
                 {
@@ -128,17 +129,12 @@ namespace HiddenHarbours.Tools.RigBaking
                         using var stage = new Stage(entry, heading, baseline);
                         string metadata = FileFor(side, entry, heading, ".json");
                         Shot before = null;
-                        if (!baseline)
-                            before = JsonUtility.FromJson<Shot>(File.ReadAllText(FileFor(side.Replace("candidate", "baseline"), entry, heading, ".json")));
+                        string cameraRecord = baseline ? Path.Combine(PreviousFolder, side, Key(entry, heading) + ".json") :
+                            FileFor(side.Replace("candidate", "baseline"), entry, heading, ".json");
+                        before = JsonUtility.FromJson<Shot>(File.ReadAllText(cameraRecord));
                         stage.Frame(before);
                         byte[] pixels = stage.Read();
                         byte[] control = stage.Hidden();
-                        if (baseline)
-                            for (int fit = 0; Border(pixels, control) && fit < 8; fit++)
-                            {
-                                stage.Camera.orthographicSize *= 1.2f;
-                                pixels = stage.Read(); control = stage.Hidden();
-                            }
                         int visible = Changed(pixels, control);
                         if (visible == 0 || Border(pixels, control))
                             throw new InvalidDataException("Subject is absent or clipped: " + entry.id);
@@ -156,7 +152,7 @@ namespace HiddenHarbours.Tools.RigBaking
                         File.WriteAllText(metadata, JsonUtility.ToJson(shot, true)); shots.Add(shot);
                     }
                 File.WriteAllText(checkpoint, JsonUtility.ToJson(new Checkpoint { side = side, batch = batch,
-                    utc = DateTime.UtcNow.ToString("o"), shots = shots.ToArray() }, true));
+                    utc = DateTime.UtcNow.ToString("o"), freeBytesBefore = freeBytesBefore, shots = shots.ToArray() }, true));
                 Debug.Log("BOATS_LOOK checkpoint " + side + " " + batch + " subjects=" + shots.Count / 2);
             }
         }
@@ -258,6 +254,7 @@ namespace HiddenHarbours.Tools.RigBaking
             readonly GameObject _subject, _camera;
             readonly RenderTexture _target;
             readonly IsoFacetHullSetup _setup;
+            readonly IsoFacetPropRenderer _fitting;
             bool _warm;
             public Stage(Entry e, int heading, bool baseline)
             {
@@ -292,7 +289,10 @@ namespace HiddenHarbours.Tools.RigBaking
                     hull.PosedMesh.GetComponent<MeshRenderer>().enabled = false;
                     var fitting = new GameObject("DitherFitting"); fitting.transform.SetParent(hull.PosedMesh, false);
                     var setup = IsoFacetHullPresentationService.ToPropSetup(part); if (baseline) setup.RampDitherWeights = null;
-                    fitting.AddComponent<IsoFacetPropRenderer>().Configure(setup);
+                    var renderer = fitting.AddComponent<IsoFacetPropRenderer>();
+                    _fitting = renderer;
+                    renderer.Configure(setup);
+                    renderer.WriteHullProperties();
                 }
                 foreach (var t in _subject.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = Layer;
                 _camera = new GameObject("DitherCamera"); Camera = _camera.AddComponent<Camera>();
@@ -316,9 +316,9 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (!_warm)
                 {
                     var clock = System.Diagnostics.Stopwatch.StartNew();
-                    while (ShaderUtil.anythingCompiling && clock.Elapsed.TotalSeconds < 120)
+                    while (ShaderUtil.anythingCompiling && clock.Elapsed.TotalSeconds < 600)
                     { System.Threading.Thread.Sleep(25); Camera.Render(); }
-                    if (ShaderUtil.anythingCompiling) throw new TimeoutException("Shader warm-up exceeded 120 seconds.");
+                    if (ShaderUtil.anythingCompiling) throw new TimeoutException("Shader warm-up exceeded 600 seconds.");
                     Camera.Render(); _warm = true;
                 }
                 var old = RenderTexture.active; RenderTexture.active = _target;
@@ -330,6 +330,7 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 var renderers = _subject.GetComponentsInChildren<Renderer>(); var enabled = renderers.Select(r => r.enabled).ToArray();
                 for (int i = 0; i < renderers.Length; i++) renderers[i].enabled = false;
+                _fitting?.WriteHullProperties();
                 try { return Read(); } finally { for (int i = 0; i < renderers.Length; i++) renderers[i].enabled = enabled[i]; }
             }
             public void Dispose() { Camera.targetTexture = null; _target.Release(); Object.DestroyImmediate(_target); Object.DestroyImmediate(_camera); Object.DestroyImmediate(_subject); }

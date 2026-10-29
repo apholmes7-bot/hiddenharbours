@@ -225,7 +225,8 @@ namespace HiddenHarbours.Art
         /// by the final screen pixel only when the origin excludes it. Same reasoning, same value, as
         /// the hull's own write; taking it from the hull is what keeps them on ONE grid.</para>
         /// </summary>
-        private void WriteHullProperties()
+        // The synchronous dither capture fixture is the second caller, alongside LateUpdate.
+        internal void WriteHullProperties()
         {
             if (_meshRenderer == null || _hull == null) return;
             _props ??= new MaterialPropertyBlock();
