@@ -278,6 +278,7 @@ Cape-Islander / Lobster-Boat branch. The **weather/winter/fog** wave gains the o
 ([`design/time-tides-weather.md`](design/time-tides-weather.md) §4.8), plus the **wet-surface tide effects** (the
 ~3–4 m tide range that bares wet walls and flats — [`design/art-and-audio-bible.md`](design/art-and-audio-bible.md)
 §6.1). All stay deterministic and cozy-with-teeth.
+Ice fishing for smelt joins the weather/winter wave, after the longline, with M2-35's first frozen water ([fishing methods plan](design/fishing-methods.md)).
 
 **Explicitly deferred.** The Banks and everything offshore; dragger/trawler tiers; the **staff & automation**
 layer (M3 — you still do every job by hand here, which is the *point*: earn it before you automate it, P4);
