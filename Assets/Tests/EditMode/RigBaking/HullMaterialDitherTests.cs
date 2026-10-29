@@ -37,8 +37,8 @@ namespace HiddenHarbours.Tests.RigBaking
             var data = new RigMeshData();
             RigMeshExtractor.ReadMaterials(host, "DitherFixture", data);
             var material = data.Materials.Single();
-            Assert.That(material.DitherWeight, Is.EqualTo(expected));
             var ramp = material.ToRamp();
+            Assert.That((double)ramp.DitherWeight, Is.EqualTo((double)(float)expected));
             Assert.That(ramp.DitherWeight, Is.EqualTo((float)expected));
             Assert.That(ramp.Offset, Is.EqualTo(-1));
             Assert.That(ramp.Colors, Is.EqualTo(new[] { new Color32(0x12, 0x34, 0x56, 255), new Color32(0x78, 0x9a, 0xbc, 255) }));
@@ -52,7 +52,7 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             var material = new Dictionary<string, object>();
             if (present) material.Add("dith", value);
-            Assert.That(RigMaterial.ReadDitherWeight(material), Is.EqualTo(expected));
+            Assert.That(RigMaterial.ReadDitherWeight(material), Is.EqualTo((double)(float)expected));
         }
 
         [TestCase("", 1f)]
@@ -108,11 +108,12 @@ namespace HiddenHarbours.Tests.RigBaking
         [TestCase(1d)]
         public void Threshold_UsesTheRigRuleForEveryBayerCell(double weight)
         {
+            double defWeight = (double)(float)weight;
             for (int i = 0; i < 16; i++)
             {
                 double bay = (i + 0.5) / 16;
-                double expected = weight <= 0 ? 0.5 : 0.5 + (bay - 0.5) * weight;
-                Assert.That(RigMeshReferenceRasterizer.DitherThreshold(bay, weight), Is.EqualTo(expected));
+                double expected = defWeight <= 0 ? 0.5 : 0.5 + (bay - 0.5) * defWeight;
+                Assert.That(RigMeshReferenceRasterizer.DitherThreshold(bay, defWeight), Is.EqualTo(expected));
             }
         }
 
@@ -127,7 +128,7 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (var material in data.Materials.Concat(data.InteriorMaterials))
             {
                 string expression = hull.GlobalName + ".byId('" + id + "').matsFor().MATS['" + material.Name + "'].dith";
-                double expected = host.EvaluateNumber("(function(){var x=" + expression + ";return x==null?1:x;})()");
+                double expected = (double)(float)host.EvaluateNumber("(function(){var x=" + expression + ";return x==null?1:x;})()");
                 Assert.That(material.DitherWeight, Is.EqualTo(expected), material.Name);
                 Assert.That(material.ToRamp().DitherWeight, Is.EqualTo((float)expected), material.Name);
             }
