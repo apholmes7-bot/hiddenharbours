@@ -1,0 +1,510 @@
+{
+ "schema": "hidden-harbours/road-gameplay@1",
+ "rig": "roadPathRig4",
+ "scene": "finnigans",
+ "frame": "scene metres · 32 px = 1 m · +x east · +y south (toward the camera) · +z up · heights at 24.5 px = 1 m on screen",
+ "routes": [
+  {
+   "id": "finnigans.water_street",
+   "class": "town",
+   "laneClass": "street",
+   "surface": "asphalt",
+   "foot": "stone",
+   "grip": 0.889,
+   "width_m": 5.6,
+   "length_m": 18.801,
+   "centreline_m": [
+    [
+     -1.25,
+     6.25
+    ],
+    [
+     -0.783,
+     6.224
+    ],
+    [
+     -0.316,
+     6.194
+    ],
+    [
+     0.15,
+     6.162
+    ],
+    [
+     0.617,
+     6.128
+    ],
+    [
+     1.083,
+     6.096
+    ],
+    [
+     1.55,
+     6.065
+    ],
+    [
+     2.017,
+     6.038
+    ],
+    [
+     2.484,
+     6.017
+    ],
+    [
+     2.951,
+     6.002
+    ],
+    [
+     3.419,
+     5.997
+    ],
+    [
+     3.887,
+     6.003
+    ],
+    [
+     4.354,
+     6.025
+    ],
+    [
+     4.82,
+     6.061
+    ],
+    [
+     5.285,
+     6.108
+    ],
+    [
+     5.75,
+     6.161
+    ],
+    [
+     6.214,
+     6.217
+    ],
+    [
+     6.679,
+     6.27
+    ],
+    [
+     7.144,
+     6.317
+    ],
+    [
+     7.611,
+     6.353
+    ],
+    [
+     8.078,
+     6.374
+    ],
+    [
+     8.545,
+     6.38
+    ],
+    [
+     9.013,
+     6.377
+    ],
+    [
+     9.481,
+     6.365
+    ],
+    [
+     9.948,
+     6.347
+    ],
+    [
+     10.415,
+     6.323
+    ],
+    [
+     10.882,
+     6.295
+    ],
+    [
+     11.349,
+     6.265
+    ],
+    [
+     11.815,
+     6.233
+    ],
+    [
+     12.282,
+     6.202
+    ],
+    [
+     12.748,
+     6.171
+    ],
+    [
+     13.215,
+     6.136
+    ],
+    [
+     13.681,
+     6.099
+    ],
+    [
+     14.147,
+     6.059
+    ],
+    [
+     14.613,
+     6.018
+    ],
+    [
+     15.079,
+     5.975
+    ],
+    [
+     15.544,
+     5.931
+    ],
+    [
+     16.01,
+     5.887
+    ],
+    [
+     16.475,
+     5.843
+    ],
+    [
+     16.941,
+     5.8
+    ],
+    [
+     17.407,
+     5.758
+    ],
+    [
+     17.5,
+     5.75
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 2.8,
+     "surface": "asphalt",
+     "z_m": 0
+    },
+    {
+     "role": "gutter",
+     "from_m": 2.8,
+     "to_m": 3.1,
+     "surface": "gutter",
+     "z_m": -0.015
+    },
+    {
+     "role": "kerb",
+     "from_m": 3.1,
+     "to_m": 3.26,
+     "surface": "kerb",
+     "z_m": 0.14
+    },
+    {
+     "role": "walk",
+     "from_m": 3.26,
+     "to_m": 4.76,
+     "surface": "slab",
+     "z_m": 0.125
+    },
+    {
+     "role": "verge",
+     "from_m": 4.76,
+     "to_m": 5.46,
+     "surface": "ground",
+     "z_m": 0.125
+    }
+   ],
+   "symmetric": true,
+   "kerb": {
+    "z_m": 0.14,
+    "step": "blocks wheels · a person steps up",
+    "dropped": "where a lower vehicular class crosses it"
+   },
+   "deck": null,
+   "junctions_m": [
+    [
+     7.95,
+     13.188
+    ]
+   ],
+   "crossings_m": [
+    [
+     3.85,
+     6.25
+    ]
+   ],
+   "stops_m": [],
+   "water": [
+    "gutter pan"
+   ],
+   "snow": "plough"
+  },
+  {
+   "id": "finnigans.chapel_street",
+   "class": "town",
+   "laneClass": "street",
+   "surface": "asphalt",
+   "foot": "stone",
+   "grip": 0.889,
+   "width_m": 5.2,
+   "length_m": 9.217,
+   "centreline_m": [
+    [
+     10.438,
+     15.313
+    ],
+    [
+     10.469,
+     14.843
+    ],
+    [
+     10.509,
+     14.375
+    ],
+    [
+     10.546,
+     13.906
+    ],
+    [
+     10.57,
+     13.436
+    ],
+    [
+     10.57,
+     12.966
+    ],
+    [
+     10.536,
+     12.497
+    ],
+    [
+     10.477,
+     12.031
+    ],
+    [
+     10.398,
+     11.567
+    ],
+    [
+     10.305,
+     11.106
+    ],
+    [
+     10.203,
+     10.647
+    ],
+    [
+     10.095,
+     10.19
+    ],
+    [
+     9.966,
+     9.738
+    ],
+    [
+     9.821,
+     9.29
+    ],
+    [
+     9.676,
+     8.843
+    ],
+    [
+     9.547,
+     8.391
+    ],
+    [
+     9.451,
+     7.931
+    ],
+    [
+     9.383,
+     7.465
+    ],
+    [
+     9.332,
+     6.998
+    ],
+    [
+     9.283,
+     6.53
+    ],
+    [
+     9.25,
+     6.25
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 2.6,
+     "surface": "asphalt",
+     "z_m": 0
+    },
+    {
+     "role": "gutter",
+     "from_m": 2.6,
+     "to_m": 2.9,
+     "surface": "gutter",
+     "z_m": -0.015
+    },
+    {
+     "role": "kerb",
+     "from_m": 2.9,
+     "to_m": 3.06,
+     "surface": "kerb",
+     "z_m": 0.14
+    },
+    {
+     "role": "walk",
+     "from_m": 3.06,
+     "to_m": 4.56,
+     "surface": "brick",
+     "z_m": 0.125
+    },
+    {
+     "role": "verge",
+     "from_m": 4.56,
+     "to_m": 5.26,
+     "surface": "ground",
+     "z_m": 0.125
+    }
+   ],
+   "symmetric": true,
+   "kerb": {
+    "z_m": 0.14,
+    "step": "blocks wheels · a person steps up",
+    "dropped": "where a lower vehicular class crosses it"
+   },
+   "deck": null,
+   "junctions_m": [
+    [
+     6.301,
+     9.217
+    ]
+   ],
+   "crossings_m": [
+    [
+     2.201,
+     4.601
+    ]
+   ],
+   "stops_m": [
+    1.501
+   ],
+   "water": [
+    "gutter pan"
+   ],
+   "snow": "plough"
+  },
+  {
+   "id": "finnigans.rope_walk",
+   "class": "lane",
+   "laneClass": "lane",
+   "surface": "setts",
+   "foot": "stone",
+   "grip": 0.76,
+   "width_m": 3,
+   "length_m": 7.383,
+   "centreline_m": [
+    [
+     3,
+     7.813
+    ],
+    [
+     2.912,
+     8.271
+    ],
+    [
+     2.828,
+     8.731
+    ],
+    [
+     2.743,
+     9.19
+    ],
+    [
+     2.652,
+     9.649
+    ],
+    [
+     2.551,
+     10.105
+    ],
+    [
+     2.433,
+     10.557
+    ],
+    [
+     2.292,
+     11.002
+    ],
+    [
+     2.139,
+     11.444
+    ],
+    [
+     1.989,
+     11.887
+    ],
+    [
+     1.855,
+     12.334
+    ],
+    [
+     1.747,
+     12.789
+    ],
+    [
+     1.658,
+     13.247
+    ],
+    [
+     1.58,
+     13.708
+    ],
+    [
+     1.508,
+     14.17
+    ],
+    [
+     1.437,
+     14.631
+    ],
+    [
+     1.375,
+     15
+    ]
+   ],
+   "section": [
+    {
+     "role": "carriage",
+     "from_m": 0,
+     "to_m": 1.5,
+     "surface": "setts",
+     "z_m": 0
+    }
+   ],
+   "symmetric": true,
+   "kerb": null,
+   "deck": null,
+   "junctions_m": [],
+   "crossings_m": [],
+   "stops_m": [],
+   "water": [],
+   "snow": "plough"
+  }
+ ],
+ "_notes": [
+  "Sections are symmetric; the section table is the half-width, carriage centre outward.",
+  "Where routes of one group meet, the carriage edge is a circular fillet of the group radius; the bands follow it.",
+  "A footpath ends at a sidewalk; a vehicular class drops the kerb it crosses and fills the ditch."
+ ]
+}

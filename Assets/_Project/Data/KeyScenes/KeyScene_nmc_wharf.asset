@@ -304,7 +304,7 @@ MonoBehaviour:
         the junction to (14, 92), along the gas bar\u2019s frontage, where its semi
         lane\u2019s pads and the river lane meet the road\u2019s edge. Then north-east
         off the fields and down the regraded ramp into the wharf\u2019s turning pad."},{"id":"road.nmc_bar_road","builder":"BarRoad","name":"the
-        bar road","cls":"street","surface":"gravel","width":5,"pts":[[58,-146],[36,-112],[20,-56],[14,0],[20,78],[-16,92]],"old_surface":"dirt,
+        bar road","cls":"street","surface":"gravel","width":5,"pts":[[58,-146],[36,-112],[20,-56],[14,0],[20,78],[14,92]],"old_surface":"dirt,
         4 m","why":"Today\u2019s line. Gravel and 5 m now, because the campground\u2019s
         cars and trailers use it."},{"id":"road.nmc_water_street","name":"Water Street","cls":"town","surface":null,"width":5.4,"pts":[[-271,228.81],[-266,229],[-240,230],[-205,229.5],[-177.4,228],[-166,227.17],[-150,226],[-139,224],[-128,222]],"z":6,"why":"Along
         the top of the river wall on the north bank: the restaurant, the chandlery
@@ -449,7 +449,7 @@ MonoBehaviour:
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":7,"pts":[[-193.5,58.5],[-193.5,105]],"ends":"flat"},{"id":"drive.nmc_plaza_court","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":11.5,"pts":[[-192.25,104],[-192.25,120.2]],"ends":"flat"},{"id":"drive.nmc_plaza_yard_in","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":6,"pts":[[-255.5,67.5],[-279,67.5],[-279,78.6]],"ends":"flat"},{"id":"yard.nmc_plaza_lumber_court","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":9,"pts":[[-262.5,96],[-262.5,120.1]],"ends":"flat"},{"id":"yard.nmc_plaza_apron","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":9,"pts":[[-255.5,87.25],[-262.5,87.25],[-262.5,120.1]],"ends":"flat"},{"id":"yard.nmc_plaza_apron","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":23.5,"pts":[[-258,144.25],[-186,144.25]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_1","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":12,"pts":[[-222,150],[-222,159.4]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_2","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"town","surface":"asphalt","width":10,"pts":[[-247,150],[-247,162.1]],"ends":"flat"},{"id":"drive.nmc_plaza_mill_3","builder":"the
@@ -595,15 +595,14 @@ MonoBehaviour:
         and her husband, who sails","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
         estateHouse","buildings":["structure.nmc_south_shore_house_1","structure.nmc_south_shore_bluff_deck_1"],"drive":"road.nmc_route_91","drives":[{"id":"court.nmc_south_shore_1","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":6,"pts":[[-355.2,-138.8],[-335.8,-138.8]],"ends":"flat"},{"id":"drive.nmc_south_shore_1","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":4,"pts":[[-345,-136.2],[-345,-129.78]],"ends":"flat"},{"id":"path.nmc_south_shore_1","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":4,"pts":[[-337.8,-136.2],[-337.8,-131.6],[-337.81,-131.06],[-337.85,-130.51],[-337.91,-129.97],[-338,-129.43],[-338.11,-128.9],[-338.24,-128.37],[-338.4,-127.85],[-338.58,-127.34]],"ends":"flat"},{"id":"path.nmc_south_shore_1","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"stones","width":0.9,"pts":[[-345,-160],[-339,-161.6],[-334.6,-162.4]],"ends":"flat"}],"added":"10-04
         (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_2","name":"the
         roof-walk house","at":[-305,-143],"size":[29,10],"faces":"N","z":6.55,"row":"the
         bluff, south of Route 91","photo":2,"household":"a family from Montreal who
         summer here, three children and a Bernese; the grandparents come for July","kit":"NmcShoreEstates
-        (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js): estateHouse","buildings":["structure.nmc_south_shore_house_2","structure.nmc_south_shore_pool_2","structure.nmc_south_shore_bluff_deck_2"],"drive":"road.nmc_route_91","drives":[{"id":"loop.nmc_south_shore_2","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-305,-126.2],[-306.07,-126.32],[-307.08,-126.67],[-307.99,-127.25],[-308.75,-128.01],[-309.32,-128.92],[-309.68,-129.93],[-309.8,-131],[-309.68,-132.07],[-309.32,-133.08],[-308.75,-133.99],[-307.99,-134.75],[-307.08,-135.32],[-306.07,-135.68],[-305,-135.8],[-303.93,-135.68],[-302.92,-135.32],[-302.01,-134.75],[-301.25,-133.99],[-300.67,-133.08],[-300.32,-132.07],[-300.2,-131],[-300.32,-129.93],[-300.67,-128.92],[-301.25,-128.01],[-302.01,-127.25],[-302.92,-126.67],[-303.93,-126.32],[-305,-126.2]],"ends":"flat"},{"id":"drive.nmc_south_shore_2","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-305,-126.4],[-305,-122.63]],"ends":"flat"}],"added":"10-04
+        (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js): estateHouse","buildings":["structure.nmc_south_shore_house_2","structure.nmc_south_shore_pool_2","structure.nmc_south_shore_bluff_deck_2"],"drive":"road.nmc_route_91","drives":[{"id":"drive.nmc_south_shore_2","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"setts","width":3.6,"pts":[[-304.86,-130.43],[-305.2,-122.46]],"ends":"flat"}],"added":"10-04
         (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_3","name":"the
         point estate","at":[-262,-142],"size":[34,10.5],"faces":"N","z":6.6,"row":"the
         bluff, south of Route 91","photo":3,"household":"a Toronto family of four
@@ -619,9 +618,9 @@ MonoBehaviour:
         second row, north of Route 91","photo":1,"household":"two architects from
         Halifax who keep the house full of friends every weekend; the bikes are for
         the guests","kit":"NmcShoreEstates (hh-nmc-key-scenes/south-shore/nmcShoreEstates.js):
-        estateHouse","buildings":["structure.nmc_south_shore_house_4"],"drive":"road.nmc_route_91","drives":[{"id":"loop.nmc_south_shore_4","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-111.1],[-357.12,-111.22],[-358.2,-111.57],[-359.17,-112.13],[-360.01,-112.89],[-360.68,-113.8],[-361.14,-114.83],[-361.37,-115.94],[-361.37,-117.06],[-361.14,-118.17],[-360.68,-119.2],[-360.01,-120.11],[-359.17,-120.87],[-358.2,-121.43],[-357.12,-121.78],[-356,-121.9],[-354.88,-121.78],[-353.8,-121.43],[-352.83,-120.87],[-351.99,-120.11],[-351.32,-119.2],[-350.86,-118.17],[-350.63,-117.06],[-350.63,-115.94],[-350.86,-114.83],[-351.32,-113.8],[-351.99,-112.89],[-352.83,-112.13],[-353.8,-111.57],[-354.88,-111.22],[-356,-111.1]],"ends":"flat"},{"id":"drive.nmc_south_shore_4","builder":"the
-        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-121.7],[-356,-129.32]],"ends":"flat"},{"id":"walk.nmc_south_shore_4","builder":"the
+        estateHouse","buildings":["structure.nmc_south_shore_house_4"],"drive":"road.nmc_route_91","drives":[{"id":"court.nmc_south_shore_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":12,"pts":[[-364,-116],[-348,-116]],"ends":"flat"},{"id":"drive.nmc_south_shore_4","builder":"the
+        scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"street","surface":"gravel","width":3.8,"pts":[[-356,-121.7],[-356,-122.3],[-355.92,-123.66],[-355.69,-125],[-355.31,-126.31],[-354.78,-127.57],[-354.37,-128.42]],"ends":"flat"},{"id":"walk.nmc_south_shore_4","builder":"the
         scene\u2019s road kit (export/road-path-kit-v4/roadPathRig4.js)","cls":"walk","surface":"slab","width":1.6,"pts":[[-356,-107.6],[-356,-111.2]],"ends":"flat"}],"added":"10-04
         (keyscene.nmc_south_shore)","area":"area.nmc_south_shore_estates"},{"id":"lot.nmc_south_shore_estate_5","name":"the
         shingled Colonial","at":[-316,-101],"size":[19.6,10],"faces":"S","z":6.45,"row":"the
@@ -766,14 +765,14 @@ MonoBehaviour:
         (its gate)","path.nmc_shore_path (along its east edge)","boardwalk.nmc_dune_walk_east
         / _west (to the beach)","the landing (60, -150), 40 m from Loop A\u2019s south
         end"],"buildings":[{"id":"structure.nmc_camp_office","name":"the office and
-        camp store","at":[4,38],"size":[10,7],"faces":"E","z":6,"what":"check-in,
+        camp store","at":[7,39.5],"size":[10,7],"faces":"E","z":6,"what":"check-in,
         firewood, ice, a few groceries"},{"id":"structure.nmc_camp_comfort_a","name":"the
         comfort station (Loop A)","at":[-6,-66],"size":[8,6],"z":6,"what":"washrooms,
         showers, laundry"},{"id":"structure.nmc_camp_comfort_b","name":"the comfort
         station (Loop B)","at":[-86,-116],"size":[7,5],"z":6,"what":"washrooms"},{"id":"structure.nmc_camp_shelter","name":"the
         picnic shelter","at":[-2,-138],"size":[10,6],"z":6,"what":"the rainy-day roof,
         by the east dune walk"},{"id":"structure.nmc_camp_playground","name":"the
-        playground","at":[-14,22],"size":[14,10],"z":6},{"id":"structure.nmc_camp_dump","name":"the
+        playground","at":[-30,18],"size":[14,10],"z":6},{"id":"structure.nmc_camp_dump","name":"the
         sani-dump","at":[10,18],"size":[4,8],"z":6},{"id":"structure.nmc_camp_tennis","name":"the
         tennis court","at":[-38,-45],"size":[16.5,32],"z":6,"what":"one court: the
         doubles court 10.97 x 23.77 m, run-offs 4.1 m at the ends and 2.8 m at the
@@ -787,9 +786,9 @@ MonoBehaviour:
         pool house: two change rooms, the guard\u2019s counter, the pump room; cedar
         shingle under a gable","box":[-42.5,-31.5,-75.3,-70.7],"size":[11,4.6]},"added":"10-02,
         the campground redrawn (call 53)","clear_m":{"deck":{"id":"road.nmc_camp_loop_a","d":3.16},"house":{"id":"road.nmc_camp_loop_b_stem","d":3.03}}}],"pitches":[{"id":"pitch.nmc_camp_a1","loop":"A","kind":"serviced
-        (water, power)","at":[-14.88,18.18],"size":[8,12]},{"id":"pitch.nmc_camp_a2","loop":"A","kind":"serviced
-        (water, power)","at":[-11.58,7.17],"size":[8,12]},{"id":"pitch.nmc_camp_a3","loop":"A","kind":"serviced
-        (water, power)","at":[-9.21,-3.47],"size":[8,12]},{"id":"pitch.nmc_camp_a4","loop":"A","kind":"serviced
+        (water, power)","at":[2.37,18.18],"size":[8,12]},{"id":"pitch.nmc_camp_a2","loop":"A","kind":"serviced
+        (water, power)","at":[5.17,5.67],"size":[8,12]},{"id":"pitch.nmc_camp_a3","loop":"A","kind":"serviced
+        (water, power)","at":[7.29,-8.97],"size":[8,12]},{"id":"pitch.nmc_camp_a4","loop":"A","kind":"serviced
         (water, power)","at":[-6.8,-14.71],"size":[8,12]},{"id":"pitch.nmc_camp_a5","loop":"A","kind":"serviced
         (water, power)","at":[-4.39,-25.96],"size":[8,12]},{"id":"pitch.nmc_camp_a6","loop":"A","kind":"serviced
         (water, power)","at":[-1.98,-37.2],"size":[8,12]},{"id":"pitch.nmc_camp_a7","loop":"A","kind":"serviced
@@ -800,22 +799,22 @@ MonoBehaviour:
         (water, power)","at":[10.06,-93.42],"size":[8,12]},{"id":"pitch.nmc_camp_a12","loop":"A","kind":"serviced
         (water, power)","at":[12.47,-104.67],"size":[8,12]},{"id":"pitch.nmc_camp_a13","loop":"A","kind":"serviced
         (water, power)","at":[10.57,-112.9],"size":[8,12]},{"id":"pitch.nmc_camp_a14","loop":"A","kind":"serviced
-        (water, power)","at":[12.32,-117.25],"size":[8,12]},{"id":"pitch.nmc_camp_a15","loop":"A","kind":"serviced
-        (water, power)","at":[1.27,-120.41],"size":[8,12]},{"id":"pitch.nmc_camp_a16","loop":"A","kind":"serviced
+        (water, power)","at":[24.57,-119.75],"size":[8,12]},{"id":"pitch.nmc_camp_a15","loop":"A","kind":"serviced
+        (water, power)","at":[7.77,-135.91],"size":[8,12]},{"id":"pitch.nmc_camp_a16","loop":"A","kind":"serviced
         (water, power)","at":[-1.88,-116.01],"size":[8,12]},{"id":"pitch.nmc_camp_a17","loop":"A","kind":"serviced
-        (water, power)","at":[-6.13,-111.57],"size":[8,12]},{"id":"pitch.nmc_camp_a18","loop":"A","kind":"serviced
+        (water, power)","at":[-20.88,-116.07],"size":[8,12]},{"id":"pitch.nmc_camp_a18","loop":"A","kind":"serviced
         (water, power)","at":[-9.51,-100.58],"size":[8,12]},{"id":"pitch.nmc_camp_a19","loop":"A","kind":"serviced
         (water, power)","at":[-12.61,-90.73],"size":[8,12]},{"id":"pitch.nmc_camp_a20","loop":"A","kind":"serviced
         (water, power)","at":[-14.23,-79.34],"size":[8,12]},{"id":"pitch.nmc_camp_a21","loop":"A","kind":"serviced
-        (water, power)","at":[-15.86,-67.96],"size":[8,12]},{"id":"pitch.nmc_camp_a22","loop":"A","kind":"serviced
+        (water, power)","at":[-14.97,-67.96],"size":[8,12]},{"id":"pitch.nmc_camp_a22","loop":"A","kind":"serviced
         (water, power)","at":[-16.98,-57.05],"size":[8,12]},{"id":"pitch.nmc_camp_a23","loop":"A","kind":"serviced
         (water, power)","at":[-17.8,-45.58],"size":[8,12]},{"id":"pitch.nmc_camp_a24","loop":"A","kind":"serviced
         (water, power)","at":[-18.42,-35.18],"size":[8,12]},{"id":"pitch.nmc_camp_a25","loop":"A","kind":"serviced
         (water, power)","at":[-17.6,-23.71],"size":[8,12]},{"id":"pitch.nmc_camp_a26","loop":"A","kind":"serviced
         (water, power)","at":[-16.78,-12.24],"size":[8,12]},{"id":"pitch.nmc_camp_a27","loop":"A","kind":"serviced
-        (water, power)","at":[-14.29,-3.25],"size":[8,12]},{"id":"pitch.nmc_camp_a28","loop":"A","kind":"serviced
-        (water, power)","at":[-10.36,7.56],"size":[8,12]},{"id":"pitch.nmc_camp_a29","loop":"A","kind":"serviced
-        (water, power)","at":[-6.2,17.83],"size":[8,12]},{"id":"pitch.nmc_camp_b1","loop":"B","kind":"tent","at":[-81.98,-64.19],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b1","at":[-81.98,-64.19],"size":[5,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
+        (water, power)","at":[-32.04,-21],"size":[8,12]},{"id":"pitch.nmc_camp_a28","loop":"A","kind":"serviced
+        (water, power)","at":[-31.36,-8.5],"size":[8,12]},{"id":"pitch.nmc_camp_a29","loop":"A","kind":"serviced
+        (water, power)","at":[-29.8,4],"size":[8,12]},{"id":"pitch.nmc_camp_b1","loop":"B","kind":"tent","at":[-81.98,-64.19],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b1","at":[-81.98,-64.19],"size":[5,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
         tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,
         the ground from the top"}},{"id":"pitch.nmc_camp_b2","loop":"B","kind":"tent","at":[-92.2,-68.28],"size":[6,8],"pad":{"id":"prop.nmc_camp_pad_b2","at":[-92.2,-68.28],"size":[4,4],"top":6.08,"corners":[-0.08,-0.08,-0.08,-0.08],"what":"a
         tent pad: a timber frame of gravel, its top level; corners: SW, SE, NE, NW,

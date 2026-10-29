@@ -256,6 +256,11 @@ namespace HiddenHarbours.App.Editor
         /// boat shed get nothing: a dooryard is grass and ruts, and paving them would turn a farming coast
         /// into a suburb.</para>
         ///
+        /// <para>⚠ <b>One walk now (NMC H4): the parish hall's.</b> The harbourmaster's, the general store's
+        /// and the tavern's lots are gone (<see cref="PublicTownLots"/>), and the chandlery's door is on Water
+        /// Street's frontage walk. Road kit v4 lays the hall's walk as <c>walk.nmc_parish_hall</c> on this
+        /// rule.</para>
+        ///
         /// <para><b>Derived, like everything else.</b> The walk runs from the lot to the NEAREST POINT on
         /// the nearest published carriageway, so moving a lot or re-siting a road moves the walk; and it
         /// ranks below every road (<see cref="RankTownWalk"/>), so where it reaches the carriageway the
@@ -297,8 +302,12 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// The five town lots a stranger walks INTO — the ones a walk is for. The three houses and the
-        /// boat shed in <see cref="NineMileCreekMainland.TownLots"/> are deliberately not here.
+        /// The town lots a stranger walks INTO — the ones a walk is for. The two houses and the boat shed
+        /// in <see cref="NineMileCreekMainland.TownLots"/> are deliberately not here, and neither is the
+        /// chandlery: on Water Street its door opens onto the frontage walk
+        /// (<c>walk.nmc_main_street_frontage_east</c>), so a shell walk from Route 91 would only cross the
+        /// corner block. NMC H4 took out the harbourmaster's, the general store's and the tavern's, whose
+        /// lots are gone (G3's <c>lots.gone</c>; the tavern's is the plaza's parking).
         ///
         /// <para>⚠ A PROPERTY, not a <c>static readonly</c> array, and the region's own file-header
         /// warning is why: a static field initialised from ANOTHER type's static fields binds at type-init
@@ -307,17 +316,13 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static Vector2[] PublicTownLots => new[]
         {
-            new Vector2(NineMileCreekMainland.HarbourmasterPos.x, NineMileCreekMainland.HarbourmasterPos.y),
-            new Vector2(NineMileCreekMainland.ChandleryPos.x,     NineMileCreekMainland.ChandleryPos.y),
-            new Vector2(NineMileCreekMainland.GeneralStorePos.x,  NineMileCreekMainland.GeneralStorePos.y),
-            new Vector2(NineMileCreekMainland.TavernPos.x,        NineMileCreekMainland.TavernPos.y),
             new Vector2(NineMileCreekMainland.ParishHallPos.x,    NineMileCreekMainland.ParishHallPos.y),
         };
 
         /// <inheritdoc cref="PublicTownLots"/>
         public static readonly string[] PublicTownLotNames =
         {
-            "Harbourmaster", "Chandlery", "GeneralStore", "Tavern", "ParishHall",
+            "ParishHall",
         };
 
         /// <summary>The Route 91 forecourt's paving. Named here because a pad is a road-surface thing and

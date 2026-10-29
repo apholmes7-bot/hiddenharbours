@@ -95,6 +95,10 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
+        static NineMileCreekRoadNetwork.Network _network;
+
+        static bool Cleared(Vector2 at, bool hedged) => NineMileCreekRoadClearings.Why(_network, at, hedged) != null;
+
         /// <summary>Plant the hinterland. Safe before the kits are imported.</summary>
         public static Result Plant(ITidalTerrain terrain)
         {
@@ -106,6 +110,10 @@ namespace HiddenHarbours.App.Editor
             }
 
             PlantGrass(terrain, result);
+            // Kit v4's network (NMC H4): a piece standing on its paving or in a hedge's clearance is not stood, the
+            // same rule N1 step 12 deletes them by (NineMileCreekRoadClearings), so a rebuild and the step agree.
+            // The sites are still scattered and handed on, so nothing downstream of a skipped piece moves.
+            _network = NineMileCreekRoadNetwork.Load();
             // ⚠ TREES BEFORE SHRUBS, and the order is load-bearing rather than cosmetic: the wood lots'
             // understorey stands BETWEEN trunks (WoodlandZones.MinUnderstoreyGapMetres), so it has to be
             // handed the canopy that is already there. Nothing in the hedge pass reads the trees, so
@@ -292,6 +300,7 @@ namespace HiddenHarbours.App.Editor
 
             bool Stand(NineMileCreekFields.ShrubSite site, GameObject parent)
             {
+                if (Cleared(site.Position, parent == hedgeRoot)) return false;
                 if (!byHabitat.TryGetValue(site.Habitat, out var pool) || pool.Count == 0)
                 {
                     unservedHabitats.Add(site.Habitat);
@@ -431,6 +440,7 @@ namespace HiddenHarbours.App.Editor
             // region's own builder warns about at length; two on one REGION would be worse.
             bool Stand(Vector2 at, string species, int variant)
             {
+                if (Cleared(at, true)) return false;
                 if (!bySpecies.TryGetValue(species, out var placement)) return false;
 
                 var key = (species, variant);
@@ -514,6 +524,7 @@ namespace HiddenHarbours.App.Editor
 
             foreach (var site in sites)
             {
+                if (Cleared(site.Position, false)) continue;
                 var def = Def(site.SpeciesKey);
                 if (def == null || !def.IsComplete()) { missing.Add(site.SpeciesKey); continue; }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using HiddenHarbours.Core;
 using UnityEngine;
 
@@ -221,5 +222,49 @@ namespace HiddenHarbours.App.Editor
         /// river.</summary>
         public static NineMileCreekRoads.Paving Pave(ITidalTerrain terrain) =>
             NineMileCreekRoads.Pave(terrain, Ways(), NineMileCreekRoads.Pads(), new[] { BridgeDeck });
+
+        // =====================================================================================
+        //  what kit v3 still paints, once kit v4 lays the network (NMC H4)
+        // =====================================================================================
+
+        /// <summary>Where the network's Wharf Road ends and the wharf's own stub of it takes over: the network
+        /// (<see cref="NineMileCreekRoadNetwork"/>) clips road.nmc_wharf_road here, and the stub runs on to the turning
+        /// pad, both the wharf's (H5/H6).</summary>
+        public static readonly Vector2 WharfStubStart = new Vector2(40f, 118f);
+        public const string WharfStubName = "WharfRoadWharfStub";
+
+        /// <summary>The ways kit v3 still paints: the wharf's stub of Wharf Road, from where the network clips it to
+        /// the end of G3's line, and the turning pad at its head. Every other road is kit v4's, drawn by the road floor
+        /// (<c>RoadFloorStreamer</c>), so step 06 and the road painter lay none of it and no rebuild brings it back.</summary>
+        public static IReadOnlyList<NineMileCreekRoads.Way> KeptV3Ways()
+        {
+            NineMileCreekRoads.Way wharf = Ways().Single(w => w.Name == NineMileCreekRoads.WharfRoadName);
+            NineMileCreekRoads.Way pad = Ways().Single(w => w.Name == TurningPadName);
+            return new[]
+            {
+                new NineMileCreekRoads.Way(WharfStubName, wharf.Surface, new[] { WharfStubStart, WharfRoad[WharfRoad.Length - 1] },
+                    wharf.HalfWidth, wharf.Rank, wharf.CentreLineCritical,
+                    "the wharf's stub of Wharf Road, from where kit v4's network clips it to the turning pad (H5/H6's)"),
+                pad,
+            };
+        }
+
+        /// <summary>The pads kit v3 still paints: the winch apron and the buyers' parking (the wharf's) and the
+        /// station's forecourt (the gas bar's). The truck park and the laydown are lots on kit v4's network.</summary>
+        public static IReadOnlyList<NineMileCreekRoads.Pad> KeptV3Pads() =>
+            NineMileCreekRoads.Pads().Where(p => p.Name != NineMileCreekRoads.TruckParkName &&
+                                                 p.Name != NineMileCreekRoads.LaydownName).ToList();
+
+        /// <summary>What step 06 and the road painter paint in kit v3: <see cref="KeptV3Ways"/> and
+        /// <see cref="KeptV3Pads"/> under the dry-ground rule. None of it crosses water, so no deck is exempted.</summary>
+        public static NineMileCreekRoads.Paving PaveKeptV3(ITidalTerrain terrain) =>
+            NineMileCreekRoads.Pave(terrain, KeptV3Ways(), KeptV3Pads(), System.Array.Empty<Rect>());
+
+        /// <summary>The bridges' root: the three plain standable decks of the network (Q7), each an instance of its own
+        /// prefab under <see cref="BridgePrefabFolder"/>. H7 and H12 dress them.</summary>
+        public const string BridgesRootName = "NineMileCreekBridges";
+        public const string BridgePrefabFolder = "Assets/_Project/Prefabs/Bridges";
+
+        public static string BridgePrefabPath(string prefab) => BridgePrefabFolder + "/" + prefab + ".prefab";
     }
 }

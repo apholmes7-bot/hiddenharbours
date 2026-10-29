@@ -65,6 +65,11 @@ namespace HiddenHarbours.Art
         [SerializeField] private Texture2DArray _relightDetail;   // mark id, class, tips
         [SerializeField] private Texture2D _relightRamp;          // palettes and each slice's parameters
 
+        // NMC H4: the road floor (road / path kit v4), bound while a RoadFloorStreamer runs, never saved.
+        [System.NonSerialized] private Texture2DArray _roadNormal, _roadLight, _roadDetail;
+        [System.NonSerialized] private Texture2D _roadRamp, _roadIndex;
+        [System.NonSerialized] private Vector4 _roadOrigin;
+
         [Header("Bands (builder-pushed from StPetersShoreMap — not owned here)")]
         [SerializeField] private float _floorPaint = -2.6f;
         [SerializeField] private float _floorRipple = -1.7f;
@@ -136,6 +141,14 @@ namespace HiddenHarbours.Art
         private static readonly int IdRelightDetail = Shader.PropertyToID("_RelightDetail");
         private static readonly int IdRelightRamp = Shader.PropertyToID("_RelightRamp");
         private static readonly int IdRelightLoaded = Shader.PropertyToID("_RelightLoaded");
+        private static readonly int IdRoadNormal = Shader.PropertyToID("_RoadNormal");
+        private static readonly int IdRoadLight = Shader.PropertyToID("_RoadLight");
+        private static readonly int IdRoadDetail = Shader.PropertyToID("_RoadDetail");
+        private static readonly int IdRoadRamp = Shader.PropertyToID("_RoadRamp");
+        private static readonly int IdRoadIndex = Shader.PropertyToID("_RoadIndex");
+        private static readonly int IdRoadLoaded = Shader.PropertyToID("_RoadLoaded");
+        private static readonly int IdRoadOrigin = Shader.PropertyToID("_RoadOrigin");
+        private static readonly int IdRoadGrid = Shader.PropertyToID("_RoadGrid");
         private static readonly int IdBarFrom = Shader.PropertyToID("_BarFrom");
         private static readonly int IdBarTo = Shader.PropertyToID("_BarTo");
         private static readonly int IdBarHalfWidth = Shader.PropertyToID("_BarHalfWidth");
@@ -271,6 +284,44 @@ namespace HiddenHarbours.Art
 
         private static bool Fits(Texture2DArray map, int depth) =>
             map != null && map.depth == depth && map.width == RelightTileTexels && map.height == RelightTileTexels;
+
+        /// <summary>NMC H4: the road floor's pool, from <see cref="RoadFloorStreamer"/>: its three arrays of
+        /// <see cref="RoadFloorMaps.ChunkTexels"/>-square slots, the ramp (<see cref="RoadFloorMaps.RampWidth"/> wide,
+        /// a row per slot), the index (a texel per chunk of the grid, the slot + 1 of a resident one), the grid's
+        /// north-west corner in world metres and its pixels per metre. The streamer binds them when it opens a bake
+        /// and passes nulls when it closes; a ground no streamer feeds (every region but Nine Mile Creek) never
+        /// binds them and reads _RoadLoaded 0, its picture unchanged.
+        ///
+        /// <para>All or nothing and checked, as the relight's are (<see cref="RoadFloorLoaded"/>). The slots' and
+        /// the index's contents change in place as chunks stream; only the binding comes through here.</para></summary>
+        public void ConfigureRoadFloor(Texture2DArray normal, Texture2DArray light, Texture2DArray detail,
+                                       Texture2D ramp, Texture2D index, Vector2 originMetres, float pixelsPerMetre)
+        {
+            _roadNormal = normal;
+            _roadLight = light;
+            _roadDetail = detail;
+            _roadRamp = ramp;
+            _roadIndex = index;
+            _roadOrigin = new Vector4(originMetres.x, originMetres.y, pixelsPerMetre, 0f);
+            if (_renderer != null && _mpb != null) PushAll();
+        }
+
+        /// <summary>True when the road floor's pool is bound and fits: three arrays as deep as the ramp is tall with
+        /// <see cref="RoadFloorMaps.ChunkTexels"/>-square slots, the ramp <see cref="RoadFloorMaps.RampWidth"/> wide,
+        /// an index and a scale.</summary>
+        public bool RoadFloorLoaded
+        {
+            get
+            {
+                if (_roadRamp == null || _roadIndex == null || _roadOrigin.z <= 0f) return false;
+                int depth = _roadRamp.height;
+                return FitsRoad(_roadNormal, depth) && FitsRoad(_roadLight, depth) && FitsRoad(_roadDetail, depth)
+                    && _roadRamp.width == RoadFloorMaps.RampWidth;
+            }
+        }
+
+        private static bool FitsRoad(Texture2DArray map, int depth) => map != null && map.depth == depth
+            && map.width == RoadFloorMaps.ChunkTexels && map.height == RoadFloorMaps.ChunkTexels;
 
         /// <summary>The band ladder + meander, pushed from the CPU classifier's constants.</summary>
         public void ConfigureBands(
@@ -453,6 +504,21 @@ namespace HiddenHarbours.Art
                                  "TerrainTexArrayBuilder. The ground keeps the albedo.");
             }
             _mpb.SetFloat(IdRelightLoaded, relight ? 1f : 0f);
+
+            // NMC H4: the road floor, only while a streamer's pool is bound and fits (no warning: a ground without
+            // roads binds none, and the streamer says why it did not open).
+            bool road = RoadFloorLoaded;
+            if (road)
+            {
+                _mpb.SetTexture(IdRoadNormal, _roadNormal);
+                _mpb.SetTexture(IdRoadLight, _roadLight);
+                _mpb.SetTexture(IdRoadDetail, _roadDetail);
+                _mpb.SetTexture(IdRoadRamp, _roadRamp);
+                _mpb.SetTexture(IdRoadIndex, _roadIndex);
+                _mpb.SetVector(IdRoadOrigin, _roadOrigin);
+                _mpb.SetVector(IdRoadGrid, new Vector4(_roadIndex.width, _roadIndex.height, 0f, 0f));
+            }
+            _mpb.SetFloat(IdRoadLoaded, road ? 1f : 0f);
 
             _mpb.SetFloat(IdWaterLevel, ResolveWaterLevel());
             _renderer.SetPropertyBlock(_mpb);

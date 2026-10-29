@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using UnityEditor;
@@ -375,6 +376,10 @@ namespace HiddenHarbours.App.Editor
             public bool Contains(double x, double y, double margin) =>
                 Math.Abs(x - X) <= SizeX / 2 + margin && Math.Abs(y - Y) <= SizeY / 2 + margin;
         }
+
+        /// <summary>G3's building lots by id, read only: the tests that hold the lots to the roads (NMC H4) read the
+        /// same boxes the masks are cut round.</summary>
+        public static IReadOnlyList<Lot> Lots => BuildingLots;
 
         public readonly struct Disc
         {

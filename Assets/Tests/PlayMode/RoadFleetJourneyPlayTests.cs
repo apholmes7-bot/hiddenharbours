@@ -94,6 +94,10 @@ namespace HiddenHarbours.Tests.PlayMode
         private const float BobtailMetres = 10f;
         private const float ClearOfTheTrailerMetres = 15f;
         private const float MinimumPullOutMetres = 10f;
+        private const string CaboverAtTheLaydown = "CaboverBoxAtTheLaydown";
+        private const float CaboverPulledOutMetres = 5.5025f;  // L07, 10-29: 5.50250626 m
+        private const float DuallyPulledOutMetres = 9.791f;    // the park to its road join, 12.791 m, less the reach
+        private const float PinnedSlackMetres = 0.01f;         // float drift between machines, not a figure
         private const float OtterDriveMetres = 12f;
         private const int MaxStepsPerLeg = 3000;       // 60 s of physics — fails loudly, never hangs
         private const int MaxStepsToStop = 400;
@@ -204,9 +208,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 startedAt = go.transform.position;
             Vector2 join = WhereTheSpurMeetsTheRoad();
             yield return DriveTo(go, ctl, join, WaypointReachMetres, false, who);
+            // pinned at the measured figure, 10-29: G3's lots put the yard's gate at its centre;
+            // retire this pin when G3 re-sites the park
             Assert.That(Vector2.Distance(startedAt, go.transform.position),
-                Is.GreaterThanOrEqualTo(MinimumPullOutMetres),
-                $"{who}: reached the road join having covered under {MinimumPullOutMetres} m.");
+                Is.GreaterThanOrEqualTo(DuallyPulledOutMetres),
+                $"{who}: reached the road join having covered under {DuallyPulledOutMetres} m.");
 
             yield return DriveAlongTheRoad(go, ctl, TheRoadTheSpurJoins(), join, AlongTheRoadMetres, who);
             yield return Park(ctl, who);
@@ -409,8 +415,22 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return DriveTo(go, ctl, TheYardsGate(), WaypointReachMetres, false, who);
 
             float pulledOut = Vector2.Distance(startedAt, go.transform.position);
-            Assert.That(pulledOut, Is.GreaterThanOrEqualTo(MinimumPullOutMetres),
-                $"{who}: at the yard's gate having covered only {pulledOut:0.##} m.");
+            if (who == CaboverAtTheLaydown)
+            {
+                // pinned at the measured figure, 10-29: G3's lots put the yard's gate at its centre;
+                // retire this pin when G3 re-sites the park
+                Assert.That(Vector2.Distance(NineMileCreekMainland.LaydownPos, TheYardsGate()),
+                    Is.EqualTo(0f).Within(1e-4f),
+                    $"{who}: the yard's gate has left its centre, so G3 has re-sited the park: retire this pin.");
+                Assert.That(pulledOut, Is.GreaterThanOrEqualTo(CaboverPulledOutMetres - PinnedSlackMetres),
+                    $"{who}: at the yard's gate having covered only {pulledOut:0.####} m, " +
+                    $"under the pinned {CaboverPulledOutMetres} m.");
+            }
+            else
+            {
+                Assert.That(pulledOut, Is.GreaterThanOrEqualTo(MinimumPullOutMetres),
+                    $"{who}: at the yard's gate having covered only {pulledOut:0.##} m.");
+            }
             Assert.That(NineMileCreekLaydown.BayArea(bay).Contains((Vector2)go.transform.position),
                 Is.False, $"{who} is still inside her own bay.");
 

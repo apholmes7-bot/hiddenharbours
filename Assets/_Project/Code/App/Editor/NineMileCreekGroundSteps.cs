@@ -29,8 +29,13 @@ namespace HiddenHarbours.App.Editor
     /// Defs (<see cref="NineMileCreekCliffWalls.WallsFolder"/>) by St Peters' own step,
     /// <see cref="StPetersLayerRefresh.CliffWalls"/>. It is the one step that deletes: a retired wall's four documents,
     /// each named, its Def keeping the id.</para>
+    ///
+    /// <para>H4 adds 12, the roads in kit v4 (<c>NineMileCreekGroundSteps.RoadsV4.cs</c>): the road floor's streamer on
+    /// the splat, the network's three decks for 06's one platform, and the planting off the new carriageways. 06 is
+    /// re-lined, not replaced: it paints only what kit v3 keeps (<see cref="G.PaveKeptV3"/>), so planning both again
+    /// on what they wrote is empty.</para>
     /// </summary>
-    public static class NineMileCreekGroundSteps
+    public static partial class NineMileCreekGroundSteps
     {
         public const string GroundStep = "04-ground-g3";
         public const string WharfStep = "05-wharf-support-g3";
@@ -39,7 +44,8 @@ namespace HiddenHarbours.App.Editor
         public const string ContactsStep = "08-loop-contacts-g3";
         public const string MarksStep = "09-nav-marks-g3";
         public const string WallsStep = "11-cliff-walls-g3";
-        public static readonly string[] Steps = { GroundStep, WharfStep, RoadsStep, CliffStep, ContactsStep, MarksStep, WallsStep };
+        public static readonly string[] Steps =
+            { GroundStep, WharfStep, RoadsStep, CliffStep, ContactsStep, MarksStep, WallsStep, RoadsV4Step };
 
         public const string PaintedTerrainScriptPath = "Assets/_Project/Code/World/PaintedTidalTerrain.cs";
         public const string TerrainRootName = "TidalTerrain";
@@ -270,7 +276,7 @@ namespace HiddenHarbours.App.Editor
             public string Summary() => string.Join("\n", Patches.Select(p => p.Summary()));
         }
 
-        /// <summary>Plan 04 to 09, then 11, in order, each patch on the text the one before it leaves; returns the steps
+        /// <summary>Plan 04 to 09, then 11 and 12, in order, each patch on the text the one before it leaves; returns the steps
         /// and, in <paramref name="after"/>, the scene they write.</summary>
         public static List<Step> PlanAll(string sceneText, Inputs inputs, out string after)
         {
@@ -296,7 +302,7 @@ namespace HiddenHarbours.App.Editor
             };
             var steps = new List<Step>();
             string text = sceneText;
-            foreach (var (name, plan) in planners)
+            foreach (var (name, plan) in planners.Concat(RoadsV4Planners(inputs)))
             {
                 if (steps.Count == 0 || steps[steps.Count - 1].Name != name) steps.Add(new Step(name));
                 SceneYaml scene = SceneYaml.Parse(text);
@@ -755,8 +761,9 @@ namespace HiddenHarbours.App.Editor
         //  06: the essential roads
         // =====================================================================================================
 
-        /// <summary>Rows 7 and 8: both road layers repainted from the G3 paving (Route 91 to the bar road,
-        /// WharfRoad's ramp and pad), and the river bridge's deck.</summary>
+        /// <summary>Rows 7 and 8: both road layers repainted with what kit v3 keeps of the G3 paving (the wharf's
+        /// stub of Wharf Road, the turning pad, the wharf's and the station's pads). Re-lined by H4: kit v4's road
+        /// floor draws every other road, and step 12 lays the bridges, so this step no longer places a deck.</summary>
         static LayerPatch Roads(SceneYaml scene, Inputs inputs)
         {
             const string step = RoadsStep;
@@ -764,9 +771,8 @@ namespace HiddenHarbours.App.Editor
             Doc rootTr = scene.TransformOf(root);
             RequireIdentity(rootTr, step);
             var patch = new LayerPatch(step, NineMileCreekRoadPainter.RootName, root.FileId);
-            var ids = new IdAllocator(scene);
 
-            NineMileCreekRoads.Paving paving = G.Pave(inputs.Ground);
+            NineMileCreekRoads.Paving paving = G.PaveKeptV3(inputs.Ground);
             if (paving.Cells.Count == 0) throw new Refusal($"{step}: the G3 paving laid no cells.");
             var tops = new List<KeyValuePair<Vector2Int, RoadTile>>(paving.Cells.Count);
             var skirts = new List<KeyValuePair<Vector2Int, RoadTile>>(paving.Cells.Count);
@@ -779,30 +785,9 @@ namespace HiddenHarbours.App.Editor
             Layer(scene, patch, rootTr, RoadKitV3.TopLayerName, tops);
             Layer(scene, patch, rootTr, RoadKitV3.SkirtLayerName, skirts);
 
-            // Row 7's source bridge: a deck at 6 m over the river, as a platform the roads root owns.
-            Doc wharf = scene.TransformOf(scene.RootNamed(NineMileCreekWharf.RootName));
-            Doc template = RequireChild(scene, wharf, "NorthWall", step);
-            Doc templateTr = scene.TransformOf(template);
-            Doc templateDeck = One(scene.ComponentsOf(template).Where(d => d.IsScript("HiddenHarbours.World.StandablePlatform")),
-                                   step, "the platform template");
-            Doc bridge = Child(scene, rootTr, G.BridgeName, step);
-            Doc bridgeTr = bridge != null ? scene.TransformOf(bridge) : null;
-            Doc bridgeDeck = bridge != null
-                ? One(scene.ComponentsOf(bridge).Where(d => d.IsScript("HiddenHarbours.World.StandablePlatform")), step, G.BridgeName)
-                : null;
-            long bGo = bridge?.FileId ?? ids.Next(step + "/" + G.BridgeName + "/go");
-            long bTr = bridgeTr?.FileId ?? ids.Next(step + "/" + G.BridgeName + "/transform");
-            long bDeck = bridgeDeck?.FileId ?? ids.Next(step + "/" + G.BridgeName + "/platform");
-            Put(patch, bridge, NamedGameObject(template.Text, bGo, G.BridgeName, bTr, bDeck), G.BridgeName);
-            Put(patch, bridgeTr, ChildTransform(templateTr.Text, bTr, bGo, G.BridgeDeck.center, rootTr.FileId), G.BridgeName + "/Transform");
-            string deck = Set(Header(templateDeck.Text, bDeck), "m_GameObject", Ref(bGo));
-            deck = Set(Platform(deck, G.BridgeDeck, G.BridgeDeckElevation), "_id", G.BridgeId);
-            Put(patch, bridgeDeck, deck, G.BridgeName + "/StandablePlatform");
-            patch.Edit(rootTr, WithListed(rootTr.Text, "m_Children", bTr), "NineMileCreekRoads/children");
-
-            patch.Note(NineMileCreekRoadPainter.RootName, "G3 paving",
+            patch.Note(NineMileCreekRoadPainter.RootName, "G3 paving kept in kit v3",
                 $"{paving.Cells.Count} cells ({string.Join(", ", paving.PerSurface.OrderBy(s => s.Key, StringComparer.Ordinal).Select(s => s.Key + " " + s.Value))}); " +
-                $"{paving.Trimmed} trimmed by the water; bridge deck {N(G.BridgeDeckElevation)} m");
+                $"{paving.Trimmed} trimmed by the water");
             return patch.Seal(scene);
         }
 
