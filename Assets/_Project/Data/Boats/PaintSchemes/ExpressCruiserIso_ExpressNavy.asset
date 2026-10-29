@@ -36,6 +36,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294179063
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4282925370
@@ -50,6 +52,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4293848550
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279702288
@@ -66,6 +70,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288255114
     Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4282326789
@@ -82,6 +88,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288577634
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4284570966
@@ -94,6 +102,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4292400846
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4285557341
@@ -110,6 +120,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4294179063
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0.22
   - Colors:
     - serializedVersion: 2
       rgba: 4284708210
@@ -122,6 +134,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4292931572
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.12
   - Colors:
     - serializedVersion: 2
       rgba: 4282326789
@@ -134,6 +148,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288446818
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.1
   - Colors:
     - serializedVersion: 2
       rgba: 4282135318
@@ -146,6 +162,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4291086735
     Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4280037723
@@ -158,6 +176,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4287277766
     Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.3
   - Colors:
     - serializedVersion: 2
       rgba: 4282135318
@@ -170,6 +190,8 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4291086735
     Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
   - Colors:
     - serializedVersion: 2
       rgba: 4279702288
@@ -186,3 +208,5 @@ MonoBehaviour:
     - serializedVersion: 2
       rgba: 4288255114
     Offset: 1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
