@@ -78,7 +78,18 @@ namespace HiddenHarbours.Tests.EditMode
         /// — see <c>StPetersWoodsPlanter.ShadowCasterMinHeightM</c> and <c>.SubtidalZone</c>.
         /// </summary>
         [Test]
-        public void TheShoresShadowCasters_AreTheEmergentStands_AndStayInsideTheirBudget()
+        public void TheNewPlantRootStoresNoPerStemCasterOrBinder()
+        {
+            var scene = StPetersLayerRefresh.SceneYaml.Parse(System.IO.File.ReadAllText(StPetersLayerRefresh.ScenePath));
+            var root = scene.RootNamed(StPetersPlantFieldPatch.FieldRoot); var ids = scene.SubtreeOf(root.FileId);
+            Assert.AreEqual(4, ids.Count, "one object, one transform, one ground and one field");
+            Assert.IsFalse(scene.Docs.Any(d => ids.Contains(d.FileId) &&
+                ((d.Field("m_EditorClassIdentifier") ?? "").Contains("SpriteShadow") ||
+                 (d.Field("m_EditorClassIdentifier") ?? "").Contains("SpriteLightBinder"))));
+        }
+
+        [Test]
+        public void LegacyFixture_TheShoresShadowCasters_AreTheEmergentStands_AndStayInsideTheirBudget()
         {
             var defs = LoadDefs();
             Assert.AreEqual(16, defs.Count,
@@ -159,7 +170,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// decision lives there and a later edit is exactly what this is watching for.
         /// </summary>
         [Test]
-        public void TheGrassCastsNothing_BecauseThousandsOfTuftsIsTheRuleSevenViolation()
+        public void LegacyFixture_TheGrassCastsNothing_BecauseThousandsOfTuftsIsTheRuleSevenViolation()
         {
             var tufts = StPetersGrass.Scatter(Terrain());
             Assert.Greater(tufts.Count, 1000,
@@ -196,7 +207,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// catch.</para>
         /// </summary>
         [Test]
-        public void TheShrubLayer_CarriesABinderAndACasterEach_AndStaysInsideItsBudget()
+        public void LegacyFixture_TheShrubLayer_CarriesABinderAndACasterEach_AndStaysInsideItsBudget()
         {
             var baked = StPetersShrubBake.Species
                 .Where(s => System.IO.File.Exists(ShrubCatalog.SheetPath(
