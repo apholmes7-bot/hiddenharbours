@@ -128670,6 +128670,7 @@ MonoBehaviour:
   _heightMax: 12
   _paintedHeightTex: {fileID: 2800000, guid: 4b7e2c9a1d6f4e3aa8c50f2b9d71e6c4, type: 3}
   _seabedTexture: {fileID: 2800000, guid: 4f2c5d2a7b42a5e4bbd474103eb31267, type: 3}
+  _waterType: {fileID: 11400000, guid: 410a2ac062de4c89a572c234be7a8d0d, type: 2}
   _previewInEditMode: 1
   _previewTideLevel: 0.5
   _weatherPaletteEnabled: 1
