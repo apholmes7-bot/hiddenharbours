@@ -5,6 +5,8 @@ using System.Linq;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using UnityEngine;
+using UnityEditor;
+using HiddenHarbours.World;
 
 namespace HiddenHarbours.App.Editor
 {
@@ -14,6 +16,26 @@ namespace HiddenHarbours.App.Editor
         public static List<Vector2> CommittedGrassSites(SceneYaml scene)
         {
             var result = new List<Vector2>();
+            var plant = scene.Docs.SingleOrDefault(d => d.ClassId == MonoBehaviourClass &&
+                d.Field("m_EditorClassIdentifier") == "HiddenHarbours.Art::HiddenHarbours.Art.PlantField");
+            if (plant != null)
+            {
+                var definition = AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(
+                    AssetDatabase.GUIDToAssetPath(GuidRx.Match(plant.Field("Definition")).Groups[1].Value));
+                var groundDoc = scene.Require(plant.FieldRef("GroundSource"), "plant field ground");
+                var groundData = AssetDatabase.LoadAssetAtPath<PlantFieldGroundData>(
+                    AssetDatabase.GUIDToAssetPath(GuidRx.Match(groundDoc.Field("Data")).Groups[1].Value));
+                var go = new GameObject("PlantFieldRead") { hideFlags = HideFlags.HideAndDontSave };
+                try
+                {
+                    var ground = go.AddComponent<StPetersPlantGround>(); ground.Data = groundData;
+                    var field = go.AddComponent<PlantField>(); field.Definition = definition; field.GroundSource = ground;
+                    field.Rebuild(false); field.CopyGrassRootsTo(result);
+                }
+                finally { UnityEngine.Object.DestroyImmediate(go); }
+                if (result.Count == 0) throw new Refusal("The committed plant field has no grass sites");
+                return result;
+            }
             foreach (var doc in scene.Docs.Where(d => d.ClassId == MonoBehaviourClass &&
                          d.Field("m_EditorClassIdentifier") == "HiddenHarbours.Art::HiddenHarbours.Art.GrassField"))
             {
