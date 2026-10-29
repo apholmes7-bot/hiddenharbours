@@ -199,8 +199,9 @@ tracks the complete loop, its explicit fit contracts, production integration and
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
 | M2-15 | Cape Islander (T2) + Lobster Boat (T3) branch | gameplay-systems | The hub workboat + the shellfish specialist branch | Both purchasable; branch reads as a choice; metric scale on screen |
-| M2-16 | Gear methods: longline + traps/pots | gameplay-systems | Soak-and-haul gear beyond the handline | Set/soak/haul loop; gear gates which species/volume (catch-context contract) |
+| M2-16 | Gear methods: longline + traps/pots | gameplay-systems | Soak-and-haul gear beyond the handline | Set/soak/haul loop; gear gates which species/volume (catch-context contract). Pots landed through M2-33 and the trap arc; the rest is the longline ([fishing methods plan](../docs/design/fishing-methods.md)) |
 | M2-17 | Boat upgrades (engine/hull/hold/instruments/safety) | gameplay-systems + economy-sim | Component swaps at the shipwright; each mitigates a danger | Upgrades are data swaps; each maps to a danger (sounder→grounding, pump→ingress, etc.) |
+| M2-47 | Ice fishing for smelt | gameplay-systems + world-content | In the Lock, walk out on the first frozen water, cut a hole, jig for smelt at night; a shack on the ice | Ice regional and seasonal, recomputed from (seed, time), never saved; going through is a cozy fail; a shack never strands a save; after M2-35 ([fishing-methods.md](../docs/design/fishing-methods.md)) |
 
 ### Epic M2-E — Market depth, storage & first refining (`economy-sim`)
 | ID | Title | Owner | One-liner | Key AC (seed) |
