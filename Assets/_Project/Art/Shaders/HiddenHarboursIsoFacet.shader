@@ -611,7 +611,7 @@ Shader "HiddenHarbours/IsoFacet"
                 int off  = (int)_RampMeta[m].y;
                 float dith = _RampMeta[m].z;
 #endif
-                // Keep full Bayer's threshold exactly, including setup callers predating weights.
+                // Writers pack 1 for full Bayer and 0 for flat; Pack() defaults to 1 when a setup has no weights.
                 float thr = dith == 1.0 ? bay : (dith <= 0.0 ? 0.5 : 0.5 + (bay - 0.5) * dith);
                 float fbase = floor(i.fidx);
                 int idx = (int)fbase + ((i.fidx - fbase) > thr ? 1 : 0) + off;

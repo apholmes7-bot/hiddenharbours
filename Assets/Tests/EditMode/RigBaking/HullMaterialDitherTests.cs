@@ -103,6 +103,50 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(copy.Ramps.Single().DitherWeight, Is.EqualTo(weight));
         }
 
+        [Test]
+        public void FigureWithoutDitherWeight_PacksFullBayerForEveryMaterial()
+        {
+            var host = new GameObject("FigureDitherFixture");
+            var mesh = new Mesh();
+            var def = ScriptableObject.CreateInstance<CharacterSkinDef>();
+            try
+            {
+                mesh.vertices = new[] { Vector3.zero, Vector3.right, Vector3.up };
+                mesh.normals = new[] { Vector3.forward, Vector3.forward, Vector3.forward };
+                mesh.triangles = new[] { 0, 1, 2 };
+                mesh.boneWeights = Enumerable.Repeat(new BoneWeight { boneIndex0 = 0, weight0 = 1f }, 3).ToArray();
+                mesh.bindposes = new[] { Matrix4x4.identity };
+                def.Id = "character.dither_fixture";
+                def.BindMesh = mesh;
+                def.Bones = new[] { new CharacterSkinDef.Bone { Id = "root", Parent = CharacterSkinDef.NoBone, OwnsVertex = true } };
+                def.MaxInfluences = 1;
+                def.Materials = new[]
+                {
+                    new CharacterSkinDef.Material { Name = "first", Colors = new[] { new Color32(12, 34, 56, 255) }, Offset = -1 },
+                    new CharacterSkinDef.Material { Name = "second", Colors = new[] { new Color32(78, 90, 123, 255), new Color32(45, 67, 89, 255) }, Offset = 1 },
+                };
+                def.Bayer16 = Enumerable.Range(0, 16).Select(i => (i + 0.5f) / 16f).ToArray();
+                def.LightN = Vector3.forward;
+                def.Gain = 1f;
+                def.Clips = new[]
+                {
+                    new CharacterSkinDef.SkinClip
+                    {
+                        Anim = "idle", FrameCount = 1, FramesPerSecond = 1f,
+                        Keys = new[] { new CharacterSkinDef.BoneKey { Rotation = Quaternion.identity } },
+                    },
+                };
+                Assert.That(def.IsUsable(), Is.True);
+                host.AddComponent<IsoCharacterFigureRenderer>().Configure(def);
+                var material = host.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+                Assert.That(material.IsKeywordEnabled(IsoFacetFigureShaderIds.FigureKeyword), Is.False);
+                var meta = material.GetVectorArray("_RampMeta");
+                for (int m = 0; m < def.Materials.Length; m++)
+                    Assert.That(meta[m].z, Is.EqualTo(1f), "_RampMeta[" + m + "].z must preserve full Bayer for the figure.");
+            }
+            finally { Object.DestroyImmediate(host); Object.DestroyImmediate(def); Object.DestroyImmediate(mesh); }
+        }
+
         [TestCase(0d)]
         [TestCase(0.28d)]
         [TestCase(1d)]

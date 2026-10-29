@@ -538,7 +538,7 @@ namespace HiddenHarbours.Art
             for (int m = 0; m < count; m++)
             {
                 Color32[] c = def.Materials[m].Colors;
-                meta[m] = new Vector4(c != null && c.Length > 0 ? c.Length : 1, def.Materials[m].Offset, 0, 0);
+                meta[m] = new Vector4(c != null && c.Length > 0 ? c.Length : 1, def.Materials[m].Offset, 1f, 0);
             }
             _facetMaterial.SetVectorArray(IsoFacetShaderIds.RampMeta, meta);
 
