@@ -10,6 +10,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering.RenderGraphModule;
 using Unity.Profiling;
 using Object = UnityEngine.Object;
 
@@ -154,6 +156,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     bool atBerth=hullName=="CapeIslander";
                     Vector3 place=atBerth?berth:berth+new Vector3(hullName=="Tanker"?80:0,-55,0);
                     using var shot=new SunStage(hullName=="Tanker"?180:atBerth?30:16,1024,false);
+                    using var clock=new ProofClock(shot.Camera);
                     shot.Camera.cullingMask=~0;
                     shot.Camera.transform.position=new Vector3(place.x,place.y,-1000);
                     shot.Camera.farClipPlane=2500;
@@ -203,6 +206,38 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         [Serializable] class FrameRecord
         { public string key,scene,station,format,graphics;public float x,y,hour,heading,roll,heave,ride,ortho;public int width,height,changed,frame; }
+
+        // Editor URP resets shader time from real elapsed time for every Camera.Render.
+        // Freeze it after camera setup and before sprites so only the caster arm differs.
+        sealed class ProofClock:IDisposable
+        {
+            readonly Camera _camera;
+            readonly ClockPass _pass=new ClockPass();
+            public ProofClock(Camera camera){_camera=camera;RenderPipelineManager.beginCameraRendering+=Begin;}
+            void Begin(ScriptableRenderContext context,Camera camera)
+            {if(camera==_camera)camera.GetUniversalAdditionalCameraData().scriptableRenderer.EnqueuePass(_pass);}
+            public void Dispose(){RenderPipelineManager.beginCameraRendering-=Begin;}
+            sealed class ClockPass:ScriptableRenderPass2D
+            {
+                sealed class Data{}
+                public ClockPass(){renderPassEvent2D=RenderPassEvent2D.BeforeRenderingSprites;renderPassSortingLayerID=0;}
+                public override void RecordRenderGraph(RenderGraph graph,ContextContainer frame)
+                {
+                    using var builder=graph.AddUnsafePass<Data>("Proof frozen shader clock",out _);
+                    builder.AllowPassCulling(false);builder.AllowGlobalStateModification(true);
+                    builder.SetRenderFunc((Data data,UnsafeGraphContext context)=>
+                    {
+                        const float t=42f;
+                        context.cmd.SetGlobalVector("_Time",new Vector4(t/20,t,t*2,t*3));
+                        context.cmd.SetGlobalVector("_SinTime",new Vector4(Mathf.Sin(t/8),Mathf.Sin(t/4),Mathf.Sin(t/2),Mathf.Sin(t)));
+                        context.cmd.SetGlobalVector("_CosTime",new Vector4(Mathf.Cos(t/8),Mathf.Cos(t/4),Mathf.Cos(t/2),Mathf.Cos(t)));
+                        context.cmd.SetGlobalVector("unity_DeltaTime",new Vector4(1f/60,60,1f/60,60));
+                        context.cmd.SetGlobalVector("_TimeParameters",new Vector4(t,Mathf.Sin(t),Mathf.Cos(t),0));
+                        context.cmd.SetGlobalVector("_LastTimeParameters",new Vector4(t,Mathf.Sin(t),Mathf.Cos(t),0));
+                    });
+                }
+            }
+        }
 
         static SunStage _counterStage;
         static HullSunShadowCaster _counterCaster;
