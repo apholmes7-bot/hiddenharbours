@@ -33,6 +33,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             for(int i=0;i<off.Length;i++)if(!off[i].Equals(on[i])){changed++;Assert.That(off[i],Is.EqualTo(deck),"A changed pixel must be visible deck, never a wall, water or neighbour.");}
             Assert.That(changed,Is.GreaterThan(100));
         }
+        [Test] public void DeckShadow_Diagnostic_ReenableAndHour()
+        {
+            using var stage=new HullDeckShadowTests.DeckStage();
+            int Cycle(float hour)=>Changed(stage.Read(false,hour),stage.Read(true,hour));
+            var counts=new DeckDiagnostic{cycleA=Cycle(8),cycleB=Cycle(8),cycleC=Cycle(17)};
+            const string folder="artifacts/boats-look/pr2/c3";Directory.CreateDirectory(folder);
+            File.WriteAllText(folder+"/diagnostic.json",JsonUtility.ToJson(counts,true));
+            Assert.That(File.Exists(folder+"/diagnostic.json"),Is.True);
+        }
+        [Serializable] class DeckDiagnostic{public int cycleA,cycleB,cycleC;}
         [Test] public void DeckShadow_FollowsTheSun()
         {
             using var stage=new HullDeckShadowTests.DeckStage();
