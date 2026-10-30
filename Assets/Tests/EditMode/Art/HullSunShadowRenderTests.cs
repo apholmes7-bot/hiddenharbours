@@ -242,9 +242,35 @@ namespace HiddenHarbours.Tests.Art.EditMode
         static SunStage _counterStage;
         static HullSunShadowCaster _counterCaster;
         static ProfilerRecorder _draws,_batches;
-        static int _counterFrame;
+        static int _counterFrame,_lastCounterFrame;
         static long _offDraws,_offBatches;
+        const string CostPending="HullSunShadowCostPending";
         public static void ReadCostOnce()
+        {
+            RequireGpu();
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
+            SessionState.SetBool(CostPending,true);
+            AwaitCostMode();
+            EditorApplication.EnterPlaymode();
+        }
+
+        [InitializeOnLoadMethod]
+        static void AwaitCostMode()
+        {
+            if(!SessionState.GetBool(CostPending,false))return;
+            EditorApplication.playModeStateChanged-=CostModeChanged;
+            EditorApplication.playModeStateChanged+=CostModeChanged;
+        }
+
+        static void CostModeChanged(PlayModeStateChange state)
+        {
+            if(state!=PlayModeStateChange.EnteredPlayMode)return;
+            EditorApplication.playModeStateChanged-=CostModeChanged;
+            SessionState.SetBool(CostPending,false);
+            EditorApplication.delayCall+=StartCostCounter;
+        }
+
+        static void StartCostCounter()
         {
             try
             {
@@ -257,10 +283,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 SetSun(17);
                 _counterCaster=HullSunShadowCaster.Fit(host);
                 for(int i=0;i<32;i++)_counterCaster.Tick();
-                _counterCaster.ShadowRenderer.enabled=false;
+                _counterCaster.ShadowRenderer.forceRenderingOff=true;
                 _draws=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count");
                 _batches=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Batches Count");
                 _counterFrame=0;
+                _lastCounterFrame=Time.frameCount;
                 EditorApplication.update+=CounterUpdate;
             }
             catch(Exception e){Debug.LogException(e);EditorApplication.Exit(1);}
@@ -270,11 +297,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             try
             {
-                _counterStage.Camera.Render();
-                EditorApplication.QueuePlayerLoopUpdate();
+                if(Time.frameCount==_lastCounterFrame)return;
+                _lastCounterFrame=Time.frameCount;
                 _counterFrame++;
-                if(_counterFrame==5){_offDraws=_draws.LastValue;_offBatches=_batches.LastValue;_counterCaster.ShadowRenderer.enabled=true;}
+                if(_counterFrame==5){_offDraws=_draws.LastValue;_offBatches=_batches.LastValue;_counterCaster.ShadowRenderer.forceRenderingOff=false;}
                 if(_counterFrame<10)return;
+                if(!_draws.Valid||!_batches.Valid)throw new InvalidOperationException("The rendering counters are unavailable in PlayMode.");
                 long before=GC.GetAllocatedBytesForCurrentThread();
                 for(int i=0;i<256;i++)_counterCaster.Tick();
                 long allocated=GC.GetAllocatedBytesForCurrentThread()-before;
