@@ -2,6 +2,22 @@
 
 Implementation on the original `f3ce747a` base. The owner skipped the broad comparison phase: the cached mesh route is built directly, with six before/after proof frames and one counter read under the Phase C lease. The historical map and route analysis below explain the decisions. This serves P1, the hour's light on the fleet, and P5, a consistent picture for figures and boats. The rig's fixed lighting, rigs, kits, boat defs, camera ladder and lamps stay outside this change.
 
+## Built amendment: the house shades its own deck
+
+There are two complementary receivers. D4a remains the late water/wharf shadow: its fragment rejects this hull's main id and fore block before claiming the shared shade stencil. D4b adds the own deck: only this hull's id block is accepted, and only existing deck triangles are drawn. Neighbours, water and wharf cannot receive this second draw. Both use the same one-claim stencil and hard multiply, so they cannot claim a pixel twice. A figure within the deck footprint may receive the shade; a protruding figure outside it does not receive this deck shade.
+
+The plane comes from the existing `WatertightDeckHeightMeters`, carried read-only through the renderer snapshot. Receiver triangles must be upward-facing and lie at that height; their lowest tag identifies the deck level. Cape Islander and Tanker both identify level 1 this way. Dory has no faces tagged above its deck level, so it creates no receiver renderer, GPU buffers or extra draw. There is no new def field, inferred height literal, rig edit or kit edit.
+
+`HullDeckShadowMesh` caches the deck triangles and a stackless bounding-volume tree of the borrowed hull and both door leaves. A shared-material variant of `HiddenHarboursHullSunShadow` draws the receiver once. Each deck fragment checks toward the camera for a nearer visible hull surface; walls and roof therefore hide deck behind them. It then checks the inverse projection ray toward the published sun against faces tagged above the deck level. This is equivalent to projecting those house faces onto the deck plane, without an extra mask target or a sun-direction depth pass. The tree and triangle buffers are built only when geometry/height changes. Warm updates reuse them and one property block; disable releases them, the receiver mesh and draw object. The last user releases the shared deck material variants.
+
+The inverse ray uses the same sprite-profile length law and current heading, roll and pitch. The receiver follows the actual posed deck transform, including visual heave. The camera test and house test both use the displayed door marker and the same shared level/role predicate as the facet shader. A lifted house contributes no intersections. Sun at or below the horizon disables both receivers; the fixed key, dither and night lamps retain their existing behavior. The shade has one hard threshold, with no distance ramp, blur or gradient.
+
+Failure modes are explicit: the flat declared plane must have matching deck triangles; a mesh without them gets no deck draw. The cached tree models the hull and its displayed door leaf, not independently animated fittings. Camera visibility uses source geometry rather than a new depth target; coincident faces and their tiny depth biases retain a possible edge disagreement to check in the small render guard. The own-id test is a final footprint fence. Any changed deck-proof pixel outside that footprint is a stop, not grounds to widen the mask. The deck variant requires structured-buffer shader support; the GPU proof uses the supported desktop renderer.
+
+Scope: the mesh's tagged house, including its cabin, hardtop, flybridge and carried mast, shades its own deck. Railings and thin fittings are excluded. A separate sun-direction depth pass for arbitrary overhangs remains outside this change.
+
+Budget is structural. The water route has one cached combined mesh and one draw per visible hull. A hull with a house adds one cached deck receiver draw; a houseless hull adds none. Materials are shared and warm ticks allocate zero managed bytes under the guards. The two named draw/batch counters were not offered by the batch harness; their deltas are unavailable. The failed counter probe is retained as evidence and is not rerun for this amendment.
+
 ## Current path, by symbol
 
 All code paths below start at `Assets/_Project/Code/`; shader paths start at `Assets/_Project/Art/Shaders/` unless stated otherwise.

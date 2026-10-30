@@ -71,6 +71,7 @@ namespace HiddenHarbours.Art
         {
             HullLampShadowCaster.Fit(host);
             HullSunShadowCaster.Fit(host);
+            HullDeckShadowCaster.Fit(host);
         }
 
         /// <summary>
