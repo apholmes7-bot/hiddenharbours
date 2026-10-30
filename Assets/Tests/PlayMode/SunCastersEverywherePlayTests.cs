@@ -268,7 +268,18 @@ namespace HiddenHarbours.Tests.PlayMode
                     scene == "Cumberland" ? new Vector2(240f, 53f) :
                     (Vector2)(GameObject.Find("Player")?.transform.position ?? Vector3.zero);
                 yield return PinHour(17f);
-                if (scene != "StPeters") yield return Pair(scene == "NineMileCreek" ? "nmc-quay-1700" : scene.ToLowerInvariant() + "-1700", centre, 16.875f);
+                float height = 16.875f;
+                if (scene == "Cumberland")
+                {
+                    var figures = Renderers().Where(r => r.enabled && r.gameObject.activeInHierarchy &&
+                        r.GetComponent<NpcFigureStand>() != null).ToArray();
+                    Assert.That(figures, Is.Not.Empty, "Frame the region's live routine figures, not their authored spawn placeholders.");
+                    float minX = figures.Min(r => r.transform.position.x), maxX = figures.Max(r => r.transform.position.x);
+                    float minY = figures.Min(r => r.transform.position.y), maxY = figures.Max(r => r.transform.position.y);
+                    centre = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f + 1f);
+                    height = Mathf.Max(height, maxY - minY + 8f);
+                }
+                if (scene != "StPeters") yield return Pair(scene == "NineMileCreek" ? "nmc-quay-1700" : scene.ToLowerInvariant() + "-1700", centre, height);
                 if (scene == "StPeters")
                 {
                     foreach (float hour in new[] { 8f, 12f, 17f })
