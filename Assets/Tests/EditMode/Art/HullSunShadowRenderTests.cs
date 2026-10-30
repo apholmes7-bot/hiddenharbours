@@ -13,6 +13,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Rendering.RenderGraphModule;
 using Unity.Profiling;
+using Unity.Profiling.LowLevel.Unsafe;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.Art.EditMode
@@ -284,8 +285,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 _counterCaster=HullSunShadowCaster.Fit(host);
                 for(int i=0;i<32;i++)_counterCaster.Tick();
                 _counterCaster.ShadowRenderer.forceRenderingOff=true;
-                _draws=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count");
-                _batches=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Batches Count");
+                Profiler.enabled=true;
                 _counterFrame=0;
                 _lastCounterFrame=Time.frameCount;
                 EditorApplication.update+=CounterUpdate;
@@ -300,8 +300,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 if(Time.frameCount==_lastCounterFrame)return;
                 _lastCounterFrame=Time.frameCount;
                 _counterFrame++;
-                if(_counterFrame==5){_offDraws=_draws.LastValue;_offBatches=_batches.LastValue;_counterCaster.ShadowRenderer.forceRenderingOff=false;}
-                if(_counterFrame<10)return;
+                if(_counterFrame==5)
+                {
+                    var handles=new List<ProfilerRecorderHandle>();ProfilerRecorderHandle.GetAvailable(handles);
+                    var offered=new List<string>();
+                    foreach(var handle in handles)
+                    {
+                        var d=ProfilerRecorderHandle.GetDescription(handle);
+                        if(d.Category==ProfilerCategory.Render||d.Name=="Draw Calls Count"||d.Name=="Batches Count")offered.Add(d.Category.Name+": "+d.Name);
+                        if(d.Name=="Draw Calls Count")_draws=ProfilerRecorder.StartNew(d.Category,d.Name);
+                        if(d.Name=="Batches Count")_batches=ProfilerRecorder.StartNew(d.Category,d.Name);
+                    }
+                    File.WriteAllLines(Path.Combine("artifacts","boats-look","pr2","c","offered-render-counters.txt"),offered);
+                }
+                if(_counterFrame==10){_offDraws=_draws.LastValue;_offBatches=_batches.LastValue;_counterCaster.ShadowRenderer.forceRenderingOff=false;}
+                if(_counterFrame<15)return;
                 if(!_draws.Valid||!_batches.Valid)throw new InvalidOperationException("The rendering counters are unavailable in PlayMode.");
                 long before=GC.GetAllocatedBytesForCurrentThread();
                 for(int i=0;i<256;i++)_counterCaster.Tick();
