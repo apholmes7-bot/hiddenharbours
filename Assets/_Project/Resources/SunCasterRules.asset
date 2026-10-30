@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21c0a30b9c204422a41672d32a49f5cb, type: 3}
+  m_Name: SunCasterRules
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SunCasterRules
+  Id: art.sun_caster_rules
+  Bands: 0000000001000000
+  MinimumHeightMetres: 0.15
+  ExcludedNames:
+  - '*Decal*'
+  - '*Splat*'
+  - '*Seabed*'
+  - '*Shadow*'
+  - '*Shade*'
+  - Sea
+  - Water
+  - 'Water_*'
+  - 'Sea_*'
+  - 'UI_*'
+  - 'Interior*'
+  - '*Floor*'
+  - '*GroundPatch*'
+  - '*ClamHole*'
+  - '*Foam*'
+  - '*Wake*'
+  - '*Ripple*'
+  - '*Caustic*'
+  - Dory
+  - 'Dory_*'
+  - '*BoatVisual*'
+  - '*Hull*'
+  - 'Oar*'
+  - LeftOar
+  - RightOar
+  - '*Vehicle*'
+  - '*Truck*'
+  - '*ATV*'
+  - '*FishSwimmer*'
+  ExcludedScenes: []
+  Classes:
+  - Id: figure
+    Names: [Player, DeckRider, '*Figure*', '*Villager*']
+    CastsGroundContact: 0
+    FootOffset: 0
+    AllowOutsideBands: 0
+  - Id: thin_post
+    Names: ['*Lamp*', '*Lantern*', '*Post*', '*Bollard*', '*Buoy*', '*NavMark*', '*powerPole*']
+    CastsGroundContact: 0
+    FootOffset: 0
+    AllowOutsideBands: 0
+  - Id: legacy_tree
+    Names: ['Tree*']
+    CastsGroundContact: 1
+    FootOffset: 0
+    AllowOutsideBands: 1
+  - Id: plant
+    Names: ['*Kelp*', '*Wrack*', '*Grass*', '*Rose*', '*Raspberry*', '*Gale*', '*Shrub*', '*Hay*', '*Rush*', '*Moss*', '*Lettuce*', '*Flower*', '*Hazelnut*', '*Blueberry*']
+    CastsGroundContact: 1
+    FootOffset: 0
+    AllowOutsideBands: 0
+  - Id: pier
+    Names: ['Deck_*', '*Wall_*', '*Crib*', '*Apron*', '*Quay*', '*Float*', '*Gangway*', '*Breakwater*', '*Wharf*']
+    CastsGroundContact: 0
+    FootOffset: 0
+    AllowOutsideBands: 1
+  - Id: building
+    Names: ['*House*', '*Home*', '*Cottage*', '*Manor*', '*Shop*', '*Store*', '*Shed*', '*School*', '*Office*', '*structure.*']
+    CastsGroundContact: 0
+    FootOffset: 0
+    AllowOutsideBands: 0
+  DefaultGroundContact: 0
+  DefaultFootOffset: 0
+  CameraDistanceMetres: 0
+  ArrivalScanSeconds: 0.5
