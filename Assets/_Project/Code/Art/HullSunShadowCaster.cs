@@ -35,6 +35,7 @@ namespace HiddenHarbours.Art
         public static readonly int EnabledId = Shader.PropertyToID("_CastSunShadow");
         static readonly int SunDir = Shader.PropertyToID("_SunDir"), SunElevation = Shader.PropertyToID("_SunElevation");
         static readonly int Strength = Shader.PropertyToID("_ShadowStrength"), PoseId = Shader.PropertyToID("_HHSunPose");
+        static readonly int ViewPoseId = Shader.PropertyToID("_HHSunViewPose");
         static readonly int ProjectionId = Shader.PropertyToID("_HHSunProjection"), WaterlineId = Shader.PropertyToID("_HHSunWaterline");
         static readonly int ColorId = Shader.PropertyToID("_ShadowColor"), IdsId = Shader.PropertyToID("_HullIds");
         static readonly int GateId = Shader.PropertyToID("_HHSunLevelGate"), DoorId = Shader.PropertyToID("_HHSunDoorOpen");
@@ -93,6 +94,7 @@ namespace HiddenHarbours.Art
             _draw.transform.localScale = transform.lossyScale;
             _renderer.localBounds = HullSunShadowMath.ProjectBounds(_proxy.bounds, pose, projection, waterline);
             _block.SetMatrix(PoseId, pose);
+            _block.SetMatrix(ViewPoseId, IsoFacetMath.RigToWorld(state.Heading, state.Elevation, state.Roll, state.Pitch));
             _block.SetVector(ProjectionId, projection);
             _block.SetFloat(WaterlineId, waterline);
             Color tint = look.ShadowColor;

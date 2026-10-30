@@ -61,6 +61,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             stage.Material.SetFloat("_HHLevelShown",1);
             stage.Material.SetInteger("_HHShownRoles",int.MaxValue);
             Assert.That(Changed(absent,stage.Shoot(true)), Is.Zero, "The visible facet predicate removes the same house faces.");
+            for(int i=0;i<levels.Count;i++)levels[i]=new Vector4(1,0,2,0);
+            stage.Mesh.SetUVs(0,levels);stage.Material.SetInteger("_HHShownRoles",1);
+            Assert.That(Changed(absent,stage.Shoot(true)),Is.GreaterThan(100),"A role not selected for lifting stays visible.");
+            stage.Material.SetInteger("_HHShownRoles",2);
+            Assert.That(Changed(absent,stage.Shoot(true)),Is.Zero,"The raw third tag component is the role, not the front flag.");
             stage.Material.SetFloat("_HHSunLevelGate",0);
             stage.Mesh.SetUVs(1,new List<Vector2> {Vector2.right,Vector2.right,Vector2.right,Vector2.right});
             stage.Material.SetFloat("_HHSunDoorOpen",1);
@@ -279,6 +284,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Mesh.SetUVs(1,new List<Vector2>{Vector2.zero,Vector2.zero,Vector2.zero,Vector2.zero});Mesh.RecalculateBounds();
                 Material=Own(new Material(Resources.Load<Material>(HullSunShadowCaster.MaterialPath)));
                 Material.SetMatrix("_HHSunPose",Matrix4x4.identity);
+                Material.SetMatrix("_HHSunViewPose",Matrix4x4.identity);
                 Material.SetVector("_HHSunProjection",HullSunShadowMath.Projection(Vector2.right,1.5f,40,0,0,32));
                 Material.SetVector("_HullIds",new Vector4(23/255f,100/255f,12,0));
                 Material.SetColor("_ShadowColor",new Color(0.04f,0.05f,0.1f,0.3f));

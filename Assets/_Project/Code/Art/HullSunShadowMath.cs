@@ -46,6 +46,9 @@ namespace HiddenHarbours.Art
             Vector3 reach = new Vector3(height * projection.x, height * projection.y, 0);
             result.Encapsulate(min + reach); result.Encapsulate(max + reach);
             result.Expand(Vector3.forward);
+            // Bounds stores centre/extents; cover round-off from the eight scalar transform stages.
+            const float floatRelativePrecision = 1.1920929e-7f;
+            result.Expand(result.size.magnitude * (8f * floatRelativePrecision));
             return result;
         }
 

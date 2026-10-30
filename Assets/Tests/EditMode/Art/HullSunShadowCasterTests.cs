@@ -47,6 +47,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(_caster.Proxy, Is.SameAs(proxy));
             Assert.That(proxy.subMeshCount, Is.EqualTo(1));
             Assert.That(_caster.ShadowRenderer.sortingOrder, Is.EqualTo(HiddenHarbours.Core.SortingBands.SunShade));
+            Material sprite = Resources.Load<Material>("SpriteShadowShade");
+            foreach (string property in new[] {"_StencilRef","_StencilComp","_StencilPass","_SrcBlend","_DstBlend"})
+                Assert.That(_caster.ShadowRenderer.sharedMaterial.GetFloat(property),Is.EqualTo(sprite.GetFloat(property)),
+                    "The mesh and sprite are the same sun-shade stencil owner: "+property);
         }
 
         [Test]

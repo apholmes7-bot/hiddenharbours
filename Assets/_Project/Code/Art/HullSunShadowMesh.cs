@@ -14,14 +14,16 @@ namespace HiddenHarbours.Art
                                          + (openLeaf != null ? openLeaf.vertexCount : 0);
             var vertices = new List<Vector3>(count);
             var levels = new List<Vector4>(count);
+            var normals = new List<Vector3>(count);
             var parts = new List<Vector2>(count);
             var indices = new List<int>();
-            Append(hull, 0, vertices, levels, parts, indices);
-            Append(closedLeaf, 1, vertices, levels, parts, indices);
-            Append(openLeaf, 2, vertices, levels, parts, indices);
+            Append(hull, 0, vertices, normals, levels, parts, indices);
+            Append(closedLeaf, 1, vertices, normals, levels, parts, indices);
+            Append(openLeaf, 2, vertices, normals, levels, parts, indices);
             var mesh = new Mesh { name = "HullSunShadowProxy", hideFlags = HideFlags.HideAndDontSave,
                 indexFormat = count > 65535 ? IndexFormat.UInt32 : IndexFormat.UInt16 };
             mesh.SetVertices(vertices);
+            mesh.SetNormals(normals);
             mesh.SetUVs(0, levels);
             mesh.SetUVs(1, parts);
             mesh.SetTriangles(indices, 0);
@@ -29,17 +31,19 @@ namespace HiddenHarbours.Art
             return mesh;
         }
 
-        static void Append(Mesh source, int part, List<Vector3> vertices, List<Vector4> levels,
+        static void Append(Mesh source, int part, List<Vector3> vertices, List<Vector3> normals, List<Vector4> levels,
                            List<Vector2> parts, List<int> indices)
         {
             if (source == null) return;
             int start = vertices.Count;
             Vector3[] points = source.vertices;
+            Vector3[] sourceNormals = source.normals;
             var tags = new List<Vector4>();
             source.GetUVs(1, tags);
             for (int i = 0; i < points.Length; i++)
             {
                 vertices.Add(points[i]);
+                normals.Add(i < sourceNormals.Length ? sourceNormals[i] : Vector3.forward);
                 levels.Add(i < tags.Count ? tags[i] : Vector4.zero);
                 parts.Add(new Vector2(part, 0));
             }

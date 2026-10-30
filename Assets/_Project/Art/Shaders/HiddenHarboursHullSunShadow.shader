@@ -28,13 +28,13 @@ Shader "HiddenHarbours/HullSunShadow"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Include/HullLevelGate.hlsl"
             Texture2D<float4> _HHHullScreenTex;
-            float4x4 _HHSunPose;
+            float4x4 _HHSunPose, _HHSunViewPose;
             float4 _HHSunProjection, _ShadowColor, _HullIds;
             float _HHSunWaterline, _HHSunLevelGate, _HHSunDoorOpen;
             float _HHLevelShown, _CastSunShadow, _ScreenShade;
             uint _HHLiftLevels, _HHShownRoles;
             float4 _HHRoleLiftMasks[31];
-            struct Attributes { float3 positionOS:POSITION; float4 level:TEXCOORD0; float2 part:TEXCOORD1; };
+            struct Attributes { float3 positionOS:POSITION; float3 normalOS:NORMAL; float4 level:TEXCOORD0; float2 part:TEXCOORD1; };
             struct Varyings { float4 positionCS:SV_POSITION; nointerpolation float4 level:TEXCOORD0; nointerpolation float part:TEXCOORD1; };
             Varyings vert(Attributes v)
             {
@@ -43,7 +43,9 @@ Shader "HiddenHarbours/HullSunShadow"
                 float height = max(0.0,p.z + _HHSunProjection.w);
                 float2 flat = float2(p.x,p.y*_HHSunProjection.z + _HHSunWaterline) + height*_HHSunProjection.xy;
                 o.positionCS = TransformObjectToHClip(float3(flat,0));
-                o.level = v.level; o.part = v.part.x;
+                float3 wn = TransformObjectToWorldNormal(mul((float3x3)_HHSunViewPose,v.normalOS));
+                o.level = float4(v.level.xy,dot(wn,UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0,v.level.z);
+                o.part = v.part.x;
                 return o;
             }
             half4 frag(Varyings i):SV_Target
