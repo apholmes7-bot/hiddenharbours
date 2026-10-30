@@ -101,7 +101,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             // A real region has a name; the editor's initial unsaved scene has an empty one.
             // Keep both exclusion assertions on an explicit, unsaved fixture, never on editor state.
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            var scene = EditorSceneManager.NewPreviewScene();
             scene.name = "SunCasterRulesFixture";
             try
             {
@@ -113,7 +113,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 renderer.gameObject.AddComponent<Canvas>();
                 Assert.That(_rules.Qualifies(renderer, out _), Is.False);
             }
-            finally { EditorSceneManager.CloseScene(scene, true); }
+            finally { EditorSceneManager.ClosePreviewScene(scene); }
         }
 
         [Test] public void ShippedDef_HasStableIdentityAndValidFields()
