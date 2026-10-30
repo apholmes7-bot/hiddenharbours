@@ -67,7 +67,11 @@ namespace HiddenHarbours.Art
         /// wiring. The caster is a registration and an id hand-off, and costs nothing until a lamp
         /// is in range of her (see <see cref="HullLampShadowCaster"/>).
         /// </summary>
-        static void MakeShadowCasting(GameObject host) => HullLampShadowCaster.Fit(host);
+        static void MakeShadowCasting(GameObject host)
+        {
+            HullLampShadowCaster.Fit(host);
+            HullSunShadowCaster.Fit(host);
+        }
 
         /// <summary>
         /// (ADR 0016) Give this hull the LAMPS her def says she wears.

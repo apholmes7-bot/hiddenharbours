@@ -1,6 +1,6 @@
 # A mesh hull's sun shadow
 
-Phase A design, read on `f3ce747a`. The next phase makes comparison plates; production work belongs to Phase C. This serves P1, the hour's light on the fleet, and P5, a consistent picture for figures and boats. The rig's fixed lighting, rigs, kits, boat defs, camera ladder and lamps stay outside this change.
+Implementation on the original `f3ce747a` base. The owner skipped the broad comparison phase: the cached mesh route is built directly, with six before/after proof frames and one counter read under the Phase C lease. The historical map and route analysis below explain the decisions. This serves P1, the hour's light on the fleet, and P5, a consistent picture for figures and boats. The rig's fixed lighting, rigs, kits, boat defs, camera ladder and lamps stay outside this change.
 
 ## Current path, by symbol
 
@@ -95,7 +95,7 @@ Board coordinates are east/south/up. The table converts south to north before co
 
 Finding for B: moving the game to this board would turn the 12:00 shadow about 167 degrees, change its length from 0.4666 to 0.3020 per height, remove the game's 19:30 cap difference (3 versus 5.1814), and retain sunlight after the game's 20:00 sunset. The lean is to move neither model in this PR. Keep the game's law and show the reference as a look comparison with these differences labelled. In particular, a board labelled night can still have a low sun; its label cannot override the game's horizon gate. Moon-driven reference light is not a sun caster.
 
-## Phase B: one lease and a labelled matrix
+## Historical Phase B proposal: cancelled before any launch
 
 Use the eight T0-T7 coverage classes named in `Art`'s fleet catalogue, `Tools/Editor/RigBaking/HullMeshFleet.cs:247-305`. Actual boat-def lengths, rather than approximate catalogue labels, set the framing.
 
@@ -128,9 +128,9 @@ Planned capture budget: 8 hulls * 2 locations * 7 light/weather states = 112 fro
 
 Reserve one `boats-look-b2` lease for 110 minutes, one editor launch: 15 minutes warm refresh/import allowance, 15 prototype/harness setup, 35 capture, 15 image/cost checks, 10 clean shutdown/return, 20 reserve. This is an estimate, not a measured duration. Stream PNGs, retain no raw RGBA copies, budget 4 GB of evidence. B's paste must explicitly authorise the temporary prototype and collector; none exists in production from Phase A. B records actual draws, warmed CPU allocations, GPU cost per hull, proxy memory and peak target memory. No second launch without the next paste's authority. Return the lease and prove launched processes gone.
 
-## C's candidate files, overlap boundary and gates
+## C's files, overlap boundary and gates
 
-This list is the proposed edit set for the preferred route, not authority to build in A. New Unity assets below carry their matching `.meta`; the docs folder has no sibling metas.
+This is the implementation edit set. New Unity assets below carry their matching `.meta`; the docs folder has no sibling metas. The historical matrix is superseded by the six Cape Islander/Dory proof pairs at 08:00, 17:00 and 22:30, plus the optional Tanker pair. No proxy-versus-quad comparison is required.
 
 - New `Assets/_Project/Code/Art/HullSunShadowCaster.cs`, `HullSunShadowMath.cs`, `HullSunShadowMesh.cs`.
 - Modify `Assets/_Project/Code/Art/IsoFacetHullRenderer.cs` only to expose/synchronise a read-only pose, cutaway and leaf snapshot; `IsoFacetHullPresentationService.cs` to fit the caster.

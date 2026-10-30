@@ -41,6 +41,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // through the wheelhouse, with only a warning in the log to say so.
             ("Assets/_Project/Art/Shaders/HiddenHarboursDeckOccludedSprite.shader",
              "HiddenHarbours/DeckOccludedSprite"),
+            ("Assets/_Project/Art/Shaders/HiddenHarboursHullSunShadow.shader",
+             "HiddenHarbours/HullSunShadow"),
         };
 
         [Test]

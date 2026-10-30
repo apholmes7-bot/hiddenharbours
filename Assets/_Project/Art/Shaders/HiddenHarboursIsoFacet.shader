@@ -535,25 +535,10 @@ Shader "HiddenHarbours/IsoFacet"
                 return (fu < 0.030 || fv < 0.030) ? -1.0 : 0.0;
             }
 
+            #include "Include/HullLevelGate.hlsl"
             bool HHLevelDiscards(float4 lvl)
             {
-                bool isInterior = lvl.y > 0.5;
-                bool isShown = abs(lvl.x - _HHLevelShown) < 0.5;
-
-                // INTERIOR geometry tests the SHOWN level only. A lid is a thing that comes OFF; it
-                // is not a second room you are also standing in, and drawing its fit-out because you
-                // are under it would put two rooms in one hull.
-                if (isInterior) return _HHLevelShown < 0.5 || !isShown || lvl.z < 0.5;
-
-                // HULL geometry loses the level you are inside AND its declared lid. Two compares,
-                // no loop, no chain.
-                uint levelBit = 1u << (uint)max(0.0, lvl.x);
-                bool lifted = (_HHLiftLevels & levelBit) != 0;
-                bool role = lvl.w < 0.5 || (_HHShownRoles & (1u << (uint)(lvl.w - 1.0))) != 0;
-                float2 halves = _HHRoleLiftMasks[(uint)clamp(lvl.x, 0.0, 30.0)].xy;
-                uint extra = (uint)halves.x | ((uint)halves.y << 16);
-                bool roleLift = extra != 0 && (lvl.w < 0.5 || (extra & (1u << (uint)max(0.0, lvl.w - 1.0))) != 0);
-                return lifted || roleLift || (_HHLevelShown >= 0.5 && isShown && role);
+                return HHDiscardHullLevel(lvl, _HHLevelShown, _HHLiftLevels, _HHShownRoles, _HHRoleLiftMasks);
             }
 #endif
 
