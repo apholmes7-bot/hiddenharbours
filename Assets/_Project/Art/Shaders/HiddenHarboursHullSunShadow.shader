@@ -121,6 +121,25 @@ Shader "HiddenHarbours/HullSunShadow"
             }
             ENDHLSL
         }
+        // Explicit proof-only GPU readback. No production renderer list requests this tag.
+        Pass
+        {
+            Name "HullIdsProof"
+            Tags { "LightMode"="HHHullIdsProof" }
+            Blend One Zero
+            Stencil { Ref 0 Comp Always Pass Keep }
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex proofVert
+            #pragma fragment proofFrag
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            Texture2D<float4> _HHHullScreenTex;
+            struct ProofVertex {float4 positionOS:POSITION;};
+            struct ProofPixel {float4 positionCS:SV_POSITION;};
+            ProofPixel proofVert(ProofVertex v){ProofPixel o;o.positionCS=float4(v.positionOS.xy*2-1,0,1);return o;}
+            float4 proofFrag(ProofPixel i):SV_Target{return _HHHullScreenTex.Load(int3(int2(i.positionCS.xy),0));}
+            ENDHLSL
+        }
     }
     Fallback Off
 }

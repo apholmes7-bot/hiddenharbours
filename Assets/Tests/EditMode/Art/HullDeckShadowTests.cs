@@ -143,10 +143,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                         File.WriteAllBytes(Path.Combine(folder,"before-"+key+"-deck.png"),before);
                         deck.enabled=true;deck.Tick();byte[] after=shot.Png();Color32[] on=shot.LastPixels;
                         File.WriteAllBytes(Path.Combine(folder,"after-"+key+".png"),after);
-                        var screen=Shader.GetGlobalTexture(IsoFacetShaderIds.HullScreenTex) as RenderTexture;
-                        if(screen==null||screen.width!=shot.Size||screen.height!=shot.Size)throw new InvalidOperationException("The real hull id image must match the proof camera.");
-                        var mask=shot.Own(new Texture2D(screen.width,screen.height,TextureFormat.RGBA32,false));
-                        RenderTexture previous=RenderTexture.active;RenderTexture.active=screen;mask.ReadPixels(new Rect(0,0,screen.width,screen.height),0,0);mask.Apply();RenderTexture.active=previous;
+                        var screen=new RenderTexture(shot.Size,shot.Size,0,RenderTextureFormat.ARGB32);
+                        var copy=shot.Own(new Material(Resources.Load<Material>(HullSunShadowCaster.MaterialPath)));
+                        ShaderUtil.CompilePass(copy,1,true);Graphics.Blit(null,screen,copy,1);
+                        var mask=shot.Own(new Texture2D(shot.Size,shot.Size,TextureFormat.RGBA32,false));
+                        RenderTexture previous=RenderTexture.active;RenderTexture.active=screen;mask.ReadPixels(new Rect(0,0,shot.Size,shot.Size),0,0);mask.Apply();RenderTexture.active=previous;
+                        screen.Release();Object.DestroyImmediate(screen);
                         var ids=mask.GetPixels32();File.WriteAllBytes(Path.Combine(folder,"ownid-"+key+".png"),mask.EncodeToPNG());
                         int changed=0,outside=0,minX=shot.Size,minY=shot.Size,maxX=0,maxY=0;
                         for(int i=0;i<off.Length;i++)if(!off[i].Equals(on[i]))
@@ -168,6 +170,27 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
         [Serializable] class DeckFrame
         {public string key,scene,station;public float hour,deckHeight;public int changed,outside,minX,minY,maxX,maxY,hullId,foreId,span;}
+
+        public static void InspectFixture()
+        {
+            try
+            {
+                const string folder="artifacts/boats-look/pr2/c2/fixture";Directory.CreateDirectory(folder);
+                using var stage=new DeckStage();
+                foreach(float hour in new[]{8f,17f})
+                {
+                    var off=stage.Read(false,hour);File.WriteAllBytes(folder+"/off-"+hour+".png",stage.Shot.Png());
+                    var on=stage.Read(true,hour);File.WriteAllBytes(folder+"/on-"+hour+".png",stage.Shot.Png());
+                    var block=new MaterialPropertyBlock();stage.Caster.ShadowRenderer.GetPropertyBlock(block);
+                    var texture=Shader.GetGlobalTexture(IsoFacetShaderIds.HullScreenTex);
+                    File.AppendAllText(folder+"/state.txt","hour="+hour+" changed="+HullSunShadowRenderTests.Changed(off,on)+" active="+stage.Caster.ShadowRenderer.enabled+
+                        " id="+stage.Hull.HullId+" ray="+block.GetVector("_HHDeckSunRay")+" keywords="+string.Join(",",stage.Caster.ShadowRenderer.sharedMaterial.shaderKeywords)+
+                        " texture="+(texture!=null?texture.width+"x"+texture.height:"none")+"\n");
+                }
+                EditorApplication.Exit(0);
+            }
+            catch(Exception e){Debug.LogException(e);EditorApplication.Exit(1);}
+        }
 
         internal sealed class DeckStage:IDisposable
         {
@@ -191,7 +214,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
             public Color32[] Read(bool on,float hour)
             {
-                HullSunShadowRenderTests.SetSun(hour);Caster.enabled=on;Caster.Tick();return Shot.Read();
+                HullSunShadowRenderTests.SetSun(hour);Caster.enabled=on;Caster.Tick();
+                if(on)ShaderUtil.CompilePass(Caster.ShadowRenderer.sharedMaterial,0,true);
+                return Shot.Read();
             }
             public int DeckSample=>Shot.PixelOf(IsoFacetMath.RigToWorld(0,40).MultiplyPoint3x4(new Vector3(-2,0,0.8f)));
             public void Dispose()

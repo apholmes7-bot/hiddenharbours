@@ -40,7 +40,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             {
                 Color32[] off=stage.Read(false,hour),on=stage.Read(true,hour);long x=0,count=0;
                 for(int i=0;i<off.Length;i++)if(!off[i].Equals(on[i])){x+=i%stage.Shot.Size;count++;}
-                Assert.That(count,Is.GreaterThan(100));return (double)x/count-stage.Shot.Size/2.0;
+                Assert.That(count,Is.GreaterThan(100),"The declared fixture must show shade at hour "+hour);return (double)x/count-stage.Shot.Size/2.0;
             }
             Assert.That(Centre(8)*Centre(17),Is.LessThan(0),"The morning and evening shade must lie on opposite sides of the house.");
         }
