@@ -111,8 +111,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             try
             {
                 if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null)throw new InvalidOperationException("The deck proof needs a graphics device.");
-                const string folder="artifacts/boats-look/pr2/c2/plates";
-                if(!File.Exists("artifacts/boats-look/pr2/c2/plates-floor.json"))throw new InvalidOperationException("The floor must precede this launch.");
+                const string folder="artifacts/boats-look/pr2/c3/plates";
+                if(!File.Exists("artifacts/boats-look/pr2/c3/plates-floor.json"))throw new InvalidOperationException("The floor must precede this launch.");
                 Directory.CreateDirectory(folder);
                 var scene=EditorSceneManager.OpenScene("Assets/_Project/Scenes/NineMileCreek.unity",OpenSceneMode.Single);
                 Transform station=null;
