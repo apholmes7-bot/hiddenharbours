@@ -240,6 +240,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(DeckStance.IsActive, Is.True, "The real deck controller publishes the walking stance.");
             Assert.That(shadow, Is.Not.Null);
             Assert.That(shadow.TryGetLampShadowCaster(out _), Is.True, "The caster has a live sprite silhouette.");
+            _fisher.transform.position = _switcher.HelmWorldPosition;
+            Assert.That(_switcher.WithinHelmReach(), Is.True, "Arrange the fisher at the hull's measured helm.");
             Assert.That(_switcher.TryInteract(), Is.True, "Take the helm from the configured deck station.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.Aboard));
             Assert.That(_fisher.enabled, Is.False, "Taking the helm disables the body's sprite renderer.");
@@ -247,6 +249,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(_switcher.TryInteract(), Is.True, "Release the helm back onto the deck.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
             Assert.That(_deckWalk.enabled, Is.True);
+            _deckWalk.SnapTo(new Vector2(-0.5f, -3f));
         }
 
         [UnityTest] public IEnumerator ProofFrames_OffOn()
@@ -271,7 +274,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     foreach (float hour in new[] { 8f, 12f, 17f })
                     {
                         yield return PinHour(hour);
-                        yield return Pair("stp-street-" + ((int)hour).ToString("00") + "00", new Vector2(-8f, 44f), 16.875f);
+                        yield return Pair("stp-street-" + ((int)hour).ToString("00") + "00", new Vector2(-8f, 37f), 24f);
                     }
                     foreach (float hour in new[] { 8f, 17f })
                     {
@@ -325,12 +328,18 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             _camera.transform.position = new Vector3(centre.x, centre.y, -100f);
             _camera.orthographicSize = height / 2f;
+            bool deck = name.StartsWith("cape-deck", StringComparison.Ordinal);
+            if (deck) SpriteShadow.Attach(_fisher, false);
             _host.SetCasting(false);
             for (int i = 0; i < 3; i++) yield return null;
             var before = Capture();
             _host.SetCasting(true);
+            if (deck) SpriteShadow.Attach(_fisher, true);
             for (int i = 0; i < 3; i++) yield return null;
             var after = Capture();
+            int changed = 0;
+            for (int i = 0; i < before.Length; i++)
+                if (!before[i].Equals(after[i])) changed++;
             var pixels = new Color32[1920 * 2 * 1080];
             for (int y = 0; y < 1080; y++)
             {
@@ -342,7 +351,12 @@ namespace HiddenHarbours.Tests.PlayMode
             File.WriteAllBytes(Path.Combine(Output, "plates", "compare-" + name + ".png"), sheet.EncodeToPNG());
             Object.Destroy(sheet);
             File.WriteAllText(Path.Combine(Output, "plates", name + ".txt"),
-                $"Left: installer OFF. Right: ON. Same frozen world, camera, station and clock.\ncentre={centre}; height={height}; hour={GameServices.Clock.HourOfDay}\nStructural budget: one shared-material silhouette submission per caster.\n");
+                $"Left: installer OFF. Right: ON. Same frozen world, camera, station and clock.\ncentre={centre}; height={height}; hour={GameServices.Clock.HourOfDay}; changedPixels={changed}\nStructural budget: one shared-material silhouette submission per caster.\n");
+            float halfWidth = height * _target.width / _target.height / 2f;
+            var frame = new Bounds(new Vector3(centre.x, centre.y, 0f), new Vector3(halfWidth * 2f, height, 1000f));
+            var visible = Renderers().Where(r => r.enabled && r.gameObject.activeInHierarchy && frame.Intersects(r.bounds));
+            File.WriteAllLines(Path.Combine(Output, "plates", name + "-inventory.tsv"), visible.Select(r =>
+                $"{r.name}\t{r.sprite?.name}\t{r.transform.parent?.name}\t{r.transform.position}\tcaster={r.GetComponent<SpriteShadow>() != null}"));
         }
 
         Color32[] Capture()
