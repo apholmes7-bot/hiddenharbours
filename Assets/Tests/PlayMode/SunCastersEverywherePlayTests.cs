@@ -274,10 +274,10 @@ namespace HiddenHarbours.Tests.PlayMode
                     var figures = Renderers().Where(r => r.enabled && r.gameObject.activeInHierarchy &&
                         r.GetComponent<NpcFigureStand>() != null).ToArray();
                     Assert.That(figures, Is.Not.Empty, "Frame the region's live routine figures, not their authored spawn placeholders.");
-                    float minX = figures.Min(r => r.transform.position.x), maxX = figures.Max(r => r.transform.position.x);
-                    float minY = figures.Min(r => r.transform.position.y), maxY = figures.Max(r => r.transform.position.y);
-                    centre = new Vector2((minX + maxX) / 2f, (minY + maxY) / 2f + 1f);
-                    height = Mathf.Max(height, maxY - minY + 8f);
+                    File.WriteAllLines(Path.Combine(Output, "cumberland-proof-figures.tsv"), figures.Select(r =>
+                        $"{r.name}\t{r.gameObject.scene.name}\t{r.transform.position}"));
+                    var focus = figures.OrderBy(r => r.transform.position.sqrMagnitude).First();
+                    centre = (Vector2)focus.transform.position + Vector2.up;
                 }
                 if (scene != "StPeters") yield return Pair(scene == "NineMileCreek" ? "nmc-quay-1700" : scene.ToLowerInvariant() + "-1700", centre, height);
                 if (scene == "StPeters")
@@ -290,7 +290,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     foreach (float hour in new[] { 8f, 17f })
                     {
                         yield return PinHour(hour);
-                        yield return Pair("stp-pier-" + ((int)hour).ToString("00") + "00", new Vector2(191f, 0f), 16.875f);
+                        yield return Pair("stp-pier-" + ((int)hour).ToString("00") + "00", new Vector2(210f, 0f), 16.875f);
                     }
                     yield return BuildDeckFixture();
                     yield return PinHour(17f);
