@@ -100,7 +100,7 @@ namespace HiddenHarbours.Tests.RigBaking
         // ---- the slicer's kit manifest is the rigs' own geometry --------------------------------
 
         [Test]
-        public void SlicerKitSpecs_MatchTheLiveRigs()
+        public void SlicerKitSpecs_MatchTheCurrentSheetRigs()
         {
             // FishingSheetSlicer runs without a script host, so its cells/pivots are constants.
             // This is the drift alarm: the constants must equal what the rigs themselves declare.
@@ -109,7 +109,7 @@ namespace HiddenHarbours.Tests.RigBaking
             // slicer spec carries the SAME numbers as the rod's, so a check that did not read
             // them off ShovelIso would pass on a transcription and go on passing after the
             // spade rig moved. ShovelKitBakeTests asserts the CCW/CW disagreement separately.
-            foreach (var (rigKey, prefix) in new[] { ("fish", "Fish_"), ("bobber", "Bobber_"),
+            foreach (var (rigKey, prefix) in new[] { ("fish2", "Fish_"), ("bobber", "Bobber_"),
                                                      ("rod", "Rod_"), ("shovel", "Shovel_") })
             {
                 var geo = RigCatalog.Install(host, RigCatalog.Get(rigKey));
@@ -285,36 +285,18 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void BakedFishSheets_HaveTheSpecifiedGeometry_AndEveryDirectionRowHasArt()
+        public void PassOneFishBake_RefusesBeforeWriting_AndNamesThePassTwoMenu()
         {
-            string outFolder = ScratchFolder();
-            // cod, not mackerel: the LONGEST species keeps the bow-on rows (N/S — a fish seen
-            // along its own axis is a few px of cross-section) comfortably above the art floor.
-            var r = FishingKitBaker.BakeFish(new[] { "cod" }, new[] { "dart", "gill" }, outFolder);
+            string outFolder = Path.Combine("Temp", "RefusedFishBake", Guid.NewGuid().ToString("N"));
+            bool progressed = false;
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+                FishingKitBaker.BakeFish(new[] { "unknown" }, new[] { "unknown" }, outFolder,
+                    (_, _) => progressed = true));
 
-            Assert.AreEqual(2, r.Sheets.Count);
-            var dart = r.Sheets.Single(s => s.Name == "Fish_cod_dart");
-            Assert.AreEqual(2, dart.Frames, "dart is a 2-frame state");
-            Assert.AreEqual(2 * 64, dart.Width);
-            Assert.AreEqual(8 * 64, dart.Height);
-            var gill = r.Sheets.Single(s => s.Name == "Fish_cod_gill");
-            Assert.AreEqual(2, gill.Frames, "gill is a 2-frame held rest");
-            Assert.AreEqual(2 * 2 * 8, r.CellsRendered, "2 states × 2 frames × 8 dirs");
-
-            // dart bakes UNDERWATER (tinted, alpha 160) and gill bakes DRY (opaque) — both must
-            // land art in every direction row, so the row check runs at a low alpha floor.
-            foreach (var sheet in r.Sheets)
-                AssertEveryRowHasArt(sheet.AssetPath, 64, 64, rows: 8, alphaFloor: 64, minOpaque: 30);
-
-            string anchors = File.ReadAllText(Path.Combine(RepoRoot, r.AnchorJsonPath));
-            AssertBalancedJson(anchors, r.AnchorJsonPath);
-            StringAssert.Contains("\"cod\"", anchors);
-            StringAssert.Contains("\"mouth\"", anchors);
-            StringAssert.Contains("\"hold\"", anchors);
-            StringAssert.Contains("\"facingsAreCounterClockwise\": false", anchors);
-            StringAssert.DoesNotContain("\"gill\"", anchors,
-                "mouth() is body-space and the held rests re-pivot to the grip — a rest-pose " +
-                "mouth is wrong data and must not be exported");
+            StringAssert.Contains("CatchPass2BakeMenu.BakeCatchPass2", ex.Message);
+            Assert.IsFalse(progressed, "refusal must precede rendering or progress callbacks");
+            Assert.IsFalse(Directory.Exists(Path.Combine(RepoRoot, outFolder)),
+                           "the retired bake must not create its output folder");
         }
 
         [Test]

@@ -53,10 +53,11 @@ namespace HiddenHarbours.Player
 
         [Header("The fish (builder-wired from FishIsoAnchors.json + the Fish_* sheets)")]
         [SerializeField] private FishSpeciesVisual[] _species;
-        [Tooltip("Seconds per fish animation frame (shadow/dart/thrash/held all share the kit cadence).")]
+        [Tooltip("Seconds per fish animation frame. The rig's own cadences are shadow 0.28 s, " +
+                 "dart 0.08 s and thrash 0.11 s; this serialized playback cadence is independent.")]
         [SerializeField, Min(0.01f)] private float _fishSecondsPerFrame = 0.16f;
         [Tooltip("Surfaced-fish speed (m/s) above which she draws with the DART sheet facing her travel; " +
-                 "below it she station-holds on the THRASH sheet.")]
+                 "below it she station-holds on the THRASH sheet. The rig's dart motion is 1.4 m/s.")]
         [SerializeField, Min(0f)] private float _fishDartSpeedMps = 1.2f;
         [Tooltip("FALLBACK seconds between a hooked JUMPER's jumps while she is up at the surface, for " +
                  "a species that states no FightJumpPeriodSeconds of its own. Only jumpers ever jump " +

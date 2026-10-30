@@ -36,8 +36,8 @@ namespace HiddenHarbours.Art
             // A DIFFERENT PIVOT, which is why it cannot be another variant of the row above. The lay
             // variants pivot on GROUND CONTACT — the item dropped in a tote. Held art pivots on THE
             // GRIP, so it can be pinned to a character's hand anchor: the crustacean rig bakes it
-            // around hpivot (32,12), the point on the animal's back a hand closes over, while a
-            // walking one sits at (32,40). One sheet cannot carry two pivots.
+            // around hpivot per kind: lobster (32,16), crab (32,12), while a walking one uses
+            // (32,40). Each held sheet carries its kind's grip on the animal's back.
 
             [Tooltip("The kind in a hand: HeldFacings × HeldFramesPerFacing, facing-major. Empty " +
                      "for a kind whose rig bakes no held pose.")]

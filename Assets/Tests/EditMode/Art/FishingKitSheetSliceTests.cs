@@ -19,7 +19,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// pivot, or an importer setting that downscales a sheet all land as silently wrong sprites.
     ///
     /// <para><b>THREE kits, three cells, three pivots — none of them ground contact.</b>
-    /// Fish 64×64 pivoting on THE WATER-SURFACE POINT (32,38 top-left → normalized (0.5, 26/64));
+    /// Fish 64×80 pivoting on THE WATER-SURFACE POINT (32,38 top-left → normalized (0.5, 42/80));
     /// bobber 16×22 on THE WATERLINE (8,12 → (0.5, 10/22)), and only ONE row — it is a state
     /// sprite, not a turntable; rod 112×112 on THE GRIP (56,72 → (0.5, 40/112)). All three are
     /// restated here as literals ON PURPOSE, imported from neither <c>FishingSheetSlicer</c> nor
@@ -125,8 +125,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         // Pivots restated in BOTTOM-origin pixels (what Unity stores): fish (32,38) top-left on a
-        // 64-tall cell → y = 64−38 = 26; bobber (8,12) on 22 → 10; rod (56,72) on 112 → 40.
-        private static readonly Kit FishKit = new Kit(64, 64, rows: 8, pivotPxX: 32, pivotPxY: 26);
+        // 80-tall cell → y = 80−38 = 42; bobber (8,12) on 22 → 10; rod (56,72) on 112 → 40.
+        private static readonly Kit FishKit = new Kit(64, 80, rows: 8, pivotPxX: 32, pivotPxY: 42);
         private static readonly Kit BobberKit = new Kit(16, 22, rows: 1, pivotPxX: 8, pivotPxY: 10);
         private static readonly Kit RodKit = new Kit(112, 112, rows: 8, pivotPxX: 56, pivotPxY: 40);
         // The spade: 112×112 on THE GRIP (56,72) top-left → y = 112−72 = 40. The rod's numbers
@@ -391,7 +391,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             SkipIfNothingBaked(stem);
             // The same rule in NORMALIZED terms — the number actually stored in the .meta:
-            // fish (0.5, 26/64), bobber (0.5, 10/22), rod (0.5, 40/112). Three numbers, one
+            // fish (0.5, 42/80), bobber (0.5, 10/22), rod (0.5, 40/112). Three numbers, one
             // inversion rule — this catches a "generalisation" that quietly reused one kit's
             // fraction on another kit's cell.
             Kit kit = KitOf(stem);

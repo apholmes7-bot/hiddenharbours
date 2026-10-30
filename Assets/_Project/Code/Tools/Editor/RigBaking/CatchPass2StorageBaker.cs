@@ -24,7 +24,7 @@ namespace HiddenHarbours.Tools.RigBaking
     /// and painting a second bed system beside it would be two things to keep in step; the rig's
     /// <c>bed()</c> is handed to the splat lane as an ask instead. Fish ITEMS are also absent, and
     /// that is pass 1's standing decision, still true: the fish deck lays ARE the fish item art, and
-    /// <c>CatchKit2.item</c> hands back the same 64×64 cell on the same (32,38) pivot for them.</para>
+    /// <c>CatchKit2.item</c> hands back the same 64×80 cell on the same (32,38) pivot for them.</para>
     /// </summary>
     public static class CatchPass2StorageBaker
     {
@@ -56,8 +56,8 @@ namespace HiddenHarbours.Tools.RigBaking
         ///
         /// <para><b>Held is a separate stem because it is a separate PIVOT.</b> Every other pose draws
         /// around <c>pivot</c> (32,40), the ground centre; <c>held</c> draws around <c>hpivot</c>
-        /// (32,12), the grip on the animal's back — measured, the held cell's content sits at y≈14
-        /// while a walking one sits at y≈38. One stem cannot carry two pivots through the slicer.</para>
+        /// per kind: lobster (32,16), crab (32,12), the grip on the animal's back.
+        /// One stem cannot carry two pivots through the slicer.</para>
         /// </summary>
         public static FishingBakeResult BakeCrustaceans(string outputFolder = DefaultOutputFolder,
                                                         Action<string, float> progress = null)
@@ -83,17 +83,16 @@ namespace HiddenHarbours.Tools.RigBaking
             var renderClock = new Stopwatch();
             Directory.CreateDirectory(Path.Combine(RigCatalog.RepoRoot, outputFolder));
 
-            // The held pivot, read from the rig — not the ground pivot the cell otherwise uses.
-            var heldGeo = new RigGeometry(
-                width: geo.Width, height: geo.Height,
-                pivotX: host.EvaluateNumber($"{g}.hpivot.x"),
-                pivotY: host.EvaluateNumber($"{g}.hpivot.y"),
-                nativeDirs: 0, rockFrames: 0, defaultElevation: geo.DefaultElevation);
-
             int done = 0;
             foreach (string kind in kinds)
             {
                 AssertKind(host, g, kind);
+                // Each kind declares its own held grip, separate from the ground pivot.
+                var heldGeo = new RigGeometry(
+                    width: geo.Width, height: geo.Height,
+                    pivotX: host.EvaluateNumber($"{g}.hpivot.{kind}.x"),
+                    pivotY: host.EvaluateNumber($"{g}.hpivot.{kind}.y"),
+                    nativeDirs: 0, rockFrames: 0, defaultElevation: geo.DefaultElevation);
                 var poses = PosesOwnedBy(host, g, kind);
 
                 foreach (string pose in poses)

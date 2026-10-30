@@ -79,7 +79,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // ---- catch pass 2 ---------------------------------------------------------------------
         //
         // Bottom-origin again: Crustacean2's ground pivot (32,40) on a 64-tall cell → 64−40 = 24;
-        // its HELD pivot (32,12) → 64−12 = 52, high in the cell because the animal dangles BELOW
+        // its HELD pivots: lobster (32,16) → 48, crab (32,12) → 52, with the animal below
         // the grip; the hod's (20,30) on 40 → 10; Shellfish2's item pivot (4,6) on 8 → 2, and its
         // handful GRIP pivot (4,4) → 4.
         //
@@ -97,7 +97,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private static readonly (string pose, int frames)[] CrabPoses =
             { ("walk", 4), ("rear", 1), ("defend", 1), ("sidle", 4), ("burrow", 4) };
 
-        private static readonly Kit Crust2HeldKit = new Kit(64, 64, rows: 8, frames: 2, 32, 52);
+        private static readonly Kit Crust2HeldLobsterKit = new Kit(64, 64, rows: 8, frames: 2, 32, 48);
+        private static readonly Kit Crust2HeldCrabKit = new Kit(64, 64, rows: 8, frames: 2, 32, 52);
         private static readonly Kit Hod2Kit = new Kit(40, 40, rows: 8, frames: 1, 20, 10);
         private static readonly Kit Shell2ItemKit = new Kit(8, 8, rows: 1, frames: 4, 4, 2);
         private static readonly Kit Shell2HandKit = new Kit(8, 8, rows: 1, frames: 2, 4, 4);
@@ -128,8 +129,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // ---- catch pass 2 (every stem carries a 2, so pass 1 above is untouched) ----------
             foreach (var (pose, frames) in LobsterPoses) d[$"Crust2_lobster_{pose}"] = Crust2Kit(frames);
             foreach (var (pose, frames) in CrabPoses) d[$"Crust2_crab_{pose}"] = Crust2Kit(frames);
-            d["Crust2Held_lobster"] = Crust2HeldKit;
-            d["Crust2Held_crab"] = Crust2HeldKit;
+            d["Crust2Held_lobster"] = Crust2HeldLobsterKit;
+            d["Crust2Held_crab"] = Crust2HeldCrabKit;
 
             foreach (var kind in Pass2ShellKinds)
             {

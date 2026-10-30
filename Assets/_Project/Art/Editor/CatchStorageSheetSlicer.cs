@@ -63,10 +63,10 @@ namespace HiddenHarbours.Art.Editor
                 // Crustacean2 on the ground: 64×64, pivot (32,40) = ground centre; 8 direction rows.
                 ["Crust2_"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 8, pivotX: 32, pivotY: 40),
 
-                // ⚠️ HELD is its own stem because it is its own PIVOT: hpivot (32,12), the grip on
-                // the animal's back. Measured — a held cell's content sits at y≈14 while a walking
-                // one sits at y≈38, so slicing held on the ground pivot would hang it in mid-air.
-                ["Crust2Held_"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 8, pivotX: 32, pivotY: 12),
+                // HELD has a per-kind grip: lobster (32,16), crab (32,12).
+                // Full kind stems keep the keys distinct without a generic held prefix.
+                ["Crust2Held_lobster"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 8, pivotX: 32, pivotY: 16),
+                ["Crust2Held_crab"] = new FishingSheetSlicer.KitSpec(64, 64, rows: 8, pivotX: 32, pivotY: 12),
 
                 // Shellfish2 at STRICT WORLD SCALE — 8×8, not pass 1's 14×12, because scale 1 is now
                 // the real animal (a periwinkle is ONE PIXEL). Loose shell pivots on ground contact.

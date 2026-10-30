@@ -34,8 +34,8 @@ namespace HiddenHarbours.Fishing
     /// landed fish. Because a dig is a single press (not the tension fight), it doesn't run the
     /// <c>FishFight</c> FSM — it's the lightest hand-gather: bend down, lift one out.</para>
     ///
-    /// <para><b>Greybox reveal.</b> The "two little squirt holes give the clam away" tell is a simple
-    /// placeholder here: while exposed, <see cref="ShowingSquirt"/> flips on a 10–20 s cadence for art/UI
+    /// <para><b>Clam reveal.</b> While exposed, the "two little squirt holes give the clam away" tell's
+    /// <see cref="ShowingSquirt"/> follows the rig's 2.6–7.8 s period and 420 ms spurt
     /// to render a hint. It's cosmetic only (real-time, not sim state) and never gates the dig — digging
     /// works whenever the spot is exposed. Determinism is unaffected (the reveal isn't world-sim state).</para>
     ///
