@@ -1,0 +1,886 @@
+{
+  "rig": "fieldGuidePlateRig.js",
+  "version": 3,
+  "generated": "read out of Art/fieldGuidePlateRig.js at its defaults, with the defs’ words, by export/catch-review/tools/plate.js — regenerate, never hand-edit",
+  "purpose": "the field guide plate: one knowledge page per species with a def, drawn on the notebook kit. The def’s words on the ruled leaf, the species from the catch rigs on the squared leaf, at a page scale of its own that the plate states with a bar.",
+  "loadOrder": [
+    "Art/isoSolid.js",
+    "Art/fishIsoRig2.js",
+    "Art/shellfishRig2.js",
+    "Art/crustaceanRig2.js",
+    "Art/clamHodRig.js",
+    "Art/catchKit2.js",
+    "Art/dialogueBubbleRig.js",
+    "Art/notebookRig3.js",
+    "Art/fieldGuidePlateRig.js"
+  ],
+  "globals": {
+    "fishIsoRig2": "FishIso2",
+    "crustaceanRig2": "Crustacean2",
+    "shellfishRig2": "Shellfish2",
+    "notebookRig3": "NotebookKit (the page)",
+    "fieldGuidePlateRig": "FieldGuidePlate"
+  },
+  "requires": [
+    "FishIso2",
+    "Crustacean2",
+    "Shellfish2",
+    "NotebookKit"
+  ],
+  "grid": {
+    "world": "32 px = 1 m, strict, in the world: the plate does not change it",
+    "page": "P page units to the metre, a multiple of 20 (every bar whole units), one per species and page size (cols × lines), the same at both of a page size’s tiers",
+    "rigPixel": "one catch-rig pixel per page unit (m = 1): each species is its own rig’s plate drawing, renderPlate(species, P / 32), in its rig’s plate cell (pass E), and nothing is resampled",
+    "screen": "the notebook kit’s integer scale s takes a page unit to s × s px"
+  },
+  "bar": {
+    "ladder_m": [
+      1,
+      0.5,
+      0.25,
+      0.2,
+      0.1,
+      0.05
+    ],
+    "minUnits": 6,
+    "rule": "the longest on the ladder no longer than the drawing; set in the kit’s caption row a cell after its label, straight, in pencil; the label is the caption"
+  },
+  "plate": {
+    "rect": "NotebookKit layout().plate, the kit’s room for a plate that is not part of a section, on the squared leaf",
+    "pad": "3 units clear of the frame",
+    "frame": "the kit’s plate(): frame, corner ticks, caption",
+    "fill": "the species, centred, then the bar",
+    "turn": "when the words run onto the squared leaf the plate turns the page: the next spread carries the name and the plate"
+  },
+  "words": {
+    "source": "the def only: DisplayName; Flavor up to its first team note (“<WORD> NOTE:”); MinWeightKg-MaxWeightKg kg; Seasons, AllowedGear and DepthBands where the def carries them, by Gear.cs’s enum names (C# [Flags] ToString, split at capitals)",
+    "layout": "blocks(): the name and the body as one kit section, then one section a line for each fact, no labels"
+  },
+  "views": {
+    "fish.atlantic_cod": {
+      "rig": "FishIso2",
+      "species": "cod",
+      "view": "side-on, facing left"
+    },
+    "fish.haddock": {
+      "rig": "FishIso2",
+      "species": "haddock",
+      "view": "side-on, facing left"
+    },
+    "fish.pollock": {
+      "rig": "FishIso2",
+      "species": "pollock",
+      "view": "side-on, facing left"
+    },
+    "fish.mackerel": {
+      "rig": "FishIso2",
+      "species": "mackerel",
+      "view": "side-on, facing left"
+    },
+    "fish.striped_bass": {
+      "rig": "FishIso2",
+      "species": "bass",
+      "view": "side-on, facing left"
+    },
+    "fish.winter_flounder": {
+      "rig": "FishIso2",
+      "species": "flounder",
+      "view": "from above, head left"
+    },
+    "fish.atlantic_herring": {
+      "rig": "FishIso2",
+      "species": "herring",
+      "view": "side-on, facing left"
+    },
+    "fish.lobster": {
+      "rig": "Crustacean2",
+      "species": "lobster",
+      "view": "from above, head left, at rest"
+    },
+    "fish.rock_crab": {
+      "rig": "Crustacean2",
+      "species": "crab",
+      "view": "from above, legs across, at rest"
+    },
+    "fish.soft_shell_clam": {
+      "rig": "Shellfish2",
+      "species": "clam",
+      "view": "side-on, the left valve, siphon right"
+    }
+  },
+  "plates": {
+    "fish.atlantic_cod": {
+      "name": "Atlantic Cod",
+      "view": "side-on, facing left",
+      "marks": [
+        "the lateral line, pale, arched over the pectoral",
+        "speckles over the back and the upper flank",
+        "the chin barbel",
+        "the mouth, the upper jaw the longer",
+        "the eye, its pupil, iris and light",
+        "the gill cover",
+        "the fins rayed"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 100,
+          "m": 1,
+          "rigScale": 3.125,
+          "units": [
+            75,
+            26
+          ],
+          "bar": "50 cm",
+          "barUnits": 50,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 200,
+          "m": 1,
+          "rigScale": 6.25,
+          "units": [
+            151,
+            53
+          ],
+          "bar": "50 cm",
+          "barUnits": 100,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.haddock": {
+      "name": "Haddock",
+      "view": "side-on, facing left",
+      "marks": [
+        "the lateral line, black",
+        "the dark blotch above the pectoral",
+        "a small chin barbel",
+        "the small mouth",
+        "the eye, its pupil, iris and light",
+        "the gill cover",
+        "the fins rayed"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 140,
+          "m": 1,
+          "rigScale": 4.375,
+          "units": [
+            83,
+            32
+          ],
+          "bar": "25 cm",
+          "barUnits": 35,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 240,
+          "m": 1,
+          "rigScale": 7.5,
+          "units": [
+            143,
+            55
+          ],
+          "bar": "50 cm",
+          "barUnits": 120,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.pollock": {
+      "name": "Pollock",
+      "view": "side-on, facing left",
+      "marks": [
+        "the lateral line, pale and nearly straight",
+        "the mouth, the lower jaw the longer",
+        "the eye, its pupil, iris and light",
+        "the gill cover",
+        "the fins rayed"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 120,
+          "m": 1,
+          "rigScale": 3.75,
+          "units": [
+            78,
+            28
+          ],
+          "bar": "25 cm",
+          "barUnits": 30,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 220,
+          "m": 1,
+          "rigScale": 6.875,
+          "units": [
+            143,
+            51
+          ],
+          "bar": "50 cm",
+          "barUnits": 110,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.mackerel": {
+      "name": "Mackerel",
+      "view": "side-on, facing left",
+      "marks": [
+        "wavy dark bars down the back to the mid-flank",
+        "the flank and the belly plain",
+        "the mouth",
+        "the eye, its pupil, iris and light",
+        "the gill cover",
+        "the fins rayed"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 160,
+          "m": 1,
+          "rigScale": 5,
+          "units": [
+            78,
+            27
+          ],
+          "bar": "25 cm",
+          "barUnits": 40,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 300,
+          "m": 1,
+          "rigScale": 9.375,
+          "units": [
+            146,
+            51
+          ],
+          "bar": "25 cm",
+          "barUnits": 75,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.striped_bass": {
+      "name": "Striped Bass",
+      "view": "side-on, facing left",
+      "marks": [
+        "seven dark stripes along the flank",
+        "the large mouth",
+        "the eye, its pupil, iris and light",
+        "the gill cover",
+        "the fins rayed"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 100,
+          "m": 1,
+          "rigScale": 3.125,
+          "units": [
+            81,
+            28
+          ],
+          "bar": "50 cm",
+          "barUnits": 50,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 180,
+          "m": 1,
+          "rigScale": 5.625,
+          "units": [
+            146,
+            50
+          ],
+          "bar": "50 cm",
+          "barUnits": 90,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.winter_flounder": {
+      "name": "Winter Flounder",
+      "view": "from above, head left",
+      "marks": [
+        "both eyes on the upper side",
+        "dark spots over the back",
+        "the lateral line, nearly straight",
+        "the eye, its pupil, iris and light",
+        "the gill cover",
+        "the fins rayed"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 200,
+          "m": 1,
+          "rigScale": 6.25,
+          "units": [
+            78,
+            42
+          ],
+          "bar": "25 cm",
+          "barUnits": 50,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 380,
+          "m": 1,
+          "rigScale": 11.875,
+          "units": [
+            147,
+            80
+          ],
+          "bar": "25 cm",
+          "barUnits": 95,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.atlantic_herring": {
+      "name": "Atlantic Herring",
+      "view": "side-on, facing left",
+      "marks": [
+        "the large eye",
+        "the keel along the belly",
+        "the mouth, upturned",
+        "the eye, its pupil, iris and light",
+        "the gill cover",
+        "the fins rayed"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 300,
+          "m": 1,
+          "rigScale": 9.375,
+          "units": [
+            81,
+            22
+          ],
+          "bar": "10 cm",
+          "barUnits": 30,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 560,
+          "m": 1,
+          "rigScale": 17.5,
+          "units": [
+            150,
+            41
+          ],
+          "bar": "20 cm",
+          "barUnits": 112,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.lobster": {
+      "name": "American Lobster",
+      "view": "from above, head left, at rest",
+      "marks": [
+        "the shell mottled",
+        "the cervical groove across the back",
+        "the rostrum between the eyes",
+        "the tail's six segments jointed",
+        "the claws unlike: the crusher's blunt teeth, the cutter's fine ones",
+        "the legs jointed and tapering",
+        "the antennae swept back wide of the body",
+        "the wet glint"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 180,
+          "m": 1,
+          "rigScale": 5.625,
+          "units": [
+            75,
+            46
+          ],
+          "bar": "25 cm",
+          "barUnits": 45,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 320,
+          "m": 1,
+          "rigScale": 10,
+          "units": [
+            132,
+            83
+          ],
+          "bar": "25 cm",
+          "barUnits": 80,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.rock_crab": {
+      "name": "Rock Crab",
+      "view": "from above, legs across, at rest",
+      "marks": [
+        "nine teeth a side on the shell's front edge",
+        "the shell closely speckled",
+        "the claws folded before the face, their gape",
+        "the legs jointed and tapering",
+        "the wet glint"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 280,
+          "m": 1,
+          "rigScale": 8.75,
+          "units": [
+            78,
+            50
+          ],
+          "bar": "10 cm",
+          "barUnits": 28,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 460,
+          "m": 1,
+          "rigScale": 14.375,
+          "units": [
+            126,
+            81
+          ],
+          "bar": "25 cm",
+          "barUnits": 115,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    },
+    "fish.soft_shell_clam": {
+      "name": "Soft-shell Clam",
+      "view": "side-on, the left valve, siphon right",
+      "marks": [
+        "the growth lines close, crowding to the margin, two checks darker",
+        "the siphon out of the gape, ringed, dark at its tip",
+        "the beak fore of centre"
+      ],
+      "pages": {
+        "17x12": {
+          "P": 820,
+          "m": 1,
+          "rigScale": 25.625,
+          "units": [
+            82,
+            40
+          ],
+          "bar": "5 cm",
+          "barUnits": 41,
+          "cell": [
+            160,
+            96
+          ]
+        },
+        "31x20": {
+          "P": 1520,
+          "m": 1,
+          "rigScale": 47.5,
+          "units": [
+            152,
+            76
+          ],
+          "bar": "5 cm",
+          "barUnits": 76,
+          "cell": [
+            160,
+            96
+          ]
+        }
+      }
+    }
+  },
+  "tiers": [
+    {
+      "key": "31x20-s1",
+      "cols": 31,
+      "lines": 20,
+      "scale": 1,
+      "zoom": 4
+    },
+    {
+      "key": "17x12-s2",
+      "cols": 17,
+      "lines": 12,
+      "scale": 2,
+      "zoom": 3
+    },
+    {
+      "key": "17x12-s3",
+      "cols": 17,
+      "lines": 12,
+      "scale": 3,
+      "zoom": 2
+    }
+  ],
+  "pages": {
+    "17x12 s3": {
+      "fish.atlantic_cod": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.haddock": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.pollock": {
+        "pages": 1,
+        "rowsUsed": [
+          12,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.mackerel": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.striped_bass": {
+        "pages": 1,
+        "rowsUsed": [
+          12,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.winter_flounder": {
+        "pages": 1,
+        "rowsUsed": [
+          11,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.atlantic_herring": {
+        "pages": 1,
+        "rowsUsed": [
+          10,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.lobster": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.rock_crab": {
+        "pages": 1,
+        "rowsUsed": [
+          12,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.soft_shell_clam": {
+        "pages": 2,
+        "rowsUsed": [
+          12,
+          3
+        ],
+        "blocks": 4
+      }
+    },
+    "17x12 s2": {
+      "fish.atlantic_cod": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.haddock": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.pollock": {
+        "pages": 1,
+        "rowsUsed": [
+          12,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.mackerel": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.striped_bass": {
+        "pages": 1,
+        "rowsUsed": [
+          12,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.winter_flounder": {
+        "pages": 1,
+        "rowsUsed": [
+          11,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.atlantic_herring": {
+        "pages": 1,
+        "rowsUsed": [
+          10,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.lobster": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.rock_crab": {
+        "pages": 1,
+        "rowsUsed": [
+          12,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.soft_shell_clam": {
+        "pages": 2,
+        "rowsUsed": [
+          12,
+          3
+        ],
+        "blocks": 4
+      }
+    },
+    "31x20 s1": {
+      "fish.atlantic_cod": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.haddock": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.pollock": {
+        "pages": 1,
+        "rowsUsed": [
+          9,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.mackerel": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.striped_bass": {
+        "pages": 1,
+        "rowsUsed": [
+          9,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.winter_flounder": {
+        "pages": 1,
+        "rowsUsed": [
+          9,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.atlantic_herring": {
+        "pages": 1,
+        "rowsUsed": [
+          8,
+          0
+        ],
+        "blocks": 5
+      },
+      "fish.lobster": {
+        "pages": 1,
+        "rowsUsed": [
+          5,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.rock_crab": {
+        "pages": 1,
+        "rowsUsed": [
+          9,
+          0
+        ],
+        "blocks": 4
+      },
+      "fish.soft_shell_clam": {
+        "pages": 1,
+        "rowsUsed": [
+          10,
+          0
+        ],
+        "blocks": 4
+      }
+    }
+  },
+  "api": {
+    "render": "render({id, words, cols, lines, scale, plate}) → { pages: [{canvas, U, plate}], turned, size } · plate:false draws the kit alone (its empty room, its own caption)",
+    "draw": "draw(ctx, X, Y, W, H, o) → spread o.spread (0, or 1 when it turned) into a rect, as NotebookKit.drawUnit does, page “knowledge”",
+    "plan": "plan(X, Y, W, H, o) → { blocks, flow, turned, pages }, nothing drawn",
+    "fit": "fit(defId, plateRect, s) → { P, m, scale, units, bar, drawing, at }",
+    "fillFor": "fillFor(fit) → the fill for NotebookKit.plate(ctx, layout, {fill})",
+    "blocks": "blocks({name, body, facts}) → the kit’s sections",
+    "drawing": "drawing(defId, P) → the species’ own rig’s plate drawing, renderPlate(species, P / 32), cropped, as runs"
+  },
+  "probesToRun": [
+    "FieldGuidePlate.probeFit()",
+    "FieldGuidePlate.probeWords(words)",
+    "FieldGuidePlate.probeScale()",
+    "FieldGuidePlate.probeInk()"
+  ],
+  "probeResults": {
+    "fit": {
+      "pass": true,
+      "tiers": [
+        "17x12 s3",
+        "17x12 s2",
+        "31x20 s1"
+      ],
+      "claim": "each species fits at the largest page scale P, a multiple of 20, that holds it (the next step up does not), one P for a page size at each of its tiers; the drawing is the rig’s own plate drawing, not clipped by its cell, 3 units clear of the frame; the bar is whole units, at least 6, no longer than the drawing, and inside the caption row.",
+      "fails": null
+    },
+    "words": {
+      "pass": true,
+      "missingGlyphs": "",
+      "claim": "every character is in the kit’s face; the words keep to the ruled leaf, or the plate turns the page and the next spread keeps the plate’s leaf clear; placed + overflow = blocks.",
+      "fails": null
+    },
+    "scale": {
+      "pass": true,
+      "compared": 20,
+      "claim": "the plate’s fill (drawing and bar) at the kit’s s2 and s3 tiers is the s1 fill scaled, pixel for pixel: one rig pixel is one page unit, and a unit is s x s px.",
+      "fails": null
+    },
+    "ink": {
+      "pass": true,
+      "inked": 221208,
+      "claim": "everything the plate draws lies inside the kit’s frame or in its caption row.",
+      "fails": null
+    }
+  },
+  "kitCheck": {
+    "file": "notebook-kit/notebook.contract.json",
+    "bytes": 60920,
+    "sha256": "1cd7c03fcbcd04a0d0b2a4aeb6632ed83a85257cb4607265e7acbcd4eba511bb",
+    "equal": true,
+    "rects": 3555,
+    "fractional": 0,
+    "colours": {
+      "#6": 3250
+    },
+    "unknown": 0
+  },
+  "ruled": [
+    "THE DRAWING’S SIZE (the owner, 10-28, “Bigger, with field marks”, made in pass E): each species with a def is drawn for its plate by its own rig’s renderPlate, in a 160 × 96 cell, filling the frame at about 3x the game’s sprite, with the marks a field guide shows (plates.<id>.marks): the game’s colours and shape at the page’s pixel size, never a new fish. The game’s sprites are unchanged.",
+    "THE CLAM (the owner, 10-28): a plate-size clam drawing in Shellfish2, which the plate draws: Shellfish2.renderPlate (pass D; a 160 × 96 cell since pass E), side-on with its siphon, at P / 32 like every other species. Its siphon stays as drawn (pass D’s question 4).",
+    "THE LOBSTER (the owner, 10-28, “Olive in pass E”): Crustacean2 draws the live lobster dark olive, and so its plate, drawn once; red is kept for a cooked one.",
+    "THE WORDS (the owner, 10-28): the player’s words on a plate come from the game’s writers, through the coordinator; the team notes stay cut, and nothing is invented. Until they come the plate prints the def’s words: the enums’ names with no labels, and two lines in the team’s words for the game (“the trap-arc’s”, “the St Peters opening’s”), which print until the writers’ words come (pass D’s question 6).",
+    "THE FURNITURE (the owner, 10-28): the bar’s label is the caption; the running head and the tabs stay the Notebook’s; the plate’s page scale stands."
+  ]
+}

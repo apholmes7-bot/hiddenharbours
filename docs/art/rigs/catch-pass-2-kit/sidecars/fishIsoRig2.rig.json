@@ -2,9 +2,9 @@
  "schema": "hidden-harbours/rig-sidecar@1",
  "rig": "Art/fishIsoRig2.js",
  "exportSymbol": "FishIso2",
- "derivedFromRigSha256": "c97f5f76851bfed806c2b74dbc894a2aef2506c69a5dd5e9f20086f71317d13c",
+ "derivedFromRigSha256": "3e162191294f07129c94e5e4ecc36db31a94564fa114b4327fd44447d267e479",
  "generated": {
-  "date": "2026-09-06T00:14:50.676Z",
+  "date": "2026-10-28T00:00:00.000Z",
   "by": "Art/_catchSidecars.js",
   "harness": "CATCH_SIDECARS",
   "isoSolidSha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
@@ -25,7 +25,7 @@
  },
  "cell": {
   "w": 64,
-  "h": 64,
+  "h": 80,
   "pivot": {
    "x": 32,
    "y": 38
@@ -51,14 +51,14 @@
    "len": 0.7,
    "girth": 0.105,
    "lenPx": {
-    "atRangeMin": 13.4,
+    "atRangeMin": 19.5,
     "at1": 22.4,
-    "atRangeMax": 33.6
+    "atRangeMax": 35.6
    },
    "flat": 0.72,
    "stripes": "none",
    "dorsals": 2,
-   "range": [0.6, 1.5],
+   "range": [0.87, 1.59],
    "massK": 1,
    "hold": {
     "at1": {
@@ -66,11 +66,11 @@
      "hands": 2
     },
     "atRangeMin": {
-     "mass": 0.65,
+     "mass": 1.98,
      "hands": 1
     },
     "atRangeMax": {
-     "mass": 10.16,
+     "mass": 12.1,
      "hands": 2
     }
    },
@@ -87,14 +87,14 @@
    "len": 0.55,
    "girth": 0.09,
    "lenPx": {
-    "atRangeMin": 12.3,
+    "atRangeMin": 14.6,
     "at1": 17.6,
-    "atRangeMax": 22.9
+    "atRangeMax": 26.6
    },
    "flat": 0.68,
    "stripes": "none",
    "dorsals": 2,
-   "range": [0.7, 1.3],
+   "range": [0.83, 1.51],
    "massK": 1,
    "hold": {
     "at1": {
@@ -102,11 +102,11 @@
      "hands": 1
     },
     "atRangeMin": {
-     "mass": 0.6,
+     "mass": 0.99,
      "hands": 1
     },
     "atRangeMax": {
-     "mass": 3.82,
+     "mass": 5.98,
      "hands": 2
     }
    },
@@ -123,14 +123,14 @@
    "len": 0.6,
    "girth": 0.092,
    "lenPx": {
-    "atRangeMin": 13.4,
+    "atRangeMin": 17.5,
     "at1": 19.2,
-    "atRangeMax": 26.9
+    "atRangeMax": 31.9
    },
    "flat": 0.7,
    "stripes": "none",
    "dorsals": 2,
-   "range": [0.7, 1.4],
+   "range": [0.91, 1.66],
    "massK": 1,
    "hold": {
     "at1": {
@@ -138,11 +138,11 @@
      "hands": 1
     },
     "atRangeMin": {
-     "mass": 0.68,
+     "mass": 1.49,
      "hands": 1
     },
     "atRangeMax": {
-     "mass": 5.43,
+     "mass": 9.06,
      "hands": 2
     }
    },
@@ -159,14 +159,14 @@
    "len": 0.45,
    "girth": 0.068,
    "lenPx": {
-    "atRangeMin": 10.1,
+    "atRangeMin": 10.4,
     "at1": 14.4,
-    "atRangeMax": 17.3
+    "atRangeMax": 17.7
    },
    "flat": 0.62,
    "stripes": "bars",
    "dorsals": 2,
-   "range": [0.7, 1.2],
+   "range": [0.72, 1.23],
    "massK": 1,
    "hold": {
     "at1": {
@@ -174,11 +174,11 @@
      "hands": 1
     },
     "atRangeMin": {
-     "mass": 0.28,
+     "mass": 0.3,
      "hands": 1
     },
     "atRangeMax": {
-     "mass": 1.4,
+     "mass": 1.51,
      "hands": 1
     }
    },
@@ -198,12 +198,12 @@
    "lenPx": {
     "atRangeMin": 14.4,
     "at1": 24,
-    "atRangeMax": 38.4
+    "atRangeMax": 42.2
    },
    "flat": 0.7,
    "stripes": "lines",
    "dorsals": 2,
-   "range": [0.6, 1.6],
+   "range": [0.6, 1.76],
    "massK": 1.3,
    "hold": {
     "at1": {
@@ -215,7 +215,7 @@
      "hands": 1
     },
     "atRangeMax": {
-     "mass": 18.85,
+     "mass": 25.08,
      "hands": 2
     }
    },
@@ -233,15 +233,15 @@
    "len": 0.35,
    "girth": 0.08,
    "lenPx": {
-    "atRangeMin": 7.8,
+    "atRangeMin": 8.6,
     "at1": 11.2,
-    "atRangeMax": 17.9
+    "atRangeMax": 18.6
    },
    "flat": 1,
    "zflat": 0.24,
    "stripes": "none",
    "dorsals": 0,
-   "range": [0.7, 1.6],
+   "range": [0.77, 1.66],
    "massK": 0.5,
    "hold": {
     "at1": {
@@ -249,11 +249,11 @@
      "hands": 1
     },
     "atRangeMin": {
-     "mass": 0.15,
+     "mass": 0.2,
      "hands": 1
     },
     "atRangeMax": {
-     "mass": 1.79,
+     "mass": 2,
      "hands": 1
     }
    },
@@ -271,14 +271,14 @@
    "len": 0.25,
    "girth": 0.028,
    "lenPx": {
-    "atRangeMin": 6.4,
+    "atRangeMin": 7,
     "at1": 8,
-    "atRangeMax": 9.6
+    "atRangeMax": 11.8
    },
    "flat": 0.55,
    "stripes": "none",
    "dorsals": 1,
-   "range": [0.8, 1.2],
+   "range": [0.87, 1.48],
    "massK": 2,
    "hold": {
     "at1": {
@@ -286,15 +286,15 @@
      "hands": 1
     },
     "atRangeMin": {
-     "mass": 0.08,
+     "mass": 0.1,
      "hands": 1
     },
     "atRangeMax": {
-     "mass": 0.26,
+     "mass": 0.5,
      "hands": 1
     }
    },
-   "flags": ["shoal"],
+   "flags": ["shoal", "flash"],
    "palette": {
     "back": "#2e4d61",
     "flank": "#95adb5",
