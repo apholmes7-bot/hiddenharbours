@@ -185,6 +185,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 var setup=HullSunShadowFixture.Setup(_mesh);setup.WatertightDeckHeightMeters=0.8f;
                 setup.Ramps=new[]{new[]{new Color32(190,180,130,255),new Color32(190,180,130,255)},new[]{new Color32(120,65,30,255),new Color32(120,65,30,255)}};
                 setup.RampOffsets=new[]{0,0};Hull=_host.AddComponent<IsoFacetHullRenderer>();Hull.Configure(setup);
+                foreach(Transform child in _host.GetComponentsInChildren<Transform>(true))child.gameObject.layer=31;
                 Caster=HullDeckShadowCaster.Fit(_host);
                 Shot.Sprite("neighbour",new Vector2(4,0),new Vector2(1,4),Color.cyan,0);
             }

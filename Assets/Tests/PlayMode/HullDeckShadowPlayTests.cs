@@ -35,6 +35,7 @@ namespace HiddenHarbours.Tests.PlayMode
             try
             {
                 var hull=(IsoFacetHullRenderer)new IsoFacetHullPresentationService().Install(host,def);
+                foreach(Transform child in host.GetComponentsInChildren<Transform>(true))child.gameObject.layer=31;
                 host.GetComponent<HullSunShadowCaster>().enabled=false;
                 hull.HeadingDirUnits=2;hull.ApplyPose();
                 var profile=Resources.Load<DayNightProfile>("DayNightProfile");
@@ -45,6 +46,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 var deck=host.GetComponent<HullDeckShadowCaster>();
                 Color32[] Read(bool on)
                 {
+                    Shader.SetGlobalVector("_SunDir",new Vector4(sun.x,sun.y,0,0));Shader.SetGlobalFloat("_SunElevation",DayNightMath.SunElevation(hour,profile.SunriseHour,profile.SunsetHour));
+                    Shader.SetGlobalFloat("_ShadowStrength",DayNightMath.ShadowStrength(hour,profile.SunriseHour,profile.SunsetHour,0,profile.OvercastFadesShadow));
                     deck.enabled=on;deck.Tick();camera.Render();camera.Render();
                     RenderTexture previous=RenderTexture.active;RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,256,256),0,0);pixels.Apply();RenderTexture.active=previous;return pixels.GetPixels32();
                 }
