@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using NUnit.Framework;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace HiddenHarbours.Tests.Art.EditMode
 {
@@ -97,12 +99,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         [Test] public void SceneOptOutAndCanvas_ExcludeSprites()
         {
-            var renderer = Sprite("Crate");
-            _rules.ExcludedScenes = new[] { renderer.gameObject.scene.name };
-            Assert.That(_rules.Qualifies(renderer, out _), Is.False);
-            _rules.ExcludedScenes = System.Array.Empty<string>();
-            renderer.gameObject.AddComponent<Canvas>();
-            Assert.That(_rules.Qualifies(renderer, out _), Is.False);
+            // A real region has a name; the editor's initial unsaved scene has an empty one.
+            // Keep both exclusion assertions on an explicit, unsaved fixture, never on editor state.
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            scene.name = "SunCasterRulesFixture";
+            try
+            {
+                var renderer = Sprite("Crate");
+                SceneManager.MoveGameObjectToScene(renderer.gameObject, scene);
+                _rules.ExcludedScenes = new[] { "SunCasterRulesFixture" };
+                Assert.That(_rules.Qualifies(renderer, out _), Is.False);
+                _rules.ExcludedScenes = System.Array.Empty<string>();
+                renderer.gameObject.AddComponent<Canvas>();
+                Assert.That(_rules.Qualifies(renderer, out _), Is.False);
+            }
+            finally { EditorSceneManager.CloseScene(scene, true); }
         }
 
         [Test] public void ShippedDef_HasStableIdentityAndValidFields()
