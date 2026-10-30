@@ -386,16 +386,46 @@ namespace HiddenHarbours.Tests.EditMode
             UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Art.PlantFieldDefinition>(DefinitionPath);
 
         [Test]
-        public void TheSceneHasOnePlantField_AndNoneOfTheFourRetiredRoots()
+        public void TheSceneHasOnePlantField_AndKeepsTheWetShorePlants()
         {
             var scene = StPetersLayerRefresh.SceneYaml.Parse(System.IO.File.ReadAllText(StPetersLayerRefresh.ScenePath));
             Assert.IsNotNull(scene.RootNamed(StPetersPlantFieldPatch.FieldRoot));
-            foreach (string name in StPetersPlantFieldPatch.RetiredRoots)
+            foreach (string name in new[] { "IslandGrass", "IslandShrubs", "IslandFlowers" })
                 Assert.Throws<StPetersLayerRefresh.Refusal>(() => scene.RootNamed(name));
             Assert.AreEqual(1, System.Linq.Enumerable.Count(scene.Docs, d =>
                 d.Field("m_EditorClassIdentifier") == "HiddenHarbours.Art::HiddenHarbours.Art.PlantField"));
             Assert.AreEqual(0, System.Linq.Enumerable.Count(scene.Docs, d =>
                 d.Field("m_EditorClassIdentifier") == "HiddenHarbours.Art::HiddenHarbours.Art.GrassField"));
+            var ground = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldGroundData>(GroundPath);
+            var definition = Definition();
+            Vector2Int Cell(Vector2 at) => new Vector2Int(
+                Mathf.FloorToInt((at.x - definition.Origin.x) / definition.CellSize),
+                Mathf.FloorToInt((at.y - definition.Origin.y) / definition.CellSize));
+            var region = UnityEditor.AssetDatabase.LoadAssetAtPath<RegionDef>("Assets/_Project/Data/Regions/StPeters.asset");
+            float high = region.TideMeanLevel + Mathf.Abs(region.TideAmplitude);
+            var shore = scene.RootNamed(StPetersPlantFieldPatch.KeptShoreRoot);
+            var children = scene.TransformOf(shore).FieldRefs("m_Children");
+            Assert.AreEqual(30, children.Count, "PR 5p retains the wet members of the placed shore");
+            var species = new Dictionary<string, int>();
+            var cells = new HashSet<Vector2Int>();
+            foreach (long id in children)
+            {
+                var tr = scene.Require(id, "kept transform");
+                var go = scene.Require(tr.FieldRef("m_GameObject"), "kept plant");
+                string name = go.Field("m_Name");
+                species[name] = species.TryGetValue(name, out int count) ? count + 1 : 1;
+                Vector2 at = StPetersLayerRefresh.ParseVec3(tr.Field("m_LocalPosition"));
+                Assert.LessOrEqual(ground.HeightMap.Field.ElevationAt(at), high, name);
+                cells.Add(Cell(at));
+            }
+            CollectionAssert.AreEquivalent(new[] { "Eelgrass:4", "SugarKelp:8", "IrishMoss:4", "Cordgrass:4",
+                "Glasswort:3", "Threesquare:2", "SaltmeadowHay:2", "BlackRush:1", "KnottedWrack:1", "SeaLettuce:1" },
+                System.Linq.Enumerable.Select(species, p => p.Key + ":" + p.Value));
+            Assert.AreEqual(30, StPetersPlantFieldPatch.KeptStands(scene, ground.HeightMap.Field, high).Count);
+            byte[] map = ground.Decode();
+            foreach (var cell in cells) Assert.AreEqual(255, map[cell.y * ground.Width + cell.x], "no scatter over a kept plant");
+            foreach (var row in definition.Authored)
+                Assert.IsFalse(cells.Contains(Cell(row.At)), row.Id);
         }
 
         [Test]
@@ -432,16 +462,26 @@ namespace HiddenHarbours.Tests.EditMode
                 int go = 100 + 2 * i, tr = go + 1; transforms.Add(tr);
                 before += Pair(go, tr, StPetersPlantFieldPatch.RetiredRoots[i]);
             }
+            transforms.Add(201);
+            before += Pair(200, 201, StPetersPlantFieldPatch.KeptShoreRoot)
+                .Replace("  m_Children: []", "  m_Children:" + "\n  - {fileID: 205}\n  - {fileID: 207}");
+            before += Pair(204, 205, "WetShore").Replace("  m_Father: {fileID: 0}", "  m_Father: {fileID: 201}");
+            before += Pair(206, 207, "DryShore").Replace("  m_Father: {fileID: 0}", "  m_Father: {fileID: 201}");
             before += "--- !u!1660057539 &900\nSceneRoots:\n  m_Roots:\n";
             foreach (int tr in transforms) before += "  - {fileID: " + tr + "}\n";
             string added = Pair(1000, 1001, StPetersPlantFieldPatch.FieldRoot);
-            var patch = StPetersPlantFieldPatch.Apply(before, added);
-            CollectionAssert.AreEquivalent(StPetersPlantFieldPatch.RetiredRoots, patch.DeletedObjects);
+            var kept = new HashSet<long> { 204 };
+            var patch = StPetersPlantFieldPatch.Apply(before, added, kept);
+            CollectionAssert.AreEquivalent(new[] { "IslandGrass", "IslandShrubs", "IslandFlowers", "ShorePlants/DryShore" },
+                patch.DeletedObjects);
             CollectionAssert.AreEqual(new[] { StPetersPlantFieldPatch.FieldRoot }, patch.AddedObjects);
             Assert.AreEqual(8, patch.DeletedDocuments.Length);
-            Assert.AreEqual(patch.Text, StPetersPlantFieldPatch.Apply(patch.Text, added).Text);
+            Assert.AreEqual(patch.Text, StPetersPlantFieldPatch.Apply(patch.Text, added, kept).Text);
+            var parsed = StPetersLayerRefresh.SceneYaml.Parse(patch.Text);
+            CollectionAssert.AreEqual(new[] { 205L }, parsed.TransformOf(parsed.RootNamed("ShorePlants")).FieldRefs("m_Children"));
+            Assert.AreEqual(StPetersLayerRefresh.SceneYaml.Parse(before).Get(204).Text, parsed.Get(204).Text);
             string bad = before + "--- !u!114 &950\nMonoBehaviour:\n  m_GameObject: {fileID: 0}\n  target: {fileID: 100}\n";
-            Assert.Throws<System.InvalidOperationException>(() => StPetersPlantFieldPatch.Apply(bad, added));
+            Assert.Throws<System.InvalidOperationException>(() => StPetersPlantFieldPatch.Apply(bad, added, kept));
         }
 
         static string Pair(int go, int tr, string name) =>

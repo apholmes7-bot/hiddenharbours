@@ -653,7 +653,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>The step re-adds its root LAST: SceneRoots must be the committed list with only the key
-        /// root moved from index 56 to the end, every other root in its committed order, nothing else changed.</summary>
+        /// root moved from index 53 to the end, every other root in its committed order, nothing else changed.</summary>
         static void AssertOnlyTheKeyRootMovesToTheEnd(string committed, string rebuilt)
         {
             var c = new LayerRefreshSceneText(committed);
@@ -662,10 +662,10 @@ namespace HiddenHarbours.Tests.EditMode
             List<long> before = c.Refs(roots, "m_Roots"), after = r.Refs(roots, "m_Roots");
             long key = c.TransformOf(c.RootGameObject(StPetersLayerRefresh.KeyScenesRootName));
 
-            // E2 ruling 8 (case 11): the committed scene lists the key root at index 56.
-            Assert.AreEqual(56, before.IndexOf(key), "the key root's index in the committed SceneRoots");
-            // E2 ruling 8, D1/D5 and Amendment 1 point 5 (Village.cs :163, :257): the commons, then the lights.
-            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L }, before.Skip(57).ToArray(),
+            // E2 ruling 8 and PR 5p: three retired roots leave the key root at index 53.
+            Assert.AreEqual(53, before.IndexOf(key), "the key root's index in the committed SceneRoots");
+            // E2 ruling 8, D1/D5 and Amendment 1 point 5: commons then lights; PR 5p field last.
+            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L }, before.Skip(54).ToArray(),
                                       "the committed roots after the key root");
             Assert.AreEqual(1757780506L, c.TransformOf(c.RootGameObject(StPetersVillageDressing.CommonsRoot)));
             Assert.AreEqual(866884044L, c.TransformOf(c.RootGameObject(StPetersVillageLights.RootName)));

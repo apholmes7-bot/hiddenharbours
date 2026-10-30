@@ -162,7 +162,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            Assert.Less(weight.Bytes, 5815722 - 650000, "the four named root subtrees must leave real scene savings");
+            Assert.AreEqual(5259646, weight.Bytes, "PR 5p keeps the 30 wet shore plants and measures the remaining scene");
             string text = File.ReadAllText("Assets/_Project/Scenes/StPeters.unity");
             Assert.IsFalse(text.Contains("  m_Name: PlantChunk\n"), "runtime chunks must never be serialized");
         }
