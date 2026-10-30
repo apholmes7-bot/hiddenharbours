@@ -520,6 +520,45 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{pair.Key}: {pair.Value} enabled curling breaker sites, the pool holds {CurlingBreakerSettings.PilotCapacity}");
         }
 
+        // ---- water types and plumes (ADR 0027 #7, gains 2) ----------------------------------
+
+        [Test]
+        public void WaterTypesAndPlumes_HaveStableIdsAndValidValues()
+        {
+            // A region's water is data: one type per file under Data/Water/Types, a stable water.snake_case
+            // id, every value inside its range. A plume (a creek or river mouth's own water) names an
+            // existing region and a shipped type.
+            var seen = new Dictionary<string, string>();
+            var types = LoadAll<HiddenHarbours.Art.WaterTypeDef>();
+            Assert.IsNotEmpty(types, "no WaterTypeDef under Data");
+            foreach (var type in types)
+            {
+                string path = AssetDatabase.GetAssetPath(type);
+                RegisterUniqueId(seen, type.Id, path, nameof(HiddenHarbours.Art.WaterTypeDef));
+                Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(type.Id, @"^water\.[a-z][a-z0-9_]*$"),
+                    $"{path}: id '{type.Id}' is not water.snake_case");
+                StringAssert.StartsWith($"{DataRoot}/Water/Types/", path, $"{path}: not in Data/Water/Types");
+                Assert.IsTrue(type.IsValid(), $"{path}: a value is outside its range");
+            }
+
+            var regionIds = new HashSet<string>();
+            foreach (var r in LoadAll<RegionDef>())
+                if (!string.IsNullOrWhiteSpace(r.Id)) regionIds.Add(r.Id);
+            foreach (var plume in LoadAll<HiddenHarbours.Art.WaterPlumeDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(plume);
+                RegisterUniqueId(seen, plume.Id, path, nameof(HiddenHarbours.Art.WaterPlumeDef));
+                Assert.IsTrue(System.Text.RegularExpressions.Regex.IsMatch(plume.Id, @"^water_plume\.[a-z][a-z0-9_]*$"),
+                    $"{path}: id '{plume.Id}' is not water_plume.snake_case");
+                StringAssert.StartsWith($"{DataRoot}/Water/Plumes/", path, $"{path}: not in Data/Water/Plumes");
+                Assert.IsTrue(regionIds.Contains(plume.RegionId ?? string.Empty),
+                    $"{path}: region id '{plume.RegionId}' resolves to no RegionDef");
+                Assert.IsTrue(plume.IsValid(), $"{path}: a value is outside its range, or it carries no valid type");
+                StringAssert.StartsWith($"{DataRoot}/Water/Types/", AssetDatabase.GetAssetPath(plume.Type),
+                    $"{path}: its type is not a shipped water type");
+            }
+        }
+
         // ---- cross-type ---------------------------------------------------------------------
 
         [Test]
@@ -548,7 +587,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void DefIds_AreGloballyUnique_AcrossAllDefTypes()
         {
             // Ids are append-only & stable and namespaced by type (fish.* / boat.* / region.* / trap.* /
-            // bait.*), so they must not collide across the whole content set.
+            // bait.* / water.* / water_plume.*), so they must not collide across the whole content set.
             var seen = new Dictionary<string, string>();
             foreach (var f in LoadAll<FishSpeciesDef>())
                 if (!string.IsNullOrWhiteSpace(f.Id))
@@ -565,6 +604,12 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var bait in LoadAll<BaitDef>())
                 if (!string.IsNullOrWhiteSpace(bait.Id))
                     RegisterUniqueId(seen, bait.Id, AssetDatabase.GetAssetPath(bait), "Def");
+            foreach (var water in LoadAll<HiddenHarbours.Art.WaterTypeDef>())
+                if (!string.IsNullOrWhiteSpace(water.Id))
+                    RegisterUniqueId(seen, water.Id, AssetDatabase.GetAssetPath(water), "Def");
+            foreach (var plume in LoadAll<HiddenHarbours.Art.WaterPlumeDef>())
+                if (!string.IsNullOrWhiteSpace(plume.Id))
+                    RegisterUniqueId(seen, plume.Id, AssetDatabase.GetAssetPath(plume), "Def");
         }
 
         /// <summary>

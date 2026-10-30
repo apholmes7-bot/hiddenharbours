@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb3d1bad098e4dbbb09238fdcced42f7, type: 3}
+  m_Name: WaterType_StPetersOpenAtlantic
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.WaterTypeDef
+  Id: water.st_peters_open_atlantic
+  Water:
+    Stain: 0
+    StainSpectrum: {x: 0.1, y: 0.28, z: 1}
+    Algae: 0
+    AlgaeSpectrum: {x: 0.4, y: 0.2, z: 1}
+    DrySilt: 0
+    SiltSpectrum: {x: 0.8, y: 0.88, z: 1}
+    SiltResponse: 0.15
+    SiltWindowDays: 1
+    SiltTaps: 16
+    StainColour: {r: 0.42, g: 0.27, b: 0.12, a: 1}
+    SiltColour: {r: 0.45, g: 0.42, b: 0.33, a: 1}
+    BodyStrength: 0.25

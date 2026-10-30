@@ -479,6 +479,80 @@ and no alpha blend returns, so §17.3's cancellation stays dissolved by construc
   (`AnAwashRock_DrawsNoSecondWaterline`); drawing their below-water pixels through the column is a scene change in
   both played regions, raised before it is built (§17.13).
 
+### Amendment to (1) #7 (2026-10-28, water gains 2 and 3) — the water is coloured by place and by rain
+
+Rulings (2026-10-15): each region's whole water, plus local plumes at creek and river mouths, as data;
+the water itself tints, an in-scatter term under the palette grade, which lifts #7's "never to the water's own
+colour" for a region that carries a type; Nine Mile Creek's creek water is stained, St Peters' open Atlantic is
+clear, and every other region keeps the default. The ratio stays fixed and stays the mood's. A region's **water
+type** adds its own per-channel character beside it.
+
+- **The type is data.** `WaterTypeDef`, one per file under `Data/Water/Types/` with a stable `water.snake_case` id
+  that the content validator holds unique across every Def (`WaterTypesAndPlumes_HaveStableIdsAndValidValues`,
+  `DefIds_AreGloballyUnique_AcrossAllDefTypes`). It carries three constituents in 1/m when dry, each with a
+  per-channel spectrum: stain (tea; default spectrum (0.10, 0.28, 1): it takes blue first), algae (green;
+  (0.40, 0.20, 1): it spares green) and silt (brown; (0.80, 0.88, 1): it dims every channel). It also carries the
+  silt a wet spell adds, the clearing window, and the body tint's two colours and strength. Every field names its
+  default, unit and range. `WaterTypeValues.Default` is today's water: no constituent, no response, no tint.
+- **The law, and how it composes with the moods.** σ = `_Turbidity` × `_AbsorptionRatio` + σ_type per channel,
+  where σ_type = stain × its spectrum + algae × its spectrum + silt(t) × its spectrum. The mood still eases
+  `_Turbidity` per weather (§14), so the two add: the mood says how stirred the sea is, the type says what this
+  region's water carries, and a type never takes light back out (negatives clamp to +0). The default type adds
+  exactly +0, so a region with no type draws exactly as before (`WaterType_Default_IsTodaysSigma_BitForBit`,
+  `WaterType_NoType_DrawsExactlyAsToday`). One σ feeds every reader: the type's term is set once per pixel, ahead
+  of the seabed, the crest glow and the caustic, all of which read it through `AbsorptionSigma()`. Twins:
+  `WaterAbsorption.Sigma(turbidity, ratio, typeSigma)` and `WaterType` against `AbsorptionSigma` and the shader's
+  `WaterType*` functions (`TheShader_CarriesTheWaterTypeTwin`).
+- **Silt after rain, pure in (worldSeed, gameTime).** silt(t) = dry silt + response × the rain averaged over the
+  clearing window before t, on W4-2's fixed world-time tap grid by `WaveMemory`'s own method
+  (`WaveMemory.AverageSignal` is `WaveMemory.Average`, op for op, over any scalar of world time). The rain at a past
+  time is the rain the rain rings draw: `AmbientParticleMath.RainIntensity` over that time's visibility and sea
+  state, with the rings' own five dials. The window is in game days (default 3, from 0.25 to 14: a creek's runoff
+  settles and flushes over a few days) and its taps are data (default 24, from 4 to 64). Nothing is saved, and a
+  jump reads what a play-through reads (`Silt_SameSeedSameTime_NoHistory`).
+- **The Core seam.** `IVisibilitySource.VisibilityAt(double)` stands beside W4-2's `IWaveWindSource.WaveWindAt`,
+  with `IWorldTimeSignal`, in `Core/Environment`. `EnvironmentService` answers it with the fog law `Sample()`
+  reads (fog stays the pure sim: the dev storm override never touches it), and Art's `WaterRainSignal` reads both
+  seams. Core depends on no feature module, and Art never depends on Environment
+  (`Core_DependsOnNoFeatureModule_AndArtReadsTheRainThroughCore`). This records the Core contract, as W4-2's
+  amendment to ADR 0018 recorded its own.
+- **Placement, edges and plumes.** The type sits on the region's `WaterSurface`, never on the shared `Water.mat`,
+  and reaches the sea through the surface's property block, as the seabed bake does; a surface with no type pushes
+  nothing. The type fades to the default over the last 32 m inside the surface's bounds
+  (`_waterTypeSeamMeters`), so no region meets another at a step
+  (`WaterType_FadesToNothingAtTheSurfacesEdge_NoStep`). A plume (`WaterPlumeDef`, `water_plume.snake_case`, under
+  `Data/Water/Plumes/`) is a mouth, a reach and a feather that carry its own type into the region's water, at most
+  four to a surface (`WaterType_APlume_FeathersIntoTheRegionsWater`). None ships yet.
+- **The body tint.** Where a type carries stain or silt, the water's own colour moves toward the type's: weight
+  1 − exp(−σ_in × 2d) with σ_in = stain + silt, banded by `_AbsorptionBands` and scaled by the type's body strength,
+  toward the stain's colour and the silt's mixed by their shares
+  (`WaterType_Body_TintsTowardTheTypesColour_ByItsStainAndSilt`). It lands in `col.rgb` after the depth block and
+  before every additive layer and the seabed composite, which then sees the bottom through the tinted column, and
+  under the palette grade (ADR 0015), which bounds and posterizes it like every layer. Body strength 0 skips it
+  exactly. The painted `_DepthRamp` stays the body's colour authority, and the transmission still applies only to
+  the bottom.
+- **Cost (rule 7).** The silt is folded on the surface's slow tick (125 ms), never per frame: for a typed surface
+  with a response, taps + 1 rain evaluations a tick (each a weather sample for the fog, a wind sample and the rain
+  law), 25 at Nine Mile Creek and 17 at St Peters; a surface with no type or no response makes none. The tick
+  allocates nothing (`Silt_SlowTick_AllocatesNothing`, `SiltSlowTick_OnTheRealEnvironment_AllocatesNothing`). The
+  shader adds one type read a pixel (up to four plume weights) and one body weight. These are estimates until the
+  plates measure them.
+- **The crest glow (gain 3) reads the same σ.** Light through a thin crest when the sun is low and behind it. On
+  the one signed facing `_SwellFaceShade` and `_SunSideStrength` read, and under the sun side's own elevation gate,
+  the face shade darkens the back (value), the sun side cools it (hue), and the glow lights only its thin top, in
+  the sun's colour through the water's σ over `_CrestGlowThickness` metres, posterized by `_CrestGlowBands` and
+  added under the palette grade. `_CrestGlowStrength` ships at 0 on every water material: an exact passthrough,
+  visual only. It is a mood float whose fog anchor reads 0, so fog takes it away. Its strength is picked by eye.
+  Measured since (gains B5, St Peters' open coast at 19:30 and 17:30, sea states 0.342 and 0.444): at the shipped
+  onset `_CrestGlowTop` 0.55 and 3 bands the glow lights no pixel at any strength. `glowTop` never opens in the
+  frame; where it opens on the open sea (about 0.1% of a 2 km square) the amount before the posterize peaks at
+  0.104 (19:30) and 0.043 (17:30), under the first band's floor of 1/6, and the strength multiplies after the
+  posterize. The numbers pass is a later phase; the glow ships at strength 0. Twin: `CrestGlow`
+  (`TheShader_CarriesTheCrestGlowTwin`).
+- **What did not change.** The ratio, the bands, every mood's turbidity, the bake and W4-4's floor; `depth`,
+  `clip()`, `_WaterLevel` and the height read the sim uses (visual only, rule 5). Live spec:
+  [water rendering §17.7](../design/water-rendering.md#177-seabed-absorption--the-bottom-seen-through-the-column-adr-0027-7).
+
 ---
 
 ## Pixelation — the owner's condition, made concrete per item

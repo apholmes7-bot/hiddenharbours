@@ -1843,6 +1843,11 @@ per channel, including non-physical shapes he prefers. `_DeepBlueStrength: 0.45`
 physical answer was **already overridden by hand** (ADR 0027 finding 1). Beer-Lambert on the base colour would
 remove owner control and add no expressiveness. It is **rejected**, permanently.
 
+> **Narrowed 2026-10-28 (water gains 2; the ruling of 2026-10-15, recorded in the ADR 0027 #7 amendment):** a region's
+> water type tints the body toward its own colour by an in-scatter weight, 1 − exp(−σ_in × 2d) (see "The water
+> type" below). The ramp stays the body's colour authority: the tint moves the painted colour toward the type's,
+> never replaces the LUT, and a region with no type draws exactly the ramp.
+
 **Why the bottom needs it.** The LUT cannot describe the bottom at all — see §17.1 for the three ways the old
 alpha-blend approach failed. Handing the shader the bottom's **albedo** is what makes per-channel transmission
 possible in the first place.
@@ -1887,7 +1892,7 @@ the bottom is actually fading.
 #### Passthrough — twice over
 
 `[Toggle(_USE_SEABEDTEX)]` is **off** on the shipped material, so the whole block **compiles out**; and inside
-it, `_Turbidity = 0` skips it anyway (`ABSORPTION_EPS`). Either alone is exact.
+it, σ = 0 (`_Turbidity = 0` and no water type) skips it anyway (`ABSORPTION_EPS`). Either alone is exact.
 
 > ⚠️ **σ = 0 means "no absorption model", NOT "perfectly clear water".** Perfectly clear water would show the
 > bottom at **full** strength at every depth, so the transition from 0 to 0.001 is a deliberate discontinuity,
@@ -1947,6 +1952,76 @@ the post-grade compensated light content (§11.6), both untouched. `col.rgb` onl
 `_WaterLevel` / the height read / the sim (P1 integrity, rule 5). Twins: `WaterAbsorption`
 (`Sigma` / `Transmission` / `BandTransmission` / `Composite`) and `SeabedBake` (the world↔texel mapping the
 bake and the shader must agree on) — **change one, change both in the same PR.**
+
+#### The water type: coloured by place and by rain (water gains 2 and 3, 2026-10-28)
+
+The ADR 0027 #7 amendment of 2026-10-28 carries the rulings and the reasoning; this is the live spec.
+
+A region's water is a **water type** (`WaterTypeDef`, `Data/Water/Types/`, `water.snake_case`): what it carries
+when dry and how rain muddies it. The type's extinction joins the mood's inside `AbsorptionSigma()`:
+
+σ = `_Turbidity` × `_AbsorptionRatio` + stain × S_stain + algae × S_algae + silt(t) × S_silt
+
+silt(t) = dry silt + response × (the rain averaged over the window before t)
+
+The mood eases `_Turbidity` per weather as before; the type adds per channel and never subtracts. The rain at a
+past time is the rain rings' own rain (`AmbientParticleMath.RainIntensity` over that time's visibility and sea
+state), read through Core (`IVisibilitySource` beside `IWaveWindSource`) and averaged on W4-2's world-time tap grid
+(`WaveMemory.AverageSignal`), so the silt is pure in (worldSeed, gameTime) and nothing is saved.
+
+| Field | Default | Unit, range | Effect |
+|---|---|---|---|
+| `Stain` | 0 | 1/m, 0–2 | Dissolved stain (tea). Spectrum (0.10, 0.28, 1): it takes blue first. |
+| `Algae` | 0 | 1/m, 0–2 | Algae (green). Spectrum (0.40, 0.20, 1): it spares green. |
+| `DrySilt` | 0 | 1/m, 0–2 | Silt (brown) when dry. Spectrum (0.80, 0.88, 1): it dims every channel. |
+| `SiltResponse` | 0 | 1/m per unit of mean rain, 0–4 | The silt a wet spell adds. 0 = rain changes nothing. |
+| `SiltWindowDays` | 3 | game days, 0.25–14 | The clearing window: how long a wet spell is remembered and how long the water takes to clear. |
+| `SiltTaps` | 24 | taps, 4–64 | Taps across the window on the fixed grid (one every 3 game hours at the default). |
+| `StainColour` / `SiltColour` | tea (0.42, 0.27, 0.12) / mud (0.52, 0.40, 0.27) | sRGB, each 0–1 | The colours the body moves toward, mixed by stain's and silt's shares. |
+| `BodyStrength` | 0 | 0–1 | How far a thick stained or silty column moves the body toward them. 0 = no tint. |
+
+Each spectrum is itself a field (linear, each channel 0–1).
+
+**The body tint.** Weight = `BodyStrength` × band(1 − exp(−(stain + silt) × 2d)), banded by `_AbsorptionBands`;
+`col.rgb` lerps toward the body colour by it, after the depth block settles the base colour and before the seabed
+composite (which then sees the bottom through the tinted column), so every additive layer rides on top and the
+palette grade bounds it. Body strength 0 skips it exactly.
+
+**Placement.** The type sits on the region's `WaterSurface` (`_waterType`), never on `Water.mat`. The surface folds
+it on its slow tick (125 ms) and writes plain globals, outside `UnityPerMaterial` and never Properties, into its
+own property block: `_WaterTypeSigma` (rgb σ_type, a = stain + silt), `_WaterTypeBody` (premultiplied colour,
+a = strength), `_WaterTypeRect`, `_WaterTypeSeam` (`_waterTypeSeamMeters`, 32 m: the type fades to the default
+across it inside the rect, so regions never meet at a step), and up to four plumes (`_WaterPlumeShape` = mouth x,
+y, reach, feather; `_WaterPlumeSigma`; `_WaterPlumeBody`; `_WaterPlumeCount`). A plume is a `WaterPlumeDef`
+(`water_plume.snake_case`, `Data/Water/Plumes/`). The read is on the world PPU grid (`Pixelize`), so a plume's rim
+is a pixel edge that stays put. Unset, every global reads 0: today's sea bit for bit.
+
+**Shipped types.** `water.nine_mile_creek`: stain 0.35, algae 0.05, dry silt 0.05 with a muddier silt spectrum
+(0.6, 0.8, 1), response 0.8 over 3 days on 24 taps, body 0.5. `water.st_peters_open_atlantic`: clear when dry,
+response 0.15 over 1 day on 16 taps, body 0.25. Neither is on a region's surface yet: placing one is a scene edit.
+Every other region keeps the default. No plume ships.
+
+**The crest glow (water gain 3).** A third reader of σ. On the one signed facing `_SwellFaceShade` and
+`_SunSideStrength` read, and under the sun side's hoisted elevation gate, it lights the thin top of a swell's back
+when the sun is low and behind it: the face shade darkens the back (value), the sun side cools it (hue), and the
+glow adds light to its top, `_DayNightTint` through exp(−σ × `_CrestGlowThickness`). It needs live trains and the
+calm gate open, lands after the sun side and under the palette grade, and is light, not foam.
+
+| Property | Default | Effect |
+|---|---|---|
+| `_CrestGlowStrength` | `0` (**OFF**) | Master, 0–2; 0 is an exact passthrough. A mood float: the fog anchor reads 0, so fog takes it away. |
+| `_CrestGlowTop` | `0.55` | Onset on the envelope-relative crest height; above it is the thin top. |
+| `_CrestGlowThickness` | `1.5` | Metres of water the light crosses. |
+| `_CrestGlowBands` | `3` | Posterize bands; 0 = smooth. |
+
+The add ceiling is 0.15, the swell read's idiom.
+
+**Twins and guards.** `WaterType` and `WaterAbsorption.Sigma(turbidity, ratio, typeSigma)` against the shader's
+`WaterType*` functions and `AbsorptionSigma`; `CrestGlow` against the glow block. By name: `WaterTypeTests`
+(among them `WaterType_Default_IsTodaysSigma_BitForBit`, `WaterType_NoType_DrawsExactlyAsToday` and
+`TheShader_CarriesTheWaterTypeTwin`), `CrestGlowTests`, `WaterSiltEnvironmentTests`,
+`WaterAbsorptionTests.Sigma_WithAType_AddsItsOwnSigma_PerChannel_NeverSubtracts` and the content validator's
+`WaterTypesAndPlumes_HaveStableIdsAndValidValues`. **Change one, change both in the same PR.**
 
 
 ### 17.8 Activation — the cove's committed bake, and why it is baked from ELEVATION
