@@ -51,6 +51,7 @@ MonoBehaviour:
   - '*Splash*'
   - '*Smoke*'
   - DeckRider
+  - 'DeckGear_*'
   ExcludedScenes:
   - 'InitTestScene*'
   Classes:
@@ -92,5 +93,5 @@ MonoBehaviour:
     AllowOutsideBands: 0
   DefaultGroundContact: 0
   DefaultFootOffset: 0
-  CameraDistanceMetres: 0
-  ArrivalScanSeconds: 0.5
+  CameraDistanceMetres: 96
+  ArrivalScanSeconds: 2

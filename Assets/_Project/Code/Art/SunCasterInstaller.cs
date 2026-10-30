@@ -118,10 +118,15 @@ namespace HiddenHarbours.Art
             foreach (var shadow in _installed)
             {
                 if (shadow == null) continue;
-                bool on = _castingEnabled && (camera == null ||
-                    ((Vector2)(shadow.transform.position - camera.transform.position)).sqrMagnitude <= rangeSquared);
-                if (shadow.enabled != on) shadow.enabled = on;
+                ApplyVisibility(shadow, camera, rangeSquared);
             }
+        }
+
+        void ApplyVisibility(SpriteShadow shadow, Camera camera, float rangeSquared)
+        {
+            bool on = _castingEnabled && (camera == null ||
+                ((Vector2)(shadow.transform.position - camera.transform.position)).sqrMagnitude <= rangeSquared);
+            if (shadow.enabled != on) shadow.enabled = on;
         }
 
         public void ScanScene(Scene scene)
@@ -169,6 +174,9 @@ namespace HiddenHarbours.Art
                 next.Shadow.CastsGroundContact = settings != null ? settings.CastsGroundContact : _rules.DefaultGroundContact;
                 next.Shadow.FootOffset = settings != null ? settings.FootOffset : _rules.DefaultFootOffset;
                 _installed.Add(next.Shadow);
+                // A scene load must not wake every distant caster until the next arrival scan.
+                ApplyVisibility(next.Shadow, _rules.CameraDistanceMetres > 0f ? Camera.main : null,
+                    _rules.CameraDistanceMetres * _rules.CameraDistanceMetres);
             }
             _known[renderer] = next;
             return next.Shadow;

@@ -21,6 +21,59 @@ using UnityEditor;
 
 namespace HiddenHarbours.Tests.PlayMode
 {
+    // Test-run instrumentation only; enabled explicitly by the local diagnostic launch.
+    sealed class SunCasterRunProbe : MonoBehaviour
+    {
+        readonly List<float> _frames = new();
+        string _label;
+        SunCasterRules _silentRules;
+        double _previous;
+        bool _inCreek;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        static void Install()
+        {
+            string label = System.Environment.GetEnvironmentVariable("HH_SHADOWS_A3_RUN");
+            if (string.IsNullOrEmpty(label)) return;
+            var go = new GameObject(nameof(SunCasterRunProbe));
+            Object.DontDestroyOnLoad(go);
+            go.AddComponent<SunCasterRunProbe>()._label = label;
+        }
+
+        void Update()
+        {
+            var host = SunCasterInstaller.Instance;
+            if (System.Environment.GetEnvironmentVariable("HH_SHADOWS_A3_SILENT") == "1" && host != null)
+            {
+                if (_silentRules == null)
+                {
+                    _silentRules = Object.Instantiate(Resources.Load<SunCasterRules>(nameof(SunCasterRules)));
+                    _silentRules.ExcludedScenes = new[] { "*" };
+                    host.Configure(_silentRules);
+                    Debug.Log("SunCasterRunProbe: copied in-memory rules exclude every scene; installer silent.");
+                }
+                host.SetCasting(false);
+                host.enabled = false;
+            }
+            bool creek = SceneManager.GetActiveScene().name == "NineMileCreek";
+            double now = Time.realtimeSinceStartupAsDouble;
+            if (creek && _inCreek) _frames.Add((float)((now - _previous) * 1000.0));
+            if (_inCreek && !creek) Flush();
+            _inCreek = creek;
+            _previous = now;
+        }
+
+        void Flush()
+        {
+            if (_frames.Count == 0) return;
+            Directory.CreateDirectory("artifacts/shadows/a3");
+            File.AppendAllLines("artifacts/shadows/a3/frames-" + _label + ".txt",
+                _frames.Select(f => f.ToString("R", System.Globalization.CultureInfo.InvariantCulture)));
+            _frames.Clear();
+        }
+        void OnApplicationQuit() => Flush();
+    }
+
     /// <summary>Scene presence gates run without a GPU; the opt-in plate pass uses the same installer.</summary>
     public class SunCastersEverywherePlayTests
     {
@@ -32,6 +85,13 @@ namespace HiddenHarbours.Tests.PlayMode
         RenderTexture _target;
         bool _logIgnore;
         float _timeScale;
+        readonly HashSet<GameObject> _residentBefore = new();
+        bool _loadedAny, _titleOnEntry, _introOnEntry;
+        IGameClock _clockOnEntry;
+        float _clockScaleOnEntry;
+        bool _clockPausedOnEntry;
+        double _clockSecondsOnEntry;
+        string _arrivalOnEntry;
 
         [SetUp] public void SetUp()
         {
@@ -39,6 +99,19 @@ namespace HiddenHarbours.Tests.PlayMode
             _timeScale = Time.timeScale;
             _host = SunCasterInstaller.Instance;
             Assert.That(_host, Is.Not.Null, "The runtime initializer must install the host itself.");
+            _residentBefore.Clear();
+            foreach (var root in _host.gameObject.scene.GetRootGameObjects()) _residentBefore.Add(root);
+            _loadedAny = false;
+            _titleOnEntry = ShellFlow.AtTitle;
+            _introOnEntry = GameServices.OpeningCinematicRunning;
+            _arrivalOnEntry = GameServices.PendingArrivalKey;
+            _clockOnEntry = GameServices.Clock;
+            if (_clockOnEntry != null)
+            {
+                _clockScaleOnEntry = _clockOnEntry.TimeScale;
+                _clockPausedOnEntry = _clockOnEntry.IsPaused;
+                _clockSecondsOnEntry = _clockOnEntry.TotalSeconds;
+            }
         }
 
         [UnityTearDown] public IEnumerator TearDown()
@@ -51,6 +124,23 @@ namespace HiddenHarbours.Tests.PlayMode
             _disabledCameras.Clear();
             foreach (var obj in _owned) if (obj != null) Object.Destroy(obj);
             _owned.Clear();
+            // Single region loads promote players, boats and coordinators to the persistent scene.
+            // Disable their callbacks before changing the active scene, then remove only our arrivals.
+            foreach (var root in _host.gameObject.scene.GetRootGameObjects())
+                if (root != null && !_residentBefore.Contains(root))
+                {
+                    root.SetActive(false);
+                    Object.DestroyImmediate(root);
+                }
+            yield return null;
+            Assert.That(_host.gameObject.scene.GetRootGameObjects().All(root => _residentBefore.Contains(root)),
+                Is.True, "No persistent root introduced by this case may reach the next test.");
+            if (!_loadedAny)
+            {
+                LogAssert.ignoreFailingMessages = _logIgnore;
+                Time.timeScale = _timeScale;
+                yield break;
+            }
             var clean = SceneManager.GetSceneByName("SunCasterAuditCleanup");
             if (!clean.IsValid() || !clean.isLoaded) clean = SceneManager.CreateScene("SunCasterAuditCleanup");
             SceneManager.SetActiveScene(clean);
@@ -59,6 +149,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 var scene = SceneManager.GetSceneAt(i);
                 if (scene != clean && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
             }
+            if (_clockOnEntry != null && !(_clockOnEntry is Object clockObject && clockObject == null))
+            {
+                _clockOnEntry.SeekTo(_clockSecondsOnEntry);
+                _clockOnEntry.TimeScale = _clockScaleOnEntry;
+                _clockOnEntry.IsPaused = _clockPausedOnEntry;
+            }
+            GameServices.PendingArrivalKey = _arrivalOnEntry;
+            GameServices.OpeningCinematicRunning = _introOnEntry;
+            if (_titleOnEntry) ShellFlow.EnterTitle(); else ShellFlow.Reset();
+            _fisher = null; _deckWalk = null; _boat = null; _switcher = null;
             LogAssert.ignoreFailingMessages = _logIgnore;
             Time.timeScale = _timeScale;
         }
@@ -78,6 +178,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         IEnumerator Load(string scene)
         {
+            _loadedAny = true;
             var config = GameServices.Config;
             var clock = GameServices.Clock;
             var environment = GameServices.Environment;

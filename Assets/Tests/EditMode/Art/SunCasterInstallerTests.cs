@@ -168,5 +168,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _host.SetCasting(true);
             Assert.That(shadow.enabled, Is.True);
         }
+
+        [Test] public void DistantArrival_SleepsImmediately_WithoutRemovingItsCaster()
+        {
+            var cameraGo = new GameObject("ArrivalCullCamera");
+            _owned.Add(cameraGo);
+            cameraGo.tag = "MainCamera";
+            cameraGo.AddComponent<Camera>();
+            _rules.CameraDistanceMetres = 10f;
+            var far = Sprite("ArrivalCrate");
+            far.transform.position = new Vector3(100f, 0f, 0f);
+            var shadow = _host.Consider(far);
+            Assert.That(shadow, Is.Not.Null);
+            Assert.That(shadow.enabled, Is.False, "Sleep on attachment, before any later scan.");
+            Assert.That(far.enabled, Is.True);
+            Assert.That(far.GetComponent<SpriteShadow>(), Is.SameAs(shadow));
+            Assert.That(_host.Consider(Sprite("NearbyCrate")).enabled, Is.True);
+        }
     }
 }

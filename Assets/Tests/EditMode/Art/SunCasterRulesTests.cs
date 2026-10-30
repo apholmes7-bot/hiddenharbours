@@ -45,6 +45,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test] public void DecorAboveMinimumHeight_Qualifies()
             => Assert.That(_rules.Qualifies(Sprite("Crate"), out _), Is.True);
 
+        [Test] public void BoatAttachedDeckGear_IsExcludedByShippedRules()
+        {
+            var renderer = Sprite("DeckGear_0");
+            Assert.That(_rules.IsExcludedArt(renderer), Is.True);
+            Assert.That(_rules.Qualifies(renderer, out _), Is.False);
+        }
+
         [TestCase("GroundDecal")]
         [TestCase("MudSplat")]
         [TestCase("ClamHole")]
