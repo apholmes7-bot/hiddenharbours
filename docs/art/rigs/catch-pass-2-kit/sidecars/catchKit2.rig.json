@@ -2,9 +2,9 @@
  "schema": "hidden-harbours/rig-sidecar@1",
  "rig": "Art/catchKit2.js",
  "exportSymbol": "CatchKit2",
- "derivedFromRigSha256": "4afe6d0d87deb169623d1ec5379bfec60457229c0b189fd9341e71c75e93dfd9",
+ "derivedFromRigSha256": "d01c40cb5a508401ea17db92df1ccd4c26e22c0f717fdf7a4eb8f7c52b2166c9",
  "generated": {
-  "date": "2026-10-28T00:00:00.000Z",
+  "date": "2026-10-30T02:27:56.750Z",
   "by": "Art/_catchSidecars.js",
   "harness": "CATCH_SIDECARS",
   "isoSolidSha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
@@ -228,7 +228,7 @@
   "call": "fillItems(catch, fill, seed, slotCount) -> [{kind, variant, scale, jx, jy}]",
   "count": "round(FRAC[fill] x slotCount x DENSE[catch])",
   "monotonic": "seeded — growing a fill never moves earlier items; pass the container's real slot count so full / brim genuinely heap",
-  "scale": "clamp(0.85 + rng x 0.30, SPECIES.range) — fish take their species range, everything else [0.85, 1.15]",
+  "scale": "clamp(0.85 + rng x 0.30, range) — fish take SPECIES[kind].range, crustaceans take Crustacean2.SIZES[kind].range, everything else [0.85, 1.15]",
   "jitter": "extras beyond count / DENSE get jx in [-3, 3], jy in [-2, 2] px",
   "mixed": "kind drawn per item from [herring, mackerel, haddock, lobster, crab, pollock, cod, bass, flounder]",
   "shellfish": "returns [] — use heap()"
