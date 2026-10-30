@@ -326,6 +326,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
         IEnumerator Pair(string name, Vector2 centre, float height)
         {
+            bool scanned = false;
+            void Complete() => scanned = true;
+            _host.ScanCompleted += Complete;
+            _host.enabled = true;
+            _host.RequestScan();
+            float deadline = Time.realtimeSinceStartup + 10f;
+            while (!scanned && Time.realtimeSinceStartup < deadline) yield return null;
+            _host.enabled = false;
+            _host.ScanCompleted -= Complete;
+            Assert.That(scanned, Is.True, "Capture only after the current hour's arrivals were scanned.");
             _camera.transform.position = new Vector3(centre.x, centre.y, -100f);
             _camera.orthographicSize = height / 2f;
             bool deck = name.StartsWith("cape-deck", StringComparison.Ordinal);
