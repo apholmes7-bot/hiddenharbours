@@ -59,16 +59,17 @@ namespace HiddenHarbours.Art
             settings = null;
             if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy || renderer.sprite == null)
                 return false;
-            if (renderer.TryGetComponent<SpriteShadow>(out _) ||
-                renderer.GetComponentInParent<Canvas>() != null) return false;
+            if (renderer.TryGetComponent<SpriteShadow>(out _) || IsExcludedArt(renderer)) return false;
             if (ExcludesScene(renderer.gameObject.scene.name)) return false;
-            string objectName = renderer.name;
-            string spriteName = renderer.sprite.name;
-            if (MatchesAny(objectName, ExcludedNames) || MatchesAny(spriteName, ExcludedNames)) return false;
             settings = ClassFor(renderer);
             if (!IncludesOrder(renderer.sortingOrder) && (settings == null || !settings.AllowOutsideBands)) return false;
             return renderer.sprite.bounds.size.y * Mathf.Abs(renderer.transform.lossyScale.y) >= MinimumHeightMetres;
         }
+
+        public bool IsExcludedArt(SpriteRenderer renderer)
+            => renderer == null || renderer.GetComponentInParent<Canvas>() != null ||
+                MatchesAny(renderer.name, ExcludedNames) ||
+                (renderer.sprite != null && MatchesAny(renderer.sprite.name, ExcludedNames));
 
         public SunCasterClassRule ClassFor(SpriteRenderer renderer)
         {

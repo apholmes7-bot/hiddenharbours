@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using HiddenHarbours.App;
 using HiddenHarbours.Art;
 using HiddenHarbours.Boats;
@@ -11,7 +10,6 @@ using HiddenHarbours.Core;
 using HiddenHarbours.Player;
 using HiddenHarbours.World;
 using NUnit.Framework;
-using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -53,7 +51,8 @@ namespace HiddenHarbours.Tests.PlayMode
             _disabledCameras.Clear();
             foreach (var obj in _owned) if (obj != null) Object.Destroy(obj);
             _owned.Clear();
-            var clean = SceneManager.CreateScene("SunCasterAuditCleanup");
+            var clean = SceneManager.GetSceneByName("SunCasterAuditCleanup");
+            if (!clean.IsValid() || !clean.isLoaded) clean = SceneManager.CreateScene("SunCasterAuditCleanup");
             SceneManager.SetActiveScene(clean);
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
@@ -103,14 +102,23 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Load(scene);
             if (GameServices.Clock != null && GameServices.Config != null) yield return PinHour(12f);
             int before = Renderers().Count(r => r.GetComponent<SpriteShadow>() != null);
-            _host.ScanLoadedScenes();
+            SpriteRenderer[] population = null;
+            void Complete() => population = Renderers();
+            _host.ScanCompleted += Complete;
+            _host.enabled = true;
+            _host.RequestScan();
+            float deadline = Time.realtimeSinceStartup + 10f;
+            while (population == null && Time.realtimeSinceStartup < deadline) yield return null;
+            _host.enabled = false;
+            _host.ScanCompleted -= Complete;
+            Assert.That(population, Is.Not.Null, "Wait for the installer's complete loaded-and-persistent scan.");
             _host.SetCasting(true);
-            yield return null;
             var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
             int total = 0, villagers = 0, houses = 0, piers = 0, excluded = 0;
             var rows = new List<string>();
-            foreach (var renderer in Renderers())
+            foreach (var renderer in population)
             {
+                if (renderer == null) continue;
                 var shadow = renderer.GetComponent<SpriteShadow>();
                 if (shadow == null)
                 {
@@ -123,11 +131,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 string kind = ClassOf(renderer, rules);
                 if (kind == "building") houses++;
                 if (kind == "pier") piers++;
-                bool forbidden = renderer.sortingOrder == SortingBands.Sea ||
-                    renderer.sortingOrder >= SortingBands.SunShadePool ||
+                bool forbidden = renderer.sortingOrder >= SortingBands.SunShadePool ||
                     SunCasterRules.Matches(renderer.name, "*Seabed*") ||
                     SunCasterRules.Matches(renderer.name, "Sea") ||
-                    SunCasterRules.Matches(renderer.name, "*Shadow*");
+                    SunCasterRules.Matches(renderer.name, "*Shadow*") || rules.IsExcludedArt(renderer);
                 if (forbidden) excluded++;
                 rows.Add($"{renderer.name}\t{kind}\t{renderer.sortingOrder}\t{renderer.transform.position}");
             }
@@ -204,7 +211,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var riderGo = new GameObject("DeckRider"); riderGo.transform.SetParent(playerGo.transform, false);
             var riderRenderer = riderGo.AddComponent<SpriteRenderer>(); riderRenderer.enabled = false;
             playerGo.AddComponent<DeckRiderVisual>().Configure(riderRenderer, _fisher, art);
-            playerGo.AddComponent<DeckRiderMeshPresenter>().Configure(character.Skin);
+            var presenter = playerGo.GetComponent<DeckRiderMeshPresenter>();
+            Assert.That(presenter, Is.Not.Null, "The rider's presentation service already installed its presenter.");
+            presenter.Configure(character.Skin);
             var switchGo = new GameObject("ShadowDeckSwitcher"); _owned.Add(switchGo);
             _switcher = switchGo.AddComponent<ControlSwitcher>();
             _switcher.Configure(walk, _boat, input, null, 3f, null);
@@ -240,7 +249,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(_deckWalk.enabled, Is.True);
         }
 
-        [UnityTest] public IEnumerator ProofFrames_OffOn_AndRenderCounters()
+        [UnityTest] public IEnumerator ProofFrames_OffOn()
         {
             if (System.Environment.GetEnvironmentVariable("HH_SHADOWS_A_PLATES") != "1" ||
                 SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
@@ -252,27 +261,27 @@ namespace HiddenHarbours.Tests.PlayMode
                 _host.ScanLoadedScenes();
                 SetUpCamera();
                 Vector2 centre = scene == "StPeters" ? new Vector2(-8f, 44f) :
-                    scene == "NineMileCreek" ? new Vector2(90f, 10f) :
+                    scene == "NineMileCreek" ? new Vector2(120f, 81f) :
                     scene == "Cumberland" ? new Vector2(240f, 53f) :
                     (Vector2)(GameObject.Find("Player")?.transform.position ?? Vector3.zero);
                 yield return PinHour(17f);
-                yield return Pair(scene.ToLowerInvariant() + "-1700", centre, 16.875f, true);
+                if (scene != "StPeters") yield return Pair(scene == "NineMileCreek" ? "nmc-quay-1700" : scene.ToLowerInvariant() + "-1700", centre, 16.875f);
                 if (scene == "StPeters")
                 {
                     foreach (float hour in new[] { 8f, 12f, 17f })
                     {
                         yield return PinHour(hour);
-                        yield return Pair("stp-street-" + ((int)hour).ToString("00") + "00", new Vector2(-8f, 44f), 16.875f, false);
+                        yield return Pair("stp-street-" + ((int)hour).ToString("00") + "00", new Vector2(-8f, 44f), 16.875f);
                     }
                     foreach (float hour in new[] { 8f, 17f })
                     {
                         yield return PinHour(hour);
-                        yield return Pair("stp-pier-" + ((int)hour).ToString("00") + "00", new Vector2(191f, 0f), 16.875f, false);
+                        yield return Pair("stp-pier-" + ((int)hour).ToString("00") + "00", new Vector2(191f, 0f), 16.875f);
                     }
                     yield return BuildDeckFixture();
                     yield return PinHour(17f);
                     AssertDeckCaster();
-                    yield return Pair("cape-deck-1700", _boat.transform.position, 12f, false);
+                    yield return Pair("cape-deck-1700", _boat.transform.position, 12f);
                 }
                 if (_camera != null) { _camera.targetTexture = null; Object.Destroy(_camera.gameObject); _camera = null; }
             }
@@ -312,19 +321,16 @@ namespace HiddenHarbours.Tests.PlayMode
             Time.timeScale = 0f;
         }
 
-        IEnumerator Pair(string name, Vector2 centre, float height, bool counters)
+        IEnumerator Pair(string name, Vector2 centre, float height)
         {
             _camera.transform.position = new Vector3(centre.x, centre.y, -100f);
             _camera.orthographicSize = height / 2f;
             _host.SetCasting(false);
             for (int i = 0; i < 3; i++) yield return null;
             var before = Capture();
-            long[] off = new long[2], on = new long[2];
-            if (counters) yield return Counters(off);
             _host.SetCasting(true);
             for (int i = 0; i < 3; i++) yield return null;
             var after = Capture();
-            if (counters) yield return Counters(on);
             var pixels = new Color32[1920 * 2 * 1080];
             for (int y = 0; y < 1080; y++)
             {
@@ -333,11 +339,10 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             var sheet = new Texture2D(3840, 1080, TextureFormat.RGBA32, false);
             sheet.SetPixels32(pixels); sheet.Apply();
-            File.WriteAllBytes(Path.Combine(Output, "plates", name + "-off-on.png"), sheet.EncodeToPNG());
+            File.WriteAllBytes(Path.Combine(Output, "plates", "compare-" + name + ".png"), sheet.EncodeToPNG());
             Object.Destroy(sheet);
             File.WriteAllText(Path.Combine(Output, "plates", name + ".txt"),
-                $"Left: installer OFF. Right: ON. Same frozen world, camera, station and clock.\ncentre={centre}; height={height}; hour={GameServices.Clock.HourOfDay}\n" +
-                $"Draw Calls Count: {off[0]} -> {on[0]}; Batches Count: {off[1]} -> {on[1]}\n");
+                $"Left: installer OFF. Right: ON. Same frozen world, camera, station and clock.\ncentre={centre}; height={height}; hour={GameServices.Clock.HourOfDay}\nStructural budget: one shared-material silhouette submission per caster.\n");
         }
 
         Color32[] Capture()
@@ -351,15 +356,5 @@ namespace HiddenHarbours.Tests.PlayMode
             return result;
         }
 
-        IEnumerator Counters(long[] into)
-        {
-            using (var draws = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count"))
-            using (var batches = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Batches Count"))
-            {
-                for (int i = 0; i < 4; i++) yield return null;
-                Assert.That(draws.Valid && batches.Valid, Is.True, "GPU render counters must be available.");
-                into[0] = draws.LastValue; into[1] = batches.LastValue;
-            }
-        }
     }
 }

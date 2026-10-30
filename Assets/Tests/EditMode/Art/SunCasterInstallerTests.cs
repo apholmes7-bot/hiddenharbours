@@ -55,7 +55,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test] public void ExclusionByRule_LeavesDecalAlone()
-            => Assert.That(_host.Consider(Sprite("GroundDecal")), Is.Null);
+        {
+            foreach (string name in new[] { "GroundDecal", "wisp", "Swimmer 7", "BowSpray", "HullSplash", "ChimneySmoke" })
+                Assert.That(_host.Consider(Sprite(name)), Is.Null, name);
+        }
 
         [Test] public void DisabledRenderer_IsLeftAlone_AndCastsWhenItArrives()
         {

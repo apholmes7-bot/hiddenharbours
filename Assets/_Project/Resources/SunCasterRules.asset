@@ -45,6 +45,11 @@ MonoBehaviour:
   - '*Truck*'
   - '*ATV*'
   - '*FishSwimmer*'
+  - 'Swimmer*'
+  - wisp
+  - '*Spray*'
+  - '*Splash*'
+  - '*Smoke*'
   - DeckRider
   ExcludedScenes:
   - 'InitTestScene*'

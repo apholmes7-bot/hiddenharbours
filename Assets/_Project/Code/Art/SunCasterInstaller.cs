@@ -32,6 +32,9 @@ namespace HiddenHarbours.Art
 
         public IReadOnlyList<SpriteShadow> Installed => _installed;
         public static SunCasterInstaller Instance => _instance;
+        public event System.Action ScanCompleted;
+
+        public void RequestScan() => _timer = 0f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetHost() => _instance = null;
@@ -82,7 +85,16 @@ namespace HiddenHarbours.Art
         public void ScanLoadedScenes()
         {
             if (_rules == null) return;
-            for (int i = 0; i < SceneManager.sceneCount; i++) ScanScene(SceneManager.GetSceneAt(i));
+            var hostScene = gameObject.scene;
+            bool hostSceneScanned = false;
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                ScanScene(scene);
+                if (scene == hostScene) hostSceneScanned = true;
+            }
+            // The host shares the persistent scene with promoted player bodies and runtime art.
+            if (!hostSceneScanned) ScanScene(hostScene);
             _departed.Clear();
             foreach (var pair in _known)
                 if (pair.Value.Renderer == null) _departed.Add(pair.Key);
@@ -90,6 +102,7 @@ namespace HiddenHarbours.Art
             for (int i = _installed.Count - 1; i >= 0; i--)
                 if (_installed[i] == null) _installed.RemoveAt(i);
             RefreshVisibility();
+            ScanCompleted?.Invoke();
         }
 
         public void SetCasting(bool enabled)
