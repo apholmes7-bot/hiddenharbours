@@ -153,9 +153,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest] public IEnumerator LateArrival_IsFoundByTheRunningHost()
         {
+            var arrivalScene = SceneManager.CreateScene("SunCasterArrivalFixture");
             var texture = new Texture2D(16, 64); _owned.Add(texture);
             var sprite = Sprite.Create(texture, new Rect(0, 0, 16, 64), Vector2.zero, 32f); _owned.Add(sprite);
             var go = new GameObject("ArrivalCrate"); _owned.Add(go);
+            SceneManager.MoveGameObjectToScene(go, arrivalScene);
             var renderer = go.AddComponent<SpriteRenderer>(); renderer.sprite = sprite;
             renderer.sortingOrder = SortingBands.DecorBase;
             float until = Time.realtimeSinceStartup + Resources.Load<SunCasterRules>(nameof(SunCasterRules)).ArrivalScanSeconds * 4f;

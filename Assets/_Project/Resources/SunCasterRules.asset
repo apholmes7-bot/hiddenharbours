@@ -45,7 +45,8 @@ MonoBehaviour:
   - '*Truck*'
   - '*ATV*'
   - '*FishSwimmer*'
-  ExcludedScenes: []
+  ExcludedScenes:
+  - 'InitTestScene*'
   Classes:
   - Id: figure
     Names: [Player, DeckRider, '*Figure*', '*Villager*']
