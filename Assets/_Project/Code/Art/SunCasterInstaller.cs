@@ -139,13 +139,20 @@ namespace HiddenHarbours.Art
             _known.TryGetValue(renderer, out var previous);
             bool active = renderer.gameObject.activeInHierarchy;
             if (previous.Renderer == renderer && previous.Shadow != null) return previous.Shadow;
+            if (renderer.TryGetComponent<SpriteShadow>(out var existing))
+            {
+                var rule = _rules.ClassFor(renderer);
+                if (rule != null && rule.CastOnWalkingDeck) SpriteShadow.Attach(renderer, true);
+                _known[renderer] = new Candidate { Renderer = renderer, Shadow = existing };
+                return existing;
+            }
             if (previous.Renderer == renderer && previous.Sprite == renderer.sprite && previous.Order == renderer.sortingOrder &&
                 previous.Enabled == renderer.enabled && previous.Active == active) return null;
             var next = new Candidate { Renderer = renderer, Sprite = renderer.sprite, Order = renderer.sortingOrder,
                 Enabled = renderer.enabled, Active = active };
             if (_rules.Qualifies(renderer, out var settings))
             {
-                next.Shadow = renderer.gameObject.AddComponent<SpriteShadow>();
+                next.Shadow = SpriteShadow.Attach(renderer, settings != null && settings.CastOnWalkingDeck);
                 next.Shadow.CastsGroundContact = settings != null ? settings.CastsGroundContact : _rules.DefaultGroundContact;
                 next.Shadow.FootOffset = settings != null ? settings.FootOffset : _rules.DefaultFootOffset;
                 _installed.Add(next.Shadow);

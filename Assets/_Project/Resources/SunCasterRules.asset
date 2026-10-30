@@ -45,11 +45,18 @@ MonoBehaviour:
   - '*Truck*'
   - '*ATV*'
   - '*FishSwimmer*'
+  - DeckRider
   ExcludedScenes:
   - 'InitTestScene*'
   Classes:
+  - Id: player
+    Names: [Player]
+    CastsGroundContact: 0
+    FootOffset: 0
+    AllowOutsideBands: 0
+    CastOnWalkingDeck: 1
   - Id: figure
-    Names: [Player, DeckRider, '*Figure*', '*Villager*']
+    Names: ['*Figure*', '*Villager*']
     CastsGroundContact: 0
     FootOffset: 0
     AllowOutsideBands: 0

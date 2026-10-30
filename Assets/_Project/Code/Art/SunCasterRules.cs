@@ -16,6 +16,8 @@ namespace HiddenHarbours.Art
         public float FootOffset;
         [Tooltip("For named legacy standing art whose sorting order predates SortingBands.")]
         public bool AllowOutsideBands;
+        [Tooltip("Use Core's live walking-deck stance for an existing hidden figure caster; the helm clears it.")]
+        public bool CastOnWalkingDeck;
     }
 
     /// <summary>Eligibility and contact settings for standing sprite art. No scene or gameplay types.</summary>
@@ -63,14 +65,19 @@ namespace HiddenHarbours.Art
             string objectName = renderer.name;
             string spriteName = renderer.sprite.name;
             if (MatchesAny(objectName, ExcludedNames) || MatchesAny(spriteName, ExcludedNames)) return false;
-            foreach (var rule in Classes)
-                if (MatchesAny(objectName, rule.Names) || MatchesAny(spriteName, rule.Names))
-                {
-                    settings = rule;
-                    break;
-                }
+            settings = ClassFor(renderer);
             if (!IncludesOrder(renderer.sortingOrder) && (settings == null || !settings.AllowOutsideBands)) return false;
             return renderer.sprite.bounds.size.y * Mathf.Abs(renderer.transform.lossyScale.y) >= MinimumHeightMetres;
+        }
+
+        public SunCasterClassRule ClassFor(SpriteRenderer renderer)
+        {
+            if (renderer == null) return null;
+            string objectName = renderer.name;
+            string spriteName = renderer.sprite != null ? renderer.sprite.name : null;
+            foreach (var rule in Classes)
+                if (MatchesAny(objectName, rule.Names) || MatchesAny(spriteName, rule.Names)) return rule;
+            return null;
         }
 
         public bool IsValid(out string error)

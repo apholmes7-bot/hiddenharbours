@@ -259,6 +259,32 @@ namespace HiddenHarbours.Art
             set => _footOffset = value;
         }
 
+        private bool _castOnWalkingDeck;
+        private bool CasterVisible => _caster != null &&
+            (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        /// <summary>
+        /// Attach once, optionally keeping the fisher's hidden body as the walking-deck silhouette.
+        /// Core's stance clears at the helm; the renderer's own visibility remains its owner's decision.
+        /// Existing caster profile, contact and pivot settings are preserved.
+        /// </summary>
+        public static SpriteShadow Attach(SpriteRenderer renderer, bool castOnWalkingDeck = false)
+        {
+            if (renderer == null) return null;
+            var caster = renderer.GetComponent<SpriteShadow>();
+            if (caster == null)
+            {
+                if (!renderer.enabled) return null;
+                caster = renderer.gameObject.AddComponent<SpriteShadow>();
+            }
+            if (caster._castOnWalkingDeck != castOnWalkingDeck)
+            {
+                caster._castOnWalkingDeck = castOnWalkingDeck;
+                if (caster.isActiveAndEnabled) caster.Tick();
+            }
+            return caster;
+        }
+
         [Header("Sun (when no clock is running)")]
         [Tooltip("Hour (0..24) used for the sun arc when the day/night cycle isn't pushing the globals yet " +
                  "(EditMode / a bare art scene), so the demo shadow still shows. Ignored once the cycle runs.")]
@@ -456,7 +482,7 @@ namespace HiddenHarbours.Art
         {
             state = default;
             if (_caster == null) _caster = GetComponent<SpriteRenderer>();
-            if (_caster == null || !_caster.enabled) return false;
+            if (!CasterVisible) return false;
             Sprite sprite = _caster.sprite;
             if (sprite == null || sprite.texture == null) return false;
 
@@ -689,7 +715,7 @@ namespace HiddenHarbours.Art
                     _shadow.sortingOrder = _caster.sortingOrder + _sortingOffset;
                 }
             }
-            _shadow.enabled = _caster.enabled && alpha > 0f && _shadow.sharedMaterial != null;
+            _shadow.enabled = CasterVisible && alpha > 0f && _shadow.sharedMaterial != null;
 
             TickPool(look, color, alpha);
         }
@@ -730,7 +756,7 @@ namespace HiddenHarbours.Art
             // composite two different ways.
             Material arm = ArmMaterial(look.ScreenSpaceShade);
             if (arm != null && _pool.sharedMaterial != arm) _pool.sharedMaterial = arm;
-            bool on = radius > 0f && poolAlpha > 0f && tallEnough && _castsGroundContact && _caster.enabled
+            bool on = radius > 0f && poolAlpha > 0f && tallEnough && _castsGroundContact && CasterVisible
                    && _caster.sprite != null && _pool.sharedMaterial != null;
             _pool.enabled = on;
             if (!on) return;

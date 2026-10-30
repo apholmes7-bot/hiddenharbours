@@ -87,7 +87,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test] public void PerClassContactAndFootOffset_AreApplied()
         {
             _rules.Classes[0].FootOffset = 0.25f;
-            var shadow = _host.Consider(Sprite("Villager"));
+            var shadow = _host.Consider(Sprite("Player"));
             Assert.That(shadow.CastsGroundContact, Is.False);
             Assert.That(shadow.FootOffset, Is.EqualTo(0.25f));
         }
@@ -101,6 +101,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var ui = Sprite("Label");
             ui.gameObject.AddComponent<Canvas>();
             Assert.That(_host.Consider(ui), Is.Null);
+        }
+
+        [Test] public void ExistingHiddenPlayerCaster_FollowsCoreWalkingDeckStance()
+        {
+            var renderer = Sprite("Player");
+            var shadow = renderer.gameObject.AddComponent<SpriteShadow>();
+            renderer.enabled = false;
+            _host.Consider(renderer);
+            try
+            {
+                DeckStance.Publish(renderer, new DeckStanceState(Vector2.zero, 0f, Vector2.zero, Vector2.one));
+                Assert.That(shadow.TryGetLampShadowCaster(out _), Is.True);
+                Assert.That(renderer.enabled, Is.False);
+                DeckStance.Clear(renderer);
+                Assert.That(shadow.TryGetLampShadowCaster(out _), Is.False);
+            }
+            finally { DeckStance.Clear(renderer); }
         }
 
         [Test] public void SettledPass_AllocatesZeroManagedBytes()

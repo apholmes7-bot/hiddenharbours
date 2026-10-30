@@ -212,6 +212,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _switcher.ConfigureBoardingMove(false, 1f, 1f, 1f, 1f);
             playerGo.transform.position = boatGo.transform.position;
             PlayerShadowInstaller.Attach(playerGo);
+            _host.Consider(_fisher);
             yield return null;
             Assert.That(_switcher.TryInteract(), Is.True, "Board the real Cape Islander deck.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
@@ -227,7 +228,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var shadow = _fisher.GetComponent<SpriteShadow>();
             Assert.That(_deckWalk.enabled, Is.True);
-            Assert.That(_fisher.enabled, Is.True, "Deck walking must keep the hidden sprite body enabled.");
+            Assert.That(DeckStance.IsActive, Is.True, "The real deck controller publishes the walking stance.");
             Assert.That(shadow, Is.Not.Null);
             Assert.That(shadow.TryGetLampShadowCaster(out _), Is.True, "The caster has a live sprite silhouette.");
             Assert.That(_switcher.TryInteract(), Is.True, "Take the helm from the configured deck station.");
@@ -236,7 +237,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(shadow.TryGetLampShadowCaster(out _), Is.False);
             Assert.That(_switcher.TryInteract(), Is.True, "Release the helm back onto the deck.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
-            Assert.That(_fisher.enabled, Is.True);
+            Assert.That(_deckWalk.enabled, Is.True);
         }
 
         [UnityTest] public IEnumerator ProofFrames_OffOn_AndRenderCounters()
