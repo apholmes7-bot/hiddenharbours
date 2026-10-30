@@ -376,6 +376,13 @@ namespace HiddenHarbours.Tests.PlayMode
             float halfWidth = height * _target.width / _target.height / 2f;
             var frame = new Bounds(new Vector3(centre.x, centre.y, 0f), new Vector3(halfWidth * 2f, height, 1000f));
             var visible = Renderers().Where(r => r.enabled && r.gameObject.activeInHierarchy && frame.Intersects(r.bounds));
+            var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
+            foreach (var renderer in visible)
+                Assert.That(renderer.GetComponent<SpriteShadow>() != null && rules.IsExcludedArt(renderer), Is.False,
+                    name + ": excluded water, seabed, shade, lamp glow, UI, fish or effects must not cast: " + renderer.name);
+            if (name.StartsWith("stp-", StringComparison.Ordinal) || name.StartsWith("cape-", StringComparison.Ordinal) ||
+                name == "nmc-quay-1700" || name == "cumberland-1700")
+                Assert.That(changed, Is.GreaterThan(0), name + ": the required comparison must show a visible change.");
             File.WriteAllLines(Path.Combine(Output, "plates", name + "-inventory.tsv"), visible.Select(r =>
                 $"{r.name}\t{r.sprite?.name}\t{r.transform.parent?.name}\t{r.transform.position}\tcaster={r.GetComponent<SpriteShadow>() != null}"));
         }
