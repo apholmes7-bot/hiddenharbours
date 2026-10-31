@@ -1,0 +1,477 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.3.0",
+ "key": "cascade",
+ "id": "structure.nmc_the_falls_water",
+ "name": "The Falls: three sandstone steps in white water",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_the_falls",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -5.272,
+   1.59
+  ],
+  "y": [
+   -4.799,
+   5.113
+  ],
+  "z": [
+   0,
+   3.366
+  ]
+ },
+ "layer": "water",
+ "walk": "the blocks and shelves are rock, standable; the water is not walkable",
+ "mount": "river bed",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 227,
+   "h": 271,
+   "pivot": [
+    172,
+    175
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 339,
+   "h": 217,
+   "pivot": [
+    215,
+    123
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 325,
+   "h": 140,
+   "pivot": [
+    167,
+    73
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 344,
+   "h": 214,
+   "pivot": [
+    130,
+    119
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 227,
+   "h": 275,
+   "pivot": [
+    54,
+    173
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 339,
+   "h": 297,
+   "pivot": [
+    124,
+    219
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 325,
+   "h": 222,
+   "pivot": [
+    157,
+    192
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 344,
+   "h": 295,
+   "pivot": [
+    214,
+    221
+   ]
+  }
+ ],
+ "anchors": {
+  "lip": [
+   -2.8,
+   0,
+   2.9
+  ],
+  "foot": [
+   1.75,
+   0,
+   0.58
+  ],
+  "levels": [
+   2.9,
+   2.15,
+   1.35,
+   0.58
+  ],
+  "lips": [
+   [
+    -2.8,
+    0.5
+   ],
+   [
+    -0.8,
+    0.45
+   ],
+   [
+    1.2,
+    0.55
+   ]
+  ],
+  "blocks": [
+   {
+    "lip": 0,
+    "at": [
+     -3.195,
+     -3.019
+    ],
+    "r": [
+     0.5,
+     0.868
+    ],
+    "top": 3.02
+   },
+   {
+    "lip": 0,
+    "at": [
+     -2.788,
+     -0.185
+    ],
+    "r": [
+     0.5,
+     0.418
+    ],
+    "top": 3.02
+   },
+   {
+    "lip": 0,
+    "at": [
+     -3.062,
+     3.096
+    ],
+    "r": [
+     0.5,
+     0.897
+    ],
+    "top": 3.02
+   },
+   {
+    "lip": 1,
+    "at": [
+     -1.197,
+     -3.414
+    ],
+    "r": [
+     0.5,
+     0.74
+    ],
+    "top": 2.27
+   },
+   {
+    "lip": 1,
+    "at": [
+     -1.015,
+     -1.422
+    ],
+    "r": [
+     0.5,
+     0.322
+    ],
+    "top": 2.27
+   },
+   {
+    "lip": 1,
+    "at": [
+     -0.928,
+     1.399
+    ],
+    "r": [
+     0.5,
+     0.519
+    ],
+    "top": 2.27
+   },
+   {
+    "lip": 2,
+    "at": [
+     1.117,
+     0.156
+    ],
+    "r": [
+     0.5,
+     0.382
+    ],
+    "top": 1.47
+   },
+   {
+    "lip": 2,
+    "at": [
+     0.825,
+     3.899
+    ],
+    "r": [
+     0.5,
+     0.761
+    ],
+    "top": 1.47
+   }
+  ],
+  "shelves": [
+   {
+    "lip": 0,
+    "bank": "south",
+    "at": [
+     -3.815,
+     -3.477
+    ],
+    "r": [
+     0.95,
+     0.75
+    ],
+    "top": 3.12
+   },
+   {
+    "lip": 0,
+    "bank": "north",
+    "at": [
+     -3.681,
+     3.633
+    ],
+    "r": [
+     0.95,
+     0.75
+    ],
+    "top": 3.2
+   },
+   {
+    "lip": 1,
+    "bank": "south",
+    "at": [
+     -1.748,
+     -3.743
+    ],
+    "r": [
+     0.95,
+     0.75
+    ],
+    "top": 2.37
+   },
+   {
+    "lip": 1,
+    "bank": "north",
+    "at": [
+     -1.588,
+     3.967
+    ],
+    "r": [
+     0.95,
+     0.75
+    ],
+    "top": 2.45
+   },
+   {
+    "lip": 2,
+    "bank": "south",
+    "at": [
+     0.25,
+     -4.01
+    ],
+    "r": [
+     0.95,
+     0.75
+    ],
+    "top": 1.57
+   },
+   {
+    "lip": 2,
+    "bank": "north",
+    "at": [
+     0.272,
+     4.3
+    ],
+    "r": [
+     0.95,
+     0.75
+    ],
+    "top": 1.65
+   }
+  ],
+  "note": "the blocks and shelves are rock (walkable, fishable from); the sound point sits at the foot (scene.json sound[])",
+  "px": {
+   "lip": [
+    143.6,
+    101.9
+   ],
+   "foot": [
+    -2,
+    158.8
+   ]
+  }
+ },
+ "options": {
+  "lips": [
+   [
+    -2.8,
+    0.5
+   ],
+   [
+    -0.8,
+    0.45
+   ],
+   [
+    1.2,
+    0.55
+   ]
+  ],
+  "levels": [
+   2.9,
+   2.15,
+   1.35,
+   0.58
+  ],
+  "islands": [
+   [
+    [
+     0,
+     0.12
+    ],
+    [
+     0.4,
+     0.52
+    ],
+    [
+     0.87,
+     1
+    ]
+   ],
+   [
+    [
+     0,
+     0.07
+    ],
+    [
+     0.23,
+     0.31
+    ],
+    [
+     0.63,
+     0.77
+    ]
+   ],
+   [
+    [
+     0.46,
+     0.55
+    ],
+    [
+     0.93,
+     1
+    ]
+   ]
+  ],
+  "edges": [
+   [
+    -6,
+    -2.5,
+    2.5
+   ],
+   [
+    9,
+    -4.5,
+    5
+   ]
+  ],
+  "x0": -5.5,
+  "x1": 8.5,
+  "seed": 29
+ },
+ "light": null,
+ "notes": "Stand it at z 0 at the Falls (-275.5, 197.3). The rock is a collider; the water is the game’s. NmcSetPieces.paint(’cascade’, o) paints the water for pictures.",
+ "falls": {
+  "levels": [
+   2.9,
+   2.15,
+   1.35,
+   0.58
+  ],
+  "lips": [
+   [
+    -2.8,
+    0.5
+   ],
+   [
+    -0.8,
+    0.45
+   ],
+   [
+    1.2,
+    0.55
+   ]
+  ],
+  "dropM": 2.32,
+  "fishing": "the pool below the third lip, from the Falls deck and the south shelves; trout and salmon lie in the boils",
+  "sound": "the falls: loudest on the ebb, when the pool stands clear of the sea"
+ }
+}

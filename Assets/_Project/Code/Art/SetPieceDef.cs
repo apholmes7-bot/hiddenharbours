@@ -23,6 +23,8 @@ namespace HiddenHarbours.Art
     /// <para><b>Words bake blank.</b> A board the game letters carries its corners and a string id
     /// (<see cref="SetPieceWordsAnchor"/>); the text lives in the strings table, so renaming a place
     /// changes a string, never a pixel.</para>
+    /// <para>Named states and option variants share one sheet. GameplayJson retains the kit's complete
+    /// block; typed fields carry the points, vendor and bound words the current readers need.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Set Piece", fileName = "SetPiece")]
     public class SetPieceDef : ScriptableObject
@@ -111,6 +113,12 @@ namespace HiddenHarbours.Art
         public bool IsAnimated;
 
         public SetPieceAnimatedPart Animated = new SetPieceAnimatedPart();
+
+        public string GameplayJson = "{}";
+        public string State = "";
+        public SetPieceVariant[] Variants = Array.Empty<SetPieceVariant>();
+        public bool HasVendor;
+        public SetPieceVendor Vendor;
 
         // ---- the one facing mapping -------------------------------------------------------------------
 
@@ -302,6 +310,9 @@ namespace HiddenHarbours.Art
 
         [Tooltip("Letter height in metres, when the kit gives one; 0 otherwise.")]
         public float Size;
+
+        public string Bind = "";
+        public string[] Format = Array.Empty<string>();
     }
 
     /// <summary>The sidecar's light rule: what would glow, and when.</summary>
@@ -347,5 +358,25 @@ namespace HiddenHarbours.Art
             if (Steps <= 0) return 0;
             return SetPieceDef.Wrap(Mathf.FloorToInt(degrees / StepDeg + 0.5f), Steps);
         }
+    }
+
+    [Serializable]
+    public sealed class SetPieceVariant
+    {
+        public string Name = "";
+        public string BakedOptionsJson = "{}";
+        public string GameplayJson = "{}";
+        public Vector3 BoundsMin;
+        public Vector3 BoundsMax;
+        public SetPieceFrame[] Frames = Array.Empty<SetPieceFrame>();
+        public SetPieceAnchor[] Anchors = Array.Empty<SetPieceAnchor>();
+        public SetPieceCollider[] Colliders = Array.Empty<SetPieceCollider>();
+    }
+
+    [Serializable]
+    public sealed class SetPieceVendor
+    {
+        public string Seller = "";
+        public Vector3 At;
     }
 }

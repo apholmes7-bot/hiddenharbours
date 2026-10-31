@@ -1,0 +1,187 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.3.0",
+ "key": "fallsDeck",
+ "id": "structure.nmc_falls_deck",
+ "name": "The Falls deck",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_the_falls",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -3.6,
+   3.6
+  ],
+  "y": [
+   -1.53,
+   1.5
+  ],
+  "z": [
+   0,
+   5.601
+  ]
+ },
+ "layer": "raised",
+ "walk": "deck",
+ "mount": "piles",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 238,
+   "h": 195,
+   "pivot": [
+    119,
+    156
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 238,
+   "h": 244,
+   "pivot": [
+    119,
+    186
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 104,
+   "h": 269,
+   "pivot": [
+    52,
+    210
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 239,
+   "h": 266,
+   "pivot": [
+    119,
+    209
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 238,
+   "h": 207,
+   "pivot": [
+    119,
+    168
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 238,
+   "h": 274,
+   "pivot": [
+    119,
+    193
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 104,
+   "h": 275,
+   "pivot": [
+    52,
+    193
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 239,
+   "h": 275,
+   "pivot": [
+    119,
+    194
+   ]
+  }
+ ],
+ "anchors": {
+  "deck": 3.4,
+  "fishFrom": [
+   0,
+   -1.9,
+   3.4
+  ],
+  "note": "fish from the river rail: the Falls pool below",
+  "words": [
+   {
+    "id": "words.nmc_falls_notice",
+    "text": "",
+    "note": "the fishing notice; the game’s rules for the Falls, blank in pictures"
+   }
+  ],
+  "px": {
+   "fishFrom": [
+    119,
+    45.6
+   ]
+  }
+ },
+ "options": {
+  "len": 7.2,
+  "width": 3,
+  "deck": 3.4,
+  "ground": [
+   1.2,
+   0.2
+  ],
+  "yaw": 0,
+  "side": -1
+ },
+ "light": null,
+ "notes": "Heights above mean sea level: stand it at z 0 on its line off the north boardwalk’s west end."
+}

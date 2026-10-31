@@ -54,7 +54,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// strings table owns what they say.</summary>
         static readonly HashSet<string> WordMembers = new HashSet<string>(StringComparer.Ordinal)
         {
-            "id", "text", "body", "at", "corners", "size", "note", "atPx", "cornersPx",
+            "id", "text", "body", "at", "corners", "size", "note", "atPx", "cornersPx", "bind", "format",
         };
 
         static readonly HashSet<string> MarkMembers = new HashSet<string>(StringComparer.Ordinal)
@@ -106,11 +106,13 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>Builds or refreshes every Def in place (a Def keeps its GUID). Returns the problems.</summary>
-        public static List<string> BuildAll()
+        public static List<string> BuildAll() => BuildAll(StPetersSetPieceKit.Definition);
+
+        public static List<string> BuildAll(SetPieceKit kit)
         {
             var problems = new List<string>();
 
-            var contract = SetPieceSheetSlicer.LoadContract(out string error);
+            var contract = SetPieceSheetSlicer.LoadContract(kit.Sheets, out string error);
             if (contract == null)
             {
                 problems.Add(error);
@@ -121,33 +123,36 @@ namespace HiddenHarbours.Tools.RigBaking
             string todaySha;
             try
             {
-                string todayText = StPetersSetPieceKit.ReadTodayText();
+                string todayText = kit.ReadTodayText();
                 today = DeckSidecarJson.Parse(todayText);
-                StPetersSetPieceKit.CheckToday(today);
+                kit.CheckToday(today);
                 todaySha = StPetersSetPieceKit.Sha256Hex(Encoding.UTF8.GetBytes(StPetersSetPieceKit.Lf(todayText)));
             }
             catch (Exception ex)
             {
-                problems.Add($"{SetPieceSheetSlicer.TodayPath}: {ex.Message}");
+                problems.Add($"{kit.Sheets.TodayPath}: {ex.Message}");
                 return problems;
             }
 
             if (contract.todaySha256Lf != todaySha)
                 problems.Add($"the sheets were baked from a today file hashing {contract.todaySha256Lf}; " +
-                             $"{SetPieceSheetSlicer.TodayPath} is now {todaySha}. Re-bake before building.");
-            if (contract.kitVersion != StPetersSetPieceKit.Version)
-                problems.Add($"the sheets were baked by kit {contract.kitVersion}; this intake is {StPetersSetPieceKit.Version}.");
+                             $"{kit.Sheets.TodayPath} is now {todaySha}. Re-bake before building.");
+            if (contract.kitVersion != kit.Version)
+                problems.Add($"the sheets were baked by kit {contract.kitVersion}; this intake is {kit.Version}.");
             if (!Mathf.Approximately(contract.pixelsPerMetre, ArtImportPipeline.PixelsPerUnit))
                 problems.Add($"the kit draws {contract.pixelsPerMetre} px per metre; sprites import at " +
                              $"{ArtImportPipeline.PixelsPerUnit}. A piece would place at the wrong scale.");
 
             var pieces = DeckSidecarJson.AsArray(DeckSidecarJson.Member(today, "pieces"));
-            if (pieces == null || pieces.Count != StPetersSetPieceKit.Pieces.Count)
-                problems.Add($"the today file lists {pieces?.Count ?? 0} pieces, not {StPetersSetPieceKit.Pieces.Count}.");
-            if (contract.pieces.Count != StPetersSetPieceKit.Pieces.Count)
-                problems.Add($"the contract lists {contract.pieces.Count} sheets, not {StPetersSetPieceKit.Pieces.Count}.");
+            if (pieces == null || pieces.Count != kit.Pieces.Count)
+                problems.Add($"the today file lists {pieces?.Count ?? 0} pieces, not {kit.Pieces.Count}.");
+            if (contract.pieces.Count != kit.Pieces.Count)
+                problems.Add($"the contract lists {contract.pieces.Count} sheets, not {kit.Pieces.Count}.");
             if (problems.Count > 0) return problems;
 
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            kit.Install(host);
+            host.Execute("globalThis.__spToday = " + kit.ReadTodayText() + ";");
             EnsureFolder(DefFolder);
 
             int built = 0;
@@ -156,7 +161,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 AssetDatabase.StartAssetEditing();
                 for (int i = 0; i < pieces.Count; i++)
                 {
-                    string key = StPetersSetPieceKit.Pieces[i].Key, id = StPetersSetPieceKit.Pieces[i].Value;
+                    string key = kit.Pieces[i].Key, id = kit.Pieces[i].Value;
                     var sheet = contract.pieces.FirstOrDefault(p => p.key == key);
                     if (sheet == null)
                     {
@@ -169,8 +174,15 @@ namespace HiddenHarbours.Tools.RigBaking
                         problems.Add($"today piece {i} is not {key} ({id}).");
                         continue;
                     }
-                    if (BuildDef(key, id, DeckSidecarJson.Member(pieces[i], "gameplay"), sheet, contract, problems))
-                        built++;
+                    string expression = $"__spToday.pieces[{i}]";
+                    string gameplayJson = CheckGameplay(host, kit, expression, key, problems);
+                    var variants = DeckSidecarJson.AsArray(DeckSidecarJson.Member(pieces[i], "variants")) ?? new List<object>();
+                    var variantJson = new List<string>();
+                    for (int v = 0; v < variants.Count; v++)
+                        variantJson.Add(CheckGameplay(host, kit, expression + $".variants[{v}]", key, problems));
+                    if (gameplayJson == null || variantJson.Any(j => j == null)) continue;
+                    if (BuildDef(key, id, DeckSidecarJson.Member(pieces[i], "gameplay"), sheet, contract, problems,
+                                 kit, gameplayJson, variants, variantJson)) built++;
                 }
             }
             finally
@@ -185,24 +197,26 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         static bool BuildDef(string key, string id, object g, SetPieceSheetSlicer.Piece sheet,
-                             SetPieceSheetSlicer.Contract contract, List<string> problems)
+                             SetPieceSheetSlicer.Contract contract, List<string> problems,
+                             SetPieceKit kit, string gameplayJson, List<object> variants = null,
+                             List<string> variantJson = null, SetPieceDef target = null, int frameOffset = 0)
         {
             int before = problems.Count;
             void Problem(string p) => problems.Add($"{key}: {p}");
 
-            OnlyKnown(g, "the gameplay block", GameplayMembers, Problem);
-            if (Str(g, "schema") != StPetersSetPieceKit.SidecarSchema) Problem($"schema is '{Str(g, "schema")}'.");
-            if (Str(g, "generatedBy") != $"{StPetersSetPieceKit.GlobalName} {StPetersSetPieceKit.Version}")
+            OnlyKnown(g, "the gameplay block", new HashSet<string>(GameplayMembers.Concat(kit.ExtraGameplayMembers), StringComparer.Ordinal), Problem);
+            if (Str(g, "schema") != kit.SidecarSchema) Problem($"schema is '{Str(g, "schema")}'.");
+            if (Str(g, "generatedBy") != $"{kit.GlobalName} {kit.Version}")
                 Problem($"generated by '{Str(g, "generatedBy")}'.");
             if (Str(g, "key") != key || Str(g, "id") != id) Problem($"the block is {Str(g, "key")} ({Str(g, "id")}).");
             if (Str(g, "defType") != StPetersSetPieceKit.DefType) Problem($"defType is '{Str(g, "defType")}'.");
 
-            var byName = AssetDatabase.LoadAllAssetsAtPath(SetPieceSheetSlicer.SheetPath(key))
+            var byName = AssetDatabase.LoadAllAssetsAtPath(SetPieceSheetSlicer.SheetPath(kit.Sheets, key))
                                       .OfType<Sprite>()
                                       .ToDictionary(s => s.name, StringComparer.Ordinal);
             if (byName.Count != sheet.cells)
             {
-                Problem($"{byName.Count} sprites on {SetPieceSheetSlicer.SheetPath(key)}, expected {sheet.cells}. " +
+                Problem($"{byName.Count} sprites on {SetPieceSheetSlicer.SheetPath(kit.Sheets, key)}, expected {sheet.cells}. " +
                         "Slice the sheets before building Defs.");
                 return false;
             }
@@ -223,7 +237,7 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int k = 0; k < SetPieceDef.Facings; k++)
             {
                 int dir = SetPieceDef.RigDirForFrame(k);
-                var f = sheet.frames[k];
+                var f = sheet.frames[frameOffset + k];
                 if (f.rigDir != dir || f.heading != -1) Problem($"contract frame {k} is rig dir {f.rigDir}, not {dir}.");
                 frames[k] = MakeFrame(sheet, f, facings[dir], cells[dir], byName, Problem);
             }
@@ -248,7 +262,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
             var options = DeckSidecarJson.Member(g, "options");
             object bakedOptions = null;
-            try { bakedOptions = DeckSidecarJson.Parse(sheet.optionsJson ?? ""); }
+            string optionsJson = frameOffset == 0 ? sheet.optionsJson : CanonicalOptions(gameplayJson);
+            try { bakedOptions = DeckSidecarJson.Parse(optionsJson ?? ""); }
             catch (FormatException) { }
             if (!JsonEquals(bakedOptions, options))
                 Problem("the contract's options are not the gameplay block's: the sheets and the block disagree on what was baked.");
@@ -260,10 +275,30 @@ namespace HiddenHarbours.Tools.RigBaking
             var marks = new List<SetPieceTideMark>();
             var path = new List<Vector2>();
             object vaneHeading = null;
+            string state = "";
+            SetPieceVendor vendor = null;
+            object stateValue = DeckSidecarJson.Member(anchorsObj, "state");
+            if (kit.ExtraAnchorMembers.Contains("state") && stateValue != null)
+            {
+                state = DeckSidecarJson.String(stateValue);
+                if (state == null || state != Str(options, "state")) Problem("anchors.state must equal options.state.");
+            }
             if (anchorsObj == null) Problem("the block has no anchors object.");
             else
                 foreach (var kv in anchorsObj)
                 {
+                    if (kit.ExtraAnchorMembers.Contains(kv.Key))
+                    {
+                        if (kv.Key == "vendor" && kv.Value != null)
+                        {
+                            string seller = Str(kv.Value, "seller");
+                            if (string.IsNullOrEmpty(seller) || !TryVec3(DeckSidecarJson.Member(kv.Value, "at"), out var at))
+                                Problem("vendor needs a seller id and an at model point.");
+                            else vendor = new SetPieceVendor { Seller = seller, At = at };
+                        }
+                        continue;
+                    }
+                    if (kv.Value == null && !string.IsNullOrEmpty(state)) continue;
                     if (!NonPointAnchors.Contains(kv.Key))
                     {
                         if (TryVec3(kv.Value, out var p)) points.Add(new SetPieceAnchor { Name = kv.Key, Position = p });
@@ -341,10 +376,57 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (sheet.headings != 0) Problem($"the sheet bakes {sheet.headings} headings for a piece that does not move.");
             }
 
+            var builtVariants = new List<SetPieceVariant>();
+            if (target == null)
+            {
+                variants ??= new List<object>();
+                if ((sheet.variants?.Length ?? 0) != variants.Count) Problem("variant count differs from the sheet.");
+                if (variants.Count > 0 && animatedObj != null) Problem("variants and an animated part on one piece.");
+                for (int v = 0; v < variants.Count; v++)
+                {
+                    object block = DeckSidecarJson.Member(variants[v], "gameplay");
+                    string name = Str(variants[v], "name");
+                    if (v >= (sheet.variants?.Length ?? 0) || sheet.variants[v] != name) Problem("variant name differs from the sheet.");
+                    foreach (string member in new[] { "layer", "walk", "mount", "light" })
+                        if (!JsonEquals(DeckSidecarJson.Member(g, member), DeckSidecarJson.Member(block, member)))
+                            Problem($"variant {name} differs in shared field {member}.");
+                    foreach (string member in new[] { "words", "marks", "path" })
+                        if (!JsonEquals(DeckSidecarJson.Member(anchorsObj, member), DeckSidecarJson.Member(DeckSidecarJson.Member(block, "anchors"), member)))
+                            Problem($"variant {name} differs in shared anchors.{member}.");
+                    object variantOptions = DeckSidecarJson.Member(variants[v], "options");
+                    string variantState = Str(DeckSidecarJson.Member(block, "anchors"), "state");
+                    if (!string.IsNullOrEmpty(variantState))
+                    {
+                        if (name != variantState) Problem("variant name differs from its state.");
+                    }
+                    else
+                    {
+                        var baseOptions = DeckSidecarJson.AsObject(DeckSidecarJson.Member(DeckSidecarJson.Parse(gameplayJson), "options"));
+                        var otherOptions = DeckSidecarJson.AsObject(DeckSidecarJson.Member(block, "options"));
+                        var changed = baseOptions.Keys.Union(otherOptions.Keys).Where(k =>
+                            !JsonEquals(DeckSidecarJson.Member(baseOptions, k), DeckSidecarJson.Member(otherOptions, k))).ToArray();
+                        if (changed.Length != 1 || name != changed[0] + "=" + Str(otherOptions, changed[0]))
+                            Problem("a stateless variant needs one changed option and its member=value name.");
+                    }
+                    var temp = ScriptableObject.CreateInstance<SetPieceDef>();
+                    try
+                    {
+                        if (BuildDef(key, id, block, sheet, contract, problems, kit, variantJson[v],
+                                     target: temp, frameOffset: SetPieceDef.Facings * (1 + v)))
+                            builtVariants.Add(new SetPieceVariant
+                            {
+                                Name = name, BakedOptionsJson = temp.BakedOptionsJson, GameplayJson = temp.GameplayJson,
+                                BoundsMin = temp.BoundsMin, BoundsMax = temp.BoundsMax, Frames = temp.Frames,
+                                Anchors = temp.Anchors, Colliders = temp.Colliders,
+                            });
+                    }
+                    finally { UnityEngine.Object.DestroyImmediate(temp); }
+                }
+            }
             if (problems.Count > before) return false;
 
             string defPath = DefPath(key);
-            var def = AssetDatabase.LoadAssetAtPath<SetPieceDef>(defPath);
+            var def = target ?? AssetDatabase.LoadAssetAtPath<SetPieceDef>(defPath);
             bool created = def == null;
             if (created) def = ScriptableObject.CreateInstance<SetPieceDef>();
 
@@ -352,7 +434,12 @@ namespace HiddenHarbours.Tools.RigBaking
             def.DisplayName = Str(g, "name") ?? "";
             def.RigKey = key;
             def.SceneId = Str(g, "scene") ?? "";
-            def.BakedOptionsJson = sheet.optionsJson;
+            def.BakedOptionsJson = optionsJson;
+            def.GameplayJson = gameplayJson;
+            def.State = state ?? "";
+            def.HasVendor = vendor != null;
+            def.Vendor = vendor;
+            def.Variants = builtVariants.ToArray();
             def.Layer = Str(g, "layer") ?? "";
             def.Walk = Str(g, "walk") ?? "";
             def.Mount = Str(g, "mount") ?? "";
@@ -373,8 +460,11 @@ namespace HiddenHarbours.Tools.RigBaking
             def.IsAnimated = animatedObj != null;
             def.Animated = animated;
 
-            if (created) AssetDatabase.CreateAsset(def, defPath);
-            else EditorUtility.SetDirty(def);
+            if (target == null)
+            {
+                if (created) AssetDatabase.CreateAsset(def, defPath);
+                else EditorUtility.SetDirty(def);
+            }
             return true;
         }
 
@@ -424,9 +514,16 @@ namespace HiddenHarbours.Tools.RigBaking
         static SetPieceWordsAnchor MakeWords(object w, Action<string> problem)
         {
             OnlyKnown(w, "a words anchor", WordMembers, problem);
+            object bind = DeckSidecarJson.Member(w, "bind"), format = DeckSidecarJson.Member(w, "format");
+            if (bind != null && !(bind is string)) problem("words.bind must be a string.");
+            var lines = DeckSidecarJson.AsArray(format);
+            if (format != null && (lines == null || lines.Any(x => !(x is string))))
+                problem("words.format must be an array of strings.");
             var words = new SetPieceWordsAnchor
             {
                 Id = Str(w, "id") ?? "",
+                Bind = bind as string ?? "",
+                Format = lines?.Select(DeckSidecarJson.String).ToArray() ?? Array.Empty<string>(),
                 BodyId = Str(w, "body") ?? "",
                 Size = DeckSidecarJson.Float(DeckSidecarJson.Member(w, "size")),
             };
@@ -467,6 +564,29 @@ namespace HiddenHarbours.Tools.RigBaking
                 Z = (float)z, OverDatum = (float)over, At = at,
                 Label = Str(m, "label") ?? "", Kind = kind ?? "",
             };
+        }
+
+        public static List<string> ValidateGameplayMembers(object block, SetPieceKit kit)
+        {
+            var problems = new List<string>();
+            OnlyKnown(block, "the gameplay block", new HashSet<string>(GameplayMembers.Concat(kit.ExtraGameplayMembers), StringComparer.Ordinal), problems.Add);
+            return problems;
+        }
+
+        static string CheckGameplay(IRigScriptHost host, SetPieceKit kit, string expression, string key, List<string> problems)
+        {
+            if (!host.EvaluateBool($"JSON.stringify({kit.GlobalName}.gameplay('{key}', {expression}.options)) === JSON.stringify({expression}.gameplay)"))
+            {
+                problems.Add($"{key}: kit gameplay differs from {expression}.");
+                return null;
+            }
+            return host.EvaluateString($"JSON.stringify({expression}.gameplay)");
+        }
+
+        static string CanonicalOptions(string gameplayJson)
+        {
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            return host.EvaluateString("JSON.stringify((" + gameplayJson + ").options)");
         }
 
         // ---- reading --------------------------------------------------------------------------------------
@@ -537,6 +657,27 @@ namespace HiddenHarbours.Tools.RigBaking
             string parent = folder.Substring(0, slash);
             EnsureFolder(parent);
             AssetDatabase.CreateFolder(parent, folder.Substring(slash + 1));
+        }
+    }
+
+    public static class NmcSetPieceDefBuilder
+    {
+        [MenuItem("Hidden Harbours/Art/Build Nine Mile Creek Set Piece Defs", priority = 82)]
+        public static void BuildMenu()
+        {
+            foreach (string problem in SetPieceDefBuilder.BuildAll(NmcSetPieceKit.Definition)) Debug.LogError(problem);
+        }
+        public static void BuildFromCommandLine()
+        {
+            int code = 1;
+            try
+            {
+                var problems = SetPieceDefBuilder.BuildAll(NmcSetPieceKit.Definition);
+                foreach (string problem in problems) Debug.LogError(problem);
+                code = problems.Count == 0 ? 0 : 1;
+            }
+            catch (Exception ex) { Debug.LogError(ex); }
+            EditorApplication.Exit(code);
         }
     }
 }

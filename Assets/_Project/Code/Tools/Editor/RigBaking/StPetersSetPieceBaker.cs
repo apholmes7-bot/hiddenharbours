@@ -34,15 +34,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// option layering (bake sky and lamp under the piece's options) cannot drift between cells.
         /// Returns the rig's own cell and whether it is the one the gameplay block names.
         /// </summary>
-        const string RenderFunction =
-            "globalThis.__spRender = function (i, dir, step) {\n" +
-            "  var P = __spToday.pieces[i], e = {};\n" +
+        static string RenderFunction(SetPieceKit kit) =>
+            "globalThis.__spRender = function (i, dir, step, variant) {\n" +
+            "  var P = __spToday.pieces[i], V = variant >= 0 ? P.variants[variant] : P, e = {};\n" +
             "  if (step >= 0) e[P.gameplay.animated.input] = step * 360 / P.gameplay.animated.steps;\n" +
-            "  var o = Object.assign({ sky: __spSky, lit: __spToday.bake.lit, outline: __spToday.bake.outline }, P.options, e);\n" +
-            "  var r = " + StPetersSetPieceKit.GlobalName + ".render(P.key, dir, o);\n" +
+            "  var o = Object.assign({ sky: __spSky, lit: __spToday.bake.lit, outline: __spToday.bake.outline }, V.options, e);\n" +
+            "  var r = " + kit.GlobalName + ".render(P.key, dir, o);\n" +
             "  var c = step >= 0\n" +
-            "    ? " + StPetersSetPieceKit.GlobalName + ".gameplay(P.key, Object.assign({}, P.options, e)).cells[dir]\n" +
-            "    : P.gameplay.cells[dir];\n" +
+            "    ? " + kit.GlobalName + ".gameplay(P.key, Object.assign({}, V.options, e)).cells[dir]\n" +
+            "    : V.gameplay.cells[dir];\n" +
             "  return { w: r.w, h: r.h, px: r.px, py: r.py, rgba: r.rgba,\n" +
             "           cellOk: c.dir === dir && c.w === r.w && c.h === r.h && c.pivot[0] === r.px && c.pivot[1] === r.py };\n" +
             "};";
@@ -78,41 +78,45 @@ namespace HiddenHarbours.Tools.RigBaking
         /// The whole Phase B chain. Importer work happens OUTSIDE StartAssetEditing and synchronously, so
         /// the slicer reads the sheets it was just handed rather than a deferred import.
         /// </summary>
-        public static List<string> BakeSliceBuild()
+        public static List<string> BakeSliceBuild() => BakeSliceBuild(StPetersSetPieceKit.Definition);
+
+        public static List<string> BakeSliceBuild(SetPieceKit kit)
         {
             var problems = new List<string>();
-            var contract = Bake(out string log);
+            var contract = Bake(kit, out string log);
             Debug.Log(log);
 
             AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
             foreach (var piece in contract.pieces)
-                AssetDatabase.ImportAsset(SetPieceSheetSlicer.SheetPath(piece.key),
+                AssetDatabase.ImportAsset(SetPieceSheetSlicer.SheetPath(kit.Sheets, piece.key),
                                           ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
-            AssetDatabase.ImportAsset(SetPieceSheetSlicer.ContractPath, ImportAssetOptions.ForceSynchronousImport);
+            AssetDatabase.ImportAsset(kit.Sheets.ContractPath, ImportAssetOptions.ForceSynchronousImport);
 
-            int sliced = SetPieceSheetSlicer.SliceAll(problems);
+            int sliced = SetPieceSheetSlicer.SliceAll(kit.Sheets, problems);
             if (sliced != contract.pieces.Count)
                 problems.Add($"sliced {sliced} of {contract.pieces.Count} sheets.");
             if (problems.Count == 0)
-                problems.AddRange(SetPieceDefBuilder.BuildAll());
+                problems.AddRange(SetPieceDefBuilder.BuildAll(kit));
             return problems;
         }
 
         /// <summary>Renders, packs and writes every sheet and the contract. Throws on any refusal.</summary>
-        public static SetPieceSheetSlicer.Contract Bake(out string log)
+        public static SetPieceSheetSlicer.Contract Bake(out string log) => Bake(StPetersSetPieceKit.Definition, out log);
+
+        public static SetPieceSheetSlicer.Contract Bake(SetPieceKit kit, out string log)
         {
             var total = Stopwatch.StartNew();
             var lines = new List<string>();
 
-            string todayText = StPetersSetPieceKit.ReadTodayText();
+            string todayText = kit.ReadTodayText();
             object today = DeckSidecarJson.Parse(todayText);
-            StPetersSetPieceKit.CheckToday(today);
+            kit.CheckToday(today);
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
-            StPetersSetPieceKit.Install(host);
+            kit.Install(host);
             host.Execute("globalThis.__spToday = " + todayText + ";");
             host.Execute("globalThis.__spSky = WeatherSky.at(__spToday.bake.sky);");
-            host.Execute(RenderFunction);
+            host.Execute(RenderFunction(kit));
 
             if (!host.EvaluateBool("CoastalPass.light.lampNeed(__spSky) === __spToday.bake.lit"))
                 throw new InvalidOperationException(
@@ -121,37 +125,39 @@ namespace HiddenHarbours.Tools.RigBaking
 
             var contract = new SetPieceSheetSlicer.Contract
             {
-                schema = SetPieceSheetSlicer.ContractSchema,
+                schema = kit.Sheets.ContractSchema,
                 importSizeCap = (int)host.EvaluateNumber("__spToday.bake.importSizeCap"),
                 facings = (int)host.EvaluateNumber("__spToday.bake.facings"),
-                kitVersion = host.EvaluateString($"{StPetersSetPieceKit.GlobalName}.VERSION"),
+                kitVersion = host.EvaluateString($"{kit.GlobalName}.VERSION"),
                 todaySha256Lf = StPetersSetPieceKit.Sha256Hex(System.Text.Encoding.UTF8.GetBytes(StPetersSetPieceKit.Lf(todayText))),
                 skyJson = host.EvaluateString("JSON.stringify(__spToday.bake.sky)"),
                 bakedLit = (float)host.EvaluateNumber("__spToday.bake.lit"),
                 outline = host.EvaluateBool("__spToday.bake.outline === true"),
-                pixelsPerMetre = (float)host.EvaluateNumber($"{StPetersSetPieceKit.GlobalName}.PPU"),
+                pixelsPerMetre = (float)host.EvaluateNumber($"{kit.GlobalName}.PPU"),
                 elevationDeg = (float)host.EvaluateNumber(
                     $"(function (B) {{ return Math.round(Math.atan2(B.se, B.ce) * 180 / Math.PI * 1e6) / 1e6; }})" +
-                    $"({StPetersSetPieceKit.GlobalName}.basis(0))"),
+                    $"({kit.GlobalName}.basis(0))"),
             };
 
-            if (contract.facings != StPetersSetPieceKit.Facings || contract.importSizeCap != StPetersSetPieceKit.ImportSizeCap)
+            if (contract.facings != kit.Facings || contract.importSizeCap != kit.ImportSizeCap)
                 throw new InvalidOperationException(
                     $"the today file bakes {contract.facings} facings at a {contract.importSizeCap} px cap; this " +
-                    $"baker is {StPetersSetPieceKit.Facings} at {StPetersSetPieceKit.ImportSizeCap}.");
+                    $"baker is {kit.Facings} at {kit.ImportSizeCap}.");
 
             lines.Add($"[StPetersSetPieceBaker] {host.EngineName}, kit {contract.kitVersion}, sky {contract.skyJson}, " +
                       $"lit {contract.bakedLit.ToString(CultureInfo.InvariantCulture)}, cap {contract.importSizeCap}");
 
             int n = (int)host.EvaluateNumber("__spToday.pieces.length");
-            if (n != StPetersSetPieceKit.Pieces.Count)
-                throw new InvalidOperationException($"the today file bakes {n} pieces, not {StPetersSetPieceKit.Pieces.Count}.");
+            if (n != kit.Pieces.Count)
+                throw new InvalidOperationException($"the today file bakes {n} pieces, not {kit.Pieces.Count}.");
 
             for (int i = 0; i < n; i++)
-                contract.pieces.Add(BakePiece(host, i, contract, lines));
+                contract.pieces.Add(BakePiece(kit, host, i, contract, lines));
 
             string contractJson = StPetersSetPieceKit.Lf(JsonUtility.ToJson(contract, true)) + "\n";
-            File.WriteAllText(StPetersSetPieceKit.Abs(SetPieceSheetSlicer.ContractPath), contractJson);
+            if (kit == StPetersSetPieceKit.Definition)
+                contractJson = System.Text.RegularExpressions.Regex.Replace(contractJson, @",\s*""variants""\s*:\s*\[\s*\]", "");
+            File.WriteAllText(StPetersSetPieceKit.Abs(kit.Sheets.ContractPath), contractJson);
 
             total.Stop();
             lines.Add($"[StPetersSetPieceBaker] {n} sheets and the contract in {total.Elapsed.TotalMilliseconds:F0} ms.");
@@ -165,18 +171,18 @@ namespace HiddenHarbours.Tools.RigBaking
             public byte[] Rgba;
         }
 
-        static SetPieceSheetSlicer.Piece BakePiece(IRigScriptHost host, int i, SetPieceSheetSlicer.Contract contract,
+        static SetPieceSheetSlicer.Piece BakePiece(SetPieceKit kit, IRigScriptHost host, int i, SetPieceSheetSlicer.Contract contract,
                                                    List<string> lines)
         {
             string key = host.EvaluateString($"__spToday.pieces[{i}].key");
             string id = host.EvaluateString($"__spToday.pieces[{i}].id");
-            if (StPetersSetPieceKit.Pieces[i].Key != key || StPetersSetPieceKit.Pieces[i].Value != id)
+            if (kit.Pieces[i].Key != key || kit.Pieces[i].Value != id)
                 throw new InvalidOperationException(
-                    $"today piece {i} is {key} ({id}); the kit's order says {StPetersSetPieceKit.Pieces[i].Key} " +
-                    $"({StPetersSetPieceKit.Pieces[i].Value}).");
+                    $"today piece {i} is {key} ({id}); the kit's order says {kit.Pieces[i].Key} " +
+                    $"({kit.Pieces[i].Value}).");
 
             // THE ORACLE: the kit, today, still writes the gameplay block the Defs are built from.
-            string g = StPetersSetPieceKit.GlobalName;
+            string g = kit.GlobalName;
             if (!host.EvaluateBool($"JSON.stringify({g}.gameplay(__spToday.pieces[{i}].key, " +
                                    $"Object.assign({{}}, __spToday.pieces[{i}].options))) === " +
                                    $"JSON.stringify(__spToday.pieces[{i}].gameplay)"))
@@ -187,17 +193,29 @@ namespace HiddenHarbours.Tools.RigBaking
             int headings = host.EvaluateBool($"__spToday.pieces[{i}].gameplay.animated != null")
                 ? (int)host.EvaluateNumber($"__spToday.pieces[{i}].gameplay.animated.steps")
                 : 0;
-            int count = contract.facings + headings;
+            int variants = (int)host.EvaluateNumber($"(__spToday.pieces[{i}].variants || []).length");
+            if (variants > 0 && headings > 0)
+                throw new InvalidOperationException($"{key}: variants and an animated part.");
+            var variantNames = new string[variants];
+            for (int v = 0; v < variants; v++)
+            {
+                variantNames[v] = host.EvaluateString($"__spToday.pieces[{i}].variants[{v}].name");
+                if (!host.EvaluateBool($"JSON.stringify({g}.gameplay('{key}', __spToday.pieces[{i}].variants[{v}].options)) === JSON.stringify(__spToday.pieces[{i}].variants[{v}].gameplay)"))
+                    throw new InvalidOperationException($"{key} variant {variantNames[v]}: kit gameplay differs from today.");
+            }
+            int facingCells = contract.facings * (1 + variants);
+            int count = facingCells + headings;
 
             var cells = new Cell[count];
             int cellW = 0, cellH = 0;
             for (int c = 0; c < count; c++)
             {
-                bool heading = c >= contract.facings;
-                int dir = heading ? StPetersSetPieceKit.HeadingRigDir : StPetersSetPieceKit.RigDirForFrame(c);
-                int step = heading ? c - contract.facings : -1;
+                bool heading = c >= facingCells;
+                int dir = heading ? StPetersSetPieceKit.HeadingRigDir : StPetersSetPieceKit.RigDirForFrame(c % contract.facings);
+                int step = heading ? c - facingCells : -1;
+                int variant = heading ? -1 : c / contract.facings - 1;
 
-                host.Execute($"globalThis.__spR = __spRender({i}, {dir}, {step});");
+                host.Execute($"globalThis.__spR = __spRender({i}, {dir}, {step}, {variant});");
                 var cell = new Cell
                 {
                     Index = c, RigDir = dir, Heading = step,
@@ -237,7 +255,7 @@ namespace HiddenHarbours.Tools.RigBaking
             var piece = new SetPieceSheetSlicer.Piece
             {
                 key = key, id = id, sheet = SetPieceSheetSlicer.SheetName(key),
-                cells = count, headings = headings, cellW = cellW, cellH = cellH,
+                cells = count, headings = headings, variants = variantNames, cellW = cellW, cellH = cellH,
                 cols = cols, rows = rows, sheetW = sheetW, sheetH = sheetH,
                 optionsJson = host.EvaluateString($"JSON.stringify(__spToday.pieces[{i}].gameplay.options)"),
             };
@@ -256,7 +274,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 });
             }
 
-            int bytes = WritePng(pixels, sheetW, sheetH, SetPieceSheetSlicer.SheetPath(key));
+            int bytes = WritePng(pixels, sheetW, sheetH, SetPieceSheetSlicer.SheetPath(kit.Sheets, key));
             lines.Add($"  {key,-14} {count,2} cells of {cellW}×{cellH} → {cols}×{rows} = {sheetW}×{sheetH} ({bytes:N0} B)");
             return piece;
         }
@@ -279,6 +297,29 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 UnityEngine.Object.DestroyImmediate(tex);
             }
+        }
+    }
+
+    public static class NmcSetPieceBaker
+    {
+        [MenuItem("Hidden Harbours/Art/Bake Nine Mile Creek Set Pieces (today)", priority = 74)]
+        public static void BakeMenu()
+        {
+            foreach (string problem in StPetersSetPieceBaker.BakeSliceBuild(NmcSetPieceKit.Definition))
+                Debug.LogError(problem);
+        }
+
+        public static void BakeSliceBuildFromCommandLine()
+        {
+            int code = 1;
+            try
+            {
+                var problems = StPetersSetPieceBaker.BakeSliceBuild(NmcSetPieceKit.Definition);
+                foreach (string problem in problems) Debug.LogError(problem);
+                code = problems.Count == 0 ? 0 : 1;
+            }
+            catch (Exception ex) { Debug.LogError(ex); }
+            EditorApplication.Exit(code);
         }
     }
 }

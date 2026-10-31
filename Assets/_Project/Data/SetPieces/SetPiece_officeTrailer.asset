@@ -1,0 +1,207 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_officeTrailer
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_wharf_office
+  DisplayName: Wharf office (box trailer)
+  RigKey: officeTrailer
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{"text":"HARBOURMASTER","doorX":1.05,"stripe":"orange","lights":true,"role":"harbourmaster","flag":true}'
+  Layer: raised
+  Walk: solid
+  Mount: ground
+  BoundsMin: {x: -5.72, y: -1.238, z: 0}
+  BoundsMax: {x: 4.22, y: 3.49, z: 3.42}
+  Frames:
+  - Sprite: {fileID: -6796665665226769133, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 326, y: 158}
+    NativePivot: {x: 187, y: 129}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 183, y: 126}
+  - Sprite: {fileID: -4757742368107779894, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 263, y: 266}
+    NativePivot: {x: 135, y: 185}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 131, y: 181}
+  - Sprite: {fileID: -2371354831088340244, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 159, y: 270}
+    NativePivot: {x: 43, y: 182}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 39, y: 178}
+  - Sprite: {fileID: 6610985566836315473, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 285, y: 231}
+    NativePivot: {x: 124, y: 150}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 121, y: 147}
+  - Sprite: {fileID: -6817979763900817240, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 326, y: 176}
+    NativePivot: {x: 139, y: 103}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 135, y: 99}
+  - Sprite: {fileID: 9071027653650605712, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 263, y: 240}
+    NativePivot: {x: 128, y: 155}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 124, y: 152}
+  - Sprite: {fileID: 3354666432778931976, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 159, y: 279}
+    NativePivot: {x: 115, y: 164}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 112, y: 160}
+  - Sprite: {fileID: -5294062766431596079, guid: e6032555d3734bf4aa54b5d4b441ca83, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 285, y: 240}
+    NativePivot: {x: 160, y: 155}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 156, y: 152}
+  CellSize: {x: 318, y: 271}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -4.05, y: -1.22}
+    - {x: 4.12, y: -1.22}
+    - {x: 4.12, y: 1.22}
+    - {x: -4.05, y: 1.22}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -5.75, y: -0.9}
+    - {x: -4.05, y: -0.9}
+    - {x: -4.05, y: 0.9}
+    - {x: -5.75, y: 0.9}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 0.2, y: 1.22}
+    - {x: 2.35, y: 1.22}
+    - {x: 2.35, y: 2.5}
+    - {x: 0.2, y: 2.5}
+  Anchors:
+  - Name: counter
+    Position: {x: 2.8, y: 2.034, z: 0}
+  - Name: door
+    Position: {x: 1.05, y: 2.99, z: 0}
+  - Name: dropBox
+    Position: {x: 0.05, y: 3.32, z: 1.2}
+  - Name: flag
+    Position: {x: -3.83, y: 2.17, z: 3.3}
+  - Name: hitch
+    Position: {x: -5.62, y: 0, z: 0.56}
+  - Name: interact
+    Position: {x: 1.25, y: 3.27, z: 0}
+  - Name: porchLight
+    Position: {x: 1.05, y: 1.334, z: 2.65}
+  Path: []
+  TideMarks: []
+  Words:
+  - Id: words.nmc_licences
+    BodyId: 
+    Corners:
+    - {x: 2.12, y: 1.266, z: 0.86}
+    - {x: 3.48, y: 1.266, z: 0.86}
+    - {x: 3.48, y: 1.266, z: 1.16}
+    - {x: 2.12, y: 1.266, z: 1.16}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+    Bind: 
+    Format: []
+  - Id: words.nmc_harbourmaster
+    BodyId: 
+    Corners:
+    - {x: -1.95, y: 1.268, z: 1.92}
+    - {x: -0.55, y: 1.268, z: 1.92}
+    - {x: -0.55, y: 1.268, z: 2.44}
+    - {x: -1.95, y: 1.268, z: 2.44}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+    Bind: 
+    Format: []
+  HasLight: 1
+  Light:
+    Emitters:
+    - lamp
+    - win
+    When: "o.lit, from the game\u2019s lamp rule (dusk to dawn; the office while
+      open)"
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+    1.4.0\",\"key\":\"officeTrailer\",\"id\":\"structure.nmc_wharf_office\",\"name\":\"Wharf
+    office (box trailer)\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+    the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+    point (the pivot)\",\"bounds\":{\"x\":[-5.72,4.22],\"y\":[-1.238,3.49],\"z\":[0,3.42]},\"layer\":\"raised\",\"walk\":\"solid\",\"mount\":\"ground\",\"colliders\":[{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-4.05,-1.22],[4.12,-1.22],[4.12,1.22],[-4.05,1.22]]},{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-5.75,-0.9],[-4.05,-0.9],[-4.05,0.9],[-5.75,0.9]]},{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[0.2,1.22],[2.35,1.22],[2.35,2.5],[0.2,2.5]]}],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+    back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+    back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+    show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+    show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+    show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+    back\"}],\"cells\":[{\"dir\":0,\"w\":326,\"h\":158,\"pivot\":[187,129]},{\"dir\":1,\"w\":285,\"h\":240,\"pivot\":[160,155]},{\"dir\":2,\"w\":159,\"h\":279,\"pivot\":[115,164]},{\"dir\":3,\"w\":263,\"h\":240,\"pivot\":[128,155]},{\"dir\":4,\"w\":326,\"h\":176,\"pivot\":[139,103]},{\"dir\":5,\"w\":285,\"h\":231,\"pivot\":[124,150]},{\"dir\":6,\"w\":159,\"h\":270,\"pivot\":[43,182]},{\"dir\":7,\"w\":263,\"h\":266,\"pivot\":[135,185]}],\"anchors\":{\"role\":\"harbourmaster\",\"counter\":[2.8,2.034,0],\"vendor\":{\"seller\":\"seller.nmc_harbourmaster\",\"at\":[2.8,0.3,1.5],\"sells\":\"the
+    cod licence (LicenseVendor on this counter; the game\u2019s LicenseDef)\"},\"flag\":[-3.8299999999999996,2.17,3.3],\"dropBox\":[0.05,3.3200000000000003,1.2],\"words\":[{\"id\":\"words.nmc_licences\",\"text\":\"LICENCES
+    \xB7 BERTHS \xB7 WHARFAGE\",\"corners\":[[2.12,1.266,0.86],[3.48,1.266,0.86],[3.48,1.266,1.16],[2.12,1.266,1.16]],\"note\":\"under
+    the counter: what the harbourmaster sells\",\"cornersPx\":[[71.2,108],[27.6,108],[27.6,100.6],[71.2,100.6]]},{\"id\":\"words.nmc_harbourmaster\",\"text\":\"HARBOURMASTER\",\"corners\":[[-1.95,1.268,1.92],[-0.55,1.268,1.92],[-0.55,1.268,2.44],[-1.95,1.268,2.44]],\"note\":\"the
+    office\u2019s sign, lettered by the game\",\"cornersPx\":[[201.4,82],[156.6,82],[156.6,69.3],[201.4,69.3]]}],\"door\":[1.05,2.99,0],\"interact\":[1.25,3.27,0],\"porchLight\":[1.05,1.334,2.65],\"hitch\":[-5.62,0,0.56],\"px\":{\"counter\":[49.4,144.8],\"flag\":[261.6,66.7],\"dropBox\":[137.4,141.9],\"door\":[105.4,164.5],\"interact\":[99,170.3],\"porchLight\":[105.4,65.5],\"hitch\":[318.8,89.3]}},\"options\":{\"text\":\"HARBOURMASTER\",\"doorX\":1.05,\"stripe\":\"orange\",\"lights\":true,\"role\":\"harbourmaster\",\"flag\":true},\"light\":{\"emitters\":[\"lamp\",\"win\"],\"when\":\"o.lit,
+    from the game\u2019s lamp rule (dusk to dawn; the office while open)\"},\"notes\":\"Stand
+    it with its curb side (the door) to the yard. The hitch is the game\u2019s if
+    it is ever towed: anchors().hitch. The porch light and the windows glow with
+    o.lit while the office is open after dark.\"}"
+  State: 
+  Variants: []
+  HasVendor: 1
+  Vendor:
+    Seller: seller.nmc_harbourmaster
+    At: {x: 2.8, y: 0.3, z: 1.5}

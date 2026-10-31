@@ -35,9 +35,18 @@ namespace HiddenHarbours.Art.Editor
         public const string ContractSchema = "hidden-harbours/st-peters-set-pieces-contract@1";
         public const string SheetPrefix = "SetPiece_";
 
+        public sealed class Kit
+        {
+            public readonly string SheetFolder, TodayPath, ContractPath, ContractSchema;
+            public Kit(string folder, string today, string contract, string schema)
+            { SheetFolder = folder; TodayPath = today; ContractPath = contract; ContractSchema = schema; }
+        }
+        public static readonly Kit StPeters = new Kit(SheetFolder, TodayPath, ContractPath, ContractSchema);
+
         public static string SheetName(string key) => SheetPrefix + key;
 
         public static string SheetPath(string key) => $"{SheetFolder}/{SheetName(key)}.png";
+        public static string SheetPath(Kit kit, string key) => $"{kit.SheetFolder}/{SheetName(key)}.png";
 
         public static string SpriteName(string key, int cell) => $"{SheetName(key)}_{cell}";
 
@@ -63,6 +72,7 @@ namespace HiddenHarbours.Art.Editor
 
             /// <summary>The options the kit resolved for this bake, as JSON.</summary>
             public string optionsJson;
+            public string[] variants = Array.Empty<string>();
         }
 
         [Serializable]
@@ -83,9 +93,12 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>The contract, or null with the reason. JsonUtility returns a ZEROED object rather than
         /// throwing on a shape mismatch, so every field that matters is asserted.</summary>
         public static Contract LoadContract(out string error)
+            => LoadContract(StPeters, out error);
+
+        public static Contract LoadContract(Kit kit, out string error)
         {
             error = null;
-            string abs = Path.Combine(RepoRoot, ContractPath);
+            string abs = Path.Combine(RepoRoot, kit.ContractPath);
             if (!File.Exists(abs))
             {
                 error = $"No contract at '{ContractPath}'. Run \"Hidden Harbours/Art/Bake St Peters Set " +
@@ -94,7 +107,7 @@ namespace HiddenHarbours.Art.Editor
             }
 
             var c = JsonUtility.FromJson<Contract>(File.ReadAllText(abs));
-            if (c == null || c.schema != ContractSchema)
+            if (c == null || c.schema != kit.ContractSchema)
                 error = $"'{ContractPath}' is not a {ContractSchema} document.";
             else if (c.importSizeCap <= 0 || c.facings <= 0)
                 error = $"'{ContractPath}' has no importSizeCap or facings; refusing to guess either.";
@@ -113,7 +126,9 @@ namespace HiddenHarbours.Art.Editor
         {
             if (string.IsNullOrEmpty(p.key) || p.sheet != SheetName(p.key))
                 return $"piece '{p.key}' names sheet '{p.sheet}'.";
-            if (p.cells != c.facings + p.headings || p.frames == null || p.frames.Count != p.cells)
+            if (p.headings > 0 && (p.variants?.Length ?? 0) > 0)
+                return $"{p.key}: variants and an animated part cannot share a piece.";
+            if (p.cells != c.facings * (1 + (p.variants?.Length ?? 0)) + p.headings || p.frames == null || p.frames.Count != p.cells)
                 return $"{p.key}: {p.frames?.Count ?? 0} frames for {p.cells} cells ({c.facings} facings + " +
                        $"{p.headings} headings).";
             if (p.cols * p.rows != p.cells || p.sheetW != p.cols * p.cellW || p.sheetH != p.rows * p.cellH)
@@ -163,8 +178,11 @@ namespace HiddenHarbours.Art.Editor
         /// <c>StartAssetEditing</c>: each importer change reimports synchronously before the next read.
         /// </summary>
         public static int SliceAll(List<string> problems)
+            => SliceAll(StPeters, problems);
+
+        public static int SliceAll(Kit kit, List<string> problems)
         {
-            var contract = LoadContract(out string error);
+            var contract = LoadContract(kit, out string error);
             if (contract == null)
             {
                 problems.Add(error);
@@ -173,15 +191,15 @@ namespace HiddenHarbours.Art.Editor
 
             int sliced = 0;
             foreach (var piece in contract.pieces)
-                if (SliceOne(piece, contract.importSizeCap, problems)) sliced++;
+                if (SliceOne(kit, piece, contract.importSizeCap, problems)) sliced++;
             return sliced;
         }
 
         static string RepoRoot => Directory.GetParent(Application.dataPath)!.FullName;
 
-        static bool SliceOne(Piece piece, int importSizeCap, List<string> problems)
+        static bool SliceOne(Kit kit, Piece piece, int importSizeCap, List<string> problems)
         {
-            string assetPath = SheetPath(piece.key);
+            string assetPath = SheetPath(kit, piece.key);
             if (!File.Exists(Path.Combine(RepoRoot, assetPath)))
             {
                 problems.Add($"{piece.key}: no sheet at '{assetPath}'. Bake before slicing.");

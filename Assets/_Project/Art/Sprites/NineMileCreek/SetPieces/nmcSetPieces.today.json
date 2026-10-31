@@ -1,0 +1,2666 @@
+{
+ "schema": "hidden-harbours/nmc-set-pieces-today@1",
+ "note": "The six wharf pieces at the delivered scene options. The crane includes working and stowed states; the harbour light includes green and red. Gameplay blocks are the kit output, unchanged.",
+ "kit": {
+  "folder": "docs/art/rigs/nmc-set-pieces-kit",
+  "global": "NmcSetPieces",
+  "version": "1.4.0",
+  "scripts": [
+   {
+    "path": "lib/weatherSky.js",
+    "sha256Lf": "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062"
+   },
+   {
+    "path": "lib/coastalPass.js",
+    "sha256Lf": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"
+   },
+   {
+    "path": "nmcSetPieces.js",
+    "sha256Lf": "9f64906237501c7bdf0bcf0aa402f9443d2e2299fd8c97da0b72f68f62f7d966"
+   }
+  ]
+ },
+ "scenes": [
+  {
+   "id": "keyscene.nmc_wharf",
+   "file": "hh-nmc-wharf-return/scenes/keyscene.nmc_wharf/scene.json",
+   "bytes": 78926,
+   "sha256": "81307f997035dbbec420c65326337fb439dc82afe9049c0b96de69f856fec26d"
+  }
+ ],
+ "bake": {
+  "sky": {
+   "time": 14,
+   "cloud": 0.1,
+   "wind": 0.3
+  },
+  "lit": 0,
+  "outline": false,
+  "facings": 8,
+  "importSizeCap": 4096
+ },
+ "leftOut": [],
+ "pieces": [
+  {
+   "key": "officeTrailer",
+   "id": "structure.nmc_wharf_office",
+   "scene": "keyscene.nmc_wharf",
+   "sceneEntry": 9,
+   "options": {
+    "role": "harbourmaster",
+    "text": "HARBOURMASTER"
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-set-piece@1",
+    "generatedBy": "NmcSetPieces 1.4.0",
+    "key": "officeTrailer",
+    "id": "structure.nmc_wharf_office",
+    "name": "Wharf office (box trailer)",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -5.72,
+      4.22
+     ],
+     "y": [
+      -1.238,
+      3.49
+     ],
+     "z": [
+      0,
+      3.42
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -4.05,
+        -1.22
+       ],
+       [
+        4.12,
+        -1.22
+       ],
+       [
+        4.12,
+        1.22
+       ],
+       [
+        -4.05,
+        1.22
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -5.75,
+        -0.9
+       ],
+       [
+        -4.05,
+        -0.9
+       ],
+       [
+        -4.05,
+        0.9
+       ],
+       [
+        -5.75,
+        0.9
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        0.2,
+        1.22
+       ],
+       [
+        2.35,
+        1.22
+       ],
+       [
+        2.35,
+        2.5
+       ],
+       [
+        0.2,
+        2.5
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 326,
+      "h": 158,
+      "pivot": [
+       187,
+       129
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 285,
+      "h": 240,
+      "pivot": [
+       160,
+       155
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 159,
+      "h": 279,
+      "pivot": [
+       115,
+       164
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 263,
+      "h": 240,
+      "pivot": [
+       128,
+       155
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 326,
+      "h": 176,
+      "pivot": [
+       139,
+       103
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 285,
+      "h": 231,
+      "pivot": [
+       124,
+       150
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 159,
+      "h": 270,
+      "pivot": [
+       43,
+       182
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 263,
+      "h": 266,
+      "pivot": [
+       135,
+       185
+      ]
+     }
+    ],
+    "anchors": {
+     "role": "harbourmaster",
+     "counter": [
+      2.8,
+      2.034,
+      0
+     ],
+     "vendor": {
+      "seller": "seller.nmc_harbourmaster",
+      "at": [
+       2.8,
+       0.3,
+       1.5
+      ],
+      "sells": "the cod licence (LicenseVendor on this counter; the game’s LicenseDef)"
+     },
+     "flag": [
+      -3.8299999999999996,
+      2.17,
+      3.3
+     ],
+     "dropBox": [
+      0.05,
+      3.3200000000000003,
+      1.2
+     ],
+     "words": [
+      {
+       "id": "words.nmc_licences",
+       "text": "LICENCES · BERTHS · WHARFAGE",
+       "corners": [
+        [
+         2.12,
+         1.266,
+         0.86
+        ],
+        [
+         3.48,
+         1.266,
+         0.86
+        ],
+        [
+         3.48,
+         1.266,
+         1.16
+        ],
+        [
+         2.12,
+         1.266,
+         1.16
+        ]
+       ],
+       "note": "under the counter: what the harbourmaster sells",
+       "cornersPx": [
+        [
+         71.2,
+         108
+        ],
+        [
+         27.6,
+         108
+        ],
+        [
+         27.6,
+         100.6
+        ],
+        [
+         71.2,
+         100.6
+        ]
+       ]
+      },
+      {
+       "id": "words.nmc_harbourmaster",
+       "text": "HARBOURMASTER",
+       "corners": [
+        [
+         -1.95,
+         1.268,
+         1.92
+        ],
+        [
+         -0.55,
+         1.268,
+         1.92
+        ],
+        [
+         -0.55,
+         1.268,
+         2.44
+        ],
+        [
+         -1.95,
+         1.268,
+         2.44
+        ]
+       ],
+       "note": "the office’s sign, lettered by the game",
+       "cornersPx": [
+        [
+         201.4,
+         82
+        ],
+        [
+         156.6,
+         82
+        ],
+        [
+         156.6,
+         69.3
+        ],
+        [
+         201.4,
+         69.3
+        ]
+       ]
+      }
+     ],
+     "door": [
+      1.05,
+      2.99,
+      0
+     ],
+     "interact": [
+      1.25,
+      3.27,
+      0
+     ],
+     "porchLight": [
+      1.05,
+      1.334,
+      2.65
+     ],
+     "hitch": [
+      -5.62,
+      0,
+      0.56
+     ],
+     "px": {
+      "counter": [
+       49.4,
+       144.8
+      ],
+      "flag": [
+       261.6,
+       66.7
+      ],
+      "dropBox": [
+       137.4,
+       141.9
+      ],
+      "door": [
+       105.4,
+       164.5
+      ],
+      "interact": [
+       99,
+       170.3
+      ],
+      "porchLight": [
+       105.4,
+       65.5
+      ],
+      "hitch": [
+       318.8,
+       89.3
+      ]
+     }
+    },
+    "options": {
+     "text": "HARBOURMASTER",
+     "doorX": 1.05,
+     "stripe": "orange",
+     "lights": true,
+     "role": "harbourmaster",
+     "flag": true
+    },
+    "light": {
+     "emitters": [
+      "lamp",
+      "win"
+     ],
+     "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+    },
+    "notes": "Stand it with its curb side (the door) to the yard. The hitch is the game’s if it is ever towed: anchors().hitch. The porch light and the windows glow with o.lit while the office is open after dark."
+   },
+   "variants": []
+  },
+  {
+   "key": "wharfCrane",
+   "id": "structure.nmc_wharf_crane",
+   "scene": "keyscene.nmc_wharf",
+   "sceneEntry": 6,
+   "options": {
+    "state": "working",
+    "slew": 27.5,
+    "reach": 5.41,
+    "hookZ": -1.06,
+    "load": "totes"
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-set-piece@1",
+    "generatedBy": "NmcSetPieces 1.4.0",
+    "key": "wharfCrane",
+    "id": "structure.nmc_wharf_crane",
+    "name": "Wharf crane (knuckle boom)",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -1.025,
+      3.161
+     ],
+     "y": [
+      -1.35,
+      5.377
+     ],
+     "z": [
+      0,
+      5.794
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "quay",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.95,
+        -0.95
+       ],
+       [
+        0.95,
+        -0.95
+       ],
+       [
+        0.95,
+        0.95
+       ],
+       [
+        -0.95,
+        0.95
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.55,
+        -1.38
+       ],
+       [
+        0.55,
+        -1.38
+       ],
+       [
+        0.55,
+        -0.95
+       ],
+       [
+        -0.55,
+        -0.95
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 141,
+      "h": 257,
+      "pivot": [
+       36,
+       231
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 126,
+      "h": 271,
+      "pivot": [
+       76,
+       238
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 223,
+      "h": 210,
+      "pivot": [
+       176,
+       183
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 235,
+      "h": 256,
+      "pivot": [
+       185,
+       144
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 141,
+      "h": 304,
+      "pivot": [
+       105,
+       128
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 126,
+      "h": 308,
+      "pivot": [
+       50,
+       126
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 223,
+      "h": 270,
+      "pivot": [
+       47,
+       140
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 235,
+      "h": 210,
+      "pivot": [
+       50,
+       165
+      ]
+     }
+    ],
+    "anchors": {
+     "hook": [
+      2.498,
+      4.799,
+      -1.06
+     ],
+     "tip": [
+      2.498,
+      4.799,
+      4.95
+     ],
+     "loadBase": [
+      2.498,
+      4.799,
+      -2.5
+     ],
+     "operator": [
+      0,
+      -1.18,
+      0.26
+     ],
+     "column": [
+      0,
+      0,
+      1.52
+     ],
+     "state": "working",
+     "slewDeg": 27.5,
+     "reachM": 5.41,
+     "hookZ": -1.06,
+     "luffDeg": 64.883,
+     "jibDeg": -8.245,
+     "load": "totes",
+     "note": "hook = [reach sin(slew), reach cos(slew), hookZ] in the piece frame; the stand never turns",
+     "px": {
+      "hook": [
+       25.1,
+       252.7
+      ],
+      "tip": [
+       25.1,
+       105.4
+      ],
+      "loadBase": [
+       25.1,
+       288
+      ],
+      "operator": [
+       105,
+       97.4
+      ],
+      "column": [
+       105,
+       90.7
+      ]
+     }
+    },
+    "options": {
+     "state": "working",
+     "slew": 27.5,
+     "reach": 5.41,
+     "hookZ": -1.06,
+     "load": "totes"
+    },
+    "light": null,
+    "notes": "Mount on the quay with local +Y out over the water, the plinth 2.2 m inside the face, so the hook reaches a boat alongside and the landing pad behind. Playable: see gameplay().crane and NOTES §4.",
+    "crane": {
+     "envelope": {
+      "pin": [
+       0.05,
+       2.85
+      ],
+      "Lm": 2.975,
+      "Lj": 4.14,
+      "column": [
+       0,
+       0,
+       1.52
+      ],
+      "operator": [
+       0,
+       -1.18,
+       0.26
+      ],
+      "reach": {
+       "min": 2.2,
+       "max": 5.6,
+       "rateMS": 0.45
+      },
+      "tipZ": {
+       "near": 1.9,
+       "far": 4.95,
+       "farFrom": 5
+      },
+      "slew": {
+       "continuous": true,
+       "rateDegS": 20,
+       "stowedDeg": -90
+      },
+      "hoist": {
+       "max": 3.6,
+       "min": -7,
+       "upMS": 0.4,
+       "downMS": 0.55,
+       "belowTip": 0.95,
+       "slowNearM": 0.3,
+       "slowMS": 0.15
+      },
+      "stowed": {
+       "luffDeg": 72,
+       "jibDeg": -94,
+       "hookZ": 1.35
+      },
+      "swlKg": 1000,
+      "latchM": 0.35,
+      "landM": 0.05,
+      "swing": {
+       "damping": 0.6,
+       "maxDeg": 12,
+       "fromSlewDegS2": 0.35
+      }
+     },
+     "loads": {
+      "none": null,
+      "totes": {
+       "label": "two fish totes, stacked: the landing",
+       "size": [
+        1.12,
+        0.72,
+        1.04
+       ],
+       "kg": 190,
+       "lift": 0.4,
+       "seat": "deck or pad"
+      },
+      "traps": {
+       "label": "a sling of four traps: setting day",
+       "size": [
+        1.24,
+        1.26,
+        0.9
+       ],
+       "kg": 150,
+       "lift": 0.4,
+       "seat": "pad or deck"
+      },
+      "bait": {
+       "label": "a bait barrel",
+       "size": [
+        0.6,
+        0.6,
+        0.9
+       ],
+       "kg": 120,
+       "lift": 0.3,
+       "seat": "pad or deck"
+      }
+     },
+     "states": [
+      {
+       "id": "stowed",
+       "means": "jib folded down beside the column, the hook in its cradle, slewed along the quay (-90). Nobody at the stand."
+      },
+      {
+       "id": "idle",
+       "means": "working pose, the hook up at the top of its travel, nothing on it. The player is at the stand."
+      },
+      {
+       "id": "reaching",
+       "means": "the player is slewing, reaching or hoisting with nothing on the hook."
+      },
+      {
+       "id": "hooked",
+       "means": "the eye within latchM of a load’s lift point and latched (E). The load still sits."
+      },
+      {
+       "id": "lifting",
+       "means": "a latched load clear of every surface; it swings, damped, never more than swing.maxDeg."
+      },
+      {
+       "id": "landing",
+       "means": "the load’s base within hoist.slowNearM of a surface (the pad, a deck, a truck bed): lowering slows to hoist.slowMS."
+      },
+      {
+       "id": "set",
+       "means": "the load’s base within landM of a surface: it sits, and E unlatches."
+      }
+     ],
+     "pose": {
+      "state": "working",
+      "slew": 27.5,
+      "luffDeg": 64.883,
+      "jibDeg": -8.245,
+      "reach": 5.41,
+      "hookZ": -1.06,
+      "load": "totes",
+      "hook": [
+       2.498,
+       4.799,
+       -1.06
+      ],
+      "tip": [
+       2.498,
+       4.799,
+       4.95
+      ],
+      "loadBase": [
+       2.498,
+       4.799,
+       -2.5
+      ]
+     },
+     "controls": {
+      "take": "E at the operator point (anchors.operator), from the landward side",
+      "slew": "A / D, left stick X",
+      "reach": "W / S, left stick Y",
+      "hoist": "R up / F down; RT up / LT down",
+      "latch": "E, when the eye is within envelope.latchM of a load’s lift point",
+      "release": "E, when the load is set",
+      "leave": "Esc / B, or walk off the grating"
+     },
+     "camera": {
+      "size": [
+       20,
+       11.25
+      ],
+      "centre": "midway between the column and the hook, the same angle; eases in over 0.6 s",
+      "marker": "a ring on the surface under the hook (the drop line), because a hook’s height is hard to read from above"
+     },
+     "proposal": "NOTES.md §4: the crane’s gameplay, for the owner to rule"
+    }
+   },
+   "variants": [
+    {
+     "name": "stowed",
+     "sceneEntry": 7,
+     "options": {
+      "state": "stowed"
+     },
+     "gameplay": {
+      "schema": "hidden-harbours/nmc-set-piece@1",
+      "generatedBy": "NmcSetPieces 1.4.0",
+      "key": "wharfCrane",
+      "id": "structure.nmc_wharf_crane",
+      "name": "Wharf crane (knuckle boom)",
+      "defType": "SetPieceDef",
+      "scene": "keyscene.nmc_wharf",
+      "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+      "bounds": {
+       "x": [
+        -1.025,
+        1.025
+       ],
+       "y": [
+        -1.35,
+        1.219
+       ],
+       "z": [
+        0,
+        5.929
+       ]
+      },
+      "layer": "raised",
+      "walk": "solid",
+      "mount": "quay",
+      "colliders": [
+       {
+        "type": "polygon",
+        "blocks": "walk",
+        "pts": [
+         [
+          -0.95,
+          -0.95
+         ],
+         [
+          0.95,
+          -0.95
+         ],
+         [
+          0.95,
+          0.95
+         ],
+         [
+          -0.95,
+          0.95
+         ]
+        ]
+       },
+       {
+        "type": "polygon",
+        "blocks": "walk",
+        "pts": [
+         [
+          -0.55,
+          -1.38
+         ],
+         [
+          0.55,
+          -1.38
+         ],
+         [
+          0.55,
+          -0.95
+         ],
+         [
+          -0.55,
+          -0.95
+         ]
+        ]
+       }
+      ],
+      "facings": [
+       {
+        "dir": 0,
+        "showFaces": "N",
+        "bearingDeg": 0,
+        "cameraSees": "its back"
+       },
+       {
+        "dir": 1,
+        "showFaces": "NW",
+        "bearingDeg": 315,
+        "cameraSees": "its back"
+       },
+       {
+        "dir": 2,
+        "showFaces": "W",
+        "bearingDeg": 270,
+        "cameraSees": "the show face, edge-on or at a diagonal"
+       },
+       {
+        "dir": 3,
+        "showFaces": "SW",
+        "bearingDeg": 225,
+        "cameraSees": "the show face"
+       },
+       {
+        "dir": 4,
+        "showFaces": "S",
+        "bearingDeg": 180,
+        "cameraSees": "the show face"
+       },
+       {
+        "dir": 5,
+        "showFaces": "SE",
+        "bearingDeg": 135,
+        "cameraSees": "the show face"
+       },
+       {
+        "dir": 6,
+        "showFaces": "E",
+        "bearingDeg": 90,
+        "cameraSees": "the show face, edge-on or at a diagonal"
+       },
+       {
+        "dir": 7,
+        "showFaces": "NE",
+        "bearingDeg": 45,
+        "cameraSees": "its back"
+       }
+      ],
+      "cells": [
+       {
+        "dir": 0,
+        "w": 73,
+        "h": 200,
+        "pivot": [
+         36,
+         174
+        ]
+       },
+       {
+        "dir": 1,
+        "w": 100,
+        "h": 203,
+        "pivot": [
+         50,
+         170
+        ]
+       },
+       {
+        "dir": 2,
+        "w": 90,
+        "h": 179,
+        "pivot": [
+         43,
+         154
+        ]
+       },
+       {
+        "dir": 3,
+        "w": 100,
+        "h": 175,
+        "pivot": [
+         50,
+         142
+        ]
+       },
+       {
+        "dir": 4,
+        "w": 73,
+        "h": 159,
+        "pivot": [
+         36,
+         134
+        ]
+       },
+       {
+        "dir": 5,
+        "w": 100,
+        "h": 175,
+        "pivot": [
+         50,
+         142
+        ]
+       },
+       {
+        "dir": 6,
+        "w": 90,
+        "h": 179,
+        "pivot": [
+         47,
+         154
+        ]
+       },
+       {
+        "dir": 7,
+        "w": 100,
+        "h": 203,
+        "pivot": [
+         50,
+         170
+        ]
+       }
+      ],
+      "anchors": {
+       "hook": [
+        0,
+        0.681,
+        1.35
+       ],
+       "tip": [
+        0,
+        0.681,
+        1.549
+       ],
+       "loadBase": null,
+       "operator": [
+        0,
+        -1.18,
+        0.26
+       ],
+       "column": [
+        0,
+        0,
+        1.52
+       ],
+       "state": "stowed",
+       "slewDeg": 0,
+       "reachM": 0.681,
+       "hookZ": 1.35,
+       "luffDeg": 72,
+       "jibDeg": -94,
+       "load": "none",
+       "note": "hook = [reach sin(slew), reach cos(slew), hookZ] in the piece frame; the stand never turns",
+       "px": {
+        "hook": [
+         36,
+         114.9
+        ],
+        "tip": [
+         36,
+         110
+        ],
+        "operator": [
+         36,
+         103.4
+        ],
+        "column": [
+         36,
+         96.7
+        ]
+       }
+      },
+      "options": {
+       "state": "stowed",
+       "slew": 0,
+       "reach": 5.35,
+       "hookZ": 0.6,
+       "load": "totes"
+      },
+      "light": null,
+      "notes": "Mount on the quay with local +Y out over the water, the plinth 2.2 m inside the face, so the hook reaches a boat alongside and the landing pad behind. Playable: see gameplay().crane and NOTES §4.",
+      "crane": {
+       "envelope": {
+        "pin": [
+         0.05,
+         2.85
+        ],
+        "Lm": 2.975,
+        "Lj": 4.14,
+        "column": [
+         0,
+         0,
+         1.52
+        ],
+        "operator": [
+         0,
+         -1.18,
+         0.26
+        ],
+        "reach": {
+         "min": 2.2,
+         "max": 5.6,
+         "rateMS": 0.45
+        },
+        "tipZ": {
+         "near": 1.9,
+         "far": 4.95,
+         "farFrom": 5
+        },
+        "slew": {
+         "continuous": true,
+         "rateDegS": 20,
+         "stowedDeg": -90
+        },
+        "hoist": {
+         "max": 3.6,
+         "min": -7,
+         "upMS": 0.4,
+         "downMS": 0.55,
+         "belowTip": 0.95,
+         "slowNearM": 0.3,
+         "slowMS": 0.15
+        },
+        "stowed": {
+         "luffDeg": 72,
+         "jibDeg": -94,
+         "hookZ": 1.35
+        },
+        "swlKg": 1000,
+        "latchM": 0.35,
+        "landM": 0.05,
+        "swing": {
+         "damping": 0.6,
+         "maxDeg": 12,
+         "fromSlewDegS2": 0.35
+        }
+       },
+       "loads": {
+        "none": null,
+        "totes": {
+         "label": "two fish totes, stacked: the landing",
+         "size": [
+          1.12,
+          0.72,
+          1.04
+         ],
+         "kg": 190,
+         "lift": 0.4,
+         "seat": "deck or pad"
+        },
+        "traps": {
+         "label": "a sling of four traps: setting day",
+         "size": [
+          1.24,
+          1.26,
+          0.9
+         ],
+         "kg": 150,
+         "lift": 0.4,
+         "seat": "pad or deck"
+        },
+        "bait": {
+         "label": "a bait barrel",
+         "size": [
+          0.6,
+          0.6,
+          0.9
+         ],
+         "kg": 120,
+         "lift": 0.3,
+         "seat": "pad or deck"
+        }
+       },
+       "states": [
+        {
+         "id": "stowed",
+         "means": "jib folded down beside the column, the hook in its cradle, slewed along the quay (-90). Nobody at the stand."
+        },
+        {
+         "id": "idle",
+         "means": "working pose, the hook up at the top of its travel, nothing on it. The player is at the stand."
+        },
+        {
+         "id": "reaching",
+         "means": "the player is slewing, reaching or hoisting with nothing on the hook."
+        },
+        {
+         "id": "hooked",
+         "means": "the eye within latchM of a load’s lift point and latched (E). The load still sits."
+        },
+        {
+         "id": "lifting",
+         "means": "a latched load clear of every surface; it swings, damped, never more than swing.maxDeg."
+        },
+        {
+         "id": "landing",
+         "means": "the load’s base within hoist.slowNearM of a surface (the pad, a deck, a truck bed): lowering slows to hoist.slowMS."
+        },
+        {
+         "id": "set",
+         "means": "the load’s base within landM of a surface: it sits, and E unlatches."
+        }
+       ],
+       "pose": {
+        "state": "stowed",
+        "slew": 0,
+        "luffDeg": 72,
+        "jibDeg": -94,
+        "reach": 0.681,
+        "hookZ": 1.35,
+        "load": "none",
+        "hook": [
+         0,
+         0.681,
+         1.35
+        ],
+        "tip": [
+         0,
+         0.681,
+         1.549
+        ],
+        "loadBase": null
+       },
+       "controls": {
+        "take": "E at the operator point (anchors.operator), from the landward side",
+        "slew": "A / D, left stick X",
+        "reach": "W / S, left stick Y",
+        "hoist": "R up / F down; RT up / LT down",
+        "latch": "E, when the eye is within envelope.latchM of a load’s lift point",
+        "release": "E, when the load is set",
+        "leave": "Esc / B, or walk off the grating"
+       },
+       "camera": {
+        "size": [
+         20,
+         11.25
+        ],
+        "centre": "midway between the column and the hook, the same angle; eases in over 0.6 s",
+        "marker": "a ring on the surface under the hook (the drop line), because a hook’s height is hard to read from above"
+       },
+       "proposal": "NOTES.md §4: the crane’s gameplay, for the owner to rule"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "key": "harbourLight",
+   "id": "structure.nmc_harbour_light",
+   "scene": "keyscene.nmc_wharf",
+   "sceneEntry": 12,
+   "options": {
+    "colour": "green"
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-set-piece@1",
+    "generatedBy": "NmcSetPieces 1.4.0",
+    "key": "harbourLight",
+    "id": "structure.nmc_harbour_light",
+    "name": "Harbour light",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -0.9,
+      0.9
+     ],
+     "y": [
+      -0.9,
+      0.9
+     ],
+     "z": [
+      0,
+      5.88
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "breakwater",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -0.9,
+        -0.9
+       ],
+       [
+        0.9,
+        -0.9
+       ],
+       [
+        0.9,
+        0.9
+       ],
+       [
+        -0.9,
+        0.9
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 65,
+      "h": 178,
+      "pivot": [
+       32,
+       156
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 89,
+      "h": 189,
+      "pivot": [
+       44,
+       159
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 65,
+      "h": 178,
+      "pivot": [
+       32,
+       156
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 89,
+      "h": 189,
+      "pivot": [
+       44,
+       159
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 65,
+      "h": 178,
+      "pivot": [
+       32,
+       156
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 89,
+      "h": 189,
+      "pivot": [
+       44,
+       159
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 65,
+      "h": 178,
+      "pivot": [
+       32,
+       156
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 89,
+      "h": 189,
+      "pivot": [
+       44,
+       159
+      ]
+     }
+    ],
+    "anchors": {
+     "lamp": [
+      0,
+      0,
+      5.64
+     ],
+     "colour": "green",
+     "note": "flashes are the game’s: the lens emits with o.lit",
+     "px": {
+      "lamp": [
+       32,
+       17.7
+      ]
+     }
+    },
+    "options": {
+     "colour": "green",
+     "height": 4.6
+    },
+    "light": {
+     "emitters": [
+      "lamp",
+      "win"
+     ],
+     "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+    },
+    "notes": "Stand on the head block of a breakwater arm, the daymark to the approach. Red on the east (starboard entering), green on the west."
+   },
+   "variants": [
+    {
+     "name": "colour=red",
+     "sceneEntry": 13,
+     "options": {
+      "colour": "red"
+     },
+     "gameplay": {
+      "schema": "hidden-harbours/nmc-set-piece@1",
+      "generatedBy": "NmcSetPieces 1.4.0",
+      "key": "harbourLight",
+      "id": "structure.nmc_harbour_light",
+      "name": "Harbour light",
+      "defType": "SetPieceDef",
+      "scene": "keyscene.nmc_wharf",
+      "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+      "bounds": {
+       "x": [
+        -0.9,
+        0.9
+       ],
+       "y": [
+        -0.9,
+        0.9
+       ],
+       "z": [
+        0,
+        5.88
+       ]
+      },
+      "layer": "raised",
+      "walk": "solid",
+      "mount": "breakwater",
+      "colliders": [
+       {
+        "type": "polygon",
+        "blocks": "walk",
+        "pts": [
+         [
+          -0.9,
+          -0.9
+         ],
+         [
+          0.9,
+          -0.9
+         ],
+         [
+          0.9,
+          0.9
+         ],
+         [
+          -0.9,
+          0.9
+         ]
+        ]
+       }
+      ],
+      "facings": [
+       {
+        "dir": 0,
+        "showFaces": "N",
+        "bearingDeg": 0,
+        "cameraSees": "its back"
+       },
+       {
+        "dir": 1,
+        "showFaces": "NW",
+        "bearingDeg": 315,
+        "cameraSees": "its back"
+       },
+       {
+        "dir": 2,
+        "showFaces": "W",
+        "bearingDeg": 270,
+        "cameraSees": "the show face, edge-on or at a diagonal"
+       },
+       {
+        "dir": 3,
+        "showFaces": "SW",
+        "bearingDeg": 225,
+        "cameraSees": "the show face"
+       },
+       {
+        "dir": 4,
+        "showFaces": "S",
+        "bearingDeg": 180,
+        "cameraSees": "the show face"
+       },
+       {
+        "dir": 5,
+        "showFaces": "SE",
+        "bearingDeg": 135,
+        "cameraSees": "the show face"
+       },
+       {
+        "dir": 6,
+        "showFaces": "E",
+        "bearingDeg": 90,
+        "cameraSees": "the show face, edge-on or at a diagonal"
+       },
+       {
+        "dir": 7,
+        "showFaces": "NE",
+        "bearingDeg": 45,
+        "cameraSees": "its back"
+       }
+      ],
+      "cells": [
+       {
+        "dir": 0,
+        "w": 65,
+        "h": 178,
+        "pivot": [
+         32,
+         156
+        ]
+       },
+       {
+        "dir": 1,
+        "w": 89,
+        "h": 189,
+        "pivot": [
+         44,
+         159
+        ]
+       },
+       {
+        "dir": 2,
+        "w": 65,
+        "h": 178,
+        "pivot": [
+         32,
+         156
+        ]
+       },
+       {
+        "dir": 3,
+        "w": 89,
+        "h": 189,
+        "pivot": [
+         44,
+         159
+        ]
+       },
+       {
+        "dir": 4,
+        "w": 65,
+        "h": 178,
+        "pivot": [
+         32,
+         156
+        ]
+       },
+       {
+        "dir": 5,
+        "w": 89,
+        "h": 189,
+        "pivot": [
+         44,
+         159
+        ]
+       },
+       {
+        "dir": 6,
+        "w": 65,
+        "h": 178,
+        "pivot": [
+         32,
+         156
+        ]
+       },
+       {
+        "dir": 7,
+        "w": 89,
+        "h": 189,
+        "pivot": [
+         44,
+         159
+        ]
+       }
+      ],
+      "anchors": {
+       "lamp": [
+        0,
+        0,
+        5.64
+       ],
+       "colour": "red",
+       "note": "flashes are the game’s: the lens emits with o.lit",
+       "px": {
+        "lamp": [
+         32,
+         17.7
+        ]
+       }
+      },
+      "options": {
+       "colour": "red",
+       "height": 4.6
+      },
+      "light": {
+       "emitters": [
+        "lamp",
+        "win"
+       ],
+       "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+      },
+      "notes": "Stand on the head block of a breakwater arm, the daymark to the approach. Red on the east (starboard entering), green on the west."
+     }
+    }
+   ]
+  },
+  {
+   "key": "restaurant",
+   "id": "structure.nmc_restaurant",
+   "scene": "keyscene.nmc_wharf",
+   "sceneEntry": 11,
+   "options": {},
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-set-piece@1",
+    "generatedBy": "NmcSetPieces 1.4.0",
+    "key": "restaurant",
+    "id": "structure.nmc_restaurant",
+    "name": "The restaurant",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -8.9,
+      11.67
+     ],
+     "y": [
+      -5.85,
+      14.32
+     ],
+     "z": [
+      0,
+      6.947
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -8,
+        -4.5
+       ],
+       [
+        8,
+        -4.5
+       ],
+       [
+        8,
+        4.5
+       ],
+       [
+        -8,
+        4.5
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -8,
+        4.5
+       ],
+       [
+        11.6,
+        4.5
+       ],
+       [
+        11.6,
+        14
+       ],
+       [
+        -8,
+        14
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        8,
+        -3.2
+       ],
+       [
+        11.6,
+        -3.2
+       ],
+       [
+        11.6,
+        4.5
+       ],
+       [
+        8,
+        4.5
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 666,
+      "h": 503,
+      "pivot": [
+       288,
+       379
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 847,
+      "h": 658,
+      "pivot": [
+       504,
+       463
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 653,
+      "h": 523,
+      "pivot": [
+       462,
+       336
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 890,
+      "h": 639,
+      "pivot": [
+       586,
+       306
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 666,
+      "h": 519,
+      "pivot": [
+       377,
+       218
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 847,
+      "h": 672,
+      "pivot": [
+       342,
+       286
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 653,
+      "h": 588,
+      "pivot": [
+       191,
+       336
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 890,
+      "h": 639,
+      "pivot": [
+       304,
+       411
+      ]
+     }
+    ],
+    "anchors": {
+     "door": [
+      -0.45,
+      -6.1,
+      0
+     ],
+     "takeout": [
+      3.45,
+      -5.4,
+      0
+     ],
+     "deckDoor": [
+      7.2,
+      5.1,
+      0.55
+     ],
+     "deckSteps": [
+      9.3,
+      -4.4,
+      0
+     ],
+     "deckZ": 0.55,
+     "patio": {
+      "box": [
+       -8,
+       11.6,
+       8.6,
+       14
+      ],
+      "z": 0.55,
+      "tables": 8,
+      "seats": 32,
+      "umbrellas": 8,
+      "note": "the rear patio over the water: the deck extended north"
+     },
+     "words": [
+      {
+       "id": "words.nmc_restaurant",
+       "text": "RESTAURANT",
+       "corners": [
+        [
+         -3.6,
+         -5.064,
+         3.1
+        ],
+        [
+         3.6,
+         -5.064,
+         3.1
+        ],
+        [
+         3.6,
+         -5.064,
+         3.8
+        ],
+        [
+         -3.6,
+         -5.064,
+         3.8
+        ]
+       ],
+       "note": "the name board over the door; the owner names the place",
+       "cornersPx": [
+        [
+         492.2,
+         37.8
+        ],
+        [
+         261.8,
+         37.8
+        ],
+        [
+         261.8,
+         20.7
+        ],
+        [
+         492.2,
+         20.7
+        ]
+       ]
+      },
+      {
+       "id": "words.nmc_restaurant_menu",
+       "text": "CHOWDER · FISH & CHIPS · LOBSTER ROLLS",
+       "corners": [
+        [
+         5.15,
+         -4.544,
+         1.15
+        ],
+        [
+         6.35,
+         -4.544,
+         1.15
+        ],
+        [
+         6.35,
+         -4.544,
+         2.15
+        ],
+        [
+         5.15,
+         -4.544,
+         2.15
+        ]
+       ],
+       "note": "the takeout’s chalk menu; the game may bind it to the day’s catch",
+       "cornersPx": [
+        [
+         212.2,
+         96.3
+        ],
+        [
+         173.8,
+         96.3
+        ],
+        [
+         173.8,
+         71.8
+        ],
+        [
+         212.2,
+         71.8
+        ]
+       ]
+      }
+     ],
+     "px": {
+      "door": [
+       391.4,
+       92.5
+      ],
+      "takeout": [
+       266.6,
+       106.9
+      ],
+      "deckDoor": [
+       146.6,
+       309.4
+      ],
+      "deckSteps": [
+       79.4,
+       127.5
+      ]
+     }
+    },
+    "options": {
+     "text": "RESTAURANT",
+     "paint": "butter",
+     "lights": true,
+     "deck": true,
+     "patio": 5.4
+    },
+    "light": {
+     "emitters": [
+      "lamp",
+      "win"
+     ],
+     "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+    },
+    "notes": "Stand it with local +Y to the creek (dir 0 on the north row), so the camera sees the yard side: the door, the takeout, the name board, and the deck round the east end. Windows, the porch lamp, the name lamps and the deck lights glow with o.lit."
+   },
+   "variants": []
+  },
+  {
+   "key": "fishMarket",
+   "id": "structure.nmc_fish_market",
+   "scene": "keyscene.nmc_wharf",
+   "sceneEntry": 10,
+   "options": {},
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-set-piece@1",
+    "generatedBy": "NmcSetPieces 1.4.0",
+    "key": "fishMarket",
+    "id": "structure.nmc_fish_market",
+    "name": "The fish market",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -4.5,
+      3.445
+     ],
+     "y": [
+      -2.95,
+      3.63
+     ],
+     "z": [
+      0,
+      4.2
+     ]
+    },
+    "layer": "raised",
+    "walk": "solid",
+    "mount": "ground",
+    "colliders": [
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -3.2,
+        -2.6
+       ],
+       [
+        3.2,
+        -2.6
+       ],
+       [
+        3.2,
+        2.6
+       ],
+       [
+        -3.2,
+        2.6
+       ]
+      ]
+     },
+     {
+      "type": "polygon",
+      "blocks": "walk",
+      "pts": [
+       [
+        -4.45,
+        -1.2
+       ],
+       [
+        -3.2,
+        -1.2
+       ],
+       [
+        -3.2,
+        0.6
+       ],
+       [
+        -4.45,
+        0.6
+       ]
+      ]
+     }
+    ],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 262,
+      "h": 189,
+      "pivot": [
+       147,
+       125
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 300,
+      "h": 252,
+      "pivot": [
+       152,
+       158
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 218,
+      "h": 273,
+      "pivot": [
+       120,
+       177
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 301,
+      "h": 252,
+      "pivot": [
+       152,
+       158
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 262,
+      "h": 204,
+      "pivot": [
+       114,
+       125
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 300,
+      "h": 257,
+      "pivot": [
+       148,
+       158
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 218,
+      "h": 253,
+      "pivot": [
+       98,
+       177
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 301,
+      "h": 252,
+      "pivot": [
+       148,
+       158
+      ]
+     }
+    ],
+    "anchors": {
+     "counter": [
+      -1.1,
+      3.45,
+      0
+     ],
+     "door": [
+      1.55,
+      3.3,
+      0
+     ],
+     "iceChest": [
+      -3.9,
+      -0.3,
+      0.96
+     ],
+     "words": [
+      {
+       "id": "words.nmc_fish_market",
+       "text": "FISH MARKET",
+       "corners": [
+        [
+         -2.55,
+         2.644,
+         2.3
+        ],
+        [
+         0.35,
+         2.644,
+         2.3
+        ],
+        [
+         0.35,
+         2.644,
+         2.62
+        ],
+        [
+         -2.55,
+         2.644,
+         2.62
+        ]
+       ],
+       "note": "the name board over the awning",
+       "cornersPx": [
+        [
+         195.6,
+         123
+        ],
+        [
+         102.8,
+         123
+        ],
+        [
+         102.8,
+         115.2
+        ],
+        [
+         195.6,
+         115.2
+        ]
+       ]
+      },
+      {
+       "id": "words.nmc_market_board",
+       "text": "TODAY",
+       "bind": "market.today",
+       "format": [
+        "TODAY",
+        "{species1} {price1}",
+        "{species2} {price2}"
+       ],
+       "corners": [
+        [
+         2.41,
+         3.6084,
+         0.11
+        ],
+        [
+         2.8899999999999997,
+         3.6084,
+         0.11
+        ],
+        [
+         2.8899999999999997,
+         3.39,
+         0.86
+        ],
+        [
+         2.41,
+         3.39,
+         0.86
+        ]
+       ],
+       "note": "the day’s prices, from the market the buyer reads",
+       "cornersPx": [
+        [
+         36.9,
+         196.5
+        ],
+        [
+         21.5,
+         196.5
+        ],
+        [
+         21.5,
+         173.6
+        ],
+        [
+         36.9,
+         173.6
+        ]
+       ]
+      }
+     ],
+     "px": {
+      "counter": [
+       149.2,
+       196
+      ],
+      "door": [
+       64.4,
+       192.9
+      ],
+      "iceChest": [
+       238.8,
+       95.3
+      ]
+     }
+    },
+    "options": {
+     "text": "FISH MARKET",
+     "board": true
+    },
+    "light": {
+     "emitters": [
+      "lamp",
+      "win"
+     ],
+     "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+    },
+    "notes": "Stand it with local +Y to the yard (dir 4), beside the harbourmaster’s office. The window, the door lamp glow with o.lit while it is open."
+   },
+   "variants": []
+  },
+  {
+   "key": "landingPad",
+   "id": "prop.nmc_crane_pad",
+   "scene": "keyscene.nmc_wharf",
+   "sceneEntry": 8,
+   "options": {
+    "size": 2.4
+   },
+   "gameplay": {
+    "schema": "hidden-harbours/nmc-set-piece@1",
+    "generatedBy": "NmcSetPieces 1.4.0",
+    "key": "landingPad",
+    "id": "prop.nmc_crane_pad",
+    "name": "Crane landing pad",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.nmc_wharf",
+    "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -1.2,
+      1.2
+     ],
+     "y": [
+      -1.2,
+      1.2
+     ],
+     "z": [
+      0,
+      0.014
+     ]
+    },
+    "layer": "floor",
+    "walk": "on",
+    "mount": "quay",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 84,
+      "h": 57,
+      "pivot": [
+       42,
+       29
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 116,
+      "h": 78,
+      "pivot": [
+       58,
+       39
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 84,
+      "h": 57,
+      "pivot": [
+       42,
+       29
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 116,
+      "h": 78,
+      "pivot": [
+       58,
+       39
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 84,
+      "h": 57,
+      "pivot": [
+       42,
+       29
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 116,
+      "h": 78,
+      "pivot": [
+       58,
+       39
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 84,
+      "h": 57,
+      "pivot": [
+       42,
+       29
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 116,
+      "h": 78,
+      "pivot": [
+       58,
+       39
+      ]
+     }
+    ],
+    "anchors": {
+     "seat": [
+      0,
+      0,
+      0.014
+     ],
+     "size": [
+      2.4,
+      2.4
+     ],
+     "px": {
+      "seat": [
+       42,
+       28.7
+      ]
+     }
+    },
+    "options": {
+     "size": 2.4
+    },
+    "light": null,
+    "notes": "Paint it on the apron deck inside the crane’s reach, behind the berth. anchors().seat is where a load sits."
+   },
+   "variants": []
+  }
+ ]
+}

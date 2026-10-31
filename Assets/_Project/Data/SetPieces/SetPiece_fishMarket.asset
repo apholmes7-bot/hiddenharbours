@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_fishMarket
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_fish_market
+  DisplayName: The fish market
+  RigKey: fishMarket
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{"text":"FISH MARKET","board":true}'
+  Layer: raised
+  Walk: solid
+  Mount: ground
+  BoundsMin: {x: -4.5, y: -2.95, z: 0}
+  BoundsMax: {x: 3.445, y: 3.63, z: 4.2}
+  Frames:
+  - Sprite: {fileID: -4591705877891032949, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 262, y: 189}
+    NativePivot: {x: 147, y: 125}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 144, y: 122}
+  - Sprite: {fileID: 3179572329863835231, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 301, y: 252}
+    NativePivot: {x: 148, y: 158}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 145, y: 154}
+  - Sprite: {fileID: 1973998425302582640, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 218, y: 253}
+    NativePivot: {x: 98, y: 177}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 94, y: 174}
+  - Sprite: {fileID: -6714638436102220408, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 300, y: 257}
+    NativePivot: {x: 148, y: 158}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 145, y: 154}
+  - Sprite: {fileID: 1739307512216780055, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 262, y: 204}
+    NativePivot: {x: 114, y: 125}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 111, y: 122}
+  - Sprite: {fileID: -1835839853461344674, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 301, y: 252}
+    NativePivot: {x: 152, y: 158}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 149, y: 154}
+  - Sprite: {fileID: -499465103205842906, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 218, y: 273}
+    NativePivot: {x: 120, y: 177}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 116, y: 174}
+  - Sprite: {fileID: -4899702527935131280, guid: a8a40e8eec7201b4785a85920cfb38db, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 300, y: 252}
+    NativePivot: {x: 152, y: 158}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 148, y: 154}
+  CellSize: {x: 294, y: 266}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -3.2, y: -2.6}
+    - {x: 3.2, y: -2.6}
+    - {x: 3.2, y: 2.6}
+    - {x: -3.2, y: 2.6}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -4.45, y: -1.2}
+    - {x: -3.2, y: -1.2}
+    - {x: -3.2, y: 0.6}
+    - {x: -4.45, y: 0.6}
+  Anchors:
+  - Name: counter
+    Position: {x: -1.1, y: 3.45, z: 0}
+  - Name: door
+    Position: {x: 1.55, y: 3.3, z: 0}
+  - Name: iceChest
+    Position: {x: -3.9, y: -0.3, z: 0.96}
+  Path: []
+  TideMarks: []
+  Words:
+  - Id: words.nmc_fish_market
+    BodyId: 
+    Corners:
+    - {x: -2.55, y: 2.644, z: 2.3}
+    - {x: 0.35, y: 2.644, z: 2.3}
+    - {x: 0.35, y: 2.644, z: 2.62}
+    - {x: -2.55, y: 2.644, z: 2.62}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+    Bind: 
+    Format: []
+  - Id: words.nmc_market_board
+    BodyId: 
+    Corners:
+    - {x: 2.41, y: 3.6084, z: 0.11}
+    - {x: 2.89, y: 3.6084, z: 0.11}
+    - {x: 2.89, y: 3.39, z: 0.86}
+    - {x: 2.41, y: 3.39, z: 0.86}
+    HasPoint: 0
+    Point: {x: 0, y: 0, z: 0}
+    Size: 0
+    Bind: market.today
+    Format:
+    - TODAY
+    - '{species1} {price1}'
+    - '{species2} {price2}'
+  HasLight: 1
+  Light:
+    Emitters:
+    - lamp
+    - win
+    When: "o.lit, from the game\u2019s lamp rule (dusk to dawn; the office while
+      open)"
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: "{\"schema\":\"hidden-harbours/nmc-set-piece@1\",\"generatedBy\":\"NmcSetPieces
+    1.4.0\",\"key\":\"fishMarket\",\"id\":\"structure.nmc_fish_market\",\"name\":\"The
+    fish market\",\"defType\":\"SetPieceDef\",\"scene\":\"keyscene.nmc_wharf\",\"units\":\"metres,
+    the piece\u2019s own frame: +x right, +y the show face, +z up from its ground
+    point (the pivot)\",\"bounds\":{\"x\":[-4.5,3.445],\"y\":[-2.95,3.63],\"z\":[0,4.2]},\"layer\":\"raised\",\"walk\":\"solid\",\"mount\":\"ground\",\"colliders\":[{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-3.2,-2.6],[3.2,-2.6],[3.2,2.6],[-3.2,2.6]]},{\"type\":\"polygon\",\"blocks\":\"walk\",\"pts\":[[-4.45,-1.2],[-3.2,-1.2],[-3.2,0.6],[-4.45,0.6]]}],\"facings\":[{\"dir\":0,\"showFaces\":\"N\",\"bearingDeg\":0,\"cameraSees\":\"its
+    back\"},{\"dir\":1,\"showFaces\":\"NW\",\"bearingDeg\":315,\"cameraSees\":\"its
+    back\"},{\"dir\":2,\"showFaces\":\"W\",\"bearingDeg\":270,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":3,\"showFaces\":\"SW\",\"bearingDeg\":225,\"cameraSees\":\"the
+    show face\"},{\"dir\":4,\"showFaces\":\"S\",\"bearingDeg\":180,\"cameraSees\":\"the
+    show face\"},{\"dir\":5,\"showFaces\":\"SE\",\"bearingDeg\":135,\"cameraSees\":\"the
+    show face\"},{\"dir\":6,\"showFaces\":\"E\",\"bearingDeg\":90,\"cameraSees\":\"the
+    show face, edge-on or at a diagonal\"},{\"dir\":7,\"showFaces\":\"NE\",\"bearingDeg\":45,\"cameraSees\":\"its
+    back\"}],\"cells\":[{\"dir\":0,\"w\":262,\"h\":189,\"pivot\":[147,125]},{\"dir\":1,\"w\":300,\"h\":252,\"pivot\":[152,158]},{\"dir\":2,\"w\":218,\"h\":273,\"pivot\":[120,177]},{\"dir\":3,\"w\":301,\"h\":252,\"pivot\":[152,158]},{\"dir\":4,\"w\":262,\"h\":204,\"pivot\":[114,125]},{\"dir\":5,\"w\":300,\"h\":257,\"pivot\":[148,158]},{\"dir\":6,\"w\":218,\"h\":253,\"pivot\":[98,177]},{\"dir\":7,\"w\":301,\"h\":252,\"pivot\":[148,158]}],\"anchors\":{\"counter\":[-1.1,3.45,0],\"door\":[1.55,3.3,0],\"iceChest\":[-3.9,-0.3,0.96],\"words\":[{\"id\":\"words.nmc_fish_market\",\"text\":\"FISH
+    MARKET\",\"corners\":[[-2.55,2.644,2.3],[0.35,2.644,2.3],[0.35,2.644,2.62],[-2.55,2.644,2.62]],\"note\":\"the
+    name board over the awning\",\"cornersPx\":[[195.6,123],[102.8,123],[102.8,115.2],[195.6,115.2]]},{\"id\":\"words.nmc_market_board\",\"text\":\"TODAY\",\"bind\":\"market.today\",\"format\":[\"TODAY\",\"{species1}
+    {price1}\",\"{species2} {price2}\"],\"corners\":[[2.41,3.6084,0.11],[2.8899999999999997,3.6084,0.11],[2.8899999999999997,3.39,0.86],[2.41,3.39,0.86]],\"note\":\"the
+    day\u2019s prices, from the market the buyer reads\",\"cornersPx\":[[36.9,196.5],[21.5,196.5],[21.5,173.6],[36.9,173.6]]}],\"px\":{\"counter\":[149.2,196],\"door\":[64.4,192.9],\"iceChest\":[238.8,95.3]}},\"options\":{\"text\":\"FISH
+    MARKET\",\"board\":true},\"light\":{\"emitters\":[\"lamp\",\"win\"],\"when\":\"o.lit,
+    from the game\u2019s lamp rule (dusk to dawn; the office while open)\"},\"notes\":\"Stand
+    it with local +Y to the yard (dir 4), beside the harbourmaster\u2019s office.
+    The window, the door lamp glow with o.lit while it is open.\"}"
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

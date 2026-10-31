@@ -1,0 +1,200 @@
+{
+ "schema": "hidden-harbours/nmc-set-piece@1",
+ "generatedBy": "NmcSetPieces 1.3.0",
+ "key": "fireRing",
+ "id": "prop.nmc_fire_ring",
+ "name": "Fire ring",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.nmc_campground",
+ "units": "metres, the piece’s own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -0.703,
+   0.74
+  ],
+  "y": [
+   -0.711,
+   0.711
+  ],
+  "z": [
+   0,
+   0.967
+  ]
+ },
+ "layer": "floor",
+ "walk": "solid",
+ "mount": "ground",
+ "colliders": [
+  {
+   "type": "polygon",
+   "blocks": "walk",
+   "pts": [
+    [
+     -0.6,
+     -0.6
+    ],
+    [
+     0.6,
+     -0.6
+    ],
+    [
+     0.6,
+     0.6
+    ],
+    [
+     -0.6,
+     0.6
+    ]
+   ]
+  }
+ ],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 54,
+   "h": 45,
+   "pivot": [
+    26,
+    27
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 56,
+   "h": 46,
+   "pivot": [
+    28,
+    27
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 53,
+   "h": 45,
+   "pivot": [
+    26,
+    27
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 56,
+   "h": 47,
+   "pivot": [
+    28,
+    27
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 54,
+   "h": 46,
+   "pivot": [
+    27,
+    28
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 56,
+   "h": 48,
+   "pivot": [
+    28,
+    28
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 53,
+   "h": 47,
+   "pivot": [
+    26,
+    27
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 56,
+   "h": 47,
+   "pivot": [
+    28,
+    27
+   ]
+  }
+ ],
+ "anchors": {
+  "fire": [
+   0,
+   0,
+   0.4
+  ],
+  "sitRadius": 1.6,
+  "px": {
+   "fire": [
+    27,
+    18.2
+   ]
+  }
+ },
+ "options": {
+  "lit": true
+ },
+ "light": {
+  "emitters": [
+   "lamp",
+   "win"
+  ],
+  "when": "o.lit, from the game’s lamp rule (dusk to dawn; the office while open)"
+ },
+ "notes": "The flames glow with o.lit (the lamp rule: dusk to midnight at an occupied site)."
+}
