@@ -86,10 +86,11 @@ namespace HiddenHarbours.Tests.RigBaking
         /// it is matched against its ground rest, the same spade on its own turntable with the pivot
         /// under the grip, by the side its weight falls on.
         /// </summary>
+        // Pass 3 (PR 995) drew flounder flat as it lies; d5/d6 are within 6/1 px of their mirrors, so bass is the witness (all seven measured 10-31: six facings, smallest margin 9 px).
         static readonly (string Id, string Sheet, TurnMeasure By)[] TurnCases =
         {
             ("heldprop.rod_coast", "Assets/_Project/Art/Fishing/Iso/Rod_coast_hold.png", TurnMeasure.Outline),
-            ("heldprop.fish_flounder", "Assets/_Project/Art/Fishing/Iso/Fish_flounder_tail.png", TurnMeasure.Outline),
+            ("heldprop.fish_bass", "Assets/_Project/Art/Fishing/Iso/Fish_bass_tail.png", TurnMeasure.Outline),
             ("heldprop.bucket_tray_empty", "Assets/_Project/Art/Fishing/Storage/Bucket_tray_empty.png", TurnMeasure.Outline),
             ("heldprop.shovel", "Assets/_Project/Art/Fishing/Iso/Shovel_ground.png", TurnMeasure.Side),
         };
