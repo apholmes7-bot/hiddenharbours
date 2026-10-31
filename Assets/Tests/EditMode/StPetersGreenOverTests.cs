@@ -23,7 +23,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// position. Two calls must produce byte-identical fields, or the builder's "rebuild the scene"
     /// becomes "get a different island", and the owner's proof screenshots stop meaning anything.</para>
     /// </summary>
-    public class StPetersGreenOverTests
+    public class StPetersLegacyGreenOverFixtureTests
     {
         GameObject _go;
         TidalTerrain _terrain;
@@ -420,5 +420,60 @@ namespace HiddenHarbours.Tests.EditMode
 
         static string Summary(Dictionary<string, int> d) =>
             string.Join(", ", d.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key} {kv.Value}"));
+    }
+}
+
+namespace HiddenHarbours.Tests.EditMode
+{
+    public class StPetersGreenOverTests
+    {
+        [Test]
+        public void TheGroundGridIsComplete_AndTheFieldBindsAllFiveRecipes()
+        {
+            var ground = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldGroundData>(StPetersGrassFieldTests.GroundPath);
+            Assert.IsNotNull(ground); Assert.IsNotNull(ground.HeightMap);
+            var first = ground.Decode(); CollectionAssert.AreEqual(first, ground.Decode());
+            Assert.AreEqual(1520 * 1040, first.Length);
+            var definition = StPetersGrassFieldTests.Definition(); Assert.AreEqual(5, definition.Recipes.Length);
+            foreach (byte cell in first)
+            {
+                if (cell == 255) continue;
+                Assert.That(cell >> 5, Is.InRange(0, 4));
+                Assert.IsNotNull(definition.Recipes[cell >> 5].ForMaterial(cell & 31));
+            }
+            Assert.AreEqual(0, definition.HeightProjection, "plant roots remain in the game's ground plane");
+        }
+
+        [Test]
+        public void AuthoredSitesKeepTheirStageVariantAndFoot_WhileTheSeasonChanges()
+        {
+            var go = new GameObject("PlantFieldSeasonFixture");
+            var definition = ScriptableObject.CreateInstance<HiddenHarbours.Art.PlantFieldDefinition>();
+            var species = ScriptableObject.CreateInstance<HiddenHarbours.Art.PlantSpeciesDef>();
+            try
+            {
+                species.Code = 1; species.Family = "grass";
+                species.Cells = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Select(System.Linq.Enumerable.Range(0, 4),
+                    s => new HiddenHarbours.Art.PlantCell { Stage = 1, Season = s, Variant = 3, Tide = 0, Dormant = true }));
+                definition.Width = definition.Height = 1; definition.CellSize = .5f; definition.GroundMetresPerY = 1;
+                definition.ChunkWidth = 8; definition.SlowTickSeconds = .5f; definition.Species = new[] { species };
+                definition.Authored = new[] { new HiddenHarbours.Art.PlantFieldSite { Id = "plant.fixture", At = new Vector2(7, -3), Species = 1, Stage = 1, Variant = 3 } };
+                var ground = go.AddComponent<StPetersPlantGroundFixture>();
+                var field = go.AddComponent<HiddenHarbours.Art.PlantField>(); field.Definition = definition; field.GroundSource = ground;
+                field.Rebuild(false); Assert.AreEqual(0, field.MissingCells);
+                var roots = new List<Vector2>(); field.CopyGrassRootsTo(roots); CollectionAssert.AreEqual(new[] { new Vector2(7, -3) }, roots);
+                ground.Season = 1; field.RefreshAppearance();
+                Assert.AreEqual(1, field.CurrentSeason); Assert.AreEqual(1, field.PlantCount); Assert.AreEqual(0, field.MissingCells);
+            }
+            finally { Object.DestroyImmediate(go); Object.DestroyImmediate(definition); Object.DestroyImmediate(species); }
+        }
+    }
+
+    public sealed class StPetersPlantGroundFixture : MonoBehaviour, IPlantFieldGround
+    {
+        public int Season;
+        public int PlantSeason => Season;
+        public PlantGroundSample Sample(float x, float y) => new PlantGroundSample(-1, 0, 2.5f, true);
+        public float WaterLevelAt(float x, float y) => 0;
     }
 }
