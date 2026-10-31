@@ -462,6 +462,11 @@ namespace HiddenHarbours.Art
         /// </summary>
         public Transform PosedMesh => _meshChild;
 
+        /// <summary>Borrowed geometry and read-only presentation state for the sun caster; no depth calibration is exposed as altitude.</summary>
+        public HullSunShadowState SunShadowState => _setup == null ? default : new HullSunShadowState(
+            _setup, _headingDirUnits, _rollDegrees, _pitchDegrees, _heavePixels, _ridePixels,
+            _cutaway.Opens || _hasRoomGeometry, _doorLeafOpen, _cutaway, _roleLiftMasks);
+
         /// <summary>
         /// The lamps this hull carries, in her own rig metres — the def's table, handed straight
         /// through. Empty until she is set up, and empty forever for a hull whose rig has not been
