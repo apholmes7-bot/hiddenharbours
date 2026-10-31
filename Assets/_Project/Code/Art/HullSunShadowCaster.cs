@@ -10,6 +10,7 @@ namespace HiddenHarbours.Art
         public readonly Mesh Hull, ClosedLeaf, OpenLeaf;
         public readonly float Heading, Elevation, Roll, Pitch, HeavePixels, RidePixels;
         public readonly int PixelsPerMetre;
+        public readonly float DeckHeight;
         public readonly bool LevelGate, DoorOpen;
         public readonly int Level, LiftLevels, ShownRoles;
         readonly Vector4[] _roles;
@@ -20,6 +21,7 @@ namespace HiddenHarbours.Art
             Hull = setup.Mesh; ClosedLeaf = setup.DoorLeafClosed; OpenLeaf = setup.DoorLeafOpen;
             Heading = heading; Elevation = setup.ElevationDeg; Roll = roll; Pitch = pitch;
             HeavePixels = heave; RidePixels = ride; PixelsPerMetre = setup.PxPerMetre;
+            DeckHeight = setup.WatertightDeckHeightMeters;
             LevelGate = levelGate; DoorOpen = doorOpen; Level = cut.Level;
             LiftLevels = cut.LiftLevels; ShownRoles = cut.ShownRoles; _roles = roles;
         }
