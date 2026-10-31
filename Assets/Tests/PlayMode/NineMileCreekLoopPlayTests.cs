@@ -853,6 +853,10 @@ namespace HiddenHarbours.Tests.PlayMode
             for (var e = WalkTo(body, arrive, leg, walk); e.MoveNext();) yield return e.Current;
             TestContext.WriteLine("  " + walk);
             Assert.That(walk.Reached, Is.True, $"the loop broke {leg}: {walk}");
+            // Update read the old aim before this step released it; yield so it can read the release.
+            // The sale, loads and next plan then run after that read, without pushing her round the fish buyer's stall.
+            // 10-31: CI 41130661584, 41147083240 and PR 996's first attempt.
+            yield return null;
         }
 
         IEnumerator WalkTo(Vector2 goal, float arrive, string leg, Walk walk)
