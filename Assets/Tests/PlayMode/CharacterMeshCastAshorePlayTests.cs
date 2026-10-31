@@ -56,6 +56,14 @@ namespace HiddenHarbours.Tests.PlayMode
 
         private const float SkipperHeadingDegrees = 135f;
         private const int SettleFrames = 3;
+
+        /// <summary>How many of the villagers' shelter checks to let pass, in real time, after the clock
+        /// jumps. <see cref="VillagerRoutine"/> re-decides shelter every
+        /// <see cref="VillagerRoutine.ShelterCheckSeconds"/> of unscaled time, so a fast runner's three
+        /// frames could read a villager before her routine had stood her out of doors (the 09-30 and 10-31
+        /// reds, the same three villagers each time). Two checks: one boundary is certain, the second is
+        /// slack.</summary>
+        private const float ShelterChecksToWait = 2f;
         private const float YawToleranceDegrees = 0.01f;
         private const float WalkBandMiddle = 0.5f;
         private const float RunPastThreshold = 1.5f;
@@ -354,6 +362,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(GameServices.Clock, "harness: St Peters loaded and published no clock");
             double spd = GameServices.Config.SecondsPerDay;
             GameServices.Clock.SeekTo((1d + NoonHour / 24d) * spd);
+            // The routines decide by real time, not by frames: let their shelter check run before the frames settle.
+            yield return new WaitForSecondsRealtime(VillagerRoutine.ShelterCheckSeconds * ShelterChecksToWait);
             yield return Settle();
         }
 
