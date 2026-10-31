@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.Tilemaps;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -31,6 +32,7 @@ namespace HiddenHarbours.Tests.PlayMode
         bool _ignore;
         float _timeScale;
         ISaveService _save;
+        string _lampCaption;
 
         static GameObject[] PersistentRoots()
         {
@@ -74,7 +76,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             Time.timeScale = 1f;
             // GPU fixtures before this class can retain a real persistent fleet. Keep that fleet
-            // resident but asleep, so this region has its own camera and unshared facet ids.
+            // resident but asleep, so this region has its own camera and no inherited active fleet.
             foreach (var root in _resident)
                 if (root != null && root.activeSelf && root.GetComponentInChildren<PersistentObject>(true) != null)
                 { root.SetActive(false); _sleepingResidents.Add(root); }
@@ -164,6 +166,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 l.gameObject.scene.name == "NineMileCreek" && l.Shape == SceneLight.LightShape.Radial &&
                 l.Intensity > 0f && l.ReachMetres > 0f && l.GetComponent<PreconfiguredLight>() != null &&
                 l.GetComponent<PreconfiguredLight>().Preset == LightPresets.Kind.Lightpost);
+            _lampCaption = lamp != null ? "live post=" + lamp.name : null;
             if (lamp == null)
             {
                 // This legacy region carries the yard-light art without a light component. Compose
@@ -173,6 +176,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.That(post, Is.Not.Null, "The authored yard-light post must exist.");
                 lamp = LampPosts.Light(post.gameObject, LampPosts.UtilityFamily, LampPosts.YardLight);
                 _owned.Add(post.GetComponent<PreconfiguredLight>()); _owned.Add(lamp);
+                _lampCaption = "fixture-lit unlit legacy post=" + post.name + "; kit=" + LampPosts.YardLight;
             }
             Assert.That(lamp, Is.Not.Null, "The fixture must carry a live radial lamp post.");
             Assert.That(LampShadowSystem.LiveLights.Contains(lamp), Is.True);
@@ -206,6 +210,35 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(LampShadowSystem.LiveCasterCount, Is.EqualTo(count));
         }
 
+        static (Vector2 world, string caption) RoadStation(Vector2 near, params Vector2[] avoid)
+        {
+            var road = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None)
+                .FirstOrDefault(t => t.gameObject.scene.name == "NineMileCreek" && t.name == "RoadTop");
+            Assert.That(road, Is.Not.Null, "Read the road from the loaded scene, not its builder.");
+            float nearest = float.PositiveInfinity;
+            Vector3Int chosen = default;
+            bool found = false;
+            foreach (var cell in road.cellBounds.allPositionsWithin)
+            {
+                if (!road.HasTile(cell)) continue;
+                Vector2 world = road.GetCellCenterWorld(cell);
+                if (avoid.Any(p => Vector2.Distance(p, world) < 25f)) continue;
+                float distance = (world - near).sqrMagnitude;
+                if (distance >= nearest) continue;
+                nearest = distance; chosen = cell; found = true;
+            }
+            Assert.That(found, Is.True, "A separated road tile must exist in the banked scene.");
+            Vector2 at = road.GetCellCenterWorld(chosen);
+            return (at, $"NineMileCreek/RoadTop cell={chosen}; world={at}");
+        }
+
+        static void ParkOtherVehicles(ParkedVehicle subject, Vector2 centre)
+        {
+            int i = 0;
+            foreach (var other in Placed())
+                if (other != subject) Park(other, centre + new Vector2(70f + i++ * 12f, 70f));
+        }
+
         [UnityTest] public IEnumerator ProofFrames_OffOn()
         {
             if (System.Environment.GetEnvironmentVariable("HH_SHADOWS_B_PLATES") != "1" ||
@@ -214,20 +247,25 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Load();
             var truck = Placed().First(p => p.name == NineMileCreekTruckPark.TruckName);
             Vector2 park = truck.transform.position;
-            var quad = Quad(NineMileCreekMainland.WharfRoad[2] + Vector2.right * 14f);
+            var road = RoadStation(NineMileCreekMainland.WharfRoad[2]);
+            var quadSite = RoadStation(road.world + Vector2.left * 50f,
+                Placed().Select(p => (Vector2)p.transform.position).Concat(new[] { road.world, new Vector2(122f, 77f) }).ToArray());
+            var quad = Quad(quadSite.world);
             yield return null;
-            yield return Pair("truck-park-1700", park, 17f);
-            Vector2 road = NineMileCreekMainland.WharfRoad[2];
-            Park(truck, road);
-            yield return Pair("truck-road-0800", road, 8f);
-            yield return Pair("truck-road-1700", road, 17f);
-            yield return Pair("atv-1700", quad.transform.position, 17f);
+            yield return Pair("truck-park-1700", truck, park, 17f, "authored truck park; world=" + park);
+            Park(truck, road.world);
+            yield return Pair("truck-road-0800", truck, road.world, 8f, road.caption);
+            yield return Pair("truck-road-1700", truck, road.world, 17f, road.caption);
+            Park(truck, park);
+            Park(quad, quadSite.world);
+            yield return Pair("atv-1700", quad, quadSite.world, 17f, quadSite.caption);
             SpawnMooredHull();
             Park(truck, new Vector2(120f, 87.7f));
-            yield return Pair("truck-and-hull-1700", new Vector2(120f, 83f), 17f);
+            yield return Pair("truck-and-hull-1700", truck, new Vector2(120f, 83f), 17f,
+                "NineMileCreek wharf; truck=(120,87.7); owned moored Dory=(122,77)");
             var lamp = LampPost();
             Park(truck, (Vector2)lamp.WorldOrigin + Vector2.right * 2f);
-            yield return Pair("truck-lamp-2100", truck.transform.position, 21f);
+            yield return Pair("truck-lamp-2100", truck, truck.transform.position, 21f, _lampCaption);
         }
 
         void SpawnMooredHull()
@@ -261,10 +299,21 @@ namespace HiddenHarbours.Tests.PlayMode
                 LampShadowSystem.Instance.PublishFrame(Camera.main);
         }
 
-        IEnumerator Pair(string name, Vector2 centre, float hour)
+        IEnumerator Pair(string name, ParkedVehicle subject, Vector2 centre, float hour, string station)
         {
+            ParkOtherVehicles(subject, centre);
             yield return Hour(hour);
             yield return _stage.FrameOn(centre);
+            var planes = GeometryUtility.CalculateFrustumPlanes(_stage.Camera);
+            Assert.That(GeometryUtility.TestPlanesAABB(planes, Body(subject).OverlayRenderer.bounds), Is.True,
+                subject.name + ": the referenced subject must be in frame.");
+            foreach (var other in Placed())
+                if (other != subject)
+                    Assert.That(GeometryUtility.TestPlanesAABB(planes, Body(other).OverlayRenderer.bounds), Is.False,
+                        other.name + ": another vehicle must not enter " + name);
+            if (name == "atv-1700")
+                foreach (var other in Placed())
+                    if (other != subject) Assert.That(Vector2.Distance(subject.transform.position, other.transform.position), Is.GreaterThanOrEqualTo(25f));
             Casting(false);
             for (int i = 0; i < 3; i++) yield return null;
             byte[] before = _stage.Capture();
@@ -291,7 +340,7 @@ namespace HiddenHarbours.Tests.PlayMode
             File.WriteAllBytes(Path.Combine(Output, "plates", "compare-" + name + ".png"), sheet.EncodeToPNG());
             Object.DestroyImmediate(sheet);
             File.WriteAllText(Path.Combine(Output, "plates", name + ".txt"),
-                $"OFF left | ON right; frozen world/camera/station/hour.\ncentre={centre}; hour={hour}; changedPixels={changed}; nativePanel={width}x{height}\n" +
+                $"OFF left | ON right; frozen world/camera/station/hour.\nsubject={subject.name}; station={station}; centre={centre}; hour={hour}; changedPixels={changed}; nativePanel={width}x{height}\n" +
                 $"Draws OFF/ON={off[0]}/{on[0]}; batches OFF/ON={off[1]}/{on[1]}; -1 means counter not offered.\n");
         }
 
