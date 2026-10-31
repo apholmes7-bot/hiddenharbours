@@ -617,6 +617,10 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static GameConfig Config { get; set; }
 
+        /// <summary>The name limit, including the fallback for an unwired config.</summary>
+        public static int PlayerNameMaxLength => Config != null
+            ? System.Math.Max(1, Config.PlayerNameMaxLength) : GameConfig.DefaultPlayerNameMaxLength;
+
         /// <summary>
         /// The ONE wind → wave-train derivation every consumer reads (ADR 0018 §(5)): the shader
         /// bridge, the hull rocking, the seakeeping forces, the wake, the buoys, the trap haul and the

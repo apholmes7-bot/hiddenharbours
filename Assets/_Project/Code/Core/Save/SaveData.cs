@@ -314,6 +314,9 @@ namespace HiddenHarbours.Core
         /// sprite layer, which the mesh never drew; v15 leaves that id exactly where it was.</para>
         /// </summary>
         public CharacterRecipe PlayerRecipe = new CharacterRecipe();
+
+        /// <summary>The chosen player name, added in v17. Empty means no name.</summary>
+        public string PlayerName = "";
     }
 
     /// <summary>
