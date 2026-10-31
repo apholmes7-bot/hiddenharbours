@@ -162,8 +162,23 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            Assert.AreEqual(5259646, weight.Bytes, "PR 5p keeps the 30 wet shore plants and measures the remaining scene");
+            const long MeasuredPlantFieldSceneBytes = 5_259_646;
+            const long SharedSceneHeadroomBytes = 64L * 1024;
+            const long MinimumPopulatedSceneBytes = 5_000_000;
+            // Main's data/water edits move this shared file by tens of bytes per merge. Allow 64 KiB
+            // above the measured retirement: 5,325,182 is below 5.4 MB, and cannot hide the roughly
+            // 556 KB retirement. The 5 MB floor rejects a truncated scene; names prove retirement.
+            Assert.LessOrEqual(weight.Bytes, MeasuredPlantFieldSceneBytes + SharedSceneHeadroomBytes,
+                "the named plant retirement must retain its saving with shared-scene headroom");
+            Assert.Greater(weight.Bytes, MinimumPopulatedSceneBytes, "the remaining scene must stay populated");
             string text = File.ReadAllText("Assets/_Project/Scenes/StPeters.unity");
+            foreach (string retired in new[] { "IslandGrass", "IslandShrubs", "IslandFlowers" })
+                StringAssert.DoesNotContain("  m_Name: " + retired + "\n", text, "the retired root " + retired);
+            StringAssert.Contains("  m_Name: ShorePlants\n", text, "the wet shore root stays placed");
+            int keptShorePlants = System.Text.RegularExpressions.Regex.Matches(text,
+                @"^  m_Script: \{fileID: 11500000, guid: 06e7444939cab3b76d2723aa8c09e04f, type: 3\}$",
+                System.Text.RegularExpressions.RegexOptions.Multiline).Count;
+            Assert.AreEqual(30, keptShorePlants, "PR 5p keeps thirty placed wet shore plants");
             Assert.IsFalse(text.Contains("  m_Name: PlantChunk\n"), "runtime chunks must never be serialized");
         }
 
