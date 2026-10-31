@@ -853,6 +853,10 @@ namespace HiddenHarbours.Tests.PlayMode
             for (var e = WalkTo(body, arrive, leg, walk); e.MoveNext();) yield return e.Current;
             TestContext.WriteLine("  " + walk);
             Assert.That(walk.Reached, Is.True, $"the loop broke {leg}: {walk}");
+            // Update read the old aim before this step released it; yield so it can read the release.
+            // The sale, loads and next plan then run after that read, without pushing her round the fish buyer's stall.
+            // 10-31: CI 41130661584, 41147083240 and PR 996's first attempt.
+            yield return null;
         }
 
         IEnumerator WalkTo(Vector2 goal, float arrive, string leg, Walk walk)
@@ -867,6 +871,29 @@ namespace HiddenHarbours.Tests.PlayMode
                     List<Vector2> path = planner.Plan(Body(), goal, arrive, PlanCell, PlanMargin, PlanMaxExpansions, out string why)
                                          ?? planner.Plan(Body(), goal, arrive, FineCell, FineMargin, FineMaxExpansions, out why);
                     walk.Probes = planner.Probes;
+                    if (attempt == 0 && planner.TryStepBackDirection(out Vector2 outward))
+                    {
+                        // Step back from the counter before following a grid path from beside its face.
+                        Vector2 began = Body(), was = began;
+                        float spent = 0f;
+                        while (Vector2.Dot(Body() - began, outward) < PlanCell && spent < StallWindowSeconds)
+                        {
+                            _held.Walk(outward);
+                            yield return null;
+                            Vector2 now = Body();
+                            walk.Metres += Vector2.Distance(was, now);
+                            float dt = Time.deltaTime;
+                            spent += dt;
+                            walk.Seconds += dt;
+                            float depth = Depth(now);
+                            if (depth > walk.DeepestAtBody) { walk.DeepestAtBody = depth; walk.DeepestAt = now; }
+                            was = now;
+                        }
+                        _held.Release();
+                        yield return null;
+                        walk.Replans++;
+                        continue;
+                    }
                     if (path == null) { walk.Why = $"no plan from {Body()}: {why}"; yield break; }
                     walk.Nodes += path.Count;
                     walk.Stalled = false;
@@ -938,6 +965,9 @@ namespace HiddenHarbours.Tests.PlayMode
             readonly float _radius, _maxDepth;
             readonly ContactFilter2D _filter;
             readonly List<Collider2D> _hits = new List<Collider2D>();
+            Vector2 _startFoot;
+            float _startReachSquared;
+            Collider2D _startCounter;
             public readonly List<string> FirstPlanRefusals = new List<string>(24);
             int _planCount;
             public int Probes;
@@ -966,9 +996,24 @@ namespace HiddenHarbours.Tests.PlayMode
                 for (int i = 0; i < _hits.Count; i++)
                     if (_hits[i].attachedRigidbody != _self)
                     {
+                        // Include the start cell's footprint: rounding to the grid can put it in the counter.
+                        Vector2 away = _startFoot - _hits[i].ClosestPoint(_startFoot);
+                        if (_startCounter == null && away.sqrMagnitude <= _startReachSquared)
+                            _startCounter = _hits[i];
                         RecordRefusal(body, "hit", depth);
                         return false;
                     }
+                return true;
+            }
+
+            public bool TryStepBackDirection(out Vector2 outward)
+            {
+                outward = Vector2.zero;
+                if (_startCounter == null) return false;
+                Vector2 foot = _self.position + _footOffset;
+                outward = foot - _startCounter.ClosestPoint(foot);
+                if (outward.sqrMagnitude <= Mathf.Epsilon) return false;
+                outward.Normalize();
                 return true;
             }
 
@@ -999,6 +1044,9 @@ namespace HiddenHarbours.Tests.PlayMode
                                       out string why)
             {
                 _planCount++;   // Keep the initial coarse plan's record; fallback plans and replans never overwrite it.
+                _startFoot = from + _footOffset;
+                _startReachSquared = (_radius + cell) * (_radius + cell);
+                _startCounter = null;
                 Vector2 min = Vector2.Min(from, goal) - Vector2.one * margin;
                 Vector2 max = Vector2.Max(from, goal) + Vector2.one * margin;
                 float ox = Mathf.Floor(min.x / cell) * cell, oy = Mathf.Floor(min.y / cell) * cell;

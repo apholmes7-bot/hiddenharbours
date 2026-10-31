@@ -28,6 +28,16 @@ namespace HiddenHarbours.Tests.EditMode
         private const string DataRoot = "Assets/_Project/Data";
 
         [Test]
+        public void SunCasterRules_Exist_WithStableIdAndValidFields()
+        {
+            var rules = Resources.Load<HiddenHarbours.Art.SunCasterRules>("SunCasterRules");
+            Assert.That(rules, Is.Not.Null);
+            Assert.That(rules.Id, Is.EqualTo("art.sun_caster_rules"));
+            Assert.That(rules.IsValid(out var error), Is.True, error);
+            Assert.That(AssetDatabase.FindAssets("t:SunCasterRules"), Has.Length.EqualTo(1));
+        }
+
+        [Test]
         public void NmcKeyScenes_Exist_AsUnplacedData_WithUniqueIdsAndResolvedRegion()
         {
             var regions = LoadAll<RegionDef>();
