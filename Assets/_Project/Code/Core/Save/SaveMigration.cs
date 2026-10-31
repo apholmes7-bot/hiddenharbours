@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 16;
+        public const int CurrentVersion = 17;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -327,6 +327,13 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 16;
             }
 
+            // v16 -> v17: older games have no chosen name. Their appearance is untouched.
+            if (data.SchemaVersion < 17)
+            {
+                data.PlayerName = "";
+                data.SchemaVersion = 17;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -356,6 +363,7 @@ namespace HiddenHarbours.Core
             data.RestRegion ??= "";
             data.PlayerRecipe ??= new CharacterRecipe();
             data.PlayerRecipe.Heal();    // a field JsonUtility left null reads as "the preset's own"
+            data.PlayerName ??= "";
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
