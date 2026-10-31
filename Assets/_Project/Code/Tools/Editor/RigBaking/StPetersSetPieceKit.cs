@@ -65,6 +65,17 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public static string SidecarPath(string id) => $"{GameplayFolder}/{id}.gameplay.json";
 
+        public static readonly HashSet<string> ExtraGameplayMembers = new HashSet<string>(StringComparer.Ordinal);
+        public static readonly HashSet<string> ExtraAnchorMembers = new HashSet<string>(StringComparer.Ordinal);
+        public static readonly SetPieceKit Definition = new SetPieceKit
+        {
+            Folder = KitFolder, GlobalName = GlobalName, Version = Version, SidecarSchema = SidecarSchema,
+            TodaySchema = TodaySchema, Scripts = Scripts, Pieces = Pieces,
+            ExtraGameplayMembers = ExtraGameplayMembers, ExtraAnchorMembers = ExtraAnchorMembers,
+            ImportSizeCap = ImportSizeCap, Facings = Facings,
+            Sheets = SetPieceSheetSlicer.StPeters,
+        };
+
         public static string Abs(string repoRelative) => Path.Combine(RigCatalog.RepoRoot, repoRelative);
 
         public static string Lf(string text) => text.Replace("\r\n", "\n");
